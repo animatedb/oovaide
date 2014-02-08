@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="290" height="141">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="5" y="112" width="75" height="28" />
+<rect x="0" y="117" width="10" height="5" />
+<rect x="0" y="127" width="10" height="5" />
+</g>
+<g font-size="10">
+<text x="12" y="124">kingdom</text>
+<text x="12" y="136">&lt;&lt;Program&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="99" y="112" width="87" height="28" />
+<rect x="94" y="117" width="10" height="5" />
+<rect x="94" y="127" width="10" height="5" />
+</g>
+<g font-size="10">
+<text x="106" y="124">resources/horses</text>
+<text x="106" y="136">&lt;&lt;SharedLib&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="205" y="112" width="84" height="28" />
+<rect x="200" y="117" width="10" height="5" />
+<rect x="200" y="127" width="10" height="5" />
+</g>
+<g font-size="10">
+<text x="212" y="124">resources/men</text>
+<text x="212" y="136">&lt;&lt;SharedLib&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="106" y="47" width="74" height="28" />
+<rect x="101" y="52" width="10" height="5" />
+<rect x="101" y="62" width="10" height="5" />
+</g>
+<g font-size="10">
+<text x="113" y="59">gtk+-3.0</text>
+<text x="113" y="71">&lt;&lt;External&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="119" y1="75" x2="61" y2="112" style="stroke-dasharray: 4, 4 "/>
+<line x1="119" y1="75" x2="116" y2="84" />
+<line x1="119" y1="75" x2="110" y2="75" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="140" y1="75" x2="140" y2="112" style="stroke-dasharray: 4, 4 "/>
+<line x1="140" y1="75" x2="145" y2="83" />
+<line x1="140" y1="75" x2="135" y2="83" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="162" y1="75" x2="222" y2="112" style="stroke-dasharray: 4, 4 "/>
+<line x1="162" y1="75" x2="171" y2="75" />
+<line x1="162" y1="75" x2="165" y2="84" />
+</g>
+</svg>

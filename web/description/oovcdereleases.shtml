@@ -1,0 +1,249 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head><!-- DC Blaha - 6/8/2009 -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
+
+<h2>OOVCDE Release Details</h2>
+
+Created: 6-8-2009
+
+<p>
+<img src="OovLogo.png">
+
+</p><h2>Releases</h2>
+The following lists releases in reverse chronological order.
+
+<h2>2014-02</h2>This version contains:<br>
+<ul>
+  <li>Display dependency diagrams including external package dependencies<br>
+  </li>
+  <li>Automatically determines library and package link dependencies for each component<br>
+  </li>
+  <li>The oovCMaker tool will generate CMake files from a project.</li>
+  <li>Fixed bug for filename case problems.</li>
+  <li>Fixed bug for deleting stale build data.<br>
+  </li>
+</ul>
+<h2>2014-01-04</h2>
+This version contains:<br>
+
+
+
+<ul>
+<li>Added external packages for easier builds</li>
+  <li>Fixed build bug for scanning projects (-ER is workaround for bug)</li>
+  <li>Fixed bug during analysis for stddef.h</li>
+  <li>Fixed bug in journal<br>
+  </li>
+
+
+
+</ul>
+<h2>2014-01-3</h2>
+This version contains:<br>
+
+
+<ul>
+<li>Allow aborting analysis to enable quicker build argument setup and early analysis<br>
+</li>
+  
+  
+  <li>Allow editing component diagrams</li>
+<li>Improved build display output</li>
+  <li>Added more build preferences</li>
+  <li>Saves different build configurations when build arguments are changed</li>
+  <li>Added ability to create new configurations for cross compiling, etc.<br>
+  </li>
+
+  <li>Automatically cleans up build files when arguments are changed<br>
+  </li>
+
+  <li>Fixed process handling on Linux for processes with many errors</li>
+  <li>Fixed process handling on Windows to use less CPU time<br>
+  </li><li>Fixed build settings to allow many more components (without buying a bigger monitor)<br>
+  </li>
+
+<li>Added CMake files<br>
+  </li>
+</ul>
+<h2>2014-01-2</h2>
+This version contains:<br>
+
+<ul>
+<li>Use of CLang 3.4<br>
+</li><li>New component diagrams that show library dependencies<br>
+</li>
+</ul>
+<h2>2014-01</h2>
+This version contains:<br>
+<ul>
+  <li>Added a new dialog for creating modules (source interface and implementation)</li>
+  <li>Improved simple projects and creation of projects.</li>
+  <li>Improved the build settings dialog.</li>
+  <li>Fixed process execution in some cases on Linux.<br>
+  </li>
+</ul>
+<h2>2013-12</h2>
+This version contains:<br>
+<ul>
+<li>Added a new dialog for new projects<br>
+</li>
+  <li>Added background processing on Linux<br>
+  </li>
+  <li>Doesn't relayout class diagrams when classes are removed or preferences are changed<br>
+  </li>
+<li>Changed the quality of automatically drawn class diagrams<br>
+</li>
+</ul>
+<h2>2013-10-2</h2>
+This version contains:<br>
+<ul>
+  <li>Optimized include file dependencies for builds</li>
+  <li>Distributed all required files for Windows (GTK and MinGW)<br>
+  </li>
+  <li>Improved behavior of tabs<br>
+  </li>
+  <li>Added a build output window<br>
+  </li>
+</ul>
+<h2>2013-10</h2>
+
+This version contains:<br>
+<ul>
+  <li>A C++ syntax highlighting editor</li>
+  <li>A component/module list</li>
+  <li>Improved build with Debug/Release builds</li>
+</ul>
+
+<h2>2013-09-2</h2>
+This version contains:<br>
+<ul>
+  <li>Recursive search of roots (includes and libraries) using "-ER"</li>
+  <li>Working easy to use build system</li>
+</ul>
+
+<h2>2013-09</h2>
+This version contains:<br>
+<ul>
+  <li>Improved initial include paths for external dependencies</li>
+  <li>Recursive search of includes using "-EI" (Later changed to -ER)</li>
+  <li>Improved class navigation</li>
+  <li>Fixes such as View Source for Linux and improved parse execution</li>
+  <li>Part of a system to build projects</li>
+</ul>
+
+
+<h2>2013-08-2</h2>
+This version contains:<br>
+<ul>
+  <li>Journal that keeps a history of modified diagrams</li>
+  <li>Collapsing and expanding calls in sequence diagrams<br>
+  </li>
+  <li>Improved class diagram symbols</li>
+  <li>Improved const function handling<br>
+  </li>
+  <li>Many small improvements and bug fixes<br>
+  </li>
+</ul>
+
+
+<h2>2013-08</h2>
+
+This version contains many new small features:
+<ul>
+	<li>Improved class diagram line positions</li>
+	<li>Added public, protected, private indicators +,-,# to classes</li>
+	<li>Added preferences for each class in a diagram</li>
+	<li>Added package names to class diagrams</li>
+	<li>Fixed lifelines on sequence diagrams</li>
+	<li>Many small improvements and bug fixes</li>
+</ul>
+
+<h2>2013-07-2</h2>
+Sequence diagrams are now created and can be saved as .SVG files. Class diagrams
+now have many more features.
+
+<h2>2013-07</h2>
+The biggest new feature is that the graphs can now be saved into .SVG files,
+which can be edited in Inkscape.
+<p>
+The C++ parser has been changed from a parser used in the Umbrello project
+to the LLVM/Clang parser.  The Clang parser will correctly parse modern C++
+variants, and is a complete C++ parser, which allows for
+collecting any information that is desired for graphs.
+</p><p>
+The GUI has been changed from QT to GTK partly because of licensing and
+because the number of dependencies seems to be smaller.
+</p><p>
+The graph layout has been changed from Boost to a custom genetic algorithm.
+The Boost graph did not handle different sized nodes/classes easily.  The
+genetic algorithm is not perfect, but gives a surprisingly quick initial
+layout in most cases.
+
+</p><h2>2010-01</h2>
+This version used Qt, a C++ parser from the Umbrello project, and Boost graph.
+<p>
+The program goal has evolved a bit from the original to focus initially on the
+graphs.  The main goal currently is to be able to quickly view class relations
+and navigate between classes in systems with hundreds of classes.  There are also
+new symbols for aiding understanding of which classes can modify other classes so
+that review of certain relations can be performed quickly.
+</p><p>
+The boost graph and D-Bus usage cost a lot of time to develop due to various
+problems.  Originally the boost graph was going to be based on
+lists, but was changed to vectors because the implementation was easier.  The
+D-Bus was difficult to use to handle arrays of structures, but eventually that
+too was figured out.  Since the D-Bus support in MS Windows does not seem to be supported
+well, the code was converted to shared memory.  The D-Bus code still exists in case
+there is better support in the future.
+
+</p><h2>Original Goals</h2>
+The original purpose of this program was as an integrated software development
+environment.  Since many CPU cores will be available, why not have many tasks
+happening in the background while the programmer is working?  This means that
+the program can be compiled, and documentation produced while the programmer
+is developing code.  This includes code diagrams that are created in the background.
+<p>
+The implementation details of the separation of header files and source files
+for C++ should be hidden from the developer.  This would require an intelligent
+layout of source methods so that the user doesn't have to organize windows.
+</p><p>
+One idea was to use a genetic algorithm to create the graphs on a background thread.
+The boost graph library would be used to create the original graph quickly, then
+an icon would indicate when the improved graph was ready.  The programmer could
+click on the icon to view the improved graph.  This has yet to be implemented.
+</p><p>
+There could also be a simple language for creating classes for either beginning
+users, or as a convenience for advanced users.  The relations could be specified
+by a language such as "Mary has-a little Lamb".  This could give a tigher understanding
+for beginners between language and graphs.
+
+</p><h2>More History</h2>
+Originally the program was called Program Object Relationship Navigator, but the
+web site was not getting any hits.  So a few programs were written to generate
+random strings to make a name, and the programs all generated OOVCDE.  I may post
+the source code later.  The pronunciaton is something like Oov-Kitty, and that is
+the reason that the cat-eye is used for the scope and const relations symbol, and
+that the Oov logo is an ice cream cone.
+<p>
+</p></div>
+
+</body></html>

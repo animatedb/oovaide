@@ -1,0 +1,268 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="667" height="726">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="21" y="20" width="205" height="242" />
+<line x1="21" y1="41" x2="226" y2="41" />
+<line x1="21" y1="89" x2="226" y2="89" />
+</g>
+<g font-size="10">
+<text x="22" y="29">Journal</text>
+<text x="22" y="38">/oovcde/</text>
+<text x="22" y="50">-std::vector&lt;JournalRecord&gt; mRecords</text>
+<text x="22" y="59">-int mCurrentRecord</text>
+<text x="22" y="68">-Builder mBuilder</text>
+<text x="22" y="77">-ModelData mModel</text>
+<text x="22" y="86">-JournalListener mListener</text>
+<text x="22" y="98">+Journal()</text>
+<text x="22" y="107">+~Journal()</text>
+<text x="22" y="116">+init(Builder builder, ModelData model,</text>
+<text x="22" y="125">    JournalListener listener)</text>
+<text x="22" y="134">+clear()</text>
+<text x="22" y="143">+displayClass(char   const className)</text>
+<text x="22" y="152">+displayOperation(char   const className,</text>
+<text x="22" y="161">    char   const operName, bool isConst)</text>
+<text x="22" y="170">+saveFile(FILE fp)</text>
+<text x="22" y="179">+cppArgOptionsChangedUpdateDrawings()</text>
+<text x="22" y="188">+setCurrentRecord(size_t index)</text>
+<text x="22" y="197">+getRecords()</text>
+<text x="22" y="206">+getCurrentRecord()</text>
+<text x="22" y="215">+removeUnmodifiedRecords()</text>
+<text x="22" y="224">-getCurrentRecord()</text>
+<text x="22" y="233">-addRecord(JournalRecord record, char  </text>
+<text x="22" y="242">    const name)</text>
+<text x="22" y="251">-removeRecord(int index)</text>
+<text x="22" y="260">-findRecord(char   const name)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="267" y="28" width="131" height="17" />
+<line x1="267" y1="40" x2="398" y2="40" />
+<line x1="267" y1="43" x2="398" y2="43" />
+</g>
+<g font-size="10">
+<text x="268" y="37">std::vector&lt;JournalRecord&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="43" y="406" width="71" height="26" />
+<line x1="43" y1="427" x2="114" y2="427" />
+<line x1="43" y1="430" x2="114" y2="430" />
+</g>
+<g font-size="10">
+<text x="44" y="415">ModelData</text>
+<text x="44" y="424">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="217" y="285" width="202" height="62" />
+<line x1="217" y1="306" x2="419" y2="306" />
+<line x1="217" y1="309" x2="419" y2="309" />
+</g>
+<g font-size="10">
+<text x="218" y="294">JournalListener</text>
+<text x="218" y="303">/oovcde/</text>
+<text x="218" y="318">+~JournalListener()</text>
+<text x="218" y="327">+displayClass(char   const className)</text>
+<text x="218" y="336">+displayOperation(char   const className,</text>
+<text x="218" y="345">    char   const operName, bool isConst)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="284" y="78" width="290" height="170" />
+<line x1="284" y1="99" x2="574" y2="99" />
+<line x1="284" y1="129" x2="574" y2="129" />
+</g>
+<g font-size="10">
+<text x="285" y="87">JournalRecord</text>
+<text x="285" y="96">/oovcde/</text>
+<text x="285" y="108">-std::string mName</text>
+<text x="285" y="117">-eRecordTypes mRecordType</text>
+<text x="285" y="126">-JournalListener mListener</text>
+<text x="285" y="138">+JournalRecord(eRecordTypes type, JournalListener listener)</text>
+<text x="285" y="147">+~JournalRecord()</text>
+<text x="285" y="156">+drawingAreaButtonPressEvent(GdkEventButton event)</text>
+<text x="285" y="165">+drawingAreaButtonReleaseEvent(GdkEventButton event)</text>
+<text x="285" y="174">+drawingAreaDrawEvent()</text>
+<text x="285" y="183">+cppArgOptionsChangedUpdateDrawings()</text>
+<text x="285" y="192">+saveFile(FILE fp)</text>
+<text x="285" y="201">+isModified()</text>
+<text x="285" y="210">+getName()</text>
+<text x="285" y="219">+getFullName(bool addSpace)</text>
+<text x="285" y="228">+setName(char   const str)</text>
+<text x="285" y="237">+getRecordType()</text>
+<text x="285" y="246">+displayClass(char   const className)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="116" y="535" width="274" height="116" />
+<line x1="116" y1="556" x2="390" y2="556" />
+<line x1="116" y1="568" x2="390" y2="568" />
+</g>
+<g font-size="10">
+<text x="117" y="544">JournalRecordClassDiagram</text>
+<text x="117" y="553">/oovcde/</text>
+<text x="117" y="565">+ClassDiagram mClassDiagram</text>
+<text x="117" y="577">+JournalRecordClassDiagram(Builder builder, ModelData</text>
+<text x="117" y="586">    model, JournalListener listener)</text>
+<text x="117" y="595">-gotoClass(char   const className)</text>
+<text x="117" y="604">-drawingAreaButtonPressEvent(GdkEventButton event)</text>
+<text x="117" y="613">-drawingAreaButtonReleaseEvent(GdkEventButton event)</text>
+<text x="117" y="622">-drawingAreaDrawEvent()</text>
+<text x="117" y="631">-cppArgOptionsChangedUpdateDrawings()</text>
+<text x="117" y="640">-saveFile(FILE fp)</text>
+<text x="117" y="649">-isModified()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="371" y="406" width="296" height="116" />
+<line x1="371" y1="427" x2="667" y2="427" />
+<line x1="371" y1="439" x2="667" y2="439" />
+</g>
+<g font-size="10">
+<text x="372" y="415">JournalRecordOperationDiagram</text>
+<text x="372" y="424">/oovcde/</text>
+<text x="372" y="436">+OperationDiagram mOperationDiagram</text>
+<text x="372" y="448">+JournalRecordOperationDiagram(Builder builder, ModelData</text>
+<text x="372" y="457">    model, JournalListener listener)</text>
+<text x="372" y="466">-gotoClass(char   const className)</text>
+<text x="372" y="475">-drawingAreaButtonPressEvent(GdkEventButton event)</text>
+<text x="372" y="484">-drawingAreaButtonReleaseEvent(GdkEventButton event)</text>
+<text x="372" y="493">-drawingAreaDrawEvent()</text>
+<text x="372" y="502">-cppArgOptionsChangedUpdateDrawings()</text>
+<text x="372" y="511">-saveFile(FILE fp)</text>
+<text x="372" y="520">-isModified()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="114" y="323" width="45" height="26" />
+<line x1="114" y1="344" x2="159" y2="344" />
+<line x1="114" y1="347" x2="159" y2="347" />
+</g>
+<g font-size="10">
+<text x="115" y="332">oovGui</text>
+<text x="115" y="341">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="499" y="310" width="168" height="44" />
+<line x1="499" y1="331" x2="667" y2="331" />
+<line x1="499" y1="334" x2="667" y2="334" />
+</g>
+<g font-size="10">
+<text x="500" y="319">OperationDiagramListener</text>
+<text x="500" y="328">/oovcde/</text>
+<text x="500" y="343">+~OperationDiagramListener()</text>
+<text x="500" y="352">+gotoClass(char   const className)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="176" y="378" width="90" height="26" />
+<line x1="176" y1="399" x2="266" y2="399" />
+<line x1="176" y1="402" x2="266" y2="402" />
+</g>
+<g font-size="10">
+<text x="177" y="387">OperationDiagram</text>
+<text x="177" y="396">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="40" y="693" width="67" height="26" />
+<line x1="40" y1="714" x2="107" y2="714" />
+<line x1="40" y1="717" x2="107" y2="717" />
+</g>
+<g font-size="10">
+<text x="41" y="702">ClassDiagram</text>
+<text x="41" y="711">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="222" y="682" width="168" height="44" />
+<line x1="222" y1="703" x2="390" y2="703" />
+<line x1="222" y1="706" x2="390" y2="706" />
+</g>
+<g font-size="10">
+<text x="223" y="691">ClassDiagramListener</text>
+<text x="223" y="700">/oovcde/</text>
+<text x="223" y="715">+~ClassDiagramListener()</text>
+<text x="223" y="724">+gotoClass(char   const className)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="225" y1="90" x2="317" y2="44" />
+<polygon points="225,90 233,90 241,82 229,83 225,90 " style="fill:#ffffff" />
+<circle cx="251" cy="76" r="5" style="fill:#000000" />
+<circle cx="251" cy="76" r="2" style="fill:#000000" />
+<line x1="104" y1="262" x2="80" y2="406" />
+<polygon points="104,262 99,268 102,279 107,270 104,262 " style="fill:#ffffff" />
+<polygon points="102,277 94,285 101,281 105,287 102,277 " style="fill:#ffffff" />
+<circle cx="99" cy="291" r="5" style="fill:#000000" />
+<circle cx="99" cy="291" r="2" style="fill:#000000" />
+<line x1="225" y1="232" x2="284" y2="285" />
+<polygon points="225,232 227,240 238,244 233,233 225,232 " style="fill:#ffffff" />
+<circle cx="247" cy="252" r="5" style="fill:#000000" />
+<circle cx="247" cy="252" r="2" style="fill:#000000" />
+<line x1="225" y1="148" x2="284" y2="153" />
+<circle cx="243" cy="149" r="5" style="fill:#ffffff" />
+<circle cx="249" cy="150" r="2" style="fill:#ffffff" />
+<line x1="136" y1="323" x2="131" y2="262" />
+<polygon points="136,323 139,315 135,306 131,316 136,323 " style="fill:#000000" />
+<circle cx="133" cy="293" r="5" style="fill:#000000" />
+<circle cx="133" cy="293" r="2" style="fill:#000000" />
+<line x1="338" y1="44" x2="365" y2="78" />
+<line x1="195" y1="535" x2="91" y2="432" />
+<polygon points="192,532 190,522 189,529 181,530 192,532 " style="fill:#ffffff" />
+<circle cx="181" cy="521" r="5" style="fill:#ffffff" />
+<circle cx="177" cy="517" r="2" style="fill:#ffffff" />
+<line x1="371" y1="449" x2="113" y2="422" />
+<polygon points="367,449 359,442 363,449 357,453 367,449 " style="fill:#ffffff" />
+<circle cx="352" cy="447" r="5" style="fill:#ffffff" />
+<circle cx="346" cy="446" r="2" style="fill:#ffffff" />
+<line x1="127" y1="349" x2="87" y2="406" />
+<polygon points="127,349 119,352 117,363 127,357 127,349 " style="fill:#000000" />
+<circle cx="109" cy="373" r="5" style="fill:#000000" />
+<circle cx="109" cy="373" r="2" style="fill:#000000" />
+<line x1="176" y1="399" x2="113" y2="413" />
+<polygon points="176,399 168,397 159,402 170,405 176,399 " style="fill:#ffffff" />
+<polygon points="161,402 151,399 157,403 153,410 161,402 " style="fill:#ffffff" />
+<circle cx="146" cy="405" r="5" style="fill:#000000" />
+<circle cx="146" cy="405" r="2" style="fill:#000000" />
+<line x1="73" y1="693" x2="78" y2="432" />
+<polygon points="73,693 77,686 73,676 69,686 73,693 " style="fill:#ffffff" />
+<polygon points="73,678 79,668 73,674 68,668 73,678 " style="fill:#ffffff" />
+<circle cx="73" cy="663" r="5" style="fill:#000000" />
+<circle cx="73" cy="663" r="2" style="fill:#000000" />
+<line x1="368" y1="248" x2="340" y2="285" />
+<polygon points="368,248 360,251 358,262 367,256 368,248 " style="fill:#ffffff" />
+<circle cx="349" cy="271" r="5" style="fill:#000000" />
+<circle cx="349" cy="271" r="2" style="fill:#000000" />
+<line x1="266" y1="535" x2="311" y2="347" />
+<circle cx="270" cy="516" r="5" style="fill:#ffffff" />
+<circle cx="271" cy="510" r="2" style="fill:#ffffff" />
+<line x1="441" y1="406" x2="360" y2="347" />
+<circle cx="425" cy="394" r="5" style="fill:#ffffff" />
+<circle cx="420" cy="391" r="2" style="fill:#ffffff" />
+<line x1="217" y1="327" x2="158" y2="334" />
+<polygon points="217,327 204,324 205,333 217,327 " style="fill:#ffffff" />
+<circle cx="187" cy="330" r="5" style="fill:#ffffff" />
+<circle cx="187" cy="330" r="2" style="fill:#ffffff" />
+<line x1="395" y1="248" x2="276" y2="535" />
+<polygon points="395,248 386,257 395,261 395,248 " style="fill:#ffffff" />
+<circle cx="383" cy="275" r="5" style="fill:#ffffff" />
+<circle cx="383" cy="275" r="2" style="fill:#ffffff" />
+<line x1="454" y1="248" x2="502" y2="406" />
+<polygon points="454,248 453,261 462,258 454,248 " style="fill:#ffffff" />
+<circle cx="462" cy="276" r="5" style="fill:#ffffff" />
+<circle cx="462" cy="276" r="2" style="fill:#ffffff" />
+<line x1="161" y1="651" x2="93" y2="693" />
+<polygon points="161,651 153,651 146,660 157,658 161,651 " style="fill:#000000" />
+<circle cx="135" cy="666" r="5" style="fill:#ffffff" />
+<circle cx="135" cy="666" r="2" style="fill:#ffffff" />
+<line x1="296" y1="682" x2="280" y2="651" />
+<polygon points="296,682 295,669 286,673 296,682 " style="fill:#ffffff" />
+<circle cx="282" cy="655" r="5" style="fill:#ffffff" />
+<circle cx="282" cy="655" r="2" style="fill:#ffffff" />
+<line x1="573" y1="354" x2="547" y2="406" />
+<polygon points="573,354 563,363 573,367 573,354 " style="fill:#ffffff" />
+<circle cx="559" cy="380" r="5" style="fill:#ffffff" />
+<circle cx="559" cy="380" r="2" style="fill:#ffffff" />
+<line x1="371" y1="428" x2="266" y2="402" />
+<polygon points="371,428 365,422 354,424 363,430 371,428 " style="fill:#000000" />
+<circle cx="341" cy="420" r="5" style="fill:#ffffff" />
+<circle cx="341" cy="420" r="2" style="fill:#ffffff" />
+<line x1="266" y1="384" x2="499" y2="345" />
+<polygon points="266,384 274,387 283,382 272,379 266,384 " style="fill:#ffffff" />
+<circle cx="295" cy="379" r="5" style="fill:#000000" />
+<circle cx="295" cy="379" r="2" style="fill:#000000" />
+<line x1="106" y1="706" x2="222" y2="704" />
+<polygon points="106,706 113,710 123,706 113,702 106,706 " style="fill:#ffffff" />
+<circle cx="135" cy="705" r="5" style="fill:#000000" />
+<circle cx="135" cy="705" r="2" style="fill:#000000" />
+</g>
+</svg>

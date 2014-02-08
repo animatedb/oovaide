@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="504" height="270">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="51" y="62" width="60" height="35" />
+<line x1="51" y1="83" x2="111" y2="83" />
+<line x1="51" y1="86" x2="111" y2="86" />
+</g>
+<g font-size="10">
+<text x="52" y="71">Kingdom</text>
+<text x="52" y="80">/kingdom/</text>
+<text x="52" y="95">+Kingdom()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="181" y="66" width="119" height="62" />
+<line x1="181" y1="87" x2="300" y2="87" />
+<line x1="181" y1="99" x2="300" y2="99" />
+</g>
+<g font-size="10">
+<text x="182" y="75">Egg</text>
+<text x="182" y="84">/kingdom/</text>
+<text x="182" y="96">-std::string mName</text>
+<text x="182" y="108">+Egg(char   const name)</text>
+<text x="182" y="117">+getName()</text>
+<text x="182" y="126">+fall()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="124" y="162" width="196" height="107" />
+<line x1="124" y1="183" x2="320" y2="183" />
+<line x1="124" y1="204" x2="320" y2="204" />
+</g>
+<g font-size="10">
+<text x="125" y="171">ResourceClient</text>
+<text x="125" y="180">/kingdom/</text>
+<text x="125" y="192">-GModule mModule</text>
+<text x="125" y="201">-ResourceClientInterface mInterface</text>
+<text x="125" y="213">+open(char   const fn)</text>
+<text x="125" y="222">+close()</text>
+<text x="125" y="231">+isOpen()</text>
+<text x="125" y="240">+getInterface()</text>
+<text x="125" y="249">-loadSymbols()</text>
+<text x="125" y="258">-loadModuleSymbol(gchar symbolName,</text>
+<text x="125" y="267">    gpointer symbol)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="378" y="194" width="125" height="44" />
+<line x1="378" y1="215" x2="503" y2="215" />
+<line x1="378" y1="236" x2="503" y2="236" />
+</g>
+<g font-size="10">
+<text x="379" y="203">ResourceClientInterface</text>
+<text x="379" y="212">/kingdom/</text>
+<text x="379" y="224">+void ( getResourceName</text>
+<text x="379" y="233">+bool ( putTogether</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="111" y1="82" x2="181" y2="91" />
+<circle cx="124" cy="83" r="5" style="fill:#ffffff" />
+<line x1="98" y1="96" x2="168" y2="162" />
+<circle cx="108" cy="105" r="5" style="fill:#ffffff" />
+<line x1="320" y1="215" x2="378" y2="216" />
+<polygon points="320,215 327,219 337,215 327,211 320,215 " style="fill:#000000" />
+<circle cx="349" cy="215" r="5" style="fill:#000000" />
+<circle cx="349" cy="215" r="2" style="fill:#000000" />
+</g>
+</svg>

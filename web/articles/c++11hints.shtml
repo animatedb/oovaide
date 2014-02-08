@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html><head>
+<!-- DC Blaha - 1/1/2014 --></head><body>
+<h1><a class="mozTocH1" name="mozTocId633342"></a>More Pythonic with C++11<br>
+</h1>Last updated: 1-28-2014<br>
+<br>
+<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId633342">More Pythonic with C++11
+</a><ol><li><a href="#mozTocId38196">Overview</a></li><li><a href="#mozTocId820224">Examples</a><ol><li><a href="#mozTocId7834">
+
+
+
+
+Range Based For Loop</a></li><li><a href="#mozTocId285285">Test Elements in Collection</a></li><li><a href="#mozTocId349753">Find Element in Collection</a></li><li><a href="#mozTocId712735">Modify Every Element in Collection</a></li><li><a href="#mozTocId71778">Modify Collection</a></li><li><a href="#mozTocId593703">Copy Collection</a></li></ol></li><li><a href="#mozTocId554337">Notes</a><ol><li><a href="#mozTocId147715">Range Based For Loop Notes</a></li><li><a href="#mozTocId784747">Test Element Notes</a></li><li><a href="#mozTocId991684">Modify Element Notes</a></li><li><a href="#mozTocId364438">Modify Collection Notes</a></li><li><a href="#mozTocId995019">Copy Collection Notes</a></li></ol></li></ol></li></ol>
+<h2><a class="mozTocH2" name="mozTocId38196"></a>Overview</h2>What is Pythonic programming in C++? Everybody may have a different opinion, but some of the advantages are:<br>
+<ul>
+  <li>Make it more quickly apparent what operations are performed in a function.</li>
+  <li>Make it more apparent what variables are being modified in an algorithm.</li>
+  <li>Reduce the number of extra variables that are not used to achieve the end goal of a function.</li>
+</ul>
+This document only shows some examples of collections and lambdas.<br>
+<br>
+When looking at a loop in a function that is operating on a collection,
+some questions to the programmer reading the code may be:<br>
+<ul>
+  <li>Are elements in the collection being modified?</li>
+  <li>Is every element being inspected with a common operation?</li>
+  <li>Is a collection being filtered into another collection?</li>
+</ul>
+It is more difficult to see which of these is being performed if all loops look the same.<br>
+<br>
+If there are more variables and loops in functions, the code is more
+difficult to quickly understand.&nbsp; Hopefully the examples
+illustrate these points.<br>
+<br>This document only describes a few functions, and may of them were
+around before C++11. There are many other functions in
+&lt;algorithms&gt;. (Search the web for "std algorithms")<br>
+<div class="content">
+
+</div><br>
+<h2><a class="mozTocH2" name="mozTocId820224"></a>Examples</h2>
+<h3><a class="mozTocH3" name="mozTocId7834"></a>
+
+
+
+
+Range Based For Loop</h3>
+New Code:<br>
+<pre>std::vector&lt;PersonNames&gt; names = getNames();<br>for(auto const &amp;name : names)<br>    {<br>    name += ';';<br>    }</pre>
+Old Code:<br>
+<pre>std::vector&lt;PersonNames&gt; names = getNames();<br>for(int i=0; i&lt;names.size(); i++)<br>    {<br>    names[i] += ';';<br>    }</pre>
+
+<a href="#Range_Based_For_Loop_Notes">
+
+
+
+
+Range Based For Loop Notes</a><br>
+<br>
+
+
+<h3><a class="mozTocH3" name="mozTocId285285"></a>Test Elements in Collection</h3>
+New Code:<br>
+<pre>bool ComponentTypesFile::anyComponentsDefined()<br>    {<br>    auto const &amp;names = getComponentNames();<br>    return std::any_of(names.begin(), names.end(),<br>	[=](std::string const &amp;name){return(getComponentType(name.c_str()) != CT_Unknown);} );<br>    }<br></pre>
+Old Code:<br>
+<pre style="font-style: italic;">bool ComponentTypesFile::anyComponentsDefined() const<br>    {<br>&nbsp;&nbsp;&nbsp; bool defined = false;<br>    for(auto const &amp;name : getComponentNames())<br>	{<br>	if(getComponentType(name.c_str()) != CT_Unknown)<br>	    {<br>	    defined = true;<br>	    break;<br>	    }<br>	}<br>    return defined;<br>    }<br></pre>
+<a href="mapreduce.shtml#Test_Element_Notes">Test Element Notes</a><br>
+
+<br>
+Some Test Functions:<br>
+&nbsp;&nbsp;&nbsp; all_of, any_of, none_of<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId349753"></a>Find Element in Collection</h3>Some of this has been around before C++11.<br>
+<br>Pre C++11 Code:<br>
+<pre>std::vector&lt;std::string&gt; packages = getPackages();<br>bool found = std::find(packages.begin(), packages.end(), name) != packages.end());<br></pre>
+Old Code:<br>
+<pre style="font-style: italic;">std::vector&lt;std::string&gt; packages = getPackages();<br>bool found = false;<br>for(int i=0; i&lt;packages.size(); i++)<br>    {<br>    if(packages[i].mName.compare(name) == 0)<br>    found = true;<br>    break;<br>    }<br></pre>More Advanced Example with C++11 Code:<br>
+<pre style="font-style: italic;">auto const &amp;supplierIter = std::find_if(packages.begin(), packages.end(),<br>	[nodeName](Package const &amp;pkg) -&gt; bool<br>	{ return(pkg.getPkgName().compare(nodeName) == 0); });</pre>
+<br>
+Some Find Functions:<br>
+&nbsp;&nbsp;&nbsp; find_if, find_if_not, find_first_of, search<br>
+<br>
+
+<h3><a class="mozTocH3" name="mozTocId712735"></a>Modify Every Element in Collection</h3>
+New Lambda Code:<br>
+<pre>for_each(incs.begin(), incs.end(), [](std::string &amp;fn)<br>    {<br>&nbsp;&nbsp;&nbsp; FilePath fp;<br>&nbsp;&nbsp;&nbsp; fp.getAbsolutePath(fn.c_str(), FP_Dir);<br>&nbsp;&nbsp;&nbsp; fn = fp.pathStdStr();<br>&nbsp;&nbsp;&nbsp; });</pre>
+Loop Code:<br>
+<pre style="font-style: italic;">for(auto &amp;fn : incs)<br>    {<br>    FilePath fp;<br>    fp.getAbsolutePath(fn.c_str(), FP_Dir);<br>    fn = fp.pathStdStr();<br>    }</pre>
+<a href="#Modify_Element_Notes">Modify Element Notes</a><br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId71778"></a>Modify Collection</h3>
+New Code:<br>
+<pre>static void removeLib(char const * const libName, std::set&lt;std::string&gt; &amp;libDirs)<br>&nbsp;&nbsp;&nbsp; {<br>    libDirs.erase(std::remove_if(libDirs.begin(), libDirs.end(),<br>	[=](std::string const &amp;str){ return(str.compare(libName) == 0); }));<br>    }</pre>
+Old Code:<br>
+<pre style="font-style: italic;">static void removeLib(char const * const libName, std::set&lt;std::string&gt; &amp;libDirs)<br>&nbsp;&nbsp;&nbsp; {<br>    for(int i=0; i&lt;libDirs.size(); i++)<br>	{<br>	if(libDirs.compare(libName) == 0)<br>	    clear(libDirs.begin()+i);<br>	}<br>    }</pre>
+
+<a href="#Modify_Collection_Notes">Modify Collection Notes</a><br>
+<br>
+These functions have been around before C++11. They sort and reverse the order of the collections. <br>
+
+<pre>    std::sort(mPackageNames.begin(), mPackageNames.end());</pre>
+
+<pre>    std::reverse(clumpNames.begin(), clumpNames.end());</pre>
+
+
+<br>
+
+<h3><a class="mozTocH3" name="mozTocId593703"></a>Copy Collection</h3>
+New Code:<br>
+<pre>&nbsp;&nbsp;&nbsp; std::vector&lt;std::string&gt; headers;<br>&nbsp;&nbsp;&nbsp; std::copy_if(possibleHeaders.begin(), possibleHeaders.end(),<br>	std::back_inserter(headers),<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;     [](std::string const &amp;header) { return isHeader(header.c_str()); });</pre>
+Old Code:<br>
+<pre style="font-style: italic;">&nbsp;&nbsp;&nbsp; std::vector&lt;std::string&gt; headers;<br>    for(int i=0; i&lt;possibleHeaders.size(); i++)<br>	{<br>	if(isHeader(possibleHeaders[i].c_str()))<br>	    {<br>	    headers.push_back(possibleHeaders[i]);<br>	    }<br>	}<br></pre>
+<a href="#Copy_Collection_Notes">Copy Collection Notes</a><br>
+
+<br>
+To copy an entire collection, use:<br>
+
+<pre>    std::copy(tempDirs.begin(), tempDirs.end(), incDirs.begin());</pre>
+
+<br>
+<h2><a class="mozTocH2" name="mozTocId554337"></a>Notes</h2>
+<h3><a class="mozTocH3" name="mozTocId147715"></a><a name="Range_Based_For_Loop_Notes"></a>Range Based For Loop Notes</h3>
+The iterator is removed which removes more clutter from the source
+code. Since the 'i' variable is removed, there is no way that the
+iterator is modified inside the loop, or has out of range bugs. It
+could also lead to better optimizations for the compiler. The range
+based for also works for standard C arrays, and also custom containers
+as long as begin() and end() are defined.<br>
+
+<br>
+
+<h3><a class="mozTocH3" name="mozTocId784747"></a><a name="Test_Element_Notes"></a>Test Element Notes</h3>
+This example checks if any elements in a vector have a certain type.
+The getComponentNames() function returns a
+"std::vector&lt;std::string&gt;".<br>
+
+The "[=]" text indicates the start of a Lambda function. The "="
+indicates that a capture by value of some parameters is needed for the code
+within the "{}".&nbsp; In this case, the "this" pointer is needed for
+the getComponentType() function.<br>
+<br>
+
+
+<h3><a class="mozTocH3" name="mozTocId991684"></a><a name="Modify_Element_Notes"></a>Modify Element Notes</h3>
+There is not much advantage to using for_each over range-based-for,
+except that it indicates that each element will be examined or
+modified, and a lambda can be used.<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId364438"></a><a name="Modify_Collection_Notes"></a>Modify Collection Notes</h3>
+The "=" sign in the "[=]" characters indicates that a capture is
+needed. In this case, the libName parameter is needed by the lambda.<br>
+<br>
+<h3><a class="mozTocH3" name="mozTocId995019"></a><a name="Copy_Collection_Notes"></a>Copy Collection Notes</h3>
+This function copies only certain strings from one vector to another
+based on the results of the isHeader() function. The back_inserter will
+perform a push_back at the end of the target vector.<br>
+<br><br>
+</body></html>

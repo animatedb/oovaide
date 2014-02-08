@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="97" height="99">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="19" y="14" width="77" height="28" />
+<rect x="14" y="19" width="10" height="5" />
+<rect x="14" y="29" width="10" height="5" />
+</g>
+<g font-size="10">
+<text x="26" y="26">BlackSheep</text>
+<text x="26" y="38">&lt;&lt;StaticLib&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="20" y="70" width="75" height="28" />
+<rect x="15" y="75" width="10" height="5" />
+<rect x="15" y="85" width="10" height="5" />
+</g>
+<g font-size="10">
+<text x="27" y="82">MainClients</text>
+<text x="27" y="94">&lt;&lt;Program&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="55" y1="42" x2="55" y2="70" style="stroke-dasharray: 4, 4 "/>
+<line x1="55" y1="42" x2="60" y2="50" />
+<line x1="55" y1="42" x2="50" y2="50" />
+</g>
+</svg>

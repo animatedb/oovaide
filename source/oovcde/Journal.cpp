@@ -1,0 +1,180 @@
+/*
+ * Journal.cpp
+ *
+ *  Created on: Aug 22, 2013
+ *  \copyright 2013 DCBlaha.  Distributed under the GPL.
+ */
+
+#include "Journal.h"
+
+static Journal *gJournal;
+
+
+std::string JournalRecord::getFullName(bool addSpace) const
+    {
+    std::string fullName = (getRecordType() == RT_Class) ? "Class" : "Seq";
+    if(addSpace)
+	fullName += ' ';
+    fullName += getName();
+    return fullName;
+    }
+
+Journal::Journal():
+    mCurrentRecord(0), mBuilder(nullptr), mModel(nullptr), mListener(nullptr)
+    {
+    gJournal = this;
+    }
+
+void Journal::clear()
+    {
+    for(auto &rec : mRecords)
+	{
+	delete rec;
+	}
+    mRecords.clear();
+    }
+
+void Journal::displayClass(char const * const className)
+    {
+    JournalRecordClassDiagram *rec;
+    int recordIndex = findRecord(className);
+    if(recordIndex == -1)
+	{
+	rec = new JournalRecordClassDiagram(*mBuilder,
+		*mModel, *mListener);
+	addRecord(rec, className);
+	rec->mClassDiagram.clearGraphAndAddClass(className);
+	}
+    else
+	{
+	setCurrentRecord(recordIndex);
+	rec = reinterpret_cast<JournalRecordClassDiagram*>(getCurrentRecord());
+	rec->mClassDiagram.drawToDrawingArea();
+	}
+    }
+
+void Journal::displayOperation(char const * const className,
+	char const * const operName, bool isConst)
+    {
+    JournalRecordOperationDiagram *rec;
+    std::string fullOperName = operName;
+    fullOperName += ' ';
+    fullOperName += className;
+    int recordIndex = findRecord(fullOperName.c_str());
+    if(recordIndex == -1)
+	{
+	rec = new JournalRecordOperationDiagram(*mBuilder, *mModel, *mListener);
+	addRecord(rec, fullOperName.c_str());
+	rec->mOperationDiagram.clearGraphAndAddOperation(className, operName, isConst);
+	}
+    else
+	{
+	setCurrentRecord(recordIndex);
+	rec = reinterpret_cast<JournalRecordOperationDiagram*>(getCurrentRecord());
+	rec->mOperationDiagram.drawToDrawingArea();
+	}
+    }
+
+void Journal::displayComponents()
+    {
+    if(mBuilder)
+	{
+	char const * const componentName = "<Components>";
+	int recordIndex = findRecord(componentName);
+	JournalRecordComponentDiagram *rec;
+	if(recordIndex == -1)
+	    {
+	    rec = new JournalRecordComponentDiagram(*mBuilder, *mListener);
+	    rec->mComponentDiagram.drawToDrawingArea();
+	    addRecord(rec, componentName);
+	    }
+	else
+	    {
+	    setCurrentRecord(recordIndex);
+	    rec = reinterpret_cast<JournalRecordComponentDiagram*>(getCurrentRecord());
+	    rec->mComponentDiagram.drawToDrawingArea();
+	    }
+	}
+    }
+
+void Journal::addRecord(JournalRecord *record, char const * const name)
+    {
+    record->setName(name);
+    removeUnmodifiedRecords();
+    mRecords.push_back(record);
+    setCurrentRecord(mRecords.size()-1);
+    }
+
+int Journal::findRecord(char const * const name)
+    {
+    int index = -1;
+    for(size_t i=0; i<mRecords.size(); i++)
+	{
+	if(std::string(mRecords[i]->getName()).compare(name) == 0)
+	    {
+	    index = i;
+	    break;
+	    }
+	}
+    return index;
+    }
+
+void Journal::removeUnmodifiedRecords()
+    {
+    for(size_t i=0; i<mRecords.size(); i++)
+	{
+	if(!mRecords[i]->isModified())
+	    {
+	    removeRecord(i);
+	    break;
+	    }
+	}
+    }
+
+void Journal::removeRecord(int index)
+    {
+    delete mRecords[index];
+    mRecords.erase(mRecords.begin() + index);
+    }
+
+void Journal::saveFile(FILE *fp)
+    {
+    JournalRecord *rec = getCurrentRecord();
+    if(rec)
+	{
+	rec->saveFile(fp);
+	}
+    }
+
+void Journal::cppArgOptionsChangedUpdateDrawings()
+    {
+    JournalRecord *rec = getCurrentRecord();
+    if(rec)
+	rec->cppArgOptionsChangedUpdateDrawings();
+    }
+
+
+extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_draw(GtkWidget *widget,
+	GdkEventExpose *event, gpointer user_data)
+    {
+    JournalRecord *rec = gJournal->getCurrentRecord();
+    if(rec)
+	rec->drawingAreaDrawEvent();
+    }
+
+extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_press_event(GtkWidget *widget,
+	GdkEventExpose *event, gpointer user_data)
+    {
+    JournalRecord *rec = gJournal->getCurrentRecord();
+    if(rec)
+	rec->drawingAreaButtonPressEvent(reinterpret_cast<GdkEventButton*>(event));
+    }
+
+extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_release_event(GtkWidget *widget,
+	GdkEventExpose *event, gpointer user_data)
+    {
+    JournalRecord *rec = gJournal->getCurrentRecord();
+    if(rec)
+	rec->drawingAreaButtonReleaseEvent(reinterpret_cast<GdkEventButton*>(event));
+    }
+

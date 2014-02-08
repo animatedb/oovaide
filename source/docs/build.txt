@@ -1,0 +1,95 @@
+Building Oovcde projects
+------------------------
+
+	I originally used Eclipse to build Oovcde, but Oovcde can now
+	build itself.
+
+	I have not figured out how to build a 32 bit version under
+	64 bit Ubuntu yet.
+
+	I usually put the Eclipse workspace in trunk.
+	In eclipse, select the build configuration for your platorm.
+	Source files use Preferences/C/C++/Code Style/profile=Whitesmiths
+
+
+Versions after 2014-01
+----------------------
+Windows:
+	MinGW:
+		From: http://sourceforge.net/projects/mingw/files/
+		File: "mingw-get-setup.exe"		0.6.2-beta-20131004-1
+			Add package mingw32-gcc-g++		4.8.1-4
+			Add package mingw32-base		2013072200
+			Add package mingw32-pthreads-w32 dev	2.9.1-1
+			Install to \MinGW
+	GTK-3.0
+		From: http://www.tarnyko.net/dl/
+		File: "GTK+ 3.6.4 Bundle for Windows"
+			Extract to "C:\Program Files\GTK+-Bundle-3.6.4"
+	Clang 3.4
+		From: http://llvm.org/releases/download.html
+		File: "Clang for Windows (.sig)"
+			Install to C:\Program Files\LLVM
+
+Versions on or before 2014-01
+-----------------------
+Windows:
+	MinGW:
+		From: https://sourceforge.net/projects/oovcde/files/
+		File: mingw-get-inst-20120426.exe, ver 3.2, g++ 4.6.2
+	GTK-3.0:		
+		From: http://www.tarnyko.net/dl/
+		File: "version 3.6.1 TARNYKO 11-13-2012 for Windows"
+			The oovcde workspace expects GTK to be under
+			c:/program files/GTK+Bundle-3.6.1
+	Clang 3.2:
+		From: http://llvm.org/releases/download.html
+		File: "Experimental Clang Binaries for Mingw32/x86".
+			The following is the directory tree showing the
+			relative location of clang:
+
+			/clang+llvm-3.2
+			/svn
+
+Ubuntu:
+	In Ubuntu, use "uname -m" to find if you have 32 or 64 bit linux.
+	CLang:
+		"Clang Binaries for Ubuntu-12.04/x86_64".
+
+	get packages eclipse, eclipse-cdt, libgtk-3-dev
+	DOESN'T WORK: To make a 32 bit build on a 64 bit OS, use:
+		libc6-dev-i386, g++-multilib, ia32-libs?
+		libgtk-3-dev:i386
+		Using aptitude instead of apt-get to fix problems?
+
+
+Glade
+-----
+The oovcdeLayout.glade and oovEdit.glade files must be in the bin directories.
+
+Problems/Solutions
+--------
+- If there is eclipse meta-data already existing for a project, and svn
+  contains modified project files, and they are downloaded, then svn
+  may corrupt the project files.  To clean up, delete the project files, delete
+  the .metadata directory, and import the projects in eclipse. (File
+  Import/Existing Project into Workspace)
+
+- Sometimes the Eclipse projects will not create the output directories.
+  Creating Windows-Debug manually will work, then changing configuration in
+  Eclipse to release will allow Eclipse to create the Windows-Release directory.
+
+- CLang requires a certain version of mingw. The following can be because of an
+  incorrect version of mingw.
+	BFD (GNU Binutils) 2.19.1 internal error, aborting at
+	../../binutils-2.19.1/bfd/coffcode.h line 842 in handle_COMDAT
+
+- Eclipse won't build an executable if only the library was modified. This
+  appears to be because the references don't work well with configuration
+  windows/linux/release/debug name changes.
+
+Link order can take time to work out with clang.  I couldn't find a dependency
+graph anywhere. OOvcde now does this automatically.
+
+To solve link errors for GetProcessMemoryInfo@12 and _imp_semSetOptions@4,
+I needed to link with psapi and imagehlp. Also needed pthread.

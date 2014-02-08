@@ -1,0 +1,25 @@
+
+- Clutters up source directories with project files, intermediate
+  and output directories.
+- Project info changes when build config changes
+  (Causes source management problem)
+- Projects don't keep track of dependencies
+	- Stale data, Clean, Refresh, Make Index/Rebuild
+	- multiple configurations mess up dependencies
+	- library change doesn't update executable
+	- executables build with no changes
+	- source shows syntax errors
+- Order of compiling is not always the same (can be working on one
+	problem, rebuild, and have to work on a different problem)
+- Setting active configuration modifies project files
+- Clean and Build are right next to each other on the menu
+- Sometimes debugger doesn't stop, so build doesn't complete
+- Pop up for editing while compiling is annoying.
+- Multiple clicks for operations
+- Some template errors display more than the console window can store
+- Sometimes the link fails because the output is open even though
+  Eclipse was the only thing previously running (Windows)
+- If projects are building, output window updates for each project
+  so finding errors is difficult until build completes.
+- Right click, accidentally click "Close Project", means project must
+  be deleted from workspace, and imported.

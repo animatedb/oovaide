@@ -1,0 +1,65 @@
+
+Think about NUMA?
+	http://lwn.net/Articles/250967/
+
+
+FindFirstChangeNotification - files are always changed by a process (including editor),
+they could broadcast completion.
+	Could periodically stat files open in an editor? Only local disks?
+	Ram disks will be more popular?
+
+
+- Should the computer be constantly busy as edits are made?
+	tasks quit with "finish and exit", "exit without finishing"
+- User specifies idle build time?
+- Where do errors/completion progress go?
+
+Tasks:
+	- Oovcde
+		- DONE - launches editor at error line number
+		- runs OovBuilder (OovSrcManager) constantly in background?
+		- DONE - displays build error info from OovBuilder
+		- DONE - launches OovEdit from drawings
+	- OovEdit
+		- launches debugger
+	- OovBuilder
+		- checks status
+		- DONE - outputs build error info to Oovcde/stdout/stderr
+		- DONE - OovBuilder runs child compile/build tasks
+
+ideal:
+
+oovcde.txt file changes:
+	trigger for all object files
+
+inc-deps updating:
+	if inc-deps older than source, update inc-deps for source : run oovCppParser
+
+
+source/header changes:
+	DONE - if xmi is older than source, update xmi file
+	if inc-deps are older than source, update inc-deps for file
+		if inc-deps don't change, inc-deps timestamp changes, but no need to build objs
+			two times: last-checked-time, last-changed-time
+		oovCppParser run to get info
+
+source changes:
+	if obj is older than source (plus inc-deps files), update obj file
+
+header changes only:
+	if inc-paths are older than all inc-deps, update inc-paths
+
+object file changes:
+	libraries updated
+	executables updated
+
+library file changes:
+	library link orders updated
+	executables updated
+
+
+If a new change comes in, build must be restarted.
+If user requests build now, only modified files need to restart build.
+
+
+

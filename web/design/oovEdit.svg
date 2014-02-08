@@ -1,0 +1,277 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="733" height="877">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="25" y="34" width="277" height="513" />
+<line x1="25" y1="56" x2="302" y2="56" />
+<line x1="25" y1="275" x2="302" y2="275" />
+</g>
+<g font-size="10">
+<text x="26" y="43">Editor</text>
+<text x="26" y="53">/oovEdit/</text>
+<text x="26" y="65">-Builder mBuilder</text>
+<text x="26" y="74">-Indenter mIndenter</text>
+<text x="26" y="83">-std::string mFileName</text>
+<text x="26" y="92">-GtkTextView mTextView</text>
+<text x="26" y="101">-GtkTextBuffer mTextBuffer</text>
+<text x="26" y="110">-std::string mLastSearch</text>
+<text x="26" y="119">-bool mLastSearchCaseSensitive</text>
+<text x="26" y="128">-bool mDoingHistory</text>
+<text x="26" y="137">-std::vector&lt;HistoryItem&gt; mHistoryItems</text>
+<text x="26" y="146">-size_t mCurHistoryPos</text>
+<text x="26" y="155">-Highlighter mHighlighter</text>
+<text x="26" y="164">-HightlightStates mNeedHighlightUpdate</text>
+<text x="26" y="173">-Builder mBuilder</text>
+<text x="26" y="182">-Indenter mIndenter</text>
+<text x="26" y="191">-std::string mFileName</text>
+<text x="26" y="200">-GtkTextView mTextView</text>
+<text x="26" y="209">-GtkTextBuffer mTextBuffer</text>
+<text x="26" y="218">-std::string mLastSearch</text>
+<text x="26" y="227">-bool mLastSearchCaseSensitive</text>
+<text x="26" y="236">-bool mDoingHistory</text>
+<text x="26" y="245">-std::vector&lt;HistoryItem&gt; mHistoryItems</text>
+<text x="26" y="254">-size_t mCurHistoryPos</text>
+<text x="26" y="263">-Highlighter mHighlighter</text>
+<text x="26" y="272">-HightlightStates mNeedHighlightUpdate</text>
+<text x="26" y="284">+Editor()</text>
+<text x="26" y="293">+setStyle()</text>
+<text x="26" y="302">+setTabs(int numSpaces)</text>
+<text x="26" y="311">+init()</text>
+<text x="26" y="320">+openTextFile(char   const fn)</text>
+<text x="26" y="329">+saveTextFile()</text>
+<text x="26" y="338">+gotoLine(int lineNum)</text>
+<text x="26" y="347">+moveToIter(GtkTextIter startIter, GtkTextIter endIter)</text>
+<text x="26" y="356">+saveAsTextFileWithDialog()</text>
+<text x="26" y="365">+findDialog()</text>
+<text x="26" y="374">+findUsingDialogInfo()</text>
+<text x="26" y="383">+findAgain(bool forward)</text>
+<text x="26" y="392">+cut()</text>
+<text x="26" y="401">+copy()</text>
+<text x="26" y="410">+paste()</text>
+<text x="26" y="419">+deleteSel()</text>
+<text x="26" y="428">+checkExitSave()</text>
+<text x="26" y="437">+getBuilder()</text>
+<text x="26" y="446">+getIndenter()</text>
+<text x="26" y="455">+doingHistory()</text>
+<text x="26" y="464">+undo()</text>
+<text x="26" y="473">+redo()</text>
+<text x="26" y="482">+addHistoryItem(HistoryItem item)</text>
+<text x="26" y="491">+highlight()</text>
+<text x="26" y="500">+setNeedHighlightUpdate(HightlightStates hs)</text>
+<text x="26" y="509">+getHighlightUpdate()</text>
+<text x="26" y="518">-find(char   const findStr, bool forward, bool caseSensitive)</text>
+<text x="26" y="527">-setFileName(char fn)</text>
+<text x="26" y="536">-saveAsTextFile(char   const fn)</text>
+<text x="26" y="545">-getBuffer()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="27" y="587" width="88" height="24" />
+<line x1="27" y1="587" x2="115" y2="587" />
+<line x1="27" y1="587" x2="115" y2="587" />
+</g>
+<g font-size="10">
+<text x="28" y="596">Builder</text>
+<text x="28" y="606">/oovGuiCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="356" y="34" width="376" height="153" />
+<line x1="356" y1="56" x2="732" y2="56" />
+<line x1="356" y1="77" x2="732" y2="77" />
+</g>
+<g font-size="10">
+<text x="357" y="43">Indenter</text>
+<text x="357" y="53">/oovEdit/</text>
+<text x="357" y="65">-GtkTextBuffer mTextBuffer</text>
+<text x="357" y="74">-GtkTextBuffer mTextBuffer</text>
+<text x="357" y="86">+init(GtkTextBuffer textBuffer)</text>
+<text x="357" y="95">+tabPressed()</text>
+<text x="357" y="104">+shiftTabPressed()</text>
+<text x="357" y="113">+backspacePressed()</text>
+<text x="357" y="122">+homePressed()</text>
+<text x="357" y="131">-getIndentSize()</text>
+<text x="357" y="140">-dentHighlightedRegion(bool in, GtkTextIter startSelIter, GtkTextIter endSelIter)</text>
+<text x="357" y="149">-getFirstNonSpaceOnLineIter(GtkTextIter startLineIter, GtkTextIter iter)</text>
+<text x="357" y="158">-countSpaces(char   const text, bool expandTabs)</text>
+<text x="357" y="167">-getCursorIter(GtkTextIter iter)</text>
+<text x="357" y="176">-getLineNumber(GtkTextIter iter)</text>
+<text x="357" y="185">-addSpaces(int count)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="360" y="213" width="115" height="14" />
+<line x1="360" y1="213" x2="475" y2="213" />
+<line x1="360" y1="213" x2="475" y2="213" />
+</g>
+<g font-size="10">
+<text x="361" y="222">std::vector&lt;HistoryItem&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="34" y="796" width="620" height="81" />
+<line x1="34" y1="818" x2="654" y2="818" />
+<line x1="34" y1="857" x2="654" y2="857" />
+</g>
+<g font-size="10">
+<text x="35" y="805">Highlighter</text>
+<text x="35" y="815">/oovEdit/</text>
+<text x="35" y="827">-Tokenizer mTokenizer</text>
+<text x="35" y="836">-HighlightTags mHighlightTags</text>
+<text x="35" y="845">-Tokenizer mTokenizer</text>
+<text x="35" y="854">-HighlightTags mHighlightTags</text>
+<text x="35" y="866">+highlight(GtkTextView textView, char   const filename, char   const buffer, int bufLen, char   const clang_args, int num_clang_args)</text>
+<text x="35" y="875">+applyTags(GtkTextBuffer textBuffer, TokenRange tokens)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="454" y="233" width="279" height="135" />
+<line x1="454" y1="255" x2="733" y2="255" />
+<line x1="454" y1="312" x2="733" y2="312" />
+</g>
+<g font-size="10">
+<text x="455" y="242">HistoryItem</text>
+<text x="455" y="252">/oovEdit/</text>
+<text x="455" y="264">#bool mInsert</text>
+<text x="455" y="273">#gint mOffset</text>
+<text x="455" y="282">#std::string mText</text>
+<text x="455" y="291">#bool mInsert</text>
+<text x="455" y="300">#gint mOffset</text>
+<text x="455" y="309">#std::string mText</text>
+<text x="455" y="321">+HistoryItem(bool insert, int offset, char   const text, int len)</text>
+<text x="455" y="330">+undo(GtkTextBuffer buffer)</text>
+<text x="455" y="339">+redo(GtkTextBuffer buffer)</text>
+<text x="455" y="348">+setText(bool set, GtkTextBuffer buffer)</text>
+<text x="455" y="357">+getOffset(GtkTextIter iter)</text>
+<text x="455" y="366">+getIter(GtkTextBuffer buffer, int offset, GtkTextIter iter)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="344" y="418" width="88" height="24" />
+<line x1="344" y1="418" x2="432" y2="418" />
+<line x1="344" y1="418" x2="432" y2="418" />
+</g>
+<g font-size="10">
+<text x="345" y="427">PathChooser</text>
+<text x="345" y="437">/oovGuiCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="145" y="586" width="88" height="24" />
+<line x1="145" y1="586" x2="233" y2="586" />
+<line x1="145" y1="586" x2="233" y2="586" />
+</g>
+<g font-size="10">
+<text x="146" y="595">Dialog</text>
+<text x="146" y="605">/oovGuiCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="354" y="469" width="71" height="24" />
+<line x1="354" y1="469" x2="425" y2="469" />
+<line x1="354" y1="469" x2="425" y2="469" />
+</g>
+<g font-size="10">
+<text x="355" y="478">FilePath</text>
+<text x="355" y="488">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="456" y="404" width="95" height="36" />
+<line x1="456" y1="426" x2="551" y2="426" />
+<line x1="456" y1="429" x2="551" y2="429" />
+</g>
+<g font-size="10">
+<text x="457" y="413">GuiText</text>
+<text x="457" y="423">/oovGuiCommon/</text>
+<text x="457" y="438">+GuiText(void text)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="235" y="632" width="496" height="99" />
+<line x1="235" y1="654" x2="731" y2="654" />
+<line x1="235" y1="711" x2="731" y2="711" />
+</g>
+<g font-size="10">
+<text x="236" y="641">Tokenizer</text>
+<text x="236" y="651">/oovEdit/</text>
+<text x="236" y="663">-CXTranslationUnit mTransUnit</text>
+<text x="236" y="672">-CXFile mSourceFile</text>
+<text x="236" y="681">-std::string mSourceFilename</text>
+<text x="236" y="690">-CXTranslationUnit mTransUnit</text>
+<text x="236" y="699">-CXFile mSourceFile</text>
+<text x="236" y="708">-std::string mSourceFilename</text>
+<text x="236" y="720">+parse(char   const fileName, char   const buffer, int bufLen, char   const clang_args, int num_clang_args)</text>
+<text x="236" y="729">+tokenize(int startLine, int endLine, TokenRange highlight)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="39" y="697" width="167" height="63" />
+<line x1="39" y1="719" x2="206" y2="719" />
+<line x1="39" y1="740" x2="206" y2="740" />
+</g>
+<g font-size="10">
+<text x="40" y="706">HighlightTags</text>
+<text x="40" y="716">/oovEdit/</text>
+<text x="40" y="728">-HighlightTag mTags</text>
+<text x="40" y="737">-HighlightTag mTags</text>
+<text x="40" y="749">+initTags(GtkTextBuffer textBuffer)</text>
+<text x="40" y="758">+getTag(int tagIndex)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="297" y="557" width="378" height="36" />
+<line x1="297" y1="579" x2="675" y2="579" />
+<line x1="297" y1="582" x2="675" y2="582" />
+</g>
+<g font-size="10">
+<text x="298" y="566">TokenRange</text>
+<text x="298" y="576">/oovEdit/</text>
+<text x="298" y="591">+tokenize(CXTranslationUnit transUnit, CXFile srcFile, int startLine, int endLine)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="457" y="470" width="92" height="27" />
+<line x1="457" y1="492" x2="549" y2="492" />
+<line x1="457" y1="495" x2="549" y2="495" />
+</g>
+<g font-size="10">
+<text x="458" y="479">std::vector&lt;Token&gt;</text>
+<text x="458" y="489">/oovEdit/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="87" y1="546" x2="74" y2="587" />
+<polygon points="87,546 81,552 82,563 88,554 87,546 " style="fill:#000000" />
+<circle cx="77" cy="574" r="5" style="fill:#000000" />
+<circle cx="77" cy="574" r="2" style="fill:#000000" />
+<line x1="301" y1="225" x2="384" y2="186" />
+<polygon points="301,225 309,225 317,218 306,218 301,225 " style="fill:#000000" />
+<circle cx="328" cy="212" r="5" style="fill:#000000" />
+<circle cx="328" cy="212" r="2" style="fill:#000000" />
+<line x1="301" y1="252" x2="392" y2="227" />
+<polygon points="301,252 309,254 318,248 307,246 301,252 " style="fill:#000000" />
+<circle cx="329" cy="244" r="5" style="fill:#000000" />
+<circle cx="329" cy="244" r="2" style="fill:#000000" />
+<line x1="247" y1="546" x2="331" y2="796" />
+<polygon points="247,546 246,554 252,563 253,551 247,546 " style="fill:#000000" />
+<circle cx="256" cy="574" r="5" style="fill:#000000" />
+<circle cx="256" cy="574" r="2" style="fill:#000000" />
+<line x1="301" y1="293" x2="454" y2="297" />
+<polygon points="305,293 314,299 309,293 314,288 305,293 " style="fill:#ffffff" />
+<circle cx="319" cy="293" r="5" style="fill:#ffffff" />
+<circle cx="325" cy="293" r="2" style="fill:#ffffff" />
+<line x1="301" y1="375" x2="369" y2="418" />
+<circle cx="312" cy="382" r="5" style="fill:#ffffff" />
+<line x1="184" y1="546" x2="188" y2="586" />
+<circle cx="185" cy="559" r="5" style="fill:#ffffff" />
+<line x1="301" y1="406" x2="375" y2="469" />
+<circle cx="311" cy="415" r="5" style="fill:#ffffff" />
+<line x1="301" y1="343" x2="457" y2="404" />
+<circle cx="314" cy="348" r="5" style="fill:#ffffff" />
+<line x1="432" y1="227" x2="454" y2="237" />
+<line x1="379" y1="796" x2="440" y2="730" />
+<polygon points="379,796 387,794 391,783 380,788 379,796 " style="fill:#000000" />
+<circle cx="399" cy="773" r="5" style="fill:#000000" />
+<circle cx="399" cy="773" r="2" style="fill:#000000" />
+<line x1="262" y1="796" x2="185" y2="759" />
+<polygon points="262,796 257,789 246,789 254,796 262,796 " style="fill:#000000" />
+<circle cx="234" cy="783" r="5" style="fill:#000000" />
+<circle cx="234" cy="783" r="2" style="fill:#000000" />
+<line x1="365" y1="796" x2="477" y2="593" />
+<polygon points="367,792 376,787 369,789 366,782 367,792 " style="fill:#ffffff" />
+<circle cx="374" cy="779" r="5" style="fill:#ffffff" />
+<circle cx="377" cy="774" r="2" style="fill:#ffffff" />
+<line x1="484" y1="632" x2="486" y2="593" />
+<circle cx="484" cy="613" r="5" style="fill:#ffffff" />
+<circle cx="485" cy="607" r="2" style="fill:#ffffff" />
+<line x1="501" y1="496" x2="489" y2="557" />
+<polygon points="501,496 494,507 503,509 501,496 " style="fill:#ffffff" />
+<circle cx="495" cy="525" r="5" style="fill:#ffffff" />
+<circle cx="495" cy="525" r="2" style="fill:#ffffff" />
+</g>
+</svg>

@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="650" height="261">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="56" y="137" width="85" height="32" />
+<rect x="50" y="143" width="12" height="6" />
+<rect x="50" y="155" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="64" y="151">oovBuilder</text>
+<text x="64" y="165">&lt;&lt;Program&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="54" y="221" width="85" height="32" />
+<rect x="48" y="227" width="12" height="6" />
+<rect x="48" y="239" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="62" y="235">oovCMaker</text>
+<text x="62" y="249">&lt;&lt;Program&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="263" y="186" width="87" height="32" />
+<rect x="257" y="192" width="12" height="6" />
+<rect x="257" y="204" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="271" y="200">oovCommon</text>
+<text x="271" y="214">&lt;&lt;StaticLib&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="55" y="68" width="87" height="32" />
+<rect x="49" y="74" width="12" height="6" />
+<rect x="49" y="86" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="63" y="82">oovCppParser</text>
+<text x="63" y="96">&lt;&lt;StaticLib&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="466" y="228" width="85" height="32" />
+<rect x="460" y="234" width="12" height="6" />
+<rect x="460" y="246" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="474" y="242">oovEdit</text>
+<text x="474" y="256">&lt;&lt;Program&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="415" y="129" width="92" height="32" />
+<rect x="409" y="135" width="12" height="6" />
+<rect x="409" y="147" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="423" y="143">oovGuiCommon</text>
+<text x="423" y="157">&lt;&lt;StaticLib&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="564" y="133" width="85" height="32" />
+<rect x="558" y="139" width="12" height="6" />
+<rect x="558" y="151" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="572" y="147">oovcde</text>
+<text x="572" y="161">&lt;&lt;Program&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="265" y="52" width="84" height="32" />
+<rect x="259" y="58" width="12" height="6" />
+<rect x="259" y="70" width="12" height="6" />
+</g>
+<g font-size="10">
+<text x="273" y="66">gtk+-3.0</text>
+<text x="273" y="80">&lt;&lt;External&gt;&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="257" y1="192" x2="140" y2="163" style="stroke-dasharray: 4, 4 "/>
+<line x1="257" y1="192" x2="248" y2="195" />
+<line x1="257" y1="192" x2="251" y2="185" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="265" y1="84" x2="134" y2="137" style="stroke-dasharray: 4, 4 "/>
+<line x1="265" y1="84" x2="260" y2="92" />
+<line x1="265" y1="84" x2="256" y2="82" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="257" y1="209" x2="138" y2="230" style="stroke-dasharray: 4, 4 "/>
+<line x1="257" y1="209" x2="251" y2="216" />
+<line x1="257" y1="209" x2="249" y2="205" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="285" y1="84" x2="112" y2="221" style="stroke-dasharray: 4, 4 "/>
+<line x1="285" y1="84" x2="283" y2="93" />
+<line x1="285" y1="84" x2="276" y2="84" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="304" y1="84" x2="303" y2="186" style="stroke-dasharray: 4, 4 "/>
+<line x1="304" y1="84" x2="309" y2="92" />
+<line x1="304" y1="84" x2="299" y2="92" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="275" y1="186" x2="123" y2="100" style="stroke-dasharray: 4, 4 "/>
+<line x1="275" y1="186" x2="266" y2="187" />
+<line x1="275" y1="186" x2="271" y2="177" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="259" y1="71" x2="141" y2="81" style="stroke-dasharray: 4, 4 "/>
+<line x1="259" y1="71" x2="252" y2="77" />
+<line x1="259" y1="71" x2="251" y2="66" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="349" y1="211" x2="460" y2="235" style="stroke-dasharray: 4, 4 "/>
+<line x1="349" y1="211" x2="358" y2="207" />
+<line x1="349" y1="211" x2="355" y2="218" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="465" y1="161" x2="498" y2="228" style="stroke-dasharray: 4, 4 "/>
+<line x1="465" y1="161" x2="473" y2="165" />
+<line x1="465" y1="161" x2="464" y2="170" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="322" y1="84" x2="487" y2="228" style="stroke-dasharray: 4, 4 "/>
+<line x1="322" y1="84" x2="331" y2="84" />
+<line x1="322" y1="84" x2="324" y2="93" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="336" y1="84" x2="427" y2="129" style="stroke-dasharray: 4, 4 "/>
+<line x1="336" y1="84" x2="345" y2="83" />
+<line x1="336" y1="84" x2="340" y2="92" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="349" y1="194" x2="558" y2="156" style="stroke-dasharray: 4, 4 "/>
+<line x1="349" y1="194" x2="355" y2="187" />
+<line x1="349" y1="194" x2="358" y2="198" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="507" y1="146" x2="558" y2="148" style="stroke-dasharray: 4, 4 "/>
+<line x1="507" y1="146" x2="515" y2="141" />
+<line x1="507" y1="146" x2="514" y2="152" />
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="349" y1="80" x2="558" y2="137" style="stroke-dasharray: 4, 4 "/>
+<line x1="349" y1="80" x2="358" y2="77" />
+<line x1="349" y1="80" x2="355" y2="87" />
+</g>
+</svg>

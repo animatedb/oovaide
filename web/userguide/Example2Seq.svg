@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="279" height="416">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="7" y="7" width="33" height="11" />
+</g>
+<g font-size="10">
+<text x="9" y="16">World</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="53" y="7" width="34" height="11" />
+</g>
+<g font-size="10">
+<text x="55" y="16">Client</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="98" y="7" width="61" height="11" />
+</g>
+<g font-size="10">
+<text x="100" y="16">BlackSheep</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="170" y="7" width="4" height="11" />
+</g>
+<g font-size="10">
+<text x="172" y="16"></text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="181" y="7" width="49" height="11" />
+</g>
+<g font-size="10">
+<text x="183" y="16">WoolBag</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="237" y="7" width="35" height="11" />
+</g>
+<g font-size="10">
+<text x="239" y="16">vector</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="7" y1="38" x2="26" y2="38" />
+<line x1="22" y1="34" x2="26" y2="38" />
+<line x1="22" y1="42" x2="26" y2="38" />
+<line x1="30" y1="73" x2="72" y2="73" />
+<line x1="68" y1="69" x2="72" y2="73" />
+<line x1="68" y1="77" x2="72" y2="73" />
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="76" y1="117" x2="130" y2="117" />
+<line x1="126" y1="113" x2="130" y2="117" />
+<line x1="126" y1="121" x2="130" y2="117" />
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="134" y1="161" x2="254" y2="161" />
+<line x1="250" y1="157" x2="254" y2="161" />
+<line x1="250" y1="165" x2="254" y2="161" />
+<line x1="134" y1="175" x2="254" y2="175" />
+<line x1="250" y1="171" x2="254" y2="175" />
+<line x1="250" y1="179" x2="254" y2="175" />
+<line x1="134" y1="189" x2="205" y2="189" />
+<line x1="201" y1="185" x2="205" y2="189" />
+<line x1="201" y1="193" x2="205" y2="189" />
+<line x1="134" y1="203" x2="254" y2="203" />
+<line x1="250" y1="199" x2="254" y2="203" />
+<line x1="250" y1="207" x2="254" y2="203" />
+<polygon points="130,136 132,136 132,150 134,150 134,206 132,206 132,206 130,206 130,206 128,206 128,206 126,206 126,150 128,150 128,136 130,136 " style="fill:#f5f5ff" />
+</g>
+<line x1="76" y1="221" x2="97" y2="221" style="stroke-dasharray: 4, 4 "/>
+<line x1="97" y1="221" x2="97" y2="224" />
+<line x1="76" y1="224" x2="97" y2="224" style="stroke-dasharray: 4, 4 "/>
+<line x1="76" y1="238" x2="205" y2="238" style="stroke-dasharray: 4, 4 "/>
+<line x1="201" y1="234" x2="205" y2="238" />
+<line x1="201" y1="242" x2="205" y2="238" />
+<line x1="76" y1="252" x2="172" y2="252" />
+<line x1="168" y1="248" x2="172" y2="252" />
+<line x1="168" y1="256" x2="172" y2="252" />
+<polygon points="72,92 74,92 74,106 76,106 76,120 72,120 72,210 76,210 76,255 74,255 74,255 72,255 72,255 70,255 70,255 68,255 68,210 72,210 72,120 68,120 68,106 70,106 70,92 72,92 " style="fill:#f5f5ff" />
+</g>
+<line x1="30" y1="270" x2="72" y2="270" />
+<line x1="68" y1="266" x2="72" y2="270" />
+<line x1="68" y1="274" x2="72" y2="270" />
+<rect x="76" y="270" width="9" height="9" />
+<line x1="30" y1="293" x2="72" y2="293" />
+<line x1="68" y1="289" x2="72" y2="293" />
+<line x1="68" y1="297" x2="72" y2="293" />
+<rect x="76" y="293" width="9" height="9" />
+<line x1="32" y1="330" x2="130" y2="330" style="stroke-dasharray: 4, 4 "/>
+<line x1="126" y1="326" x2="130" y2="330" />
+<line x1="126" y1="334" x2="130" y2="330" />
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="134" y1="374" x2="254" y2="374" />
+<line x1="250" y1="370" x2="254" y2="374" />
+<line x1="250" y1="378" x2="254" y2="374" />
+<polygon points="130,349 132,349 132,363 134,363 134,377 132,377 132,377 130,377 130,377 128,377 128,377 126,377 126,363 128,363 128,349 130,349 " style="fill:#f5f5ff" />
+</g>
+<line x1="32" y1="392" x2="172" y2="392" />
+<line x1="168" y1="388" x2="172" y2="392" />
+<line x1="168" y1="396" x2="172" y2="392" />
+<line x1="32" y1="406" x2="172" y2="406" />
+<line x1="168" y1="402" x2="172" y2="406" />
+<line x1="168" y1="410" x2="172" y2="406" />
+<polygon points="26,48 28,48 28,62 30,62 30,76 26,76 26,259 30,259 30,273 26,273 26,282 30,282 30,296 26,296 26,305 30,305 30,319 32,319 32,333 26,333 26,381 32,381 32,409 30,409 30,409 28,409 28,409 26,409 26,409 24,409 24,409 22,409 22,409 20,409 20,381 26,381 26,333 20,333 20,319 22,319 22,305 26,305 26,296 22,296 22,282 26,282 26,273 22,273 22,259 26,259 26,76 22,76 22,62 24,62 24,48 26,48 " style="fill:#f5f5ff" />
+</g>
+<g font-size="10">
+<text x="136" y="157">size</text>
+<text x="136" y="171">operator[]</text>
+<text x="136" y="185">WoolBag</text>
+<text x="136" y="199">pop_back</text>
+<text x="78" y="113">getBag</text>
+<text x="78" y="220">getName</text>
+<text x="78" y="234">quantity</text>
+<text x="78" y="248">printf</text>
+<text x="136" y="370">size</text>
+<text x="7" y="34">World</text>
+<text x="28" y="41"></text>
+<text x="30" y="55"></text>
+<text x="32" y="69">takeBag</text>
+<text x="32" y="266">takeBag</text>
+<text x="32" y="289">takeBag</text>
+<text x="32" y="312">[sheep . haveWool ( ) ]</text>
+<text x="34" y="326">haveWool</text>
+<text x="34" y="388">printf</text>
+<text x="34" y="402">printf</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="26" y1="18" x2="26" y2="416" />
+<line x1="72" y1="18" x2="72" y2="416" />
+<line x1="130" y1="18" x2="130" y2="416" />
+<line x1="172" y1="18" x2="172" y2="416" />
+<line x1="205" y1="18" x2="205" y2="416" />
+<line x1="254" y1="18" x2="254" y2="416" />
+</g>
+</svg>

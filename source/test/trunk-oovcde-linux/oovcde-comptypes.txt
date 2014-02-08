@@ -1,0 +1,8 @@
+Comp-type-oovBuilder|Program
+Comp-type-oovCMaker|Program
+Comp-type-oovCommon|StaticLib
+Comp-type-oovCppParser|StaticLib
+Comp-type-oovEdit|Program
+Comp-type-oovGuiCommon|StaticLib
+Comp-type-oovcde|Program
+Components|.metadata/.plugins/org.eclipse.cdt.make.core;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCppParser;oovEdit;oovGuiCommon;oovcde;test/TestCpp

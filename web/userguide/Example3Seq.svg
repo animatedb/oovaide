@@ -1,0 +1,185 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="423" height="632">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="7" y="7" width="48" height="11" />
+</g>
+<g font-size="10">
+<text x="9" y="16">Kingdom</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="70" y="7" width="24" height="11" />
+</g>
+<g font-size="10">
+<text x="72" y="16">Egg</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="105" y="7" width="77" height="11" />
+</g>
+<g font-size="10">
+<text x="107" y="16">ResourceClient</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="195" y="7" width="60" height="11" />
+</g>
+<g font-size="10">
+<text x="197" y="16">basic_string</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="262" y="7" width="4" height="11" />
+</g>
+<g font-size="10">
+<text x="264" y="16"></text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="273" y="7" width="117" height="11" />
+</g>
+<g font-size="10">
+<text x="275" y="16">ResourceClientInterface</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="397" y="7" width="19" height="11" />
+</g>
+<g font-size="10">
+<text x="399" y="16">std</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="7" y1="38" x2="35" y2="38" />
+<line x1="31" y1="34" x2="35" y2="38" />
+<line x1="31" y1="42" x2="35" y2="38" />
+<line x1="39" y1="73" x2="84" y2="73" />
+<line x1="80" y1="69" x2="84" y2="73" />
+<line x1="80" y1="77" x2="84" y2="73" />
+<line x1="88" y1="117" x2="225" y2="117" />
+<line x1="221" y1="113" x2="225" y2="117" />
+<line x1="221" y1="121" x2="225" y2="117" />
+<polygon points="84,92 86,92 86,106 88,106 88,120 86,120 86,120 84,120 84,120 82,120 82,120 80,120 80,106 82,106 82,92 84,92 " style="fill:#f5f5ff" />
+<line x1="39" y1="135" x2="146" y2="135" />
+<line x1="142" y1="131" x2="146" y2="135" />
+<line x1="142" y1="139" x2="146" y2="135" />
+<line x1="39" y1="149" x2="84" y2="149" style="stroke-dasharray: 4, 4 "/>
+<line x1="80" y1="145" x2="84" y2="149" />
+<line x1="80" y1="153" x2="84" y2="149" />
+<line x1="88" y1="193" x2="225" y2="193" />
+<line x1="221" y1="189" x2="225" y2="193" />
+<line x1="221" y1="197" x2="225" y2="193" />
+<polygon points="84,168 86,168 86,182 88,182 88,196 86,196 86,196 84,196 84,196 82,196 82,196 80,196 80,182 82,182 82,168 84,168 " style="fill:#f5f5ff" />
+<line x1="39" y1="211" x2="225" y2="211" />
+<line x1="221" y1="207" x2="225" y2="211" />
+<line x1="221" y1="215" x2="225" y2="211" />
+<line x1="39" y1="225" x2="264" y2="225" />
+<line x1="260" y1="221" x2="264" y2="225" />
+<line x1="260" y1="229" x2="264" y2="225" />
+<line x1="39" y1="239" x2="264" y2="239" />
+<line x1="260" y1="235" x2="264" y2="239" />
+<line x1="260" y1="243" x2="264" y2="239" />
+<line x1="39" y1="253" x2="84" y2="253" />
+<line x1="80" y1="249" x2="84" y2="253" />
+<line x1="80" y1="257" x2="84" y2="253" />
+<line x1="88" y1="297" x2="225" y2="297" />
+<line x1="221" y1="293" x2="225" y2="297" />
+<line x1="221" y1="301" x2="225" y2="297" />
+<line x1="88" y1="311" x2="225" y2="311" />
+<line x1="221" y1="307" x2="225" y2="311" />
+<line x1="221" y1="315" x2="225" y2="311" />
+<line x1="88" y1="325" x2="406" y2="325" />
+<line x1="402" y1="321" x2="406" y2="325" />
+<line x1="402" y1="329" x2="406" y2="325" />
+<polygon points="84,272 86,272 86,286 88,286 88,328 86,328 86,328 84,328 84,328 82,328 82,328 80,328 80,286 82,286 82,272 84,272 " style="fill:#f5f5ff" />
+<line x1="39" y1="343" x2="84" y2="343" style="stroke-dasharray: 4, 4 "/>
+<line x1="80" y1="339" x2="84" y2="343" />
+<line x1="80" y1="347" x2="84" y2="343" />
+<rect x="88" y="343" width="9" height="9" />
+<line x1="39" y1="366" x2="225" y2="366" />
+<line x1="221" y1="362" x2="225" y2="366" />
+<line x1="221" y1="370" x2="225" y2="366" />
+<line x1="39" y1="380" x2="264" y2="380" />
+<line x1="260" y1="376" x2="264" y2="380" />
+<line x1="260" y1="384" x2="264" y2="380" />
+<line x1="41" y1="408" x2="146" y2="408" />
+<line x1="142" y1="404" x2="146" y2="408" />
+<line x1="142" y1="412" x2="146" y2="408" />
+<line x1="150" y1="452" x2="264" y2="452" />
+<line x1="260" y1="448" x2="264" y2="452" />
+<line x1="260" y1="456" x2="264" y2="452" />
+<line x1="152" y1="480" x2="173" y2="480" />
+<line x1="173" y1="480" x2="173" y2="483" />
+<line x1="152" y1="483" x2="173" y2="483" />
+<polygon points="146,427 148,427 148,441 150,441 150,469 152,469 152,486 150,486 150,486 148,486 148,486 146,486 146,486 144,486 144,486 142,486 142,486 140,486 140,469 142,469 142,441 144,441 144,427 146,427 " style="fill:#f5f5ff" />
+<line x1="43" y1="515" x2="146" y2="515" style="stroke-dasharray: 4, 4 "/>
+<line x1="142" y1="511" x2="146" y2="515" />
+<line x1="142" y1="519" x2="146" y2="515" />
+<line x1="43" y1="529" x2="331" y2="529" />
+<line x1="327" y1="525" x2="331" y2="529" />
+<line x1="327" y1="533" x2="331" y2="529" />
+<line x1="43" y1="543" x2="146" y2="543" style="stroke-dasharray: 4, 4 "/>
+<line x1="142" y1="539" x2="146" y2="543" />
+<line x1="142" y1="547" x2="146" y2="543" />
+<line x1="43" y1="557" x2="331" y2="557" />
+<line x1="327" y1="553" x2="331" y2="557" />
+<line x1="327" y1="561" x2="331" y2="557" />
+<line x1="43" y1="571" x2="84" y2="571" style="stroke-dasharray: 4, 4 "/>
+<line x1="80" y1="567" x2="84" y2="571" />
+<line x1="80" y1="575" x2="84" y2="571" />
+<rect x="88" y="571" width="9" height="9" />
+<line x1="43" y1="594" x2="225" y2="594" />
+<line x1="221" y1="590" x2="225" y2="594" />
+<line x1="221" y1="598" x2="225" y2="594" />
+<line x1="43" y1="608" x2="264" y2="608" />
+<line x1="260" y1="604" x2="264" y2="608" />
+<line x1="260" y1="612" x2="264" y2="608" />
+<line x1="41" y1="622" x2="146" y2="622" />
+<line x1="142" y1="618" x2="146" y2="622" />
+<line x1="142" y1="626" x2="146" y2="622" />
+<polygon points="35,48 37,48 37,62 39,62 39,76 35,76 35,124 39,124 39,152 35,152 35,200 39,200 39,256 35,256 35,332 39,332 39,346 35,346 35,355 39,355 39,397 41,397 41,411 35,411 35,490 41,490 41,504 43,504 43,574 35,574 35,583 43,583 43,611 41,611 41,625 39,625 39,625 37,625 37,625 35,625 35,625 33,625 33,625 31,625 31,625 29,625 29,611 27,611 27,583 35,583 35,574 27,574 27,504 29,504 29,490 35,490 35,411 29,411 29,397 31,397 31,355 35,355 35,346 31,346 31,332 35,332 35,256 31,256 31,200 35,200 35,152 31,152 31,124 35,124 35,76 31,76 31,62 33,62 33,48 35,48 " style="fill:#f5f5ff" />
+</g>
+<g font-size="10">
+<text x="7" y="34">Kingdom</text>
+<text x="37" y="41"></text>
+<text x="39" y="55"></text>
+<text x="41" y="69">Egg</text>
+<text x="86" y="85"></text>
+<text x="88" y="99"></text>
+<text x="90" y="113">basic_string</text>
+<text x="41" y="131">ResourceClient</text>
+<text x="41" y="145">getName</text>
+<text x="86" y="161"></text>
+<text x="88" y="175"></text>
+<text x="90" y="189">basic_string</text>
+<text x="41" y="207">c_str</text>
+<text x="41" y="221">printf</text>
+<text x="41" y="235">printf</text>
+<text x="41" y="249">fall</text>
+<text x="86" y="265"></text>
+<text x="88" y="279"></text>
+<text x="90" y="293">begin</text>
+<text x="90" y="307">end</text>
+<text x="90" y="321">random_shuffle</text>
+<text x="41" y="339">getName</text>
+<text x="41" y="362">c_str</text>
+<text x="41" y="376">printf</text>
+<text x="41" y="390">*[: resources]</text>
+<text x="43" y="404">open</text>
+<text x="148" y="420"></text>
+<text x="150" y="434"></text>
+<text x="152" y="448">g_module_open_utf8</text>
+<text x="152" y="462">[mModule ]</text>
+<text x="154" y="479">loadSymbols</text>
+<text x="43" y="497">[! client . getInterface ( ) . putTogether ( ) ]</text>
+<text x="45" y="511">getInterface</text>
+<text x="45" y="525">putTogether</text>
+<text x="45" y="539">getInterface</text>
+<text x="45" y="553">getResourceName</text>
+<text x="45" y="567">getName</text>
+<text x="45" y="590">c_str</text>
+<text x="45" y="604">printf</text>
+<text x="43" y="618">close</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="35" y1="18" x2="35" y2="632" />
+<line x1="84" y1="18" x2="84" y2="632" />
+<line x1="146" y1="18" x2="146" y2="632" />
+<line x1="225" y1="18" x2="225" y2="632" />
+<line x1="264" y1="18" x2="264" y2="632" />
+<line x1="331" y1="18" x2="331" y2="632" />
+<line x1="406" y1="18" x2="406" y2="632" />
+</g>
+</svg>

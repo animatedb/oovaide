@@ -1,0 +1,448 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="795" height="1214">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="31" y="847" width="763" height="278" />
+<line x1="31" y1="870" x2="794" y2="870" />
+<line x1="31" y1="953" x2="794" y2="953" />
+</g>
+<g font-size="10">
+<text x="32" y="857">ComponentBuilder</text>
+<text x="32" y="867">/oovBuilder/</text>
+<text x="32" y="880">-char mSrcRootDir</text>
+<text x="32" y="890">-FilePath mOutputPath</text>
+<text x="32" y="900">-FilePath mIntermediatePath</text>
+<text x="32" y="910">-ComponentFinder mComponentFinder</text>
+<text x="32" y="920">-ToolPathFile mToolPathFile</text>
+<text x="32" y="930">-ObjSymbols mObjSymbols</text>
+<text x="32" y="940">-IncDirDependencyMapReader mIncDirMap</text>
+<text x="32" y="950">-ComponentPkgDeps mComponentPkgDeps</text>
+<text x="32" y="963">+ComponentBuilder(ComponentFinder compFinder)</text>
+<text x="32" y="973">+~ComponentBuilder()</text>
+<text x="32" y="983">+build(char   const srcRootDir, char   const incDepsFilePath, char   const buildDirClass)</text>
+<text x="32" y="993">+runProcess(char   const procPath, char   const outFile, OovProcessChildArgs args, char   const stdOutFn)</text>
+<text x="32" y="1003">-buildComponents()</text>
+<text x="32" y="1013">-makeObj(std::string srcFile, std::vector&lt;std::string&gt; incDirs, std::vector&lt;std::string&gt; incFiles, std::set&lt;std::string&gt; externPkgCompileArgs)</text>
+<text x="32" y="1023">-makeLib(std::string libName, std::vector&lt;std::string&gt; objectFileNames, std::string outFileName, bool builtLib)</text>
+<text x="32" y="1033">-makeLibSymbols(char   const clumpName, std::vector&lt;std::string&gt; files)</text>
+<text x="32" y="1043">-makeExe(char   const compName, std::vector&lt;std::string&gt; sources, std::vector&lt;std::string&gt; projectLibsFilePaths, std::vector&lt;std::string&gt; externLibDirs,</text>
+<text x="32" y="1053">    std::vector&lt;std::string&gt; externOrderedLibNames, std::set&lt;std::string&gt; externPkgLinkArgs, bool shared)</text>
+<text x="32" y="1063">-makeOutputObjectFileName(char   const str)</text>
+<text x="32" y="1073">-getSymbolBasePath()</text>
+<text x="32" y="1083">-getDiagFileName()</text>
+<text x="32" y="1093">-anyIncDirsMatch(char   const compName, RootDirPackage pkg)</text>
+<text x="32" y="1103">-appendOrderedPackageLibs(char   const compName, std::vector&lt;std::string&gt; libDirs, std::vector&lt;std::string&gt; sortedLibNames)</text>
+<text x="32" y="1113">-getComponentCompileArgs(char   const compName)</text>
+<text x="32" y="1123">-getComponentLinkArgs(char   const compName)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="401" y="110" width="244" height="118" />
+<line x1="401" y1="133" x2="645" y2="133" />
+<line x1="401" y1="176" x2="645" y2="176" />
+</g>
+<g font-size="10">
+<text x="402" y="120">srcFileParser</text>
+<text x="402" y="130">/oovBuilder/</text>
+<text x="402" y="143">-char mSrcRootDir</text>
+<text x="402" y="153">-char mAnalysisDir</text>
+<text x="402" y="163">-std::vector&lt;std::string&gt; mIncDirArgs</text>
+<text x="402" y="173">-ComponentFinder mComponentFinder</text>
+<text x="402" y="186">+srcFileParser(ComponentFinder compFinder)</text>
+<text x="402" y="196">+~srcFileParser()</text>
+<text x="402" y="206">+analyzeSrcFiles(char   const srcRootDir, char  </text>
+<text x="402" y="216">    const analysisDir, char   const incDepsFilename)</text>
+<text x="402" y="226">-processFile(std::string filePath)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="372" y="270" width="230" height="48" />
+<line x1="372" y1="293" x2="602" y2="293" />
+<line x1="372" y1="296" x2="602" y2="296" />
+</g>
+<g font-size="10">
+<text x="373" y="280">CppChildArgs</text>
+<text x="373" y="290">/oovBuilder/</text>
+<text x="373" y="306">+addCompileArgList(ComponentFinder finder,</text>
+<text x="373" y="316">    std::vector&lt;std::string&gt; incDirs)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="18" y="25" width="262" height="268" />
+<line x1="18" y1="48" x2="280" y2="48" />
+<line x1="18" y1="121" x2="280" y2="121" />
+</g>
+<g font-size="10">
+<text x="19" y="35">ComponentFinder</text>
+<text x="19" y="45">/oovBuilder/</text>
+<text x="19" y="58">-std::string mRootPathName</text>
+<text x="19" y="68">-std::vector&lt;std::string&gt; mExcludes</text>
+<text x="19" y="78">-ScannedComponentsInfo mScannedInfo</text>
+<text x="19" y="88">-ProjectReader mProject</text>
+<text x="19" y="98">-ComponentTypesFile mComponentTypesFile</text>
+<text x="19" y="108">-ComponentsFile mComponentsFile</text>
+<text x="19" y="118">-Package mScanningPackage</text>
+<text x="19" y="131">+ComponentFinder()</text>
+<text x="19" y="141">+readProject(char   const oovProjectDir,</text>
+<text x="19" y="151">    char   const buildConfigName)</text>
+<text x="19" y="161">+scanProject()</text>
+<text x="19" y="171">+scanExternalProject(char   const externalRootSrch,</text>
+<text x="19" y="181">    Package pkg)</text>
+<text x="19" y="191">+addBuildPackage(Package pkg)</text>
+<text x="19" y="201">+saveProject(char   const compFn)</text>
+<text x="19" y="211">+getComponentName(char   const filePath)</text>
+<text x="19" y="221">+getProject()</text>
+<text x="19" y="231">+getProject()</text>
+<text x="19" y="241">+getComponentTypesFile()</text>
+<text x="19" y="251">+getComponentsFile()</text>
+<text x="19" y="261">+getScannedInfo()</text>
+<text x="19" y="271">+getAllIncludeDirs()</text>
+<text x="19" y="281">+makeFileName(char   const projName)</text>
+<text x="19" y="291">-processFile(std::string filePath)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="281" y="429" width="120" height="18" />
+<line x1="281" y1="442" x2="401" y2="442" />
+<line x1="281" y1="445" x2="401" y2="445" />
+</g>
+<g font-size="10">
+<text x="282" y="439">std::vector&lt;std::string&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="419" y="412" width="336" height="108" />
+<line x1="419" y1="435" x2="755" y2="435" />
+<line x1="419" y1="458" x2="755" y2="458" />
+</g>
+<g font-size="10">
+<text x="420" y="422">ScannedComponentsInfo</text>
+<text x="420" y="432">/oovBuilder/</text>
+<text x="420" y="445">-std::map&lt;std::string mComponents</text>
+<text x="420" y="455">-InsertOrderedSet mProjectIncludeDirs</text>
+<text x="420" y="468">+addProjectIncludePath(char   const path)</text>
+<text x="420" y="478">+addSourceFile(char   const compName, char   const srcFileName)</text>
+<text x="420" y="488">+addIncludeFile(char   const compName, char   const srcFileName)</text>
+<text x="420" y="498">+initializeComponentTypesFileValues(NameValueFile file)</text>
+<text x="420" y="508">+setProjectComponentsFileValues(NameValueFile file)</text>
+<text x="420" y="518">+getProjectIncludeDirs()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="25" y="366" width="73" height="28" />
+<line x1="25" y1="389" x2="98" y2="389" />
+<line x1="25" y1="392" x2="98" y2="392" />
+</g>
+<g font-size="10">
+<text x="26" y="376">ProjectReader</text>
+<text x="26" y="386">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="217" y="360" width="106" height="28" />
+<line x1="217" y1="383" x2="323" y2="383" />
+<line x1="217" y1="386" x2="323" y2="386" />
+</g>
+<g font-size="10">
+<text x="218" y="370">ComponentTypesFile</text>
+<text x="218" y="380">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="131" y="380" width="82" height="28" />
+<line x1="131" y1="403" x2="213" y2="403" />
+<line x1="131" y1="406" x2="213" y2="406" />
+</g>
+<g font-size="10">
+<text x="132" y="390">ComponentsFile</text>
+<text x="132" y="400">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="45" y="497" width="72" height="28" />
+<line x1="45" y1="520" x2="117" y2="520" />
+<line x1="45" y1="523" x2="117" y2="523" />
+</g>
+<g font-size="10">
+<text x="46" y="507">Package</text>
+<text x="46" y="517">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="312" y="31" width="163" height="58" />
+<line x1="312" y1="54" x2="475" y2="54" />
+<line x1="312" y1="57" x2="475" y2="57" />
+</g>
+<g font-size="10">
+<text x="313" y="41">dirRecurser</text>
+<text x="313" y="51">/oovCommon/</text>
+<text x="313" y="67">+~dirRecurser()</text>
+<text x="313" y="77">+recurseDirs(char   const path)</text>
+<text x="313" y="87">+processFile(std::string filePath)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="237" y="482" width="72" height="28" />
+<line x1="237" y1="505" x2="309" y2="505" />
+<line x1="237" y1="508" x2="309" y2="508" />
+</g>
+<g font-size="10">
+<text x="238" y="492">FilePath</text>
+<text x="238" y="502">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="346" y="338" width="111" height="48" />
+<line x1="346" y1="361" x2="457" y2="361" />
+<line x1="346" y1="364" x2="457" y2="364" />
+</g>
+<g font-size="10">
+<text x="347" y="348">InsertOrderedSet</text>
+<text x="347" y="358">/oovBuilder/</text>
+<text x="347" y="374">+insert(std::string str)</text>
+<text x="347" y="384">+exists(std::string str)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="611" y="702" width="181" height="118" />
+<line x1="611" y1="725" x2="792" y2="725" />
+<line x1="611" y1="768" x2="792" y2="768" />
+</g>
+<g font-size="10">
+<text x="612" y="712">ToolPathFile</text>
+<text x="612" y="722">/oovBuilder/</text>
+<text x="612" y="735">-std::string mBuildConfig</text>
+<text x="612" y="745">-std::string mPathLibber</text>
+<text x="612" y="755">-std::string mPathCompiler</text>
+<text x="612" y="765">-std::string mPathObjSymbol</text>
+<text x="612" y="778">+setConfig(char   const buildConfig)</text>
+<text x="612" y="788">+getCompilerPath()</text>
+<text x="612" y="798">+getLibberPath()</text>
+<text x="612" y="808">+getObjSymbolPath()</text>
+<text x="612" y="818">-getPaths()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="330" y="544" width="459" height="118" />
+<line x1="330" y1="567" x2="789" y2="567" />
+<line x1="330" y1="580" x2="789" y2="580" />
+</g>
+<g font-size="10">
+<text x="331" y="554">ObjSymbols</text>
+<text x="331" y="564">/oovBuilder/</text>
+<text x="331" y="577">-bool mForceUpdateSymbols</text>
+<text x="331" y="590">+ObjSymbols()</text>
+<text x="331" y="600">+forceUpdate(bool force)</text>
+<text x="331" y="610">+makeObjectSymbols(char   const clumpName, std::vector&lt;std::string&gt; libFileNames,</text>
+<text x="331" y="620">    char   const outPath, char   const objSymbolTool)</text>
+<text x="331" y="630">+appendOrderedLibs(char   const clumpName, char   const outPath, std::vector&lt;std::string&gt;</text>
+<text x="331" y="640">    libDirs, std::vector&lt;std::string&gt; sortedLibNames)</text>
+<text x="331" y="650">+appendOrderedLibFileNames(char   const clumpName, char   const outPath,</text>
+<text x="331" y="660">    std::vector&lt;std::string&gt; sortedLibFileNames)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="30" y="673" width="533" height="128" />
+<line x1="30" y1="696" x2="563" y2="696" />
+<line x1="30" y1="699" x2="563" y2="699" />
+</g>
+<g font-size="10">
+<text x="31" y="683">IncDirDependencyMapReader</text>
+<text x="31" y="693">/oovCommon/</text>
+<text x="31" y="709">+read(char   const fn)</text>
+<text x="31" y="719">+getImmediateIncludeFilesUsedBySourceFile(char   const srcName, std::set&lt;IncludedPath&gt; incFiles)</text>
+<text x="31" y="729">+getNestedIncludeFilesUsedBySourceFile(char   const srcName, std::set&lt;IncludedPath&gt; incFiles)</text>
+<text x="31" y="739">+getIncludeFilesDefinedInDirectory(char   const dirName)</text>
+<text x="31" y="749">+getNestedIncludeDirsUsedBySourceFile(char   const srcName)</text>
+<text x="31" y="759">+anyRootDirsUsedBySourceFile(std::vector&lt;std::string&gt; incRoots, std::set&lt;std::string&gt; includesUsedSoFar,</text>
+<text x="31" y="769">    char   const srcName)</text>
+<text x="31" y="779">+anyRootDirsMatch(std::vector&lt;std::string&gt; incRoots, char   const dirName)</text>
+<text x="31" y="789">+getOrderedIncludeDirsForSourceFile(char   const srcName, std::vector&lt;std::string&gt; orderedIncRoots)</text>
+<text x="31" y="799">+getFilesDefinedInDirectory(char   const dirName)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="477" y="1155" width="311" height="58" />
+<line x1="477" y1="1178" x2="788" y2="1178" />
+<line x1="477" y1="1191" x2="788" y2="1191" />
+</g>
+<g font-size="10">
+<text x="478" y="1165">ComponentPkgDeps</text>
+<text x="478" y="1175">/oovBuilder/</text>
+<text x="478" y="1188">-std::map&lt;std::string mCompPkgMap</text>
+<text x="478" y="1201">+addPkgDep(char   const compName, char   const pkgName)</text>
+<text x="478" y="1211">+isDependent(char   const compName, char   const pkgName)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="530" y="332" width="107" height="28" />
+<line x1="530" y1="355" x2="637" y2="355" />
+<line x1="530" y1="358" x2="637" y2="358" />
+</g>
+<g font-size="10">
+<text x="531" y="342">OovProcessChildArgs</text>
+<text x="531" y="352">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="102" y="431" width="82" height="28" />
+<line x1="102" y1="454" x2="184" y2="454" />
+<line x1="102" y1="457" x2="184" y2="457" />
+</g>
+<g font-size="10">
+<text x="103" y="441">RootDirPackage</text>
+<text x="103" y="451">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="216" y="1165" width="72" height="28" />
+<line x1="216" y1="1188" x2="288" y2="1188" />
+<line x1="216" y1="1191" x2="288" y2="1191" />
+</g>
+<g font-size="10">
+<text x="217" y="1175">File</text>
+<text x="217" y="1185">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="656" y="359" width="117" height="28" />
+<line x1="656" y1="382" x2="773" y2="382" />
+<line x1="656" y1="385" x2="773" y2="385" />
+</g>
+<g font-size="10">
+<text x="657" y="369">OovProcessStdListener</text>
+<text x="657" y="379">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="640" y="261" width="81" height="28" />
+<line x1="640" y1="284" x2="721" y2="284" />
+<line x1="640" y1="287" x2="721" y2="287" />
+</g>
+<g font-size="10">
+<text x="641" y="271">OovPipeProcess</text>
+<text x="641" y="281">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="337" y="1167" width="113" height="28" />
+<line x1="337" y1="1190" x2="450" y2="1190" />
+<line x1="337" y1="1193" x2="450" y2="1193" />
+</g>
+<g font-size="10">
+<text x="338" y="1177">FilePathImmutableRef</text>
+<text x="338" y="1187">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="427" y1="847" x2="485" y2="318" />
+<circle cx="428" cy="833" r="5" style="fill:#ffffff" />
+<line x1="368" y1="847" x2="191" y2="293" />
+<polygon points="368,847 369,839 363,830 362,841 368,847 " style="fill:#ffffff" />
+<circle cx="362" cy="828" r="5" style="fill:#ffffff" />
+<circle cx="358" cy="818" r="5" style="fill:#000000" />
+<circle cx="358" cy="818" r="2" style="fill:#000000" />
+<line x1="373" y1="847" x2="276" y2="510" />
+<polygon points="373,847 375,839 369,830 367,841 373,847 " style="fill:#000000" />
+<circle cx="367" cy="828" r="5" style="fill:#ffffff" />
+<circle cx="364" cy="818" r="5" style="fill:#000000" />
+<circle cx="364" cy="818" r="2" style="fill:#000000" />
+<line x1="590" y1="847" x2="626" y2="820" />
+<polygon points="590,847 598,846 604,837 593,839 590,847 " style="fill:#000000" />
+<circle cx="614" cy="829" r="5" style="fill:#000000" />
+<circle cx="614" cy="829" r="2" style="fill:#000000" />
+<line x1="465" y1="847" x2="537" y2="662" />
+<polygon points="465,847 472,842 471,831 464,839 465,847 " style="fill:#000000" />
+<circle cx="475" cy="819" r="5" style="fill:#000000" />
+<circle cx="475" cy="819" r="2" style="fill:#000000" />
+<line x1="348" y1="847" x2="325" y2="801" />
+<polygon points="348,847 348,839 340,831 341,843 348,847 " style="fill:#000000" />
+<circle cx="334" cy="820" r="5" style="fill:#000000" />
+<circle cx="334" cy="820" r="2" style="fill:#000000" />
+<line x1="566" y1="1125" x2="600" y2="1155" />
+<polygon points="566,1125 568,1133 579,1136 574,1126 566,1125 " style="fill:#000000" />
+<circle cx="588" cy="1144" r="5" style="fill:#000000" />
+<circle cx="588" cy="1144" r="2" style="fill:#000000" />
+<line x1="449" y1="847" x2="580" y2="360" />
+<polygon points="453,832 461,825 454,828 449,822 453,832 " style="fill:#ffffff" />
+<circle cx="453" cy="828" r="5" style="fill:#ffffff" />
+<circle cx="456" cy="818" r="5" style="fill:#000000" />
+<circle cx="456" cy="818" r="2" style="fill:#000000" />
+<line x1="343" y1="847" x2="149" y2="459" />
+<polygon points="341,843 343,833 339,839 332,838 341,843 " style="fill:#ffffff" />
+<circle cx="334" cy="830" r="5" style="fill:#ffffff" />
+<circle cx="331" cy="824" r="2" style="fill:#ffffff" />
+<line x1="297" y1="1125" x2="263" y2="1165" />
+<circle cx="287" cy="1135" r="5" style="fill:#ffffff" />
+<line x1="480" y1="847" x2="708" y2="387" />
+<circle cx="486" cy="834" r="5" style="fill:#ffffff" />
+<line x1="464" y1="847" x2="675" y2="289" />
+<circle cx="468" cy="833" r="5" style="fill:#ffffff" />
+<line x1="399" y1="1125" x2="394" y2="1167" />
+<circle cx="397" cy="1138" r="5" style="fill:#ffffff" />
+<line x1="507" y1="228" x2="493" y2="270" />
+<circle cx="502" cy="241" r="5" style="fill:#ffffff" />
+<line x1="401" y1="166" x2="280" y2="162" />
+<polygon points="401,166 394,162 384,166 394,170 401,166 " style="fill:#ffffff" />
+<polygon points="386,166 376,159 382,166 376,171 386,166 " style="fill:#ffffff" />
+<circle cx="382" cy="165" r="5" style="fill:#ffffff" />
+<circle cx="371" cy="165" r="5" style="fill:#000000" />
+<circle cx="371" cy="165" r="2" style="fill:#000000" />
+<line x1="484" y1="228" x2="347" y2="429" />
+<polygon points="484,228 476,231 474,242 484,236 484,228 " style="fill:#000000" />
+<circle cx="467" cy="252" r="5" style="fill:#000000" />
+<circle cx="467" cy="252" r="2" style="fill:#000000" />
+<line x1="453" y1="110" x2="427" y2="89" />
+<polygon points="427,89 433,101 440,92 427,89 " style="fill:#ffffff" />
+<circle cx="450" cy="107" r="5" style="fill:#ffffff" />
+<circle cx="450" cy="107" r="2" style="fill:#ffffff" />
+<line x1="478" y1="228" x2="283" y2="482" />
+<circle cx="469" cy="239" r="5" style="fill:#ffffff" />
+<line x1="578" y1="228" x2="701" y2="359" />
+<circle cx="587" cy="238" r="5" style="fill:#ffffff" />
+<line x1="610" y1="228" x2="660" y2="261" />
+<circle cx="621" cy="235" r="5" style="fill:#ffffff" />
+<line x1="427" y1="270" x2="280" y2="211" />
+<polygon points="423,269 417,260 419,267 413,270 423,269 " style="fill:#ffffff" />
+<circle cx="409" cy="262" r="5" style="fill:#ffffff" />
+<circle cx="403" cy="260" r="2" style="fill:#ffffff" />
+<line x1="531" y1="318" x2="558" y2="332" />
+<polygon points="558,332 549,322 545,331 558,332 " style="fill:#ffffff" />
+<circle cx="531" cy="318" r="5" style="fill:#ffffff" />
+<circle cx="531" cy="318" r="2" style="fill:#ffffff" />
+<line x1="241" y1="293" x2="335" y2="429" />
+<polygon points="241,293 241,301 251,307 249,296 241,293 " style="fill:#000000" />
+<circle cx="258" cy="317" r="5" style="fill:#000000" />
+<circle cx="258" cy="317" r="2" style="fill:#000000" />
+<line x1="280" y1="250" x2="510" y2="412" />
+<polygon points="280,250 283,258 294,260 288,250 280,250 " style="fill:#000000" />
+<circle cx="304" cy="267" r="5" style="fill:#000000" />
+<circle cx="304" cy="267" r="2" style="fill:#000000" />
+<line x1="96" y1="293" x2="66" y2="366" />
+<polygon points="96,293 89,298 90,309 97,301 96,293 " style="fill:#000000" />
+<circle cx="84" cy="320" r="5" style="fill:#000000" />
+<circle cx="84" cy="320" r="2" style="fill:#000000" />
+<line x1="224" y1="293" x2="263" y2="360" />
+<polygon points="224,293 224,301 233,308 231,297 224,293 " style="fill:#000000" />
+<circle cx="239" cy="318" r="5" style="fill:#000000" />
+<circle cx="239" cy="318" r="2" style="fill:#000000" />
+<line x1="162" y1="293" x2="171" y2="380" />
+<polygon points="162,293 159,301 163,310 167,300 162,293 " style="fill:#000000" />
+<circle cx="165" cy="322" r="5" style="fill:#000000" />
+<circle cx="165" cy="322" r="2" style="fill:#000000" />
+<line x1="124" y1="293" x2="83" y2="497" />
+<polygon points="124,293 119,299 121,310 126,301 124,293 " style="fill:#ffffff" />
+<circle cx="120" cy="311" r="5" style="fill:#ffffff" />
+<circle cx="118" cy="322" r="5" style="fill:#000000" />
+<circle cx="118" cy="322" r="2" style="fill:#000000" />
+<line x1="280" y1="106" x2="322" y2="89" />
+<polygon points="322,89 309,89 313,98 322,89 " style="fill:#ffffff" />
+<circle cx="294" cy="100" r="5" style="fill:#ffffff" />
+<circle cx="294" cy="100" r="2" style="fill:#ffffff" />
+<line x1="198" y1="293" x2="268" y2="482" />
+<circle cx="202" cy="306" r="5" style="fill:#ffffff" />
+<line x1="280" y1="264" x2="372" y2="338" />
+<circle cx="290" cy="272" r="5" style="fill:#ffffff" />
+<line x1="364" y1="429" x2="547" y2="360" />
+<polygon points="547,360 539,359 531,366 542,366 547,360 " style="fill:#000000" />
+<circle cx="518" cy="370" r="5" style="fill:#000000" />
+<circle cx="518" cy="370" r="2" style="fill:#000000" />
+<line x1="491" y1="412" x2="443" y2="386" />
+<polygon points="491,412 487,405 476,404 483,412 491,412 " style="fill:#000000" />
+<circle cx="464" cy="397" r="5" style="fill:#000000" />
+<circle cx="464" cy="397" r="2" style="fill:#000000" />
+<line x1="63" y1="394" x2="79" y2="497" />
+<circle cx="65" cy="407" r="5" style="fill:#ffffff" />
+<line x1="270" y1="388" x2="273" y2="482" />
+<circle cx="270" cy="401" r="5" style="fill:#ffffff" />
+<line x1="185" y1="408" x2="260" y2="482" />
+<circle cx="194" cy="417" r="5" style="fill:#ffffff" />
+<line x1="94" y1="497" x2="130" y2="459" />
+<polygon points="130,459 118,464 125,472 130,459 " style="fill:#ffffff" />
+<circle cx="109" cy="480" r="5" style="fill:#ffffff" />
+<circle cx="109" cy="480" r="2" style="fill:#ffffff" />
+<line x1="309" y1="509" x2="402" y2="544" />
+<circle cx="388" cy="539" r="5" style="fill:#ffffff" />
+<line x1="274" y1="510" x2="290" y2="673" />
+<circle cx="288" cy="659" r="5" style="fill:#ffffff" />
+<line x1="238" y1="482" x2="178" y2="459" />
+<circle cx="191" cy="464" r="5" style="fill:#ffffff" />
+<line x1="564" y1="544" x2="582" y2="360" />
+<circle cx="565" cy="530" r="5" style="fill:#ffffff" />
+</g>
+</svg>
