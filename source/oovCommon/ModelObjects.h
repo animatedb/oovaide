@@ -499,16 +499,13 @@ class ModelData
         void resolveStatements(ModelStatement *stmt);
         void resolveDecl(ModelDeclarator &decl);
 
+        void addType(ModelType *type);
         ModelModule const * const findModuleById(int id);
 
         // otype is only used if a type is created.
 	ModelType *createOrGetTypeRef(char const * const typeName, ObjectType otype);
 	ModelType *createTypeRef(char const * const typeName, ObjectType otype);
 	const ModelType *getTypeRef(char const * const typeName) const;
-	void addType(ModelType *type)
-	    {
-	    mTypes.push_back(type);
-	    }
 	ModelType *findType(char const * const name);
 	const ModelType *findType(char const * const name) const;
 	/// Deletes from the existing type from the model, and then deletes the type itself.

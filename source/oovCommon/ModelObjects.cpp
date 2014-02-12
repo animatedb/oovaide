@@ -6,8 +6,11 @@
  */
 
 #include "ModelObjects.h"
+#include "OovString.h"
+#include <string.h>
 #include <stdio.h>
 #include <ctype.h>
+#include <algorithm>
 
 #define DEBUG_TYPES 0
 
@@ -506,8 +509,78 @@ ModelObject *ModelData::createObject(ObjectType type, const std::string &id)
     return obj;
     }
 
+#define BASESPEED 0	// 1 appears worse?
+#define BINARYSPEED 1
+#define SORTCASE 0
+#if(BASESPEED)
+static bool skipStr(char const * * const str, char const * const compareStr)
+    {
+    int compLen = strlen(compareStr);
+    bool match = (strncmp(*str, compareStr, compLen) == 0);
+    if(match)
+	*str += compLen;
+    return match;
+    }
+#endif
+
 std::string ModelData::getBaseType(char const * const fullStr) const
 {
+#if(BASESPEED)
+    std::string str;
+    char const *p = fullStr;
+    while(*p == ' ')
+	p++;
+    while(*p)
+	{
+	switch(*p)
+	    {
+	    case 'c':
+		if(!skipStr(&p, "const ") && !skipStr(&p, "class "))
+		    str += *p++;
+		break;
+	    case 'm':
+		if(!skipStr(&p, "mutable "))
+		    str += *p++;
+		break;
+	    case 's':
+		if(!skipStr(&p, "struct "))
+		    str += *p++;
+		break;
+	    case '*':	p++;		break;
+	    case '&':	p++;		break;
+	    case ' ':
+		if(*(p-1) == ' ')
+		    p++;
+		else
+		    {
+		    switch(*(p+1))
+			{
+			// FALL THROUGH
+			case '<':
+			case '>':
+			case ' ':
+			case ':':
+			    p++;
+			    break;
+			default:	str += *p++;	break;
+			}
+		    }
+		break;
+	    case '<':
+	    case '>':
+	    case ':':
+		if(*(p+1) == ' ')
+		    p++;
+		else
+		    str += *p++;
+		break;
+	    default:	str += *p++;	break;
+	    }
+	}
+    int len = str.length()-1;
+    if(str[len] == ' ')
+	str.resize(len);
+#else
     std::string str = fullStr;
     strReplace("const ", " ", str);
     strReplace("class ", " ", str);
@@ -523,12 +596,53 @@ std::string ModelData::getBaseType(char const * const fullStr) const
     int lastPos = str.length()-1;
     if(str[lastPos] == ' ')
 	str.erase(lastPos, 1);
+#endif
     return str;
 }
+
+static inline bool compareStrsUpper(char const * const tstr1, char const * const tstr2)
+    {
+#if(SORTCASE)
+    OovString str1, str2;
+    str1.setUpperCase(tstr1);
+    str2.setUpperCase(tstr2);
+    return (str1.compare(str2) < 0);
+#else
+    bool val = (strcmp(tstr1, tstr2) < 0);
+    return val;
+#endif
+    }
+
+void ModelData::addType(ModelType *type)
+    {
+#if(BINARYSPEED)
+    std::string baseTypeName = getBaseType(type->getName().c_str());
+    type->setName(baseTypeName.c_str());
+    auto it = std::upper_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
+	[](char const * const mod1Name, ModelType const *mod2) -> bool
+	{ return(compareStrsUpper(mod1Name, mod2->getName().c_str())); } );
+    mTypes.insert(it, type);
+#else
+    mTypes.push_back(type);
+#endif
+    }
 
 const ModelType *ModelData::findType(char const * const name) const
     {
     const ModelType *type = nullptr;
+#if(BINARYSPEED)
+    // Since the types are now sorted by upper case, the comparison must
+    // be done with upper case.
+    std::string baseTypeName = getBaseType(name);
+    auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
+	[](ModelType const *mod1, char const * const mod2Name) -> bool
+	{ return(compareStrsUpper(mod1->getName().c_str(), mod2Name)); } );
+    if(iter != mTypes.end())
+	{
+	if(baseTypeName.compare((*iter)->getName()) == 0)
+	    type = *iter;
+	}
+#else
     std::string baseTypeName = getBaseType(name);
     for(auto &iterType : mTypes)
 	{
@@ -538,6 +652,7 @@ const ModelType *ModelData::findType(char const * const name) const
 	    break;
 	    }
 	}
+#endif
     return type;
     }
 

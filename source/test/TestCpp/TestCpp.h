@@ -12,7 +12,7 @@
 // being unit tested. This can hold anything that is common between tests.
 //
 // For each test, the TEST_F macro is used to define a test.
-// Inside of each defined test, the TEST_EQ macro is used to perform checks.
+// Inside of each defined test, the EXPECT_EQ macro is used to perform checks.
 //
 // Then the runAllTests() function is called to run all defined tests in order.
 //
@@ -24,7 +24,7 @@
 //
 //		TEST_F(gExampleUnitTest, ExampleFailTest)
 //			{
-//			TEST_EQ(5, 4);		// This will fail.
+//			EXPECT_EQ(5, 4);		// This will fail.
 //			}
 //
 //		int main()

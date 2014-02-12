@@ -19,6 +19,8 @@
 
 
 
+
+
 <link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
 
 <h2>OOVCDE Release Details</h2>
@@ -33,12 +35,17 @@ The following lists releases in reverse chronological order.
 
 <h2>2014-02</h2>This version contains:<br>
 <ul>
-  <li>Display dependency diagrams including external package dependencies<br>
+  <li>Display dependency diagrams including external package dependencies</li>
+  <li>Improved speed of class lists and drawing for large projects<br>
   </li>
+
   <li>Automatically determines library and package link dependencies for each component<br>
   </li>
   <li>The oovCMaker tool will generate CMake files from a project.</li>
+  <li>Fixed namespace bug that prevented classes in namespaces from displaying.<br>
+</li>
   <li>Fixed bug for filename case problems.</li>
+
   <li>Fixed bug for deleting stale build data.<br>
   </li>
 </ul>

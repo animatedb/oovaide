@@ -39,7 +39,11 @@ Missing Features
 		FindFirstChangeNotification/CDirectoryChangeWatcher , inotify
 	- Load last project automatically, but allow opening other while parsing
 - C++ parsing for drawings
-	- BUG: Namespaces not handled properly, std should not be a class
+	- BUG: Model objects not handled properly
+		- namespace - std should not be a class
+		- templates also, why so few std::vector<std::string>,
+		  where is std::vector<ModelObject>
+		- operator()
 	- Multiple case statements without breaks appear nested.
 	- Overloaded operations are not differentiated
 	- function return type not listed
@@ -52,7 +56,7 @@ Missing Features
 		for empty classes.
 	- no visibility			(Use CXXAccessSpecifier, oovCppParser.cpp)
 	- no packages
-	- no namespaces
+	- namespaces not shown
 	- no nested classes
 - Journal
 	- Allow more copies of diagrams?
@@ -60,6 +64,8 @@ Missing Features
 	- Changing build settings/dependencies should update components
 	- Show external project component dependencies, module dependencies
 - Class Diagrams
+	- BUG: forward class definitions mess up source line numbers
+	- When class members are not shown, should be easy way to view members
 	- FilePath not showing inheritance - templates?
 	- Allow adding selected class to existing diagram - right click in class list
 	- Add filter for class list
@@ -113,6 +119,11 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
+	- GtkPlug, XEmbed
+	- Embed vim examples:
+		http://pages.cs.wisc.edu/~psilord/blog/18.html
+		http://www.freehackers.org/VimIntegration
+		http://vimdoc.sourceforge.net/htmldoc/netbeans.html
 	- Creating new module created .tmp file
 	- unindenting doesn't work well when tabs are in file
 	- display line number and column/character position
@@ -126,11 +137,14 @@ Missing Features
 - Debugger (In editor)
 	- Embed GDB or LLDB
 	- GDB docs are gdb.info, "The GDB/MI Interface"
+	https://wiki.linuxfoundation.org/en/Debugger_Machine_Interface_%28DMI%29
+	http://sourceforge.net/projects/libmigdb/
+	https://code.google.com/p/beaverdbg/
 	- Gtk Plug/Socket, Wayland? "gvim -f --socketid %w '%s'"
 	  http://lists.freedesktop.org/archives/wayland-devel/2012-February/002030.html
-	- embed editor http://www.freehackers.org/VimIntegration
 	https://developer.gnome.org/gtkmm-tutorial/stable/sec-plugs-sockets-example.html
 	http://learngtk.org/pygtk-tutorial/plugsocketexample.html
+	http://www.pygtk.org/pygtk2tutorial/sec-PlugsAndSockets.html
 	gdk_set_allowed_backends("x11")
 http://search.cpan.org/~rjbs/perl-5.18.2/pod/perlipc.pod#Bidirectional_Communication_with_Yourself
 http://gtk2-perl.sourceforge.net/doc/pod/Glib/MainLoop.html#integer_Glib_IO_add_

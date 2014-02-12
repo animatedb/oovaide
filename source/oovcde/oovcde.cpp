@@ -106,6 +106,9 @@ void oovGui::clear()
     mJournalList.clear();
     mOperationList.clear();
     mProjectOpen = false;
+#if(LAZY_UPDATE)
+    setBackgroundUpdateClassListSize(0);
+#endif
     }
 
 gboolean oovGui::onIdle(gpointer data)
@@ -117,9 +120,13 @@ gboolean oovGui::onIdle(gpointer data)
 	gui->mOpenProject = false;
 	}
     bool completed;
-    if(!gui->onBackgroundProcessIdle(completed))
+    if(!gui->onBackgroundProcessIdle(completed)
+#if(LAZY_UPDATE)
+	&& !gui->backgroundUpdateClassListItem()
+#endif
+	    )
 	{
-	sleepMs(10);
+	sleepMs(5);
 	}
     if(completed)
 	gui->mOpenProject = true;
@@ -130,7 +137,6 @@ gboolean oovGui::onIdle(gpointer data)
 void oovGui::openProject()
     {
     gOovGui.clear();
-
     BuildConfigReader buildConfig;
     std::vector<std::string> fileNames;
     bool open = getDirListMatchExt(buildConfig.getAnalysisPath().c_str(),
@@ -146,12 +152,16 @@ void oovGui::openProject()
 		fclose(fp);
 		}
 	    }
+#if(LAZY_UPDATE)
+	setBackgroundUpdateClassListSize(mModelData.mTypes.size());
+#else
 	for(size_t i=0; i<mModelData.mTypes.size(); i++)
 	    {
 	    if(mModelData.mTypes[i]->getObjectType() == otClass)
 		mClassList.appendText(mModelData.mTypes[i]->getName().c_str());
 	    }
 	mClassList.sort();
+#endif
 	}
     if(sOptionsDialog)
 	sOptionsDialog->openedProject();
@@ -424,27 +434,30 @@ extern "C" G_MODULE_EXPORT void on_NewProjectOkButton_clicked(
     GtkEntry *dirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
 	    "OovcdeProjectDirEntry"));
     std::string projDir = gtk_entry_get_text(dirEntry);
-    ensureLastPathSep(projDir);
-    if(ensurePathExists(projDir.c_str()))
+    if(projDir.length())
 	{
-	Project::setProjectDirectory(projDir.c_str());
-
-	gBuildOptions.setFilename(Project::getProjectFilePath().c_str());
-	gGuiOptions.setFilename(Project::getGuiOptionsFilePath().c_str());
-	if(gBuildOptions.writeFile())
+	ensureLastPathSep(projDir);
+	if(ensurePathExists(projDir.c_str()))
 	    {
-	    gGuiOptions.writeFile();
-	    gOovGui.updateProject();
+	    Project::setProjectDirectory(projDir.c_str());
+
+	    gBuildOptions.setFilename(Project::getProjectFilePath().c_str());
+	    gGuiOptions.setFilename(Project::getGuiOptionsFilePath().c_str());
+	    if(gBuildOptions.writeFile())
+		{
+		gGuiOptions.writeFile();
+		gOovGui.updateProject();
+		}
+	    else
+		{
+		Gui::messageBox("Unable to write project file");
+		gOovGui.setProjectOpen(false);
+		}
 	    }
 	else
-	    {
-	    Gui::messageBox("Unable to write project file");
-	    gOovGui.setProjectOpen(false);
-	    }
+	    Gui::messageBox("Unable to create project directory");
+	gtk_widget_hide(gOovGui.getBuilder().getWidget("NewProjectDialog"));
 	}
-    else
-	Gui::messageBox("Unable to create project directory");
-    gtk_widget_hide(gOovGui.getBuilder().getWidget("NewProjectDialog"));
     }
 
 // In glade, set the callback for the dialog's GtkWidget "delete-event" to
@@ -565,6 +578,7 @@ extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
 	Project::setProjectDirectory(projectDir.c_str());
 	gBuildOptions.setFilename(Project::getProjectFilePath().c_str());
 	gGuiOptions.setFilename(Project::getGuiOptionsFilePath().c_str());
+	gOovGui.clear();
 	gOovGui.updateProject();
 	}
     }

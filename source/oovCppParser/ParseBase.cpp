@@ -35,7 +35,7 @@ void removeClass(std::string &name)
 
 void removeTypeRefEnd(std::string &name)
     {
-    size_t pos = name.find_first_of(",;)=");
+    size_t pos = name.find_first_of(",;()=");
     if(pos != std::string::npos)
 	name.resize(pos);
     }

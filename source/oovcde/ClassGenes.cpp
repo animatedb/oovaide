@@ -22,7 +22,13 @@ void ClassGenes::initialize(const ClassGraph &graph, int avgNodeSize)
     {
     mGraph = &graph;
     int numNodes = graph.getNodes().size();
-    int numGenes = static_cast<int>(sqrt(numNodes)) * 30 + 50;
+    int numGenes = 0;
+    if(numNodes > 100)	// Too many nodes to draw well, so make fewer genes for speed
+	numGenes = static_cast<int>(sqrt(numNodes)) * 3;
+    else if(numNodes > 50)	// Too many nodes to draw well, so make fewer genes for speed
+	numGenes = static_cast<int>(sqrt(numNodes)) * 5;
+    else
+	numGenes = static_cast<int>(sqrt(numNodes)) * 30 + 50;
     const int numPos = 2;
     const int sizePos = sizeof(uint16_t);
     int geneBytes = numNodes * sizePos * numPos;

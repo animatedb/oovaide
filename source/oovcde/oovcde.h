@@ -78,6 +78,8 @@ class Menu
 	bool mProjectOpen;
     };
 
+#define LAZY_UPDATE 0
+
 class oovGui:public JournalListener, public WindowBuildListener
     {
     friend class Menu;
@@ -146,6 +148,24 @@ class oovGui:public JournalListener, public WindowBuildListener
 	    {
 	    return GTK_WINDOW(getBuilder().getWidget("TopWindow"));
 	    }
+#if(LAZY_UPDATE)
+	void setBackgroundUpdateClassListSize(int size)
+	    {
+	    mLazyClassListCurrentIndex = 0;
+	    mLazyClassListCount = size;
+	    }
+	bool backgroundUpdateClassListItem()
+	    {
+	    bool didSomething = mLazyClassListCurrentIndex < mLazyClassListCount;
+	    if(didSomething)
+		{
+		if(mModelData.mTypes[mLazyClassListCurrentIndex]->getObjectType() == otClass)
+		    mClassList.appendText(mModelData.mTypes[mLazyClassListCurrentIndex]->getName().c_str());
+		mLazyClassListCurrentIndex++;
+		}
+	    return didSomething;
+	    }
+#endif
 
     private:
 	ClassList mClassList;
@@ -157,6 +177,10 @@ class oovGui:public JournalListener, public WindowBuildListener
 	Journal mJournal;
 	std::string mLastSavedPath;
 	bool mProjectOpen;
+#if(LAZY_UPDATE)
+	int mLazyClassListCurrentIndex;
+	int mLazyClassListCount;
+#endif
 	Menu mMenu;
 	OovBackgroundPipeProcess mBackgroundProc;
     };

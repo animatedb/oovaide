@@ -484,6 +484,8 @@
 								<option id="gnu.cpp.compiler.option.optimization.level.202188313" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1047636722" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.1550977479" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0  -std=c++0x" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.debugging.prof.1694230372" name="Generate prof information (-p)" superClass="gnu.cpp.compiler.option.debugging.prof" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.compiler.option.debugging.gprof.2036097400" name="Generate gprof information (-pg)" superClass="gnu.cpp.compiler.option.debugging.gprof" value="false" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.488837750" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1380297334" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
@@ -521,6 +523,8 @@
 								</option>
 								<option id="gnu.cpp.link.option.flags.648751663" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -rdynamic" valueType="string"/>
 								<option id="gnu.cpp.link.option.other.1807470683" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other"/>
+								<option id="gnu.cpp.link.option.debugging.prof.564670733" name="Generate prof information (-p)" superClass="gnu.cpp.link.option.debugging.prof" value="false" valueType="boolean"/>
+								<option id="gnu.cpp.link.option.debugging.gprof.1939031643" name="Generate gprof information (-pg)" superClass="gnu.cpp.link.option.debugging.gprof" value="true" valueType="boolean"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.109807080" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -567,22 +571,8 @@
 		<project id="oovcde.cdt.managedbuild.target.gnu.mingw.exe.968720772" name="Executable" projectType="cdt.managedbuild.target.gnu.mingw.exe"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Linux-Release">
-			<resource resourceType="PROJECT" workspacePath="/oovcde"/>
-		</configuration>
-		<configuration configurationName="Windows-Release">
-			<resource resourceType="PROJECT" workspacePath="/oovcde"/>
-		</configuration>
-		<configuration configurationName="Linux-Release32">
-			<resource resourceType="PROJECT" workspacePath="/oovcde"/>
-		</configuration>
-		<configuration configurationName="Windows-Debug">
-			<resource resourceType="PROJECT" workspacePath="/oovcde"/>
-		</configuration>
-		<configuration configurationName="Linux-Debug">
-			<resource resourceType="PROJECT" workspacePath="/oovcde"/>
-		</configuration>
+	<storageModule moduleId="refreshScope" versionNumber="1">
+		<resource resourceType="PROJECT" workspacePath="/oovcde"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>

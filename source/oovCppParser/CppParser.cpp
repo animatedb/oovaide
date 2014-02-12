@@ -618,6 +618,17 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor parent)
     {
     sCrashDiagnostics.saveMostRecentParseLocation("TU", cursor);
+    CXCursorKind cursKind = clang_getCursorKind(cursor);
+    switch(cursKind)
+	{
+	case CXCursor_Namespace:
+	    clang_visitChildren(cursor, ::visitTranslationUnit, this);
+	    break;
+
+	default:
+	    break;
+	}
+
     CXType cursType = clang_getCursorType(cursor);
     switch(cursType.kind)
 	{
