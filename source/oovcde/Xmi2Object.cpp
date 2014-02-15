@@ -28,6 +28,7 @@
 #include <stdlib.h>     // for atoi
 #include <stdio.h>
 #include <algorithm>
+#include <cassert>
 #include "Debug.h"
 
 
@@ -102,8 +103,8 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 	for(size_t i=0; i<graph.mTypes.size(); i++)
 	    {
 	    const ModelType *mt = graph.mTypes[i];
-	    fprintf(sLog.mFp, " %s   %s\n", getObjectTypeName(mt->getObjectType()),
-		    mt->getName().c_str());
+	    fprintf(sLog.mFp, " %s   %s %d\n", getObjectTypeName(mt->getObjectType()),
+		    mt->getName().c_str(), mt->getModelId());
 	    fflush(sLog.mFp);
 	    if(mt->getObjectType() == otClass)
 		{
@@ -145,7 +146,7 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 		    }
 		}
 	    else
-		fprintf(sLog.mFp, "ERROR:Cannot find class\n");
+		fprintf(sLog.mFp, " %d %d\n", assoc->getParentModelId(), assoc->getChildModelId());
 	    fflush(sLog.mFp);
 	    }
 	}
@@ -187,7 +188,8 @@ bool XmiParser::parse(char const * const buf)
     bool success = (parseXml(buf) == ERROR_NONE);
     if(success)
 	{
-	mModel.resolveModelIds();
+	updateTypeIndices();
+//	mModel.resolveModelIds();
 	}
     return success;
     }
@@ -304,11 +306,11 @@ static bool isTrue(const std::string &attrVal)
     return(attrVal[0] == 't');
     }
 
-static void setDeclAttr(const std::string &attrName,
+void XmiParser::setDeclAttr(const std::string &attrName,
 	const std::string &attrVal, ModelDeclarator &decl)
     {
     if(strcmp(attrName.c_str(), "type") == 0)
-        decl.setDeclTypeModelId(getInt(attrVal.c_str()));
+        decl.setDeclTypeModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
     else if(strcmp(attrName.c_str(), "ref") == 0)
         decl.setRefer(isTrue(attrVal));
     else if(strcmp(attrName.c_str(), "const") == 0)
@@ -327,7 +329,19 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
         tString attrVal(val, valLen);
         replaceAttrChars(attrVal);
         if(strcmp(attrName.c_str(), "xmi.id") == 0)
-            elItem->setModelId(getInt(attrVal.c_str()));
+            {
+            int index = getInt(attrVal.c_str());
+            if(elItem->getObjectType() == otModule)
+        	{
+		elItem->setModelId(index);
+        	}
+            else
+        	{
+		elItem->setModelId(mStartingModuleTypeIndex + index);
+		if(mNumModuleTypeIndices < mStartingModuleTypeIndex + index)
+		    mNumModuleTypeIndices = mStartingModuleTypeIndex + index;
+        	}
+            }
         if(strcmp(attrName.c_str(), "name") == 0)
             {
             elItem->setName(attrVal.c_str());
@@ -346,6 +360,10 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
                     const ModelModule *mod = mModel.findModuleById(modId);
                     if(mod)
                 	cl->setModule(mod);
+                    else
+                	{
+                	assert(false);
+                	}
                     }
                 else if(strcmp(attrName.c_str(), "line") == 0)
                     {
@@ -389,9 +407,9 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
                 {
                 ModelAssociation *assoc = static_cast<ModelAssociation*>(elItem);
                 if(strcmp(attrName.c_str(), "parent") == 0)
-                    assoc->setParentModelId(getInt(attrVal.c_str()));
+                    assoc->setParentModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
                 else if(strcmp(attrName.c_str(), "child") == 0)
-                    assoc->setChildModelId(getInt(attrVal.c_str()));
+                    assoc->setChildModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
                 else if(strcmp(attrName.c_str(), "access") == 0)
                     assoc->setAccess(getAccess(attrVal.c_str()));
                 }
@@ -489,12 +507,6 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 	    case otClass:
 	    case otDatatype:
 		{
-		// It seems like the same type from different files cannot be resolved into
-		// one type here, because the xmi.id is different in different files, and
-		// must be used to resolve references.
-		// Since xmi.id's are used per file, they can be used as long as they are set
-		// into the existing object's of other files.  Then when this file is resolved,
-		// the class pointers may be from previous files.
 		ModelType *newType = static_cast<ModelType*>(elItem);
 		ModelType *existingType = mModel.findType(newType->getName().c_str());
 		if(existingType)
@@ -514,11 +526,18 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 			// Classes from the XMI files can either be defined struct/classes
 			// with data members or function declarations or definitions, or
 			// they may only contain defined functions
-			existingType->setModelId(newType->getModelId());
+//			existingType->setModelId(newType->getModelId());
+			mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
+#if(DEBUG_LOAD)
+    fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
+#endif
+			// This type must have indices remapped.
+			mPotentialRemapIndicesTypes.push_back(existingType);
 			// If the new class is a definition, then update
 			// the existing class's module and line number.
 			if(static_cast<const ModelClassifier*>(newType)->isDefinition())
 			    {
+			    assert(static_cast<ModelClassifier*>(newType)->getModule());
 			    static_cast<ModelClassifier*>(existingType)->setModule(
 				    static_cast<ModelClassifier*>(newType)->getModule());
 			    static_cast<ModelClassifier*>(existingType)->setLineNum(
@@ -536,7 +555,11 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		    // was a class or datatype.
 		    else if(newType->getObjectType() == otDatatype)
 			{
-			existingType->setModelId(newType->getModelId());
+//			existingType->setModelId(newType->getModelId());
+			mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
+#if(DEBUG_LOAD)
+    fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
+#endif
 			delete newType;
 			newType = nullptr;
 #if(DEBUG_LOAD)
@@ -545,7 +568,10 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 			}
 		    }
 		if(newType)
+		    {
 		    mModel.addType(newType);
+	            mPotentialRemapIndicesTypes.push_back(newType);
+		    }
 		}
 		break;
 
@@ -634,14 +660,109 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 	mElementStack.pop_back();
     }
 
-
-static bool loadXmiBuf(char const * const buf, ModelData &model)
+void XmiParser::updateDeclTypeIndices(ModelDeclarator &decl)
     {
-    XmiParser parser(model);
-    return(parser.parse(buf));
+    auto const &iter = mFileTypeIndexMap.find(decl.getDeclTypeModelId());
+    if(iter != mFileTypeIndexMap.end())
+	{
+	decl.setDeclTypeModelId((*iter).second);
+	}
     }
 
-bool loadXmiFile(FILE *fp, ModelData &graph, char const * const fn)
+void XmiParser::updateStatementTypeIndices(ModelStatement *stmt)
+    {
+    if(stmt->getObjectType() == otCondStatement)
+	{
+	ModelCondStatements *condStmt = static_cast<ModelCondStatements *>(stmt);
+	for(auto &childstmt : condStmt->getStatements())
+	    {
+	    updateStatementTypeIndices(childstmt);
+	    }
+	}
+    else if(stmt->getObjectType() == otOperCall)
+	{
+	updateDeclTypeIndices(static_cast<ModelOperationCall *>(stmt)->getDecl());
+	}
+    }
+
+void XmiParser::updateTypeIndices()
+    {
+#if(DEBUG_LOAD)
+    fprintf(sLog.mFp, "Index Map\n");
+    for(auto const &iter : mFileTypeIndexMap)
+	{
+	fprintf(sLog.mFp, " %d %d\n", iter.first, iter.second);
+	}
+    fflush(sLog.mFp);
+#endif
+    for(const auto &type : mPotentialRemapIndicesTypes)
+	{
+	if(type->getObjectType() == otClass)
+	    {
+	    ModelClassifier *classifier = ModelObject::getClass(type);
+	    for(auto &attr : classifier->getAttributes())
+		{
+		updateDeclTypeIndices(*attr);
+		}
+	    for(auto &oper : classifier->getOperations())
+		{
+		// Resolve function parameters.
+		for(auto &param : oper->getParams())
+		    {
+		    updateDeclTypeIndices(*param);
+		    }
+		// Resolve function call decls.
+		ModelCondStatements &stmts = oper->getCondStatements();
+		updateStatementTypeIndices(&stmts);
+
+		// Resolve body variables.
+		for(auto &vd : oper->getBodyVarDeclarators())
+		    {
+		    updateDeclTypeIndices(*vd);
+		    }
+		}
+	    }
+	}
+    // Not real efficient to go through all, but there should not be all that many
+    // compared to the number of types.
+    for(auto &assoc : mModel.mAssociations)
+        {
+	auto const &iterChild = mFileTypeIndexMap.find(assoc->getChildModelId());
+	if(iterChild != mFileTypeIndexMap.end())
+	    {
+#if(DEBUG_LOAD)
+    fprintf(sLog.mFp, "Updated Child Model Id %d %d\n", assoc->getChildModelId(), (*iterChild).second);
+#endif
+	    assoc->setChildModelId((*iterChild).second);
+	    }
+	auto const &iter = mFileTypeIndexMap.find(assoc->getParentModelId());
+	if(iter != mFileTypeIndexMap.end())
+	    {
+#if(DEBUG_LOAD)
+    fprintf(sLog.mFp, "Updated Parent Model Id %d %d\n", assoc->getChildModelId(), (*iterChild).second);
+#endif
+	    assoc->setParentModelId((*iter).second);
+	    }
+        }
+    mPotentialRemapIndicesTypes.clear();
+    mFileTypeIndexMap.clear();
+    // Prevent using this module again.
+    for(auto &mod : mModel.mModules)
+	{
+	mod->setModelId(UNDEFINED_ID);
+	}
+    }
+
+static bool loadXmiBuf(char const * const buf, ModelData &model, int &typeIndex)
+    {
+    XmiParser parser(model);
+    parser.setStartingTypeIndex(typeIndex);
+    bool parsed = parser.parse(buf);
+    typeIndex = parser.getNextTypeIndex();
+    return(parsed);
+    }
+
+bool loadXmiFile(FILE *fp, ModelData &graph, char const * const fn, int &typeIndex)
     {
     bool success = false;
     fseek(fp , 0 , SEEK_END);
@@ -658,7 +779,7 @@ bool loadXmiFile(FILE *fp, ModelData &graph, char const * const fn)
 	buf[size] = 0;
 	size_t actualSize = fread(buf, size, 1, fp);
 	if(ferror(fp) == 0)
-	    success = loadXmiBuf(buf, graph);
+	    success = loadXmiBuf(buf, graph, typeIndex);
         delete [] buf;
         }
 #if(DEBUG_LOAD)

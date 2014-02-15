@@ -143,15 +143,17 @@ void oovGui::openProject()
 	    FilePath(".xmi", FP_File), fileNames);
     if(open)
 	{
+	int typeIndex = 0;
 	for(const auto &filename : fileNames)
 	    {
 	    FILE *fp = fopen(filename.c_str(), "r");
 	    if(fp)
 		{
-		loadXmiFile(fp, mModelData, filename.c_str());
+		loadXmiFile(fp, mModelData, filename.c_str(), typeIndex);
 		fclose(fp);
 		}
 	    }
+	mModelData.resolveModelIds();
 #if(LAZY_UPDATE)
 	setBackgroundUpdateClassListSize(mModelData.mTypes.size());
 #else

@@ -8,7 +8,7 @@
 #ifndef VERSION_H_
 #define VERSION_H_
 
-#define OOV_VERSION "2014-01-03"
+#define OOV_VERSION "2014-02"
 
 
 #endif /* VERSION_H_ */

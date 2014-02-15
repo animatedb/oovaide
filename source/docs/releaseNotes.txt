@@ -44,6 +44,7 @@ Missing Features
 		- templates also, why so few std::vector<std::string>,
 		  where is std::vector<ModelObject>
 		- operator()
+	- remove module ids from most/all elements.
 	- Multiple case statements without breaks appear nested.
 	- Overloaded operations are not differentiated
 	- function return type not listed

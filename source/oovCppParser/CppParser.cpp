@@ -634,6 +634,10 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	{
 	case CXType_Record:	// Class or struct
 	    {
+	    if(cursKind == CXCursor_ClassDecl)
+		mClassMemberAccess = Visibility::Private;
+	    else
+		mClassMemberAccess = Visibility::Public;
 // Save all classes so that the access specifiers in the declared classes from other TU's are saved.
 	    CXStringDisposer name(clang_getCursorSpelling(cursor));
 	    mClassifier = createOrGetClassRef(name.c_str());

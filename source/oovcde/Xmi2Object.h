@@ -40,15 +40,36 @@ class XmiParser:private XmlParser
     {
     public:
         XmiParser(ModelData &model):
-            mModel(model), mCurrentClassifier(NULL)
+            mModel(model), mCurrentClassifier(NULL), mStartingModuleTypeIndex(0),
+            mNumModuleTypeIndices(0)
             {}
     public:
 	bool parse(char const * const buf);
+	// Since each file only has indices relative to the file, they
+	// must be remapped to a global indices so that the references can be
+	// resolved later.  It is the responsibility of the caller to start the
+	// first file at zero, then get the next type index when the file is
+	// completed parsing and use that for the starting index of the next module.
+	void setStartingTypeIndex(int index)
+	    { mStartingModuleTypeIndex = index; }
+	int getNextTypeIndex() const
+	    { return mNumModuleTypeIndices+1; }
 
     private:
         ModelData &mModel;
         std::vector<ModelObject*> mElementStack;
         ModelClassifier *mCurrentClassifier;
+        int mStartingModuleTypeIndex;
+        int mNumModuleTypeIndices;
+        // First is index from current module or the original index. Second is
+        // index from previous module or the new index that it will be changed to
+        std::map<int, int> mFileTypeIndexMap;
+        // These are the types that were loaded from the current module that
+        // may need to have indices remapped.
+        std::vector<ModelType*> mPotentialRemapIndicesTypes;
+        void updateDeclTypeIndices(ModelDeclarator &decl);
+        void updateStatementTypeIndices(ModelStatement *stmt);
+        void updateTypeIndices();
         virtual void onOpenElem(char const * const name, int len);
         virtual void onCloseElem(char const * const /*name*/, int /*len*/);
         virtual void onAttr(char const * const name, int &nameLen,
@@ -59,9 +80,11 @@ class XmiParser:private XmlParser
         void dumpTypeMap(char const * const str1, char const * const str2);
         ModelObject *findParentInStack(ObjectType type);
         ModelCondStatements *findStatementsParentInStack();
+        void setDeclAttr(const std::string &attrName,
+        	const std::string &attrVal, ModelDeclarator &decl);
     };
 
-bool loadXmiFile(FILE *fp, ModelData &model, char const * const fn);
+bool loadXmiFile(FILE *fp, ModelData &model, char const * const fn, int &typeIndex);
 
 #endif
 

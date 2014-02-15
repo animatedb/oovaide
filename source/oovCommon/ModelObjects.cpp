@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <algorithm>
+#include <cassert>
 
 #define DEBUG_TYPES 0
 
@@ -354,10 +355,13 @@ void ModelData::resolveModelIds()
 	    {
 	    assoc->setChildClass(findClassByModelId(assoc->getChildModelId()));
 	    assoc->setParentClass(findClassByModelId(assoc->getParentModelId()));
+/*
 	    assoc->setChildModelId(UNDEFINED_ID);
 	    assoc->setParentModelId(UNDEFINED_ID);
+*/
 	    }
         }
+/*
     for(auto &type : mTypes)
 	{
 	type->setModelId(UNDEFINED_ID);
@@ -367,6 +371,7 @@ void ModelData::resolveModelIds()
 	{
 	mod->setModelId(UNDEFINED_ID);
 	}
+*/
     }
 
 void ModelData::takeAttributes(ModelClassifier *sourceType, ModelClassifier *destType)
@@ -509,16 +514,23 @@ ModelObject *ModelData::createObject(ObjectType type, const std::string &id)
     return obj;
     }
 
-#define BASESPEED 0	// 1 appears worse?
+#define BASESPEED 1
 #define BINARYSPEED 1
-#define SORTCASE 0
 #if(BASESPEED)
-static bool skipStr(char const * * const str, char const * const compareStr)
+static inline bool skipStr(char const * * const str, char const * const compareStr)
     {
-    int compLen = strlen(compareStr);
-    bool match = (strncmp(*str, compareStr, compLen) == 0);
+    char const *needle = compareStr;
+    char const *haystack = *str;
+    while(*needle)
+	{
+	if(*needle != *haystack)
+	    break;
+	needle++;
+	haystack++;
+	}
+    bool match = (*needle == '\0');
     if(match)
-	*str += compLen;
+	*str += needle-compareStr;
     return match;
     }
 #endif
@@ -600,17 +612,9 @@ std::string ModelData::getBaseType(char const * const fullStr) const
     return str;
 }
 
-static inline bool compareStrsUpper(char const * const tstr1, char const * const tstr2)
+static inline bool compareStrs(char const * const tstr1, char const * const tstr2)
     {
-#if(SORTCASE)
-    OovString str1, str2;
-    str1.setUpperCase(tstr1);
-    str2.setUpperCase(tstr2);
-    return (str1.compare(str2) < 0);
-#else
-    bool val = (strcmp(tstr1, tstr2) < 0);
-    return val;
-#endif
+    return (strcmp(tstr1, tstr2) < 0);
     }
 
 void ModelData::addType(ModelType *type)
@@ -620,7 +624,7 @@ void ModelData::addType(ModelType *type)
     type->setName(baseTypeName.c_str());
     auto it = std::upper_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
 	[](char const * const mod1Name, ModelType const *mod2) -> bool
-	{ return(compareStrsUpper(mod1Name, mod2->getName().c_str())); } );
+	{ return(compareStrs(mod1Name, mod2->getName().c_str())); } );
     mTypes.insert(it, type);
 #else
     mTypes.push_back(type);
@@ -631,12 +635,11 @@ const ModelType *ModelData::findType(char const * const name) const
     {
     const ModelType *type = nullptr;
 #if(BINARYSPEED)
-    // Since the types are now sorted by upper case, the comparison must
-    // be done with upper case.
+    // This comparison must produce the same sort order as addType.
     std::string baseTypeName = getBaseType(name);
     auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
 	[](ModelType const *mod1, char const * const mod2Name) -> bool
-	{ return(compareStrsUpper(mod1->getName().c_str(), mod2Name)); } );
+	{ return(compareStrs(mod1->getName().c_str(), mod2Name)); } );
     if(iter != mTypes.end())
 	{
 	if(baseTypeName.compare((*iter)->getName()) == 0)
@@ -664,14 +667,21 @@ ModelType *ModelData::findType(char const * const name)
 ModelModule const * const ModelData::findModuleById(int id)
     {
     ModelModule *mod = nullptr;
-    for(auto &iterMod : mModules)
+    // Searching backwards is an effective optimization because onAttr
+    // has calls to this function, and many of the recently added ID's
+    // will be at the end.
+    if(mModules.size() > 0)
 	{
-	if(iterMod->getModelId() == id)
+	for(int i=mModules.size()-1; i>=0; i--)
 	    {
-	    mod = iterMod;
-	    break;
+	    if(mModules[i]->getModelId() == id)
+		{
+		mod = mModules[i];
+		break;
+		}
 	    }
 	}
+    assert(mod);
     return mod;
     }
 
