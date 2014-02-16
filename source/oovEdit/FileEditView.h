@@ -22,7 +22,7 @@ class FileEditView
 	    mNeedHighlightUpdate(HS_HighlightDone)
 	    {}
 	void init(GtkTextView *textView);
-	void openTextFile(char const * const fn);
+	bool openTextFile(char const * const fn);
 	bool saveTextFile();
 	bool saveAsTextFileWithDialog();
 	bool checkExitSave();

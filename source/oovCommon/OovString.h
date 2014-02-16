@@ -61,7 +61,7 @@ class OovString:public OovStringRefInterface, public std::string
 	    {}
 	void setUpperCase(char const * const str);
 	void setLowerCase(char const * const str);
-	void setInt(int val, int radix=10);
+	void appendInt(int val, int radix=10);
 	virtual char const * const c_str() const
 	    { return std::string::c_str(); }
     };

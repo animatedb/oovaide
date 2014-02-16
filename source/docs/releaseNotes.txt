@@ -44,7 +44,7 @@ Missing Features
 		- templates also, why so few std::vector<std::string>,
 		  where is std::vector<ModelObject>
 		- operator()
-	- remove module ids from most/all elements.
+	- remove module ids from most/all elements, remove built in types
 	- Multiple case statements without breaks appear nested.
 	- Overloaded operations are not differentiated
 	- function return type not listed
@@ -91,9 +91,11 @@ Missing Features
 	- Could allow multiple selection to add relations, remove, properties
 	- Could have grid for class placement, option for grid size
 - Sequence Diagrams
+	- Add show callers for operation
+	- don't allow removing top call
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
-	- Add show callers for operation
+	- shorten exetremely long names
 	- Diagram width not correct in svg diagrams for long operation names
 	- Should try to find top level function in diagram, may not be first class.
 	- Const calls aren't shown correctly for overloaded functions?
@@ -120,6 +122,7 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
+	- BUG: shift-f3 doesn't work
 	- GtkPlug, XEmbed
 	- Embed vim examples:
 		http://pages.cs.wisc.edu/~psilord/blog/18.html
@@ -128,6 +131,7 @@ Missing Features
 	- Creating new module created .tmp file
 	- unindenting doesn't work well when tabs are in file
 	- display line number and column/character position
+https://gist.github.com/otsaloma/1912166
 	- go to line in editor, on command line only partly works
 	- replace
 	- find in files

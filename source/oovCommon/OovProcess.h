@@ -87,6 +87,7 @@ class OovPipeProcessLinux
 		char const * const *argv);
 	void linuxChildProcessListen(OovProcessListener &listener, int &exitCode);
 	void linuxChildProcessKill();
+	void linuxChildProcessSend(char const * const str);
     private:
 	int mChildProcessId;
 	enum PipeIndices { P_Read=0, P_Write=1, P_NumIndices=2 };
@@ -107,6 +108,7 @@ class OovPipeProcessWindows
 		char const * const *argv);
 	void windowsChildProcessListen(OovProcessListener &listener, int &exitCode);
 	void windowsChildProcessClose();
+	void windowsChildProcessSend(char const * const str);
 	void windowsChildProcessKill();
 
     private:
@@ -128,6 +130,7 @@ class OovPipeProcess
 	/// This hangs waiting for the process to finish. It reads the output
 	/// pipes from the child process, and sends the output to the listener.
 	void childProcessListen(OovProcessListener &listener, int &exitCode);
+	void childProcessSend(char const * const str);
 	void childProcessClose();
 	void childProcessKill();
 

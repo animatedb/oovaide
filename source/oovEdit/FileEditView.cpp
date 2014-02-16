@@ -35,7 +35,7 @@ void FileEditView::init(GtkTextView *textView)
     g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), NULL);
     }
 
-void FileEditView::openTextFile(char const * const fn)
+bool FileEditView::openTextFile(char const * const fn)
     {
     setFileName(fn);
     FILE *fp = fopen(fn, "rb");
@@ -54,6 +54,7 @@ void FileEditView::openTextFile(char const * const fn)
 	    }
 	fclose(fp);
 	}
+    return(fp != nullptr);
     }
 
 bool FileEditView::saveTextFile()

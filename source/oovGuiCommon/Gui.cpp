@@ -88,6 +88,20 @@ GuiText Gui::getText(GtkTextView *textview)
     return GuiText(gtk_text_buffer_get_text(textbuf, &start, &end, FALSE));
     }
 
+char const * const Gui::getCurrentLineText(GtkTextView *textView)
+    {
+    GtkTextBuffer *buf = gtk_text_view_get_buffer(textView);
+    GtkTextMark *mark = gtk_text_buffer_get_insert(buf);
+    GtkTextIter iter;
+    gtk_text_buffer_get_iter_at_mark(buf, &iter, mark);
+
+    GtkTextIter startIter = iter;
+    GtkTextIter endIter = iter;
+    gtk_text_iter_set_line_offset(&startIter, 0);
+    gtk_text_iter_forward_to_line_end(&endIter);
+    return gtk_text_buffer_get_text(buf, &startIter, &endIter, false);
+    }
+
 void Gui::reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent)
     {
     g_object_ref(GTK_WIDGET(windowToMove));

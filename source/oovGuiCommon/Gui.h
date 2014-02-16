@@ -86,6 +86,7 @@ class Gui
 	    { return gtk_entry_get_text(entry); }
 	static char const * const getText(GtkComboBoxText *cb)
 	    { return gtk_combo_box_text_get_active_text(cb); }
+	static char const * const getCurrentLineText(GtkTextView *textView);
 	static void setSelected(GtkComboBox *cb, int index)
 	    { gtk_combo_box_set_active(cb, index); }
 

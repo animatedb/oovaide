@@ -10,12 +10,6 @@
 #include <algorithm>
 
 
-CXStringDisposer::CXStringDisposer(const CXString &xstr)
-    {
-    append(clang_getCString(xstr));
-    clang_disposeString(xstr);
-    }
-
 
 void removeIdentName(char const * const name, std::string &str)
     {

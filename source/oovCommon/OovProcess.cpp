@@ -253,6 +253,11 @@ void OovPipeProcessLinux::linuxChildProcessListen(OovProcessListener &listener, 
     exitCode = 0;
     }
 
+void OovPipeProcessLinux::linuxChildProcessSend(char const * const str)
+    {
+    write(mOutPipe[P_Write], str, strlen(str));
+    }
+
 void OovPipeProcessLinux::linuxChildProcessKill()
     {
 #if(DEBUG_PROC)
@@ -448,6 +453,11 @@ void OovPipeProcessWindows::windowsClosePipes()
     windowsCloseHandle(mChildStd_OUT_Wr);
     }
 
+void OovPipeProcessWindows::windowsChildProcessSend(char const * const str)
+    {
+
+    }
+
 void OovPipeProcessWindows::windowsCloseHandle(HANDLE &h)
     {
     if(h != NULL)
@@ -485,6 +495,15 @@ void OovPipeProcess::childProcessListen(OovProcessListener &listener, int &exitC
     mPipeProcWindows.windowsChildProcessListen(listener, exitCode);
 #endif
     listener.processComplete();
+    }
+
+void OovPipeProcess::childProcessSend(char const * const str)
+    {
+#ifdef __linux__
+    mPipeProcLinux.linuxChildProcessSend(str);
+#else
+    mPipeProcWindows.windowsChildProcessSend(str);
+#endif
     }
 
 void OovPipeProcess::childProcessClose()

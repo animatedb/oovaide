@@ -57,8 +57,8 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug.2023438502" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/oovEdit ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.1328082518" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
 								<option id="gnu.cpp.link.option.paths.753954493" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Windows-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
@@ -92,14 +92,14 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
 					</externalSetting>
 				</externalSettings>
 				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
 					</externalSetting>
 				</externalSettings>
@@ -159,8 +159,8 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release.1874216920" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/oovEdit ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release.812649127" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release">
 								<option id="gnu.cpp.link.option.paths.910496902" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Windows-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
@@ -194,14 +194,14 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
 					</externalSetting>
 				</externalSettings>
 				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
 					</externalSetting>
 				</externalSettings>
@@ -276,8 +276,8 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="clang"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.645546713" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.490085970" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./ -rdynamic" valueType="string"/>
@@ -310,14 +310,14 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
 					</externalSetting>
 				</externalSettings>
 				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
 					</externalSetting>
 				</externalSettings>
@@ -392,8 +392,8 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="clang"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.2034445752" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.159689848" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./ -rdynamic" valueType="string"/>
@@ -426,14 +426,14 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
 					</externalSetting>
 				</externalSettings>
 				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
 					</externalSetting>
 				</externalSettings>

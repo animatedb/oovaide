@@ -8,8 +8,11 @@
 #include "FilePath.h"
 #include "FileEditView.h"
 #include "Version.h"
+#include "Debugger.h"
 #include <vector>
 
+
+enum TextViewIndices { TVI_Header=0, TVI_Source=1 };
 
 class Module
     {
@@ -19,8 +22,8 @@ class Module
 	    {}
 	void init(Builder &builder)
 	    {
-	    mFileEditView[0].init(GTK_TEXT_VIEW(builder.getWidget("Edit1Textview")));
-	    mFileEditView[1].init(GTK_TEXT_VIEW(builder.getWidget("Edit2Textview")));
+	    mFileEditView[TVI_Header].init(GTK_TEXT_VIEW(builder.getWidget("Edit1Textview")));
+	    mFileEditView[TVI_Source].init(GTK_TEXT_VIEW(builder.getWidget("Edit3Textview")));
 	    }
 	void setEditTextView(int index)
 	    {
@@ -29,20 +32,20 @@ class Module
 	    }
 	void setFocusEditTextView(GtkTextView *editTextView)
 	    {
-	    if(mFileEditView[0].getTextView() == editTextView)
-		mLastEditView = &mFileEditView[0];
-	    else if(mFileEditView[1].getTextView() == editTextView)
-		mLastEditView = &mFileEditView[1];
+	    if(mFileEditView[TVI_Header].getTextView() == editTextView)
+		mLastEditView = &mFileEditView[TVI_Header];
+	    else if(mFileEditView[TVI_Source].getTextView() == editTextView)
+		mLastEditView = &mFileEditView[TVI_Source];
 	    else
 		mLastEditView = nullptr;
 	    }
 	bool checkExitSave()
 	    {
 	    bool exitOk = true;
-	    if(mFileEditView[0].getTextView())
-		exitOk = mFileEditView[0].checkExitSave();
-	    if(mFileEditView[1].getTextView())
-		exitOk = mFileEditView[1].checkExitSave();
+	    if(mFileEditView[TVI_Header].getTextView())
+		exitOk = mFileEditView[TVI_Header].checkExitSave();
+	    if(mFileEditView[TVI_Source].getTextView())
+		exitOk = mFileEditView[TVI_Source].checkExitSave();
 	    return exitOk;
 	    }
 	FileEditView *getEditView()
@@ -55,18 +58,23 @@ class Module
 	FileEditView *mLastEditView;
     };
 
-class Editor
+class Editor:public DebuggerListener
     {
     public:
 	Editor():
-	    mLastSearchCaseSensitive(false)
+	    mLastSearchCaseSensitive(false), mDesiredLine(-1)
 	    {
+	    mDebugger.setListener(*this);
+	    /// @todo - need to get this from somewhere
+	    mDebugger.setDebuggee("oovEdit");
+	    g_idle_add(onIdle, this);
 	    }
 	void init()
 	    {
 	    mModule.init(mBuilder);
 	    setStyle();
 	    }
+	static gboolean onIdle(gpointer data);
 	void setFocusEditTextView(GtkTextView *editTextView)
 	    { mModule.setFocusEditTextView(editTextView); }
 	void openTextFile(char const * const fn)
@@ -74,24 +82,23 @@ class Editor
 	    FilePath moduleName(fn, FP_File);
 	    FilePath cppExt("cpp", FP_Ext);
 	    FilePath hExt("h", FP_Ext);
-	    // Default to putting the filename into the top edit pane.
-	    int fnTargetIndex = 0;
 
-	    if(moduleName.matchExtension(cppExt.c_str()))
+	    if(moduleName.matchExtension(hExt.c_str()) ||
+		    moduleName.matchExtension(cppExt.c_str()))
 		{
-		fnTargetIndex = 1;	// Put cpp files into bottom edit pane
-		mModule.setEditTextView(0);
+		mModule.setEditTextView(TVI_Header);
 		moduleName.appendExtension("h");
 		mModule.getEditView()->openTextFile(moduleName.c_str());
-		}
-	    else if(moduleName.matchExtension(hExt.c_str()))
-		{
-		mModule.setEditTextView(1);
+
+		mModule.setEditTextView(TVI_Source);
 		moduleName.appendExtension("cpp");
 		mModule.getEditView()->openTextFile(moduleName.c_str());
 		}
-	    mModule.setEditTextView(fnTargetIndex);
-	    mModule.getEditView()->openTextFile(fn);
+	    else
+		{
+		mModule.setEditTextView(TVI_Source);
+		mModule.getEditView()->openTextFile(fn);
+		}
 
 	    moduleName.discardExtension();
 	    gtk_window_set_title(GTK_WINDOW(mBuilder.getWidget("MainWindow")),
@@ -252,13 +259,25 @@ class Editor
 		handled = mModule.getEditView()->handleIndentKeys(event);
 	    return handled;
 	    }
-
+	Debugger &getDebugger()
+	    { return mDebugger; }
+	virtual void DebugOutput(char const * const str)
+	    {
+	    mDebugOut.append(str);
+	    }
+	virtual void DebugStopped(char const * const fileName, int lineNum)
+	    {
+	    mDesiredLine = lineNum;
+	    }
 
     private:
 	Builder mBuilder;
 	Module mModule;
+	Debugger mDebugger;
 	std::string mLastSearch;
 	bool mLastSearchCaseSensitive;
+	std::string mDebugOut;
+	int mDesiredLine;
 	void find(char const * const findStr, bool forward, bool caseSensitive)
 	    {
 	    mLastSearch = findStr;
@@ -272,7 +291,25 @@ class Editor
 	    }
 };
 
+
 Editor gEditor;
+
+gboolean Editor::onIdle(gpointer data)
+    {
+    if(gEditor.mDebugOut.length())
+	{
+	GtkTextView *view = GTK_TEXT_VIEW(gEditor.getBuilder().
+		getWidget("Edit2Textview"));
+	Gui::appendText(view, gEditor.mDebugOut.c_str());
+	gEditor.mDebugOut.clear();
+	}
+    if(gEditor.mDesiredLine != -1)
+	{
+	gEditor.gotoLine(gEditor.mDesiredLine);
+	gEditor.mDesiredLine = -1;
+	}
+    return true;
+    }
 
 void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
         gchar *text, gint len, gpointer user_data)
@@ -459,6 +496,12 @@ extern "C" G_MODULE_EXPORT gboolean on_Edit2Textview_focus_in_event(GtkWidget *w
     return false;
     }
 
+extern "C" G_MODULE_EXPORT gboolean on_Edit3Textview_focus_in_event(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    gEditor.setFocusEditTextView(GTK_TEXT_VIEW(widget));
+    return false;
+    }
 
 extern "C" G_MODULE_EXPORT gboolean on_Edit1Textview_key_press_event(GtkWidget *widget,
 	GdkEvent *event, gpointer data)
@@ -467,6 +510,19 @@ extern "C" G_MODULE_EXPORT gboolean on_Edit1Textview_key_press_event(GtkWidget *
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_Edit2Textview_key_press_event(GtkWidget *widget,
+	GdkEvent *event, gpointer data)
+    {
+    switch(event->key.keyval)
+	{
+	case GDK_KEY_Return:
+	    std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+	    gEditor.getDebugger().sendCommand(str.c_str());
+	    break;
+	}
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_Edit3Textview_key_press_event(GtkWidget *widget,
 	GdkEvent *event, gpointer data)
     {
     return gEditor.handleIndentKeys(event);

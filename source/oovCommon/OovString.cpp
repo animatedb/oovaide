@@ -165,11 +165,11 @@ void OovString::setLowerCase(char const * const str)
 	}
 }
 
-void OovString::setInt(int val, int radix)
+void OovString::appendInt(int val, int radix)
     {
     char buf[30];
     IntToAsciiString(val, buf, sizeof(buf), radix);
-    *this = buf;
+    append(buf);
     }
 
 std::vector<std::string> split(const std::string &str, char delimiter)

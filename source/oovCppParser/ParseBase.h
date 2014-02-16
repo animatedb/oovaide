@@ -15,7 +15,11 @@
 class CXStringDisposer:public std::string
     {
     public:
-	CXStringDisposer(const CXString &xstr);
+	CXStringDisposer(const CXString &xstr):
+	    std::string(clang_getCString(xstr))
+	    {
+	    clang_disposeString(xstr);
+	    }
     };
 
 // This will do funny things if the str does not contain a type and identifier.
