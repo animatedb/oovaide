@@ -106,6 +106,7 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- split source of libraries into separate file for each function for release mode
 	- BUG: Allow all components to have difference cpp/link args? -lnk-mwindows
 		Add -lnk-mwindows if in Windows and using GTK? NO for command line apps
 		Assign configs to components?
@@ -130,9 +131,7 @@ Missing Features
 		http://vimdoc.sourceforge.net/htmldoc/netbeans.html
 	- Creating new module created .tmp file
 	- unindenting doesn't work well when tabs are in file
-	- display line number and column/character position
-https://gist.github.com/otsaloma/1912166
-	- go to line in editor, on command line only partly works
+	- display column/character position
 	- replace
 	- find in files
 	- error highlighting
