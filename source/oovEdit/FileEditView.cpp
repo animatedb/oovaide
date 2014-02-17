@@ -53,6 +53,7 @@ bool FileEditView::openTextFile(char const * const fn)
 	    gtk_text_buffer_set_modified(mTextBuffer, FALSE);
 	    }
 	fclose(fp);
+	setNeedHighlightUpdate(HS_ExternalChange);
 	}
     return(fp != nullptr);
     }

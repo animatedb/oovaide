@@ -29,6 +29,9 @@ class TokenRange:public std::vector<Token>
 class Tokenizer
     {
     public:
+	Tokenizer():
+	    mSourceFile(nullptr)
+	    {}
 	void parse(char const * const fileName, char const * const buffer, int bufLen,
 		char const * const clang_args[], int num_clang_args);
 	// line numbers are 1 based.

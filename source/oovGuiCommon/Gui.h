@@ -110,10 +110,14 @@ class Gui
 	static bool messageBox(char const * const msg,
 		GtkMessageType msgType=GTK_MESSAGE_ERROR,
 		GtkButtonsType buttons=GTK_BUTTONS_OK);
+	static int appendPage(GtkNotebook *notebook, GtkWidget *child, GtkWidget *tabLabel)
+	    { return gtk_notebook_append_page(notebook, child, tabLabel); }
 	static int getCurrentPage(GtkNotebook *notebook)
 	    { return gtk_notebook_get_current_page(notebook); }
 	static void setCurrentPage(GtkNotebook *notebook, int page)
 	    { gtk_notebook_set_current_page(notebook, page); }
+	static int getNumPages(GtkNotebook *notebook)
+	    { return gtk_notebook_get_n_pages(notebook); }
 	static void reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent);
     };
 
