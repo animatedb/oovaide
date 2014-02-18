@@ -144,6 +144,7 @@ gboolean Editor::onIdle(gpointer data)
 	GtkTextView *view = GTK_TEXT_VIEW(gEditor.getBuilder().
 		getWidget("ControlTextview"));
 	Gui::appendText(view, gEditor.mDebugOut.c_str());
+	Gui::scrollToCursor(view);
 	gEditor.mDebugOut.clear();
 	}
     gEditor.getEditFiles().onIdle();

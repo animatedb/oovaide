@@ -348,8 +348,8 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugToggleBreakpoint_activate(GtkWidget 
 	if(view)
 	    {
 	    int line = Gui::getCurrentLineNumber(view->getTextView());
-	    DebuggerLocation loc(view->getFilename().c_str(), line);
-	    sEditFiles->getDebugger().toggleBreakpoint(loc);
+	    DebuggerBreakpoint bp(view->getFilename().c_str(), line);
+	    sEditFiles->getDebugger().toggleBreakpoint(bp);
 	    Gui::redraw(GTK_WIDGET(view->getTextView()));
 	    }
 	}
@@ -359,5 +359,14 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugToggleBreakpoint_activate(GtkWidget 
 extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *widget,
 	GdkEvent *event, gpointer user_data)
     {
+    if(sEditFiles)
+	{
+	FileEditView const *view = sEditFiles->getEditView();
+	if(view)
+	    {
+	    sEditFiles->getDebugger().viewVariable(
+		    Gui::getSelectedText(view->getTextView()));
+	    }
+	}
     return false;
     }
