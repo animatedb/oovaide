@@ -10,7 +10,33 @@
 
 #include "OovProcess.h"
 #include "OovString.h"
+#include <algorithm>
 #include <vector>
+
+class DebuggerLocation
+    {
+    public:
+	DebuggerLocation(char const * const fn="", int line=-1):
+	    mFilename(fn), mLineNum(line)
+	    {
+	    }
+	bool operator==(DebuggerLocation const &rhs) const
+	    {
+	    return(mLineNum == rhs.mLineNum && mFilename == rhs.mFilename);
+	    }
+	void setLine(int line)
+	    { mLineNum = line; }
+	std::string getAsString() const;
+	OovString mFilename;
+	int mLineNum;
+    };
+
+class DebuggerBreakpoints:public std::vector<DebuggerLocation>
+    {
+    public:
+	bool locationMatch(const DebuggerLocation &loc) const
+	    { return(std::find(begin(), end(), loc) != end()); }
+    };
 
 class DebuggerListener
     {
@@ -18,21 +44,7 @@ class DebuggerListener
 	virtual ~DebuggerListener()
 	    {}
 	virtual void DebugOutput(char const * const str) = 0;
-	virtual void DebugStopped(char const * const fileName, int lineNum) = 0;
-    };
-
-class DebugBreakpoint
-    {
-    public:
-	DebugBreakpoint(char const * const moduleName, int lineNumber);
-	// location can be a function name
-	DebugBreakpoint(char const * const location):
-	    mLocation(location)
-	    {}
-	const OovString &getLocation() const
-	    { return mLocation; }
-    private:
-	OovString mLocation;
+	virtual void DebugStopped(DebuggerLocation const &loc) = 0;
     };
 
 class Debugger:public OovProcessListener
@@ -43,25 +55,30 @@ class Debugger:public OovProcessListener
 	    { mDebuggerListener = &listener; }
 	void setDebuggee(char const * const debuggee)
 	    { mDebuggee = debuggee; }
-	void addBreakpoint(const DebugBreakpoint &br);
+	void toggleBreakpoint(const DebuggerLocation &br);
 	void stepInto();
 	void stepOver();
 	void resume();
 	void interrupt();
 	void sendCommand(char const * const command);
+	// Returns empty filename if not stopped.
+	DebuggerLocation getStoppedLocation() const;
+	DebuggerBreakpoints const &getBreakpoints() const
+	    { return mBreakpoints; }
 
     private:
-	enum GdbChildStates { GCS_GdbChildNotRunning , GCS_GdbChildRunning };
+	enum GdbChildStates { GCS_GdbChildNotRunning, GCS_GdbChildRunning, GCS_GdbChildPaused };
 	std::string mDebuggee;
 	std::string mGdbOutputBuffer;
-	std::vector<DebugBreakpoint> mBreakpoints;
+	DebuggerBreakpoints mBreakpoints;
 	OovBackgroundPipeProcess mBkgPipeProc;
 	GdbChildStates mGdbChildState;
 	DebuggerListener *mDebuggerListener;
 	int mCommandIndex;
-	void runDebuggerProcess();
+	DebuggerLocation mStoppedLocation;
+	bool runDebuggerProcess();
 	void ensureGdbChildRunning();
-	void sendBreakpoint(const DebugBreakpoint &br);
+	void sendBreakpoint(const DebuggerLocation &br);
 	void sendMiCommand(char const * const command);
 	void handleResult(const std::string &resultStr);
 	std::string getTagValue(std::string const &wholeStr, char const * const tag);

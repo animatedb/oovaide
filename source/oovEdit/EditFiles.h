@@ -10,13 +10,36 @@
 
 #include "Gui.h"
 #include "FileEditView.h"
+#include "Debugger.h"
 #include <vector>
 
+
+struct ScrolledFileView
+    {
+    ScrolledFileView():
+	mDesiredLine(-1)
+	{}
+    GtkNotebook *getBook()
+	{
+	return GTK_NOTEBOOK(gtk_widget_get_ancestor(GTK_WIDGET(mScrolled),
+		GTK_TYPE_NOTEBOOK));
+	}
+    const GtkTextView *getTextView() const
+	{ return mFileView.getTextView(); }
+    std::string const &getFilename() const
+	{ return mFilename; }
+
+    std::string mFilename;
+    GtkScrolledWindow *mScrolled;
+    FileEditView mFileView;
+    int mDesiredLine;
+    int mPageIndex;
+    };
 
 class EditFiles
     {
     public:
-	EditFiles();
+	EditFiles(Debugger &debugger);
 	void init(GtkNotebook *headerBook, GtkNotebook *srcBook);
 	void onIdle();
 	void viewFile(char const * const fn, int lineNum);
@@ -33,24 +56,15 @@ class EditFiles
 	void setFocusEditTextView(GtkTextView *editTextView);
 	bool handleKeyPress(GdkEvent *event);
 	void drawMargin(GtkWidget *widget, cairo_t *cr);
+	Debugger &getDebugger()
+	    { return mDebugger; }
 
     private:
 	GtkNotebook *mHeaderBook;
 	GtkNotebook *mSourceBook;
-	struct ScrolledFileView
-	    {
-	    ScrolledFileView():
-		mDesiredLine(-1)
-		{}
-	    std::string mFilename;
-	    GtkScrolledWindow *mScrolled;
-	    FileEditView mFileView;
-	    int mDesiredLine;
-	    };
 	std::vector<ScrolledFileView> mFileViews;
 	size_t mFocusEditViewIndex;
-	GdkCursor *mDebuggerCurrentLocationCursor;
-	GdkCursor *mDebuggerBreakpointCursor;
+	Debugger &mDebugger;
 	void addFile(char const * const fn, bool useMainView, int lineNum);
 	void idleHighlight()
 	    {

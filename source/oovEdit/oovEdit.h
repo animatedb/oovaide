@@ -88,9 +88,9 @@ class Editor:public DebuggerListener
 	    {
 	    mDebugOut.append(str);
 	    }
-	virtual void DebugStopped(char const * const fileName, int lineNum)
+	virtual void DebugStopped(DebuggerLocation const &loc)
 	    {
-	    mEditFiles.viewFile(fileName, lineNum);
+	    mEditFiles.viewFile(loc.mFilename.c_str(), loc.mLineNum);
 	    }
 
     private:

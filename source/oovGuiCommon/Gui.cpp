@@ -88,6 +88,15 @@ GuiText Gui::getText(GtkTextView *textview)
     return GuiText(gtk_text_buffer_get_text(textbuf, &start, &end, FALSE));
     }
 
+int Gui::getCurrentLineNumber(GtkTextView *textView)
+    {
+    GtkTextBuffer *buf = gtk_text_view_get_buffer(textView);
+    GtkTextMark *mark = gtk_text_buffer_get_insert(buf);
+    GtkTextIter iter;
+    gtk_text_buffer_get_iter_at_mark(buf, &iter, mark);
+    return(gtk_text_iter_get_line(&iter) + 1);
+    }
+
 char const * const Gui::getCurrentLineText(GtkTextView *textView)
     {
     GtkTextBuffer *buf = gtk_text_view_get_buffer(textView);

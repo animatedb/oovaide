@@ -86,6 +86,7 @@ class Gui
 	    { return gtk_entry_get_text(entry); }
 	static char const * const getText(GtkComboBoxText *cb)
 	    { return gtk_combo_box_text_get_active_text(cb); }
+	static int getCurrentLineNumber(GtkTextView *textView);
 	static char const * const getCurrentLineText(GtkTextView *textView);
 	static void setSelected(GtkComboBox *cb, int index)
 	    { gtk_combo_box_set_active(cb, index); }
@@ -119,6 +120,8 @@ class Gui
 	static int getNumPages(GtkNotebook *notebook)
 	    { return gtk_notebook_get_n_pages(notebook); }
 	static void reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent);
+	static void redraw(GtkWidget *widget)
+	    { gtk_widget_queue_draw(widget); }
     };
 
 class GuiList

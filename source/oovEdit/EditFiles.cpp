@@ -12,8 +12,8 @@
 
 static EditFiles *sEditFiles;
 
-EditFiles::EditFiles():
-    mFocusEditViewIndex(-1)
+EditFiles::EditFiles(Debugger &debugger):
+    mFocusEditViewIndex(-1), mDebugger(debugger)
     {
     sEditFiles = this;
     }
@@ -23,8 +23,6 @@ void EditFiles::init(GtkNotebook *headerBook, GtkNotebook *srcBook)
     // create scrolled window, with text view
     mHeaderBook = headerBook;
     mSourceBook = srcBook;
-    mDebuggerCurrentLocationCursor = gdk_cursor_new(GDK_SB_RIGHT_ARROW);
-    mDebuggerBreakpointCursor = gdk_cursor_new(GDK_DOT);
     }
 
 void EditFiles::onIdle()
@@ -100,9 +98,10 @@ void EditFiles::drawMargin(GtkWidget *widget, cairo_t *cr)
     int afterLineSepWidth=2;
 
     marginWindow = gtk_text_view_get_window(textView, GTK_TEXT_WINDOW_LEFT);
-    int height;
-    gdk_window_get_geometry(marginWindow, NULL, NULL, NULL, &height);
-    std::vector<LineInfo> linesInfo = getLinesInfo(textView, height);
+    int marginWindowHeight;
+    gdk_window_get_geometry(marginWindow, NULL, NULL, NULL, &marginWindowHeight);
+    std::vector<LineInfo> linesInfo = getLinesInfo(textView, marginWindowHeight);
+    int lineHeight = linesInfo[1].yPos - linesInfo[0].yPos;
 
     PangoLayout *layout = gtk_widget_create_pango_layout(widget, "");
     char str[8];
@@ -129,19 +128,50 @@ void EditFiles::drawMargin(GtkWidget *widget, cairo_t *cr)
     pango_attr_list_insert(attrList, attr);
     pango_layout_set_attributes(layout, attrList);
 
+    DebuggerLocation dbgLoc = mDebugger.getStoppedLocation();
+    auto const &fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
+	    [textView](ScrolledFileView const &fv) -> bool
+		{ return(fv.getTextView() == textView); });
+    DebuggerLocation thisFileLoc((*fvIter).mFilename.c_str());
+    int full = lineHeight*.8;
+    int half = full/2;
     for(auto const & lineInfo : linesInfo)
 	{
 	int pos;
+	thisFileLoc.setLine(lineInfo.lineNum);
 	gtk_text_view_buffer_to_window_coords (textView,
 	    GTK_TEXT_WINDOW_LEFT, 0, lineInfo.yPos, NULL, &pos);
 	snprintf(str, sizeof(str), "%d", lineInfo.lineNum);
 	pango_layout_set_text(layout, str, -1);
 	gtk_render_layout(gtk_widget_get_style_context(widget), cr,
 		layoutWidth + beforeLineSepWidth, pos, layout);
+
+	int centerY = pos + lineHeight/2;
+	if(dbgLoc == thisFileLoc)
+	    {
+	    cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 255.0/255.0);
+	    cairo_move_to(cr, 0, centerY);
+	    cairo_line_to(cr, full, centerY);
+
+	    cairo_move_to(cr, full, centerY);
+	    cairo_line_to(cr, half, centerY-half);
+
+	    cairo_move_to(cr, full, centerY);
+	    cairo_line_to(cr, half, centerY+half);
+
+	    cairo_stroke(cr);
+	    }
+	if(mDebugger.getBreakpoints().locationMatch(thisFileLoc))
+	    {
+	    cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
+	    cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
+	    cairo_fill(cr);
+	    }
 	}
 
+    cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 0/255.0);
     cairo_rectangle(cr, layoutWidth + beforeLineSepWidth, 0,
-	    marginLineWidth, height);
+	    marginLineWidth, marginWindowHeight);
     cairo_fill(cr);
     g_object_unref (G_OBJECT (layout));
     }
@@ -173,9 +203,11 @@ extern "C" G_MODULE_EXPORT gboolean onMarginDraw(GtkWidget *widget,
 
 void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
     {
-    auto const &iter = std::find_if(mFileViews.begin(), mFileViews.end(),
-	    [fn](ScrolledFileView const &fv) -> bool
-		{ return fv.mFilename.compare(fn) == 0; });
+    FilePath fp;
+    fp.getAbsolutePath(fn, FP_File);
+    auto iter = std::find_if(mFileViews.begin(), mFileViews.end(),
+	    [fp](ScrolledFileView const &fv) -> bool
+		{ return fv.mFilename.compare(fp) == 0; });
     if(iter == mFileViews.end())
 	{
 	GtkNotebook *book = nullptr;
@@ -185,7 +217,6 @@ void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
 	    book = mHeaderBook;
 	if(book)
 	    {
-	    FilePath fp(fn, FP_File);
 	    GtkWidget *scrolled = gtk_scrolled_window_new(nullptr, nullptr);
 	    GtkWidget *editView = gtk_text_view_new();
 	    gtk_container_add(GTK_CONTAINER(scrolled), editView);
@@ -196,25 +227,23 @@ void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
 		    GTK_TEXT_WINDOW_LEFT, 10);	// need to get text size
 	    g_signal_connect(editView, "draw",
 		    G_CALLBACK(onMarginDraw), NULL);
-	    // yad
-//	gtk_text_view_get_window(GTK_TEXT_WINDOW_LEFT);
-//	    gdk_window_set_cursor(window, GDK_DOT);
-//	    gdk_window_set_cursor(window, GDK_SB_RIGHT_ARROW);
 
 	    ScrolledFileView scrolledView;
 	    scrolledView.mFileView.init(GTK_TEXT_VIEW(editView));
 	    scrolledView.mFileView.openTextFile(fp.c_str());
 	    scrolledView.mScrolled = GTK_SCROLLED_WINDOW(scrolled);
-	    scrolledView.mFilename = fn;
+	    scrolledView.mFilename = fp;
+	    scrolledView.mPageIndex = Gui::getNumPages(book)-1;
 	    g_signal_connect(editView, "focus_in_event",
 		    G_CALLBACK(on_EditFiles_focus_in_event), NULL);
 	    g_signal_connect(editView, "key_press_event",
 		    G_CALLBACK(on_EditFiles_key_press_event), NULL);
 	    mFileViews.push_back(scrolledView);
-	    Gui::setCurrentPage(book, Gui::getNumPages(book)-1);
-	    mFileViews[mFileViews.size()-1].mDesiredLine = lineNum;
+	    iter = mFileViews.end()-1;
 	    }
 	}
+    (*iter).mDesiredLine = lineNum;
+    Gui::setCurrentPage((*iter).getBook(), (*iter).mPageIndex);
     }
 
 void EditFiles::viewFile(char const * const fn, int lineNum)
@@ -278,3 +307,57 @@ bool EditFiles::checkExitSave()
     return exitOk;
     }
 
+extern "C" G_MODULE_EXPORT gboolean on_DebugGo_activate(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    if(sEditFiles)
+	sEditFiles->getDebugger().resume();
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_DebugStepOver_activate(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    if(sEditFiles)
+	sEditFiles->getDebugger().stepOver();
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_DebugStepInto_activate(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    if(sEditFiles)
+	sEditFiles->getDebugger().stepInto();
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_DebugStop_activate(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    if(sEditFiles)
+	sEditFiles->getDebugger().interrupt();
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_DebugToggleBreakpoint_activate(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    if(sEditFiles)
+	{
+	FileEditView const *view = sEditFiles->getEditView();
+	if(view)
+	    {
+	    int line = Gui::getCurrentLineNumber(view->getTextView());
+	    DebuggerLocation loc(view->getFilename().c_str(), line);
+	    sEditFiles->getDebugger().toggleBreakpoint(loc);
+	    Gui::redraw(GTK_WIDGET(view->getTextView()));
+	    }
+	}
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    return false;
+    }

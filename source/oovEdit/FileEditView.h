@@ -70,7 +70,7 @@ class FileEditView
 	    }
 	bool doingHistory() const
 	    { return mDoingHistory; }
-	const GtkTextView *getTextView() const
+	GtkTextView *getTextView() const
 	    { return mTextView; }
 	GtkWindow *getWindow()
 	    {
@@ -87,6 +87,8 @@ class FileEditView
 	void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
 	        GtkTextIter *end);
 	bool handleIndentKeys(GdkEvent *event);
+	std::string getFilename() const
+	    { return mFileName; }
 
     private:
 	std::string mFileName;

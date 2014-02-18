@@ -13,7 +13,7 @@
 
 
 Editor::Editor():
-    mLastSearchCaseSensitive(false)
+    mEditFiles(mDebugger), mLastSearchCaseSensitive(false)
     {
     mDebugger.setListener(*this);
     /// @todo - need to get this from somewhere

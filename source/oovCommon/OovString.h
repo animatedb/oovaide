@@ -59,6 +59,9 @@ class OovString:public OovStringRefInterface, public std::string
 	OovString(char const * const str):
 	    std::string(str)
 	    {}
+	OovString(std::string const &str):
+	    std::string(str)
+	    {}
 	void setUpperCase(char const * const str);
 	void setLowerCase(char const * const str);
 	void appendInt(int val, int radix=10);

@@ -11,18 +11,28 @@
 
 #define DEBUG_DBG 1
 
-static Debugger *sDebugger;
+
+
+std::string DebuggerLocation::getAsString() const
+    {
+    OovString location = mFilename;
+    location += ':';
+    location.appendInt(mLineNum);
+    return location;
+    }
+
+
 
 Debugger::Debugger():
     mBkgPipeProc(*this), mDebuggerListener(nullptr), mCommandIndex(0)
     {
-    sDebugger = this;
-    addBreakpoint("main");
+    toggleBreakpoint("main");
     }
 
-void Debugger::runDebuggerProcess()
+bool Debugger::runDebuggerProcess()
     {
-    if(mBkgPipeProc.isIdle())
+    bool started = mBkgPipeProc.isIdle();
+    if(started)
 	{
 	OovProcessChildArgs args;
 	/// @todo - this must come from options config file.
@@ -36,6 +46,7 @@ void Debugger::runDebuggerProcess()
 	fflush(stdout);
 #endif
 	}
+    return started;
     }
 
 void Debugger::resume()
@@ -44,27 +55,23 @@ void Debugger::resume()
     sendMiCommand("-exec-continue");
     }
 
-DebugBreakpoint::DebugBreakpoint(char const * const moduleName, int lineNum)
+void Debugger::toggleBreakpoint(const DebuggerLocation &br)
     {
-    OovString location = moduleName;
-    location += ':';
-    location.appendInt(lineNum);
-    }
-
-void Debugger::addBreakpoint(const DebugBreakpoint &br)
-    {
-    if(mGdbChildState == GCS_GdbChildNotRunning)
+    auto iter = std::find(mBreakpoints.begin(), mBreakpoints.end(), br);
+    if(iter == mBreakpoints.end())
 	mBreakpoints.push_back(br);
     else
+	mBreakpoints.erase(iter);
+    if(mGdbChildState != GCS_GdbChildNotRunning)
 	{
 	interrupt();
 	}
     }
 
-void Debugger::sendBreakpoint(const DebugBreakpoint &br)
+void Debugger::sendBreakpoint(const DebuggerLocation &br)
     {
     OovString command = "-break-insert -f ";
-    command += br.getLocation();
+    command += br.getAsString();
     sendMiCommand(command.c_str());
     }
 
@@ -82,7 +89,7 @@ void Debugger::stepOver()
 
 void Debugger::interrupt()
     {
-    if(!mBkgPipeProc.isIdle() && mGdbChildState != GCS_GdbChildNotRunning)
+    if(!mBkgPipeProc.isIdle() && mGdbChildState == GCS_GdbChildRunning)
 	{
 	sendMiCommand("-exec-interrupt");
 	}
@@ -90,13 +97,14 @@ void Debugger::interrupt()
 
 void Debugger::ensureGdbChildRunning()
     {
-    runDebuggerProcess();
-    if(mGdbChildState == GCS_GdbChildNotRunning)
+    if(runDebuggerProcess())
 	{
 	for(auto const &br : mBreakpoints)
 	    sendBreakpoint(br);
 	mBreakpoints.clear();
-
+	}
+    if(mGdbChildState == GCS_GdbChildNotRunning)
+	{
 	sendMiCommand("-exec-run");
 	}
     }
@@ -145,6 +153,16 @@ void Debugger::onStdOut(char const * const out, int len)\
 	else
 	    break;
 	}
+    }
+
+DebuggerLocation Debugger::getStoppedLocation() const
+    {
+    DebuggerLocation loc;
+    if(mGdbChildState == GCS_GdbChildPaused)
+	{
+	loc = mStoppedLocation;
+	}
+    return loc;
     }
 
 void Debugger::onStdErr(char const * const out, int len)
@@ -212,15 +230,17 @@ void Debugger::handleResult(const std::string &resultStr)
 		{
 		if(resultStr.compare(1, 7, "stopped") == 0)
 		    {
+		    mGdbChildState = GCS_GdbChildPaused;
 		    std::string reason = getTagValue(resultStr, "exit");
 		    if(reason.compare(0, 4, "exit") != 0)
 			{
-			std::string fileName = getTagValue(resultStr, "fullname");
 			OovString line = getTagValue(resultStr, "line").c_str();
 			int lineNum = 0;
 			line.getInt(0, INT_MAX, lineNum);
+			mStoppedLocation.mFilename = getTagValue(resultStr, "fullname");
+			mStoppedLocation.mLineNum = lineNum;
 			if(mDebuggerListener)
-			    mDebuggerListener->DebugStopped(fileName.c_str(), lineNum);
+			    mDebuggerListener->DebugStopped(mStoppedLocation);
 			}
 		    }
 		else if(resultStr.compare(1, std::string::npos, "stop") == 0)
@@ -244,50 +264,4 @@ void Debugger::handleResult(const std::string &resultStr)
     printf("%s\n", resultStr.c_str());
     fflush(stdout);
 #endif
-    }
-
-extern "C" G_MODULE_EXPORT gboolean on_DebugGo_activate(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
-    {
-    if(sDebugger)
-	sDebugger->resume();
-    return false;
-    }
-
-extern "C" G_MODULE_EXPORT gboolean on_DebugStepOver_activate(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
-    {
-    if(sDebugger)
-	sDebugger->stepOver();
-    return false;
-    }
-
-extern "C" G_MODULE_EXPORT gboolean on_DebugStepInto_activate(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
-    {
-    if(sDebugger)
-	sDebugger->stepInto();
-    return false;
-    }
-
-extern "C" G_MODULE_EXPORT gboolean on_DebugStop_activate(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
-    {
-    if(sDebugger)
-	sDebugger->interrupt();
-    return false;
-    }
-
-extern "C" G_MODULE_EXPORT gboolean on_DebugAddBreakpoint_activate(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
-    {
-//    if(sDebugger)
-//	sDebugger->addBreakpoint();
-    return false;
-    }
-
-extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
-    {
-    return false;
     }
