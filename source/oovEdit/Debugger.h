@@ -17,17 +17,27 @@ class DebuggerLocation
     {
     public:
 	DebuggerLocation(char const * const fn="", int line=-1):
-	    mFilename(fn), mLineNum(line)
+	    mFileOrFuncName(fn), mLineNum(line)
 	    {
 	    }
 	bool operator==(DebuggerLocation const &rhs) const
 	    {
-	    return(mLineNum == rhs.mLineNum && mFilename == rhs.mFilename);
+	    return(mLineNum == rhs.mLineNum && mFileOrFuncName == rhs.mFileOrFuncName);
+	    }
+	void setFileLine(char const * const fn, int line)
+	    {
+	    mFileOrFuncName = fn;
+	    mLineNum = line;
 	    }
 	void setLine(int line)
 	    { mLineNum = line; }
+	// For GDB, a location can be:
+	//	function
+	//	filename:linenum
+	//	filename:function
+	//	*address
 	std::string getAsString() const;
-	OovString mFilename;
+	OovString mFileOrFuncName;
 	int mLineNum;
     };
 

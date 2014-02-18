@@ -147,6 +147,12 @@ void EditFiles::drawMargin(GtkWidget *widget, cairo_t *cr)
 		layoutWidth + beforeLineSepWidth, pos, layout);
 
 	int centerY = pos + lineHeight/2;
+	if(mDebugger.getBreakpoints().locationMatch(thisFileLoc))
+	    {
+	    cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
+	    cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
+	    cairo_fill(cr);
+	    }
 	if(dbgLoc == thisFileLoc)
 	    {
 	    cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 255.0/255.0);
@@ -160,12 +166,6 @@ void EditFiles::drawMargin(GtkWidget *widget, cairo_t *cr)
 	    cairo_line_to(cr, half, centerY+half);
 
 	    cairo_stroke(cr);
-	    }
-	if(mDebugger.getBreakpoints().locationMatch(thisFileLoc))
-	    {
-	    cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
-	    cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
-	    cairo_fill(cr);
 	    }
 	}
 

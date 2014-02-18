@@ -90,7 +90,7 @@ class Editor:public DebuggerListener
 	    }
 	virtual void DebugStopped(DebuggerLocation const &loc)
 	    {
-	    mEditFiles.viewFile(loc.mFilename.c_str(), loc.mLineNum);
+	    mEditFiles.viewFile(loc.mFileOrFuncName.c_str(), loc.mLineNum);
 	    }
 
     private:

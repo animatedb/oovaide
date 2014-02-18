@@ -15,9 +15,12 @@
 
 std::string DebuggerLocation::getAsString() const
     {
-    OovString location = mFilename;
-    location += ':';
-    location.appendInt(mLineNum);
+    OovString location = mFileOrFuncName;
+    if(mLineNum != -1)
+	{
+	location += ':';
+	location.appendInt(mLineNum);
+	}
     return location;
     }
 
@@ -101,7 +104,6 @@ void Debugger::ensureGdbChildRunning()
 	{
 	for(auto const &br : mBreakpoints)
 	    sendBreakpoint(br);
-	mBreakpoints.clear();
 	}
     if(mGdbChildState == GCS_GdbChildNotRunning)
 	{
@@ -194,6 +196,10 @@ void Debugger::handleResult(const std::string &resultStr)
     {
     // Values are: "^running", "^error", "*stop"
     // "^connected", "^exit"
+#if(DEBUG_DBG)
+    printf("%s\n", resultStr.c_str());
+    fflush(stdout);
+#endif
     if(isdigit(resultStr[0]))
 	{
 	size_t pos = 0;
@@ -230,17 +236,22 @@ void Debugger::handleResult(const std::string &resultStr)
 		{
 		if(resultStr.compare(1, 7, "stopped") == 0)
 		    {
-		    mGdbChildState = GCS_GdbChildPaused;
-		    std::string reason = getTagValue(resultStr, "exit");
-		    if(reason.compare(0, 4, "exit") != 0)
+		    std::string reason = getTagValue(resultStr, "reason");
+		    if((reason.find("end-stepping-range") != std::string::npos) ||
+			    (reason.find("breakpoint-hit") != std::string::npos))
 			{
+			mGdbChildState = GCS_GdbChildPaused;
 			OovString line = getTagValue(resultStr, "line").c_str();
 			int lineNum = 0;
 			line.getInt(0, INT_MAX, lineNum);
-			mStoppedLocation.mFilename = getTagValue(resultStr, "fullname");
-			mStoppedLocation.mLineNum = lineNum;
+			mStoppedLocation.setFileLine(
+				getTagValue(resultStr, "fullname").c_str(), lineNum);
 			if(mDebuggerListener)
 			    mDebuggerListener->DebugStopped(mStoppedLocation);
+			}
+		    else if(reason.find("exited-normally") != std::string::npos)
+			{
+			mGdbChildState = GCS_GdbChildNotRunning;
 			}
 		    }
 		else if(resultStr.compare(1, std::string::npos, "stop") == 0)
@@ -260,8 +271,4 @@ void Debugger::handleResult(const std::string &resultStr)
 	if(mDebuggerListener)
 	    mDebuggerListener->DebugOutput(resultStr.c_str());
 	}
-#if(DEBUG_DBG)
-    printf("%s\n", resultStr.c_str());
-    fflush(stdout);
-#endif
     }
