@@ -67,16 +67,17 @@
 								<option id="gnu.cpp.link.option.libs.674095873" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="oovGuiCommon"/>
 									<listOptionValue builtIn="false" value="oovCommon"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cairo"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gmodule-2.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="glib-2.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gobject-2.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gtk-win32-3.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gdk-3"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="pthread"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="psapi"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="imagehlp"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="libclang"/>
+									<listOptionValue builtIn="false" value="pango-1.0"/>
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="gmodule-2.0"/>
+									<listOptionValue builtIn="false" value="glib-2.0"/>
+									<listOptionValue builtIn="false" value="gobject-2.0"/>
+									<listOptionValue builtIn="false" value="gtk-win32-3.0"/>
+									<listOptionValue builtIn="false" value="gdk-3"/>
+									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="psapi"/>
+									<listOptionValue builtIn="false" value="imagehlp"/>
+									<listOptionValue builtIn="false" value="libclang"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1145778521" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -mwindows" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.292711813" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -169,16 +170,17 @@
 								<option id="gnu.cpp.link.option.libs.358472122" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
 									<listOptionValue builtIn="false" value="oovGuiCommon"/>
 									<listOptionValue builtIn="false" value="oovCommon"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="cairo"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gmodule-2.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="glib-2.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gobject-2.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gtk-win32-3.0"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="gdk-3"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="pthread"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="psapi"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="imagehlp"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="libclang"/>
+									<listOptionValue builtIn="false" value="pango-1.0"/>
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="gmodule-2.0"/>
+									<listOptionValue builtIn="false" value="glib-2.0"/>
+									<listOptionValue builtIn="false" value="gobject-2.0"/>
+									<listOptionValue builtIn="false" value="gtk-win32-3.0"/>
+									<listOptionValue builtIn="false" value="gdk-3"/>
+									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="psapi"/>
+									<listOptionValue builtIn="false" value="imagehlp"/>
+									<listOptionValue builtIn="false" value="libclang"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1211194773" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -mwindows" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1520672516" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -444,7 +446,20 @@
 		<project id="oovEdit.cdt.managedbuild.target.gnu.mingw.exe.1974139240" name="Executable" projectType="cdt.managedbuild.target.gnu.mingw.exe"/>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
-	<storageModule moduleId="refreshScope"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Linux-Release">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+		<configuration configurationName="Windows-Release">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+		<configuration configurationName="Windows-Debug">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+		<configuration configurationName="Linux-Debug">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+	</storageModule>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133;cdt.managedbuild.config.gnu.mingw.exe.debug.781893133.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1935697941;cdt.managedbuild.tool.gnu.c.compiler.input.2124901927">

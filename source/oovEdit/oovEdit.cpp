@@ -13,7 +13,8 @@
 
 
 Editor::Editor():
-    mEditFiles(mDebugger), mLastSearchCaseSensitive(false)
+    mEditFiles(mDebugger), mLastSearchCaseSensitive(false),
+    mUpdateDebugMenu(false)
     {
     mDebugger.setListener(*this);
     /// @todo - need to get this from somewhere
@@ -23,9 +24,7 @@ Editor::Editor():
 
 void Editor::init()
     {
-    GtkWidget *book1 = mBuilder.getWidget("EditNotebook1");
-    GtkWidget *book2 = mBuilder.getWidget("EditNotebook2");
-    mEditFiles.init(GTK_NOTEBOOK(book1), GTK_NOTEBOOK(book2));
+    mEditFiles.init(mBuilder);
     setStyle();
     }
 
@@ -147,6 +146,18 @@ gboolean Editor::onIdle(gpointer data)
 	Gui::scrollToCursor(view);
 	gEditor.mDebugOut.clear();
 	}
+    if(gEditor.mUpdateDebugMenu)
+	{
+	gEditor.mUpdateDebugMenu = false;
+	gEditor.getEditFiles().updateDebugMenu();
+	}
+    if(!gEditor.mDebuggerStoppedLocation.isEmpty())
+	{
+	auto const &loc = gEditor.mDebuggerStoppedLocation;
+	gEditor.mEditFiles.viewFile(loc.getFilename().c_str(), loc.getLine());
+	gEditor.mDebuggerStoppedLocation.clear();
+	}
+
     gEditor.getEditFiles().onIdle();
     return true;
     }

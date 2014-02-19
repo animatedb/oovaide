@@ -88,9 +88,11 @@ class Editor:public DebuggerListener
 	    {
 	    mDebugOut.append(str);
 	    }
-	virtual void DebugStopped(DebuggerLocation const &loc)
+	virtual void DebugStatusChanged()
 	    {
-	    mEditFiles.viewFile(loc.mFileOrFuncName.c_str(), loc.mLineNum);
+	    if(mDebugger.getChildState() == GCS_GdbChildPaused)
+		mDebuggerStoppedLocation = mDebugger.getStoppedLocation();
+	    mUpdateDebugMenu = true;
 	    }
 
     private:
@@ -100,6 +102,8 @@ class Editor:public DebuggerListener
 	std::string mLastSearch;
 	bool mLastSearchCaseSensitive;
 	std::string mDebugOut;
+	bool mUpdateDebugMenu;
+	DebuggerLocation mDebuggerStoppedLocation;
 	void find(char const * const findStr, bool forward, bool caseSensitive);
 	void setModuleName(const char *mn)
 	    {

@@ -255,7 +255,7 @@ void Debugger::handleResult(const std::string &resultStr)
 		{
 		if(resultStr.find("running", pos+1) != std::string::npos)
 		    {
-		    mGdbChildState = GCS_GdbChildRunning;
+		    changeChildState(GCS_GdbChildRunning);
 		    }
 		else if(resultStr.find("error", pos+1) != std::string::npos)
 		    {
@@ -278,7 +278,7 @@ void Debugger::handleResult(const std::string &resultStr)
 		    }
 		else if(resultStr.find("exit", pos+1) != std::string::npos)
 		    {
-		    mGdbChildState = GCS_GdbChildNotRunning;
+		    changeChildState(GCS_GdbChildNotRunning);
 		    }
 		}
 		break;
@@ -296,19 +296,17 @@ void Debugger::handleResult(const std::string &resultStr)
 		    if((reason.find("end-stepping-range") != std::string::npos) ||
 			    (reason.find("breakpoint-hit") != std::string::npos))
 			{
-			mGdbChildState = GCS_GdbChildPaused;
 			mStoppedLocation = getLocationFromResult(resultStr);
-			if(mDebuggerListener)
-			    mDebuggerListener->DebugStopped(mStoppedLocation);
+			changeChildState(GCS_GdbChildPaused);
 			}
 		    else if(reason.find("exited-normally") != std::string::npos)
 			{
-			mGdbChildState = GCS_GdbChildNotRunning;
+			changeChildState(GCS_GdbChildNotRunning);
 			}
 		    }
 		else if(resultStr.compare(1, std::string::npos, "stop") == 0)
 		    {
-		    mGdbChildState = GCS_GdbChildNotRunning;
+		    changeChildState(GCS_GdbChildNotRunning);
 		    }
 		}
 		break;
@@ -323,4 +321,11 @@ void Debugger::handleResult(const std::string &resultStr)
 	}
     if(mDebuggerListener)
 	mDebuggerListener->DebugOutput(resultStr.c_str());
+    }
+
+void Debugger::changeChildState(GdbChildStates state)
+    {
+    mGdbChildState = state;
+    if(mDebuggerListener)
+	mDebuggerListener->DebugStatusChanged();
     }

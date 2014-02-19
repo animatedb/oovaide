@@ -123,8 +123,14 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
+	- BUG: Editor inherits from DebuggerListener, but not shown
 	- BUG: shift-f3 doesn't work
+	- Home key doesn't scroll window
+	- Prevent overwrite of another editor at the same time
 	- GtkPlug, XEmbed
+	- Gtk Plug/Socket, Wayland? "gvim -f --socketid %w '%s'"
+	  http://lists.freedesktop.org/archives/wayland-devel/2012-February/002030.html
+		gdk_set_allowed_backends("x11")
 	- Embed vim examples:
 		http://pages.cs.wisc.edu/~psilord/blog/18.html
 		http://www.freehackers.org/VimIntegration
@@ -139,22 +145,12 @@ Missing Features
 	- find declaration/definition
 	- refactor-rename
 - Debugger (In editor)
-	- Embed GDB or LLDB
+	- Add method for selecting component to debug
+	- When build starts, should stop debugger
+	- Need to exit child program/stop debugger when editor quits
+	- Add stack trace window/command
+	- Add variable examination window
 	- GDB docs are gdb.info, "The GDB/MI Interface"
-	https://wiki.linuxfoundation.org/en/Debugger_Machine_Interface_%28DMI%29
-	http://sourceforge.net/projects/libmigdb/
-	https://code.google.com/p/beaverdbg/
-	- Gtk Plug/Socket, Wayland? "gvim -f --socketid %w '%s'"
-	  http://lists.freedesktop.org/archives/wayland-devel/2012-February/002030.html
-	https://developer.gnome.org/gtkmm-tutorial/stable/sec-plugs-sockets-example.html
-	http://learngtk.org/pygtk-tutorial/plugsocketexample.html
-	http://www.pygtk.org/pygtk2tutorial/sec-PlugsAndSockets.html
-	gdk_set_allowed_backends("x11")
-http://search.cpan.org/~rjbs/perl-5.18.2/pod/perlipc.pod#Bidirectional_Communication_with_Yourself
-http://gtk2-perl.sourceforge.net/doc/pod/Glib/MainLoop.html#integer_Glib_IO_add_
-	g_spawn_async_with_pipes
-	g_io_channel_unix_new, g_io_channel_win32_new_fd
-	UNIX domain sockets
 
 - Future
 	- static analysis: clang++ --analyze -I/home/ad/IP/Lib/src/  -Weverything

@@ -26,6 +26,8 @@ struct ScrolledFileView
 	}
     const GtkTextView *getTextView() const
 	{ return mFileView.getTextView(); }
+    FileEditView &getFileEditView()
+	{ return mFileView; }
     std::string const &getFilename() const
 	{ return mFilename; }
 
@@ -40,8 +42,9 @@ class EditFiles
     {
     public:
 	EditFiles(Debugger &debugger);
-	void init(GtkNotebook *headerBook, GtkNotebook *srcBook);
+	void init(Builder &builder);
 	void onIdle();
+	void updateDebugMenu();
 	void viewFile(char const * const fn, int lineNum);
 	void gotoLine(int lineNum);
 	bool checkExitSave();
@@ -62,14 +65,15 @@ class EditFiles
     private:
 	GtkNotebook *mHeaderBook;
 	GtkNotebook *mSourceBook;
+	Builder *mBuilder;
 	std::vector<ScrolledFileView> mFileViews;
 	size_t mFocusEditViewIndex;
 	Debugger &mDebugger;
 	void addFile(char const * const fn, bool useMainView, int lineNum);
 	void idleHighlight()
 	    {
-	    if(getEditView())
-		getEditView()->idleHighlight();
+	    for(auto &view : mFileViews)
+		view.getFileEditView().idleHighlight();
 	    }
 	ScrolledFileView *getScrolledFileView()
 	    {

@@ -13,6 +13,9 @@
 #include <algorithm>
 #include <vector>
 
+
+enum GdbChildStates { GCS_GdbChildNotRunning, GCS_GdbChildRunning, GCS_GdbChildPaused };
+
 class DebuggerLocation
     {
     public:
@@ -20,6 +23,10 @@ class DebuggerLocation
 	    mFileOrFuncName(fn), mLineNum(line)
 	    {
 	    }
+	void clear()
+	    { mLineNum = -1; }
+	bool isEmpty() const
+	    { return(mLineNum == -1); }
 	bool operator==(DebuggerLocation const &rhs) const
 	    {
 	    return(mLineNum == rhs.mLineNum && mFileOrFuncName == rhs.mFileOrFuncName);
@@ -31,6 +38,10 @@ class DebuggerLocation
 	    }
 	void setLine(int line)
 	    { mLineNum = line; }
+	int getLine() const
+	    { return mLineNum; }
+	std::string const &getFilename() const
+	    { return mFileOrFuncName; }
 	// For GDB, a location can be:
 	//	function
 	//	filename:linenum
@@ -40,6 +51,8 @@ class DebuggerLocation
 	// 	is because breakpoint numbers for clearing breakpoints use
 	//	this to find the matching breakpoint.
 	std::string getAsString() const;
+
+    private:
 	OovString mFileOrFuncName;
 	int mLineNum;
     };
@@ -72,7 +85,7 @@ class DebuggerListener
 	virtual ~DebuggerListener()
 	    {}
 	virtual void DebugOutput(char const * const str) = 0;
-	virtual void DebugStopped(DebuggerLocation const &loc) = 0;
+	virtual void DebugStatusChanged() = 0;
     };
 
 class Debugger:public OovProcessListener
@@ -90,13 +103,14 @@ class Debugger:public OovProcessListener
 	void interrupt();
 	void sendCommand(char const * const command);
 	void viewVariable(char const * const variable);
+	GdbChildStates getChildState() const
+	    { return mGdbChildState; }
 	// Returns empty filename if not stopped.
 	DebuggerLocation getStoppedLocation() const;
 	DebuggerBreakpoints const &getBreakpoints() const
 	    { return mBreakpoints; }
 
     private:
-	enum GdbChildStates { GCS_GdbChildNotRunning, GCS_GdbChildRunning, GCS_GdbChildPaused };
 	std::string mDebuggee;
 	std::string mGdbOutputBuffer;
 	DebuggerBreakpoints mBreakpoints;
@@ -110,6 +124,7 @@ class Debugger:public OovProcessListener
 	void sendAddBreakpoint(const DebuggerBreakpoint &br);
 	void sendDeleteBreakpoint(const DebuggerBreakpoint &br);
 	void sendMiCommand(char const * const command);
+	void changeChildState(GdbChildStates state);
 	void handleResult(const std::string &resultStr);
 	virtual void onStdOut(char const * const out, int len);
 	virtual void onStdErr(char const * const out, int len);
