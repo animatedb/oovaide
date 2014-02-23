@@ -102,6 +102,8 @@ class NameValueFile:public NameValueRecord
 	    if(fn)
 		setFilename(fn);
 	    }
+	const std::string &getFilename() const
+	    { return mFilename; }
 	void setFilename(char const * const fn)
 	    { mFilename = fn; }
 	void setFilename(std::string const &fn)
@@ -111,8 +113,6 @@ class NameValueFile:public NameValueRecord
 
     private:
 	std::string mFilename;
-	const std::string &getFilename() const
-	    { return mFilename; }
     };
 
 

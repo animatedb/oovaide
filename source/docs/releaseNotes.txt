@@ -21,12 +21,8 @@ Missing Features
 	- Code improvements: Use unique_ptr for model objects
 	- Code improvements: Fix Project module to contain source root dir
 - High Priority Dog Food Problems
-	- Oovcde - when click on error, find existing editor and goto line
-	- Editor - find in files
+	- Editor - find in files (background process?)
 	- Editor - open include files
-	- Editor - Restore editor and oovcde screen configuration
-	- Editor - Go to line, char width display
-	- Builder - Optimize library dependencies
 - Gui
 	- Clicking on warnings doesn't display editor. Also change to double click?
 	- Saving diagrams/files dialog button says Open instead of Save.
@@ -65,6 +61,7 @@ Missing Features
 	- Changing build settings/dependencies should update components
 	- Show external project component dependencies, module dependencies
 - Class Diagrams
+	- BUG: Editor inherits from DebuggerListener, but not shown in Linux
 	- BUG: forward class definitions mess up source line numbers
 	- When class members are not shown, should be easy way to view members
 	- FilePath not showing inheritance - templates?
@@ -123,8 +120,7 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
-	- BUG: Editor inherits from DebuggerListener, but not shown
-	- BUG: shift-f3 doesn't work
+	- BUG: shift-f3 doesn't work (Linux?)
 	- Home key doesn't scroll window
 	- Prevent overwrite of another editor at the same time
 	- GtkPlug, XEmbed

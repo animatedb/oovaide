@@ -8,8 +8,9 @@
 #include "Version.h"
 #include "Debugger.h"
 #include "oovEdit.h"
+#include "Project.h"
+#include "Components.h"
 #include <vector>
-
 
 
 Editor::Editor():
@@ -17,8 +18,6 @@ Editor::Editor():
     mUpdateDebugMenu(false)
     {
     mDebugger.setListener(*this);
-    /// @todo - need to get this from somewhere
-    mDebugger.setDebuggee("oovEdit");
     g_idle_add(onIdle, this);
     }
 
@@ -37,7 +36,7 @@ void Editor::openTextFile()
     {
     std::string filename;
     PathChooser ch;
-    if(ch.ChoosePath(mEditFiles.getEditView()->getWindow(), "Open File",
+    if(ch.ChoosePath(GTK_WINDOW(mBuilder.getWidget("MainWindow")), "Open File",
 	    GTK_FILE_CHOOSER_ACTION_OPEN, filename))
 	{
 	openTextFile(filename.c_str());
@@ -64,7 +63,9 @@ void Editor::findDialog()
     {
     GtkEntry *entry = GTK_ENTRY(getBuilder().getWidget("FindEntry"));
     gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
-    Dialog dialog(GTK_DIALOG(getBuilder().getWidget("FindDialog")));
+    GtkWindow *parent = Gui::getWindow(mBuilder.getWidget("MainWindow"));
+    Dialog dialog(GTK_DIALOG(getBuilder().getWidget("FindDialog")),
+	    parent);
     dialog.run();
     }
 
@@ -187,6 +188,154 @@ static void scrollChild(GtkWidget *widget, GdkEvent *event, gpointer user_data)
     }
 */
 
+void Editor::loadSettings()
+    {
+    int width, height;
+    mEditOptions.setProjectDir(mProjectDir);
+    if(mEditOptions.getScreenSize(width, height))
+	{
+	gtk_window_resize(GTK_WINDOW(mBuilder.getWidget("MainWindow")), width, height);
+	}
+
+    Project::setProjectDirectory(mProjectDir.c_str());
+    NameValueFile projFile(Project::getProjectFilePath().c_str());
+    projFile.readFile();
+    mDebugger.setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath).c_str());
+    mDebugger.setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
+    }
+
+void Editor::saveSettings()
+    {
+    int width, height;
+    gtk_window_get_size(GTK_WINDOW(mBuilder.getWidget("MainWindow")), &width, &height);
+    mEditOptions.saveScreenSize(width, height);
+    }
+
+void Editor::editPreferences()
+    {
+    GtkComboBoxText *cb = GTK_COMBO_BOX_TEXT(mBuilder.getWidget("DebugComponent"));
+    Gui::clear(cb);
+
+    ComponentTypesFile compFile;
+    compFile.read();
+    bool haveNames = false;
+    for(auto const &name : compFile.getComponentNames())
+	{
+	if(compFile.getComponentType(name.c_str()) == ComponentTypesFile::CT_Program)
+	    {
+	    Gui::appendText(cb, name.c_str());
+	    haveNames = true;
+	    }
+	}
+
+    Gui::setSelected(cb, 0);
+    Dialog dlg(GTK_DIALOG(mBuilder.getWidget("Preferences")),
+	    GTK_WINDOW(mBuilder.getWidget("MainWindow")));
+    if(dlg.run(true))
+	{
+	if(haveNames)
+	    {
+	    std::string text = Gui::getText(cb);
+	    mEditOptions.setNameValue(OptEditDebuggee, text.c_str());
+	    mDebugger.setDebuggee(text.c_str());
+	    }
+	else
+	    Gui::messageBox("Some components for the project must be defined as programs");
+	}
+    }
+
+
+
+#define SINGLE_INSTANCE 1
+#if(SINGLE_INSTANCE)
+
+// Note that this is called from a few places. If command line arguments are
+// given, then it is called from the open, otherwise it is called from
+// g_application_run
+static void activateApp(GApplication *gapp)
+    {
+    GtkApplication *app = GTK_APPLICATION (gapp);
+    GtkWidget *window = gEditor.getBuilder().getWidget("MainWindow");
+    gEditor.loadSettings();
+    gtk_widget_show_all(window);
+    gtk_application_add_window(app, GTK_WINDOW(window));
+    }
+
+// command-line signal
+static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
+    gpointer user_data)
+    {
+    int argc;
+    gchar **argv = g_application_command_line_get_arguments(cmdline, &argc);
+    bool goodArgs = true;
+    for(gint i = 0; i < argc && goodArgs; i++)
+	{
+	char const * fn = nullptr;
+	int line = 0;
+	for(int argi=1; argi<argc; argi++)
+	    {
+	    if(argv[argi][0] == '+')
+		{
+		sscanf(&argv[argi][1], "%d", &line);
+		}
+	    else if(argv[argi][0] == '-')
+		{
+		if(argv[argi][1] == 'p')
+		    gEditor.setProjectDir(&argv[argi][2]);
+		else
+		    goodArgs = false;
+		}
+	    else
+		fn = argv[argi];
+	    }
+	if(fn)
+	    {
+	    gEditor.getEditFiles().viewFile(fn, line);
+	    }
+	}
+    if(goodArgs)
+	{
+	activateApp(gapp);
+	}
+    else
+	{
+	std::string str = "OovEdit version ";
+	str += OOV_VERSION;
+	str += "\n";
+	str += "oovEdit: Args are: filename [args]...\n";
+	str += "args are:\n";
+	str += "   +<line>            line number of opened file\n";
+	str += "   -p<projectDir>    directory of project files\n";
+	Gui::messageBox(str.c_str());
+	}
+    }
+
+static void startupApp(GApplication *gapp)
+    {
+    if(gEditor.getBuilder().addFromFile("oovEdit.glade"))
+	{
+	gEditor.init();
+	gEditor.getBuilder().connectSignals();
+	}
+    }
+
+int main(int argc, char **argv)
+    {
+    GtkApplication *app = gtk_application_new("org.oovcde.oovEdit",
+	    G_APPLICATION_HANDLES_COMMAND_LINE);
+    GApplication *gapp = G_APPLICATION(app);
+
+    g_signal_connect(app, "activate", G_CALLBACK(activateApp), NULL);
+    g_signal_connect(app, "startup", G_CALLBACK(startupApp), NULL);
+    g_signal_connect(app, "command-line", G_CALLBACK(commandLine), NULL);
+    int status = g_application_run(gapp, argc, argv);
+    g_object_unref(app);
+    return status;
+    }
+
+
+#else
+
 int main(int argc, char *argv[])
     {
     gtk_init (&argc, &argv);
@@ -196,12 +345,17 @@ int main(int argc, char *argv[])
 	gEditor.getBuilder().connectSignals();
 	GtkWidget *window = gEditor.getBuilder().getWidget("MainWindow");
 	char const * fn = nullptr;
+        char const *proj = nullptr;
 	int line = 0;
 	for(int argi=1; argi<argc; argi++)
 	    {
 	    if(argv[argi][0] == '+')
 		{
 		sscanf(&argv[argi][1], "%d", &line);
+		}
+	    else if(argv[argi][0] == '-')
+		{
+		proj = &argv[argi][2];
 		}
 	    else
 		fn = argv[argi];
@@ -212,7 +366,11 @@ int main(int argc, char *argv[])
 	    }
 	else
 	    {
-	    fprintf(stderr, "Unable to open file %s\n", fn);
+            fprintf(stderr, "OovEdit version %s\n", OOV_VERSION);
+            fprintf(stderr, "oovEdit: Args are: filename [args]...\n");
+            fprintf(stderr, "args are:\n");
+            fprintf(stderr, "   +<line>            line number of opened file\n");
+            fprintf(stderr, "   -p<projectDir>    directory of project files\n");
 	    }
 	gtk_widget_show(window);
 	gtk_main();
@@ -223,6 +381,7 @@ int main(int argc, char *argv[])
 	}
     return 0;
     }
+#endif
 
 extern "C" G_MODULE_EXPORT void on_FileOpenImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
@@ -246,6 +405,7 @@ extern "C" G_MODULE_EXPORT bool on_FileQuitImagemenuitem_activate(GtkWidget *but
 
 extern "C" G_MODULE_EXPORT gboolean on_MainWindow_delete_event(GtkWidget *button, gpointer data)
     {
+    gEditor.saveSettings();
     return !gEditor.checkExitSave();
     }
 
@@ -323,6 +483,11 @@ extern "C" G_MODULE_EXPORT void on_UndoImageMenuitem_activate(GtkWidget *button,
 extern "C" G_MODULE_EXPORT void on_RedoImageMenuitem_activate(GtkWidget *button, gpointer data)
     {
     gEditor.redo();
+    }
+
+extern "C" G_MODULE_EXPORT void on_EditPreferences_activate(GtkWidget *button, gpointer data)
+    {
+    gEditor.editPreferences();
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_ControlTextview_key_press_event(GtkWidget *widget,

@@ -29,7 +29,8 @@ static std::string getEntry(char const * const widgetName)
 
 
 AddPackageDialog::AddPackageDialog():
-    Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("AddPackageDialog")))
+    Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("AddPackageDialog")),
+	    GTK_WINDOW(Builder::getBuilder()->getWidget("ProjectPackagesDialog")))
     {
     sAddPackageDialog = this;
     mAllPackagesList.init(*Builder::getBuilder(), "AllPackagesTreeview", "Available Packages");
@@ -56,7 +57,8 @@ void AddPackageDialog::selectPackage()
 /////////////////
 
 ProjectPackagesDialog::ProjectPackagesDialog(std::string &baseBuildArgs):
-    Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("ProjectPackagesDialog"))),
+    Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("ProjectPackagesDialog")),
+	    GTK_WINDOW(Builder::getBuilder()->getWidget("OptionsDialog"))),
     mProjectPackages(true), mBaseBuildArgs(baseBuildArgs), mAllowSelection(true)
     {
     sProjectPackagesDialog = this;

@@ -11,6 +11,7 @@
 #include "Gui.h"
 #include "FileEditView.h"
 #include "Debugger.h"
+#include <sys/time.h>
 #include <vector>
 
 
@@ -26,6 +27,8 @@ struct ScrolledFileView
 	}
     const GtkTextView *getTextView() const
 	{ return mFileView.getTextView(); }
+    GtkWidget *getViewTopParent()
+	{ return GTK_WIDGET(mScrolled); }
     FileEditView &getFileEditView()
 	{ return mFileView; }
     std::string const &getFilename() const
@@ -58,9 +61,12 @@ class EditFiles
 	// For signal handlers
 	void setFocusEditTextView(GtkTextView *editTextView);
 	bool handleKeyPress(GdkEvent *event);
-	void drawMargin(GtkWidget *widget, cairo_t *cr);
+	void drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &pixPerChar);
+	void drawRightMargin(GtkWidget *widget, cairo_t *cr, int leftMargin, int pixPerChar);
 	Debugger &getDebugger()
 	    { return mDebugger; }
+	void removeNotebookPage(GtkWidget *pageWidget);
+	bool checkDebugger();
 
     private:
 	GtkNotebook *mHeaderBook;
@@ -69,12 +75,9 @@ class EditFiles
 	std::vector<ScrolledFileView> mFileViews;
 	size_t mFocusEditViewIndex;
 	Debugger &mDebugger;
+	timeval mLastHightlightIdleUpdate;
 	void addFile(char const * const fn, bool useMainView, int lineNum);
-	void idleHighlight()
-	    {
-	    for(auto &view : mFileViews)
-		view.getFileEditView().idleHighlight();
-	    }
+	void idleHighlight();
 	ScrolledFileView *getScrolledFileView()
 	    {
 	    if(mFocusEditViewIndex < mFileViews.size())

@@ -86,11 +86,11 @@ void IncDirDependencyMap::write()
 	    }
 
 	OovString changeStr;
-	changeStr.setInt(changedTime);
+	changeStr.appendInt(changedTime);
 	compVal.addArg(changeStr.c_str());
 
 	OovString checkedStr;
-	checkedStr.setInt(curTime);
+	checkedStr.appendInt(curTime);
 	compVal.addArg(checkedStr.c_str());
 
 	for(const auto &str : mapItem.second)

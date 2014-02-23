@@ -154,6 +154,12 @@ void BuildOptions::setDefaultOptions()
 
     extraCppRlsArgs.addArg("-O3");
 
+#ifdef __linux__
+    setNameValue(OptToolDebuggerPath, "/usr/bin/gdb");
+#else
+    setNameValue(OptToolDebuggerPath, "/MinGW/bin/gdb.exe");
+#endif
+
     setBuildConfigurationPaths(*this, BuildConfigAnalysis,
 	    extraCppDocArgs.getAsString().c_str(), useCLangBuild);
     setBuildConfigurationPaths(*this, BuildConfigDebug,

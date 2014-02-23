@@ -173,6 +173,7 @@ bool FileEditView::checkExitSave()
 	prompt += mFileName;
 	GtkDialog *dlg = GTK_DIALOG(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
 		GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", prompt.c_str()));
+	GtkWidget *button = gtk_dialog_add_button(dlg, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
 	gint result = gtk_dialog_run(dlg);
 	if(result == GTK_RESPONSE_YES)
 	    {

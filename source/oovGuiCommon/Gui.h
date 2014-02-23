@@ -32,16 +32,18 @@ class PathChooser
 class Dialog
     {
     public:
-	Dialog(GtkDialog *dlg):
+	Dialog(GtkDialog *dlg, GtkWindow *parent):
 	    mDialog(dlg)
-	    {}
+	    {
+	    gtk_window_set_transient_for(GTK_WINDOW(dlg), parent);
+	    }
 	virtual ~Dialog()
 	    {}
 	GtkWidget *addButton(const gchar *text, gint response_id)
 	    { return gtk_dialog_add_button(mDialog, text, response_id); }
 	// The response from this only works if the OK button in Glade is
 	// set to -5, and cancel is set to -6.
-	bool run(bool hide = false);
+	bool run(bool hideDialogAfterButtonPress = false);
 	virtual void beforeRun()
 	    {}
 	virtual void afterRun(bool ok)
@@ -67,6 +69,8 @@ class GuiText:public std::string
 class Gui
     {
     public:
+	static GtkWindow *getWindow(GtkWidget *widget)
+	    { return GTK_WINDOW(widget); }
 	static void clear(GtkTextView *textview);
 	static void clear(GtkComboBoxText *box)
 	    { gtk_combo_box_text_remove_all(box); }
@@ -91,6 +95,8 @@ class Gui
 	static char const * const getCurrentLineText(GtkTextView *textView);
 	static void setSelected(GtkComboBox *cb, int index)
 	    { gtk_combo_box_set_active(cb, index); }
+	static void setSelected(GtkComboBoxText *cb, int index)
+	    { gtk_combo_box_set_active(GTK_COMBO_BOX(cb), index); }
 
 	static void setEnabled(GtkButton *w, bool enabled)
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }

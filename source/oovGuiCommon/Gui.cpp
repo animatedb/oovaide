@@ -39,12 +39,12 @@ bool PathChooser::ChoosePath(GtkWindow *parent, char const * const dlgName,
     return success;
     }
 
-bool Dialog::run(bool hide)
+bool Dialog::run(bool hideDialogAfterButtonPress)
     {
     beforeRun();
     bool ok = (gtk_dialog_run(mDialog) == GTK_RESPONSE_OK);
     afterRun(ok);
-    if(hide)
+    if(hideDialogAfterButtonPress)
 	gtk_widget_hide(GTK_WIDGET(getDialog()));
     return ok;
     }

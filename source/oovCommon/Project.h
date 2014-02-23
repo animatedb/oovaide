@@ -27,6 +27,8 @@
 #define OptToolCompilePath "Tool-CompilerPath"
 #define OptToolObjSymbolPath "Tool-ObjSymbolPath"
 
+#define OptToolDebuggerPath "Tool-DebuggerPath"
+
 #define BuildConfigAnalysis "Analyze"
 #define BuildConfigDebug "Debug"
 #define BuildConfigRelease "Release"

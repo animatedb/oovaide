@@ -9,12 +9,15 @@
 #define OOVEDIT_H_
 
 #include "EditFiles.h"
+#include "EditOptions.h"
 
 class Editor:public DebuggerListener
     {
     public:
 	Editor();
 	void init();
+	void loadSettings();
+	void saveSettings();
 	static gboolean onIdle(gpointer data);
 	void openTextFile(char const * const fn);
 	void openTextFile();
@@ -65,6 +68,8 @@ class Editor:public DebuggerListener
 	    { return mDebugger; }
 	EditFiles &getEditFiles()
 	    { return mEditFiles; }
+	void setProjectDir(char const * const projDir)
+	    { mProjectDir = projDir; }
 	void gotoLine(int lineNum)
 	    { mEditFiles.gotoLine(lineNum); }
 	void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
@@ -84,6 +89,7 @@ class Editor:public DebuggerListener
 	    if(mEditFiles.getEditView())
 		mEditFiles.getEditView()->drawHighlight();
 	    }
+	void editPreferences();
 	virtual void DebugOutput(char const * const str)
 	    {
 	    mDebugOut.append(str);
@@ -100,9 +106,11 @@ class Editor:public DebuggerListener
 	EditFiles mEditFiles;
 	Debugger mDebugger;
 	std::string mLastSearch;
+	std::string mProjectDir;
 	bool mLastSearchCaseSensitive;
 	std::string mDebugOut;
 	bool mUpdateDebugMenu;
+	EditOptions mEditOptions;
 	DebuggerLocation mDebuggerStoppedLocation;
 	void find(char const * const findStr, bool forward, bool caseSensitive);
 	void setModuleName(const char *mn)

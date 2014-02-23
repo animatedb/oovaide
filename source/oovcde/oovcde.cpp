@@ -473,7 +473,8 @@ extern "C" G_MODULE_EXPORT void on_NewProjectCancelButton_clicked(
 extern "C" G_MODULE_EXPORT void on_NewProjectMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    Dialog dlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("NewProjectDialog")));
+    Dialog dlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("NewProjectDialog")),
+	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     dlg.run();
     }
 
@@ -544,7 +545,8 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
 extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
-    Dialog dlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("NewModuleDialog")));
+    Dialog dlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("NewModuleDialog")),
+	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     ComponentTypesFile componentsFile;
     Gui::clear(GTK_COMBO_BOX_TEXT(gOovGui.getBuilder().getWidget(
 	    "NewModule_ComponentComboboxtext")));

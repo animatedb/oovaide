@@ -94,8 +94,10 @@ class Debugger:public OovProcessListener
 	Debugger();
 	void setListener(DebuggerListener &listener)
 	    { mDebuggerListener = &listener; }
+	void setDebuggerFilePath(char const * const dbgPath)
+	    { mDebuggerFilePath = dbgPath; }
 	void setDebuggee(char const * const debuggee)
-	    { mDebuggee = debuggee; }
+	    { mDebuggeeFilePath = debuggee; }
 	void toggleBreakpoint(const DebuggerBreakpoint &br);
 	void stepInto();
 	void stepOver();
@@ -109,9 +111,14 @@ class Debugger:public OovProcessListener
 	DebuggerLocation getStoppedLocation() const;
 	DebuggerBreakpoints const &getBreakpoints() const
 	    { return mBreakpoints; }
+	std::string const &getDebuggerFilePath() const
+	    { return mDebuggerFilePath; }
+	std::string const &getDebuggeeFilePath() const
+	    { return mDebuggeeFilePath; }
 
     private:
-	std::string mDebuggee;
+	std::string mDebuggerFilePath;
+	std::string mDebuggeeFilePath;
 	std::string mGdbOutputBuffer;
 	DebuggerBreakpoints mBreakpoints;
 	OovBackgroundPipeProcess mBkgPipeProc;

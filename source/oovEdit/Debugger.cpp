@@ -41,12 +41,10 @@ bool Debugger::runDebuggerProcess()
     if(started)
 	{
 	OovProcessChildArgs args;
-	/// @todo - this must come from options config file.
-	char const * const dbgProcName = "/usr/bin/gdb";
-	args.addArg(dbgProcName);
-	args.addArg(mDebuggee.c_str());
+	args.addArg(mDebuggerFilePath.c_str());
+	args.addArg(mDebuggeeFilePath.c_str());
 	args.addArg("--interpreter=mi");
-	mBkgPipeProc.startProcess(dbgProcName, args.getArgv());
+	mBkgPipeProc.startProcess(mDebuggerFilePath.c_str(), args.getArgv());
 #if(DEBUG_DBG)
 	printf("Starting process\n");
 	fflush(stdout);

@@ -296,7 +296,8 @@ void OptionsDialog::updateBuildConfig()
 void OptionsDialog::showScreen()
     {
     ScreenOptions options(mCurrentBuildConfig.c_str());
-    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")));
+    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")),
+	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     options.optionsToScreen();
     updateBuildConfig();
     enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
@@ -307,7 +308,8 @@ void OptionsDialog::showScreen()
 
 void OptionsDialog::newConfig()
     {
-    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("NewBuildConfigDialog")));
+    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("NewBuildConfigDialog")),
+	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     GtkEntry *oldNameEntry = GTK_ENTRY(Builder::getBuilder()->getWidget("OldConfigNameEntry"));
     Gui::setText(oldNameEntry, mBuildConfigList.getSelected().c_str());
     if(dlg.run())
@@ -447,7 +449,8 @@ static PrefOption PrefOptions[] =
 
 bool ClassPreferencesDialog::run(Builder &builder, ClassNodeDrawOptions &options)
     {
-    Dialog dlg(GTK_DIALOG(gtk_dialog_new()));
+    Dialog dlg(GTK_DIALOG(gtk_dialog_new()),
+	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     dlg.addButton(GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
     dlg.addButton(GTK_STOCK_OK, GTK_RESPONSE_OK);
 

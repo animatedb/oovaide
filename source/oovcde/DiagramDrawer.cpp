@@ -9,6 +9,7 @@
 #include "Options.h"
 #include "OovProcess.h"
 #include "Gui.h"
+#include "Project.h"
 #include <stdio.h>
 
 int DiagramDrawer::getPad(int div)
@@ -25,22 +26,28 @@ void viewSource(char const * const module, int lineNum)
     std::string proc = gGuiOptions.getValue(OptGuiEditorPath);
     if(proc.length() > 0)
 	{
-	char const * argv[4];
-	int argi=0;
-	argv[argi++] = proc.c_str();
-	std::string lineArg = gGuiOptions.getValue(OptGuiEditorLineArg);
+	OovProcessChildArgs args;
+	args.addArg(proc.c_str());
+	OovString lineArg = gGuiOptions.getValue(OptGuiEditorLineArg);
 	if(lineArg.length() != 0)
 	    {
-	    char buf[10];
-	    snprintf(buf, sizeof(buf), "%d", lineNum);
-	    lineArg += buf;
-	    argv[argi++] = lineArg.c_str();
+	    lineArg.appendInt(lineNum);
+	    args.addArg(lineArg.c_str());
 	    }
-	argv[argi++] = module;
-	argv[argi++] = NULL;
-	spawnNoWait(proc.c_str(), argv);
+	args.addArg(module);
+
+	std::string projArg;
+	if(proc.find("oovEdit") != std::string::npos)
+	    {
+	    projArg += "-p";
+	    projArg += Project::getProjectDirectory();
+	    args.addArg(projArg.c_str());
+	    }
+	spawnNoWait(proc.c_str(), args.getArgv());
 	}
     else
+	{
 	Gui::messageBox("Use Edit/Preferences to set up an editor to view source");
+	}
     }
 

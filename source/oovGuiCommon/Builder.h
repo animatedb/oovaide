@@ -23,9 +23,13 @@ class Builder
 	    {
 	    gtk_builder_connect_signals(mGtkBuilder, nullptr);
 	    }
+	GObject *getObject(char const * const widgetName)
+	    {
+	    return gtk_builder_get_object(mGtkBuilder, widgetName);
+	    }
 	GtkWidget *getWidget(char const * const widgetName)
 	    {
-	    return GTK_WIDGET(gtk_builder_get_object(mGtkBuilder, widgetName));
+	    return GTK_WIDGET(getObject(widgetName));
 	    }
 	GtkMenu *getMenu(char const * const menuName)
 	    {
