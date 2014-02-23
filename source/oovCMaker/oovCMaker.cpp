@@ -99,7 +99,7 @@ void CMaker::makeTopMakelistsFile(char const * const destName)
     str += "   endif()\n";
     str += "endforeach()\n\n";
 
-    str += "External Packages\n";
+    str += "# External Packages\n";
     str += "if(NOT WIN32)\n";
     for(auto const &pkg : mBuildPkgs.getPackages())
 	{
@@ -150,7 +150,7 @@ void CMaker::makeTopMakelistsFile(char const * const destName)
 
     str += "# Export the package for use from the build-tree\n";
     str += "# (this registers the build-tree with a global CMake-registry)\n";
-    str += std::string("export(PACKAGE") + mProjectName + ")\n\n";
+    str += std::string("export(PACKAGE ") + mProjectName + ")\n\n";
 
     str += std::string("# Create the ") +  mProjectName + "Config.cmake and " +
 	    mProjectName + "ConfigVersion files\n";

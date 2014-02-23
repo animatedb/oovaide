@@ -30,7 +30,7 @@ foreach(p LIB BIN INCLUDE CMAKE)
    endif()
 endforeach()
 
-External Packages
+# External Packages
 if(NOT WIN32)
 # GTK
 pkg_check_modules(GTK REQUIRED gtk+-3.0)
@@ -38,10 +38,14 @@ include_directories(${GTK_INCLUDE_DIRS})
 link_directories(${GTK_LIBRARY_DIRS})
 add_definitions(${GTK_CFLAGS_OTHER})
 # LLVM
-pkg_check_modules(LLVM REQUIRED llvm)
-include_directories(${LLVM_INCLUDE_DIRS})
-link_directories(${LLVM_LIBRARY_DIRS})
-add_definitions(${LLVM_CFLAGS_OTHER})
+# pkg_check_modules(LLVM REQUIRED llvm)
+include_directories(../../clang+llvm-3.4-x86_64/include)
+cmake_policy(SET CMP0015 NEW)
+link_directories(../../clang+llvm-3.4-x86_64/lib)
+set(LLVM_LIBRARIES clang)
+# include_directories(${LLVM_INCLUDE_DIRS})
+# link_directories(${LLVM_LIBRARY_DIRS})
+# add_definitions(${LLVM_CFLAGS_OTHER})
 endif()
 
 # set up include directories
@@ -49,7 +53,8 @@ include_directories(
    "${PROJECT_SOURCE_DIR}/oovCommon"
    "${PROJECT_SOURCE_DIR}/oovGuiCommon"
    )
-add_definitions(-std=c++11)
+#add_definitions(-std=c++11)
+add_definitions(-std=c++0x)
 
 # Add sub directories
 add_subdirectory(oovBuilder)
@@ -65,7 +70,7 @@ export(TARGETS  oovBuilder oovCMaker oovCommon oovCppParser oovEdit oovGuiCommon
 
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
-export(PACKAGEOovcde)
+export(PACKAGE Oovcde)
 
 # Create the OovcdeConfig.cmake and OovcdeConfigVersion files
 file(RELATIVE_PATH REL_INCLUDE_DIR "${INSTALL_CMAKE_DIR}"
