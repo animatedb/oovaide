@@ -38,6 +38,10 @@ void ensureLastPathSep(std::string &path);
 void removePathSep(std::string &path, int pos);
 void quoteCommandLinePath(std::string &libfilePath);
 
+std::string makeExeFilename(char const * const rootFn);
+// For some reason, oovEdit requires this?
+std::string fixFilePath(char const *fullFn);
+
 // File operations
 bool ensurePathExists(char const * const path);
 bool fileExists(char const * const path);
@@ -79,6 +83,7 @@ class FilePathImmutableBase
 	static bool hasExtension(char const * const path)
 	    { return(findExtension(path) != std::string::npos); }
 	static bool isDirOnDisk(char const * const path);
+	static int comparePaths(char const * const path1, char const * const path2);
 
     protected:
 	size_t getPos() const
@@ -122,6 +127,8 @@ template<typename T_Str> class FilePathImmutable: public T_Str, public FilePathI
 	    { return FilePathImmutableBase::getWithoutEndPathSep(this->path_c_str()); }
 	bool matchExtension(char const * const path2) const
 	    { return FilePathImmutableBase::matchExtension(this->path_c_str(), path2); }
+	int comparePaths(char const * const path2) const
+	    { return FilePathImmutableBase::comparePaths(this->path_c_str(), path2); }
     };
 
 class FilePathCStr

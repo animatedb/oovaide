@@ -10,6 +10,7 @@
 
 #include "EditFiles.h"
 #include "EditOptions.h"
+#include "OovProcess.h"
 
 class Editor:public DebuggerListener
     {
@@ -90,15 +91,13 @@ class Editor:public DebuggerListener
 		mEditFiles.getEditView()->drawHighlight();
 	    }
 	void editPreferences();
+	void idleDebugStatusChange(Debugger::eChangeStatus st);
 	virtual void DebugOutput(char const * const str)
 	    {
 	    mDebugOut.append(str);
 	    }
 	virtual void DebugStatusChanged()
 	    {
-	    if(mDebugger.getChildState() == GCS_GdbChildPaused)
-		mDebuggerStoppedLocation = mDebugger.getStoppedLocation();
-	    mUpdateDebugMenu = true;
 	    }
 
     private:
@@ -109,9 +108,7 @@ class Editor:public DebuggerListener
 	std::string mProjectDir;
 	bool mLastSearchCaseSensitive;
 	std::string mDebugOut;
-	bool mUpdateDebugMenu;
 	EditOptions mEditOptions;
-	DebuggerLocation mDebuggerStoppedLocation;
 	void find(char const * const findStr, bool forward, bool caseSensitive);
 	void setModuleName(const char *mn)
 	    {

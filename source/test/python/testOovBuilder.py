@@ -9,7 +9,7 @@ import time
 
 def runOovBuilder(projDir, configName, args):
     os.system("oovBuilder.exe " + projDir + " -bld-" + configName + \
-        " " + args + " " + " > " + projDir + "testOovBuilderOut.txt")
+        " " + args + " " + " > " + projDir + "/testOovBuilderOut.txt")
 
 
 def testExampleStaticLibAnalysis():

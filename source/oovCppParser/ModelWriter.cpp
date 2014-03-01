@@ -24,7 +24,7 @@
 
 
 #include "ModelWriter.h"
-
+#include "OovString.h"
 
 // Writes the following format:
 //  <DataType stereotype="datatype" type="typeid1" name="typeName" />
@@ -35,11 +35,15 @@ enum ModelIdOffsets { MIO_Module=1, MIO_Object=2, MIO_NoLookup=100000 };
 
 
 // Some details about the XMI output file:
-// - "Datatype" values are simple data types.
+// - "Datatype" values are simple data types or class references. For example,
+//	a class can inherit from std::string and the std::string will be output
+//	as a Datatype.
 //
-// - "Class" values are structs or classes (CXType_Record). These are always
-// output as "Class", but they will be empty if they are not defined in this TU.
-// (For example, classes included from other header files)
+// - "Class" values are structs or class definitions (CXType_Record). These are
+// 	always output as "Class", but they will be empty if they are not
+//	defined in this TU.  (For example, classes included from other header
+//	files)
+//      Only defined classes in the parsed translation unit have a module name/id.
 //
 // - Inheritance relations are also only defined if they are defined in this TU.
 
@@ -153,9 +157,24 @@ void ModelWriter::writeType(const ModelType &mtype)
             typeName = "DataType";
             lineNumStr[0] = '\0';
             }
-        fprintf(mFp, "  <%s xmi.id=\"%d\" name=\"%s\" module=\"%d\" %s>\n",
-            typeName, classXmiId, translate(mtype.getName()).c_str(), MIO_Module,
-            lineNumStr);
+        /// @todo - Only output types that are defined in this file, or are used
+        /// by types in this file.
+
+        // Only defined classes in the parsed translation unit have a module name.
+        OovString moduleStr;
+        if(mtype.getObjectType() == otClass)
+            {
+	    const ModelClassifier *cl = ModelObject::getClass(&mtype);
+	    if(cl->getModule())
+		{
+		moduleStr = "module=\"";
+		moduleStr.appendInt(MIO_Module);
+		moduleStr += "\" ";
+		}
+            }
+        fprintf(mFp, "  <%s xmi.id=\"%d\" name=\"%s\" %s%s>\n",
+            typeName, classXmiId, translate(mtype.getName()).c_str(),
+            moduleStr.c_str(), lineNumStr);
 
         if(mtype.getObjectType() == otClass)
             {

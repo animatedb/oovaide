@@ -1,5 +1,4 @@
 /*
- * OovProcess.cpp
  *
  *  Created on: Jun 26, 2013
  *  \copyright 2013 DCBlaha.  Distributed under the GPL.
@@ -287,6 +286,7 @@ static int linuxSpawnNoWait(char const * const procPath, char const * const *arg
 
 // Create a child process that uses the previously created pipes for STDIN and STDOUT.
 static bool windowsChildProcessCreate(char const * const szCmdline,
+	HANDLE hChildStd_IN_Rd,
 	HANDLE hChildStd_OUT_Wr, HANDLE hChildStd_ERR_Wr,
 	PROCESS_INFORMATION &piProcInfo)
     {
@@ -298,10 +298,13 @@ static bool windowsChildProcessCreate(char const * const szCmdline,
     siStartInfo.cb = sizeof(STARTUPINFO);
     siStartInfo.hStdError = hChildStd_ERR_Wr;
     siStartInfo.hStdOutput = hChildStd_OUT_Wr;
-    siStartInfo.hStdInput = INVALID_HANDLE_VALUE;
+    siStartInfo.hStdInput = hChildStd_IN_Rd;
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
     siStartInfo.wShowWindow = SW_HIDE;
 
+#if(DEBUG_PROC)
+    sDbgFile.printflush("windowsChildProcessCreate %s\n", szCmdline);
+#endif
     BOOL bSuccess = CreateProcess(NULL, (char*)szCmdline, NULL, NULL, TRUE,
 	0, NULL, NULL, &siStartInfo, &piProcInfo);
     return bSuccess;
@@ -372,15 +375,21 @@ bool OovPipeProcessWindows::windowsCreatePipes()
     bool success = false;
 
     windowsClosePipes();
-    if (CreatePipe(&mChildStd_OUT_Rd, &mChildStd_OUT_Wr, &saAttr, 0))
+    if (CreatePipe(&mChildStd_IN_Rd, &mChildStd_IN_Wr, &saAttr, 0))
 	{
-	if(CreatePipe(&mChildStd_ERR_Rd, &mChildStd_ERR_Wr, &saAttr, 0))
+	if (CreatePipe(&mChildStd_OUT_Rd, &mChildStd_OUT_Wr, &saAttr, 0))
 	    {
-	    // Ensure the read handle to the pipe for STDOUT is not inherited.
-	    if(SetHandleInformation(mChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0))
+	    if(CreatePipe(&mChildStd_ERR_Rd, &mChildStd_ERR_Wr, &saAttr, 0))
 		{
-		if(SetHandleInformation(mChildStd_ERR_Rd, HANDLE_FLAG_INHERIT, 0))
-		    success = true;
+		// Ensure the read handle to the pipe for STDOUT is not inherited.
+		if(SetHandleInformation(mChildStd_OUT_Rd, HANDLE_FLAG_INHERIT, 0))
+		    {
+		    if(SetHandleInformation(mChildStd_ERR_Rd, HANDLE_FLAG_INHERIT, 0))
+			{
+			if(SetHandleInformation(mChildStd_IN_Wr, HANDLE_FLAG_INHERIT, 0))
+			    success = true;
+			}
+		    }
 		}
 	    }
 	}
@@ -399,7 +408,7 @@ bool OovPipeProcessWindows::windowsCreatePipeProcess(char const * const procPath
     if(windowsCreatePipes())
 	{
 	success = windowsChildProcessCreate(cmdLine.getCmdStr(),
-	       mChildStd_OUT_Wr, mChildStd_ERR_Wr, mProcInfo);
+		mChildStd_IN_Rd, mChildStd_OUT_Wr, mChildStd_ERR_Wr, mProcInfo);
 	}
     return success;
     }
@@ -440,9 +449,13 @@ void OovPipeProcessWindows::windowsChildProcessListen(OovProcessListener &listen
 
 void OovPipeProcessWindows::windowsChildProcessClose()
     {
-    CloseHandle(mProcInfo.hProcess);
-    CloseHandle(mProcInfo.hThread);
-    windowsClosePipes();
+    if(isProcRunning())
+	{
+	CloseHandle(mProcInfo.hProcess);
+	CloseHandle(mProcInfo.hThread);
+	windowsClosePipes();
+	setStatusProcNotRunning();
+	}
     }
 
 void OovPipeProcessWindows::windowsClosePipes()
@@ -451,11 +464,22 @@ void OovPipeProcessWindows::windowsClosePipes()
     windowsCloseHandle(mChildStd_ERR_Wr);
     windowsCloseHandle(mChildStd_OUT_Rd);
     windowsCloseHandle(mChildStd_OUT_Wr);
+    windowsCloseHandle(mChildStd_IN_Rd);
+    windowsCloseHandle(mChildStd_IN_Wr);
     }
 
-void OovPipeProcessWindows::windowsChildProcessSend(char const * const str)
+bool OovPipeProcessWindows::windowsChildProcessSend(char const * const str)
     {
-
+    DWORD written;
+    BOOL success = WriteFile(mChildStd_IN_Wr, str, strlen(str), &written, NULL);
+#if(DEBUG_PROC)
+    if(!success)
+	{
+	DWORD err = GetLastError();
+	sDbgFile.printflush("WriteFile Error %d\n", err);
+	}
+#endif
+    return(success == TRUE);
     }
 
 void OovPipeProcessWindows::windowsCloseHandle(HANDLE &h)

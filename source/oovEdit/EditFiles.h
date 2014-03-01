@@ -11,6 +11,7 @@
 #include "Gui.h"
 #include "FileEditView.h"
 #include "Debugger.h"
+#include "FilePath.h"
 #include <sys/time.h>
 #include <vector>
 
@@ -31,10 +32,13 @@ struct ScrolledFileView
 	{ return GTK_WIDGET(mScrolled); }
     FileEditView &getFileEditView()
 	{ return mFileView; }
-    std::string const &getFilename() const
+    // WARNING: This path was entered by the user, so it may not have the
+    FilePath const &getFilename() const
 	{ return mFilename; }
 
-    std::string mFilename;
+    // WARNING: This path was entered by the user, so it may not have the
+    // correct case in Windows.
+    FilePath mFilename;
     GtkScrolledWindow *mScrolled;
     FileEditView mFileView;
     int mDesiredLine;

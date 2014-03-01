@@ -113,6 +113,34 @@ size_t rfindPathSep(char const * const path, size_t startPos)
     return pos;
     }
 
+#ifdef __linux__
+std::string makeExeFilename(char const * const rootFn)
+    { return rootFn; }
+#else
+std::string makeExeFilename(char const * const rootFn)
+    { return (std::string(rootFn) + ".exe"); }
+#endif
+
+// Under Windows, for some reason there are doubled slashes in some cases.
+#ifdef __linux__
+std::string fixFilePath(char const *fullFn)
+    {
+    return fullFn;
+    }
+#else
+std::string fixFilePath(char const *fullFn)
+    {
+    std::string temp;
+    for(size_t i=0; i<strlen(fullFn); i++)
+	    {
+	    if(fullFn[i] != '\\' || fullFn[i+1] != '\\')
+		temp += fullFn[i];
+	    }
+    return temp;
+    }
+#endif
+
+
 bool fileExists(char const * const path)
     {
     std::string tempPath = path;
@@ -350,6 +378,16 @@ bool FilePathImmutableBase::isAbsolutePath(char const * const path)
 	absDrv = isPathSep(path, drvPos+1);
 	}
     return(isPathSep(path, 0) || absDrv);
+    }
+
+int FilePathImmutableBase::comparePaths(char const * const path1,
+	char const * const path2)
+    {
+#ifdef __linux__
+    return strcmp(path1, path2);
+#else
+    return StringCompareNoCase(path1, path2);
+#endif
     }
 
 

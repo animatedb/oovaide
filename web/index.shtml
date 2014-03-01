@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
+
 <link rel="stylesheet" type="text/css" href="style.css"><!--#include virtual="menu.html" --></head><body><div class="content">
 
 12/25/2013
@@ -13,8 +14,9 @@ Diagrams can be edited manually and saved as .SVG files.
 </p><p>Core Goals:<br>
 </p>
 <ul>
-  <li>Mainly for C++, or C++ related languages with header files and classes</li>
-  <li>Focused on programmer productivity</li>
+  <li>Mainly for C++, or CLang related languages with header files and classes</li>
+  <li>Focused on programmer productivity with no hassles and papercuts<br>
+</li>
   <li>Facilitate high quality design and code</li>
   <li>Use modern computer architectures, flash disks, multicore processing, work in the background<br>
   </li>

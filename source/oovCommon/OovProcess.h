@@ -101,18 +101,24 @@ class OovPipeProcessWindows
     {
     public:
 	OovPipeProcessWindows():
+	    mChildStd_IN_Rd(NULL), mChildStd_IN_Wr(NULL),
 	    mChildStd_OUT_Rd(NULL), mChildStd_OUT_Wr(NULL),
 	    mChildStd_ERR_Rd(NULL), mChildStd_ERR_Wr(NULL)
-	    {}
+	    {
+	    setStatusProcNotRunning();
+	    }
 	bool windowsCreatePipeProcess(char const * const procPath,
 		char const * const *argv);
 	void windowsChildProcessListen(OovProcessListener &listener, int &exitCode);
 	void windowsChildProcessClose();
-	void windowsChildProcessSend(char const * const str);
+	bool windowsChildProcessSend(char const * const str);
 	void windowsChildProcessKill();
 
     private:
 	PROCESS_INFORMATION mProcInfo;
+	HANDLE mChildStd_IN_Rd;
+	HANDLE mChildStd_IN_Wr;
+
 	HANDLE mChildStd_OUT_Rd;
 	HANDLE mChildStd_OUT_Wr;
 	HANDLE mChildStd_ERR_Rd;
@@ -120,17 +126,24 @@ class OovPipeProcessWindows
 	void windowsCloseHandle(HANDLE &h);
 	bool windowsCreatePipes();
 	void windowsClosePipes();
+	bool isProcRunning()
+	    { return mProcInfo.hProcess != nullptr; }
+	void setStatusProcNotRunning()
+	    { mProcInfo.hProcess = nullptr; }
     };
 #endif
 
 class OovPipeProcess
     {
     public:
+	~OovPipeProcess()
+	    { childProcessClose(); }
 	bool createProcess(char const * const procPath, char const * const *argv);
 	/// This hangs waiting for the process to finish. It reads the output
 	/// pipes from the child process, and sends the output to the listener.
 	void childProcessListen(OovProcessListener &listener, int &exitCode);
 	void childProcessSend(char const * const str);
+	// Close should be cleaner shutdown than kill?
 	void childProcessClose();
 	void childProcessKill();
 

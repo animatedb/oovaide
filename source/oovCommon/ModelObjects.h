@@ -32,18 +32,6 @@
 
 #define UNDEFINED_ID -1
 
-// This produces the information in the XMI file that can include:
-//
-//  <Model:Class xmi.id="id" name="cExampleClass" />
-//  <Model:Attribute type="typeid1" name="memberName" />
-//  <UML:Operation xmi.id="100004" name="funcName" >
-//  <UML:Parameter name="int iparam1 " const="false" />
-//  <Model:DataType stereotype="datatype" xmi.id="id" name="typeName" />
-//  <Model:Generalization	child="subClassRef" parent="superClassRef" />
-//
-// This is not defined currently.
-//  <Model:Enumeration xmi.id="id" name="name"/>
-
 class ModelType;
 
 
@@ -99,10 +87,6 @@ class Visibility
 	{ vis = v; }
     VisType getVis() const
 	{ return vis; }
-//    static std::string toString(Value value, bool mnemonic = false);
-//    static Visibility fromString(const std::string& vis);
-//    std::string toString(bool mnemonic = false) const;
-//    operator Value () const;
     char const * const asStr() const;
     char const * const asUmlStr() const;
   private:
@@ -112,7 +96,6 @@ class Visibility
 class ModelObject
 {
 public:
-//    ModelObject(ModelObject * parent, const QString &name, Model::IDType id = Model::idNone);
     ModelObject(const std::string &name, ObjectType type):
         mName(name), mObjectType(type), mModelId(UNDEFINED_ID)
         {}
@@ -346,8 +329,6 @@ public:
     ~ModelClassifier();
     void clearOperations();
     void clearAttributes();
-//    void setOriginType(ModelClassifier *c)
-//        { mOrigin = c; }
     ModelAttribute *addAttribute(const std::string &name, ModelType *attrType,
 	    Visibility scope);
     void addAttribute(ModelAttribute *attr)
@@ -411,7 +392,6 @@ public:
 	{ return mOutput; }
 
 private:
-//    ModelClassifier *mOrigin;		// Originally for typedefs.
     std::vector<ModelAttribute*> mAttributes;
     std::vector<ModelOperation*> mOperations;
     enum ModelOutputs mOutput;

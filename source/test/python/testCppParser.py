@@ -86,7 +86,7 @@ def testTemplates():
     with file(outDir + "/testTemplates_h.xmi") as outFile:
         outContents = outFile.read()
 
-        verifyRegEx(outContents, "Class[^<>]+name=\"std::vector&lt;templItem&gt;")
+        verifyRegEx(outContents, "DataType[^<>]+name=\"std::vector&lt;templItem&gt;")
         verifyRegEx(outContents, "Class[^<>]+name=\"templClassInherited")
         verifyRegEx(outContents, "Class[^<>]+name=\"templClassHasMembers")
         verifyRegEx(outContents, "Attribute[^<>]+name=\"itemVector")

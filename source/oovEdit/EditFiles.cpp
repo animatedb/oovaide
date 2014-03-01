@@ -50,8 +50,9 @@ void EditFiles::updateDebugMenu()
 	    state != GCS_GdbChildRunning);
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStepInto")),
 	    state != GCS_GdbChildRunning);
-    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStop")),
+    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugPause")),
 	    state == GCS_GdbChildRunning);
+    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStop")), true);
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugViewVariable")),
 	    state != GCS_GdbChildRunning);
     }
@@ -173,7 +174,7 @@ void EditFiles::drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &
 		    layoutWidth + beforeLineSepWidth, pos, layout);
 
 	    int centerY = pos + lineHeight/2;
-	    if(mDebugger.getBreakpoints().locationMatch(thisFileLoc))
+	    if(mDebugger.getBreakpoints().anyLocationsMatch(thisFileLoc))
 		{
 		cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
 		cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
@@ -311,10 +312,11 @@ static GtkWidget *newTabLabel(char const * const tabText, GtkWidget *viewTopPare
 void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
     {
     FilePath fp;
+
     fp.getAbsolutePath(fn, FP_File);
     auto iter = std::find_if(mFileViews.begin(), mFileViews.end(),
 	    [fp](ScrolledFileView const &fv) -> bool
-		{ return fv.mFilename.compare(fp) == 0; });
+		{ return fv.mFilename.comparePaths(fp.c_str()) == 0; });
     if(iter == mFileViews.end())
 	{
 	GtkNotebook *book = nullptr;
@@ -433,6 +435,8 @@ bool EditFiles::checkExitSave()
 bool EditFiles::checkDebugger()
     {
     bool ok = false;
+
+//Gui::messageBox("Debugging is not recommended. It is very unstable.");
     if(getDebugger().getDebuggerFilePath().length() > 0)
 	{
 	if(getDebugger().getDebuggeeFilePath().length() > 0)
@@ -471,11 +475,19 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugStepInto_activate(GtkWidget *widget,
     return false;
     }
 
-extern "C" G_MODULE_EXPORT gboolean on_DebugStop_activate(GtkWidget *widget,
+extern "C" G_MODULE_EXPORT gboolean on_DebugPause_activate(GtkWidget *widget,
 	GdkEvent *event, gpointer user_data)
     {
     if(sEditFiles)
 	sEditFiles->getDebugger().interrupt();
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_DebugStop_activate(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    if(sEditFiles)
+	sEditFiles->getDebugger().stop();
     return false;
     }
 
@@ -504,9 +516,20 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *wid
 	FileEditView const *view = sEditFiles->getEditView();
 	if(view)
 	    {
-	    sEditFiles->getDebugger().viewVariable(
+	    sEditFiles->getDebugger().startGetVariable(
 		    Gui::getSelectedText(view->getTextView()));
 	    }
+	}
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_StackTextview_button_press_event(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
+    if(buttEvent->type == GDK_2BUTTON_PRESS)
+	{
+
 	}
     return false;
     }

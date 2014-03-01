@@ -41,6 +41,7 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 #if(DEBUG_LOAD)
     static DebugFile sLog("DebugXmiParse.txt");
     static ModelModule const *sCurrentModule;
+    static bool sDumpFile = false;
     // This can be used for debugging. FN format is something like "DiagramDrawer_h.xmi".
     static char const *sCurrentFilename;
     static char const * const getObjectTypeName(ObjectType ot)
@@ -61,93 +62,98 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 	    }
 	return p;
 	}
-    static void dumpFilename(char const * const fn)
+    static void dumpFilename(char const * const fn, int typeIndex)
 	{
-	sCurrentFilename = fn;
-	fprintf(sLog.mFp, "\n***** %s ******\n\n", fn);
+	if(sDumpFile)
+	    {
+	    sCurrentFilename = fn;
+	    fprintf(sLog.mFp, "\n***** %s - %d *****\n\n", fn, typeIndex);
+	    }
 	}
     static void dumpStatements(const ModelStatement *stmt, int level)
 	{
-	level++;
-	std::string ws(level*2, ' ');
-	if(stmt->getObjectType() == otCondStatement)
+	if(sDumpFile)
 	    {
-	    const ModelCondStatements *condStmts = static_cast<const ModelCondStatements*>(stmt);
-	    fprintf(sLog.mFp, "   %s%s   %s\n", ws.c_str(),
-		    getObjectTypeName(condStmts->getObjectType()),
-		    condStmts->getName().c_str());
-	    for(const auto &stmt : condStmts->getStatements())
+	    level++;
+	    std::string ws(level*2, ' ');
+	    if(stmt->getObjectType() == otCondStatement)
 		{
-		dumpStatements(stmt, level);
+		const ModelCondStatements *condStmts = static_cast<const ModelCondStatements*>(stmt);
+		fprintf(sLog.mFp, "   %s%s   %s\n", ws.c_str(),
+			getObjectTypeName(condStmts->getObjectType()),
+			condStmts->getName().c_str());
+		for(const auto &stmt : condStmts->getStatements())
+		    {
+		    dumpStatements(stmt, level);
+		    }
 		}
-	    }
-	else if(stmt->getObjectType() == otOperCall)
-	    {
-	    const ModelOperationCall *call = static_cast<const ModelOperationCall*>(stmt);
-	    const ModelType *type = call->getDecl().getDeclType();
-	    if(type)
+	    else if(stmt->getObjectType() == otOperCall)
 		{
-		std::string name = type ? type->getName() : "";
-		fprintf(sLog.mFp, "   %s%s   %s:%s\n", ws.c_str(),
-			getObjectTypeName(call->getObjectType()), name.c_str(),
-			call->getName().c_str());
+		const ModelOperationCall *call = static_cast<const ModelOperationCall*>(stmt);
+		fprintf(sLog.mFp, "   %s%s   %d:%s\n", ws.c_str(),
+			getObjectTypeName(call->getObjectType()),
+			call->getDecl().getDeclTypeModelId(), call->getName().c_str());
 		fflush(sLog.mFp);
 		}
-	    else
-		fprintf(sLog.mFp, "ERROR:No Type for call %s\n", call->getName().c_str());
 	    }
 	}
     static void dumpTypes(const ModelData &graph)
 	{
-	fprintf(sLog.mFp, "\n** Type Dump **\n");
-	for(size_t i=0; i<graph.mTypes.size(); i++)
+	if(sDumpFile)
 	    {
-	    const ModelType *mt = graph.mTypes[i];
-	    fprintf(sLog.mFp, " %s   %s %d\n", getObjectTypeName(mt->getObjectType()),
-		    mt->getName().c_str(), mt->getModelId());
-	    fflush(sLog.mFp);
-	    if(mt->getObjectType() == otClass)
+	    fprintf(sLog.mFp, "\n** Type Dump **\n");
+	    for(size_t i=0; i<graph.mTypes.size(); i++)
 		{
-		const ModelClassifier*c = ModelObject::getClass(mt);
-		if(c->getModule() == sCurrentModule)
+		const ModelType *mt = graph.mTypes[i];
+		fprintf(sLog.mFp, " %s   %s %d\n", getObjectTypeName(mt->getObjectType()),
+			mt->getName().c_str(), mt->getModelId());
+		fflush(sLog.mFp);
+		if(mt->getObjectType() == otClass)
 		    {
-		    for(const auto &attr : c->getAttributes())
+		    const ModelClassifier*c = ModelObject::getClass(mt);
+		    if(c->getModule() == sCurrentModule)
 			{
-			fprintf(sLog.mFp, "   %s   %s\n", getObjectTypeName(attr->getObjectType()),
-				attr->getName().c_str());
-			}
-		    for(const auto &oper : c->getOperations())
-			{
-			fprintf(sLog.mFp, "   %s   %s", getObjectTypeName(oper->getObjectType()),
-				oper->getName().c_str());
-			if(oper->getModule())
-			    fprintf(sLog.mFp, " %d", oper->getLineNum());
-			fprintf(sLog.mFp, "\n");
-			dumpStatements(&oper->getCondStatements(), 0);
+			for(const auto &attr : c->getAttributes())
+			    {
+			    fprintf(sLog.mFp, "   %s   %s\n", getObjectTypeName(attr->getObjectType()),
+				    attr->getName().c_str());
+			    }
+			for(const auto &oper : c->getOperations())
+			    {
+			    fprintf(sLog.mFp, "   %s   %s", getObjectTypeName(oper->getObjectType()),
+				    oper->getName().c_str());
+			    if(oper->getModule())
+				fprintf(sLog.mFp, " %d", oper->getLineNum());
+			    fprintf(sLog.mFp, "\n");
+			    dumpStatements(&oper->getCondStatements(), 0);
+			    }
 			}
 		    }
+		fflush(sLog.mFp);
 		}
-	    fflush(sLog.mFp);
 	    }
 	}
     static void dumpRelations(const ModelData &graph)
 	{
-	fprintf(sLog.mFp, "\n** Relations Dump **\n");
-	for(const auto &assoc : graph.mAssociations)
+	if(sDumpFile)
 	    {
-	    const ModelClassifier *child = ModelObject::getClass(assoc->getChild());
-	    const ModelClassifier *parent = ModelObject::getClass(assoc->getParent());
-	    if(child && parent)
+	    fprintf(sLog.mFp, "\n** Relations Dump **\n");
+	    for(const auto &assoc : graph.mAssociations)
 		{
-		if(child->getModule() == sCurrentModule ||
-			parent->getModule() == sCurrentModule)
+		const ModelClassifier *child = ModelObject::getClass(assoc->getChild());
+		const ModelClassifier *parent = ModelObject::getClass(assoc->getParent());
+		if(child && parent)
 		    {
-		    fprintf(sLog.mFp, " %s %s\n", parent->getName().c_str(), child->getName().c_str());
+		    if(child->getModule() == sCurrentModule ||
+			    parent->getModule() == sCurrentModule)
+			{
+			fprintf(sLog.mFp, " %s %s\n", parent->getName().c_str(), child->getName().c_str());
+			}
 		    }
+		else
+		    fprintf(sLog.mFp, " %d %d\n", assoc->getParentModelId(), assoc->getChildModelId());
+		fflush(sLog.mFp);
 		}
-	    else
-		fprintf(sLog.mFp, " %d %d\n", assoc->getParentModelId(), assoc->getChildModelId());
-	    fflush(sLog.mFp);
 	    }
 	}
 #endif
@@ -183,7 +189,8 @@ static void replaceAttrChars(tString &str)
 bool XmiParser::parse(char const * const buf)
     {
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "----------\n");
+    if(sDumpFile)
+	fprintf(sLog.mFp, "----------\n");
 #endif
     bool success = (parseXml(buf) == ERROR_NONE);
     if(success)
@@ -275,8 +282,11 @@ void XmiParser::onOpenElem(char const * const name, int len)
             break;
         }
 #if(DEBUG_LOAD)
-    if(elem)
-	{ fprintf(sLog.mFp, "< %s  ", getObjectTypeName(elem->getObjectType())); }
+    if(sDumpFile)
+	{
+	if(elem)
+	    { fprintf(sLog.mFp, "< %s  ", getObjectTypeName(elem->getObjectType())); }
+	}
 #endif
     if(elType != ET_None)
 	mElementStack.push_back(elem);
@@ -331,22 +341,24 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
         if(strcmp(attrName.c_str(), "xmi.id") == 0)
             {
             int index = getInt(attrVal.c_str());
-            if(elItem->getObjectType() == otModule)
+            if(elItem->getObjectType() == otModule ||
+        	    elItem->getObjectType() == otAssociation)
         	{
 		elItem->setModelId(index);
         	}
             else
         	{
 		elItem->setModelId(mStartingModuleTypeIndex + index);
-		if(mNumModuleTypeIndices < mStartingModuleTypeIndex + index)
-		    mNumModuleTypeIndices = mStartingModuleTypeIndex + index;
+		if(mEndingModuleTypeIndex < mStartingModuleTypeIndex + index)
+		    mEndingModuleTypeIndex = mStartingModuleTypeIndex + index;
         	}
             }
         if(strcmp(attrName.c_str(), "name") == 0)
             {
             elItem->setName(attrVal.c_str());
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "  %s ", attrVal.c_str());
+    if(sDumpFile)
+	fprintf(sLog.mFp, "  %s ", attrVal.c_str());
 #endif
             }
         switch(elItem->getObjectType())
@@ -500,7 +512,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
     if(elItem)
         {
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "> ");
+    if(sDumpFile)
+	fprintf(sLog.mFp, "> ");
 #endif
 	switch(elItem->getObjectType())
 	    {
@@ -517,7 +530,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 			// Upgrade the type from a datatype to a class.
 			mModel.replaceType(existingType, static_cast<ModelClassifier*>(newType));
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Replaced and upgraded to class %s\n", newType->getName().c_str());
+    if(sDumpFile)
+	fprintf(sLog.mFp, "Replaced and upgraded to class %s\n", newType->getName().c_str());
 #endif
 			}
 		    else if(newType->getObjectType() == otClass &&
@@ -526,10 +540,10 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 			// Classes from the XMI files can either be defined struct/classes
 			// with data members or function declarations or definitions, or
 			// they may only contain defined functions
-//			existingType->setModelId(newType->getModelId());
 			mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
+    if(sDumpFile)
+	fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
 #endif
 			// This type must have indices remapped.
 			mPotentialRemapIndicesTypes.push_back(existingType);
@@ -537,33 +551,40 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 			// the existing class's module and line number.
 			if(static_cast<const ModelClassifier*>(newType)->isDefinition())
 			    {
-			    assert(static_cast<ModelClassifier*>(newType)->getModule());
-			    static_cast<ModelClassifier*>(existingType)->setModule(
-				    static_cast<ModelClassifier*>(newType)->getModule());
-			    static_cast<ModelClassifier*>(existingType)->setLineNum(
+			    ModelModule const *module = static_cast<ModelClassifier*>
+				(newType)->getModule();
+//			    assert(module);
+			    if(module)
+				{
+				static_cast<ModelClassifier*>(existingType)->setModule(
+				    module);
+				static_cast<ModelClassifier*>(existingType)->setLineNum(
 				    static_cast<ModelClassifier*>(newType)->getLineNum());
+				}
 			    }
 			mModel.takeAttributes(static_cast<ModelClassifier*>(newType),
 				static_cast<ModelClassifier*>(existingType));
 			delete newType;
 			newType = nullptr;
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Used existing class %s\n", existingType->getName().c_str());
+    if(sDumpFile)
+	fprintf(sLog.mFp, "Used existing class %s\n", existingType->getName().c_str());
 #endif
 			}
 		    // If the new type is a datatype, use the old type whether it
 		    // was a class or datatype.
 		    else if(newType->getObjectType() == otDatatype)
 			{
-//			existingType->setModelId(newType->getModelId());
 			mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
+    if(sDumpFile)
+	fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
 #endif
 			delete newType;
 			newType = nullptr;
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Used existing type %s\n", existingType->getName().c_str());
+    if(sDumpFile)
+	fprintf(sLog.mFp, "Used existing type %s\n", existingType->getName().c_str());
 #endif
 			}
 		    }
@@ -654,7 +675,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 	    }
         }
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "\n");
+    if(sDumpFile)
+	fprintf(sLog.mFp, "\n");
 #endif
     if(mElementStack.size() > 0)	// XML version header is not a model object.
 	mElementStack.pop_back();
@@ -688,12 +710,15 @@ void XmiParser::updateStatementTypeIndices(ModelStatement *stmt)
 void XmiParser::updateTypeIndices()
     {
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Index Map\n");
-    for(auto const &iter : mFileTypeIndexMap)
+    if(sDumpFile)
 	{
-	fprintf(sLog.mFp, " %d %d\n", iter.first, iter.second);
+	fprintf(sLog.mFp, "Index Map\n");
+	for(auto const &iter : mFileTypeIndexMap)
+	    {
+	    fprintf(sLog.mFp, " %d %d\n", iter.first, iter.second);
+	    }
+	fflush(sLog.mFp);
 	}
-    fflush(sLog.mFp);
 #endif
     for(const auto &type : mPotentialRemapIndicesTypes)
 	{
@@ -727,22 +752,64 @@ void XmiParser::updateTypeIndices()
     // compared to the number of types.
     for(auto &assoc : mModel.mAssociations)
         {
-	auto const &iterChild = mFileTypeIndexMap.find(assoc->getChildModelId());
+	    for(auto const &iterChild : mFileTypeIndexMap)
+		{
+		if(iterChild.first == assoc->getChildModelId())
+		    {
+		    assoc->setChildModelId(iterChild.second);
+#if(DEBUG_LOAD)
+		    if(sDumpFile)
+			{
+			fprintf(sLog.mFp, "Updated Child Model Id %d %d\n",
+				assoc->getChildModelId(), iterChild.second);
+			}
+#endif
+		    break;
+		    }
+		}
+	    for(auto const &iterChild : mFileTypeIndexMap)
+		{
+		if(iterChild.first == assoc->getParentModelId())
+		    {
+		    assoc->setParentModelId(iterChild.second);
+#if(DEBUG_LOAD)
+		    if(sDumpFile)
+			{
+			fprintf(sLog.mFp, "Updated Parent Model Id %d %d\n",
+				assoc->getChildModelId(), iterChild.second);
+			}
+#endif
+		    break;
+		    }
+		}
+// For some reason, this iterator approach doesn't work
+/*
+	auto const iterChild = mFileTypeIndexMap.find(assoc->getChildModelId());
 	if(iterChild != mFileTypeIndexMap.end())
 	    {
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Updated Child Model Id %d %d\n", assoc->getChildModelId(), (*iterChild).second);
+    if(sDumpFile)
+	fprintf(sLog.mFp, "Updated Child Model Id %d %d\n", assoc->getChildModelId(), (*iterChild).second);
 #endif
 	    assoc->setChildModelId((*iterChild).second);
 	    }
-	auto const &iter = mFileTypeIndexMap.find(assoc->getParentModelId());
+	auto const iter = mFileTypeIndexMap.find(assoc->getParentModelId());
 	if(iter != mFileTypeIndexMap.end())
 	    {
 #if(DEBUG_LOAD)
-    fprintf(sLog.mFp, "Updated Parent Model Id %d %d\n", assoc->getChildModelId(), (*iterChild).second);
+    if(sDumpFile)
+	{
+	fprintf(sLog.mFp, "Updated Parent Model Id %d %d\n", assoc->getChildModelId(), (*iterChild).second);
+	if((*iterChild).second > mEndingModuleTypeIndex)
+	    {
+	    fflush(sLog.mFp);
+	    assert(false);
+	    }
+	}
 #endif
 	    assoc->setParentModelId((*iter).second);
 	    }
+*/
         }
     mPotentialRemapIndicesTypes.clear();
     mFileTypeIndexMap.clear();
@@ -770,7 +837,10 @@ bool loadXmiFile(FILE *fp, ModelData &graph, char const * const fn, int &typeInd
     rewind(fp);
 
 #if(DEBUG_LOAD)
-    dumpFilename(fn);
+    std::string srcFn = fn;
+    sDumpFile = true;
+    // sDumpFile = (srcFn.find("ModelObjects_h") != std::string::npos);
+    dumpFilename(fn, typeIndex);
 #endif
     // allocate memory to contain the whole file plus a null byte
     char *buf = new char[size+1];

@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<!-- DC Blaha - 6/8/2009 -->
+<html><head><!-- DC Blaha - 6/8/2009 -->
+
+
 
 
 
@@ -34,22 +35,33 @@ Created: 6-8-2009
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.
 
-<h2>2014-02</h2>This version contains:<br>
+<h2>2014-02-2</h2>
+This version contains:<br>
+
+<ul>
+<li>Improved editor with tabs for files</li>
+  <li>Editor line numbers<br>
+  </li>
+<li>Bug fixes introduced in 2014-02 related to type lookup<br>
+</li>
+</ul>
+<h2>2014-02</h2>
+This version contains:<br>
 <ul>
   <li>Display dependency diagrams including external package dependencies</li>
   <li>Vastly improved speed of loading projects especially for large projects</li>
-  <li>Reduced large delays for large drawings.<br>
+  <li>Reduced large delays for large drawings<br>
   </li>
 
 
   <li>Automatically determines library and package link dependencies for each component<br>
   </li>
-  <li>The oovCMaker tool will generate CMake files from a project.</li>
-  <li>Fixed namespace bug that prevented classes in namespaces from displaying.<br>
+  <li>The oovCMaker tool will generate CMake files from a project</li>
+  <li>Fixed namespace bug that prevented classes in namespaces from displaying<br>
 </li>
-  <li>Fixed bug for filename case problems.</li>
+  <li>Fixed bug for filename case problems</li>
 
-  <li>Fixed bug for deleting stale build data.<br>
+  <li>Fixed bug for deleting stale build data<br>
   </li>
 </ul>
 <h2>2014-01-04</h2>

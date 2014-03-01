@@ -1,7 +1,4 @@
 
-Current Status - Version 0.2
---------------
-
 Features
 --------
 	See the web site for a list of features.
@@ -20,9 +17,6 @@ Missing Features
 	- Only 64 bit linux build is provided.
 	- Code improvements: Use unique_ptr for model objects
 	- Code improvements: Fix Project module to contain source root dir
-- High Priority Dog Food Problems
-	- Editor - find in files (background process?)
-	- Editor - open include files
 - Gui
 	- Clicking on warnings doesn't display editor. Also change to double click?
 	- Saving diagrams/files dialog button says Open instead of Save.
@@ -61,7 +55,6 @@ Missing Features
 	- Changing build settings/dependencies should update components
 	- Show external project component dependencies, module dependencies
 - Class Diagrams
-	- BUG: Editor inherits from DebuggerListener, but not shown in Linux
 	- BUG: forward class definitions mess up source line numbers
 	- When class members are not shown, should be easy way to view members
 	- FilePath not showing inheritance - templates?
@@ -88,7 +81,7 @@ Missing Features
 	- Could allow multiple selection to add relations, remove, properties
 	- Could have grid for class placement, option for grid size
 - Sequence Diagrams
-	- Add show callers for operation
+	- BUG: World doesn't show client/takeBag when opened from test/trunk-oovcde-win
 	- don't allow removing top call
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
@@ -104,7 +97,7 @@ Missing Features
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
 	- split source of libraries into separate file for each function for release mode
-	- BUG: Allow all components to have difference cpp/link args? -lnk-mwindows
+	- Allow all components to have difference cpp/link args? -lnk-mwindows
 		Add -lnk-mwindows if in Windows and using GTK? NO for command line apps
 		Assign configs to components?
 	- Separate oovcde-comptypes into user editable part (comp types), and file lists part
@@ -120,11 +113,13 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
-	- BUG: shift-f3 doesn't work (Linux?)
+	- Editor - find in files (background process?)
+	- Editor - open include files
+	- View source from oovcde puts cursor on line, but does not blink until moved
+	- BUG: Margin is wrong if view is scrolled
 	- Home key doesn't scroll window
-	- Prevent overwrite of another editor at the same time
-	- GtkPlug, XEmbed
-	- Gtk Plug/Socket, Wayland? "gvim -f --socketid %w '%s'"
+	- Prevent file overwrite of another editor at the same time
+	- GtkPlug, XEmbed, Wayland? "gvim -f --socketid %w '%s'"
 	  http://lists.freedesktop.org/archives/wayland-devel/2012-February/002030.html
 		gdk_set_allowed_backends("x11")
 	- Embed vim examples:
@@ -141,6 +136,7 @@ Missing Features
 	- find declaration/definition
 	- refactor-rename
 - Debugger (In editor)
+	- Need to switch tabs when view source / hit breakpoint
 	- Add method for selecting component to debug
 	- When build starts, should stop debugger
 	- Need to exit child program/stop debugger when editor quits

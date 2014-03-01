@@ -7,15 +7,15 @@
 
 #include "Debugger.h"
 #include "Gui.h"
+#include "FilePath.h"
 #include <climits>
 
 #define DEBUG_DBG 1
 
 
-
 std::string DebuggerLocation::getAsString() const
     {
-    OovString location = mFileOrFuncName;
+    OovString location = getFilename();
     if(mLineNum != -1)
 	{
 	location += ':';
@@ -61,7 +61,7 @@ void Debugger::resume()
 
 void Debugger::toggleBreakpoint(const DebuggerBreakpoint &br)
     {
-    if(mGdbChildState == GCS_GdbChildRunning)
+    if(getChildState() == GCS_GdbChildRunning)
 	{
 	interrupt();
 	}
@@ -69,7 +69,7 @@ void Debugger::toggleBreakpoint(const DebuggerBreakpoint &br)
     if(iter == mBreakpoints.end())
 	{
 	mBreakpoints.push_back(br);
-	if(mGdbChildState == GCS_GdbChildPaused)
+	if(getChildState() == GCS_GdbChildPaused)
 	    {
 	    sendAddBreakpoint(br);
 	    }
@@ -77,7 +77,7 @@ void Debugger::toggleBreakpoint(const DebuggerBreakpoint &br)
     else
 	{
 	mBreakpoints.erase(iter);
-	if(mGdbChildState == GCS_GdbChildPaused)
+	if(getChildState() == GCS_GdbChildPaused)
 	    {
 	    if(br.mBreakpointNumber != -1)
 		{
@@ -115,9 +115,19 @@ void Debugger::stepOver()
 
 void Debugger::interrupt()
     {
-    if(!mBkgPipeProc.isIdle() && mGdbChildState == GCS_GdbChildRunning)
+    if(!mBkgPipeProc.isIdle() && getChildState() == GCS_GdbChildRunning)
 	{
 	sendMiCommand("-exec-interrupt");
+	}
+    }
+
+void Debugger::stop()
+    {
+    if(!mBkgPipeProc.isIdle())
+	{
+	sendMiCommand("-gdb-exit");
+	mBkgPipeProc.childProcessClose();
+	changeChildState(GCS_GdbChildNotRunning);
 	}
     }
 
@@ -128,16 +138,40 @@ void Debugger::ensureGdbChildRunning()
 	for(auto const &br : mBreakpoints)
 	    sendAddBreakpoint(br);
 	}
-    if(mGdbChildState == GCS_GdbChildNotRunning)
+    if(getChildState() == GCS_GdbChildNotRunning)
 	{
+	if(mWorkingDir.length())
+	    {
+	    std::string dirCmd = "-environment-cd ";
+	    dirCmd += mWorkingDir;
+	    sendMiCommand(dirCmd.c_str());
+	    }
+	if(mDebuggeeArgs.length())
+	    {
+	    std::string argCmd = "-exec-arguments ";
+	    argCmd += mDebuggeeArgs;
+	    sendMiCommand(argCmd.c_str());
+	    }
 	sendMiCommand("-exec-run");
 	}
     }
 
-void Debugger::viewVariable(char const * const variable)
+void Debugger::startGetVariable(char const * const variable)
     {
     std::string cmd = "-data-evaluate-expression ";
     cmd += variable;
+    sendMiCommand(cmd.c_str());
+    }
+
+void Debugger::startGetStack()
+    {
+    sendMiCommand("-stack-list-frames");
+    }
+
+void Debugger::startGetMemory(char const * const addr)
+    {
+    OovString cmd = "-data-read-memory-bytes ";
+    cmd += addr;
     sendMiCommand(cmd.c_str());
     }
 
@@ -187,15 +221,41 @@ void Debugger::onStdOut(char const * const out, int len)\
 	}
     }
 
-DebuggerLocation Debugger::getStoppedLocation() const
+DebuggerLocation Debugger::getStoppedLocation()
     {
     DebuggerLocation loc;
-    if(mGdbChildState == GCS_GdbChildPaused)
+    if(getChildState() == GCS_GdbChildPaused)
 	{
+	LockGuard lock(mStatusLock);
 	loc = mStoppedLocation;
 	}
     return loc;
     }
+
+Debugger::eChangeStatus Debugger::getChangeStatus()
+    {
+    LockGuard lock(mStatusLock);
+    Debugger::eChangeStatus st = CS_None;
+    if(!mChangeStatusQueue.empty())
+	{
+	st = mChangeStatusQueue.front();
+	mChangeStatusQueue.pop();
+	}
+    return st;
+    }
+GdbChildStates Debugger::getChildState()
+    {
+    LockGuard lock(mStatusLock);
+    GdbChildStates cs = mGdbChildState;
+    return cs;
+    }
+std::string Debugger::getStack()
+    {
+    LockGuard lock(mStatusLock);
+    std::string str = mStack;
+    return str;
+    }
+
 
 void Debugger::onStdErr(char const * const out, int len)
     {
@@ -228,8 +288,91 @@ static DebuggerLocation getLocationFromResult(const std::string &resultStr)
     OovString line = getTagValue(resultStr, "line").c_str();
     int lineNum = 0;
     line.getInt(0, INT_MAX, lineNum);
-    loc.setFileLine(getTagValue(resultStr, "fullname").c_str(), lineNum);
+// For some reason, fullname has doubled slashes on Windows, buf file contains
+// a full good path.
+//    std::string fullFn = getTagValue(resultStr, "fullname");
+//    loc.setFileLine(fixFilePath(fullFn.c_str()).c_str(), lineNum);
+    loc.setFileLine(getTagValue(resultStr, "file").c_str(), lineNum);
     return loc;
+    }
+
+// Return is end of result tuple.
+// A tuple is defined in the GDB/MI output syntax BNF
+// Example:		std::vector<WoolBag> mBags
+// 15^done,value="{mBags = {<std::_Vector_base<WoolBag, std::allocator<WoolBag> >> =
+// 	{_M_impl = {<std::allocator<WoolBag>> = {<__gnu_cxx::new_allocator<WoolBag>> =
+//	{<No data fields>}, <No data fields>}, _M_start = 0x5a15a0, _M_finish = 0x5a15a2,
+//	_M_end_of_storage = 0x5a15a4}}, <No data fields>}}"
+//
+// Example:		A class containing mModule and mInterface
+// 10^done,value="{mModule = 0x8, mInterface = {getResourceName = 0x7625118e <onexit+97>,
+//	putTogether = 0x76251162 <onexit+53>}}"
+static size_t getResultTuple(int pos, const std::string &resultStr, std::string &tupleStr)
+    {
+    size_t startPos = resultStr.find('{', pos);
+    size_t endPos = resultStr.find('}', startPos);
+    if(endPos != std::string::npos)
+	{
+	endPos++;	// Include the close brace.
+	tupleStr = resultStr.substr(startPos, endPos-startPos);
+	}
+    return endPos;
+    }
+
+// From the GDB/MI output syntax BNF
+// A value can contain a tuple, a c string, or a list.
+// A list contains value="[, a tuple contains value="{
+//
+// 9^done,value="\"\\000\\000:\\000\\000\\000\""
+static size_t getResultValue(int pos, const std::string &resultStr, std::string &tupleStr)
+    {
+
+    }
+
+void Debugger::handleBreakpoint(const std::string &resultStr)
+    {
+    OovString brkNumStr = getTagValue(resultStr, "number");
+    int brkNum;
+    if(brkNumStr.getInt(0, 55555, brkNum))
+	{
+	DebuggerLocation loc = getLocationFromResult(resultStr);
+	mBreakpoints.setBreakpointNumber(loc, brkNum);
+	}
+    }
+
+// 99^done,stack=[
+//    frame={level="0",addr="0x00408d0b",func="printf",file="c:/mingw/include/stdio.h",
+//	fullname="c:\\mingw\\include\\stdio.h",line="240"},
+//    frame={level="1",...
+void Debugger::handleStack(const std::string &resultStr)
+    {
+    size_t pos=0;
+
+	{
+	LockGuard lock(mStatusLock);
+	mStack.clear();
+	do
+	    {
+	    std::string tuple;
+	    pos = getResultTuple(pos, resultStr, tuple);
+	    if(pos != std::string::npos)
+		{
+		mStack += getTagValue(tuple, "func");
+		mStack += "   ";
+		DebuggerLocation loc = getLocationFromResult(tuple);
+		mStack += loc.getAsString();
+		mStack += "\n";
+		}
+	    else
+		break;
+	    } while(pos!=std::string::npos);
+	}
+    updateChangeStatus(Debugger::CS_Stack);
+    }
+
+static int compareSubstr(const std::string &resultStr, size_t pos, char const *substr)
+    {
+    return resultStr.compare(pos, strlen(substr), substr);
     }
 
 void Debugger::handleResult(const std::string &resultStr)
@@ -251,30 +394,29 @@ void Debugger::handleResult(const std::string &resultStr)
 	    {
 	    case '^':
 		{
-		if(resultStr.find("running", pos+1) != std::string::npos)
+		if(compareSubstr(resultStr, pos+1, "running") == 0)
 		    {
 		    changeChildState(GCS_GdbChildRunning);
 		    }
-		else if(resultStr.find("error", pos+1) != std::string::npos)
+		else if(compareSubstr(resultStr, pos+1, "error") == 0)
 		    {
 //		if(mDebuggerListener)
 //		    mDebuggerListener->DebugOutput(&resultStr[3]);
 		    }
-		else if(resultStr.find("done", pos+1) != std::string::npos)
+		else if(compareSubstr(resultStr, pos+1, "done") == 0)
 		    {
-		    std::string typeStr = getTagValue(resultStr, "type");
+		    std::string typeStr = getTagValue(resultStr, "type=");
 		    if(typeStr.compare("breakpoint") == 0)
 			{
-			OovString brkNumStr = getTagValue(resultStr, "number");
-			int brkNum;
-			if(brkNumStr.getInt(0, 55555, brkNum))
-			    {
-			    DebuggerLocation loc = getLocationFromResult(resultStr);
-			    mBreakpoints.setBreakpointNumber(loc, brkNum);
-			    }
+			handleBreakpoint(resultStr);
+			}
+		    /// @todo - do this at a specific pos
+		    else if(resultStr.find("stack=[") != std::string::npos)
+			{
+			handleStack(resultStr);
 			}
 		    }
-		else if(resultStr.find("exit", pos+1) != std::string::npos)
+		else if(compareSubstr(resultStr, pos+1, "exit") == 0)
 		    {
 		    changeChildState(GCS_GdbChildNotRunning);
 		    }
@@ -294,6 +436,7 @@ void Debugger::handleResult(const std::string &resultStr)
 		    if((reason.find("end-stepping-range") != std::string::npos) ||
 			    (reason.find("breakpoint-hit") != std::string::npos))
 			{
+			LockGuard lock(mStatusLock);
 			mStoppedLocation = getLocationFromResult(resultStr);
 			changeChildState(GCS_GdbChildPaused);
 			}
@@ -321,9 +464,21 @@ void Debugger::handleResult(const std::string &resultStr)
 	mDebuggerListener->DebugOutput(resultStr.c_str());
     }
 
-void Debugger::changeChildState(GdbChildStates state)
+void Debugger::updateChangeStatus(Debugger::eChangeStatus status)
     {
-    mGdbChildState = state;
+	{
+	LockGuard lock(mStatusLock);
+	mChangeStatusQueue.push(status);
+	}
     if(mDebuggerListener)
 	mDebuggerListener->DebugStatusChanged();
+    }
+
+void Debugger::changeChildState(GdbChildStates state)
+    {
+	{
+	LockGuard lock(mStatusLock);
+	mGdbChildState = state;
+	}
+    updateChangeStatus(CS_RunState);
     }

@@ -68,14 +68,6 @@ static void addCLangArgs(CompoundValue &cv)
     cv.addArg("-std=c++11");
     }
 
-#ifdef __linux__
-std::string makeExeFilename(char const * const rootFn)
-    { return rootFn; }
-#else
-std::string makeExeFilename(char const * const rootFn)
-    { return (std::string(rootFn) + ".exe"); }
-#endif
-
 static void setBuildConfigurationPaths(NameValueFile &file,
 	char const * const buildConfig, char const * const extraArgs, bool useclang)
     {

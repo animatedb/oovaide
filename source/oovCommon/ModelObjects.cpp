@@ -535,11 +535,35 @@ static inline bool skipStr(char const * * const str, char const * const compareS
     }
 #endif
 
+static bool isIdentC(char c)
+    {
+    return(isalnum(c) || c == '_');
+    }
+
+static char const *skipWhite(char const *p)
+    {
+    while(p)
+	{
+	if(!isspace(*p))
+	    break;
+	p++;
+	}
+    return p;
+    }
+
+static char getTokenType(char c)
+    {
+    if(isIdentC(c))
+	c = 'i';
+    return c;
+    }
+
 std::string ModelData::getBaseType(char const * const fullStr) const
 {
 #if(BASESPEED)
     std::string str;
     char const *p = fullStr;
+    // Skip leading spaces.
     while(*p == ' ')
 	p++;
     while(*p)
@@ -558,35 +582,22 @@ std::string ModelData::getBaseType(char const * const fullStr) const
 		if(!skipStr(&p, "struct "))
 		    str += *p++;
 		break;
-	    case '*':	p++;		break;
-	    case '&':	p++;		break;
-	    case ' ':
-		if(*(p-1) == ' ')
-		    p++;
-		else
-		    {
-		    switch(*(p+1))
-			{
-			// FALL THROUGH
-			case '<':
-			case '>':
-			case ' ':
-			case ':':
-			    p++;
-			    break;
-			default:	str += *p++;	break;
-			}
-		    }
+	    case '*':	p++;
 		break;
-	    case '<':
-	    case '>':
-	    case ':':
-		if(*(p+1) == ' ')
+	    case '&':	p++;
+		break;
+	    case ' ':
+		{
+		char prevTokenType = getTokenType(str[str.length()-1]);
+		char nextTokenType = getTokenType(*skipWhite(p));
+		if(prevTokenType != nextTokenType)
 		    p++;
 		else
 		    str += *p++;
+		}
 		break;
-	    default:	str += *p++;	break;
+	    default:	str += *p++;
+		break;
 	    }
 	}
     int len = str.length()-1;
@@ -702,11 +713,6 @@ const ModelType *ModelData::findTypeByModelId(int id) const
 	    }
 	}
     return rettype;
-    }
-
-static bool isIdentC(char c)
-    {
-    return(isalnum(c) || c == '_');
     }
 
 static size_t findIdentC(const std::string &str, size_t pos)

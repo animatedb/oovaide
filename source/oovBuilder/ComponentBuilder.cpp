@@ -282,14 +282,6 @@ bool ComponentBuilder::buildComponents()
     }
 
 
-#ifdef __linux__
-std::string makeExeFilename(char const * const rootFn)
-    { return rootFn; }
-#else
-std::string makeExeFilename(char const * const rootFn)
-    { return (std::string(rootFn) + ".exe"); }
-#endif
-
 void ToolPathFile::getPaths()
     {
     if(mPathCompiler.length() == 0)

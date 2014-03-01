@@ -30,6 +30,7 @@ bool StringToFloat(char const * const str, float min, float max, float &val);
 bool StringToInt(char const * const str, int min, int max, int &val);
 bool StringToUnsignedInt(char const * const str, unsigned int min,
 	unsigned int max, unsigned int &val);
+int StringCompareNoCase(char const * str1, char const * str2);
 
 // This class is immutable. It does not do memory allocation or deallocation and
 // does not keep any memory.

@@ -14,8 +14,7 @@
 
 
 Editor::Editor():
-    mEditFiles(mDebugger), mLastSearchCaseSensitive(false),
-    mUpdateDebugMenu(false)
+    mEditFiles(mDebugger), mLastSearchCaseSensitive(false)
     {
     mDebugger.setListener(*this);
     g_idle_add(onIdle, this);
@@ -147,20 +146,33 @@ gboolean Editor::onIdle(gpointer data)
 	Gui::scrollToCursor(view);
 	gEditor.mDebugOut.clear();
 	}
-    if(gEditor.mUpdateDebugMenu)
+    Debugger::eChangeStatus dbgStatus = gEditor.mDebugger.getChangeStatus();
+    if(dbgStatus != Debugger::CS_None)
 	{
-	gEditor.mUpdateDebugMenu = false;
-	gEditor.getEditFiles().updateDebugMenu();
+	gEditor.idleDebugStatusChange(dbgStatus);
 	}
-    if(!gEditor.mDebuggerStoppedLocation.isEmpty())
-	{
-	auto const &loc = gEditor.mDebuggerStoppedLocation;
-	gEditor.mEditFiles.viewFile(loc.getFilename().c_str(), loc.getLine());
-	gEditor.mDebuggerStoppedLocation.clear();
-	}
-
     gEditor.getEditFiles().onIdle();
+    sleepMs(5);
     return true;
+    }
+
+void Editor::idleDebugStatusChange(Debugger::eChangeStatus st)
+    {
+    if(st == Debugger::CS_RunState)
+	{
+	getEditFiles().updateDebugMenu();
+	if(mDebugger.getChildState() == GCS_GdbChildPaused)
+	    {
+	    auto const &loc = mDebugger.getStoppedLocation();
+	    mEditFiles.viewFile(loc.getFilename().c_str(), loc.getLine());
+	    mDebugger.startGetStack();
+	    }
+	}
+    else if(st == Debugger::CS_Stack)
+	{
+	GtkTextView *view = GTK_TEXT_VIEW(mBuilder.getWidget("StackTextview"));
+	Gui::setText(view, mDebugger.getStack().c_str());
+	}
     }
 
 void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
@@ -223,7 +235,9 @@ void Editor::editPreferences()
 	{
 	if(compFile.getComponentType(name.c_str()) == ComponentTypesFile::CT_Program)
 	    {
-	    Gui::appendText(cb, name.c_str());
+	    FilePath fp(Project::getOutputDir(BuildConfigDebug), FP_Dir);
+	    fp.appendFile(makeExeFilename(name.c_str()).c_str());
+	    Gui::appendText(cb, fp.c_str());
 	    haveNames = true;
 	    }
 	}
@@ -262,6 +276,7 @@ static void activateApp(GApplication *gapp)
     }
 
 // command-line signal
+// Beware - this is called many times when starting up.
 static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
     gpointer user_data)
     {
@@ -290,7 +305,7 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 	    }
 	if(fn)
 	    {
-	    gEditor.getEditFiles().viewFile(fn, line);
+	    gEditor.getEditFiles().viewFile(fixFilePath(fn).c_str(), line);
 	    }
 	}
     if(goodArgs)

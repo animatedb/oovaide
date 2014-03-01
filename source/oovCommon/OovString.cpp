@@ -75,6 +75,18 @@ bool StringToUnsignedInt(const char *mbStr, unsigned int min, unsigned int max,
     return success;
     }
 
+int StringCompareNoCase(char const * str1, char const * str2)
+    {
+    while(*str1)
+	{
+	if(tolower(*str1) != tolower(*str2))
+	    break;
+	str1++;
+	str2++;
+	}
+    return(*str1-*str2);
+    }
+
 bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInBytes, int radix)
     {
     bool success = false;

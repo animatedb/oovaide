@@ -2,6 +2,7 @@ BuildArgsBase|-c;-x;c++;-std=c++11;-I/home/dave/software/oovcde/2.0/clang+llvm-3
 BuildArgsExtra-Debug|-O0;-g3
 BuildArgsExtra-Release|-O3
 SourceRootDir|/home/dave/software/oovcde/2.0/svn/trunk/
+Tool-DebuggerPath|/usr/bin/gdb
 Tool-CompilerPath-Debug|clang++
 Tool-CompilerPath-Release|clang++
 Tool-LibPath-Debug|ar

@@ -41,7 +41,7 @@ class XmiParser:private XmlParser
     public:
         XmiParser(ModelData &model):
             mModel(model), mCurrentClassifier(NULL), mStartingModuleTypeIndex(0),
-            mNumModuleTypeIndices(0)
+            mEndingModuleTypeIndex(0)
             {}
     public:
 	bool parse(char const * const buf);
@@ -51,16 +51,19 @@ class XmiParser:private XmlParser
 	// first file at zero, then get the next type index when the file is
 	// completed parsing and use that for the starting index of the next module.
 	void setStartingTypeIndex(int index)
-	    { mStartingModuleTypeIndex = index; }
+	    {
+	    mStartingModuleTypeIndex = index;
+	    mEndingModuleTypeIndex = index;
+	    }
 	int getNextTypeIndex() const
-	    { return mNumModuleTypeIndices+1; }
+	    { return mEndingModuleTypeIndex+1; }
 
     private:
         ModelData &mModel;
         std::vector<ModelObject*> mElementStack;
         ModelClassifier *mCurrentClassifier;
         int mStartingModuleTypeIndex;
-        int mNumModuleTypeIndices;
+        int mEndingModuleTypeIndex;
         // First is index from current module or the original index. Second is
         // index from previous module or the new index that it will be changed to
         std::map<int, int> mFileTypeIndexMap;

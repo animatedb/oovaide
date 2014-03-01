@@ -400,10 +400,13 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
 	    CXStringDisposer parentName = clang_getCursorDisplayName(parent);
 	    removeClass(name);
 	    // The parentName contains the child class.
+	    // These have to be made datatypes (not classes) so that these don't define
+	    // the type.  For example, std::string may not be defined in a file,
+	    // so these would create a new model number for the type.
 	    ModelClassifier *child = static_cast<ModelClassifier*>(
-		    mModelData.createOrGetTypeRef(parentName.c_str(), otClass));
+		    mModelData.createOrGetTypeRef(parentName.c_str(), otDatatype));
 	    ModelClassifier *parent = static_cast<ModelClassifier*>(
-		    mModelData.createOrGetTypeRef(name.c_str(), otClass));
+		    mModelData.createOrGetTypeRef(name.c_str(), otDatatype));
 	    ModelAssociation *assoc = new ModelAssociation(child,
 		parent, getAccess(cursor));
 	    mModelData.mAssociations.push_back(assoc);
@@ -650,8 +653,12 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 		if(fn == mTopParseFn)
 		    {
 		    mClassifier->setOutput(ModelClassifier::O_DefineClass);
+		    mClassifier->setModule(mModelData.mModules[0]);
 		    }
-		mClassifier->setModule(mModelData.mModules[0]);
+		else
+		    {
+//		    mClassifier->setModule(mModelData.mModules[0]);
+		    }
 		mClassifier->setLineNum(line);
 		clang_visitChildren(cursor, ::visitRecord, this);
 		}
