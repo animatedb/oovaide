@@ -113,6 +113,10 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
+	- display variable doesn't work (wrong page?)
+	- remove breakpoint doesn't work
+	- editor doesn't handle two files with same name
+	- Debugger must be stopped before exiting editor
 	- Editor - find in files (background process?)
 	- Editor - open include files
 	- View source from oovcde puts cursor on line, but does not blink until moved
@@ -137,6 +141,7 @@ Missing Features
 	- refactor-rename
 - Debugger (In editor)
 	- Need to switch tabs when view source / hit breakpoint
+	- view variable doesn't drill into data
 	- Add method for selecting component to debug
 	- When build starts, should stop debugger
 	- Need to exit child program/stop debugger when editor quits

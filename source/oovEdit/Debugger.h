@@ -11,6 +11,7 @@
 #include "OovProcess.h"
 #include "OovString.h"
 #include "FilePath.h"
+#include "DebugResult.h"
 #include <algorithm>
 #include <vector>
 #include <queue>
@@ -95,7 +96,7 @@ class DebuggerListener
 class Debugger:public OovProcessListener
     {
     public:
-	enum eChangeStatus { CS_None, CS_RunState, CS_Stack };
+	enum eChangeStatus { CS_None, CS_RunState, CS_Stack, CS_Value };
 	Debugger();
 	void setListener(DebuggerListener &listener)
 	    { mDebuggerListener = &listener; }
@@ -129,6 +130,7 @@ class Debugger:public OovProcessListener
 	Debugger::eChangeStatus getChangeStatus();
 	GdbChildStates getChildState();
 	std::string getStack();
+	std::string getVarValue();
 	// Returns empty filename if not stopped.
 	DebuggerLocation getStoppedLocation();
 
@@ -146,6 +148,7 @@ class Debugger:public OovProcessListener
 	// Thread protected data
 	std::string mGdbOutputBuffer;
 	std::string mStack;
+	std::string mVarValue;
 	GdbChildStates mGdbChildState;
 	InProcMutex mStatusLock;
 	std::queue<Debugger::eChangeStatus> mChangeStatusQueue;
@@ -161,6 +164,7 @@ class Debugger:public OovProcessListener
 	void handleResult(const std::string &resultStr);
 	void handleBreakpoint(const std::string &resultStr);
 	void handleStack(const std::string &resultStr);
+	void handleValue(const std::string &resultStr);
 	virtual void onStdOut(char const * const out, int len);
 	virtual void onStdErr(char const * const out, int len);
     };

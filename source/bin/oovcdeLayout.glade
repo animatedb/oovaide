@@ -19,11 +19,9 @@
             <child>
               <object class="GtkButton" id="AddPackageCancelButton">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -35,11 +33,9 @@
             <child>
               <object class="GtkButton" id="AddPackageOKButton">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -154,11 +150,9 @@
             <child>
               <object class="GtkButton" id="BuildSettingsCancelButton">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_BuildSettingsCancelButton_clicked" swapped="no"/>
               </object>
@@ -171,11 +165,9 @@
             <child>
               <object class="GtkButton" id="BuildSettingsOkButton">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_BuildSettingsOkButton_clicked" swapped="no"/>
               </object>
@@ -277,7 +269,6 @@
     <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="GotoClassMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Go To Class</property>
@@ -287,7 +278,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="RelayoutMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Relayout</property>
@@ -303,7 +293,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddStandardMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Standard Relations</property>
@@ -313,7 +302,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddAllMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add All Relations</property>
@@ -329,7 +317,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddSuperclassesMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Superclasses</property>
@@ -339,7 +326,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddSubclassesMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Subclasses</property>
@@ -349,7 +335,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddMembersUsingMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Members Using</property>
@@ -359,7 +344,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddMemberUsersMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Member Users</property>
@@ -375,7 +359,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddFuncParamsUsingMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Func Params Using</property>
@@ -385,7 +368,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddFuncParamUsersMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Func Param Users</property>
@@ -395,7 +377,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddFuncBodyVarUsingMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Func Body Var Using</property>
@@ -405,7 +386,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddFuncBodyVarUsersMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Func Body Var Users</property>
@@ -421,7 +401,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="RemoveClassMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Remove Class</property>
@@ -431,7 +410,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="RemoveAllMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Remove All Classes</property>
@@ -447,7 +425,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="ViewSourceMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">View Source</property>
@@ -457,7 +434,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="ClassPreferencesMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Preferences</property>
@@ -471,7 +447,6 @@
     <property name="can_focus">False</property>
     <child>
       <object class="GtkMenuItem" id="OperGotoOperationMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Go To Operation</property>
@@ -481,7 +456,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="OperGotoClassMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Go To Class</property>
@@ -491,7 +465,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddCallsMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Calls</property>
@@ -501,7 +474,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="AddCallersMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Add Callers</property>
@@ -517,7 +489,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="RemoveCallsMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Remove Calls</property>
@@ -526,7 +497,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="RemoveOperClassMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">Remove Class</property>
@@ -541,7 +511,6 @@
     </child>
     <child>
       <object class="GtkMenuItem" id="ViewOperSourceMenuitem">
-        <property name="use_action_appearance">False</property>
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">View Source</property>
@@ -568,11 +537,9 @@
             <child>
               <object class="GtkButton" id="NewBuildConfigCancelButton">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_NewBuildConfigCancelButton_clicked" swapped="no"/>
               </object>
@@ -585,11 +552,9 @@
             <child>
               <object class="GtkButton" id="NewBuildConfigOKButton">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_NewBuildConfigOKButton_clicked" swapped="no"/>
               </object>
@@ -697,11 +662,9 @@
             <child>
               <object class="GtkButton" id="NewModuleCancelButton">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_NewModuleCancelButton_clicked" swapped="no"/>
               </object>
@@ -714,11 +677,9 @@
             <child>
               <object class="GtkButton" id="NewModuleOkButton">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_NewModuleOkButton_clicked" swapped="no"/>
               </object>
@@ -796,6 +757,7 @@
               <object class="GtkEntry" id="NewModule_ModuleEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="hexpand">True</property>
                 <property name="invisible_char">•</property>
                 <property name="shadow_type">none</property>
                 <signal name="changed" handler="on_NewModule_ModuleEntry_changed" swapped="no"/>
@@ -844,7 +806,7 @@
                   <object class="GtkEntry" id="comboboxtext-entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
-                    <property name="max_length">30</property>
+                    <property name="max_length">255</property>
                     <property name="activates_default">True</property>
                   </object>
                 </child>
@@ -889,11 +851,9 @@
             <child>
               <object class="GtkButton" id="NewProjectCancelButton">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_NewProjectCancelButton_clicked" swapped="no"/>
               </object>
@@ -906,11 +866,9 @@
             <child>
               <object class="GtkButton" id="NewProjectOkButton">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_NewProjectOkButton_clicked" swapped="no"/>
               </object>
@@ -990,11 +948,9 @@
             <child>
               <object class="GtkButton" id="RootSourceDirButton">
                 <property name="label" translatable="yes">...</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <signal name="clicked" handler="on_RootSourceDirButton_clicked" swapped="no"/>
               </object>
               <packing>
@@ -1007,11 +963,9 @@
             <child>
               <object class="GtkButton" id="OovcdeProjectDirButton">
                 <property name="label" translatable="yes">...</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <signal name="clicked" handler="on_OovcdeProjectDirButton_clicked" swapped="no"/>
               </object>
               <packing>
@@ -1060,11 +1014,9 @@
             <child>
               <object class="GtkButton" id="OptionsCancelButton">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <property name="xalign">0.52999997138977051</property>
                 <signal name="clicked" handler="on_OptionsCancelButton_clicked" swapped="no"/>
@@ -1078,11 +1030,9 @@
             <child>
               <object class="GtkButton" id="OptionsOkButton">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_OptionsOkButton_clicked" swapped="no"/>
               </object>
@@ -1133,11 +1083,9 @@
                         <child>
                           <object class="GtkButton" id="ExternalPackagesButton">
                             <property name="label" translatable="yes">External Project Packages</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <signal name="clicked" handler="on_ExternalPackagesButton_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -1190,11 +1138,9 @@
                         <child>
                           <object class="GtkButton" id="BuildConfigNewButton">
                             <property name="label" translatable="yes">New Config...</property>
-                            <property name="use_action_appearance">False</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="receives_default">True</property>
-                            <property name="use_action_appearance">False</property>
                             <signal name="clicked" handler="on_BuildConfigNewButton_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -1473,11 +1419,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowAttributesCheckbutton">
                     <property name="label" translatable="yes">Show Attributes</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1490,11 +1434,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowOperationsCheckbutton">
                     <property name="label" translatable="yes">Show Operations</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1507,11 +1449,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowOperParamsCheckbutton">
                     <property name="label" translatable="yes">Show Operation Parameters</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1524,11 +1464,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowAttrTypesCheckbutton">
                     <property name="label" translatable="yes">Show Attribute Types</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1541,11 +1479,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowOperTypesCheckbutton">
                     <property name="label" translatable="yes">Show Operation Parameter Types</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1558,11 +1494,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowPackageNameCheckbutton">
                     <property name="label" translatable="yes">Show Package Name</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1596,11 +1530,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowOperBodyVarRelationsCheckbutton">
                     <property name="label" translatable="yes">Show Oper Body Var Relations</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1613,11 +1545,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowOperParamRelationsCheckbutton">
                     <property name="label" translatable="yes">Show Oper Param Relations</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1630,11 +1560,9 @@
                 <child>
                   <object class="GtkCheckButton" id="ShowOovSymbolsCheckbutton">
                     <property name="label" translatable="yes">Show Oov Symbols</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">False</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="xalign">0</property>
                     <property name="draw_indicator">True</property>
                   </object>
@@ -1766,11 +1694,9 @@
             <child>
               <object class="GtkButton" id="ProjectPackagesCancelButton">
                 <property name="label">gtk-cancel</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -1782,11 +1708,9 @@
             <child>
               <object class="GtkButton" id="ProjectPackagesOKButton">
                 <property name="label">gtk-ok</property>
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="use_action_appearance">False</property>
                 <property name="use_stock">True</property>
               </object>
               <packing>
@@ -1815,11 +1739,9 @@
                 <child>
                   <object class="GtkButton" id="PackageAddButton">
                     <property name="label">gtk-add</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="use_stock">True</property>
                     <signal name="clicked" handler="on_PackageAddButton_clicked" swapped="no"/>
                   </object>
@@ -1832,11 +1754,9 @@
                 <child>
                   <object class="GtkButton" id="PackageRemoveButton">
                     <property name="label">gtk-remove</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="use_stock">True</property>
                     <signal name="clicked" handler="on_PackageRemoveButton_clicked" swapped="no"/>
                   </object>
@@ -1966,11 +1886,9 @@
                 <child>
                   <object class="GtkButton" id="ScanDirectoriesButton">
                     <property name="label" translatable="yes">Scan Directories</property>
-                    <property name="use_action_appearance">False</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
-                    <property name="use_action_appearance">False</property>
                     <signal name="clicked" handler="on_ScanDirectoriesButton_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -2140,7 +2058,6 @@
             <property name="can_focus">False</property>
             <child>
               <object class="GtkMenuItem" id="menuitem1">
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_File</property>
@@ -2151,7 +2068,6 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkMenuItem" id="NewProjectMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">New Project...</property>
@@ -2161,7 +2077,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="NewModuleMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">New Module...</property>
@@ -2171,7 +2086,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="OpenProjectMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Open Project...</property>
@@ -2187,7 +2101,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="SaveDrawingMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Save Drawing</property>
@@ -2198,7 +2111,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="SaveDrawingAsMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Save Drawing As...</property>
@@ -2216,7 +2128,6 @@
                     <child>
                       <object class="GtkImageMenuItem" id="FileQuitmenuitem">
                         <property name="label">gtk-quit</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
@@ -2230,7 +2141,6 @@
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem2">
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Edit</property>
@@ -2242,7 +2152,6 @@
                     <child>
                       <object class="GtkImageMenuItem" id="EditCutmenuitem">
                         <property name="label">gtk-cut</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
@@ -2251,7 +2160,6 @@
                     <child>
                       <object class="GtkImageMenuItem" id="EditCopymenuitem">
                         <property name="label">gtk-copy</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
@@ -2260,7 +2168,6 @@
                     <child>
                       <object class="GtkImageMenuItem" id="EditPastemenuitem">
                         <property name="label">gtk-paste</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
@@ -2269,7 +2176,6 @@
                     <child>
                       <object class="GtkImageMenuItem" id="EditDeletemenuitem">
                         <property name="label">gtk-delete</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
@@ -2278,7 +2184,6 @@
                     <child>
                       <object class="GtkImageMenuItem" id="EditOptionsmenuitem">
                         <property name="label">Preferences...</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="image">image5</property>
@@ -2292,7 +2197,6 @@
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem3">
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Build</property>
@@ -2303,7 +2207,6 @@
                     <property name="can_focus">False</property>
                     <child>
                       <object class="GtkMenuItem" id="BuildAnalyzeMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Analyze</property>
@@ -2313,7 +2216,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="BuildSettingsMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Settings...</property>
@@ -2323,7 +2225,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="BuildDebugMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Build Debug</property>
@@ -2333,7 +2234,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="BuildReleaseMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Build Release</property>
@@ -2343,7 +2243,6 @@
                     </child>
                     <child>
                       <object class="GtkMenuItem" id="StopBuildMenuitem">
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Stop Build</property>
@@ -2357,7 +2256,6 @@
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem4">
-                <property name="use_action_appearance">False</property>
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Help</property>
@@ -2369,7 +2267,6 @@
                     <child>
                       <object class="GtkImageMenuItem" id="HelpAboutmenuitem">
                         <property name="label">gtk-about</property>
-                        <property name="use_action_appearance">False</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>

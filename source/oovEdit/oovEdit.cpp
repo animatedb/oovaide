@@ -17,13 +17,14 @@ Editor::Editor():
     mEditFiles(mDebugger), mLastSearchCaseSensitive(false)
     {
     mDebugger.setListener(*this);
-    g_idle_add(onIdle, this);
     }
 
 void Editor::init()
     {
     mEditFiles.init(mBuilder);
+    mVarView.init(mBuilder, "DataTreeview", nullptr);
     setStyle();
+    g_idle_add(onIdle, this);
     }
 
 void Editor::openTextFile(char const * const fn)
@@ -172,6 +173,10 @@ void Editor::idleDebugStatusChange(Debugger::eChangeStatus st)
 	{
 	GtkTextView *view = GTK_TEXT_VIEW(mBuilder.getWidget("StackTextview"));
 	Gui::setText(view, mDebugger.getStack().c_str());
+	}
+    else if(st == Debugger::CS_Value)
+	{
+	mVarView.appendText(GuiTreeItem(), mDebugger.getVarValue().c_str());
 	}
     }
 

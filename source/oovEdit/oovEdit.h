@@ -109,6 +109,7 @@ class Editor:public DebuggerListener
 	bool mLastSearchCaseSensitive;
 	std::string mDebugOut;
 	EditOptions mEditOptions;
+	GuiTree mVarView;
 	void find(char const * const findStr, bool forward, bool caseSensitive);
 	void setModuleName(const char *mn)
 	    {

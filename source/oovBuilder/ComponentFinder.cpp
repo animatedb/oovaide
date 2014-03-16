@@ -176,7 +176,7 @@ std::string ComponentFinder::getComponentName(char const * const filePath) const
     std::string compName;
     FilePath path(filePath, FP_File);
     path.discardFilename();
-    Project::getSrcRootDirRelativeSrcFileName(path.getWithoutEndPathSep(),
+    Project::getSrcRootDirRelativeSrcFileName(path,
 	    mProject.getSrcRootDirectory().c_str(), compName);
     if(compName.length() == 0)
     	{
@@ -184,6 +184,10 @@ std::string ComponentFinder::getComponentName(char const * const filePath) const
 	mRootPathName = path.getPathSegment();
 	compName = "<Root>";
     	}
+    else
+	{
+	removePathSep(compName, compName.length()-1);
+	}
     return compName;
     }
 

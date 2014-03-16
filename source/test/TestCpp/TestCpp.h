@@ -28,7 +28,7 @@
 //			}
 //
 //		int main()
-//			{ gCommUnitTest.runAllTests(); }
+//			{ cExampleUnitTest.runAllTests(); }
 //
 // Output is stored in a file called TestCpp.txt that logs tests as they are run,
 // and pass/fail counts at the end.

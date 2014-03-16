@@ -256,6 +256,13 @@ std::string Debugger::getStack()
     return str;
     }
 
+std::string Debugger::getVarValue()
+    {
+    LockGuard lock(mStatusLock);
+    std::string str = mVarValue;
+    return str;
+    }
+
 
 void Debugger::onStdErr(char const * const out, int len)
     {
@@ -274,6 +281,7 @@ static std::string getTagValue(std::string const &wholeStr, char const * const t
     size_t pos = wholeStr.find(tagStr);
     if(pos != std::string::npos)
 	{
+        /// @todo - this has to skip escaped quotes
 	pos += tagStr.length();
 	size_t endPos = wholeStr.find("\"", pos);
 	if(endPos != std::string::npos)
@@ -288,25 +296,46 @@ static DebuggerLocation getLocationFromResult(const std::string &resultStr)
     OovString line = getTagValue(resultStr, "line").c_str();
     int lineNum = 0;
     line.getInt(0, INT_MAX, lineNum);
-// For some reason, fullname has doubled slashes on Windows, buf file contains
-// a full good path.
-//    std::string fullFn = getTagValue(resultStr, "fullname");
-//    loc.setFileLine(fixFilePath(fullFn.c_str()).c_str(), lineNum);
-    loc.setFileLine(getTagValue(resultStr, "file").c_str(), lineNum);
+// For some reason, "fullname" has doubled slashes on Windows, Sometimes "file"
+// contains a full good path, but not all the time.
+    FilePath fullFn(fixFilePath(getTagValue(resultStr, "fullname").c_str()).c_str(),
+	    FP_File);
+    loc.setFileLine(fullFn.c_str(), lineNum);
+//    loc.setFileLine(getTagValue(resultStr, "file").c_str(), lineNum);
     return loc;
     }
 
 // Return is end of result tuple.
 // A tuple is defined in the GDB/MI output syntax BNF
 // Example:		std::vector<WoolBag> mBags
-// 15^done,value="{mBags = {<std::_Vector_base<WoolBag, std::allocator<WoolBag> >> =
-// 	{_M_impl = {<std::allocator<WoolBag>> = {<__gnu_cxx::new_allocator<WoolBag>> =
-//	{<No data fields>}, <No data fields>}, _M_start = 0x5a15a0, _M_finish = 0x5a15a2,
-//	_M_end_of_storage = 0x5a15a4}}, <No data fields>}}"
+// 15^done,value="{mBags = {
+//    <std::_Vector_base<WoolBag, std::allocator<WoolBag> >> =
+//      {
+//      _M_impl =
+//         {
+//         <std::allocator<WoolBag>> =
+//            {
+//            <__gnu_cxx::new_allocator<WoolBag>> =
+//               {<No data fields>},
+//               <No data fields>
+//            },
+//         _M_start = 0x5a15a0,
+//         _M_finish = 0x5a15a2,
+//         _M_end_of_storage = 0x5a15a4
+//         }
+//      },
+//       <No data fields>}}"
 //
 // Example:		A class containing mModule and mInterface
-// 10^done,value="{mModule = 0x8, mInterface = {getResourceName = 0x7625118e <onexit+97>,
-//	putTogether = 0x76251162 <onexit+53>}}"
+// 10^done,value="
+//      {
+//      mModule = 0x8,
+//      mInterface =
+//          {
+//          getResourceName = 0x7625118e <onexit+97>,
+//      	putTogether = 0x76251162 <onexit+53>
+//          }
+//      }"
 static size_t getResultTuple(int pos, const std::string &resultStr, std::string &tupleStr)
     {
     size_t startPos = resultStr.find('{', pos);
@@ -319,16 +348,6 @@ static size_t getResultTuple(int pos, const std::string &resultStr, std::string 
     return endPos;
     }
 
-// From the GDB/MI output syntax BNF
-// A value can contain a tuple, a c string, or a list.
-// A list contains value="[, a tuple contains value="{
-//
-// 9^done,value="\"\\000\\000:\\000\\000\\000\""
-static size_t getResultValue(int pos, const std::string &resultStr, std::string &tupleStr)
-    {
-
-    }
-
 void Debugger::handleBreakpoint(const std::string &resultStr)
     {
     OovString brkNumStr = getTagValue(resultStr, "number");
@@ -338,6 +357,15 @@ void Debugger::handleBreakpoint(const std::string &resultStr)
 	DebuggerLocation loc = getLocationFromResult(resultStr);
 	mBreakpoints.setBreakpointNumber(loc, brkNum);
 	}
+    }
+
+void Debugger::handleValue(const std::string &resultStr)
+    {
+    cDebugResult debRes;
+    debRes.parseResult(resultStr.c_str());
+    mVarValue = debRes.getAsString();
+    updateChangeStatus(Debugger::CS_Value);
+mDebuggerListener->DebugOutput(mVarValue.c_str());
     }
 
 // 99^done,stack=[
@@ -394,6 +422,8 @@ void Debugger::handleResult(const std::string &resultStr)
 	    {
 	    case '^':
 		{
+		// After ^ is the "result-class":
+		//	running, done, connected, error, exit
 		if(compareSubstr(resultStr, pos+1, "running") == 0)
 		    {
 		    changeChildState(GCS_GdbChildRunning);
@@ -405,15 +435,26 @@ void Debugger::handleResult(const std::string &resultStr)
 		    }
 		else if(compareSubstr(resultStr, pos+1, "done") == 0)
 		    {
-		    std::string typeStr = getTagValue(resultStr, "type=");
-		    if(typeStr.compare("breakpoint") == 0)
+		    size_t variableNamePos = resultStr.find(',');
+		    if(variableNamePos != std::string::npos)
 			{
-			handleBreakpoint(resultStr);
-			}
-		    /// @todo - do this at a specific pos
-		    else if(resultStr.find("stack=[") != std::string::npos)
-			{
-			handleStack(resultStr);
+			variableNamePos++;
+			if(compareSubstr(resultStr, variableNamePos, "type=") == 0)
+			    {
+			    std::string typeStr = getTagValue(resultStr, "type=");
+			    if(typeStr.compare("breakpoint") == 0)
+				{
+				handleBreakpoint(resultStr);
+				}
+			    }
+			else if(compareSubstr(resultStr, variableNamePos, "stack=") == 0)
+			    {
+			    handleStack(resultStr);
+			    }
+			else if(compareSubstr(resultStr, variableNamePos, "value=") == 0)
+			    {
+			    handleValue(resultStr.substr(variableNamePos));
+			    }
 			}
 		    }
 		else if(compareSubstr(resultStr, pos+1, "exit") == 0)

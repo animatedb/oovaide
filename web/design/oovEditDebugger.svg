@@ -1,0 +1,270 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="655" height="790">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="403" y="230" width="189" height="17" />
+<line x1="403" y1="242" x2="592" y2="242" />
+<line x1="403" y1="245" x2="592" y2="245" />
+</g>
+<g font-size="10">
+<text x="404" y="239">std::queue&lt;Debugger::eChangeStatus&gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="274" y="746" width="47" height="26" />
+<line x1="274" y1="767" x2="321" y2="767" />
+<line x1="274" y1="770" x2="321" y2="770" />
+</g>
+<g font-size="10">
+<text x="275" y="755">EditFiles</text>
+<text x="275" y="764">/oovEdit/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="167" y="763" width="47" height="26" />
+<line x1="167" y1="784" x2="214" y2="784" />
+<line x1="167" y1="787" x2="214" y2="787" />
+</g>
+<g font-size="10">
+<text x="168" y="772">Editor</text>
+<text x="168" y="781">/oovEdit/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="17" y="133" width="302" height="467" />
+<line x1="17" y1="154" x2="319" y2="154" />
+<line x1="17" y1="283" x2="319" y2="283" />
+</g>
+<g font-size="10">
+<text x="18" y="142">Debugger</text>
+<text x="18" y="151">/oovEdit/</text>
+<text x="18" y="163">-std::string mDebuggerFilePath</text>
+<text x="18" y="172">-std::string mDebuggeeFilePath</text>
+<text x="18" y="181">-std::string mDebuggeeArgs</text>
+<text x="18" y="190">-std::string mWorkingDir</text>
+<text x="18" y="199">-DebuggerBreakpoints mBreakpoints</text>
+<text x="18" y="208">-OovBackgroundPipeProcess mBkgPipeProc</text>
+<text x="18" y="217">-DebuggerListener mDebuggerListener</text>
+<text x="18" y="226">-int mCommandIndex</text>
+<text x="18" y="235">-std::string mGdbOutputBuffer</text>
+<text x="18" y="244">-std::string mStack</text>
+<text x="18" y="253">-GdbChildStates mGdbChildState</text>
+<text x="18" y="262">-InProcMutex mStatusLock</text>
+<text x="18" y="271">-std::queue&lt;Debugger::eChangeStatus&gt; mChangeStatusQueue</text>
+<text x="18" y="280">-DebuggerLocation mStoppedLocation</text>
+<text x="18" y="292">+Debugger()</text>
+<text x="18" y="301">+setListener(DebuggerListener listener)</text>
+<text x="18" y="310">+setDebuggerFilePath(char const dbgPath)</text>
+<text x="18" y="319">+setDebuggee(char const debuggee)</text>
+<text x="18" y="328">+setDebuggeeArgs(char const args)</text>
+<text x="18" y="337">+setWorkingDir(char const dir)</text>
+<text x="18" y="346">+toggleBreakpoint(DebuggerBreakpoint br)</text>
+<text x="18" y="355">+stepInto()</text>
+<text x="18" y="364">+stepOver()</text>
+<text x="18" y="373">+resume()</text>
+<text x="18" y="382">+interrupt()</text>
+<text x="18" y="391">+stop()</text>
+<text x="18" y="400">+sendCommand(char const command)</text>
+<text x="18" y="409">+startGetVariable(char const variable)</text>
+<text x="18" y="418">+startGetStack()</text>
+<text x="18" y="427">+startGetMemory(char const addr)</text>
+<text x="18" y="436">+getDebuggerFilePath()</text>
+<text x="18" y="445">+getDebuggeeFilePath()</text>
+<text x="18" y="454">+getBreakpoints()</text>
+<text x="18" y="463">+getChangeStatus()</text>
+<text x="18" y="472">+getChildState()</text>
+<text x="18" y="481">+getStack()</text>
+<text x="18" y="490">+getStoppedLocation()</text>
+<text x="18" y="499">-runDebuggerProcess()</text>
+<text x="18" y="508">-ensureGdbChildRunning()</text>
+<text x="18" y="517">-sendAddBreakpoint(DebuggerBreakpoint br)</text>
+<text x="18" y="526">-sendDeleteBreakpoint(DebuggerBreakpoint br)</text>
+<text x="18" y="535">-sendMiCommand(char const command)</text>
+<text x="18" y="544">-changeChildState(GdbChildStates state)</text>
+<text x="18" y="553">-updateChangeStatus(Debugger::eChangeStatus )</text>
+<text x="18" y="562">-handleResult(std::string resultStr)</text>
+<text x="18" y="571">-handleBreakpoint(std::string resultStr)</text>
+<text x="18" y="580">-handleStack(std::string resultStr)</text>
+<text x="18" y="589">-onStdOut(char const out, int len)</text>
+<text x="18" y="598">-onStdErr(char const out, int len)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="387" y="432" width="254" height="44" />
+<line x1="387" y1="453" x2="641" y2="453" />
+<line x1="387" y1="456" x2="641" y2="456" />
+</g>
+<g font-size="10">
+<text x="388" y="441">DebuggerBreakpoints</text>
+<text x="388" y="450">/oovEdit/</text>
+<text x="388" y="465">+anyLocationsMatch(DebuggerLocation loc)</text>
+<text x="388" y="474">+setBreakpointNumber(DebuggerLocation loc, int bn)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="359" y="87" width="135" height="26" />
+<line x1="359" y1="108" x2="494" y2="108" />
+<line x1="359" y1="111" x2="494" y2="111" />
+</g>
+<g font-size="10">
+<text x="360" y="96">OovBackgroundPipeProcess</text>
+<text x="360" y="105">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="22" y="657" width="140" height="53" />
+<line x1="22" y1="678" x2="162" y2="678" />
+<line x1="22" y1="681" x2="162" y2="681" />
+</g>
+<g font-size="10">
+<text x="23" y="666">DebuggerListener</text>
+<text x="23" y="675">/oovEdit/</text>
+<text x="23" y="690">+~DebuggerListener()</text>
+<text x="23" y="699">+DebugOutput(char const str)</text>
+<text x="23" y="708">+DebugStatusChanged()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="468" y="265" width="71" height="26" />
+<line x1="468" y1="286" x2="539" y2="286" />
+<line x1="468" y1="289" x2="539" y2="289" />
+</g>
+<g font-size="10">
+<text x="469" y="274">InProcMutex</text>
+<text x="469" y="283">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="452" y="563" width="202" height="125" />
+<line x1="452" y1="584" x2="654" y2="584" />
+<line x1="452" y1="605" x2="654" y2="605" />
+</g>
+<g font-size="10">
+<text x="453" y="572">DebuggerLocation</text>
+<text x="453" y="581">/oovEdit/</text>
+<text x="453" y="593">-OovString mFileName</text>
+<text x="453" y="602">-int mLineNum</text>
+<text x="453" y="614">+DebuggerLocation(char const fn, int line)</text>
+<text x="453" y="623">+clear()</text>
+<text x="453" y="632">+isEmpty()</text>
+<text x="453" y="641">+operator==(DebuggerLocation rhs)</text>
+<text x="453" y="650">+setFileLine(char const fn, int line)</text>
+<text x="453" y="659">+setLine(int line)</text>
+<text x="453" y="668">+getLine()</text>
+<text x="453" y="677">+getFilename()</text>
+<text x="453" y="686">+getAsString()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="86" y="18" width="163" height="62" />
+<line x1="86" y1="39" x2="249" y2="39" />
+<line x1="86" y1="42" x2="249" y2="42" />
+</g>
+<g font-size="10">
+<text x="87" y="27">OovProcessListener</text>
+<text x="87" y="36">/oovCommon/</text>
+<text x="87" y="51">+~OovProcessListener()</text>
+<text x="87" y="60">+onStdOut(char const out, int len)</text>
+<text x="87" y="69">+onStdErr(char const out, int len)</text>
+<text x="87" y="78">+processComplete()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="284" y="626" width="130" height="53" />
+<line x1="284" y1="647" x2="414" y2="647" />
+<line x1="284" y1="659" x2="414" y2="659" />
+</g>
+<g font-size="10">
+<text x="285" y="635">DebuggerBreakpoint</text>
+<text x="285" y="644">/oovEdit/</text>
+<text x="285" y="656">+int mBreakpointNumber</text>
+<text x="285" y="668">+DebuggerBreakpoint(char</text>
+<text x="285" y="677">    const fn, int line)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="454" y="340" width="147" height="53" />
+<line x1="454" y1="361" x2="601" y2="361" />
+<line x1="454" y1="373" x2="601" y2="373" />
+</g>
+<g font-size="10">
+<text x="455" y="349">LockGuard</text>
+<text x="455" y="358">/oovCommon/</text>
+<text x="455" y="370">-InProcMutex mMutex</text>
+<text x="455" y="382">+LockGuard(InProcMutex mut)</text>
+<text x="455" y="391">+~LockGuard()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="403" y="158" width="103" height="26" />
+<line x1="403" y1="179" x2="506" y2="179" />
+<line x1="403" y1="182" x2="506" y2="182" />
+</g>
+<g font-size="10">
+<text x="404" y="167">OovProcessChildArgs</text>
+<text x="404" y="176">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="477" y1="246" x2="319" y2="308" />
+<polygon points="319,308 327,309 335,302 324,301 319,308 " style="fill:#000000" />
+<circle cx="346" cy="297" r="5" style="fill:#000000" />
+<circle cx="346" cy="297" r="2" style="fill:#000000" />
+<line x1="274" y1="762" x2="213" y2="773" />
+<polygon points="213,773 221,776 230,770 219,768 213,773 " style="fill:#000000" />
+<circle cx="242" cy="767" r="5" style="fill:#000000" />
+<circle cx="242" cy="767" r="2" style="fill:#000000" />
+<line x1="293" y1="746" x2="244" y2="599" />
+<polygon points="293,746 294,738 288,729 287,741 293,746 " style="fill:#ffffff" />
+<circle cx="286" cy="727" r="5" style="fill:#ffffff" />
+<circle cx="283" cy="717" r="5" style="fill:#000000" />
+<circle cx="283" cy="717" r="2" style="fill:#000000" />
+<line x1="320" y1="747" x2="452" y2="677" />
+<circle cx="332" cy="740" r="5" style="fill:#ffffff" />
+<line x1="190" y1="763" x2="180" y2="599" />
+<polygon points="190,763 194,755 189,746 186,756 190,763 " style="fill:#000000" />
+<circle cx="188" cy="733" r="5" style="fill:#000000" />
+<circle cx="188" cy="733" r="2" style="fill:#000000" />
+<line x1="177" y1="763" x2="119" y2="709" />
+<polygon points="119,709 124,721 132,713 119,709 " style="fill:#ffffff" />
+<circle cx="140" cy="729" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="729" r="2" style="fill:#ffffff" />
+<line x1="319" y1="404" x2="428" y2="432" />
+<polygon points="319,404 325,410 336,408 327,402 319,404 " style="fill:#000000" />
+<circle cx="348" cy="411" r="5" style="fill:#000000" />
+<circle cx="348" cy="411" r="2" style="fill:#000000" />
+<line x1="319" y1="211" x2="414" y2="113" />
+<polygon points="319,211 327,209 331,199 321,203 319,211 " style="fill:#000000" />
+<circle cx="339" cy="189" r="5" style="fill:#000000" />
+<circle cx="339" cy="189" r="2" style="fill:#000000" />
+<line x1="113" y1="599" x2="98" y2="657" />
+<polygon points="113,599 107,605 109,616 115,607 113,599 " style="fill:#ffffff" />
+<circle cx="108" cy="617" r="5" style="fill:#ffffff" />
+<circle cx="105" cy="628" r="5" style="fill:#000000" />
+<circle cx="105" cy="628" r="2" style="fill:#000000" />
+<line x1="319" y1="327" x2="468" y2="287" />
+<polygon points="319,327 327,329 336,323 325,321 319,327 " style="fill:#000000" />
+<circle cx="347" cy="319" r="5" style="fill:#000000" />
+<circle cx="347" cy="319" r="2" style="fill:#000000" />
+<line x1="319" y1="467" x2="461" y2="563" />
+<polygon points="319,467 322,475 333,477 327,467 319,467 " style="fill:#000000" />
+<circle cx="334" cy="477" r="5" style="fill:#ffffff" />
+<circle cx="343" cy="483" r="5" style="fill:#000000" />
+<circle cx="343" cy="483" r="2" style="fill:#000000" />
+<line x1="168" y1="133" x2="167" y2="80" />
+<polygon points="167,80 162,93 172,92 167,80 " style="fill:#ffffff" />
+<circle cx="167" cy="109" r="5" style="fill:#ffffff" />
+<circle cx="167" cy="109" r="2" style="fill:#ffffff" />
+<line x1="315" y1="599" x2="333" y2="626" />
+<polygon points="317,603 317,613 319,606 327,607 317,603 " style="fill:#ffffff" />
+<circle cx="325" cy="614" r="5" style="fill:#ffffff" />
+<circle cx="328" cy="619" r="2" style="fill:#ffffff" />
+<line x1="319" y1="366" x2="454" y2="366" />
+<circle cx="333" cy="366" r="5" style="fill:#ffffff" />
+<line x1="319" y1="264" x2="435" y2="184" />
+<circle cx="330" cy="256" r="5" style="fill:#ffffff" />
+<line x1="519" y1="476" x2="539" y2="563" />
+<polygon points="520,480 517,490 521,484 528,487 520,480 " style="fill:#ffffff" />
+<circle cx="523" cy="494" r="5" style="fill:#ffffff" />
+<circle cx="524" cy="500" r="2" style="fill:#ffffff" />
+<line x1="360" y1="87" x2="248" y2="64" />
+<polygon points="360,87 354,82 343,84 352,89 360,87 " style="fill:#ffffff" />
+<circle cx="341" cy="83" r="5" style="fill:#ffffff" />
+<circle cx="330" cy="80" r="5" style="fill:#000000" />
+<circle cx="330" cy="80" r="2" style="fill:#000000" />
+<line x1="506" y1="291" x2="520" y2="340" />
+<polygon points="520,340 522,332 516,323 514,334 520,340 " style="fill:#ffffff" />
+<circle cx="514" cy="321" r="5" style="fill:#ffffff" />
+<circle cx="511" cy="311" r="5" style="fill:#000000" />
+<circle cx="511" cy="311" r="2" style="fill:#000000" />
+<line x1="452" y1="638" x2="414" y2="644" />
+<polygon points="452,638 439,635 441,645 452,638 " style="fill:#ffffff" />
+<circle cx="422" cy="642" r="5" style="fill:#ffffff" />
+<circle cx="422" cy="642" r="2" style="fill:#ffffff" />
+</g>
+</svg>

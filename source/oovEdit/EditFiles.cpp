@@ -12,9 +12,18 @@
 #define M_PI 3.14159265
 #endif
 
+#define DBG_EDITF 0
+#if(DBG_EDITF)
+#include "Debug.h"
+DebugFile sDbgFile("DbgEditFiles.txt");
+#endif
+
+
 static EditFiles *sEditFiles;
 
+
 EditFiles::EditFiles(Debugger &debugger):
+    mHeaderBook(nullptr), mSourceBook(nullptr), mBuilder(nullptr),
     mFocusEditViewIndex(-1), mDebugger(debugger)
     {
     sEditFiles = this;
@@ -334,7 +343,6 @@ void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
 	    scrolledView.mFileView.openTextFile(fp.c_str());
 	    scrolledView.mScrolled = GTK_SCROLLED_WINDOW(scrolled);
 	    scrolledView.mFilename = fp;
-	    scrolledView.mPageIndex = Gui::getNumPages(book)-1;
 
 	    gtk_container_add(GTK_CONTAINER(scrolled), editView);
 	    Gui::appendPage(book, scrolled,
@@ -352,10 +360,16 @@ void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
 	    iter = mFileViews.end()-1;
 	    }
 	}
-    (*iter).mDesiredLine = lineNum;
     GtkNotebook *notebook = (*iter).getBook();
     if(notebook)
-	Gui::setCurrentPage(notebook, (*iter).mPageIndex);
+	{
+	int pageIndex = mFileViews.begin() - iter;
+	Gui::setCurrentPage(notebook, pageIndex);
+#if(DBG_EDITF)
+	sDbgFile.printflush("ViewFile %d\n", pageIndex);
+#endif
+	(*iter).mDesiredLine = lineNum;
+	}
     }
 
 void EditFiles::idleHighlight()
@@ -518,6 +532,9 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *wid
 	    {
 	    sEditFiles->getDebugger().startGetVariable(
 		    Gui::getSelectedText(view->getTextView()));
+#if(DBG_EDITF)
+    sDbgFile.printflush("ViewVar %s\n", Gui::getSelectedText(view->getTextView()));
+#endif
 	    }
 	}
     return false;

@@ -42,7 +42,6 @@ struct ScrolledFileView
     GtkScrolledWindow *mScrolled;
     FileEditView mFileView;
     int mDesiredLine;
-    int mPageIndex;
     };
 
 class EditFiles

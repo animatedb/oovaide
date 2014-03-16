@@ -514,7 +514,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
 
     FilePath compDir(basePath, FP_Dir);
     if(compName != "<Root>")
-	compDir.appendDir(compName.c_str());
+	compDir.setPath(compName.c_str(), FP_Dir);
     // Create the new component directory if it doesn't exist.
     ensurePathExists(compDir.c_str());
 
