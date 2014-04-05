@@ -5,6 +5,7 @@ BuildArgsExtra-Release|-std=c++0x;-O3
 SourceRootDir|C:/Dave/Mine/software/oovcde/svn/trunk/
 Tool-CompilerPath-Debug|g++.exe
 Tool-CompilerPath-Release|g++.exe
+Tool-DebuggerPath|/mingw/bin/gdb.exe
 Tool-LibPath-Debug|ar.exe
 Tool-LibPath-Release|ar.exe
 Tool-ObjSymbolPath-Debug|nm.exe

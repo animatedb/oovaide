@@ -7,6 +7,7 @@
 
 #include "EditFiles.h"
 #include "FilePath.h"
+#include "Project.h"
 #include <algorithm>
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -22,7 +23,8 @@ DebugFile sDbgFile("DbgEditFiles.txt");
 static EditFiles *sEditFiles;
 
 
-EditFiles::EditFiles(Debugger &debugger):
+EditFiles::EditFiles(Debugger &debugger, EditOptions &editOptions):
+    mEditOptions(editOptions),
     mHeaderBook(nullptr), mSourceBook(nullptr), mBuilder(nullptr),
     mFocusEditViewIndex(-1), mDebugger(debugger)
     {
@@ -450,6 +452,10 @@ bool EditFiles::checkDebugger()
     {
     bool ok = false;
 
+    NameValueFile projFile(Project::getProjectFilePath().c_str());
+    projFile.readFile();
+    getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath).c_str());
+    getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
 //Gui::messageBox("Debugging is not recommended. It is very unstable.");
     if(getDebugger().getDebuggerFilePath().length() > 0)
 	{
@@ -461,7 +467,7 @@ bool EditFiles::checkDebugger()
 	    Gui::messageBox("Component to be debug must be set in Edit/Preferences");
 	}
     else
-	Gui::messageBox("Debugger tool path must be set in Edit/Preferences");
+	Gui::messageBox("Debugger tool path must be set in Oovcde Edit/Preferences");
     return ok;
     }
 

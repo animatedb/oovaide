@@ -8,9 +8,13 @@
 #include "Debugger.h"
 #include "Gui.h"
 #include "FilePath.h"
+#include "Debug.h"
 #include <climits>
 
-#define DEBUG_DBG 1
+#define DEBUG_DBG 0
+#if(DEBUG_DBG)
+static DebugFile sDbgFile("Dbg.txt");
+#endif
 
 
 std::string DebuggerLocation::getAsString() const
@@ -46,8 +50,7 @@ bool Debugger::runDebuggerProcess()
 	args.addArg("--interpreter=mi");
 	mBkgPipeProc.startProcess(mDebuggerFilePath.c_str(), args.getArgv());
 #if(DEBUG_DBG)
-	printf("Starting process\n");
-	fflush(stdout);
+	sDbgFile.printflush("Starting process\n");
 #endif
 	}
     return started;
@@ -199,8 +202,7 @@ void Debugger::sendCommand(char const * const command)
 	cmd += "\r\n";
     mBkgPipeProc.childProcessSend(cmd.c_str());
 #if(DEBUG_DBG)
-    printf("Sent Command %s\n", cmd.c_str());
-    fflush(stdout);
+    sDbgFile.printflush("Sent Command %s\n", cmd.c_str());
 #endif
     }
 
@@ -408,8 +410,7 @@ void Debugger::handleResult(const std::string &resultStr)
     // Values are: "^running", "^error", "*stop"
     // "^connected", "^exit"
 #if(DEBUG_DBG)
-    printf("%s\n", resultStr.c_str());
-    fflush(stdout);
+    sDbgFile.printflush("%s\n", resultStr.c_str());
 #endif
     if(isdigit(resultStr[0]))
 	{

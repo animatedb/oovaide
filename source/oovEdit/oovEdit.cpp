@@ -14,7 +14,7 @@
 
 
 Editor::Editor():
-    mEditFiles(mDebugger), mLastSearchCaseSensitive(false)
+    mEditFiles(mDebugger, mEditOptions), mLastSearchCaseSensitive(false)
     {
     mDebugger.setListener(*this);
     }
@@ -213,12 +213,13 @@ void Editor::loadSettings()
 	{
 	gtk_window_resize(GTK_WINDOW(mBuilder.getWidget("MainWindow")), width, height);
 	}
-
     Project::setProjectDirectory(mProjectDir.c_str());
+    /*
     NameValueFile projFile(Project::getProjectFilePath().c_str());
     projFile.readFile();
     mDebugger.setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath).c_str());
     mDebugger.setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
+*/
     }
 
 void Editor::saveSettings()
@@ -236,7 +237,11 @@ void Editor::editPreferences()
     ComponentTypesFile compFile;
     compFile.read();
     bool haveNames = false;
-    for(auto const &name : compFile.getComponentNames())
+    Gui::setSelected(cb, 0);
+    std::string curComp = mEditOptions.getValue(OptEditDebuggee);
+    int compIndex = -1;
+    int boxCount = 0;
+    for(const std::string &name : compFile.getComponentNames())
 	{
 	if(compFile.getComponentType(name.c_str()) == ComponentTypesFile::CT_Program)
 	    {
@@ -244,10 +249,18 @@ void Editor::editPreferences()
 	    fp.appendFile(makeExeFilename(name.c_str()).c_str());
 	    Gui::appendText(cb, fp.c_str());
 	    haveNames = true;
+	    if(fp.compare(curComp) == 0)
+		{
+		compIndex = boxCount;
+		}
+	    boxCount++;
 	    }
 	}
+    if(compIndex != -1)
+	{
+	Gui::setSelected(cb, compIndex);
+	}
 
-    Gui::setSelected(cb, 0);
     Dialog dlg(GTK_DIALOG(mBuilder.getWidget("Preferences")),
 	    GTK_WINDOW(mBuilder.getWidget("MainWindow")));
     if(dlg.run(true))
@@ -301,7 +314,10 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 	    else if(argv[argi][0] == '-')
 		{
 		if(argv[argi][1] == 'p')
-		    gEditor.setProjectDir(&argv[argi][2]);
+		    {
+		    std::string fname = fixFilePath(&argv[argi][2]);
+		    gEditor.setProjectDir(fname.c_str());
+		    }
 		else
 		    goodArgs = false;
 		}

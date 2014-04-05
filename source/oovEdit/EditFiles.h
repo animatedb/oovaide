@@ -12,6 +12,7 @@
 #include "FileEditView.h"
 #include "Debugger.h"
 #include "FilePath.h"
+#include "EditOptions.h"
 #include <sys/time.h>
 #include <vector>
 
@@ -47,7 +48,7 @@ struct ScrolledFileView
 class EditFiles
     {
     public:
-	EditFiles(Debugger &debugger);
+	EditFiles(Debugger &debugger, EditOptions &editOptions);
 	void init(Builder &builder);
 	void onIdle();
 	void updateDebugMenu();
@@ -72,6 +73,7 @@ class EditFiles
 	bool checkDebugger();
 
     private:
+	EditOptions &mEditOptions;
 	GtkNotebook *mHeaderBook;
 	GtkNotebook *mSourceBook;
 	Builder *mBuilder;

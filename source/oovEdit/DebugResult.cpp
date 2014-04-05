@@ -10,7 +10,7 @@
 
 #define DBG_RESULT 0
 #if(DBG_RESULT)
-DebugFile sDbgFile("DbgResult.txt");
+static DebugFile sDbgFile("DbgResult.txt");
 #endif
 
 static char const *skipSpace(char const *p)

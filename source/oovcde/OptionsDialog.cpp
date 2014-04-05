@@ -154,11 +154,13 @@ ScreenOptions::ScreenOptions(char const * const buildConfig)
 	    makeBuildConfigArgName(OptExtraBuildArgs, buildConfig).c_str(),
 	    "ExtraBuildArgsTextview")));
 
-    // GUI
+    // Editor
     mGuiOptions.push_back(std::unique_ptr<Option>(new EntryOption(
 	    OptGuiEditorPath, "EditorPathEntry")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new EntryOption(
 	    OptGuiEditorLineArg, "EditorLineArgEntry")));
+    mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+	    OptToolDebuggerPath, "DebuggerPathEntry")));
 
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
 	    OptGuiShowAttributes, "ShowAttributesCheckbutton")));
