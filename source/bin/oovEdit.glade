@@ -773,6 +773,19 @@
               </packing>
             </child>
             <child>
+              <object class="GtkLabel" id="label7">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Command Line Arguments</property>
+              </object>
+              <packing>
+                <property name="left_attach">0</property>
+                <property name="top_attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkComboBoxText" id="DebugComponent">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -783,18 +796,29 @@
                   <object class="GtkEntry" id="comboboxtext-entry">
                     <property name="can_focus">True</property>
                     <property name="hexpand">True</property>
+                    <property name="invisible_char">●</property>
                   </object>
                 </child>
               </object>
               <packing>
-                <property name="left_attach">2</property>
+                <property name="left_attach">1</property>
                 <property name="top_attach">0</property>
                 <property name="width">1</property>
                 <property name="height">1</property>
               </packing>
             </child>
             <child>
-              <placeholder/>
+              <object class="GtkEntry" id="CommandLineArgsEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">1</property>
+                <property name="width">1</property>
+                <property name="height">1</property>
+              </packing>
             </child>
           </object>
           <packing>

@@ -456,6 +456,7 @@ bool EditFiles::checkDebugger()
     projFile.readFile();
     getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath).c_str());
     getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
+    getDebugger().setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
 //Gui::messageBox("Debugging is not recommended. It is very unstable.");
     if(getDebugger().getDebuggerFilePath().length() > 0)
 	{

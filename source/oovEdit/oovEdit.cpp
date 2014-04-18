@@ -214,12 +214,6 @@ void Editor::loadSettings()
 	gtk_window_resize(GTK_WINDOW(mBuilder.getWidget("MainWindow")), width, height);
 	}
     Project::setProjectDirectory(mProjectDir.c_str());
-    /*
-    NameValueFile projFile(Project::getProjectFilePath().c_str());
-    projFile.readFile();
-    mDebugger.setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath).c_str());
-    mDebugger.setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
-*/
     }
 
 void Editor::saveSettings()
@@ -238,7 +232,7 @@ void Editor::editPreferences()
     compFile.read();
     bool haveNames = false;
     Gui::setSelected(cb, 0);
-    std::string curComp = mEditOptions.getValue(OptEditDebuggee);
+    std::string dbgComponent = mEditOptions.getValue(OptEditDebuggee);
     int compIndex = -1;
     int boxCount = 0;
     for(const std::string &name : compFile.getComponentNames())
@@ -249,7 +243,7 @@ void Editor::editPreferences()
 	    fp.appendFile(makeExeFilename(name.c_str()).c_str());
 	    Gui::appendText(cb, fp.c_str());
 	    haveNames = true;
-	    if(fp.compare(curComp) == 0)
+	    if(fp.compare(dbgComponent) == 0)
 		{
 		compIndex = boxCount;
 		}
@@ -260,6 +254,8 @@ void Editor::editPreferences()
 	{
 	Gui::setSelected(cb, compIndex);
 	}
+    GtkEntry *debuggeeArgs = GTK_ENTRY(mBuilder.getWidget("CommandLineArgsEntry"));
+    Gui::setText(debuggeeArgs, mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
 
     Dialog dlg(GTK_DIALOG(mBuilder.getWidget("Preferences")),
 	    GTK_WINDOW(mBuilder.getWidget("MainWindow")));
@@ -269,7 +265,9 @@ void Editor::editPreferences()
 	    {
 	    std::string text = Gui::getText(cb);
 	    mEditOptions.setNameValue(OptEditDebuggee, text.c_str());
-	    mDebugger.setDebuggee(text.c_str());
+	    mEditOptions.setNameValue(OptEditDebuggeeArgs, Gui::getText(debuggeeArgs));
+//	    mDebugger.setDebuggee(text.c_str());
+//	    mDebugger.setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
 	    }
 	else
 	    Gui::messageBox("Some components for the project must be defined as programs");

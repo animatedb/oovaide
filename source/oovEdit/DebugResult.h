@@ -12,10 +12,11 @@
 #include "OovString.h"
 
 // There are many GDB/MI output syntax BNF docs online, but they all
-// appear to be incorrect.
+// appear to be incorrect or incomplete. This is close:
+// https://sourceware.org/gdb/onlinedocs/gdb/GDB_002fMI-Output-Syntax.html
 //
 // Rough GDB output is:
-//  Parens are used to show grouping, * is used for zero or more.
+//  In the BNF, parens are used to show grouping, * is used for zero or more.
 //  a const is: 0x5a15a0 or "this\""
 //  a tuple is: "{" ( result (",")* )* "} ,*"
 //  a list is: "[" ( (value | result) (",")* )* "] ,*"
@@ -42,6 +43,7 @@ class cDebugResult
         // Using deque because it allows const reading.
         std::deque<class cDebugResult*> mChildResults;
         char const *parseVarName(char const *resultStr);
+        char const *parseValue(char const *resultStr);
         char const *parseList(char const *resultStr);
         char const *parseConst(char const *resultStr);
 	cDebugResult &addResult()

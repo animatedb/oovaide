@@ -12,6 +12,7 @@
 
 
 #define OptEditDebuggee "Debuggee"
+#define OptEditDebuggeeArgs "DebuggeeArgs"
 
 class EditOptions:public NameValueFile
     {

@@ -183,6 +183,28 @@ sDbgFile.printflush("parseList\n");
     return p;
     }
 
+char const *cDebugResult::parseValue(char const *resultStr)
+    {
+#if(DBG_RESULT)
+sDbgFile.printflush("parseValue\n");
+#endif
+    char const *p = resultStr;
+    if(*p == '\"')
+        {
+        p++;
+        }
+    if(isStartListC(*p))
+        {
+        p++;
+        p = parseList(p);
+        }
+    else
+        p = parseConst(p);
+    if(*p == '\"')
+        p++;
+    return p;
+    }
+
 // "value=" has already been parsed.
 // Ex:  value="{mVarName = {
 //	static npos = <optimized out>,
@@ -215,6 +237,12 @@ sDbgFile.printflush("parseList\n");
 //	value="{curly = 0x40d1af <_ZStL19piecewise_construct+159> \"{curly}\",
 //	    square = 0x40d1b7 <_ZStL19piecewise_construct+167> \"[square]\",
 // 	    quotes = 0x40d1c0 <_ZStL19piecewise_construct+176> \"\\\"quotes\\\"\"}"
+
+// General:
+//  There is a varname followed by an equal sign.
+//  A varname can have less than, greater than chars in the name, but is
+//  terminated by space.
+//  After an equal sign, there can be a quote, open curly brace, or
 char const *cDebugResult::parseResult(char const *resultStr)
     {
 #if(DBG_RESULT)
@@ -223,24 +251,6 @@ sDbgFile.printflush("parseResult %s\n", resultStr);
     char const *start = skipSpace(resultStr);
     char const *p = start;
     p = parseVarName(p);
-    if(*p == '[' || *p == '{')
-	{
-	p = parseList(p);
-	}
-    else if(*p == '\"')
-	{
-	p++;
-	if(isStartListC(*p))
-	    {
-	    p++;
-	    p = parseList(p);
-	    }
-	else
-	    p = parseConst(p);
-	if(*p == '\"')
-	    p++;
-	}
-    else
-	p = parseConst(p);
+    p = parseValue(p);
     return p;
     }
