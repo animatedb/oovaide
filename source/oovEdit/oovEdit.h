@@ -25,8 +25,10 @@ class Editor:public DebuggerListener
 	bool saveTextFile();
 	bool saveAsTextFileWithDialog();
 	void findDialog();
-	void findUsingDialogInfo();
 	void findAgain(bool forward);
+        void findInFilesDialog();
+        void findInFiles(char const * const srchStr, char const * const path,
+        	bool caseSensitive, GtkTextView *view);
 //	void setTabs(int numSpaces);
 	void setStyle();
 	void cut()
@@ -73,6 +75,7 @@ class Editor:public DebuggerListener
 	    { mProjectDir = projDir; }
 	void gotoLine(int lineNum)
 	    { mEditFiles.gotoLine(lineNum); }
+	void gotoFileLine(std::string const &lineBuf);
 	void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
 	        gchar *text, gint len)
 	    {

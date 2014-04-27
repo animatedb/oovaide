@@ -63,7 +63,7 @@ std::string cDebugResult::getAsString(int level) const
 // The following characters are prefixed with a backslash when they are in
 // quotes:
 //      backslash, doublequote
-static char const *parseString(char const *resultStr)
+static char const *parseString(char const *resultStr, std::string &translatedStr)
     {
 #if(DBG_RESULT)
 sDbgFile.printflush("parseString %s\n", resultStr);
@@ -73,15 +73,21 @@ sDbgFile.printflush("parseString %s\n", resultStr);
 	p++;
     while(*p)
 	{
-	if((*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\\') ||
-		(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\"'))
+	if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\\')
+            {
+            translatedStr += "\\";
+            p+=3;
+            }
+        else if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\"')
 	    {
+            translatedStr += "\"";
 	    p+=3;
 	    }
 	else if(*p == '\\' && *(p+1) == '\"')
 	    {
 	    break;
 	    }
+        translatedStr += *p;
 	p++;
 	}
     if(*p)
@@ -94,7 +100,7 @@ sDbgFile.printflush("   parseString %s\n", std::string(resultStr, p-resultStr).c
 
 // Parses stuff up to the end of an item.
 // An item can be a variable name, or a value/const
-static char const *parseItem(char const *resultStr)
+static char const *parseItem(char const *resultStr, std::string &translatedStr)
     {
 #if(DBG_RESULT)
 sDbgFile.printflush("parseItem %s\n", resultStr);
@@ -106,10 +112,11 @@ sDbgFile.printflush("parseItem %s\n", resultStr);
 	if(*p == '\\' && *(p+1) == '\"')
 	    {
 	    p++;
-	    p = parseString(p);
+	    p = parseString(p, translatedStr);
 	    }
         else if(*p == '=' || isListItemSepC(*p) || isEndListC(*p))
             {
+            p++;
             break;
             }
         p++;
@@ -126,19 +133,20 @@ char const *cDebugResult::parseVarName(char const *resultStr)
 sDbgFile.printflush("parseVarName %s\n", resultStr);
 #endif
     char const *start = skipSpace(resultStr);
-    char const *p = parseItem(start);
-    if(*p == '=')
+    std::string translatedStr;
+    char const *p = parseItem(start, translatedStr);
+//    if(*p == '=')
 	{
-	setVarName(start, p-start);
+	setVarName(start, p-start-1);
 #if(DBG_RESULT)
 sDbgFile.printflush("   parseVarName %s\n", std::string(start, p-start).c_str());
 #endif
-	p++;
+	//p++;
 	}
-    else
-	{
-	p = start;
-	}
+//    else
+//	{
+//	p = start;
+//	}
     return p;
     }
 
@@ -148,9 +156,10 @@ char const *cDebugResult::parseConst(char const *resultStr)
 sDbgFile.printflush("parseConst %s\n", resultStr);
 #endif
     char const *start = skipSpace(resultStr);
-    char const * const p = parseItem(start);
+    std::string translatedStr;
+    char const * const p = parseItem(start, translatedStr);
 #if(DBG_RESULT)
-sDbgFile.printflush("   parseConst %s\n", std::string(start, p-start).c_str());
+sDbgFile.printflush("   parseConst %s\n", translatedStr.c_str());
 #endif
     mConst.assign(start, p-start);
     return p;

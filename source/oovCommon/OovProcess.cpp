@@ -494,6 +494,7 @@ void OovPipeProcessWindows::windowsCloseHandle(HANDLE &h)
 void OovPipeProcessWindows::windowsChildProcessKill()
     {
     // This is not a clean shutdown of Windows apps.
+    sleepMs(1000);
     TerminateProcess(mProcInfo.hProcess, 0);
     }
 
@@ -669,8 +670,8 @@ void OovBackgroundPipeProcess::stopProcess()
 #if(DEBUG_PROC)
 	sDbgFile.printflush("bkg-stopProcess - join\n");
 #endif
-	g_thread_join(mThread);
 	childProcessKill();
+	g_thread_join(mThread);
 	mThreadState = TS_Idle;
 #if(DEBUG_PROC)
 	sDbgFile.printflush("bkg-stopProcess - TS_NotRunning\n");

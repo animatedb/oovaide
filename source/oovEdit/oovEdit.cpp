@@ -10,8 +10,8 @@
 #include "oovEdit.h"
 #include "Project.h"
 #include "Components.h"
+#include "DirList.h"
 #include <vector>
-
 
 Editor::Editor():
     mEditFiles(mDebugger, mEditOptions), mLastSearchCaseSensitive(false)
@@ -66,18 +66,15 @@ void Editor::findDialog()
     GtkWindow *parent = Gui::getWindow(mBuilder.getWidget("MainWindow"));
     Dialog dialog(GTK_DIALOG(getBuilder().getWidget("FindDialog")),
 	    parent);
-    dialog.run();
-    }
-
-void Editor::findUsingDialogInfo()
-    {
-    GtkEntry *entry = GTK_ENTRY(getBuilder().getWidget("FindEntry"));
-    GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-	    "FindDownCheckbutton"));
-    GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-	    "CaseSensitiveCheckbutton"));
-    find(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
-	    gtk_toggle_button_get_active(caseCheck));
+    if(dialog.run(true))
+	{
+	GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+		"FindDownCheckbutton"));
+	GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+		"CaseSensitiveCheckbutton"));
+	find(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
+		gtk_toggle_button_get_active(caseCheck));
+	}
     }
 
 void Editor::findAgain(bool forward)
@@ -89,6 +86,127 @@ void Editor::findAgain(bool forward)
     else
 	{
 	find(mLastSearch.c_str(), forward, mLastSearchCaseSensitive);
+	}
+    }
+
+
+class FindFiles:public dirRecurser
+    {
+    public:
+	~FindFiles()
+	    {}
+	FindFiles(char const *srchStr, bool caseSensitive, GtkTextView *view):
+	    mSrchStr(srchStr), mCaseSensitive(caseSensitive), mView(view)
+	    {}
+
+    private:
+	virtual bool processFile(const std::string &filePath);
+
+    private:
+	std::string mSrchStr;
+	bool mCaseSensitive;
+	GtkTextView *mView;
+    };
+
+char const *strcasestr(char const *haystack, char const *needle)
+    {
+    while(*haystack)
+	{
+	char const *hp = haystack;
+	char const *np = needle;
+
+	while(*hp && *np && tolower(*hp) == tolower(*np))
+	    {
+	    hp++;
+	    np++;
+	    }
+	if(*np == '\0')
+	    break;
+	haystack++;
+	}
+    return haystack;
+    }
+
+// Return true while success.
+bool FindFiles::processFile(const std::string &filePath)
+    {
+    bool success = true;
+    FilePath ext(filePath, FP_File);
+
+    if(isHeader(ext.c_str()) || isSource(ext.c_str()))
+	{
+	FILE *fp = fopen(filePath.c_str(), "r");
+	if(fp)
+	    {
+	    char buf[1000];
+	    int lineNum = 0;
+	    while(fgets(buf, sizeof(buf), fp))
+		{
+		lineNum++;
+		char const *match=NULL;
+		if(mCaseSensitive)
+		    {
+		    match = strcasestr(buf, mSrchStr.c_str());
+		    }
+		else
+		    {
+		    match = strstr(buf, mSrchStr.c_str());
+		    }
+		if(match)
+		    {
+		    OovString matchStr = filePath;
+		    matchStr += ':';
+		    matchStr.appendInt(lineNum);
+		    matchStr += '\n';
+		    Gui::appendText(mView, matchStr.c_str());
+		    }
+		}
+	    fclose(fp);
+	    }
+	}
+    return success;
+    }
+
+void Editor::findInFiles(char const * const srchStr, char const * const path,
+	bool caseSensitive, GtkTextView *view)
+    {
+    FindFiles findFiles(srchStr, caseSensitive, view);
+    findFiles.recurseDirs(path);
+    }
+
+void Editor::findInFilesDialog()
+    {
+    GtkEntry *entry = GTK_ENTRY(getBuilder().getWidget("FindEntry"));
+    gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
+    GtkWindow *parent = Gui::getWindow(mBuilder.getWidget("MainWindow"));
+    GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+	    "FindDownCheckbutton"));
+    Gui::setVisible(GTK_WIDGET(downCheck), false);
+    Dialog dialog(GTK_DIALOG(getBuilder().getWidget("FindDialog")),
+	    parent);
+    if(dialog.run(true))
+        {
+	GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+		"CaseSensitiveCheckbutton"));
+	GtkTextView *findView = GTK_TEXT_VIEW(getBuilder().getWidget("FindTextview"));
+	Gui::clear(findView);
+	findInFiles(gtk_entry_get_text(entry), Project::getSrcRootDirectory().c_str(),
+		gtk_toggle_button_get_active(caseCheck), findView);
+        }
+    Gui::setVisible(GTK_WIDGET(downCheck), true);
+    }
+
+void Editor::gotoFileLine(std::string const &lineBuf)
+    {
+    size_t pos = lineBuf.rfind(':');
+    if(pos != std::string::npos)
+	{
+	int lineNum;
+	OovString numStr(lineBuf.substr(pos+1, lineBuf.length()-pos).c_str());
+	if(numStr.getInt(0, INT_MAX, lineNum))
+	    {
+	    mEditFiles.viewFile(lineBuf.substr(0, pos).c_str(), lineNum);
+	    }
 	}
     }
 
@@ -112,6 +230,7 @@ void Editor::setTabs(int numSpaces)
     gtk_text_view_set_tabs(mTextView, tabs);
     }
 */
+
 void Editor::setStyle()
     {
     GtkCssProvider *provider = gtk_css_provider_get_default();
@@ -461,17 +580,6 @@ extern "C" G_MODULE_EXPORT void on_FindDialog_delete_event(GtkWidget *button, gp
     gtk_widget_hide(gEditor.getBuilder().getWidget("FindDialog"));
     }
 
-extern "C" G_MODULE_EXPORT void on_FindCancelButton_clicked(GtkWidget *button, gpointer data)
-    {
-    gtk_widget_hide(gEditor.getBuilder().getWidget("FindDialog"));
-    }
-
-extern "C" G_MODULE_EXPORT void on_FindOkButton_clicked(GtkWidget *button, gpointer data)
-    {
-    gtk_widget_hide(gEditor.getBuilder().getWidget("FindDialog"));
-    gEditor.findUsingDialogInfo();
-    }
-
 extern "C" G_MODULE_EXPORT void on_FindNextMenuItem_activate(GtkWidget *button, gpointer data)
     {
     gEditor.findAgain(true);
@@ -485,8 +593,22 @@ extern "C" G_MODULE_EXPORT void on_FindPreviousMenuitem_activate(GtkWidget *butt
 extern "C" G_MODULE_EXPORT void on_FindEntry_activate(GtkEditable *editable,
         gpointer user_data)
     {
-    gtk_widget_hide(gEditor.getBuilder().getWidget("FindDialog"));
-    gEditor.findUsingDialogInfo();
+    GtkWidget *dlg = gEditor.getBuilder().getWidget("FindDialog");
+    gtk_widget_hide(dlg);
+    g_signal_emit_by_name(dlg, "response", GTK_RESPONSE_OK);
+    }
+
+extern "C" G_MODULE_EXPORT void on_FindInFilesMenuitem_activate(GtkWidget *widget, gpointer data)
+    {
+    gEditor.findInFilesDialog();
+    }
+
+extern "C" G_MODULE_EXPORT bool on_FindTextview_button_release_event(GtkWidget *button, gpointer data)
+    {
+    GtkWidget *widget = gEditor.getBuilder().getWidget("FindTextview");
+    std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+    gEditor.gotoFileLine(line);
+    return FALSE;
     }
 
 extern "C" G_MODULE_EXPORT void on_CutImagemenuitem_activate(GtkWidget *button, gpointer data)
@@ -530,8 +652,10 @@ extern "C" G_MODULE_EXPORT gboolean on_ControlTextview_key_press_event(GtkWidget
     switch(event->key.keyval)
 	{
 	case GDK_KEY_Return:
+	    {
 	    std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
 	    gEditor.getDebugger().sendCommand(str.c_str());
+	    }
 	    break;
 	}
     return false;

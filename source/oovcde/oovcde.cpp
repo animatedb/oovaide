@@ -308,15 +308,8 @@ int oovGui::getStatusSourceFile(std::string &fn)
     {
     GtkWidget *widget = getBuilder().getWidget("StatusTextview");
     GtkTextView *textView = GTK_TEXT_VIEW(widget);
-    GtkTextBuffer *textBuf = gtk_text_view_get_buffer(textView);
-
-    GtkTextIter start;
-    GtkTextIter end;
-    gtk_text_buffer_get_selection_bounds(textBuf, &start, &end);
-    int lineNum = gtk_text_iter_get_line(&start);
-    gtk_text_buffer_get_iter_at_line(textBuf, &start, lineNum);
-    gtk_text_buffer_get_iter_at_line(textBuf, &end, lineNum+1);
-    GuiText line = gtk_text_buffer_get_text(textBuf, &start, &end, false);
+    int lineNum;
+    std::string line = Gui::getCurrentLineText(textView);
     size_t pos = 0;
     while(pos != std::string::npos)
 	{

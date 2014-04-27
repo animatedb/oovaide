@@ -920,6 +920,8 @@
               <object class="GtkEntry" id="RootSourceDirEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="has_tooltip">True</property>
+                <property name="tooltip_text" translatable="yes">Specify the root directory of the source and include files</property>
                 <property name="hexpand">True</property>
                 <property name="invisible_char">●</property>
                 <property name="width_chars">60</property>
@@ -936,6 +938,9 @@
               <object class="GtkEntry" id="OovcdeProjectDirEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="has_tooltip">True</property>
+                <property name="tooltip_text" translatable="yes">Specify the output directories for libraries and executables.
+This should normally not be under the Root Source Directory.</property>
                 <property name="invisible_char">●</property>
               </object>
               <packing>
@@ -1111,6 +1116,18 @@
                           <object class="GtkTextView" id="CppArgumentsTextview">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <property name="has_tooltip">True</property>
+                            <property name="tooltip_text" translatable="yes">Common arguments for all build configurations.
+Missing arguments may cause build errors, but
+may not be important for analysis.
+
+Use the External Project Packages to specify some
+include and library files.
+
+Use -lnk before link options.
+Other common examples:
+  -I../oovCommon
+  -lnk../Debug/DebugResult.o</property>
                           </object>
                         </child>
                       </object>
@@ -1844,6 +1861,8 @@
                   <object class="GtkEntry" id="PackageRootDirEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip_text" translatable="yes">Include and library directories are relative to this directory</property>
                     <property name="hexpand">True</property>
                     <property name="invisible_char">●</property>
                     <signal name="changed" handler="on_PackageRootDirEntry_changed" swapped="no"/>
@@ -1859,6 +1878,8 @@
                   <object class="GtkEntry" id="PackageLibDirEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip_text" translatable="yes">This is relative from "Root Directory"</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                   </object>
@@ -1873,7 +1894,7 @@
                   <object class="GtkLabel" id="label24">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Library Directory -L)</property>
+                    <property name="label" translatable="yes">Library Directory (-L)</property>
                   </object>
                   <packing>
                     <property name="left_attach">0</property>
@@ -1886,6 +1907,8 @@
                   <object class="GtkEntry" id="PackageIncDirEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip_text" translatable="yes">This is relative from "Root Directory"</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                   </object>
@@ -1944,6 +1967,8 @@
                   <object class="GtkEntry" id="PackageExternRefEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip_text" translatable="yes">Recursively search for include and library files</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                   </object>
@@ -1971,6 +1996,8 @@
                   <object class="GtkEntry" id="PackageLibNamesEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip_text" translatable="yes">List the full filename without the path</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                   </object>
@@ -2024,6 +2051,8 @@
                   <object class="GtkEntry" id="PackageCompileArgsEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip_text" translatable="yes">Required compiler arguments for this package</property>
                     <property name="invisible_char">•</property>
                   </object>
                   <packing>
@@ -2037,6 +2066,8 @@
                   <object class="GtkEntry" id="PackageLinkArgsEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_tooltip">True</property>
+                    <property name="tooltip_text" translatable="yes">Required link arguments for this package</property>
                     <property name="invisible_char">•</property>
                   </object>
                   <packing>

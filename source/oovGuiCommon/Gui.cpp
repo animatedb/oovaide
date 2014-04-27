@@ -106,7 +106,7 @@ int Gui::getCurrentLineNumber(GtkTextView *textView)
     return(gtk_text_iter_get_line(&iter) + 1);
     }
 
-char const * const Gui::getCurrentLineText(GtkTextView *textView)
+GuiText Gui::getCurrentLineText(GtkTextView *textView)
     {
     GtkTextBuffer *buf = gtk_text_view_get_buffer(textView);
     GtkTextMark *mark = gtk_text_buffer_get_insert(buf);
@@ -118,6 +118,19 @@ char const * const Gui::getCurrentLineText(GtkTextView *textView)
     gtk_text_iter_set_line_offset(&startIter, 0);
     gtk_text_iter_forward_to_line_end(&endIter);
     return gtk_text_buffer_get_text(buf, &startIter, &endIter, false);
+
+    // Alternate method
+    /*
+    GtkTextBuffer *textBuf = gtk_text_view_get_buffer(textView);
+
+    GtkTextIter start;
+    GtkTextIter end;
+    gtk_text_buffer_get_selection_bounds(textBuf, &start, &end);
+    int lineNum = gtk_text_iter_get_line(&start);
+    gtk_text_buffer_get_iter_at_line(textBuf, &start, lineNum);
+    gtk_text_buffer_get_iter_at_line(textBuf, &end, lineNum+1);
+    return gtk_text_buffer_get_text(textBuf, &start, &end, false);
+*/
     }
 
 void Gui::reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent)

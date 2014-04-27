@@ -567,12 +567,16 @@ bool ComponentBuilder::makeExe(char const * const compName,
 	    std::string arg = "-l";
 	    // Removing .a or .lib works in Windows.
 	    // On Windows, clang is libclang.lib, and the link arg must be -llibclang
+	    //		pango-1.0.lib must be -lpango-1.0
 	    FilePath libFn(lib.c_str(), FP_File);
-	    if(libFn.getExtension().compare(".a") == 0 ||
-		    libFn.getExtension().compare(".lib") == 0)
+	    if(libFn.getExtension().compare(".a") == 0)
 		{
 		libFn.discardMatchingHead("lib");
-		    arg += libFn.getName();		// with no extension
+		arg += libFn.getName();		// with no extension
+		}
+	    else if(libFn.getExtension().compare(".lib") == 0)
+		{
+		arg += libFn.getName();		// with no extension
 		}
 	    else
 		{

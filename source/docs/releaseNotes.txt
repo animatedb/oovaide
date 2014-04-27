@@ -14,6 +14,7 @@ Explanations
 Missing Features
 ----------------
 - General
+	- memory leaks from gtk_text_buffer_get_text
 	- Only 64 bit linux build is provided.
 	- Code improvements: Use unique_ptr for model objects
 	- Code improvements: Fix Project module to contain source root dir
@@ -27,6 +28,7 @@ Missing Features
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Improve multitask backend, specify number of threads
 		FindFirstChangeNotification/CDirectoryChangeWatcher , inotify
+		http://randomascii.wordpress.com/2014/03/22/make-vc-compiles-fast-through-parallel-compilation/
 	- Load last project automatically, but allow opening other while parsing
 - C++ parsing for drawings
 	- BUG: Model objects not handled properly
@@ -113,13 +115,10 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
-	- display variable doesn't work (wrong page?)
-	- remove breakpoint doesn't work
 	- editor doesn't handle two files with same name
-	- Debugger must be stopped before exiting editor
-	- Editor - find in files (background process?)
-	- Editor - open include files
-	- View source from oovcde puts cursor on line, but does not blink until moved
+	- Open include files
+	- Find in files needs to set focus to loaded file/select text
+	- View source from oovcde puts cursor on line, but does not set focus/select text
 	- BUG: Margin is wrong if view is scrolled
 	- Home key doesn't scroll window
 	- Prevent file overwrite of another editor at the same time
@@ -134,15 +133,20 @@ Missing Features
 	- unindenting doesn't work well when tabs are in file
 	- display column/character position
 	- replace
-	- find in files
 	- error highlighting
-	- open included file
 	- find declaration/definition
 	- refactor-rename
 - Debugger (In editor)
 	- Need to switch tabs when view source / hit breakpoint
-	- view variable doesn't drill into data
-	- Add method for selecting component to debug
+	- Current exec position doesn't go away/update at some times
+	- display variable doesn't work (wrong page?)
+	- Debug data could display graphs, unicode, etc.
+	- Debug data could be bound to functions in code
+	- Could execute functions in code with parameters
+	- remove breakpoint doesn't work
+	- Can't double click stack to go to source/line
+	- Parsing results not working in some cases
+	- Control window doesn't allow entering commands - must enter on blank line
 	- When build starts, should stop debugger
 	- Need to exit child program/stop debugger when editor quits
 	- Add stack trace window/command

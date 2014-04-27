@@ -24,7 +24,6 @@
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
                 <property name="xalign">0.51999998092651367</property>
-                <signal name="clicked" handler="on_FindCancelButton_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -39,7 +38,6 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_FindOkButton_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -137,8 +135,8 @@
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">FindCancelButton</action-widget>
-      <action-widget response="0">FindOkButton</action-widget>
+      <action-widget response="-6">FindCancelButton</action-widget>
+      <action-widget response="-5">FindOkButton</action-widget>
     </action-widgets>
   </object>
   <object class="GtkWindow" id="MainWindow">
@@ -353,6 +351,21 @@
                       </object>
                     </child>
                     <child>
+                      <object class="GtkSeparatorMenuItem" id="menuitem6">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="FindInFilesMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Find In Files</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_FindInFilesMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkSeparatorMenuItem" id="menuitem5">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -405,7 +418,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Step Over</property>
                         <property name="use_underline">True</property>
-                        <accelerator key="F10" signal="activate"/>
+                        <accelerator key="F11" signal="activate"/>
                         <signal name="activate" handler="on_DebugStepOver_activate" swapped="no"/>
                       </object>
                     </child>
@@ -415,7 +428,7 @@
                         <property name="can_focus">False</property>
                         <property name="label" translatable="yes">Step Into</property>
                         <property name="use_underline">True</property>
-                        <accelerator key="F11" signal="activate"/>
+                        <accelerator key="F12" signal="activate"/>
                         <signal name="activate" handler="on_DebugStepInto_activate" swapped="no"/>
                       </object>
                     </child>
@@ -554,6 +567,7 @@
                           <object class="GtkTextView" id="FindTextview">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <signal name="button-release-event" handler="on_FindTextview_button_release_event" swapped="no"/>
                           </object>
                         </child>
                       </object>

@@ -11,13 +11,11 @@ static cDebugUnitTest gDebugUnitTest;
 
 
 // String returned from debugger:
-// value="0x40d1af <_ZStL19piecewise_construct+159> \\\"{curly}\\\""
-// value="0x40d14a <_ZStL19piecewise_construct+58> \"\\\"0x40d1af
-//     <_ZStL19piecewise_construct+159> \\\\\\\"{curly}\\\\\\\"\\\"\""
+// value="0x40d1af <_ZStL19piecewise_construct+159> \"{curly}\""
 TEST_F(gDebugUnitTest, DebugResultVarStringTest)
     {
     char const * const var = "{curly}";
-    char const * const dbgVar = "value=\"0x40d1af <_ZStL19piecewise_construct+159>"
+    char const * const dbgVar = "value=\"0x40d139 <_ZStL19piecewise_construct+41>"
         " \\\"{curly}\\\"\"";
 
     cDebugResult debRes;
@@ -58,7 +56,7 @@ TEST_F(gDebugUnitTest, DebugResultVarArrayTest)
 //			},
 //			 _M_p = 0x9629f4 \"C:\\\\test\"
 //		}
-//	}
+//	}"
 TEST_F(gDebugUnitTest, DebugResultStdStringTest)
     {
     std::string val = "C:\\test";

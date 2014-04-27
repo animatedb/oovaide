@@ -1,3 +1,4 @@
+<<<<<<< .mine
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <?fileVersion 4.0.0?>
 
@@ -492,3 +493,499 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>
+=======
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133" moduleId="org.eclipse.cdt.core.settings" name="Windows-Debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133" name="Windows-Debug" parent="cdt.managedbuild.config.gnu.mingw.exe.debug">
+					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.exe.debug.2093568665" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.exe.debug">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.mingw.exe.debug.1025003984" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.mingw.exe.debug"/>
+							<builder buildPath="${workspace_loc:/oovEdit}/Debug" id="cdt.managedbuild.tool.gnu.builder.mingw.base.463361371" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.exe.debug.1211607812" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.exe.debug">
+								<option id="gnu.both.asm.option.include.paths.1081271876" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.775575007" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.1211235610" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.debug.165222717" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.debug">
+								<option id="gnu.cpp.compiler.mingw.exe.debug.option.optimization.level.785406088" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.exe.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level.1809915702" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.include.paths.549433418" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/lib/glib-2.0/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gtk-3.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/glib-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/pango-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/cairo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gdk-pixbuf-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProgramFiles}/LLVM/include&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.other.other.697936562" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -mwindows -std=c++0x" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.991713340" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1935697941" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug">
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.mingw.exe.debug.option.optimization.level.283933089" name="Optimization Level" superClass="gnu.c.compiler.mingw.exe.debug.option.optimization.level" valueType="enumerated"/>
+								<option id="gnu.c.compiler.mingw.exe.debug.option.debugging.level.398233934" name="Debug Level" superClass="gnu.c.compiler.mingw.exe.debug.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.include.paths.1031258767" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2124901927" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug.2023438502" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug"/>
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/oovEdit ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.1328082518" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
+								<option id="gnu.cpp.link.option.paths.753954493" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Windows-Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProgramFiles}/LLVM/lib&quot;"/>
+								</option>
+								<option id="gnu.cpp.link.option.libs.674095873" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
+									<listOptionValue builtIn="false" value="gio-2.0"/>
+									<listOptionValue builtIn="false" value="pango-1.0"/>
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="gmodule-2.0"/>
+									<listOptionValue builtIn="false" value="glib-2.0"/>
+									<listOptionValue builtIn="false" value="gobject-2.0"/>
+									<listOptionValue builtIn="false" value="gtk-win32-3.0"/>
+									<listOptionValue builtIn="false" value="gdk-3"/>
+									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="psapi"/>
+									<listOptionValue builtIn="false" value="imagehlp"/>
+									<listOptionValue builtIn="false" value="libclang"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.1145778521" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -mwindows" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.292711813" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+			</storageModule>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.release.194714185">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.release.194714185" moduleId="org.eclipse.cdt.core.settings" name="Windows-Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.exe.release.194714185" name="Windows-Release" parent="cdt.managedbuild.config.gnu.mingw.exe.release">
+					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.release.194714185." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.mingw.exe.release.1099200099" name="MinGW GCC" superClass="cdt.managedbuild.toolchain.gnu.mingw.exe.release">
+							<targetPlatform id="cdt.managedbuild.target.gnu.platform.mingw.exe.release.1349156609" name="Debug Platform" superClass="cdt.managedbuild.target.gnu.platform.mingw.exe.release"/>
+							<builder buildPath="${workspace_loc:/oovEdit}/Release" id="cdt.managedbuild.tool.gnu.builder.mingw.base.512522080" keepEnvironmentInBuildfile="false" managedBuildOn="true" name="CDT Internal Builder" superClass="cdt.managedbuild.tool.gnu.builder.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.mingw.exe.release.919572874" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.mingw.exe.release">
+								<option id="gnu.both.asm.option.include.paths.1147771773" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1241319684" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.2113992025" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.1345152371" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release">
+								<option id="gnu.cpp.compiler.mingw.exe.release.option.optimization.level.1225153744" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.mingw.exe.release.option.debugging.level.104999638" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.include.paths.686081423" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gtk-3.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/glib-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/lib/glib-2.0/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/pango-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/cairo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gdk-pixbuf-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProgramFiles}/LLVM/include&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.other.other.1462570601" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -mwindows -std=c++0x" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.859031413" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.2015740557" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release">
+								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.mingw.exe.release.option.optimization.level.1850049024" name="Optimization Level" superClass="gnu.c.compiler.mingw.exe.release.option.optimization.level" valueType="enumerated"/>
+								<option id="gnu.c.compiler.mingw.exe.release.option.debugging.level.1234152071" name="Debug Level" superClass="gnu.c.compiler.mingw.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.include.paths.1994821643" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.489997062" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release.1874216920" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release"/>
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/oovEdit ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release.812649127" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release">
+								<option id="gnu.cpp.link.option.paths.910496902" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Windows-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProgramFiles}/LLVM/lib&quot;"/>
+								</option>
+								<option id="gnu.cpp.link.option.libs.358472122" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
+									<listOptionValue builtIn="false" value="gio-2.0"/>
+									<listOptionValue builtIn="false" value="pango-1.0"/>
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="gmodule-2.0"/>
+									<listOptionValue builtIn="false" value="glib-2.0"/>
+									<listOptionValue builtIn="false" value="gobject-2.0"/>
+									<listOptionValue builtIn="false" value="gtk-win32-3.0"/>
+									<listOptionValue builtIn="false" value="gdk-3"/>
+									<listOptionValue builtIn="false" value="pthread"/>
+									<listOptionValue builtIn="false" value="psapi"/>
+									<listOptionValue builtIn="false" value="imagehlp"/>
+									<listOptionValue builtIn="false" value="libclang"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.1211194773" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -mwindows" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1520672516" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+			</storageModule>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068" moduleId="org.eclipse.cdt.core.settings" name="Linux-Debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068" name="Linux-Debug" parent="cdt.managedbuild.config.gnu.mingw.exe.debug">
+					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.2057038241" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.939494224" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
+							<builder buildPath="${workspace_loc:/oovcde/Linux-Debug}" id="cdt.managedbuild.target.gnu.builder.base.764325089" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1213932426" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1984074495" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
+								<option id="gnu.cpp.compiler.option.include.paths.295445995" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/pango-1.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
+									<listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/include&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.optimization.level.1152015769" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.1058452484" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.435984776" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0  -std=c++0x" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.2106665648" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.649125664" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
+								<option id="gnu.c.compiler.option.include.paths.1261787350" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/glib-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/lib/glib-2.0/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/cairo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/pango-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gdk-pixbuf-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gtk-3.0&quot;"/>
+								</option>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1257529876" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.1864206949" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.109159651" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1785286439" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovEdit ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.1129618244" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+								<option id="gnu.cpp.link.option.libs.1257423806" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
+									<listOptionValue builtIn="false" value="gio-2.0"/>
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="gmodule-2.0"/>
+									<listOptionValue builtIn="false" value="glib-2.0"/>
+									<listOptionValue builtIn="false" value="gobject-2.0"/>
+									<listOptionValue builtIn="false" value="gdk-3"/>
+									<listOptionValue builtIn="false" value="gtk-3"/>
+									<listOptionValue builtIn="false" value="clang"/>
+								</option>
+								<option id="gnu.cpp.link.option.paths.645546713" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/lib&quot;"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.490085970" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./ -rdynamic" valueType="string"/>
+								<option id="gnu.cpp.link.option.other.1661644474" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.673803783" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.865048522" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+								<option id="gnu.both.asm.option.include.paths.1568881794" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/glib-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/lib/glib-2.0/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/cairo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/pango-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gdk-pixbuf-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gtk-3.0&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1252994552" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+			</storageModule>
+		</cconfiguration>
+		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927" moduleId="org.eclipse.cdt.core.settings" name="Linux-Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="rm -rf" description="" id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927" name="Linux-Release" parent="cdt.managedbuild.config.gnu.mingw.exe.debug">
+					<folderInfo id="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927." name="/" resourcePath="">
+						<toolChain id="cdt.managedbuild.toolchain.gnu.base.1845042399" name="Linux GCC" superClass="cdt.managedbuild.toolchain.gnu.base">
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.1044154711" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
+							<builder buildPath="${workspace_loc:/oovcde/Linux-Debug}" id="cdt.managedbuild.target.gnu.builder.base.384841222" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
+							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1352054995" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
+							<tool command="g++" commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.compiler.base.2047690623" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
+								<option id="gnu.cpp.compiler.option.include.paths.436426773" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
+									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
+									<listOptionValue builtIn="false" value="/usr/include/pango-1.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
+									<listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
+									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/include&quot;"/>
+								</option>
+								<option id="gnu.cpp.compiler.option.optimization.level.1261466725" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.329646242" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.423103434" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.904671300" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.962252081" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
+								<option id="gnu.c.compiler.option.include.paths.188916436" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/glib-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/lib/glib-2.0/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/cairo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/pango-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gdk-pixbuf-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gtk-3.0&quot;"/>
+								</option>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1765090288" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.360541758" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1176189632" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1069294297" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovEdit ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.1974000618" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
+								<option id="gnu.cpp.link.option.libs.1457351451" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
+									<listOptionValue builtIn="false" value="gio-2.0"/>
+									<listOptionValue builtIn="false" value="cairo"/>
+									<listOptionValue builtIn="false" value="gmodule-2.0"/>
+									<listOptionValue builtIn="false" value="glib-2.0"/>
+									<listOptionValue builtIn="false" value="gobject-2.0"/>
+									<listOptionValue builtIn="false" value="gdk-3"/>
+									<listOptionValue builtIn="false" value="gtk-3"/>
+									<listOptionValue builtIn="false" value="clang"/>
+								</option>
+								<option id="gnu.cpp.link.option.paths.2034445752" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/lib&quot;"/>
+								</option>
+								<option id="gnu.cpp.link.option.flags.159689848" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./ -rdynamic" valueType="string"/>
+								<option id="gnu.cpp.link.option.other.187395297" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other"/>
+								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1697846989" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="cdt.managedbuild.tool.gnu.assembler.base.1077060039" name="GCC Assembler" superClass="cdt.managedbuild.tool.gnu.assembler.base">
+								<option id="gnu.both.asm.option.include.paths.444316203" name="Include paths (-I)" superClass="gnu.both.asm.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/glib-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/lib/glib-2.0/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/cairo&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/pango-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gdk-pixbuf-2.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.1/include/gtk-3.0&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.1405847795" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings">
+				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+				<externalSettings containerId="oovGuiCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
+					<externalSetting>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Release"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
+					</externalSetting>
+				</externalSettings>
+			</storageModule>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="oovEdit.cdt.managedbuild.target.gnu.mingw.exe.1974139240" name="Executable" projectType="cdt.managedbuild.target.gnu.mingw.exe"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Linux-Release">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+		<configuration configurationName="Windows-Release">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+		<configuration configurationName="Windows-Debug">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+		<configuration configurationName="Linux-Debug">
+			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133;cdt.managedbuild.config.gnu.mingw.exe.debug.781893133.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1935697941;cdt.managedbuild.tool.gnu.c.compiler.input.2124901927">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068;cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068.;cdt.managedbuild.tool.gnu.cpp.compiler.base.1984074495;cdt.managedbuild.tool.gnu.cpp.compiler.input.2106665648">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927;cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927.;cdt.managedbuild.tool.gnu.cpp.compiler.base.2047690623;cdt.managedbuild.tool.gnu.cpp.compiler.input.904671300">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927;cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927.;cdt.managedbuild.tool.gnu.c.compiler.base.962252081;cdt.managedbuild.tool.gnu.c.compiler.input.1176189632">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.194714185;cdt.managedbuild.config.gnu.mingw.exe.release.194714185.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.1345152371;cdt.managedbuild.tool.gnu.cpp.compiler.input.859031413">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.194714185;cdt.managedbuild.config.gnu.mingw.exe.release.194714185.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.2015740557;cdt.managedbuild.tool.gnu.c.compiler.input.489997062">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133;cdt.managedbuild.config.gnu.mingw.exe.debug.781893133.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.debug.165222717;cdt.managedbuild.tool.gnu.cpp.compiler.input.991713340">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068;cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.1785098068.;cdt.managedbuild.tool.gnu.c.compiler.base.649125664;cdt.managedbuild.tool.gnu.c.compiler.input.109159651">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+</cproject>
+>>>>>>> .r798

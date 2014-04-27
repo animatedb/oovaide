@@ -31,6 +31,7 @@ public:
     virtual ~dirRecurser()
 	{}
     bool recurseDirs(char const * const path);
+    // Return true while success.
     virtual bool processFile(const std::string &filePath) = 0;
 };
 

@@ -41,8 +41,9 @@ class Dialog
 	    {}
 	GtkWidget *addButton(const gchar *text, gint response_id)
 	    { return gtk_dialog_add_button(mDialog, text, response_id); }
-	// The response from this only works if the OK button in Glade is
-	// set to -5, and cancel is set to -6.
+	// The response from this only works if the OK button Response ID in
+	// Glade is set to -5 (GTK_RESPONSE_OK), and cancel is set to
+	// -6 (GTK_RESPONSE_CANCEL).
 	bool run(bool hideDialogAfterButtonPress = false);
 	virtual void beforeRun()
 	    {}
@@ -92,7 +93,7 @@ class Gui
 	    { return gtk_combo_box_text_get_active_text(cb); }
 	static char const * const getSelectedText(GtkTextView *textview);
 	static int getCurrentLineNumber(GtkTextView *textView);
-	static char const * const getCurrentLineText(GtkTextView *textView);
+	static GuiText getCurrentLineText(GtkTextView *textView);
 	static void setSelected(GtkComboBox *cb, int index)
 	    { gtk_combo_box_set_active(cb, index); }
 	static void setSelected(GtkComboBoxText *cb, int index)
