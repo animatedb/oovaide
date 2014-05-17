@@ -35,4 +35,23 @@ class File
 	FILE *mFp;
     };
 
+class SharedFile
+    {
+    public:
+	~SharedFile()
+	    { closeFile(); }
+	enum eModes { M_ReadShared, M_ReadWriteExclusive };
+	enum eOpenStatus { OS_Opened, OS_SharingProblem, OS_NoFile, OS_OtherError };
+	eOpenStatus openFile(char const * const fn, eModes mode);
+	int getFileSize() const;
+	void seekBeginFile();
+	// actual size may be less than file size in text mode.
+	bool readFile(void *buf, int size, int &actualSize);
+	bool writeFile(void const *buf, int size);
+	void closeFile();
+
+    private:
+	int mFd;
+    };
+
 #endif /* FILE_H_ */

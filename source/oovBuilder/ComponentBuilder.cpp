@@ -96,7 +96,8 @@ void ComponentBuilder::appendOrderedPackageLibs(char const * const compName,
 	buildPackages.savePackages();
     }
 
-std::set<std::string> ComponentBuilder::getComponentCompileArgs(char const * const compName)
+std::set<std::string> ComponentBuilder::getComponentCompileArgs(char const * const compName,
+	ComponentTypesFile const &file)
     {
     std::set<std::string> compileArgs;
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
@@ -110,10 +111,19 @@ std::set<std::string> ComponentBuilder::getComponentCompileArgs(char const * con
 		}
 	    }
 	}
+    std::string argStr = file.getComponentBuildArgs(compName);
+    for(auto const &arg : CompoundValueRef::parseString(argStr.c_str()))
+	{
+	if(arg.find("-lnk", 0, 4) == std::string::npos)
+	    {
+	    compileArgs.insert(arg);
+	    }
+	}
     return compileArgs;
     }
 
-std::set<std::string> ComponentBuilder::getComponentLinkArgs(char const * const compName)
+std::set<std::string> ComponentBuilder::getComponentLinkArgs(char const * const compName,
+	ComponentTypesFile const &file)
     {
     std::set<std::string> linkArgs;
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
@@ -125,6 +135,14 @@ std::set<std::string> ComponentBuilder::getComponentLinkArgs(char const * const 
 		{
 		linkArgs.insert(arg);
 		}
+	    }
+	}
+    std::string argStr = file.getComponentBuildArgs(compName);
+    for(auto const &arg : CompoundValueRef::parseString(argStr.c_str()))
+	{
+	if(arg.find("-lnk", 0, 4) != std::string::npos)
+	    {
+	    linkArgs.insert(arg.substr(4).c_str());
 	    }
 	}
     return linkArgs;
@@ -192,7 +210,8 @@ bool ComponentBuilder::buildComponents()
     // Compile all objects.
     for(const auto &name : compNames)
 	{
-	std::set<std::string> compileArgs = getComponentCompileArgs(name.c_str());
+	std::set<std::string> compileArgs = getComponentCompileArgs(name.c_str(),
+		compTypesFile);
 	if(compTypesFile.getComponentType(name.c_str()) != ComponentTypesFile::CT_Unknown)
 	    {
 	    std::vector<std::string> sources =
@@ -269,7 +288,8 @@ bool ComponentBuilder::buildComponents()
 		ComponentTypesFile::CT_Program || shared)
 	    {
 	    appendOrderedPackageLibs(name.c_str(), externalLibDirs, externalOrderedLibNames);
-	    std::set<std::string> linkArgs = getComponentLinkArgs(name.c_str());
+	    std::set<std::string> linkArgs = getComponentLinkArgs(name.c_str(),
+		    compTypesFile);
 
 	    std::vector<std::string> sources =
 		compTypesFile.getComponentSources(name.c_str());

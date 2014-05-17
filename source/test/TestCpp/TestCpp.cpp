@@ -35,11 +35,40 @@ double cTime::elapsedSecondsSinceStart(const cTime &startTime)
     return(cTime(mTime) - startTime);
     }
 
+cTestAllModules *cTestAllModules::sTestAllModules;
 
-cTestCppModule::cTestCppModule():
-	mPassCount(0), mFailCount(0)
+cTestAllModules::cTestAllModules()
+    {
+    mLogFp = fopen("TestCpp.txt", "w");
+    }
+
+cTestAllModules::~cTestAllModules()
+    {
+    fclose(mLogFp);
+    }
+
+void cTestAllModules::addModule(class cTestCppModule *module)
+    {
+    if(!cTestAllModules::sTestAllModules)
+        cTestAllModules::sTestAllModules = new cTestAllModules();
+    cTestAllModules::sTestAllModules->mModules.push_back(module);
+    }
+
+void cTestAllModules::runAllTests()
+    {
+    for(auto const &mod : mModules)
+        {
+	fprintf(mLogFp, "Module %s\n", mod->getModuleName());
+        mod->runAllTests();
+        }
+    }
+
+///////////////
+
+cTestCppModule::cTestCppModule(char const * const moduleName):
+	mPassCount(0), mFailCount(0), mModuleName(moduleName)
 	{
-	mLogFp = fopen("TestCpp.txt", "w");
+        cTestAllModules::addModule(this);
 	}
 
 void cTestCppModule::addFunctionTest(class cTestCppFunction *func)
@@ -47,10 +76,12 @@ void cTestCppModule::addFunctionTest(class cTestCppFunction *func)
 
 void cTestCppModule::runAllTests()
 	{
+        FILE *logFp = cTestAllModules::getAllModules()->getLogFp();
 	for(size_t i=0; i<mTestFunctions.size(); i++)
 		{
 		cTestCppFunction &testFunc = *mTestFunctions[i];
-		fprintf(mLogFp, "%d:Function %s %s\n", i+1, testFunc.mModuleName.c_str(), testFunc.mTestName.c_str());
+		fprintf(logFp, "%d:Function %s %s\n",
+                    i+1, testFunc.mModuleName.c_str(), testFunc.mTestName.c_str());
 		testFunc.doFunctionTest(*this);
 		if(testFunc.mAnyFailure)
 			mFailCount++;
@@ -59,13 +90,14 @@ void cTestCppModule::runAllTests()
 		}
 	if(mExtraDiagnostics.size() > 0)
 	    {
-	    fprintf(mLogFp, "\nExtra Diagnostics\n");
+	    fprintf(logFp, "\nExtra Diagnostics\n");
 	    for(size_t i=0; i<mExtraDiagnostics.size(); i++)
 		{
-		fprintf(mLogFp, "  %s\n", mExtraDiagnostics[i].c_str());
+		fprintf(logFp, "  %s\n", mExtraDiagnostics[i].c_str());
 		}
 	    }
-	fprintf(mLogFp, "\nSummary:  %d Passed, %d Failed\n", mPassCount, mFailCount);
+	fprintf(logFp, "\nSummary:  %d Passed, %d Failed\n\n",
+            mPassCount, mFailCount);
 	}
 
 void cTestCppModule::addExtraDiagnostics(const char *str, double val)
@@ -78,15 +110,21 @@ void cTestCppModule::addExtraDiagnostics(const char *str, double val)
 //////
 
 void cTestCppFunction::testCppOutput(int lineNum, bool passed)
-{
-	const char *successStr;
-	if(passed)
-		successStr = "Pass";
-	else
-		{
-		successStr = "Fail";
-		mAnyFailure = true;
-		}
-	fprintf(mParentModule.getLogFp(), "  Line %d: %s\n", lineNum, successStr);
-}
+    {
+    const char *successStr;
+    if(passed)
+        successStr = "Pass";
+    else
+        {
+        successStr = "Fail";
+        mAnyFailure = true;
+        }
+    fprintf(cTestAllModules::getAllModules()->getLogFp(),
+        "  Line %d: %s\n", lineNum, successStr);
+    }
 
+
+int main()
+    {
+    cTestAllModules::getAllModules()->runAllTests();
+    }

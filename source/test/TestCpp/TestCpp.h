@@ -60,25 +60,44 @@ class cTime
 	timeval mTime;
     };
 
+class cTestAllModules
+    {
+    public:
+        cTestAllModules();
+        ~cTestAllModules();
+        static void addModule(class cTestCppModule *module);
+        void runAllTests();
+        static cTestAllModules *getAllModules()
+            { return sTestAllModules; }
+	FILE *getLogFp()
+		{ return mLogFp; }
+
+    private:
+        std::vector<class cTestCppModule *> mModules;
+	FILE *mLogFp;
+        static cTestAllModules *sTestAllModules;
+    };
+
 // This can be derived from to hold data that is common between tests. It provides
 // functions to run defined tests and logs tests as they are run.
 // This accumulates counts of pass and fail and logs at the end.
 class cTestCppModule
 {
 public:
-	cTestCppModule();
+	cTestCppModule(char const * const moduleName);
 	void addFunctionTest(class cTestCppFunction *func);
 	void runAllTests();
 	void addExtraDiagnostics(const char *str)
 	    { mExtraDiagnostics.push_back(str); }
 	void addExtraDiagnostics(const char *str, double val);
-	FILE *getLogFp()
-		{ return mLogFp; }
+        char const * const getModuleName()
+            { return mModuleName; }
+
 private:
 	std::vector<class cTestCppFunction*> mTestFunctions;
 	int mPassCount;
 	int mFailCount;
-	FILE *mLogFp;
+        char const * const mModuleName;
 	std::vector<std::string> mExtraDiagnostics;
 };
 

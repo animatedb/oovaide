@@ -38,6 +38,8 @@ class ComponentTypesFile:public NameValueFile
 	enum CompTypes getComponentType(char const * const compName) const;
 	std::vector<std::string> getComponentSources(char const * const compName) const;
 	std::vector<std::string> getComponentIncludes(char const * const compName) const;
+	std::string getComponentBuildArgs(char const * const compName) const;
+	void setComponentBuildArgs(char const * const compName, char const * const args);
 
 	static enum CompTypes getComponentTypeFromTypeName(
 		char const * const compTypeName);

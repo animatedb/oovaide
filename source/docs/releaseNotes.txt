@@ -14,10 +14,8 @@ Explanations
 Missing Features
 ----------------
 - General
-	- memory leaks from gtk_text_buffer_get_text
 	- Only 64 bit linux build is provided.
 	- Code improvements: Use unique_ptr for model objects
-	- Code improvements: Fix Project module to contain source root dir
 - Gui
 	- Clicking on warnings doesn't display editor. Also change to double click?
 	- Saving diagrams/files dialog button says Open instead of Save.
@@ -26,9 +24,7 @@ Missing Features
 - Source/project management
 	- Make it clear which files must be saved to save project settings.
 	  Gui Options don't get recreated if project is opened instead of newed.
-	- Improve multitask backend, specify number of threads
-		FindFirstChangeNotification/CDirectoryChangeWatcher , inotify
-		http://randomascii.wordpress.com/2014/03/22/make-vc-compiles-fast-through-parallel-compilation/
+	- Add more multitasking to backend - analysis is ok, need for linux, builds, loading projects
 	- Load last project automatically, but allow opening other while parsing
 - C++ parsing for drawings
 	- BUG: Model objects not handled properly
@@ -83,7 +79,6 @@ Missing Features
 	- Could allow multiple selection to add relations, remove, properties
 	- Could have grid for class placement, option for grid size
 - Sequence Diagrams
-	- BUG: World doesn't show client/takeBag when opened from test/trunk-oovcde-win
 	- don't allow removing top call
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
@@ -98,10 +93,9 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Build sometimes must have objects specified before or after other libs/objects
 	- split source of libraries into separate file for each function for release mode
-	- Allow all components to have difference cpp/link args? -lnk-mwindows
-		Add -lnk-mwindows if in Windows and using GTK? NO for command line apps
-		Assign configs to components?
+	- Component specific build args not used to recalculate crc's for rebuild
 	- Separate oovcde-comptypes into user editable part (comp types), and file lists part
 	- Replace oovcde-comps.txt in analysis directory with oovcde-extdir.txt file.
 	- CMake file creator - Use analyze mode, read buildconfig(for crc), comptypes, incdeps
@@ -110,17 +104,14 @@ Missing Features
 	- Cross compiling: http://www.cmake.org/Wiki/CMake_Cross_Compiling
 	- date compares should not be for older, but even if date changed (in case of restore files)
 	- Allow more project directory structures?
-	- When a source file changes, or new file, the dependency list for it must be updated.
-	  For now, delete out/bld directory for clean build.
+	- When a source file changes, or new file, the dependency list is typically updated.
+	  For now, if not, delete out/bld directory for clean build.
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
-	- editor doesn't handle two files with same name
 	- Open include files
-	- Find in files needs to set focus to loaded file/select text
-	- View source from oovcde puts cursor on line, but does not set focus/select text
-	- BUG: Margin is wrong if view is scrolled
-	- Home key doesn't scroll window
+	- find declaration/definition
+	- editor doesn't handle two files with same name
 	- Prevent file overwrite of another editor at the same time
 	- GtkPlug, XEmbed, Wayland? "gvim -f --socketid %w '%s'"
 	  http://lists.freedesktop.org/archives/wayland-devel/2012-February/002030.html
@@ -132,9 +123,7 @@ Missing Features
 	- Creating new module created .tmp file
 	- unindenting doesn't work well when tabs are in file
 	- display column/character position
-	- replace
 	- error highlighting
-	- find declaration/definition
 	- refactor-rename
 - Debugger (In editor)
 	- Need to switch tabs when view source / hit breakpoint
@@ -154,6 +143,7 @@ Missing Features
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future
+	- Add timing diagram that can show state changes over time from method calls
 	- static analysis: clang++ --analyze -I/home/ad/IP/Lib/src/  -Weverything
 		 -pedantic -fshow-column -fcaret-diagnostics -fcolor-diagnostics
 		 -ferror-limit=9999999 -fdiagnostics-show-category -std=c++98 file1.cpp

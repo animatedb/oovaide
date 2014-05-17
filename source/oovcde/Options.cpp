@@ -149,7 +149,9 @@ void BuildOptions::setDefaultOptions()
 #ifdef __linux__
     setNameValue(OptToolDebuggerPath, "/usr/bin/gdb");
 #else
-    setNameValue(OptToolDebuggerPath, "/MinGW/bin/gdb.exe");
+    // This works without setting the full path.
+    // The path could be /MinGW/bin, or could be /Program Files/mingw-builds/...
+    setNameValue(OptToolDebuggerPath, "gdb.exe");
 #endif
 
     setBuildConfigurationPaths(*this, BuildConfigAnalysis,

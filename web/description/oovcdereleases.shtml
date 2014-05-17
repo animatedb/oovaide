@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><!-- DC Blaha - 6/8/2009 -->
+<html><head>
+<!-- DC Blaha - 6/8/2009 -->
 
 
 
@@ -35,7 +36,21 @@ Created: 6-8-2009
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.
 
+<h2>2014-05</h2>
+This version contains:<br>
+
+
+<ul>
+<li>Partial debug support under Windows</li>
+  <li>Analysis is now run with multiple threads</li>
+  <li>Find in files for editor</li>
+  <li>Build arguments specific for components<br>
+  </li>
+<li>Many bug fixes<br>
+</li>
+</ul>
 <h2>2014-02-2</h2>
+
 This version contains:<br>
 
 <ul>

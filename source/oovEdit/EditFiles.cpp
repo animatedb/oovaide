@@ -223,12 +223,16 @@ void EditFiles::drawRightMargin(GtkWidget *widget, cairo_t *cr, int leftMargin, 
     int marginWindowHeight;
     gdk_window_get_geometry(window, NULL, NULL, NULL, &marginWindowHeight);
 
+    GtkScrolledWindow *scrolledWindow = GTK_SCROLLED_WINDOW(
+	    gtk_widget_get_parent(GTK_WIDGET(textView)));
+    GtkAdjustment *adjust = gtk_scrolled_window_get_hadjustment(scrolledWindow);
+    int scrollAdjust = (int)gtk_adjustment_get_value(adjust);
 //    cairo_text_extents_t extents;
 //    cairo_text_extents(cr, "5555555555", &extents);
 
     cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 128/255.0);
     const int marginLineWidth = 1;
-    cairo_rectangle(cr, leftMargin + pixPerChar * 80, 0,
+    cairo_rectangle(cr, (leftMargin + pixPerChar * 80) - scrollAdjust, 0,
 	    marginLineWidth, marginWindowHeight);
     cairo_fill(cr);
     }
@@ -320,7 +324,7 @@ static GtkWidget *newTabLabel(char const * const tabText, GtkWidget *viewTopPare
 
     }
 
-void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
+void EditFiles::viewFile(char const * const fn, bool useMainView, int lineNum)
     {
     FilePath fp;
 
@@ -365,13 +369,31 @@ void EditFiles::addFile(char const * const fn, bool useMainView, int lineNum)
     GtkNotebook *notebook = (*iter).getBook();
     if(notebook)
 	{
-	int pageIndex = mFileViews.begin() - iter;
+	int pageIndex = getPageNumber(notebook, (*iter).getTextView());
 	Gui::setCurrentPage(notebook, pageIndex);
+	gtk_widget_grab_focus(GTK_WIDGET((*iter).getTextView()));
 #if(DBG_EDITF)
 	sDbgFile.printflush("ViewFile %d\n", pageIndex);
 #endif
 	(*iter).mDesiredLine = lineNum;
 	}
+    }
+
+int EditFiles::getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const
+    {
+    int numPages = Gui::getNumPages(notebook);
+    int pageNum = -1;
+    // Parent is the scrolled widget.
+    GtkWidget *page = gtk_widget_get_parent(GTK_WIDGET(view));
+    for(int i=0; i<numPages; i++)
+	{
+	if(Gui::getNthPage(notebook, i) == page)
+	    {
+	    pageNum = i;
+	    break;
+	    }
+	}
+    return pageNum;
     }
 
 void EditFiles::idleHighlight()
@@ -387,7 +409,7 @@ void EditFiles::idleHighlight()
 	}
     }
 
-void EditFiles::viewFile(char const * const fn, int lineNum)
+void EditFiles::viewModule(char const * const fn, int lineNum)
     {
     FilePath moduleName(fn, FP_File);
     FilePath cppExt("cpp", FP_Ext);
@@ -399,19 +421,19 @@ void EditFiles::viewFile(char const * const fn, int lineNum)
 	{
 	moduleName.appendExtension("h");
 	if(header)
-	    addFile(moduleName.c_str(), false, lineNum);
+	    viewFile(moduleName.c_str(), false, lineNum);
 	else
-	    addFile(moduleName.c_str(), false, 1);
+	    viewFile(moduleName.c_str(), false, 1);
 
 	moduleName.appendExtension("cpp");
 	if(source)
-	    addFile(moduleName.c_str(), true, lineNum);
+	    viewFile(moduleName.c_str(), true, lineNum);
 	else
-	    addFile(moduleName.c_str(), true, 1);
+	    viewFile(moduleName.c_str(), true, 1);
 	}
     else
 	{
-	addFile(fn, true, lineNum);
+	viewFile(fn, true, lineNum);
 	}
     }
 
@@ -458,11 +480,23 @@ bool EditFiles::checkDebugger()
     getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
     getDebugger().setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
 //Gui::messageBox("Debugging is not recommended. It is very unstable.");
-    if(getDebugger().getDebuggerFilePath().length() > 0)
+    std::string debugger = getDebugger().getDebuggerFilePath();
+    std::string debuggee = getDebugger().getDebuggeeFilePath();
+    if(debugger.length() > 0)
 	{
-	if(getDebugger().getDebuggeeFilePath().length() > 0)
+	if(debuggee.length() > 0)
 	    {
-	    ok = true;
+	    if(fileExists(debugger.c_str()))
+		{
+		if(fileExists(debuggee.c_str()))
+		    {
+		    ok = true;
+		    }
+		else
+		    Gui::messageBox("Component to be debug in Edit/Preferences does not exist");
+		}
+	    else
+		Gui::messageBox("Debugger in Edit/Preferences does not exist");
 	    }
 	else
 	    Gui::messageBox("Component to be debug must be set in Edit/Preferences");

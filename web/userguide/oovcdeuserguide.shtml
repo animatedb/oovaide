@@ -1,6 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<!-- DC Blaha - 6/8/2009 -->
+<html><head><!-- DC Blaha - 6/8/2009 -->
+
+
+
+
+
+
 
 
 
@@ -13,8 +18,8 @@
 
 <h2><a class="mozTocH2" name="mozTocId260289"></a>OOVCDE User Guide</h2>
 
-Created: 6-8-2009
-Last update: 1-1-2014
+Created: Jne 8, 2009
+Last update: May 7, 2015
 <p>
 <img src="../description/OovLogo.png">
 </p><p>
@@ -45,7 +50,7 @@ See below for more information.<br>
   <li>Build
 a project. These steps are not required for viewing diagrams. Building
 Oovcde requires CLang and GTK to be downloaded and to match the paths
-in the Edit/Preferences/Cpp Arguments settings. Windows also requires MinGW for building Oovcde.<br>
+in the Edit/Preferences/Cpp Arguments settings.<br>
 </li>
   <ol>
     <li>Select
@@ -58,8 +63,15 @@ libraries, and all other oov... components are executables.<br>
   </ol>
 
   
-</ol>
-<br>
+</ol>Building the Oovcde project under Windows also requires MinGW or
+MinGW-builds. Note that once the path is set to these packages, the
+compiler will find the includes and libraries automatically, and they
+do not have to be specified.&nbsp; If they are specified, they may
+cause duplicate definition or other types of errors. The MinGW-builds
+package has the advantage over MinGW that std::thread is supported.
+Switching between the packages requires nothing more than changing the
+path environment variable.<br>
+
 <h2><a class="mozTocH2" name="mozTocId381773"></a>Drawing Overview</h2>
 
 
@@ -209,7 +221,7 @@ The following steps can be followed:<br>
   <li>If the external packages do not exist, either custom packages can
 be created, or add some external project root references. These are
 specified under Edit/Preferences/Cpp Arguments, and may look like
-"-ERC:\MinGW", although some may already be set up. The full syntax
+"-ERC:\ExternalPackage", although some may already be set up. The full syntax
 allows excluding strings using an exclamation point as a not symbol.
 This is required for cases where external project references contain
 multiple libraries with the same symbols. For example,
@@ -229,26 +241,45 @@ it uses both Gtk and Clang, and has multiple libraries and executables.
 Early versions of CLang on Windows required building CLang, and the
 complex library order for
 Clang was able to be determined by the build system.<br>
-<h4><a class="mozTocH4" name="mozTocId206848"></a>Resolving Include Problems</h4>The
-analysis may work ok even though there are compiler errors. The
-OovCppParser uses CLang, and even when there are parsing errors, it may
-still find many of the symbols defined in files.<br>
-<br>The analysis directories are not kept unique for the clang
+<h4><a class="mozTocH4" name="mozTocId206848"></a>Resolving Include Problems During Analysis<br>
+</h4>The Oovcde analysis will produce usable output even when include files cannot
+be found, although this may result in missing classes, or methods in
+sequence diagrams.<br>
+
+<br>
+Oovcde uses the OovCppParser to perform the analysis, and the
+OovCppParser uses CLang. Clang has hard coded paths compiled into the
+library. Compilers will only search for a certain set of include paths.
+If the compiler cannot find a standard library file, then it isn't
+finding the file in its include directories. To view the CLang or GCC
+compiler
+include paths, use the -v option in the Oovcde Edit Preferences/Build
+Arguments.<br>
+<br>Oovcde produces analysis directories for each set of build
+arguments.&nbsp; This is in case the classes may be different for debug
+or release, etc.<br>
+The analysis directories are not kept unique for the clang
 and GCC compilers. Build argument differences are used to make unique analysis
 directories. If they are using the same directory, and different include paths are needed, set an argument that
 is different so that different analysis directories are used.<br>
 <br>
-Compilers will only search for a certain set of include paths.<br>
-
-If the compiler cannot find a file such as "stddef.h", then it isn't
-finding the file in its include directories. The compilers will
-automatically include some directories. To view the CLang or GCC compiler
-include paths, use the -v option in the Oovcde Edit Preferences/Build
-Arguments.<br>
-<br>
 <h5>Windows Include Problems<br>
-</h5>Things can be difficult especially on Windows since Oovcde by default
-uses CLang&nbsp; for analysis, and GCC is used for a build.<br>
+</h5>Things can be difficult especially on Windows since Oovcde by
+default
+uses CLang&nbsp; for analysis, and either MinGW-builds or MinGW is used
+for a build. MinGW-builds is required to build Oovcde with proper
+threading support.<br>
+<br>
+So there are two usage scenarios:<br>
+<ul>
+  <li>Perform Analysis with Oovcde - Typically CLang will require include files to be in \MinGW.<br>
+  </li>
+  <li>Build Oovcde - Use MinGW-Builds by setting the path to the bin
+directory, and temporarily hide the \MinGW directory by renaming it to
+\MinGW-hide<br>
+  </li>
+</ul>
+
 
 <br>
 The typical location is in the \MinGW directory. CLang supports the
@@ -271,7 +302,6 @@ following MinGW installations on Windows.<br>
   </tbody>
 </table>
 <br>
-One site that provides mingw builds is <a href="https://code.google.com/p/mingw-builds/">mingw-builds</a>.<br>
 <br>
 <h4><a class="mozTocH4" name="mozTocId450611"></a>Linux Example</h4>This
 is an old Linux example. The best method currently is to load the
@@ -320,7 +350,7 @@ Extra Release Arguments<br>
 	The only problem is that clang 3.2 does not export symbols in the object files, so
 	the link with GTK fails.
 	
-<pre>	-c<br>	-std=c++0x<br>	-ERC:\MinGW!debug<br>	-ERC:\Program Files\GTK+-Bundle-3.6.1<br>	-ERC:\Dave\Mine\software\oovcde\clang+llvm-3.2<br></pre>
+<pre>	-c<br>	-std=c++0x<br>	-ERC:\Program Files\GTK+-Bundle-3.6.1<br>	-ERC:\Dave\Mine\software\oovcde\clang+llvm-3.2<br></pre>
 <h4><a class="mozTocH4" name="mozTocId813985"></a>Build Sequence</h4>
 The detailed sequence of the build is:
 	<ul>
@@ -337,11 +367,13 @@ The detailed sequence of the build is:
 		not present, the build tools default to the GNU tools.
 		</li><li>Manually edit oovcde.txt to change build tools.</li></ul>
 
-	</li><li>The user specifies additional external project packages or package roots for includes and
-	libraries. If include
-	files are found, the paths are added to the initial include paths. If
-	libraries are found, the paths are added to the initial library	paths. The user must specify the project packages in the correct order.
-	Include paths are scanned in the order that packages and external
+	</li><li>The
+user specifies additional external project packages or package roots
+for includes and libraries. If include files are found, the paths are
+added to the initial include paths. If libraries are found, the paths
+are added to the initial library paths. The user must specify the
+project packages in the correct order. Include paths are scanned in the
+order that packages and external
 references are specified. During the link, the libraries are scanned in
 opposite order. Project package order is determined by the builder.</li>
 
@@ -359,7 +391,7 @@ opposite order. Project package order is determined by the builder.</li>
 	create libraries in the correct order for the linker. The external
 	project libraries are used in the opposite order that the external
 	project roots were specified.
-	FUTURE: The library dependencies are optimizes so only needed libraries
+	The library dependencies are optimizes so only needed libraries
 	are used for each component.
 	</li>
 
@@ -418,6 +450,12 @@ There are also these limitations.<br>
 The OovEdit program is a simple text editor. It has the following features.<br>
 <ol>
   <li> C++ syntax highlighting using CLang</li>
+  <li>Debugging using GDB<br>
+  </li>
+  <li>Find/Replace</li>
+  <li>Find in files<br>
+  </li>
+
   <li>Undo/Redo</li>
   <li>Copy/Paste</li>
   <li>Find forward or reverse, and case sensitive or insensitive<br>

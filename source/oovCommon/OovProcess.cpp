@@ -27,6 +27,7 @@
 #define off_t _off_t
 #include <unistd.h>
 #include <string>
+#include <time.h>
 
 #define DEBUG_PROC 0
 #if(DEBUG_PROC)
@@ -148,6 +149,10 @@ bool OovPipeProcessLinux::linuxCreatePipeProcess(char const * const procPath,
 	    // Not required for the child since std handles have all needed pipe handles.
 	    linuxClosePipes();
 	    success = (execvp(procPath, const_cast<char**>(argv)) != -1);
+	    if(!success)
+		{
+		fprintf(stderr, "Unable to run process %s\n", procPath);
+		}
 //	    pause();
 	    _exit(0);
 	    }
@@ -245,16 +250,28 @@ void OovPipeProcessLinux::linuxChildProcessListen(OovProcessListener &listener, 
     linuxClosePipe(mOutPipe[P_Write]);
     linuxClosePipe(mInPipe[P_Read]);
     linuxClosePipe(mErrPipe[P_Read]);
-//    if (WIFEXITED(status))
-//	exitCode = WEXITSTATUS(status);
-//    else
-//	exitCode = -1;
-    exitCode = 0;
+    // If the error pipe has "Unable to run process..." then this should
+    // actually return an error.
+    int waitStatus;
+    wait(&waitStatus);
+    if(WIFEXITED(waitStatus) == 0)
+	{
+	exitCode = 0;
+	}
+    else
+	exitCode = waitStatus;
     }
 
 void OovPipeProcessLinux::linuxChildProcessSend(char const * const str)
     {
-    write(mOutPipe[P_Write], str, strlen(str));
+    // Junk code:
+    // Compile error for not checking write return, so instead, retry once
+    for(int i=0; i<2; i++)
+	{
+	ssize_t size = write(mOutPipe[P_Write], str, strlen(str));
+	if(size > 0)
+	    break;
+	}
     }
 
 void OovPipeProcessLinux::linuxChildProcessKill()
@@ -600,19 +617,101 @@ void OovProcessStdListener::onStdErr(char const * const out, int len)
 	fprintf(mStderrFp, "%s", std::string(out, len).c_str());
     }
 
+void OovProcessBufferedStdListener::onStdOut(char const * const out, int len)
+    {
+	{
+	LockGuard lock(mStdMutex);
+	if(mStdOutPlace == OP_OutputStd || mStdOutPlace == OP_OutputStdAndFile)
+	    mStdoutStr += std::string(out, len).c_str();
+	if(mStdOutPlace == OP_OutputFile || mStdOutPlace == OP_OutputStdAndFile)
+	    mStdoutStr += std::string(out, len).c_str();
+	}
+    output(mStdoutFp, mStdoutStr, mStdoutTime);
+    }
+
+void OovProcessBufferedStdListener::onStdErr(char const * const out, int len)
+    {
+	{
+	LockGuard lock(mStdMutex);
+	if(mStdErrPlace == OP_OutputStd || mStdErrPlace == OP_OutputStdAndFile)
+	    mStderrStr += std::string(out, len).c_str();
+	if(mStdErrPlace == OP_OutputFile || mStdErrPlace == OP_OutputStdAndFile)
+	    mStderrStr += std::string(out, len).c_str();
+	}
+    output(mStderrFp, mStderrStr, mStderrTime);
+    }
+
+void OovProcessBufferedStdListener::setProcessIdStr(char const * const str)
+    {
+    LockGuard lock(mStdMutex);
+    mProcessIdStr = str;
+    }
+
+void OovProcessBufferedStdListener::output(FILE *fp, std::string &str, time_t &refTime)
+    {
+
+    time_t curTime;
+    time(&curTime);
+    if(refTime == 0)
+	{
+	refTime = curTime;
+	}
+    if(curTime-refTime > 0)
+//    if(str.length() > 20000)
+	{
+	LockGuard lock(mStdMutex);
+	size_t lastCrPos = str.rfind('\n');
+	std::string tempStr = str.substr(0, lastCrPos);
+	str.erase(0, lastCrPos);
+
+	fprintf(fp, "%s", mProcessIdStr.c_str());
+	fprintf(fp, "%s", tempStr.c_str());
+	refTime = curTime;
+	}
+    }
+
+void OovProcessBufferedStdListener::processComplete()
+    {
+    LockGuard lock(mStdMutex);
+    fprintf(mStdoutFp, "%s", mProcessIdStr.c_str());
+    fprintf(mStdoutFp, "%s", mStdoutStr.c_str());
+    fprintf(mStderrFp, "%s", mStderrStr.c_str());
+    mStdoutStr.clear();
+    mStderrStr.clear();
+    }
+
 void OovProcessChildArgs::addArg(char const * const argStr)
     {
-    argStrings.push_back(argStr);
-    mArgv.resize(mArgv.size()-1);
-    mArgv.push_back(&argStrings[argStrings.size()-1][0]);
-    mArgv.push_back(nullptr);
+    mArgStrings.push_back(argStr);
+    }
+
+char const * const *OovProcessChildArgs::getArgv() const
+    {
+    mArgv.clear();
+    for(size_t i=0; i<mArgStrings.size(); i++)
+	{
+	mArgv.push_back(mArgStrings[i].c_str());
+	}
+    mArgv.push_back(nullptr);	// Add one for end null
+    return const_cast<char const * const *>(&mArgv[0]);
+    }
+
+std::string OovProcessChildArgs::getArgsAsStr() const
+    {
+    std::string argStr;
+    for(auto const &arg : mArgStrings)
+	{
+	argStr += arg;
+	argStr += ' ';
+	}
+    argStr += '\n';
+    return argStr;
     }
 
 void OovProcessChildArgs::printArgs(FILE *fh) const
     {
-    for(size_t i=0; i<mArgv.size()-1; i++)
-	fprintf(fh, " %s", mArgv[i]);
-    fprintf(fh, "\n");
+    fprintf(fh, "%s", getArgsAsStr().c_str());
+    fflush(fh);
     }
 
 static gpointer BackgroundThreadFunc(gpointer data)

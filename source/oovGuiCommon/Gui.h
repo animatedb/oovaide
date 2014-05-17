@@ -41,6 +41,7 @@ class Dialog
 	    {}
 	GtkWidget *addButton(const gchar *text, gint response_id)
 	    { return gtk_dialog_add_button(mDialog, text, response_id); }
+	int runHideCancel();
 	// The response from this only works if the OK button Response ID in
 	// Glade is set to -5 (GTK_RESPONSE_OK), and cancel is set to
 	// -6 (GTK_RESPONSE_CANCEL).
@@ -89,8 +90,8 @@ class Gui
 	static GuiText getText(GtkTextView *textview);
 	static char const * const getText(GtkEntry *entry)
 	    { return gtk_entry_get_text(entry); }
-	static char const * const getText(GtkComboBoxText *cb)
-	    { return gtk_combo_box_text_get_active_text(cb); }
+	static GuiText getText(GtkComboBoxText *cb)
+	    { return GuiText(gtk_combo_box_text_get_active_text(cb)); }
 	static char const * const getSelectedText(GtkTextView *textview);
 	static int getCurrentLineNumber(GtkTextView *textView);
 	static GuiText getCurrentLineText(GtkTextView *textView);
@@ -127,6 +128,8 @@ class Gui
 	    { gtk_notebook_set_current_page(notebook, page); }
 	static int getNumPages(GtkNotebook *notebook)
 	    { return gtk_notebook_get_n_pages(notebook); }
+	static GtkWidget *getNthPage(GtkNotebook *notebook, int pageNum)
+	    { return gtk_notebook_get_nth_page(notebook, pageNum); }
 	static void reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent);
 	static void redraw(GtkWidget *widget)
 	    { gtk_widget_queue_draw(widget); }

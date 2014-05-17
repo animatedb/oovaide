@@ -52,8 +52,16 @@ class EditFiles
 	void init(Builder &builder);
 	void onIdle();
 	void updateDebugMenu();
-	void viewFile(char const * const fn, int lineNum);
+	/// Opens the specified file, along with the companion file. Ex: If a
+	/// source file is specified, then the header is also opened.
+	/// @param fn Full filename.
+	/// @param lineNum Line number of specified file.
+	void viewModule(char const * const fn, int lineNum);
+	/// Go to the line number in the current view.
+	/// @param lineNum The line number to put the cursor on.
 	void gotoLine(int lineNum);
+	/// Displays a prompt if a buffer is modified.
+	/// return = true if it is ok to exit.
 	bool checkExitSave();
 	FileEditView *getEditView()
 	    {
@@ -64,12 +72,18 @@ class EditFiles
 	    }
 	// For signal handlers
 	void setFocusEditTextView(GtkTextView *editTextView);
+	/// Handles keys where the behavior is modified. The main keys are
+	/// related to indenting.
 	bool handleKeyPress(GdkEvent *event);
+	/// Draws the left margin along with the line numbers.
 	void drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &pixPerChar);
+	/// Draws the right margin near 80 columns.
 	void drawRightMargin(GtkWidget *widget, cairo_t *cr, int leftMargin, int pixPerChar);
 	Debugger &getDebugger()
 	    { return mDebugger; }
+	/// Used by signal handler to close the page.
 	void removeNotebookPage(GtkWidget *pageWidget);
+	/// Displays an error if the debugger has not been setup in options.
 	bool checkDebugger();
 
     private:
@@ -81,8 +95,9 @@ class EditFiles
 	size_t mFocusEditViewIndex;
 	Debugger &mDebugger;
 	timeval mLastHightlightIdleUpdate;
-	void addFile(char const * const fn, bool useMainView, int lineNum);
+	void viewFile(char const * const fn, bool useMainView, int lineNum);
 	void idleHighlight();
+	int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
 	ScrolledFileView *getScrolledFileView()
 	    {
 	    if(mFocusEditViewIndex < mFileViews.size())

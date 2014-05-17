@@ -7,6 +7,8 @@
 
 #include "FileEditView.h"
 #include "FilePath.h"
+#include "OovString.h"
+#include <string.h>
 
 
 void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
@@ -99,8 +101,8 @@ void FileEditView::gotoLine(int lineNum)
     {
     GtkTextIter iter;
     gtk_text_buffer_get_iter_at_line(mTextBuffer, &iter, lineNum-1);
+    // Moves the insert and selection_bound marks.
     gtk_text_buffer_place_cursor(mTextBuffer, &iter);
-//	    gtk_text_view_scroll_to_iter(mTextView, &iter, 0, FALSE, 0.5, 0);
     moveToIter(iter);
     }
 
@@ -124,7 +126,8 @@ void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
 	    tempEndIter = *endIter;
 	gtk_text_buffer_select_range(mTextBuffer, &startIter, &tempEndIter);
 	gtk_text_buffer_move_mark(mTextBuffer, mark, &startIter);
-	gtk_text_view_scroll_to_mark(mTextView, mark, 0, TRUE, 0, 0.5);
+	Gui::scrollToCursor(mTextView);
+//	gtk_text_view_scroll_to_mark(mTextView, mark, 0, TRUE, 0, 0.5);
 	}
     }
 
@@ -195,7 +198,7 @@ bool FileEditView::checkExitSave()
     return exitOk;
     }
 
-void FileEditView::find(char const * const findStr, bool forward, bool caseSensitive)
+bool FileEditView::find(char const * const findStr, bool forward, bool caseSensitive)
     {
     GtkTextMark *mark = gtk_text_buffer_get_insert(mTextBuffer);
     GtkTextIter startFind;
@@ -223,6 +226,35 @@ void FileEditView::find(char const * const findStr, bool forward, bool caseSensi
 	}
     if(found)
 	moveToIter(startMatch, &endMatch);
+    return found;
+    }
+
+bool FileEditView::findAndReplace(char const * const findStr, bool forward,
+	bool caseSensitive, char const * const replaceStr)
+    {
+    GtkTextIter startSel;
+    GtkTextIter endSel;
+    bool haveSel = gtk_text_buffer_get_selection_bounds(mTextBuffer, &startSel, &endSel);
+    if(haveSel)
+	{
+	bool match;
+	GuiText text = gtk_text_buffer_get_text(mTextBuffer, &startSel, &endSel, true);
+	if(caseSensitive)
+	    {
+	    match = (strcmp(text.c_str(), findStr) == 0);
+	    }
+	else
+	    {
+	    match = (StringCompareNoCase(text.c_str(), findStr) == 0);
+	    }
+	if(match)
+	    {
+	    gtk_text_buffer_delete_selection(mTextBuffer, true, true);
+	    gtk_text_buffer_insert_at_cursor(mTextBuffer, replaceStr,
+		    strlen(replaceStr));
+	    }
+	}
+    return find(findStr, forward, caseSensitive);
     }
 
 void FileEditView::bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
@@ -303,7 +335,10 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
 	    if(event->key.state == 0)
 		{
 		if(mIndenter.homePressed())
+		    {
+		    Gui::scrollToCursor(getTextView());
 		    handled = true;
+		    }
 		}
 	    break;
 	}

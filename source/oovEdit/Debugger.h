@@ -89,7 +89,11 @@ class DebuggerListener
     public:
 	virtual ~DebuggerListener()
 	    {}
+	/// All output from the debugger process is sent to this listener.
+	/// Set this up by calling Debugger::setListener.
 	virtual void DebugOutput(char const * const str) = 0;
+	/// This is called after the state has changed. Use
+	/// Debugger::getChangeStatus to get the status.
 	virtual void DebugStatusChanged() = 0;
     };
 
@@ -102,10 +106,12 @@ class Debugger:public OovProcessListener
 	    { mDebuggerListener = &listener; }
 	void setDebuggerFilePath(char const * const dbgPath)
 	    { mDebuggerFilePath = dbgPath; }
+	/// The debuggee is the program being debugged.
 	void setDebuggee(char const * const debuggee)
 	    { mDebuggeeFilePath = debuggee; }
 	void setDebuggeeArgs(char const * const args)
 	    { mDebuggeeArgs = args; }
+	/// This is the working directory of the debuggee.
 	void setWorkingDir(char const * const dir)
 	    { mWorkingDir = dir; }
 	void toggleBreakpoint(const DebuggerBreakpoint &br);
@@ -114,6 +120,7 @@ class Debugger:public OovProcessListener
 	void resume();
 	void interrupt();	// pause
 	void stop();
+	/// This allows the user to send a typed in debugger command.
 	void sendCommand(char const * const command);
 	void startGetVariable(char const * const variable);
 	void startGetStack();

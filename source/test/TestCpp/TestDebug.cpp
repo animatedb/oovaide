@@ -4,7 +4,12 @@
 #include "../../oovEdit/DebugResult.h"
 
 class cDebugUnitTest:public cTestCppModule
-    {};
+    {
+    public:
+        cDebugUnitTest():
+            cTestCppModule("Debug")
+            {}
+    };
 
 static cDebugUnitTest gDebugUnitTest;
 
@@ -71,8 +76,3 @@ TEST_F(gDebugUnitTest, DebugResultStdStringTest)
     EXPECT_EQ(str.find(val) != std::string::npos, true);
     }
 
-
-int main()
-    {
-    gDebugUnitTest.runAllTests();
-    }

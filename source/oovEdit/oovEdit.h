@@ -114,6 +114,8 @@ class Editor:public DebuggerListener
 	EditOptions mEditOptions;
 	GuiTree mVarView;
 	void find(char const * const findStr, bool forward, bool caseSensitive);
+	void findAndReplace(char const * const findStr, bool forward, bool caseSensitive,
+		char const * const replaceStr);
 	void setModuleName(const char *mn)
 	    {
 	    gtk_window_set_title(GTK_WINDOW(mBuilder.getWidget("MainWindow")), mn);

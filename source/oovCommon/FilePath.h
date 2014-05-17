@@ -18,13 +18,16 @@
 #ifdef __linux__
 #define OovStat32 stat
 #define OovStatFunc stat
+#define OovFStatFunc fstat
 #else
 #if(__MINGW_MAJOR_VERSION >= 4)
 #define OovStat32 _stat64i32
 #define OovStatFunc _stat
+#define OovFStatFunc _fstat
 #else
 #define OovStat32 stat
 #define OovStatFunc stat
+#define OovFStatFunc fstat
 #endif
 #endif
 

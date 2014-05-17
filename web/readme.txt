@@ -4,37 +4,52 @@ The Oovcde web site is at http://oovcde.sourceforge.net.
 	The Features shows a current list of functionality.
 
 
-CMake is supported for custom builds.
+Eclipse or CMake is supported for building Oovcde.
 
 
 Windows versions:
 	Parts of GTK-3.0 and CLang are included in the oovcde-*-win
-	downloads so drawing analysis does not require any additional
-	downloads. MinGW is required for building because it supplies
-	the nm and ld tools.
-	GTK-3.0
+	downloads so some drawing analysis does not require any additional
+	downloads. Using Oovcde for more complete analysis requires the
+	MinGW package so that CLang can find include files.
+	Using Oovcde to build requires MinGW or MinGW-builds because
+	they supply the nm and ld tools.
+
+	MinGW:
+		For Oovcde Analysis - Needed by clang to find include files,
+		CLang has hard coded paths, typical path is \MinGW,
+		to debug, use -v to see locations:
+
+		From: http://sourceforge.net/projects/mingw/files/
+		File: "mingw-get-setup.exe"
+			Add package mingw32-gcc-g++	4.8.1-4
+			Add package mingw32-base	2013072200
+			Install to \MinGW
+
+	OPTIONAL:
+	GTK-3.0:
 		From: http://www.tarnyko.net/dl/
 		File: "GTK+ 3.6.4 Bundle for Windows"
 			Extract to "C:\Program Files\GTK+-Bundle-3.6.4"
-	Clang 3.4
+
+	Clang 3.4:
 		From: http://llvm.org/releases/download.html
 		File: "Clang for Windows (.sig)"
 			Install to C:\Program Files\LLVM
-	MinGW:
-		From: http://sourceforge.net/projects/mingw/files/
-		File: "mingw-get-setup.exe"	0.6.2-beta-20131004-1
-			Add package mingw32-gcc-g++		4.8.1-4
-			Add package mingw32-base		2013072200
-			Add package mingw32-pthreads-w32 dev	2.9.1-1
-			Install to \MinGW
 
+	MinGW-builds: To build Oovcde project - has C++11 threading/atomics:
+		Set path to the bin directory, and rename \MinGW to
+			\MinGW-hide to eliminate compile errors.
+		From: http://sourceforge.net/projects/mingwbuilds/
+		File: mingw-builds-install.exe
+			Install to C:\Program Files\mingw-builds
+			Using x32-4.8.1-posix-dwarf-rev5
 
 Linux versions:
 	For the prebuilt binaries, GTK3 and a 64 bit OS is required.
 	A compiler is not required for drawing analysis since
 	libclang.so is included, but either the Gnu or CLang compiler
 	is required for building.
-
 
 
 Windows versions on or before 2014-01:

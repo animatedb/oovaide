@@ -32,8 +32,8 @@
               </packing>
             </child>
             <child>
-              <object class="GtkButton" id="FindOkButton">
-                <property name="label">gtk-ok</property>
+              <object class="GtkButton" id="FindAndReplaceButton">
+                <property name="label">gtk-find-and-replace</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -43,6 +43,20 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="FindOkButton">
+                <property name="label">gtk-find</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -78,6 +92,7 @@
                   <object class="GtkEntry" id="FindEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="has_focus">True</property>
                     <property name="invisible_char">●</property>
                     <signal name="activate" handler="on_FindEntry_activate" swapped="no"/>
                   </object>
@@ -125,6 +140,41 @@
                 <property name="position">2</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkBox" id="box4">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="label6">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Replace:</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkEntry" id="ReplaceEntry">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="invisible_char">●</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">3</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -136,6 +186,7 @@
     </child>
     <action-widgets>
       <action-widget response="-6">FindCancelButton</action-widget>
+      <action-widget response="0">FindAndReplaceButton</action-widget>
       <action-widget response="-5">FindOkButton</action-widget>
     </action-widgets>
   </object>
@@ -809,6 +860,7 @@
                 <child internal-child="entry">
                   <object class="GtkEntry" id="comboboxtext-entry">
                     <property name="can_focus">True</property>
+                    <property name="has_focus">True</property>
                     <property name="hexpand">True</property>
                     <property name="invisible_char">●</property>
                   </object>

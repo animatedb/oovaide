@@ -24,21 +24,19 @@ static OptionsDialog *sOptionsDialog;
 
 bool WindowBuildListener::onBackgroundProcessIdle(bool &completed)
     {
-//    LockGuard guard(mMutex);
     bool didSomething = false;
     completed = false;
-    if(mStdOut.length())
+    std::string tempStdStr;
 	{
-	Gui::appendText(mStatusTextView, mStdOut);
-	mStdOut.clear();
-	didSomething = true;
+	LockGuard guard(mMutex);
+	if(mStdOutAndErr.length())
+	    {
+	    tempStdStr = mStdOutAndErr;
+	    mStdOutAndErr.clear();
+	    didSomething = true;
+	    }
 	}
-    if(mStdErr.length())
-	{
-	Gui::appendText(mStatusTextView, mStdErr);
-	mStdErr.clear();
-	didSomething = true;
-	}
+    Gui::appendText(mStatusTextView, tempStdStr);
     if(mProcessComplete)
 	{
 	char const * const str = "\nComplete\n";

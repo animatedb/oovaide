@@ -6,8 +6,11 @@
  */
 #include "NameValueFile.h"
 #include "FilePath.h"
+#include "File.h"
+#include "Debug.h"
 #include <stdio.h>
 #include <string.h>
+
 
 
 std::string CompoundValueRef::getAsString(const std::vector<std::string> &vec,
@@ -148,13 +151,48 @@ void NameValueRecord::read(FILE *fp)
     std::string lineBuf;
     while(getLine(fp, lineBuf))
 	{
-	size_t colonPos = lineBuf.find(mapDelimiter);
-	if(colonPos != std::string::npos)
+	insertLine(lineBuf);
+	}
+    }
+
+void NameValueRecord::insertLine(std::string lineBuf)
+    {
+    size_t colonPos = lineBuf.find(mapDelimiter);
+    if(colonPos != std::string::npos)
+	{
+	std::string key = lineBuf.substr(0, colonPos);
+	size_t termPos = lineBuf.find('\n');
+	std::string value = lineBuf.substr(colonPos+1, termPos-(colonPos+1));
+	setNameValue(key.c_str(), value.c_str());
+	}
+    }
+
+void NameValueRecord::insertBufToMap(std::string buf)
+    {
+    size_t pos = 0;
+    mNameValues.clear();
+    while(pos != std::string::npos)
+	{
+	size_t endPos = buf.find('\n', pos);
+	std::string line(buf, pos, endPos);
+	insertLine(line);
+	pos = endPos;
+	if(pos != std::string::npos)
+	    pos++;
+	}
+    }
+
+void NameValueRecord::readMapToBuf(std::string &buf)
+    {
+    buf.clear();
+    for(const auto &pair : mNameValues)
+	{
+	if(pair.second.length() > 0 || mSaveNullValues)
 	    {
-	    std::string key = lineBuf.substr(0, colonPos);
-	    size_t termPos = lineBuf.find('\n');
-	    std::string value = lineBuf.substr(colonPos+1, termPos-(colonPos+1));
-	    setNameValue(key.c_str(), value.c_str());
+	    buf += pair.first;
+	    buf += mapDelimiter;
+	    buf += pair.second;
+	    buf += '\n';
 	    }
 	}
     }
@@ -184,4 +222,54 @@ bool NameValueFile::readFile()
 	return(fp != nullptr);
 	}
 
+bool NameValueFile::readOpenedFile(SharedFile &file)
+    {
+    clear();
+    std::string buf(file.getFileSize(), 0);
+    int actualSize;
+    bool success = file.readFile(&buf[0], buf.size(), actualSize);
+    if(success)
+	{
+	buf.resize(actualSize);
+	insertBufToMap(buf);
+	}
+    return success;
+    }
+
+bool NameValueFile::readFileShared()
+    {
+    SharedFile file;
+    bool success = false;
+    SharedFile::eOpenStatus status = file.openFile(mFilename.c_str(),
+	    SharedFile::M_ReadShared);
+    if(status == SharedFile::OS_Opened)
+	{
+	success = readOpenedFile(file);
+	}
+    else if(status == SharedFile::OS_NoFile)
+	{
+	success = true;
+	}
+    return(success);
+    }
+
+bool NameValueFile::writeFileExclusiveReadUpdate(class SharedFile &file)
+    {
+    bool success = false;
+    SharedFile::eOpenStatus status = file.openFile(mFilename.c_str(),
+	    SharedFile::M_ReadWriteExclusive);
+    if(status == SharedFile::OS_Opened)
+	{
+	success = readOpenedFile(file);
+	}
+    return success;
+    }
+
+bool NameValueFile::writeFileExclusive(class SharedFile &file)
+    {
+    std::string buf;
+    readMapToBuf(buf);
+    file.seekBeginFile();
+    return file.writeFile(&buf[0], buf.size());
+    }
 

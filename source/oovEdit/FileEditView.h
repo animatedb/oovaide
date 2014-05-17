@@ -26,7 +26,9 @@ class FileEditView
 	bool saveTextFile();
 	bool saveAsTextFileWithDialog();
 	bool checkExitSave();
-	void find(char const * const findStr, bool forward, bool caseSensitive);
+	bool find(char const * const findStr, bool forward, bool caseSensitive);
+	bool findAndReplace(char const * const findStr, bool forward,
+		bool caseSensitive, char const * const replaceStr);
 	void cut()
 	    {
 	    GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);

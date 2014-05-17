@@ -29,6 +29,49 @@ void sleepMs(int ms);
 /// @param argv List of arguments, last one must be nullptr.
 int spawnNoWait(char const * const procPath, char const * const *argv);
 
+
+class InProcMutex
+    {
+    public:
+#ifdef __linux__
+	InProcMutex()
+	    { pthread_mutex_init(&mSection, NULL); }
+	~InProcMutex()
+	    { pthread_mutex_destroy(&mSection); }
+	void enter()
+	    { pthread_mutex_lock(&mSection); }
+	void leave()
+	    { pthread_mutex_unlock(&mSection); }
+private:
+	pthread_mutex_t mSection;
+#else
+	InProcMutex()
+	    { InitializeCriticalSection(&mSection); }
+	~InProcMutex()
+	    { DeleteCriticalSection(&mSection); }
+	void enter()
+	    { EnterCriticalSection(&mSection); }
+	void leave()
+	    { LeaveCriticalSection(&mSection); }
+    private:
+	CRITICAL_SECTION mSection;
+#endif
+    };
+
+class LockGuard
+    {
+    public:
+	LockGuard(InProcMutex &mut):
+	    mMutex(mut)
+	    { mMutex.enter(); }
+	~LockGuard()
+	    { mMutex.leave(); }
+
+    private:
+	InProcMutex &mMutex;
+    };
+
+
 class OovProcessListener
     {
     public:
@@ -65,11 +108,38 @@ class OovProcessStdListener:public OovProcessListener
 	    {}
 	virtual void onStdOut(char const * const out, int len);
 	virtual void onStdErr(char const * const out, int len);
-    private:
+
+    protected:
 	OutputPlaces mStdOutPlace;
 	OutputPlaces mStdErrPlace;
 	FILE *mStdoutFp;
 	FILE *mStderrFp;
+    };
+
+class OovProcessBufferedStdListener:public OovProcessStdListener
+    {
+    public:
+	OovProcessBufferedStdListener(InProcMutex &stdMutex):
+	    mStdMutex(stdMutex), mStdoutTime(0), mStderrTime(0)
+	    {}
+	virtual ~OovProcessBufferedStdListener()
+	    {}
+	void setProcessIdStr(char const * const str);
+	virtual void processComplete();
+	virtual void onStdOut(char const * const out, int len);
+	virtual void onStdErr(char const * const out, int len);
+
+    private:
+// This isn't available yet.
+//	typedef std::chrono::high_resolution_clock clock;
+	InProcMutex &mStdMutex;
+	std::string mStdoutStr;
+	std::string mStderrStr;
+	std::string mProcessIdStr;
+	time_t mStdoutTime;
+	time_t mStderrTime;
+
+	void output(FILE *fp, std::string &str, time_t &time);
     };
 
 #ifdef __linux__
@@ -163,28 +233,21 @@ class OovProcessChildArgs
     {
     public:
 	OovProcessChildArgs()
-	    {
-	    clearArgs();
-	    }
+	    { clearArgs(); }
 
 	// WARNING: The arg[0] must be added.
 	void addArg(char const * const argStr);
 	void clearArgs()
-	    {
-	    mArgv.clear();
-	    mArgv.push_back(nullptr);	// Add one for end null
-	    argStrings.clear();
-	    }
-	char const * const *getArgv() const
-	    { return const_cast<char const * const *>(&mArgv[0]); }
+	    { mArgStrings.clear(); }
+	char const * const *getArgv() const;
 	const int getArgc() const
-	    { return mArgv.size()-1; }
+	    { return mArgStrings.size(); }
+	std::string getArgsAsStr() const;
 	void printArgs(FILE *fh) const;
 
     private:
-	std::vector<char*> mArgv;
-	// These can hold temporary modified strings during the call to run the process.
-	std::vector<std::string> argStrings;
+	std::vector<std::string> mArgStrings;
+	mutable std::vector<char const*> mArgv;	// These are created temporarily during getArgv
     };
 
 
@@ -207,47 +270,6 @@ class OovBackgroundPipeProcess:public OovPipeProcess
 	GThread *mThread;
 	ThreadStates mThreadState;
 	int mChildProcessExitCode;
-    };
-
-class InProcMutex
-    {
-    public:
-#ifdef __linux__
-	InProcMutex()
-	    { pthread_mutex_init(&mSection, NULL); }
-	~InProcMutex()
-	    { pthread_mutex_destroy(&mSection); }
-	void enter()
-	    { pthread_mutex_lock(&mSection); }
-	void leave()
-	    { pthread_mutex_unlock(&mSection); }
-private:
-	pthread_mutex_t mSection;
-#else
-	InProcMutex()
-	    { InitializeCriticalSection(&mSection); }
-	~InProcMutex()
-	    { DeleteCriticalSection(&mSection); }
-	void enter()
-	    { EnterCriticalSection(&mSection); }
-	void leave()
-	    { LeaveCriticalSection(&mSection); }
-    private:
-	CRITICAL_SECTION mSection;
-#endif
-    };
-
-class LockGuard
-    {
-    public:
-	LockGuard(InProcMutex &mut):
-	    mMutex(mut)
-	    { mMutex.enter(); }
-	~LockGuard()
-	    { mMutex.leave(); }
-
-    private:
-	InProcMutex &mMutex;
     };
 
 #endif /* PORTABLE_H_ */

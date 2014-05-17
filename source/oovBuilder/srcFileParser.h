@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 #include "Debug.h"
-
+#include "OovThreadedQueue.h"
 
 
 class Logger:public DebugFile
@@ -33,7 +33,7 @@ struct fileInfo
 
 /// Recursively finds source files, and parses the source file
 /// for static information, and saves into analysis files.
-class srcFileParser:public dirRecurser
+class srcFileParser:public dirRecurser, public ThreadedWorkQueue<CppChildArgs, srcFileParser>
 {
 public:
     srcFileParser(const ComponentFinder &compFinder):
@@ -41,10 +41,13 @@ public:
 	{}
     virtual ~srcFileParser()
 	{}
-    bool analyzeSrcFiles(char const * const srcRootDir, char const * const analysisDir,
-	    char const * const incDepsFilename);
+    bool analyzeSrcFiles(char const * const srcRootDir, char const * const analysisDir);
+
+    // Called by ThreadedWorkQueue
+    bool processItem(CppChildArgs const &item);
 
 private:
+    InProcMutex mListenerStdMutex;
     char const * mSrcRootDir;
     char const * mAnalysisDir;
     std::vector<std::string> mIncDirArgs;

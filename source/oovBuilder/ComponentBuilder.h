@@ -94,8 +94,10 @@ class ComponentBuilder
 		RootDirPackage const &pkg);
 	void appendOrderedPackageLibs(char const * const compName,
 		std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames);
-	std::set<std::string> getComponentCompileArgs(char const * const compName);
-	std::set<std::string> getComponentLinkArgs(char const * const compName);
+	std::set<std::string> getComponentCompileArgs(char const * const compName,
+		ComponentTypesFile const &file);
+	std::set<std::string> getComponentLinkArgs(char const * const compName,
+		ComponentTypesFile const &file);
     };
 
 

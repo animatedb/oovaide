@@ -4,12 +4,14 @@
 
 
 
+
+
 <link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
 
 <h2>OOVCDE Features</h2>
 
 Created: July 13, 2013
-Last update: Feb 8, 2014
+Last update: May 16, 2014
 
 <p>
 <img src="OovLogo.png">
@@ -17,15 +19,18 @@ Last update: Feb 8, 2014
 </p><h2>Features</h2>
 <h3>General</h3>
 <ul>
-	<li>C++ build system, editor and diagram tool.<br>
+	<li>C++ build system, editor, debugger and diagram tool.<br>
 </li>
   <li>Generates class, function relationship and component diagrams automatically for C++ files.</li>
-  <li>The build tool is a command line utility that is invoked from the GUI.<br>
+  <li>The build and analysis tools are command line utilities that are invoked from the GUI.<br>
   </li>
 
 
 	<li>Works under Windows or Linux.</li>
 	<li>Uses LLVM/CLang to parse C++ source files.</li>
+  <li>Uses GDB to debug.<br>
+  </li>
+
 	<li>Uses GTK to display.</li>
 </ul>
 
@@ -33,7 +38,7 @@ Last update: Feb 8, 2014
 <ul>
 	<li>New projects can be created by selecting the top level directory of the
 	source file tree.  The output directory of the project is specified so that
-	all of the C++ files are parsed saved in compressed format in this
+	all of the C++ files are parsed and saved in compressed format in this
 	directory.</li>
 	<li>An existing project can be opened by specifying the previously saved
 	output directory, and the compressed files are read and updated if
@@ -134,7 +139,7 @@ Last update: Feb 8, 2014
 	that uses GNU or Clang (Not MSVC) to build projects for Windows or Linux.
 	See the user guide for a complete description of the build system.<br>
 <h3>Editor</h3>
-C++ code editor with syntax highlighting.<br>
+C++ code editor with syntax highlighting and debugger.<br>
 <br>
 
 

@@ -23,6 +23,7 @@
 #include <string>
 #include <vector>
 #include <set>
+#include "File.h"
 
 class CompoundValueRef
     {
@@ -82,6 +83,8 @@ class NameValueRecord
 	    { return mNameValues; }
 	void write(FILE *fp);
 	void read(FILE *fp);
+	void insertBufToMap(std::string buf);
+	void readMapToBuf(std::string &buf);
 	void saveNullValues(bool save)
 	    { mSaveNullValues = save; }
 
@@ -89,6 +92,7 @@ class NameValueRecord
 	bool mSaveNullValues;
 	std::map<std::string, std::string> mNameValues;
 	bool getLine(FILE *fp, std::string &str);
+	void insertLine(std::string line);
     };
 
 /// This can store a bunch of options in a file. Each option is on a separate line
@@ -97,7 +101,7 @@ class NameValueRecord
 class NameValueFile:public NameValueRecord
     {
     public:
-	NameValueFile(char const * const fn = NULL)
+	NameValueFile(char const * const fn = nullptr)
 	    {
 	    if(fn)
 		setFilename(fn);
@@ -108,11 +112,22 @@ class NameValueFile:public NameValueRecord
 	    { mFilename = fn; }
 	void setFilename(std::string const &fn)
 	    { mFilename = fn.c_str(); }
-	bool writeFile();
 	bool readFile();
+	bool writeFile();
+
+	bool readFileShared();
+	// These functions must be used together and assume that the current map
+	// can be discarded and reread.
+	// Clear and update map by reading current file, and lock/open file.
+	// THIS WILL NOT SHRINK FILES!
+	/// @todo - This does not need to reread files if they haven't changed
+	/// since the first read.
+	bool writeFileExclusiveReadUpdate(SharedFile &file);
+	bool writeFileExclusive(SharedFile &file);
 
     private:
 	std::string mFilename;
+	bool readOpenedFile(SharedFile &file);
     };
 
 

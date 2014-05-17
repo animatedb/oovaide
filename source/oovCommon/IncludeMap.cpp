@@ -8,6 +8,7 @@
 #include "IncludeMap.h"
 #include "Components.h"	// For isHeader
 #include <algorithm>
+#include <assert.h>
 
 void IncDirDependencyMapReader::read(char const * const fn)
     {
@@ -62,7 +63,9 @@ void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
 	{
 	CompoundValue compVal;
 	compVal.parseString(val.c_str());
-	if(compVal.size() > 2)
+	// There are two time values followed by directory/filename pairs.
+	assert(compVal.size() % 2 == 0);
+	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
 	    {
 	    // Skip first two time values.
 	    for(size_t i=2; i<compVal.size(); i+=2)
@@ -85,7 +88,9 @@ void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
 	{
 	CompoundValue compVal;
 	compVal.parseString(val.c_str());
-	if(compVal.size() > 2)
+	// There are two time values followed by directory/filename pairs.
+	assert(compVal.size() % 2 == 0);
+	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
 	    {
 	    // Skip first two time values.
 	    for(size_t i=2; i<compVal.size(); i+=2)

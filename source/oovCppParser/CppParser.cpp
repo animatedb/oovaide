@@ -26,12 +26,21 @@
 static DebugFile sLog("DebugCppParse.txt");
 #endif
 
+#define SHARED_FILE 1
+
 void IncDirDependencyMap::read(char const * const outDir, char const * const incFn)
     {
     FilePath outIncFileName(outDir, FP_Dir);
     outIncFileName.appendFile(incFn);
     setFilename(outIncFileName.c_str());
+#if(SHARED_FILE)
+    if(!readFileShared())
+	{
+	fprintf(stderr, "\nOovCppParser - Read file sharing error\n");
+	}
+#else
     readFile();
+#endif
     }
 
 /// For every includer file that is run across during parsing, this means that
@@ -45,6 +54,13 @@ void IncDirDependencyMap::write()
     time_t changedTime = 0;
     time(&curTime);
 
+#if(SHARED_FILE)
+    SharedFile file;
+    if(!writeFileExclusiveReadUpdate(file))
+	{
+	fprintf(stderr, "\nOovCppParser - Write file sharing error\n");
+	}
+#endif
     // Append new values from parsed includes to the NameValueFile.
     // Update existing values times and make new dependencies.
     for(const auto &mapItem : mParsedIncludeDependencies)
@@ -103,7 +119,11 @@ void IncDirDependencyMap::write()
 	    }
 	setNameValue(mapItem.first.c_str(), compVal.getAsString().c_str());
 	}
+#if(SHARED_FILE)
+    writeFileExclusive(file);
+#else
     writeFile();
+#endif
     }
 
 void IncDirDependencyMap::insert(const std::string &includerFn,

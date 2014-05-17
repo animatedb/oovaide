@@ -155,7 +155,7 @@ int main(int argc, char const * const argv[])
 
 	success = sfp.analyzeSrcFiles(
 		compFinder.getProject().getSrcRootDirectory().c_str(),
-		analysisPath.c_str(), Project::getAnalysisIncDepsFilename());
+		analysisPath.c_str());
 	if(buildConfigName.compare(BuildConfigAnalysis) != 0)
 	    {
 	    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName.c_str());

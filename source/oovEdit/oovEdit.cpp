@@ -11,6 +11,7 @@
 #include "Project.h"
 #include "Components.h"
 #include "DirList.h"
+#include <string.h>
 #include <vector>
 
 Editor::Editor():
@@ -29,7 +30,7 @@ void Editor::init()
 
 void Editor::openTextFile(char const * const fn)
     {
-    mEditFiles.viewFile(fn, 1);
+    mEditFiles.viewModule(fn, 1);
     }
 
 void Editor::openTextFile()
@@ -66,14 +67,32 @@ void Editor::findDialog()
     GtkWindow *parent = Gui::getWindow(mBuilder.getWidget("MainWindow"));
     Dialog dialog(GTK_DIALOG(getBuilder().getWidget("FindDialog")),
 	    parent);
-    if(dialog.run(true))
+    bool done = false;
+    while(!done)
 	{
-	GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-		"FindDownCheckbutton"));
-	GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-		"CaseSensitiveCheckbutton"));
-	find(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
-		gtk_toggle_button_get_active(caseCheck));
+	int ret = dialog.runHideCancel();
+	if(ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
+	    {
+	    done = true;
+	    }
+	else
+	    {
+	    GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+		    "FindDownCheckbutton"));
+	    GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+		    "CaseSensitiveCheckbutton"));
+	    if(ret == GTK_RESPONSE_OK)
+		{
+		find(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
+		    gtk_toggle_button_get_active(caseCheck));
+		}
+	    else
+		{
+		GtkEntry *replaceEntry = GTK_ENTRY(getBuilder().getWidget("ReplaceEntry"));
+		findAndReplace(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
+		    gtk_toggle_button_get_active(caseCheck), gtk_entry_get_text(replaceEntry));
+		}
+	    }
 	}
     }
 
@@ -108,24 +127,36 @@ class FindFiles:public dirRecurser
 	GtkTextView *mView;
     };
 
-char const *strcasestr(char const *haystack, char const *needle)
+#ifndef __linux__
+static int my_strnicmp(char const *str1, char const *str2, int len)
     {
+    int val = 0;
+    for(int i=0; i<len; i++)
+	{
+	val = toupper(str1[i]) - toupper(str2[i]);
+	if(val != 0)
+	    break;
+	}
+    return val;
+    }
+
+static char const *strcasestr(char const *haystack, char const *needle)
+    {
+    int needleLen = strlen(needle);
+    char const *retp = nullptr;
     while(*haystack)
 	{
-	char const *hp = haystack;
-	char const *np = needle;
-
-	while(*hp && *np && tolower(*hp) == tolower(*np))
+	// strncasecmp, strnicmp, _strnicmp not working under mingw with some flags
+	if(my_strnicmp(haystack, needle, needleLen) == 0)
 	    {
-	    hp++;
-	    np++;
-	    }
-	if(*np == '\0')
+	    retp = haystack;
 	    break;
+	    }
 	haystack++;
 	}
-    return haystack;
+    return retp;
     }
+#endif
 
 // Return true while success.
 bool FindFiles::processFile(const std::string &filePath)
@@ -146,18 +177,20 @@ bool FindFiles::processFile(const std::string &filePath)
 		char const *match=NULL;
 		if(mCaseSensitive)
 		    {
-		    match = strcasestr(buf, mSrchStr.c_str());
+		    match = strstr(buf, mSrchStr.c_str());
 		    }
 		else
 		    {
-		    match = strstr(buf, mSrchStr.c_str());
+		    match = strcasestr(buf, mSrchStr.c_str());
 		    }
 		if(match)
 		    {
 		    OovString matchStr = filePath;
 		    matchStr += ':';
 		    matchStr.appendInt(lineNum);
-		    matchStr += '\n';
+		    matchStr += "   ";
+		    matchStr += buf;
+//		    matchStr += '\n';
 		    Gui::appendText(mView, matchStr.c_str());
 		    }
 		}
@@ -205,7 +238,7 @@ void Editor::gotoFileLine(std::string const &lineBuf)
 	OovString numStr(lineBuf.substr(pos+1, lineBuf.length()-pos).c_str());
 	if(numStr.getInt(0, INT_MAX, lineNum))
 	    {
-	    mEditFiles.viewFile(lineBuf.substr(0, pos).c_str(), lineNum);
+	    mEditFiles.viewModule(lineBuf.substr(0, pos).c_str(), lineNum);
 	    }
 	}
     }
@@ -253,6 +286,15 @@ void Editor::find(char const * const findStr, bool forward, bool caseSensitive)
 	mEditFiles.getEditView()->find(findStr, forward, caseSensitive);
     }
 
+void Editor::findAndReplace(char const * const findStr, bool forward, bool caseSensitive,
+	char const * const replaceStr)
+    {
+    mLastSearch = findStr;
+    mLastSearchCaseSensitive = caseSensitive;
+    if(mEditFiles.getEditView())
+	mEditFiles.getEditView()->findAndReplace(findStr, forward, caseSensitive, replaceStr);
+    }
+
 
 Editor gEditor;
 
@@ -284,7 +326,7 @@ void Editor::idleDebugStatusChange(Debugger::eChangeStatus st)
 	if(mDebugger.getChildState() == GCS_GdbChildPaused)
 	    {
 	    auto const &loc = mDebugger.getStoppedLocation();
-	    mEditFiles.viewFile(loc.getFilename().c_str(), loc.getLine());
+	    mEditFiles.viewModule(loc.getFilename().c_str(), loc.getLine());
 	    mDebugger.startGetStack();
 	    }
 	}
@@ -369,6 +411,14 @@ void Editor::editPreferences()
 	    boxCount++;
 	    }
 	}
+    if(compIndex == -1)
+	{
+	if(dbgComponent.length() > 0)
+	    {
+	    Gui::appendText(cb, dbgComponent.c_str());
+	    compIndex = boxCount;
+	    }
+	}
     if(compIndex != -1)
 	{
 	Gui::setSelected(cb, compIndex);
@@ -426,7 +476,13 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 	    {
 	    if(argv[argi][0] == '+')
 		{
-		sscanf(&argv[argi][1], "%d", &line);
+		if(argv[argi][1] == 'p')
+		    {
+		    std::string fname = fixFilePath(&argv[argi][2]);
+		    gEditor.setProjectDir(fname.c_str());
+		    }
+		else
+		    sscanf(&argv[argi][1], "%d", &line);
 		}
 	    else if(argv[argi][0] == '-')
 		{
@@ -443,7 +499,7 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 	    }
 	if(fn)
 	    {
-	    gEditor.getEditFiles().viewFile(fixFilePath(fn).c_str(), line);
+	    gEditor.getEditFiles().viewModule(fixFilePath(fn).c_str(), line);
 	    }
 	}
     if(goodArgs)
@@ -459,6 +515,8 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 	str += "args are:\n";
 	str += "   +<line>            line number of opened file\n";
 	str += "   -p<projectDir>    directory of project files\n";
+	fprintf(stderr, "%s\n", str.c_str());
+	fflush(stderr);
 	Gui::messageBox(str.c_str());
 	}
     }
@@ -481,6 +539,18 @@ int main(int argc, char **argv)
     g_signal_connect(app, "activate", G_CALLBACK(activateApp), NULL);
     g_signal_connect(app, "startup", G_CALLBACK(startupApp), NULL);
     g_signal_connect(app, "command-line", G_CALLBACK(commandLine), NULL);
+    // For some reason, the '-' arguments quit working when upgrading Ubuntu.
+    // It would cause the commandLine function to fail in some way. So
+    // this cheat converts the minus to a plus, and both are handled in
+    // the commandLine function.  This dirty trick does change memory that is
+    // passed to main, but it seems to work.
+#ifdef __linux__
+    for(int i=0; i<argc; i++)
+	{
+	if(argv[i][0] == '-')
+	    argv[i][0] = '+';
+	}
+#endif
     int status = g_application_run(gapp, argc, argv);
     g_object_unref(app);
     return status;
@@ -515,7 +585,7 @@ int main(int argc, char *argv[])
 	    }
 	if(fn)
 	    {
-	    gEditor.getEditFiles().viewFile(fn, line);
+	    gEditor.getEditFiles().viewModule(fn, line);
 	    }
 	else
 	    {
@@ -565,7 +635,7 @@ extern "C" G_MODULE_EXPORT gboolean on_MainWindow_delete_event(GtkWidget *button
 extern "C" G_MODULE_EXPORT void on_HelpAboutImagemenuitem_activate(GtkWidget *widget, gpointer data)
     {
     char const * const comments =
-	    "This is a simple editor";
+	    "This is a simple editor that is part of the Oovcde project";
     gtk_show_about_dialog(nullptr, "program-name", "OovEdit",
 	    "version", "Version " OOV_VERSION, "comments", comments, nullptr);
     }
@@ -607,6 +677,11 @@ extern "C" G_MODULE_EXPORT bool on_FindTextview_button_release_event(GtkWidget *
     {
     GtkWidget *widget = gEditor.getBuilder().getWidget("FindTextview");
     std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+    size_t pos = line.find(' ');
+    if(pos != std::string::npos)
+	{
+	line.resize(pos);
+	}
     gEditor.gotoFileLine(line);
     return FALSE;
     }

@@ -70,19 +70,27 @@ void BuildSettingsDialog::saveFromScreen(std::string const &compName)
     {
     GtkComboBoxText *typeBox = GTK_COMBO_BOX_TEXT(Builder::getBuilder()->getWidget(
 	    "ComponentTypeComboboxtext"));
+    GtkTextView *argsView = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(
+	    "ComponentBuildArgsTextview"));
+
     char const * const boxValue = gtk_combo_box_text_get_active_text(typeBox);
     // If the cursor is changed during construction, boxValue will be NULL.
-    if(compName.length() && boxValue)
+    if(compName.length())
 	{
-	std::string tag = ComponentTypesFile::getCompTagName(compName, "type");
-	char const * value = ComponentTypesFile::getComponentTypeAsFileValue(
-		ComponentTypesFile::CompTypes::CT_Unknown);
 	if(boxValue)
 	    {
+	    std::string tag = ComponentTypesFile::getCompTagName(compName, "type");
+	    char const *value = ComponentTypesFile::getComponentTypeAsFileValue(
+		    ComponentTypesFile::CompTypes::CT_Unknown);
 	    value = ComponentTypesFile::getComponentTypeAsFileValue(
 		    ComponentTypesFile::getComponentTypeFromTypeName(boxValue));
+	    mComponentFile.setNameValue(tag.c_str(), value);
 	    }
-	mComponentFile.setNameValue(tag.c_str(), value);
+	std::string str = Gui::getText(argsView);
+	CompoundValue buildArgs;
+	buildArgs.parseString(str.c_str(), '\n');
+	std::string newBuildArgsStr = buildArgs.getAsString();
+	mComponentFile.setComponentBuildArgs(compName.c_str(), newBuildArgsStr.c_str());
 	}
     }
 
@@ -92,10 +100,17 @@ void BuildSettingsDialog::loadToScreen(std::string const &compName)
 	{
 	GtkComboBoxText *typeBox = GTK_COMBO_BOX_TEXT(Builder::getBuilder()->getWidget(
 		"ComponentTypeComboboxtext"));
+	GtkTextView *argsView = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(
+		"ComponentBuildArgsTextview"));
 	std::string tag = ComponentTypesFile::getCompTagName(compName, "type");
 	std::string val = mComponentFile.getValue(tag.c_str());
 	int index = ComponentTypesFile::getComponentTypeFromTypeName(val.c_str());
 	Gui::setSelected(GTK_COMBO_BOX(typeBox), index);
+
+	CompoundValue cppArgs;
+	cppArgs.parseString(mComponentFile.getComponentBuildArgs(compName.c_str()).c_str());
+	std::string str = cppArgs.getAsString('\n');
+	Gui::setText(argsView, str.c_str());
 	}
     }
 

@@ -39,6 +39,16 @@ bool PathChooser::ChoosePath(GtkWindow *parent, char const * const dlgName,
     return success;
     }
 
+int Dialog::runHideCancel()
+    {
+    beforeRun();
+    int ret = gtk_dialog_run(mDialog);
+    afterRun(ret == GTK_RESPONSE_OK);
+    if(ret == GTK_RESPONSE_CANCEL)
+	gtk_widget_hide(GTK_WIDGET(getDialog()));
+    return ret;
+    }
+
 bool Dialog::run(bool hideDialogAfterButtonPress)
     {
     beforeRun();
@@ -66,16 +76,20 @@ void Gui::scrollToCursor(GtkTextView *textview)
     {
     GtkTextBuffer *textbuf = gtk_text_view_get_buffer(textview);
     GtkTextMark *mark = gtk_text_buffer_get_insert(textbuf);
+/*
     if(mark)
 	{
 	// Move to beginning of line.
-/*	GtkTextIter startFind;
+	GtkTextIter startFind;
 	gtk_text_buffer_get_iter_at_mark(textbuf, &startFind, mark);
 	gtk_text_iter_backward_line(&startFind);
 	gtk_text_buffer_move_mark(textbuf, mark, &startFind);
-*/	}
+	}
+*/
     if(mark)
-	gtk_text_view_scroll_to_mark(textview, mark, 0, TRUE, 0, 0.5);
+	{
+	gtk_text_view_scroll_mark_onscreen(textview, mark);
+	}
     }
 
 GuiText Gui::getText(GtkTextView *textview)

@@ -38,13 +38,13 @@ class WindowBuildListener:public OovProcessListener
 	virtual void onStdOut(char const * const out, int len)
 	    {
 // Adding this guard causes a hang in linux when children have tons of errors.
-//	    LockGuard guard(mMutex);
-	    mStdOut.append(out, len);
+	    LockGuard guard(mMutex);
+	    mStdOutAndErr.append(out, len);
 	    }
 	virtual void onStdErr(char const * const out, int len)
 	    {
-//	    LockGuard guard(mMutex);
-	    mStdErr.append(out, len);
+	    LockGuard guard(mMutex);
+	    mStdOutAndErr.append(out, len);
 	    }
 	virtual void processComplete()
 	    {
@@ -59,9 +59,8 @@ class WindowBuildListener:public OovProcessListener
 
 	private:
 	    GtkTextView *mStatusTextView;
-	    std::string mStdErr;
-	    std::string mStdOut;
-//	    InProcMutex mMutex;
+	    std::string mStdOutAndErr;
+	    InProcMutex mMutex;
     };
 
 class Menu

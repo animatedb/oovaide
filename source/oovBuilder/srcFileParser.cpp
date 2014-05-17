@@ -10,14 +10,22 @@
 
 
 bool srcFileParser::analyzeSrcFiles(char const * const srcRootDir,
-	char const * const analysisDir, char const * const incDepsFilename)
+	char const * const analysisDir)
     {
     mSrcRootDir = srcRootDir;
     mAnalysisDir = analysisDir;
 
+#define MULTIPLE_THREADS 1
+#if(MULTIPLE_THREADS)
+    // This requires that the oovcde-incdeps file can be updated by multiple processes.
+    setupQueue(getNumHardwareThreads());
+#else
+    setupQueue(1);
+#endif
     mIncDirArgs = mComponentFinder.getAllIncludeDirs();
     bool success = recurseDirs(srcRootDir);
     mIncDirArgs.clear();
+    waitForCompletion();
     return success;
     }
 
@@ -88,6 +96,8 @@ bool srcFileParser::processFile(const std::string &srcFile)
 		ca.addArg(mAnalysisDir);
 
 		ca.addCompileArgList(mComponentFinder, mIncDirArgs);
+		addTask(ca);
+/*
 		sLog.logProcess(srcFile.c_str(), ca.getArgv(), ca.getArgc());
 		printf("\noovBuilder Analyzing: %s\n", srcFile.c_str());
 		fflush(stdout);
@@ -103,6 +113,7 @@ bool srcFileParser::processFile(const std::string &srcFile)
 		    }
 		fflush(stdout);
 		fflush(stderr);
+*/
 		}
 	    /// @todo - notify oovcde when files are ready to parse?
             }
@@ -110,3 +121,26 @@ bool srcFileParser::processFile(const std::string &srcFile)
     return success;
     }
 
+bool srcFileParser::processItem(CppChildArgs const &item)
+    {
+    OovProcessBufferedStdListener listener(mListenerStdMutex);
+    listener.setErrOut(stdout);
+    int exitCode;
+    OovPipeProcess pipeProc;
+    std::string processStr = "\noovBuilder Analyzing: ";
+    processStr += item.getArgv()[1];
+    processStr += "\n";
+    listener.setProcessIdStr(processStr.c_str());
+    bool success = pipeProc.spawn(item.getArgv()[0], item.getArgv(),
+	    listener, exitCode);
+    sLog.logProcessStatus(success);
+    if(!success || exitCode != 0)
+	{
+	std::string tempStr = "oovBuilder: Errors from ";
+	tempStr += item.getArgv()[0];
+	tempStr += "\nArguments were: ";
+	tempStr += item.getArgsAsStr();
+	listener.onStdErr(tempStr.c_str(), tempStr.length());
+	}
+    return true;
+    }

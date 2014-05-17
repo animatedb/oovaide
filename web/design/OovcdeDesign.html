@@ -8,15 +8,21 @@
 
 
 
+
+
+
+
+
+
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Oovcde Design</title></head><body><font size="+3">Oovcde Design<br>
 </font>
-<hr style="width: 100%; height: 3px;">Last update: 1-2-2014<br>Kompozer was used to edit this design document.<br>Inkscape may be used to edit .svg diagram files from Oovcde.<br>
+<hr style="width: 100%; height: 3px;">Last update: 5-2-2014<br>Kompozer was used to edit this design document.<br>Inkscape may be used to edit .svg diagram files from Oovcde.<br>
 <br>
-<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId278883">Description</a></li><li><a href="#mozTocId304148">Components</a><ol><li><a href="#mozTocId89151">OovCppParser</a></li><li><a href="#mozTocId565763">OovBuilder</a></li><li><a href="#mozTocId514779">Oovcde</a><ol><li><a href="#mozTocId571076">Oovcde GUI</a></li><li><a href="#mozTocId821661">Class Diagrams</a></li><li><a href="#mozTocId750348">Sequence Diagrams</a></li><li><a href="#mozTocId567574">Drawing Diagrams</a></li><li><a href="#mozTocId228166">Journal</a></li></ol></li><li><a href="#mozTocId28357">OovEdit</a></li></ol></li><li><a href="#mozTocId682604">
+<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId278883">Description</a></li><li><a href="#mozTocId304148">Components</a><ol><li><a href="#mozTocId89151">OovCppParser</a></li><li><a href="#mozTocId565763">OovBuilder</a></li><li><a href="#mozTocId514779">Oovcde</a><ol><li><a href="#mozTocId571076">Oovcde GUI</a></li><li><a href="#mozTocId821661">Class Diagrams</a></li><li><a href="#mozTocId750348">Sequence Diagrams</a></li><li><a href="#mozTocId567574">Drawing Diagrams</a></li><li><a href="#mozTocId228166">Journal</a></li></ol></li><li><a href="#mozTocId28357">OovEdit</a><ol><li><a href="#mozTocId677876">OovEdit Main Classes</a></li><li><a href="#mozTocId634834">EditFiles</a></li><li><a href="#mozTocId510508">Debugger</a></li></ol></li><li><a href="#mozTocId450840">OovCMaker</a></li></ol></li><li><a href="#mozTocId682604">
 
 
 Libraries</a><ol><li><a href="#mozTocId312284">OovCommon</a><ol><li><a href="#mozTocId766961">Model Data
-</a></li><li><a href="#mozTocId716210">Reading Model Data</a></li></ol></li><li><a href="#mozTocId162874">OovGuiCommon</a></li></ol></li><li><a href="#mozTocId68299">Processing</a><ol><li><a href="#mozTocId599543">Analysis Mode</a></li><li><a href="#mozTocId848189">Build Mode</a></li></ol></li></ol>
+</a></li><li><a href="#mozTocId716210">Reading Model Data</a></li></ol></li><li><a href="#mozTocId90631">OovGuiCommon</a></li></ol></li><li><a href="#mozTocId68299">Processing</a><ol><li><a href="#mozTocId599543">Analysis Mode</a></li><li><a href="#mozTocId848189">Build Mode</a></li></ol></li></ol>
 <h1><a class="mozTocH1" name="mozTocId278883"></a>Description</h1>
 This design document describes the Oovcde program.&nbsp; It also
 contains examples of the diagrams that can be produced with the
@@ -644,6 +650,8 @@ that every record can contain a different class diagram.<br>
 <h2><a class="mozTocH2" name="mozTocId28357"></a>OovEdit</h2>
 The OovEdit component is a simple C++ code editor. It uses CLang to hightlight keywords.<br>
 <br>
+<h3><a class="mozTocH3" name="mozTocId677876"></a>OovEdit Main Classes</h3>
+
 The class relations are shown below.<br>
 <br>
 <embed src="oovEdit.svg" type="image/svg+xml"> 
@@ -663,36 +671,27 @@ The class relations are shown below.<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">HistoryItem<br>
-      </td>
-      <td style="vertical-align: top;">This is for undo and redo. Each item keeps the information for one operation.<br>
-      </td>
+      <td style="vertical-align: top;">DebuggerListener<br>
+</td>
+      <td style="vertical-align: top;">This allows getting updates about the debugger<br>
+</td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">TokenRange<br>
+      <td style="vertical-align: top;">Debugger<br>
       </td>
-      <td style="vertical-align: top;">This is a set of tokens within a range of line numbers.<br>
+      <td style="vertical-align: top;">This is an interface to a debugger<br>
       </td>
     </tr>
 <tr>
-      <td style="vertical-align: top;">Tokenizer<br>
+      <td style="vertical-align: top;">EditFiles<br>
       </td>
-      <td style="vertical-align: top;">The tokenizer parses a C++ file, or the contents in memory and finds a set of tokens.<br>
+      <td style="vertical-align: top;">Keeps editor information about a text/source file.<br>
       </td>
     </tr>
     <tr>
-      <td style="vertical-align: top;">Highlighter<br>
+      <td style="vertical-align: top;">FindFiles<br>
       </td>
-      <td style="vertical-align: top;">The
-highlighter gets a set of tokens, and defines tags to apply to the text
-view. The tags are color attributes to apply to the text.<br>
-      </td>
-    </tr><tr>
-      <td style="vertical-align: top;">Indenter<br>
-      </td>
-      <td style="vertical-align: top;">This class handles indenting of
-C++ using the tab and backspace keys. It also handles indent using tab
-and untab of selected regions.<br>
+      <td style="vertical-align: top;">Provides find text in files<br>
       </td>
     </tr>
 
@@ -704,17 +703,150 @@ and untab of selected regions.<br>
 </table>
 
 <br>
-The editor contains a debugger.<br>
+<h3><a class="mozTocH3" name="mozTocId634834"></a>EditFiles</h3>
+The editor can edit files within tabs. Each file has a buffer of text
+that is highlighted. An indenter handles keys for indenting.<br>
+<br>
+<embed src="oovEditEditFiles.svg" type="image/svg+xml"> 
+<br>
+<br>
+<br>
+
+
+<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
+
+
+<tbody><tr><th style="vertical-align: top;">Class<br>
+      </th><th style="vertical-align: top;">Description<br>
+      </th></tr><tr>
+      <td style="vertical-align: top;">EditFiles<br>
+      </td>
+      <td style="vertical-align: top;">Keeps information about all files.&nbsp; There is typically one file that has the focus.<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">FileEditView<br>
+      </td>
+      <td style="vertical-align: top;">Keeps information about a single file.<br>
+      </td>
+    </tr>
+<tr>
+      <td style="vertical-align: top;">HistoryItem</td>
+      <td style="vertical-align: top;">This is for undo and redo. Each item keeps the information for one operation.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">TokenRange</td>
+      <td style="vertical-align: top;">This is a set of tokens within a range of line numbers.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Tokenizer</td>
+      <td style="vertical-align: top;">The tokenizer parses a C++ file, or the contents in memory and finds a set of tokens.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Highlighter</td>
+      <td style="vertical-align: top;">The
+highlighter gets a set of tokens, and defines tags to apply to the text
+view. The tags are color attributes to apply to the text.</td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">Indenter</td>
+      <td style="vertical-align: top;">This class handles indenting of
+C++ using the tab and backspace keys. It also handles indent using tab
+and untab of selected regions.</td>
+    </tr>
+</tbody>
+</table>
+
+
+<br>
+
+<br>
+
+
+<h3><a class="mozTocH3" name="mozTocId510508"></a>Debugger</h3>
+The editor contains a debugger. The debugger handles typical operations
+such as single stepping, setting breakpoints, displaying results, and
+starting and stopping the program being debugged.<br>
 <br>
 <embed src="oovEditDebugger.svg" type="image/svg+xml"> 
 <br>
 
 <br>
+<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
+<tbody><tr><th style="vertical-align: top;">Class<br>
+      </th><th style="vertical-align: top;">Description<br>
+      </th></tr><tr>
+      <td style="vertical-align: top;">Debugger<br>
+      </td>
+      <td style="vertical-align: top;">Provides the top level interface for the debugger<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DebuggerLocation<br>
+      </td>
+      <td style="vertical-align: top;">Defines a line number in a file<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DebuggerBreakpoint<br>
+      </td>
+      <td style="vertical-align: top;">Defines a breakpoint location<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">DebugResult<br>
+      </td>
+      <td style="vertical-align: top;">Used for parsing results from the debugger.<br>
+      </td>
+    </tr>
+</tbody>
+</table>
+<br>
+<h2><a class="mozTocH2" name="mozTocId450840"></a>OovCMaker</h2>
+
+This is a command line tool that can create CMake files from a project. The synopsis is:<br>
+
+<br>
+
+OovCMaker project_directory [-v][-w][-nProjName]<br>
+
+<br>
+
+<table style="text-align: left; width: 473px; height: 116px;" border="1" cellpadding="2" cellspacing="2">
+
+  <tbody>
+    <tr>
+      <td style="vertical-align: top;">Switch<br>
+      </td>
+      <td style="vertical-align: top;">Description<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">-v<br>
+      </td>
+      <td style="vertical-align: top;">Verbose<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">-w<br>
+      </td>
+      <td style="vertical-align: top;">Write output to project directories<br>
+      </td>
+    </tr>
+    <tr>
+      <td style="vertical-align: top;">-n<br>
+      </td>
+      <td style="vertical-align: top;">Specify the project name. For example: -nOovcde<br>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
 <br>
 <h1><a class="mozTocH1" name="mozTocId682604"></a>
 
 
-Libraries</h1>There is only one library created in the Oovcde project.<br>
+Libraries</h1>The following are the libraries created in the Oovcde project.<br>
 <br>
 
 <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
@@ -724,7 +856,13 @@ Libraries</h1>There is only one library created in the Oovcde project.<br>
       <td style="vertical-align: top;">OovCommon<br>
       </td>
       <td style="vertical-align: top;">The OovCommon library contains shared code used by each of the components.</td>
+    </tr><tr>
+      <td style="vertical-align: top;">OovGuiCommon<br>
+      </td>
+      <td style="vertical-align: top;">The GUI library defines interfaces to GTK.<br>
+      </td>
     </tr>
+
 </tbody>
 </table>
 <br>
@@ -865,42 +1003,7 @@ any attributes.</li>
   
 </ul>
 
-<h2>OovCMaker</h2>
-This is a command line tool that can create CMake files from a project. The synopsis is:<br>
-<br>
-OovCMaker project_directory [-v][-w][-nProjName]<br>
-<br>
-<table style="text-align: left; width: 473px; height: 116px;" border="1" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top;">Switch<br>
-      </td>
-      <td style="vertical-align: top;">Description<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-v<br>
-      </td>
-      <td style="vertical-align: top;">Verbose<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-w<br>
-      </td>
-      <td style="vertical-align: top;">Write output to project directories<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-n<br>
-      </td>
-      <td style="vertical-align: top;">Specify the project name. For example: -nOovcde<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-
-<h2><a class="mozTocH2" name="mozTocId162874"></a>OovGuiCommon</h2>
+<h2><a class="mozTocH2" name="mozTocId90631"></a><a class="mozTocH2" name="mozTocId162874"></a>OovGuiCommon</h2>
 The OovGuiCommon library provides code that can be used by all user interface components.<br>
 
 <br>

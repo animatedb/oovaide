@@ -14,10 +14,15 @@
 class DebugFile
     {
     public:
-	DebugFile(char const * const fn=nullptr)
+	DebugFile(char const * const fn=nullptr, bool append=false)
 	    {
 	    if(fn)
-		mFp = fopen(fn, "w");
+		{
+		if(append)
+		    mFp = fopen(fn, "a");
+		else
+		    mFp = fopen(fn, "w");
+		}
 	    }
 	~DebugFile()
 	    {

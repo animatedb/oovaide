@@ -129,6 +129,20 @@ std::vector<std::string> ComponentTypesFile::getComponentIncludes(
     return CompoundValueRef::parseString(val.c_str());
     }
 
+std::string ComponentTypesFile::getComponentBuildArgs(
+	char const * const compName) const
+    {
+    std::string tag = ComponentTypesFile::getCompTagName(compName, "args");
+    return getValue(tag.c_str());
+    }
+
+void ComponentTypesFile::setComponentBuildArgs(char const * const compName,
+	char const * const args)
+    {
+    std::string tag = ComponentTypesFile::getCompTagName(compName, "args");
+    setNameValue(tag.c_str(), args);
+    }
+
 std::string ComponentTypesFile::getComponentAbsolutePath(char const * const compName) const
     {
     std::string path;
@@ -142,6 +156,7 @@ std::string ComponentTypesFile::getComponentAbsolutePath(char const * const comp
 	}
     return path;
     }
+
 
 //////////////
 
