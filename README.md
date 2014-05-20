@@ -12,7 +12,7 @@ Oovcde is a development environment for CLang based languages. The primary goals
    * Works with Linux or Windows
    * License is GPL Version 2
 - Minimal dependencies
-   * Uses LLVM/CLang to parse C++ files
+   * Uses LLVM/CLang to parse C++ files to find build dependencies and for analysis
    * Uses GNU tools such as AR and GDB
    * Uses GTK as the window toolkit
 
