@@ -17,6 +17,7 @@ Current Features:
 - Uses LLVM/CLang to parse C++ files
 - Uses GNU tools such as AR and GDB
 - Uses GTK as the window toolkit
+- License is GPL Version 2
 
 ## Contents
 
