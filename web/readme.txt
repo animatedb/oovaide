@@ -15,8 +15,9 @@ Windows versions:
 	Using Oovcde to build requires MinGW or MinGW-builds because
 	they supply the nm and ld tools.
 
+	Required for analysis with standard include files:
 	MinGW:
-		For Oovcde Analysis - Needed by clang to find include files,
+		For Oovcde Analysis - Needed by clang for standard include files,
 		CLang has hard coded paths, typical path is \MinGW,
 		to debug, use -v to see locations:
 
@@ -26,7 +27,7 @@ Windows versions:
 			Add package mingw32-base	2013072200
 			Install to \MinGW
 
-	OPTIONAL:
+	Required for building Oovcde:
 	GTK-3.0:
 		From: http://www.tarnyko.net/dl/
 		File: "GTK+ 3.6.4 Bundle for Windows"
