@@ -21,7 +21,7 @@ Current Features:
 ## Contents
 
 - [Oovcde website] (http://oovcde.sourceforge.net/)
-- [Examples] (http://oovcde.sourceforge.net/userguide/examples.shtml)
+- [Quick Start / Examples] (http://oovcde.sourceforge.net/userguide/examples.shtml)
 - [User Guide] (http://oovcde.sourceforge.net/userguide/oovcdeuserguide.shtml)
 - [Design] (http://oovcde.sourceforge.net/design/OovcdeDesign.html)
 - [Binary downloads] (https://sourceforge.net/projects/oovcde/files/?source=directory)
