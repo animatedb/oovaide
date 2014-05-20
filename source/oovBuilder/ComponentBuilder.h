@@ -10,6 +10,7 @@
 
 #include "ComponentFinder.h"
 #include "ObjSymbols.h"
+#include "OovThreadedQueue.h"
 
 
 class ComponentPkgDeps
@@ -42,22 +43,46 @@ class ToolPathFile:public NameValueFile
     };
 
 
+class ProcessArgs
+    {
+    public:
+        ProcessArgs(char const *proc, char const *out,
+            const OovProcessChildArgs &args, char const *stdOutFn=""):
+            mProcess(proc), mOutputFile(out), mChildArgs(args),
+            mStdOutFn(stdOutFn)
+            {}
+        ProcessArgs()
+            {}
+        std::string mProcess;
+        std::string mOutputFile;
+        OovProcessChildArgs mChildArgs;
+        std::string mStdOutFn;  // zero length will not use the name
+    };
+
+class ComponentTaskQueue:public ThreadedWorkQueue<ProcessArgs, ComponentTaskQueue>
+    {
+    public:
+        // Called by ThreadedWorkQueue
+        bool processItem(ProcessArgs const &item);
+
+	/// @param outFile - used only to make an output directory, and display error.
+	static bool runProcess(char const * const procPath, char const * const outFile,
+		const OovProcessChildArgs &args,
+                InProcMutex &mutex, char const * const stdOutFn=nullptr);
+
+        InProcMutex mListenerStdMutex;
+    };
+
 // Builds components. This recursively compiles source files
 // into object files.
-class ComponentBuilder
+class ComponentBuilder:public ComponentTaskQueue
     {
     public:
 	ComponentBuilder(ComponentFinder &compFinder):
 	    mSrcRootDir(nullptr), mComponentFinder(compFinder)
 	    {}
-	virtual ~ComponentBuilder()
-	    {}
 	bool build(char const * const srcRootDir,
 		char const * const incDepsFilePath, char const * const buildDirClass);
-
-	/// @param outFile - used only to make an output directory, and display error.
-	static bool runProcess(char const * const procPath, char const * const outFile,
-		const OovProcessChildArgs &args, char const * const stdOutFn=nullptr);
 
     private:
 	char const * mSrcRootDir;

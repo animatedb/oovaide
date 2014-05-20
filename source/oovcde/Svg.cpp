@@ -143,17 +143,17 @@ int SvgDrawer::getTextExtentHeight(char const * const name) const
 /// @todo - refactor so that class specific drawing this is not in this file.
 #include "ClassDrawer.h"
 
-SvgWriter::SvgWriter(char const * const fn)
+SvgWriter::SvgWriter(char const * const fn):
+    mFile(fn, "w")
     {
-    mFp = fopen(fn, "w");
     }
 
 SvgWriter::~SvgWriter()
     {
-    if(mFp)
+    if(mFile.isOpen())
 	{
-	fprintf(mFp, "</svg>");
-	fclose(mFp);
+	fprintf(mFile.getFp(), "</svg>");
+        mFile.close();
 	}
     }
 

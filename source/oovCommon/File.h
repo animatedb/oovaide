@@ -20,15 +20,20 @@ class File
 		mFp = fopen(fn, mode);
 	    }
 	~File()
-	    {
-	    if(mFp)
-		fclose(mFp);
-	    }
+	    { close(); }
 	void open(char const * const fn, char const * const mode)
 	    {
 	    if(!mFp)
 		mFp = fopen(fn, mode);
 	    }
+        void close()
+            {
+	    if(mFp)
+		fclose(mFp);
+            mFp = nullptr;
+            }
+        bool isOpen() const
+            { return(mFp != nullptr); }
 	FILE *getFp()
 	    { return mFp; }
     private:

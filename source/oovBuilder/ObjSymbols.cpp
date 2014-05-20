@@ -187,7 +187,7 @@ static void orderDependencies(size_t numFiles, const FileDependencies &fileDepen
 
 bool ObjSymbols::makeObjectSymbols(char const * const clumpName,
 	const std::vector<std::string> &libFiles, char const * const outPath,
-	char const * const objSymbolTool)
+	char const * const objSymbolTool, ComponentTaskQueue &queue)
     {
     FileSymbols definedSymbols;
     FileSymbols undefinedSymbols;
@@ -228,8 +228,12 @@ bool ObjSymbols::makeObjectSymbols(char const * const clumpName,
 	    std::string quotedLibFilePath = libFilePath;
 	    quoteCommandLinePath(quotedLibFilePath);
 	    ca.addArg(quotedLibFilePath.c_str());
+
+//            queue.addTask(ProcessArgs(objSymbolTool, outRawFileName.c_str(), ca,
+//                outRawFileName.c_str()));
 	    success = ComponentBuilder::runProcess(objSymbolTool,
-		    outRawFileName.c_str(), ca, outRawFileName.c_str());
+		    outRawFileName.c_str(), ca, mListenerStdMutex,
+                    outRawFileName.c_str());
 	    // Now parse files for:
 	    // U referenced objects, but not defined
 	    // D global data object

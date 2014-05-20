@@ -714,15 +714,27 @@ void OovProcessChildArgs::printArgs(FILE *fh) const
     fflush(fh);
     }
 
+#if(USE_STD_THREAD)
+static void BackgroundThreadFunc(OovBackgroundPipeProcess *proc)
+    {
+    proc->privateBackground();
+    }
+#else
 static gpointer BackgroundThreadFunc(gpointer data)
     {
     OovBackgroundPipeProcess *backProc = reinterpret_cast<OovBackgroundPipeProcess *>(data);
     backProc->privateBackground();
     return 0;
     }
+#endif
 
 OovBackgroundPipeProcess::OovBackgroundPipeProcess(OovProcessListener &listener):
-	mListener(&listener), mThread(nullptr), mThreadState(TS_Idle),
+	mListener(&listener),
+#if(USE_STD_THREAD)
+#else
+            mThread(nullptr),
+#endif
+        mThreadState(TS_Idle),
 	mChildProcessExitCode(-1)
     {
 #if(DEBUG_PROC)
@@ -752,7 +764,11 @@ bool OovBackgroundPipeProcess::startProcess(char const * const procPath,
 #if(DEBUG_PROC)
 	sDbgFile.printflush("bkg-startProcess\n");
 #endif
+#if(USE_STD_THREAD)
+        mThread = std::thread(BackgroundThreadFunc, this);
+#else
 	mThread = g_thread_new("BackThread", BackgroundThreadFunc, this);
+#endif
 	success = OovPipeProcess::createProcess(procPath, argv);
 	mThreadState = TS_Running;
 #if(DEBUG_PROC)
@@ -770,7 +786,11 @@ void OovBackgroundPipeProcess::stopProcess()
 	sDbgFile.printflush("bkg-stopProcess - join\n");
 #endif
 	childProcessKill();
+#if(USE_STD_THREAD)
+        mThread.join();
+#else
 	g_thread_join(mThread);
+#endif
 	mThreadState = TS_Idle;
 #if(DEBUG_PROC)
 	sDbgFile.printflush("bkg-stopProcess - TS_NotRunning\n");
@@ -795,6 +815,9 @@ void OovBackgroundPipeProcess::privateBackground()
 	sDbgFile.printflush("bkg-background - T_Stopping\n");
 #endif
 	mThreadState = TS_Stopping;
+#if(USE_STD_THREAD)
+#else
 	g_thread_exit(0);
+#endif
 	}
     }

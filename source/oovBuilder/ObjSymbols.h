@@ -8,6 +8,7 @@
 #ifndef OBJSYMBOLS_H_
 #define OBJSYMBOLS_H_
 
+#include "OovProcess.h"
 #include <vector>
 #include <string>
 
@@ -30,7 +31,7 @@ class ObjSymbols
 	/// @param sortedLibFileNames Sorted names
 	bool makeObjectSymbols(char const * const clumpName,
 		const std::vector<std::string> &libFileNames, char const * const outPath,
-		char const * const objSymbolTool);
+		char const * const objSymbolTool, class ComponentTaskQueue &queue);
 
 	static void appendOrderedLibs(char const * const clumpName,
 		char const * const outPath, std::vector<std::string> &libDirs,
@@ -41,6 +42,7 @@ class ObjSymbols
 
     private:
 	bool mForceUpdateSymbols;
+        InProcMutex mListenerStdMutex;
     };
 
 

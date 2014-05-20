@@ -7,6 +7,7 @@
 
 #include "FileEditView.h"
 #include "FilePath.h"
+#include "File.h"
 #include "OovString.h"
 #include <string.h>
 
@@ -40,24 +41,23 @@ void FileEditView::init(GtkTextView *textView)
 bool FileEditView::openTextFile(char const * const fn)
     {
     setFileName(fn);
-    FILE *fp = fopen(fn, "rb");
-    if(fp)
+    File file(fn, "rb");
+    if(file.isOpen())
 	{
-	fseek(fp, 0, SEEK_END);
-	long fileSize = ftell(fp);
-	fseek(fp, 0, SEEK_SET);
+	fseek(file.getFp(), 0, SEEK_END);
+	long fileSize = ftell(file.getFp());
+	fseek(file.getFp(), 0, SEEK_SET);
 	std::vector<char> buf(fileSize);
 	// actualCount can be less than fileSize on Windows due to /r/n
-	int actualCount = fread(&buf.front(), 1, fileSize, fp);
+	int actualCount = fread(&buf.front(), 1, fileSize, file.getFp());
 	if(actualCount > 0)
 	    {
 	    gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
 	    gtk_text_buffer_set_modified(mTextBuffer, FALSE);
 	    }
-	fclose(fp);
 	setNeedHighlightUpdate(HS_ExternalChange);
 	}
-    return(fp != nullptr);
+    return(file.isOpen());
     }
 
 bool FileEditView::saveTextFile()
@@ -153,13 +153,13 @@ bool FileEditView::saveAsTextFile(char const * const fn)
     std::string tempFn = fn;
     setFileName(fn);
     tempFn += ".tmp";
-    FILE *fp = fopen(tempFn.c_str(), "wb");
-    if(fp)
+    File file(tempFn.c_str(), "wb");
+    if(file.isOpen())
 	{
 	int size = gtk_text_buffer_get_char_count(mTextBuffer);
 	GuiText buf = getBuffer();
-	writeSize = fwrite(buf.c_str(), 1, size, fp);
-	fclose(fp);
+	writeSize = fwrite(buf.c_str(), 1, size, file.getFp());
+	file.close();
 	deleteFile(fn);
 	renameFile(tempFn.c_str(), fn);
 	gtk_text_buffer_set_modified(mTextBuffer, FALSE);

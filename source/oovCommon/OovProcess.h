@@ -11,16 +11,17 @@
 #include <vector>
 #include <string>
 #include <stdio.h>
+#define USE_STD_THREAD 1
+#if(USE_STD_THREAD)
+#include <thread>
+#else
 #include <glib.h>	// For GThread
+#endif
 #ifdef __linux__
 #include <memory.h>
 #else
 #include <windows.h>	// for HANDLE
 #endif
-//#ifndef __linux		// These are needed for mingw 4.0, but it doesn't work with clang
-//#define off64_t _off64_t
-//#define off_t int
-//#endif
 
 
 void sleepMs(int ms);
@@ -30,6 +31,7 @@ void sleepMs(int ms);
 int spawnNoWait(char const * const procPath, char const * const *argv);
 
 
+// Note that on Linux, this is not recursive.
 class InProcMutex
     {
     public:
@@ -267,7 +269,11 @@ class OovBackgroundPipeProcess:public OovPipeProcess
 
     private:
 	OovProcessListener *mListener;
+#if(USE_STD_THREAD)
+        std::thread mThread;
+#else
 	GThread *mThread;
+#endif
 	ThreadStates mThreadState;
 	int mChildProcessExitCode;
     };

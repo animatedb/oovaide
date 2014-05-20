@@ -144,11 +144,10 @@ void oovGui::openProject()
 	int typeIndex = 0;
 	for(const auto &filename : fileNames)
 	    {
-	    FILE *fp = fopen(filename.c_str(), "r");
-	    if(fp)
+	    File file(filename.c_str(), "r");
+	    if(file.isOpen())
 		{
-		loadXmiFile(fp, mModelData, filename.c_str(), typeIndex);
-		fclose(fp);
+		loadXmiFile(file.getFp(), mModelData, filename.c_str(), typeIndex);
 		}
 	    }
 	mModelData.resolveModelIds();

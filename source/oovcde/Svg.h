@@ -6,6 +6,7 @@
  */
 
 #include "DiagramDrawer.h"
+#include "File.h"
 #include <stdio.h>
 #include <cairo.h>
 
@@ -37,8 +38,8 @@ class SvgWriter
 	SvgWriter(char const * const fn);
 	~SvgWriter();
 	FILE *getFile()
-	    { return mFp; }
+	    { return mFile.getFp(); }
 
     private:
-	FILE *mFp;
+	File mFile;
     };

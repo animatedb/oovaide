@@ -478,8 +478,10 @@ void Debugger::handleResult(const std::string &resultStr)
 		    if((reason.find("end-stepping-range") != std::string::npos) ||
 			    (reason.find("breakpoint-hit") != std::string::npos))
 			{
-			LockGuard lock(mStatusLock);
-			mStoppedLocation = getLocationFromResult(resultStr);
+			    {
+			    LockGuard lock(mStatusLock);
+			    mStoppedLocation = getLocationFromResult(resultStr);
+			    }
 			changeChildState(GCS_GdbChildPaused);
 			}
 		    else if(reason.find("exited-normally") != std::string::npos)

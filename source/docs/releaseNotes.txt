@@ -24,7 +24,7 @@ Missing Features
 - Source/project management
 	- Make it clear which files must be saved to save project settings.
 	  Gui Options don't get recreated if project is opened instead of newed.
-	- Add more multitasking to backend - analysis is ok, need for linux, builds, loading projects
+	- Add more multitasking: library symbols, loading projects
 	- Load last project automatically, but allow opening other while parsing
 - C++ parsing for drawings
 	- BUG: Model objects not handled properly
@@ -109,6 +109,9 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
+	- Bug: view source displays wrong tab
+	- Sometimes saving file creates .tmp file, (file is already open?)
+	- Add right click cut/paste, find in files, etc.
 	- Open include files
 	- find declaration/definition
 	- editor doesn't handle two files with same name
@@ -120,7 +123,6 @@ Missing Features
 		http://pages.cs.wisc.edu/~psilord/blog/18.html
 		http://www.freehackers.org/VimIntegration
 		http://vimdoc.sourceforge.net/htmldoc/netbeans.html
-	- Creating new module created .tmp file
 	- unindenting doesn't work well when tabs are in file
 	- display column/character position
 	- error highlighting
