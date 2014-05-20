@@ -6,8 +6,10 @@ Oovcde is a development environment for CLang based languages. The primary goals
 - Allows analysis and development of high quality, object oriented code
    * Generates class, sequence and component diagrams from code automatically.
    * Diagrams are based on UML, but are also a superset, and can be saved as .SVG.
+   * Diagrams are generated automatically using genetic algorithms.
 - Ease of usability
-   * Provides a build system that scans for project files, finds dependencies, and allows minimal set up.
+   * Provides a build system that scans for project files, finds dependencies, allowing minimal set up.
+   * The system uses extensive multithreading for background tasks.
    * Provides a simple editor that uses CLang for syntax highlighting and GDB for debugging.
    * Works with Linux or Windows
    * License is GPL Version 2
