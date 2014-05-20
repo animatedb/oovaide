@@ -25,3 +25,8 @@ Oovcde is a development environment for CLang based languages. The primary goals
 - [Quick Start / Examples] (http://oovcde.sourceforge.net/userguide/examples.shtml)
 - [User Guide] (http://oovcde.sourceforge.net/userguide/oovcdeuserguide.shtml)
 - [Design] (http://oovcde.sourceforge.net/design/OovcdeDesign.html)
+
+## Articles
+
+- [C++11 hints] download from oovcde, in the web/articles directory
+- [Multitasking queue] download from oovcde, OovProcessQueue
