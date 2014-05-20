@@ -3,27 +3,6 @@
 <!-- DC Blaha - 6/8/2009 -->
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
 
 <h2>OOVCDE Release Details</h2>
@@ -41,9 +20,9 @@ This version contains:<br>
 
 
 <ul>
-<li>Partial debug support under Windows</li>
-  <li>Analysis is now run with multiple threads</li>
-  <li>Find in files for editor</li>
+  <li>Editor now includes a debugger</li>
+  <li>Analysis uses multiple threads</li>
+  <li>Editor includes find in files</li>
   <li>Build arguments specific for components<br>
   </li>
 <li>Many bug fixes<br>

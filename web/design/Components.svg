@@ -8,13 +8,13 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="500"
-   height="244"
+   width="493"
+   height="209"
    id="svg2"
    inkscape:version="0.48.1 "
    sodipodi:docname="Components.svg">
   <metadata
-     id="metadata246">
+     id="metadata230">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -25,7 +25,7 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs244" />
+     id="defs228" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -35,15 +35,15 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="1062"
-     inkscape:window-height="671"
-     id="namedview242"
+     inkscape:window-width="995"
+     inkscape:window-height="826"
+     id="namedview226"
      showgrid="false"
-     inkscape:zoom="1.02"
-     inkscape:cx="258.74025"
-     inkscape:cy="122"
-     inkscape:window-x="196"
-     inkscape:window-y="159"
+     inkscape:zoom="1.0344828"
+     inkscape:cx="238.03016"
+     inkscape:cy="104.5"
+     inkscape:window-x="656"
+     inkscape:window-y="295"
      inkscape:window-maximized="0"
      inkscape:current-layer="svg2" />
   <g
@@ -52,20 +52,20 @@
      style="stroke-width:1"
      id="g4">
     <rect
-       x="14"
-       y="60"
+       x="32"
+       y="34"
        width="75"
        height="28"
        id="rect6" />
     <rect
-       x="9"
-       y="65"
+       x="27"
+       y="39"
        width="10"
        height="5"
        id="rect8" />
     <rect
-       x="9"
-       y="75"
+       x="27"
+       y="49"
        width="10"
        height="5"
        id="rect10" />
@@ -74,12 +74,12 @@
      font-size="10"
      id="g12">
     <text
-       x="21"
-       y="72"
+       x="39"
+       y="46"
        id="text14">oovBuilder</text>
     <text
-       x="21"
-       y="84"
+       x="39"
+       y="58"
        id="text16">&lt;&lt;Program&gt;&gt;</text>
   </g>
   <g
@@ -88,20 +88,20 @@
      style="stroke-width:1"
      id="g18">
     <rect
-       x="13"
-       y="142"
+       x="33"
+       y="113"
        width="75"
        height="28"
        id="rect20" />
     <rect
-       x="8"
-       y="147"
+       x="28"
+       y="118"
        width="10"
        height="5"
        id="rect22" />
     <rect
-       x="8"
-       y="157"
+       x="28"
+       y="128"
        width="10"
        height="5"
        id="rect24" />
@@ -110,51 +110,51 @@
      font-size="10"
      id="g26">
     <text
-       x="20"
-       y="154"
+       x="40"
+       y="125"
        id="text28">oovCMaker</text>
     <text
-       x="20"
-       y="166"
+       x="40"
+       y="137"
        id="text30">&lt;&lt;Program&gt;&gt;</text>
   </g>
   <g
      fill="#f5f5ff"
      stroke="rgb(0,0,0)"
-     style="stroke-width:1;fill:#fff5ff;fill-opacity:1"
+     style="stroke-width:1;fill:#ffe1e1;fill-opacity:1"
      id="g32">
     <rect
-       x="167"
-       y="132"
+       x="157"
+       y="94"
        width="77"
        height="28"
        id="rect34"
-       style="fill:#fff5ff;fill-opacity:1" />
+       style="fill:#ffe1e1;fill-opacity:1" />
     <rect
-       x="162"
-       y="137"
+       x="152"
+       y="99"
        width="10"
        height="5"
        id="rect36"
-       style="fill:#fff5ff;fill-opacity:1" />
+       style="fill:#ffe1e1;fill-opacity:1" />
     <rect
-       x="162"
-       y="147"
+       x="152"
+       y="109"
        width="10"
        height="5"
        id="rect38"
-       style="fill:#fff5ff;fill-opacity:1" />
+       style="fill:#ffe1e1;fill-opacity:1" />
   </g>
   <g
      font-size="10"
      id="g40">
     <text
-       x="174"
-       y="144"
+       x="164"
+       y="106"
        id="text42">oovCommon</text>
     <text
-       x="174"
-       y="156"
+       x="164"
+       y="118"
        id="text44">&lt;&lt;StaticLib&gt;&gt;</text>
   </g>
   <g
@@ -163,20 +163,20 @@
      style="stroke-width:1"
      id="g46">
     <rect
-       x="13"
-       y="215"
+       x="34"
+       y="178"
        width="77"
        height="28"
        id="rect48" />
     <rect
-       x="8"
-       y="220"
+       x="29"
+       y="183"
        width="10"
        height="5"
        id="rect50" />
     <rect
-       x="8"
-       y="230"
+       x="29"
+       y="193"
        width="10"
        height="5"
        id="rect52" />
@@ -185,12 +185,12 @@
      font-size="10"
      id="g54">
     <text
-       x="20"
-       y="227"
+       x="41"
+       y="190"
        id="text56">oovCppParser</text>
     <text
-       x="20"
-       y="239"
+       x="41"
+       y="202"
        id="text58">&lt;&lt;Program&gt;&gt;</text>
   </g>
   <g
@@ -199,20 +199,20 @@
      style="stroke-width:1"
      id="g60">
     <rect
-       x="313"
-       y="209"
+       x="308"
+       y="180"
        width="75"
        height="28"
        id="rect62" />
     <rect
-       x="308"
-       y="214"
+       x="303"
+       y="185"
        width="10"
        height="5"
        id="rect64" />
     <rect
-       x="308"
-       y="224"
+       x="303"
+       y="195"
        width="10"
        height="5"
        id="rect66" />
@@ -221,51 +221,51 @@
      font-size="10"
      id="g68">
     <text
-       x="320"
-       y="221"
+       x="315"
+       y="192"
        id="text70">oovEdit</text>
     <text
-       x="320"
-       y="233"
+       x="315"
+       y="204"
        id="text72">&lt;&lt;Program&gt;&gt;</text>
   </g>
   <g
      fill="#f5f5ff"
      stroke="rgb(0,0,0)"
-     style="stroke-width:1;fill:#fff5ff;fill-opacity:1"
+     style="stroke-width:1;fill:#ffe1e1;fill-opacity:1"
      id="g74">
     <rect
        x="338"
-       y="79"
+       y="53"
        width="88"
        height="28"
        id="rect76"
-       style="fill:#fff5ff;fill-opacity:1" />
+       style="fill:#ffe1e1;fill-opacity:1" />
     <rect
        x="333"
-       y="84"
+       y="58"
        width="10"
        height="5"
        id="rect78"
-       style="fill:#fff5ff;fill-opacity:1" />
+       style="fill:#ffe1e1;fill-opacity:1" />
     <rect
        x="333"
-       y="94"
+       y="68"
        width="10"
        height="5"
        id="rect80"
-       style="fill:#fff5ff;fill-opacity:1" />
+       style="fill:#ffe1e1;fill-opacity:1" />
   </g>
   <g
      font-size="10"
      id="g82">
     <text
        x="345"
-       y="91"
+       y="65"
        id="text84">oovGuiCommon</text>
     <text
        x="345"
-       y="103"
+       y="77"
        id="text86">&lt;&lt;StaticLib&gt;&gt;</text>
   </g>
   <g
@@ -274,20 +274,20 @@
      style="stroke-width:1"
      id="g88">
     <rect
-       x="424"
-       y="152"
+       x="417"
+       y="143"
        width="75"
        height="28"
        id="rect90" />
     <rect
-       x="419"
-       y="157"
+       x="412"
+       y="148"
        width="10"
        height="5"
        id="rect92" />
     <rect
-       x="419"
-       y="167"
+       x="412"
+       y="158"
        width="10"
        height="5"
        id="rect94" />
@@ -296,88 +296,90 @@
      font-size="10"
      id="g96">
     <text
-       x="431"
-       y="164"
+       x="424"
+       y="155"
        id="text98">oovcde</text>
     <text
-       x="431"
-       y="176"
+       x="424"
+       y="167"
        id="text100">&lt;&lt;Program&gt;&gt;</text>
   </g>
   <g
      fill="#f5f5ff"
      stroke="rgb(0,0,0)"
-     style="stroke-width:1;fill:#f5ffff;fill-opacity:1"
+     style="stroke-width:1;fill:#c7fff7;fill-opacity:1"
      id="g102">
     <rect
-       x="179"
-       y="68"
+       x="193"
+       y="34"
        width="74"
        height="28"
        id="rect104"
-       style="fill:#f5ffff;fill-opacity:1" />
+       style="fill:#c7fff7;fill-opacity:1" />
     <rect
-       x="174"
-       y="73"
+       x="188"
+       y="39"
        width="10"
        height="5"
        id="rect106"
-       style="fill:#f5ffff;fill-opacity:1" />
+       style="fill:#c7fff7;fill-opacity:1" />
     <rect
-       x="174"
-       y="83"
+       x="188"
+       y="49"
        width="10"
        height="5"
        id="rect108"
-       style="fill:#f5ffff;fill-opacity:1" />
+       style="fill:#c7fff7;fill-opacity:1" />
   </g>
-  <text
-     style="font-size:10px"
-     id="text112"
-     y="80"
-     x="186">gtk+-3.0</text>
-  <text
-     style="font-size:10px"
-     id="text114"
-     y="92"
-     x="186">&lt;&lt;External&gt;&gt;</text>
+  <g
+     font-size="10"
+     id="g110">
+    <text
+       x="200"
+       y="46"
+       id="text112">gtk+-3.0</text>
+    <text
+       x="200"
+       y="58"
+       id="text114">&lt;&lt;External&gt;&gt;</text>
+  </g>
   <g
      fill="#f5f5ff"
      stroke="rgb(0,0,0)"
-     style="stroke-width:1;fill:#f5ffff;fill-opacity:1"
+     style="stroke-width:1;fill:#c7fff7;fill-opacity:1"
      id="g116">
     <rect
-       x="170"
-       y="198"
+       x="168"
+       y="162"
        width="74"
        height="28"
        id="rect118"
-       style="fill:#f5ffff;fill-opacity:1" />
+       style="fill:#c7fff7;fill-opacity:1" />
     <rect
-       x="165"
-       y="203"
+       x="163"
+       y="167"
        width="10"
        height="5"
        id="rect120"
-       style="fill:#f5ffff;fill-opacity:1" />
+       style="fill:#c7fff7;fill-opacity:1" />
     <rect
-       x="165"
-       y="213"
+       x="163"
+       y="177"
        width="10"
        height="5"
        id="rect122"
-       style="fill:#f5ffff;fill-opacity:1" />
+       style="fill:#c7fff7;fill-opacity:1" />
   </g>
   <g
      font-size="10"
      id="g124">
     <text
-       x="177"
-       y="210"
+       x="175"
+       y="174"
        id="text126">llvm</text>
     <text
-       x="177"
-       y="222"
+       x="175"
+       y="186"
        id="text128">&lt;&lt;External&gt;&gt;</text>
   </g>
   <g
@@ -386,23 +388,23 @@
      style="stroke-width:1"
      id="g130">
     <line
-       x1="174"
-       y1="132"
-       x2="78"
-       y2="88"
+       x1="164"
+       y1="94"
+       x2="96"
+       y2="62"
        style="stroke-dasharray: 4, 4 "
        id="line132" />
     <line
-       x1="174"
-       y1="132"
-       x2="165"
-       y2="133"
+       x1="164"
+       y1="94"
+       x2="155"
+       y2="95"
        id="line134" />
     <line
-       x1="174"
-       y1="132"
-       x2="170"
-       y2="124"
+       x1="164"
+       y1="94"
+       x2="160"
+       y2="86"
        id="line136" />
   </g>
   <g
@@ -411,23 +413,23 @@
      style="stroke-width:1"
      id="g138">
     <line
-       x1="174"
-       y1="81"
-       x2="89"
-       y2="75"
+       x1="152"
+       y1="114"
+       x2="108"
+       y2="121"
        style="stroke-dasharray: 4, 4 "
        id="line140" />
     <line
-       x1="174"
-       y1="81"
-       x2="166"
-       y2="86"
+       x1="152"
+       y1="114"
+       x2="145"
+       y2="121"
        id="line142" />
     <line
-       x1="174"
-       y1="81"
-       x2="167"
-       y2="75"
+       x1="152"
+       y1="114"
+       x2="144"
+       y2="110"
        id="line144" />
   </g>
   <g
@@ -436,23 +438,23 @@
      style="stroke-width:1"
      id="g146">
     <line
-       x1="162"
-       y1="148"
-       x2="88"
-       y2="154"
+       x1="173"
+       y1="122"
+       x2="90"
+       y2="178"
        style="stroke-dasharray: 4, 4 "
        id="line148" />
     <line
-       x1="162"
-       y1="148"
-       x2="155"
-       y2="154"
+       x1="173"
+       y1="122"
+       x2="170"
+       y2="131"
        id="line150" />
     <line
-       x1="162"
-       y1="148"
-       x2="154"
-       y2="143"
+       x1="173"
+       y1="122"
+       x2="164"
+       y2="122"
        id="line152" />
   </g>
   <g
@@ -461,23 +463,23 @@
      style="stroke-width:1"
      id="g154">
     <line
-       x1="211"
-       y1="96"
-       x2="205"
-       y2="132"
+       x1="163"
+       y1="180"
+       x2="111"
+       y2="188"
        style="stroke-dasharray: 4, 4 "
        id="line156" />
     <line
-       x1="211"
-       y1="96"
-       x2="215"
-       y2="104"
+       x1="163"
+       y1="180"
+       x2="156"
+       y2="187"
        id="line158" />
     <line
-       x1="211"
-       y1="96"
-       x2="204"
-       y2="103"
+       x1="163"
+       y1="180"
+       x2="155"
+       y2="176"
        id="line160" />
   </g>
   <g
@@ -486,23 +488,23 @@
      style="stroke-width:1"
      id="g162">
     <line
-       x1="178"
-       y1="160"
-       x2="74"
-       y2="215"
+       x1="217"
+       y1="122"
+       x2="319"
+       y2="180"
        style="stroke-dasharray: 4, 4 "
        id="line164" />
     <line
-       x1="178"
-       y1="160"
-       x2="174"
-       y2="168"
+       x1="217"
+       y1="122"
+       x2="226"
+       y2="121"
        id="line166" />
     <line
-       x1="178"
-       y1="160"
-       x2="169"
-       y2="159"
+       x1="217"
+       y1="122"
+       x2="221"
+       y2="131"
        id="line168" />
   </g>
   <g
@@ -511,23 +513,23 @@
      style="stroke-width:1"
      id="g170">
     <line
-       x1="165"
-       y1="216"
-       x2="90"
-       y2="225"
+       x1="376"
+       y1="81"
+       x2="346"
+       y2="180"
        style="stroke-dasharray: 4, 4 "
        id="line172" />
     <line
-       x1="165"
-       y1="216"
-       x2="158"
-       y2="222"
+       x1="376"
+       y1="81"
+       x2="379"
+       y2="90"
        id="line174" />
     <line
-       x1="165"
-       y1="216"
-       x2="157"
-       y2="212"
+       x1="376"
+       y1="81"
+       x2="369"
+       y2="87"
        id="line176" />
   </g>
   <g
@@ -536,23 +538,23 @@
      style="stroke-width:1"
      id="g178">
     <line
-       x1="229"
-       y1="160"
-       x2="322"
-       y2="209"
+       x1="238"
+       y1="62"
+       x2="332"
+       y2="180"
        style="stroke-dasharray: 4, 4 "
        id="line180" />
     <line
-       x1="229"
-       y1="160"
-       x2="238"
-       y2="159"
+       x1="238"
+       y1="62"
+       x2="247"
+       y2="64"
        id="line182" />
     <line
-       x1="229"
-       y1="160"
-       x2="233"
-       y2="168"
+       x1="238"
+       y1="62"
+       x2="238"
+       y2="71"
        id="line184" />
   </g>
   <g
@@ -561,23 +563,23 @@
      style="stroke-width:1"
      id="g186">
     <line
-       x1="376"
-       y1="107"
-       x2="351"
-       y2="209"
+       x1="241"
+       y1="180"
+       x2="303"
+       y2="189"
        style="stroke-dasharray: 4, 4 "
        id="line188" />
     <line
-       x1="376"
-       y1="107"
-       x2="379"
-       y2="116"
+       x1="241"
+       y1="180"
+       x2="249"
+       y2="176"
        id="line190" />
     <line
-       x1="376"
-       y1="107"
-       x2="369"
-       y2="113"
+       x1="241"
+       y1="180"
+       x2="248"
+       y2="186"
        id="line192" />
   </g>
   <g
@@ -586,23 +588,23 @@
      style="stroke-width:1"
      id="g194">
     <line
-       x1="226"
-       y1="96"
-       x2="335"
-       y2="209"
+       x1="266"
+       y1="52"
+       x2="333"
+       y2="62"
        style="stroke-dasharray: 4, 4 "
        id="line196" />
     <line
-       x1="226"
-       y1="96"
-       x2="235"
-       y2="97"
+       x1="266"
+       y1="52"
+       x2="274"
+       y2="48"
        id="line198" />
     <line
-       x1="226"
-       y1="96"
-       x2="227"
-       y2="105"
+       x1="266"
+       y1="52"
+       x2="273"
+       y2="59"
        id="line200" />
   </g>
   <g
@@ -611,23 +613,23 @@
      style="stroke-width:1"
      id="g202">
     <line
-       x1="243"
-       y1="214"
-       x2="308"
-       y2="220"
+       x1="234"
+       y1="115"
+       x2="412"
+       y2="150"
        style="stroke-dasharray: 4, 4 "
        id="line204" />
     <line
-       x1="243"
-       y1="214"
-       x2="251"
-       y2="209"
+       x1="234"
+       y1="115"
+       x2="243"
+       y2="111"
        id="line206" />
     <line
-       x1="243"
-       y1="214"
-       x2="250"
-       y2="220"
+       x1="234"
+       y1="115"
+       x2="240"
+       y2="122"
        id="line208" />
   </g>
   <g
@@ -636,22 +638,22 @@
      style="stroke-width:1"
      id="g210">
     <line
-       x1="252"
-       y1="84"
-       x2="333"
-       y2="90"
+       x1="390"
+       y1="81"
+       x2="441"
+       y2="143"
        style="stroke-dasharray: 4, 4 "
        id="line212" />
     <line
-       x1="252"
-       y1="84"
-       x2="260"
-       y2="79"
+       x1="390"
+       y1="81"
+       x2="399"
+       y2="83"
        id="line214" />
     <line
-       x1="252"
-       y1="84"
-       x2="259"
+       x1="390"
+       y1="81"
+       x2="390"
        y2="90"
        id="line216" />
   </g>
@@ -661,73 +663,23 @@
      style="stroke-width:1"
      id="g218">
     <line
-       x1="244"
-       y1="149"
-       x2="419"
-       y2="163"
+       x1="255"
+       y1="62"
+       x2="424"
+       y2="143"
        style="stroke-dasharray: 4, 4 "
        id="line220" />
     <line
-       x1="244"
-       y1="149"
-       x2="252"
-       y2="144"
+       x1="255"
+       y1="62"
+       x2="264"
+       y2="61"
        id="line222" />
     <line
-       x1="244"
-       y1="149"
-       x2="251"
-       y2="155"
+       x1="255"
+       y1="62"
+       x2="259"
+       y2="70"
        id="line224" />
-  </g>
-  <g
-     fill="#f5f5ff"
-     stroke="rgb(0,0,0)"
-     style="stroke-width:1"
-     id="g226">
-    <line
-       x1="394"
-       y1="107"
-       x2="444"
-       y2="152"
-       style="stroke-dasharray: 4, 4 "
-       id="line228" />
-    <line
-       x1="394"
-       y1="107"
-       x2="403"
-       y2="108"
-       id="line230" />
-    <line
-       x1="394"
-       y1="107"
-       x2="396"
-       y2="116"
-       id="line232" />
-  </g>
-  <g
-     fill="#f5f5ff"
-     stroke="rgb(0,0,0)"
-     style="stroke-width:1"
-     id="g234">
-    <line
-       x1="252"
-       y1="95"
-       x2="419"
-       y2="153"
-       style="stroke-dasharray: 4, 4 "
-       id="line236" />
-    <line
-       x1="252"
-       y1="95"
-       x2="261"
-       y2="93"
-       id="line238" />
-    <line
-       x1="252"
-       y1="95"
-       x2="257"
-       y2="103"
-       id="line240" />
   </g>
 </svg>

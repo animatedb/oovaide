@@ -1,0 +1,44 @@
+
+Testing on Windows:
+	Run bin/release.bat
+
+Version
+-------
+	- Verify version in about box
+
+Examples/Simple
+--------
+	- Start oovcde and create new project for examples/simple
+	- Select Class diagram and choose Lamb.
+	- Verify Moveablething <- Mammal <- Mary <>- Lamb -O- Location
+	- Select Build/Settings, <Root>=Program
+	  - Verify Component List displays <Root><<Program>>
+	- Select Build/Debug
+	- Verify simple.exe exists in out-Debug directory
+	- Run simple.exe
+	- Right click World operation and select Add Calls.
+	- Select Class diagram and choose World, then select Oper diagram.
+	  - Verify World constructor calls Location.
+	  - Verify right click on move shows calls back to Location, setPosition.
+	- Select Class diagram and view World
+	- Right click on World and View Source.
+	  - Verify editor displays World in mary.h
+	- Do Edit/Find in Files and search for Lamb.
+	  - Verify text from mary header and source files are listed.
+	- Set breakpoint on World constructor.
+	- Select Debug/Go.
+	  - Verify debugger can run.
+
+Examples/Staticlib
+--------
+	- Start oovcde and create new project for examples/staticlib
+	- Select Build/Settings, BlackSheep=Static, MainClients=Program
+	  - Verify MainClients.exe exists in out-Debug directory
+
+Examples/Sharedlibgtk
+--------
+	- Start oovcde and create new project for examples/sharedlibgtk
+	- Select Build/Settings, resources/*=Shared, kingdom=Program
+	- Select Edit/Preferences, and in External Packages, Add gtk+-3.0.
+	- Select Build/Debug
+	  - Verify in out-Debug, that kingdom.exe and resource/*.so exist.
