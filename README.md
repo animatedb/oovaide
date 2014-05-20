@@ -17,6 +17,7 @@ Current Features:
 - Uses LLVM/CLang to parse C++ files
 - Uses GTK as the window toolkit
 
-The existing Oovcde website is at: http://oovcde.sourceforge.net/
+## Contents
 
-The binary downloads are at: https://sourceforge.net/projects/oovcde/files/?source=directory
+- [Oovcde website] (http://oovcde.sourceforge.net/)
+- [Binary downloads] (https://sourceforge.net/projects/oovcde/files/?source=directory)
