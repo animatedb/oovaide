@@ -12,12 +12,15 @@ Current Features:
 - Generates class, sequence and component diagrams from code automatically.
     The diagrams are based on UML, but are also a superset.
 - Provides a build system that scans for project files and is very easy to set up.
-- Provides a simple editor that uses CLang for syntax highlighting.
+- Provides a simple editor that uses CLang for syntax highlighting and GDB for debugging.
 - Works with Linux or Windows
 - Uses LLVM/CLang to parse C++ files
+- Uses GNU tools such as AR and GDB
 - Uses GTK as the window toolkit
 
 ## Contents
 
 - [Oovcde website] (http://oovcde.sourceforge.net/)
+- [Examples] (http://oovcde.sourceforge.net/userguide/examples.shtml)
+- [Design] (http://oovcde.sourceforge.net/design/OovcdeDesign.html)
 - [Binary downloads] (https://sourceforge.net/projects/oovcde/files/?source=directory)
