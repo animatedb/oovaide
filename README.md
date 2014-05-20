@@ -4,6 +4,7 @@ oovcde
 Oovcde is a development environment for CLang based languages. The primary goals are:
 
 - Allows analysis and development of high quality, object oriented code
+    * Foo
 - Ease of use
 - Minimal dependencies
 
