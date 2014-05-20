@@ -1,24 +1,20 @@
 oovcde
 ======
 
-Oovcde is a development environment for CLang based languages. The primary goals are:
+Oovcde is a development environment for CLang based languages. The primary goals and features are:
 
 - Allows analysis and development of high quality, object oriented code
-    * Foo
-- Ease of use
+   * Generates class, sequence and component diagrams from code automatically.
+   * Diagrams are based on UML, but are also a superset.
+- Ease of usability
+   * Provides a build system that scans for project files, finds dependencies, and allows minimal set up.
+   * Provides a simple editor that uses CLang for syntax highlighting and GDB for debugging.
+   * Works with Linux or Windows
+   * License is GPL Version 2
 - Minimal dependencies
-
-Current Features:
-
-- Generates class, sequence and component diagrams from code automatically.
-    The diagrams are based on UML, but are also a superset.
-- Provides a build system that scans for project files and is very easy to set up.
-- Provides a simple editor that uses CLang for syntax highlighting and GDB for debugging.
-- Works with Linux or Windows
-- Uses LLVM/CLang to parse C++ files
-- Uses GNU tools such as AR and GDB
-- Uses GTK as the window toolkit
-- License is GPL Version 2
+   * Uses LLVM/CLang to parse C++ files
+   * Uses GNU tools such as AR and GDB
+   * Uses GTK as the window toolkit
 
 ## Contents
 
