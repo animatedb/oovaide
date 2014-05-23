@@ -67,6 +67,7 @@ class OovThreadSafeQueuePrivate
         virtual void getFront(void *item) = 0;
     };
 
+// This is a thread safe queue, but does not handle the threads.
 template<typename T_ThreadQueueItem>
     class OovThreadSafeQueue:public OovThreadSafeQueuePrivate
     {

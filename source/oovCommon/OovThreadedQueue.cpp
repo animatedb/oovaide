@@ -1,3 +1,5 @@
+// OovThreadedQueue.cpp
+//  \copyright 2013 DCBlaha.  Distributed under the GPL.
 
 #include "OovThreadedQueue.h"
 #include <thread>
