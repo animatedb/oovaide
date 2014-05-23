@@ -96,6 +96,7 @@ class oovGui:public JournalListener, public WindowBuildListener
 	void stopSrcManager();
 	void updateProject();
 	virtual void displayClass(char const * const className);
+	virtual void addClass(char const * const className);
 	virtual void displayOperation(char const * const className,
 		char const * const operName, bool isConst);
 	void updateJournalList();

@@ -78,7 +78,7 @@ bool OovThreadSafeQueuePrivate::waitPopPrivate(void *item)
     return gotItem;
     }
 
-void OovThreadSafeQueuePrivate::quitPopsPrivate()
+void OovThreadSafeQueuePrivate::waitQueueEmptyPrivate()
     {
     std::unique_lock<std::mutex> lock(mProcessQueueMutex);
 #if(DEBUG_PROC_QUEUE)
@@ -94,6 +94,11 @@ void OovThreadSafeQueuePrivate::quitPopsPrivate()
 //    sDebugQueue.printflush("quitPops unlock\n");
 #endif
     lock.unlock();
+    }
+
+void OovThreadSafeQueuePrivate::quitPopsPrivate()
+    {
+    waitQueueEmptyPrivate();
     mProviderPushedSignal.notify_all();
 #if(DEBUG_PROC_QUEUE)
     sDebugQueue.printflush("quitPops done\n");

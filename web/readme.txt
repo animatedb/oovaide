@@ -15,11 +15,10 @@ Windows versions:
 	Using Oovcde to build requires MinGW or MinGW-builds because
 	they supply the nm and ld tools.
 
-	Required for analysis with standard include files:
+	Required for analysis with standard MinGW include files:
 	MinGW:
-		For Oovcde Analysis - Needed by clang for standard include files,
-		CLang has hard coded paths, typical path is \MinGW,
-		to debug, use -v to see locations:
+		For Oovcde Analysis: CLang has hard coded paths,
+		typical path is \MinGW, use -v to see paths
 
 		From: http://sourceforge.net/projects/mingw/files/
 		File: "mingw-get-setup.exe"
@@ -38,9 +37,10 @@ Windows versions:
 		File: "Clang for Windows (.sig)"
 			Install to C:\Program Files\LLVM
 
-	MinGW-builds: To build Oovcde project - has C++11 threading/atomics:
-		Set path to the bin directory, and rename \MinGW to
-			\MinGW-hide to eliminate compile errors.
+	MinGW-builds: has C++11 threading/atomics
+		Set path to the bin directory, and if present, rename
+		\MinGW to \MinGW-hide to eliminate compile errors.
+
 		From: http://sourceforge.net/projects/mingwbuilds/
 		File: mingw-builds-install.exe
 			Install to C:\Program Files\mingw-builds

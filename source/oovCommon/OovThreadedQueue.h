@@ -48,6 +48,7 @@ class OovThreadSafeQueuePrivate
             { mQuitPopping = false; }
         void waitPushPrivate(void const *item);
         bool waitPopPrivate(void *item);
+        void waitQueueEmptyPrivate();
         void quitPopsPrivate();
 
     private:
@@ -93,10 +94,16 @@ template<typename T_ThreadQueueItem>
             { return waitPopPrivate(&item); }
 
         // Called by the provider thread.
-        // This will cause the waitPop functions to quit and return false
-        // if there are no more queue entries.
         // This will wait to make sure all queue items were processed
         // by a consumer thread.
+        void waitQueueEmpty()
+            { waitQueueEmptyPrivate(); }
+
+        // Called by the provider thread.
+        // This will wait to make sure all queue items were processed
+        // by a consumer thread.
+        // This will cause the waitPop functions to quit and return false
+        // if there are no more queue entries.
         void quitPops()
             { quitPopsPrivate(); }
 
@@ -174,9 +181,18 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
             static_cast<T_ProcessItem*>(this)->processItem(item);
 #endif
             }
+
+        // Wait for all threads to complete work on the queued items.
+        void waitForCompletion()
+            {
+#if(USE_THREADS)
+            mTaskQueue.waitQueueEmpty();
+#endif
+            }
+
         // Wait for all threads to complete work on the queued items.
         // setupQueue must be called each time after waitForCompletion.
-        void waitForCompletion()
+        void waitForCompletionAndEndThreads()
             {
 #if(USE_THREADS)
 	    mTaskQueue.quitPops();
@@ -199,12 +215,17 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
     private:
         OovThreadSafeQueue<T_ThreadQueueItem> mTaskQueue;
         std::vector<std::thread> mWorkerThreads;
+        // Only sets the number of threads if there are
+        // currently no threads running.
         void setupThreads(int numThreads)
             {
-	    for(int i=0; i<numThreads; i++)
-		{
-		mWorkerThreads.push_back(std::thread(workerThreadProc, this));
-		}
+            if(mWorkerThreads.size() == 0)
+        	{
+		for(int i=0; i<numThreads; i++)
+		    {
+		    mWorkerThreads.push_back(std::thread(workerThreadProc, this));
+		    }
+        	}
             }
         static void workerThreadProc(
         	ThreadedWorkQueue<T_ThreadQueueItem, T_ProcessItem> *workQueue)

@@ -180,6 +180,11 @@ void oovGui::displayClass(char const * const className)
 	}
     }
 
+void oovGui::addClass(char const * const className)
+    {
+    mJournal.addClass(className);
+    }
+
 void oovGui::displayOperation(char const * const className,
 	char const * const operName, bool isConst)
     {
@@ -624,11 +629,33 @@ extern "C" G_MODULE_EXPORT void on_StopBuildMenuitem_activate(
     gOovGui.stopSrcManager();
     }
 
+static bool sDisplayClassViewRightClick = false;
+
 extern "C" G_MODULE_EXPORT void on_ClassTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    std::string className = gOovGui.getSelectedClass();;
-    gOovGui.displayClass(className.c_str());
+    std::string className = gOovGui.getSelectedClass();
+    if(sDisplayClassViewRightClick)
+	{
+	gOovGui.addClass(className.c_str());
+	sDisplayClassViewRightClick = false;
+	}
+    else
+	{
+	gOovGui.displayClass(className.c_str());
+	}
+    }
+
+extern "C" G_MODULE_EXPORT bool on_ClassTreeview_button_press_event(
+	GtkWidget *button, GdkEvent *event, gpointer data)
+    {
+//    GtkTreeView *view = GTK_TREE_VIEW(mGui.getBuilder().getWidget("ClassTreeView"));
+    GdkEventButton *eventBut = reinterpret_cast<GdkEventButton*>(event);
+    if(eventBut->button == 3)	// Right button
+	{
+	sDisplayClassViewRightClick = true;
+	}
+    return false;	// Not handled - continue processing
     }
 
 extern "C" G_MODULE_EXPORT void on_OperationsTreeview_cursor_changed(

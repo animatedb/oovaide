@@ -56,8 +56,8 @@ Missing Features
 	- BUG: forward class definitions mess up source line numbers
 	- When class members are not shown, should be easy way to view members
 	- FilePath not showing inheritance - templates?
-	- Allow adding selected class to existing diagram - right click in class list
 	- Add filter for class list
+	- Show return value for class methods
 	- Show progress/cancel dlg for long operations, loading class list and large drawings
 	- Set each class drawing preferences by whether component is the same.
 	- Need either show classes that will be added, or undo, or multiple drawing copies
@@ -75,7 +75,7 @@ Missing Features
 	- Pointers/references/const not shown as part of types as text
 	- Add class list context menu to allow adding single nodes/multiple nodes
 		(two mouse buttons?, class properties?)
-	- Show function return type relations basically already handled by body decls)
+	- Show function return type relations (basically already handled by body decls)
 	- Could allow multiple selection to add relations, remove, properties
 	- Could have grid for class placement, option for grid size
 - Sequence Diagrams

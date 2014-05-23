@@ -159,6 +159,8 @@ class ClassGraph
 	/// description.
 	void clearGraphAndAddNode(const ModelData &model, const ClassDrawOptions &options,
 		char const * const className, int nodeDepth);
+	void addNode(const ModelData &model, const ClassDrawOptions &options,
+		char const * const className, int nodeDepth);
 	/// Initializes genes from the model.
 	/// Updates node sizes and node connections in the graph.
 	/// The nodes generally must have been added with the same modelData.

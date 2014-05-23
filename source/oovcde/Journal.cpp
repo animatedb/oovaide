@@ -53,6 +53,16 @@ void Journal::displayClass(char const * const className)
 	}
     }
 
+void Journal::addClass(char const * const className)
+    {
+    JournalRecord *rec = getCurrentRecord();
+    if(rec && rec->getRecordType() == RT_Class)
+	{
+	JournalRecordClassDiagram *recClass = reinterpret_cast<JournalRecordClassDiagram*>(rec);
+	recClass->mClassDiagram.addClass(className);
+	}
+    }
+
 void Journal::displayOperation(char const * const className,
 	char const * const operName, bool isConst)
     {

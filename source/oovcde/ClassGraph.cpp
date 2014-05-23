@@ -453,6 +453,19 @@ void ClassGraph::clearGraphAndAddNode(const ModelData &model,
     mModified = false;
     }
 
+void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options,
+	char const * const className, int nodeDepth)
+    {
+    const ModelType *type = model.getTypeRef(className);
+    const ModelClassifier *classifier = ModelObject::getClass(type);
+    if(classifier)
+	{
+	addRelatedNodes(model, classifier, options, ClassGraph::AN_All, nodeDepth);
+	updateGraph(model, options);
+	}
+    mModified = false;
+    }
+
 GraphSize ClassGraph::getGraphSize() const
     {
     GraphSize size;

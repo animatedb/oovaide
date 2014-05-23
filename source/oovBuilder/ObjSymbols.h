@@ -33,6 +33,7 @@ class ObjSymbols
 		const std::vector<std::string> &libFileNames, char const * const outPath,
 		char const * const objSymbolTool, class ComponentTaskQueue &queue);
 
+	// From the clump, append the ordered libraries with their directories.
 	static void appendOrderedLibs(char const * const clumpName,
 		char const * const outPath, std::vector<std::string> &libDirs,
 		std::vector<std::string> &sortedLibNames);

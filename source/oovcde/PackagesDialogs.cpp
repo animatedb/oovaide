@@ -290,7 +290,7 @@ void ProjectPackagesDialog::winScanDirectories()
 	    {
 	    getDirList(dir, DL_Dirs, dirs);
 	    }
-	int bestMatchQuality;
+	int bestMatchQuality = 0;
 	std::string bestDir;
 	for(auto const dir : dirs)
 	    {

@@ -57,12 +57,29 @@ class ProcessArgs
         std::string mOutputFile;
         OovProcessChildArgs mChildArgs;
         std::string mStdOutFn;  // zero length will not use the name
+        std::string mLibFilePath;	// Only used for lib symbol processing.
+    };
+
+class TaskQueueListener
+    {
+    public:
+	virtual ~TaskQueueListener()
+	    {}
+	virtual void extraProcessing(bool success, char const * const outFile,
+		char const * const stdOutFn, ProcessArgs const &item) = 0;
     };
 
 class ComponentTaskQueue:public ThreadedWorkQueue<ProcessArgs, ComponentTaskQueue>
     {
     public:
-        // Called by ThreadedWorkQueue
+	ComponentTaskQueue():
+	    mListener(nullptr)
+	    {}
+	// Set to nullptr to remove listener
+	void setTaskListener(TaskQueueListener *listener)
+	    { mListener = listener; }
+
+	// Called by ThreadedWorkQueue
         bool processItem(ProcessArgs const &item);
 
 	/// @param outFile - used only to make an output directory, and display error.
@@ -71,6 +88,8 @@ class ComponentTaskQueue:public ThreadedWorkQueue<ProcessArgs, ComponentTaskQueu
                 InProcMutex &mutex, char const * const stdOutFn=nullptr);
 
         InProcMutex mListenerStdMutex;
+    private:
+        TaskQueueListener *mListener;
     };
 
 // Builds components. This recursively compiles source files
@@ -81,7 +100,7 @@ class ComponentBuilder:public ComponentTaskQueue
 	ComponentBuilder(ComponentFinder &compFinder):
 	    mSrcRootDir(nullptr), mComponentFinder(compFinder)
 	    {}
-	bool build(char const * const srcRootDir,
+	void build(char const * const srcRootDir,
 		char const * const incDepsFilePath, char const * const buildDirClass);
 
     private:
@@ -94,17 +113,16 @@ class ComponentBuilder:public ComponentTaskQueue
 	IncDirDependencyMapReader mIncDirMap;
 	ComponentPkgDeps mComponentPkgDeps;
 
-	bool buildComponents();
-	bool makeObj(const std::string &srcFile,
+	void buildComponents();
+	void makeObj(const std::string &srcFile,
 		const std::vector<std::string> &incDirs,
 		const std::vector<std::string> &incFiles,
 		const std::set<std::string> &externPkgCompileArgs);
-	bool makeLib(const std::string &libName,
-		const std::vector<std::string> &objectFileNames,
-		std::string &outFileName, bool &builtLib);
-	bool makeLibSymbols(char const * const clumpName,
+	void makeLib(const std::string &libName,
+		const std::vector<std::string> &objectFileNames);
+	void makeLibSymbols(char const * const clumpName,
 		const std::vector<std::string> &files);
-	bool makeExe(char const * const compName,
+	void makeExe(char const * const compName,
 		const std::vector<std::string> &sources,
 		const std::vector<std::string> &projectLibsFilePaths,
 		const std::vector<std::string> &externLibDirs,
@@ -117,6 +135,9 @@ class ComponentBuilder:public ComponentTaskQueue
 	    { return(mIntermediatePath + "oovcde-BuildOut.txt"); }
 	bool anyIncDirsMatch(char const * const compName,
 		RootDirPackage const &pkg);
+	void makePackageLibSymbols(char const * const compName);
+	void makeOrderedPackageLibs(char const * const compName,
+		std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames);
 	void appendOrderedPackageLibs(char const * const compName,
 		std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames);
 	std::set<std::string> getComponentCompileArgs(char const * const compName,

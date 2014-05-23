@@ -32,7 +32,10 @@ class ClassDiagram
 	void initialize(Builder &builder, const ModelData &modelData,
 		ClassDiagramListener *listener);
 	void updateGraph();
+	// Create a new graph and add a class node.
 	void clearGraphAndAddClass(char const * const className);
+	// Add a class node to an existing graph.
+	void addClass(char const * const className);
 	void drawSvgDiagram(FILE *fp);
 
 	// For use by extern functions.

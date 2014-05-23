@@ -50,6 +50,12 @@ void ClassDiagram::clearGraphAndAddClass(char const * const className)
     setLastSelectedClassName(className);
     }
 
+void ClassDiagram::addClass(char const * const className)
+    {
+    mClassGraph.addNode(getModelData(), getDrawOptions(), className, NODE_DEPTH);
+    setLastSelectedClassName(className);
+    }
+
 void ClassDiagram::drawSvgDiagram(FILE *fp)
     {
     GtkCairoContext cairo(mClassGraph.getDiagramWidget());

@@ -149,6 +149,7 @@ class Journal
 	    { mBuilder = &builder; mModel = &model; mListener = &listener; }
 	void clear();
 	void displayClass(char const * const className);
+	void addClass(char const * const className);
 	void displayOperation(char const * const className, char const * const operName,
 		bool isConst);
 	void displayComponents();

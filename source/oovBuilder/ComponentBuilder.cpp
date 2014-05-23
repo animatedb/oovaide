@@ -16,7 +16,7 @@
 #include <algorithm>
 
 
-bool ComponentBuilder::build(char const * const srcRootDir,
+void ComponentBuilder::build(char const * const srcRootDir,
 	char const * const incDepsFilePath,
 	char const * const buildDirClass)
     {
@@ -29,7 +29,7 @@ bool ComponentBuilder::build(char const * const srcRootDir,
 
     deleteFile(getDiagFileName().c_str());
     mIncDirMap.read(incDepsFilePath);
-    return buildComponents();
+    buildComponents();
     }
 
 bool const ComponentPkgDeps::isDependent(char const * const compName,
@@ -57,17 +57,12 @@ bool ComponentBuilder::anyIncDirsMatch(char const * const compName,
     return mIncDirMap.anyRootDirsMatch(incRoots, compDir.c_str());
     }
 
-void ComponentBuilder::appendOrderedPackageLibs(char const * const compName,
+void ComponentBuilder::makeOrderedPackageLibs(char const * const compName,
 	std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames)
     {
+    bool didAnything = false;
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
     std::vector<Package> packages = buildPackages.getPackages();
-// This probably shouldn't be done since it does not include external packages.
-// Just leave them in the original order specified.
-//	    std::reverse(packages.begin(), packages.end());
-    /// @todo - it might be nice to only make symbols
-    /// at the time that a component needs the symbols.
-    bool didAnything = false;
     for(auto &pkg : packages)
 	{
 	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName().c_str()))
@@ -83,6 +78,29 @@ void ComponentBuilder::appendOrderedPackageLibs(char const * const compName,
 		pkg.setOrderedLibs(libDirs, sortedLibNames);
 		buildPackages.insertPackage(pkg);
 		}
+	    }
+	}
+    if(didAnything)
+	buildPackages.savePackages();
+    }
+
+void ComponentBuilder::appendOrderedPackageLibs(char const * const compName,
+	std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames)
+    {
+    BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
+    std::vector<Package> packages = buildPackages.getPackages();
+// This probably shouldn't be done since it does not include external packages.
+// Just leave them in the original order specified.
+//	    std::reverse(packages.begin(), packages.end());
+    /// @todo - it might be nice to only make symbols
+    /// at the time that a component needs the symbols.
+    for(auto &pkg : packages)
+	{
+	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName().c_str()))
+	    {
+	    if(!pkg.areLibraryNamesOrdered())
+		{
+		}
 	    else
 		{
 		std::vector<std::string> pkgLibs = pkg.getLibraryNames();
@@ -93,8 +111,6 @@ void ComponentBuilder::appendOrderedPackageLibs(char const * const compName,
 		}
 	    }
 	}
-    if(didAnything)
-	buildPackages.savePackages();
     }
 
 std::set<std::string> ComponentBuilder::getComponentCompileArgs(char const * const compName,
@@ -150,6 +166,21 @@ std::set<std::string> ComponentBuilder::getComponentLinkArgs(char const * const 
     }
 
 
+class LibTaskListener:public TaskQueueListener
+    {
+    public:
+	std::vector<std::string> const &getBuiltLibs() const
+	    { return mBuiltLibs; }
+    private:
+	std::vector<std::string> mBuiltLibs;
+	virtual void extraProcessing(bool success, char const * const outFile,
+		char const * const stdOutFn, ProcessArgs const &item) override
+	    {
+	    if(success)
+		mBuiltLibs.push_back(outFile);
+	    }
+    };
+
 // GCC-4.3 has c++0x
 // LLVM 3.2 has c++0x and experimental binaries for mingw32/x86
 // LLVM 3.3 has c++11
@@ -181,9 +212,8 @@ std::set<std::string> ComponentBuilder::getComponentLinkArgs(char const * const 
 // http://stackoverflow.com/questions/4779759/how-to-determine-inter-library-dependencies
 // ldd utility lists the dynamic dependencies of executable files or shared objects
 // C:\Program Files\GTK+-Bundle-3.6.1\lib	(contains glib, gmodule stuff on Windows)
-bool ComponentBuilder::buildComponents()
+void ComponentBuilder::buildComponents()
     {
-    bool success = false;
     ComponentTypesFile const &compTypesFile =
 	    mComponentFinder.getComponentTypesFile();
     std::vector<std::string> compNames = compTypesFile.getComponentNames();
@@ -240,9 +270,7 @@ bool ComponentBuilder::buildComponents()
                         {
                         incFiles.push_back(file.getFullPath());
                         }
-                    success = makeObj(src, incDirs, incFiles, compileArgs);
-                    if(!success)
-                        break;
+                    makeObj(src, incDirs, incFiles, compileArgs);
                     }
                 }
             }
@@ -253,8 +281,9 @@ bool ComponentBuilder::buildComponents()
     std::vector<std::string> libFileNames;
     if(compNames.size() > 0)
         {
-        bool builtAnyLib = false;
-//        setupQueue(getNumHardwareThreads());
+        LibTaskListener libListener;
+        setTaskListener(&libListener);
+        setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
 	   {
 	   if(compTypesFile.getComponentType(name.c_str()) == ComponentTypesFile::CT_StaticLib)
@@ -265,63 +294,57 @@ bool ComponentBuilder::buildComponents()
 		  {
 		  sources[i] = makeOutputObjectFileName(sources[i].c_str());
 		  }
-	       std::string outFileName;
-	       bool builtLib = false;
-	       success = makeLib(name, sources, outFileName, builtLib);
-	       if(success)
-		  {
-		  if(builtLib)
-		      builtAnyLib = true;
-		  libFileNames.push_back(outFileName);
-		  }
+	       makeLib(name, sources);
 	       }
 	   }
-//        waitForCompletion();
+        waitForCompletion();
+        libFileNames = libListener.getBuiltLibs();
+        setTaskListener(nullptr);
 
-//        setupQueue(getNumHardwareThreads());
-        if(success && builtAnyLib)
+        if(libFileNames.size() > 0)
 	   {
 	   mObjSymbols.forceUpdate(true);
 	   makeLibSymbols("ProjLibs", libFileNames);
 	   mObjSymbols.forceUpdate(false);
 	   }
-//        waitForCompletion();
         }
 
     // Build programs
     std::vector<std::string> projectLibFileNames;
-    std::vector<std::string> externalLibDirs; 	// not in library search order, eliminate dups.
-    std::vector<std::string> externalOrderedLibNames;
     mObjSymbols.appendOrderedLibFileNames("ProjLibs", getSymbolBasePath().c_str(),
 	    projectLibFileNames);
-    int projectLibNameSize = externalOrderedLibNames.size();
-    int projectLibDirSize = externalLibDirs.size();
     if(compNames.size() > 0)
         {
+        for(const auto &name : compNames)
+            {
+            std::vector<std::string> externalLibDirs; 	// not in library search order, eliminate dups.
+            std::vector<std::string> externalOrderedLibNames;
+            makeOrderedPackageLibs(name.c_str(), externalLibDirs, externalOrderedLibNames);
+            }
+
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
-	   {
-	   externalOrderedLibNames.resize(projectLibNameSize);
-	   externalLibDirs.resize(projectLibDirSize);
-	   bool shared = (compTypesFile.getComponentType(name.c_str()) ==
-		  ComponentTypesFile::CT_SharedLib);
-	   if(compTypesFile.getComponentType(name.c_str()) ==
-		  ComponentTypesFile::CT_Program || shared)
-	       {
-	       appendOrderedPackageLibs(name.c_str(), externalLibDirs, externalOrderedLibNames);
-	       std::set<std::string> linkArgs = getComponentLinkArgs(name.c_str(),
-		      compTypesFile);
+            {
+            std::vector<std::string> externalLibDirs; 	// not in library search order, eliminate dups.
+            std::vector<std::string> externalOrderedLibNames;
+            auto type = compTypesFile.getComponentType(name.c_str());
+            if(type == ComponentTypesFile::CT_Program ||
+        	    type == ComponentTypesFile::CT_SharedLib)
+        	{
+        	appendOrderedPackageLibs(name.c_str(), externalLibDirs, externalOrderedLibNames);
+        	std::set<std::string> linkArgs = getComponentLinkArgs(name.c_str(),
+        		compTypesFile);
 
-    	       std::vector<std::string> sources =
-		  compTypesFile.getComponentSources(name.c_str());
-	       success = makeExe(name.c_str(), sources, projectLibFileNames,
-		      externalLibDirs, externalOrderedLibNames,
-		      linkArgs, shared);
-	       }
-	   }
-        waitForCompletion();
+        	std::vector<std::string> sources =
+        		compTypesFile.getComponentSources(name.c_str());
+        	makeExe(name.c_str(), sources, projectLibFileNames,
+        		externalLibDirs, externalOrderedLibNames,
+        		linkArgs, type == ComponentTypesFile::CT_SharedLib);
+        	}
+            }
+	waitForCompletion();
         }
-    return success;
+    waitForCompletionAndEndThreads();
     }
 
 
@@ -409,8 +432,11 @@ bool ComponentTaskQueue::runProcess(char const * const procPath,
 bool ComponentTaskQueue::processItem(ProcessArgs const &item)
     {
     char const *stdOutFn = item.mStdOutFn.length() ? item.mStdOutFn.c_str() : nullptr;
-    return runProcess(item.mProcess.c_str(), item.mOutputFile.c_str(),
-        item.mChildArgs, mListenerStdMutex, stdOutFn);
+    bool success = runProcess(item.mProcess.c_str(), item.mOutputFile.c_str(),
+	        item.mChildArgs, mListenerStdMutex, stdOutFn);
+    if(mListener)
+	mListener->extraProcessing(success, item.mOutputFile.c_str(), stdOutFn, item);
+    return success;
     }
 
 std::string ComponentBuilder::makeOutputObjectFileName(char const * const srcFile)
@@ -422,12 +448,11 @@ std::string ComponentBuilder::makeOutputObjectFileName(char const * const srcFil
     return outFileName;
     }
 
-bool ComponentBuilder::makeObj(const std::string &srcFile,
+void ComponentBuilder::makeObj(const std::string &srcFile,
 	const std::vector<std::string> &incDirs,
 	const std::vector<std::string> &incFiles,
 	const std::set<std::string> &externPkgCompileArgs)
     {
-    bool success = true;
     if(isSource(srcFile.c_str()))
 	{
 	int incFileOlderIndex = -1;
@@ -449,12 +474,10 @@ bool ComponentBuilder::makeObj(const std::string &srcFile,
 
 	    sLog.logProcess(srcFile.c_str(), ca.getArgv(), ca.getArgc());
             addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
-//	    runProcess(procPath.c_str(), outFileName.c_str(), ca, mListenerStdMutex);
 	    if(incFileOlderIndex != -1)
 		sLog.logOutputOld(incFiles[incFileOlderIndex].c_str());
             }
 	}
-    return success;
     }
 
 bool ComponentsFile::excludesMatch(const std::string &filePath,
@@ -479,22 +502,19 @@ std::string ComponentBuilder::getSymbolBasePath()
     return outPath;
     }
 
-bool ComponentBuilder::makeLibSymbols(char const * const clumpName,
+void ComponentBuilder::makeLibSymbols(char const * const clumpName,
 	const std::vector<std::string> &files)
     {
     std::string objSymbolTool = mToolPathFile.getObjSymbolPath();
-    return(mObjSymbols.makeObjectSymbols(clumpName, files,
-	    getSymbolBasePath().c_str(), objSymbolTool.c_str(),
-            *this));
+
+    mObjSymbols.makeObjectSymbols(clumpName, files,
+	    getSymbolBasePath().c_str(), objSymbolTool.c_str(), *this);
     }
 
-bool ComponentBuilder::makeLib(const std::string &libName,
-	const std::vector<std::string> &objectFileNames, std::string &outFileName,
-	bool &builtLib)
+void ComponentBuilder::makeLib(const std::string &libName,
+	const std::vector<std::string> &objectFileNames)
     {
-    bool success = true;
-    builtLib = false;
-    outFileName = mOutputPath + "lib" + libName + ".a";
+    std::string outFileName = mOutputPath + "lib" + libName + ".a";
     if(FileStat::isOutputOld(outFileName.c_str(), objectFileNames))
 	{
 	std::string procPath = mToolPathFile.getLibberPath();
@@ -507,19 +527,15 @@ bool ComponentBuilder::makeLib(const std::string &libName,
 	    ca.addArg(objName.c_str());
 	    }
         sLog.logProcess(outFileName.c_str(), ca.getArgv(), ca.getArgc());
-//        addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
-        success = runProcess(procPath.c_str(), outFileName.c_str(), ca, mListenerStdMutex);
-	if(success)
-	    builtLib = true;
+        addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
 	}
-    return success;
     }
 
 
 /// @param libs Libary names including full paths. Only contains project and
 ///		clump (-ER) libraries. getLinkArgs() contains -l from command
 ///		line and -EP
-bool ComponentBuilder::makeExe(char const * const compName,
+void ComponentBuilder::makeExe(char const * const compName,
 	const std::vector<std::string> &sources,
 	const std::vector<std::string> &projectLibFilePaths,
 	const std::vector<std::string> &externLibsDirs,
@@ -527,7 +543,6 @@ bool ComponentBuilder::makeExe(char const * const compName,
 	const std::set<std::string> &externPkgLinkArgs,
 	bool shared)
     {
-    bool success = true;
     std::string exeName = mComponentFinder.makeFileName(compName);
     std::string outFileName = mOutputPath + exeName;
     if(shared)
@@ -628,7 +643,5 @@ bool ComponentBuilder::makeExe(char const * const compName,
 
 	sLog.logProcess(outFileName.c_str(), ca.getArgv(), ca.getArgc());
         addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
-//        success = runProcess(procPath.c_str(), outFileName.c_str(), ca, mListenerStdMutex);
 	}
-    return success;
     }
