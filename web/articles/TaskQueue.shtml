@@ -1,10 +1,11 @@
 <h1>C++11 Task Queue</h1>
-Last updated: May 20, 2014<br>
+Last updated: May 23, 2014<br>
 <h2>Overview</h2>
-The Oovcde project needed a task queue where a provider could put things to
+The Oovcde project needed a task queue where a provider could put work items to
  work on in a queue, and multiple consumer threads would process the work items.
  One key point is that the queue should not grow too large as the provider is
- placing items on the queue, and the consumer's cannot process the queue quickly.
+ placing items on the queue, in the case that the consumer's are not processing
+ the queue as quickly as the provider is adding them.
  In other words, the provider should block if all of the consumer threads are busy.<br>
 <br>
 The starting point for this queue is from this article: 
@@ -48,9 +49,10 @@ The waitPop function that is called from the consumer threads works in a similar
 <h2>Consumer Read from Queue</h2>
 Here is the pseudocode for the waitPop function.
 <pre>
-bool OovThreadSafeQueue::waitPopPrivateQueueItem &amp;workItem)
+bool OovThreadSafeQueue::waitPop(QueueItem &amp;workItem)
 &nbsp;&nbsp;&nbsp; {
 &nbsp;&nbsp;&nbsp; std::unique_lock<std::mutex> lock(mProcessQueueMutex);
+&nbsp;&nbsp;&nbsp; bool gotItem = false;
 &nbsp;&nbsp;&nbsp; // Wait while empty
 &nbsp;&nbsp;&nbsp; while(isQueueEmpty() && !mQuitPopping)
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
@@ -75,13 +77,29 @@ There is an extra piece of code here, and that is the check for mQuitPopping.
 This allows the consumer to indicate that the consumer threads can quit waiting,
 which will allow the threads to end.
 
-<h2>Provider Quit Waiting for Queue</h2>
+
+<h2>Provider Wait and Quit</h2>
 This function can set the mQuitPopping flag, and then wait for the queue to become
-empty in the same manner as waitPush. This allows a clean shutdown of the threads.
-Then it can signal all consumer threads to
-end waiting for a signal:
+empty in the same manner as waitPush.
+The provider can signal all consumer threads to end waiting for a signal.
+At this point, the queue will be empty, but the consumer threads may still
+be working on the queued task item.
+If the threads are joined by the provider, that means all work has been
+completed. Once the threads are joined, then this means there has been a clean
+shutdown of all threads.
 <pre>
+void OovThreadSafeQueuePrivate::quitPopsPrivate()
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp; std::unique_lock<std::mutex> lock(mProcessQueueMutex);
+&nbsp;&nbsp;&nbsp; mQuitPopping = true;
+&nbsp;&nbsp;&nbsp; // Wait to make sure all queue items were processed.
+&nbsp;&nbsp;&nbsp; while(!isQueueEmpty())
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mConsumerPoppedSignal.wait(lock);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; lock.unlock();
 &nbsp;&nbsp;&nbsp; mProviderPushedSignal.notify_all();
+&nbsp;&nbsp;&nbsp; }
 </pre>
 When they wake up, they will check the mQuitPopping flag, and can quit the wait
 function.

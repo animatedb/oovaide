@@ -344,7 +344,6 @@ void ComponentBuilder::buildComponents()
             }
 	waitForCompletion();
         }
-    waitForCompletionAndEndThreads();
     }
 
 

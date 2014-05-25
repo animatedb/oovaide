@@ -54,11 +54,9 @@ bool OovThreadSafeQueuePrivate::waitPopPrivate(void *item)
         // After signaled, lock is reaquired.
         }
 
-    // In the normal case this will be empty.
-    // If it is not empty, then there was a signal, but nothing was
-    // in the queue. This may mean that the quit function was called,
-    // or that a spurious signal was received.
-    // See std::condition_variable::wait().
+    // In the normal case this will not be empty.
+    // If it is empty, then there was a signal, but nothing was
+    // in the queue. This means that the quit function was called.
     gotItem = !isQueueEmpty();
 #if(DEBUG_PROC_QUEUE)
     sDebugQueue.printflush("pop got item=%d\n", gotItem);
@@ -80,7 +78,7 @@ bool OovThreadSafeQueuePrivate::waitPopPrivate(void *item)
     return gotItem;
     }
 
-void OovThreadSafeQueuePrivate::waitQueueEmptyPrivate()
+void OovThreadSafeQueuePrivate::quitPopsPrivate()
     {
     std::unique_lock<std::mutex> lock(mProcessQueueMutex);
 #if(DEBUG_PROC_QUEUE)
@@ -93,14 +91,9 @@ void OovThreadSafeQueuePrivate::waitQueueEmptyPrivate()
         mConsumerPoppedSignal.wait(lock);
         }
 #if(DEBUG_PROC_QUEUE)
-//    sDebugQueue.printflush("quitPops unlock\n");
+    sDebugQueue.printflush("quitPops unlock\n");
 #endif
     lock.unlock();
-    }
-
-void OovThreadSafeQueuePrivate::quitPopsPrivate()
-    {
-    waitQueueEmptyPrivate();
     mProviderPushedSignal.notify_all();
 #if(DEBUG_PROC_QUEUE)
     sDebugQueue.printflush("quitPops done\n");
