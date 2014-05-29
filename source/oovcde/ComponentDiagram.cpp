@@ -16,6 +16,9 @@ void ComponentDiagram::initialize(Builder &builder)
     mDrawingArea = builder.getWidget("DiagramDrawingarea");
     mComponentGraph.updateGraph();
     updatePositionsInGraph();
+
+    GraphSize size = mComponentGraph.getGraphSize();
+    gtk_widget_set_size_request(mDrawingArea, size.x, size.y);
     }
 
 void ComponentDiagram::updatePositionsInGraph()

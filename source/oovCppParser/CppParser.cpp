@@ -593,7 +593,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    if(cursorDef.kind == CXCursor_FirstInvalid)
 		cursorDef = clang_getCursorReferenced(cursor);
 	    CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
-	    CXStringDisposer className(clang_getCursorSpelling(classCursor));
+	    std::string className = getFullSemanticName(classCursor);
 	    if(functionName.length() != 0)
 		{
 		const ModelType *classType = mModelData.createOrGetTypeRef(className.c_str(), otClass);
@@ -662,7 +662,7 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	    else
 		mClassMemberAccess = Visibility::Public;
 // Save all classes so that the access specifiers in the declared classes from other TU's are saved.
-	    CXStringDisposer name(clang_getCursorSpelling(cursor));
+	    std::string name = getFullSemanticName(cursor);
 	    mClassifier = createOrGetClassRef(name.c_str());
 	    if(mClassifier)
 		{
@@ -690,7 +690,7 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	    {
 	    mClassifier = nullptr;
 	    CXCursor classCursor = clang_getCursorSemanticParent(cursor);
-	    CXStringDisposer className(clang_getCursorSpelling(classCursor));
+	    std::string className = getFullSemanticName(classCursor);
 	    mClassifier = createOrGetClassRef(className.c_str());
 	    if(mClassifier)
 		{

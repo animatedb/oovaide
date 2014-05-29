@@ -18,20 +18,19 @@ Missing Features
 	- Code improvements: Use unique_ptr for model objects
 - Gui
 	- Clicking on warnings doesn't display editor. Also change to double click?
-	- Saving diagrams/files dialog button says Open instead of Save.
 	- Doesn't load new include paths when reopening a project. (Close oovcde and restart)
 	- Changing preferences should update drawings
 - Source/project management
 	- Make it clear which files must be saved to save project settings.
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
-	- Load last project automatically, but allow opening other while parsing
 - C++ parsing for drawings
 	- BUG: Model objects not handled properly
-		- namespace - std should not be a class
+		- namespace - std should not be a class?
 		- templates also, why so few std::vector<std::string>,
 		  where is std::vector<ModelObject>
 		- operator()
+	- BUG: Drive letters in path unable to write to bad filename.
 	- remove module ids from most/all elements, remove built in types
 	- Multiple case statements without breaks appear nested.
 	- Overloaded operations are not differentiated
@@ -40,18 +39,14 @@ Missing Features
 	- May want to save complete type info (explicit const, *, &, etc) in the XMI files.
 	- Should discard internal function names/operations?
 	- Not finding template derived types for calls to functions. vector<type>.resize()
-	- It may be nice if pkg-config was default for C++ settings for include paths.
 	- Should save whether a class is defined in the XMI file to find correct source module
 		for empty classes.
-	- no visibility			(Use CXXAccessSpecifier, oovCppParser.cpp)
 	- no packages
-	- namespaces not shown
 	- no nested classes
 - Journal
 	- Allow more copies of diagrams?
 - Component Diagrams
 	- Changing build settings/dependencies should update components
-	- Show external project component dependencies, module dependencies
 - Class Diagrams
 	- BUG: forward class definitions mess up source line numbers
 	- When class members are not shown, should be easy way to view members
@@ -110,7 +105,7 @@ Missing Features
 	- For linux, don't getPackage if not in available list.
 - Editor
 	- Bug: view source displays wrong tab
-	- Sometimes saving file creates .tmp file, (file is already open?)
+	- tab name should change with file rename/save as.
 	- Add right click cut/paste, find in files, etc.
 	- Open include files
 	- find declaration/definition

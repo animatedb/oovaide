@@ -24,9 +24,13 @@ bool PathChooser::ChoosePath(GtkWindow *parent, char const * const dlgName,
 	gtk_widget_destroy(mDialog);
 //	delete mDialog;
 	}
+    char const * openButtonFlag =
+	    (action == GTK_FILE_CHOOSER_ACTION_OPEN ||
+		    action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) ?
+			    GTK_STOCK_OPEN: GTK_STOCK_SAVE;
     mDialog = gtk_file_chooser_dialog_new(dlgName, parent,
 	action, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
-	GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, nullptr);
+	openButtonFlag, GTK_RESPONSE_ACCEPT, nullptr);
     if(mDefaultPath.length())
 	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(mDialog), mDefaultPath.c_str());
     bool success = (gtk_dialog_run(GTK_DIALOG (mDialog)) == GTK_RESPONSE_ACCEPT);

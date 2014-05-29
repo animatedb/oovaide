@@ -33,6 +33,7 @@ void buildTokenStringForCursor(CXCursor cursor, std::string &str);
 void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers);
 bool isMethodConst(CXCursor cursor);
 bool isIdentC(char c);
+std::string getFullSemanticName(CXCursor cursor);
 
 
 struct SplitType

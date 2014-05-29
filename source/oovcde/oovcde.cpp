@@ -529,6 +529,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
 	tempImp.appendFile(implementationName.c_str());
 	File impFile(tempImp.c_str(), "w");
 	fprintf(impFile.getFp(), "// %s", implementationName.c_str());
+	impFile.close();
 	viewSource(tempImp.c_str(), 1);
 	}
     else
