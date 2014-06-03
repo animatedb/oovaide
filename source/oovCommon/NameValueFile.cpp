@@ -267,9 +267,14 @@ bool NameValueFile::writeFileExclusiveReadUpdate(class SharedFile &file)
 
 bool NameValueFile::writeFileExclusive(class SharedFile &file)
     {
-    std::string buf;
-    readMapToBuf(buf);
-    file.seekBeginFile();
-    return file.writeFile(&buf[0], buf.size());
+    bool success = file.isOpen();
+    if(success)
+	{
+	std::string buf;
+	readMapToBuf(buf);
+	file.seekBeginFile();
+	success = file.writeFile(&buf[0], buf.size());
+	}
+    return success;
     }
 

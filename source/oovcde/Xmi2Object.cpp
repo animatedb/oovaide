@@ -651,8 +651,9 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 	    case otOperCall:
 		{
 		ModelCondStatements *condStmts = findStatementsParentInStack();
+		/// @todo - use make_unique when supported.
 		ModelStatement *stmt = static_cast<ModelStatement*>(elItem);
-		condStmts->addStatement(stmt);
+		condStmts->addStatement(std::unique_ptr<ModelStatement>(stmt));
 		}
 		break;
 
@@ -698,7 +699,7 @@ void XmiParser::updateStatementTypeIndices(ModelStatement *stmt)
 	ModelCondStatements *condStmt = static_cast<ModelCondStatements *>(stmt);
 	for(auto &childstmt : condStmt->getStatements())
 	    {
-	    updateStatementTypeIndices(childstmt);
+	    updateStatementTypeIndices(childstmt.get());
 	    }
 	}
     else if(stmt->getObjectType() == otOperCall)

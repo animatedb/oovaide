@@ -154,14 +154,15 @@ bool childOfCursor(CXCursor cursor, CXCursorKind cursKind)
     return visitorData.mFound;
     }
 
-std::string getFullSemanticName(CXCursor cursor)
+std::string getFullSemanticTypeName(CXCursor cursor)
     {
     std::string fullName;
-    while(!clang_Cursor_isNull(cursor))
+//    fullName.reserve(200);
+    while(1)
 	{
-	CXStringDisposer name = clang_getCursorSpelling(cursor);
-	cursor = clang_getCursorSemanticParent(cursor);
-	if(!clang_Cursor_isNull(cursor))
+//	CXStringDisposer name = clang_getCursorSpelling(cursor);
+	CXStringDisposer name = clang_getTypeSpelling(clang_getCursorType(cursor));
+	if(name.length() > 0)
 	    {
 	    if(fullName.length() == 0)
 		fullName = name;
@@ -169,6 +170,11 @@ std::string getFullSemanticName(CXCursor cursor)
 		{
 		fullName = name + "::" + fullName;
 		}
+	    }
+	cursor = clang_getCursorSemanticParent(cursor);
+	if(clang_Cursor_isNull(cursor) || cursor.kind !=  CXCursor_Namespace)
+	    {
+	    break;
 	    }
 	}
     return fullName;

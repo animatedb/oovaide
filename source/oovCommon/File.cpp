@@ -41,18 +41,20 @@ SharedFile::eOpenStatus SharedFile::openFile(char const * const fn, eModes mode)
 	{
 #ifdef __linux__
 	int lockStat;
+	int flags;
 	if(mode == M_ReadShared)
 	    {
-	    mFd = open(fn, O_RDONLY);
-	    if(mFd != -1)
-		lockStat = flock(mFd, LOCK_SH);
+	    flags = O_RDONLY;
 	    }
 	else
 	    {
-	    mFd = open(fn, O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO);
-	    if(mFd != -1)
-		lockStat = flock(mFd, LOCK_EX);
+	    flags = O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO;
+	    if(mode == M_ReadWriteExclusiveAppend)
+		flags |= O_APPEND;
 	    }
+	mFd = open(fn, flags);
+	if(mFd != -1)
+	    lockStat = flock(mFd, LOCK_EX);
 	if(mFd == -1)
 	    {
 	    status = OS_NoFile;
@@ -69,7 +71,10 @@ SharedFile::eOpenStatus SharedFile::openFile(char const * const fn, eModes mode)
 	else
 	    {
 	    // Creates if it doesn't exist.
-	    _sopen_s(&mFd, fn, _O_CREAT | _O_RDWR, _SH_DENYRW, _S_IREAD | _S_IWRITE);
+	    int flags = _O_CREAT | _O_RDWR;
+	    if(mode == M_ReadWriteExclusiveAppend)
+		flags |= _O_APPEND;
+	    _sopen_s(&mFd, fn, flags, _SH_DENYRW, _S_IREAD | _S_IWRITE);
 	    }
 	if(mFd == -1)
 	    {

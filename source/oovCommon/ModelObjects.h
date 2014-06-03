@@ -29,6 +29,7 @@
 #include <string>
 #include <list>
 #include <vector>
+#include <memory>
 
 #define UNDEFINED_ID -1
 
@@ -225,15 +226,14 @@ class ModelCondStatements:public ModelStatement
 	ModelCondStatements(const std::string &name):
 	    ModelStatement(name, otCondStatement)
 	    {}
-	~ModelCondStatements();
-	void addStatement(ModelStatement *stmt)
+	void addStatement(std::unique_ptr<ModelStatement> stmt)
 	    {
-	    mStatements.push_back(stmt);
+	    mStatements.push_back(std::move(stmt));
 	    }
-	const std::vector<ModelStatement*> getStatements() const
+	const std::vector<std::unique_ptr<ModelStatement>> &getStatements() const
 	    { return mStatements; }
     private:
-	std::vector<ModelStatement*> mStatements;
+	std::vector<std::unique_ptr<ModelStatement>> mStatements;
     };
 
 /// This container owns all pointers (parameters, etc.) given to it, except for
@@ -488,9 +488,11 @@ class ModelData
 	const ModelType *getTypeRef(char const * const typeName) const;
 	ModelType *findType(char const * const name);
 	const ModelType *findType(char const * const name) const;
-	/// Deletes from the existing type from the model, and then deletes the type itself.
-	/// All pointers to the existing type are moved to the new type.
+	/// For all pointers to the old type, sets to the new type, then
+	/// deletes the old type.
 	void replaceType(ModelType *existingType, ModelClassifier *newType);
+	void replaceStatementType(ModelStatement *stmts, ModelType *existingType,
+		ModelClassifier *newType);
 	void deleteType(ModelType *existingType);
 	/// Takes the attributes from the source type, and moves them to the dest type.
 	void takeAttributes(ModelClassifier *sourceType, ModelClassifier *destType);

@@ -86,15 +86,6 @@ const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     return getDeclType() ? getClass(getDeclType()) : nullptr;
     }
 
-ModelCondStatements::~ModelCondStatements()
-    {
-    for(auto &stmt : mStatements)
-	{
-	delete stmt;
-	}
-    mStatements.clear();
-    }
-
 ModelOperation::~ModelOperation()
     {
     for(auto &params : mParameters)
@@ -307,7 +298,7 @@ void ModelData::resolveStatements(ModelStatement *stmt)
 	ModelCondStatements *condStmt = static_cast<ModelCondStatements *>(stmt);
 	for(auto &childstmt : condStmt->getStatements())
 	    {
-	    resolveStatements(childstmt);
+	    resolveStatements(childstmt.get());
 	    }
 	}
     else if(stmt->getObjectType() == otOperCall)
@@ -401,6 +392,31 @@ void ModelData::takeAttributes(ModelClassifier *sourceType, ModelClassifier *des
     // be handled since those types haven't been resolved yet.
     }
 
+void ModelData::replaceStatementType(ModelStatement *stmts, ModelType *existingType,
+	ModelClassifier *newType)
+    {
+    if(stmts->getObjectType() == otCondStatement)
+	{
+	const ModelCondStatements *condstmts = static_cast<const ModelCondStatements*>(stmts);
+	if(condstmts->getStatements().size() != 0)
+	    {
+	    for(const auto &childstmt : condstmts->getStatements())
+		{
+		// Recurse
+		replaceStatementType(childstmt.get(), existingType, newType);
+		}
+	    }
+	}
+    else
+	{
+	ModelOperationCall *call = static_cast<ModelOperationCall*>(stmts);
+	if(call->getDecl().getDeclType() == existingType)
+	    {
+	    call->getDecl().setDeclType(newType);
+	    }
+	}
+    }
+
 void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
     {
     // Don't need to update function parameter types at this time, because the
@@ -435,6 +451,7 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
 			vd->setDeclType(newType);
 			}
 		    }
+		replaceStatementType(&oper->getCondStatements(), existingType, newType);
 		}
 	    }
 	}

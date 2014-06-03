@@ -174,7 +174,7 @@ void OperationGraph::fillDefinition(const ModelStatement *stmt, OperationDefinit
 	    opDef.addCondStart(condStmts->getName().c_str());
 	    for(const auto &stmt : condStmts->getStatements())
 		{
-		fillDefinition(stmt, opDef, gc);
+		fillDefinition(stmt.get(), opDef, gc);
 		}
 	    opDef.addCondEnd();
 	    }
@@ -384,7 +384,7 @@ void OperationGraph::addOperCallers(const ModelStatement *stmt,
 	    {
 	    for(const auto &stmt : condStmts->getStatements())
 		{
-		addOperCallers(stmt, srcCls, oper, callee);
+		addOperCallers(stmt.get(), srcCls, oper, callee);
 		}
 	    }
 	}
@@ -413,7 +413,7 @@ void OperationGraph::addOperCallers(const ModelData &model, const OperationCall 
 		{
 		for(const auto &stmt : oper->getCondStatements().getStatements())
 		    {
-		    addOperCallers(stmt, *srcCls, *oper, callee);
+		    addOperCallers(stmt.get(), *srcCls, *oper, callee);
 		    }
 		}
 	    }

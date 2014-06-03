@@ -43,11 +43,16 @@ class File
 class SharedFile
     {
     public:
+	SharedFile():
+	    mFd(-1)
+	    {}
 	~SharedFile()
 	    { closeFile(); }
-	enum eModes { M_ReadShared, M_ReadWriteExclusive };
+	enum eModes { M_ReadShared, M_ReadWriteExclusive, M_ReadWriteExclusiveAppend };
 	enum eOpenStatus { OS_Opened, OS_SharingProblem, OS_NoFile, OS_OtherError };
 	eOpenStatus openFile(char const * const fn, eModes mode);
+	bool isOpen() const
+	    { return(mFd != -1); }
 	int getFileSize() const;
 	void seekBeginFile();
 	// actual size may be less than file size in text mode.

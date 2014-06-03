@@ -33,6 +33,28 @@
 //  <Generalization child="subClassRef" parent="superClassRef" />
 enum ModelIdOffsets { MIO_Module=1, MIO_Object=2, MIO_NoLookup=100000 };
 
+#define DEBUG_WRITE 0
+#if(DEBUG_WRITE)
+#include "File.h"
+// Prevent "error: 'off64_t' does not name a type"
+#define __NO_MINGW_LFS 1
+// Prevent "error: 'off_t' has not been declared"
+#define off_t _off_t
+#include <unistd.h>
+static void writeDebugStr(std::string const &str)
+    {
+    SharedFile file;
+    file.openFile("DebugCppParseWriter.txt", SharedFile::M_ReadWriteExclusiveAppend);
+    if(file.isOpen())
+	{
+	OovString tempStr;
+	tempStr.appendInt(getpid());
+	tempStr += str + '\n';
+	file.writeFile(tempStr.c_str(), tempStr.length());
+	}
+    }
+#endif
+
 
 // Some details about the XMI output file:
 // - "Datatype" values are simple data types or class references. For example,
@@ -49,6 +71,9 @@ enum ModelIdOffsets { MIO_Module=1, MIO_Object=2, MIO_NoLookup=100000 };
 
 bool ModelWriter::openFile(char const * const filename)
     {
+#if(DEBUG_WRITE)
+    writeDebugStr(std::string("**** File ****") + filename);
+#endif
     mFp = fopen(filename, "w");
     if(mFp)
         {
@@ -122,7 +147,7 @@ void ModelWriter::writeStatements(const ModelStatement *stmts, int level)
 	    for(const auto &childstmt : condstmts->getStatements())
 		{
 		// Recurse
-		writeStatements(childstmt, level);
+		writeStatements(childstmt.get(), level);
 		}
 	    fprintf(mFp, "      %s</Condition>\n", ws.c_str());
 	    }
@@ -262,6 +287,9 @@ bool ModelWriter::writeFile(char const * const filename)
         fprintf(mFp, "  <Module xmi.id=\"%d\" module=\"%s\" >\n",
             moduleXmiId, mModelData.mModules[0]->getModulePath().c_str());
         fprintf(mFp, "  </Module>\n");
+#if(DEBUG_WRITE)
+        writeDebugStr(std::string("     Types"));
+#endif
         for(auto &type : mModelData.mTypes)
             {
 	    ModelClassifier *cl = ModelObject::getClass(type);
@@ -274,8 +302,14 @@ bool ModelWriter::writeFile(char const * const filename)
 		}
 	    writeType(*type);
             }
+#if(DEBUG_WRITE)
+        writeDebugStr(std::string("     Assocs"));
+#endif
         for(auto &assoc : mModelData.mAssociations)
             writeAssociation(*assoc);
+#if(DEBUG_WRITE)
+        writeDebugStr(std::string("     Done"));
+#endif
         }
     return success;
 }

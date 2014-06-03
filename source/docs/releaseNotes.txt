@@ -24,12 +24,9 @@ Missing Features
 	- Make it clear which files must be saved to save project settings.
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
-- C++ parsing for drawings
-	- BUG: Model objects not handled properly
-		- namespace - std should not be a class?
-		- templates also, why so few std::vector<std::string>,
-		  where is std::vector<ModelObject>
-		- operator()
+- C++ parsing
+	- BUG: Some model relations not shown
+		- std::vector<ModelType... does not show ModelData
 	- BUG: Drive letters in path unable to write to bad filename.
 	- remove module ids from most/all elements, remove built in types
 	- Multiple case statements without breaks appear nested.
@@ -42,12 +39,18 @@ Missing Features
 	- Should save whether a class is defined in the XMI file to find correct source module
 		for empty classes.
 	- no packages
+	- template class relations?
 	- no nested classes
 - Journal
 	- Allow more copies of diagrams?
 - Component Diagrams
 	- Changing build settings/dependencies should update components
 - Class Diagrams
+	- filter some standard template classes: iterator, allocator
+	- examples/names - MyThoughts doesn't display attribute with
+		Hollywood::Star (twinkle.cpp) - CPP.xmi is wrong
+		visitRecord - createOrGetTypeRef - needs to get semantic name
+		not Universe::Hollywood::Star (twinkle.h)
 	- BUG: forward class definitions mess up source line numbers
 	- When class members are not shown, should be easy way to view members
 	- FilePath not showing inheritance - templates?
