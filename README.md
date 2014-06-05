@@ -18,27 +18,30 @@ and Objective C languages.
 
 ## Features
 
-- An analysis system that searches directories for source code and uses CLang to generate
-  dependencies between files and components.
-- The analysis system uses CLang to parse the object relationships and dynamically
-  generates diagrams allowing quick navigation between objects.
-  Diagrams can be edited in Oovcde, then saved as SVG and edited using tools such as Inkscape.
+- An analysis system that searches directories for source code and uses CLang
+  to generate dependencies between files and components.
+- The analysis system uses CLang to parse the object relationships and
+  sequence information. Oovcde can dynamically generate diagrams allowing
+  quick navigation between objects.
+  Diagrams can be edited in Oovcde, then saved as SVG and edited using tools
+  such as Inkscape.
 - A multithreaded build system that uses the analysis information for easy setup.
 - A simple code editor with a debugger.
 
 
 ## Download
 
-Download the Oovcde software from [Sourceforge](http://sourceforge.net/projects/oovcde/files/). There is a version for 
-
-Linux, and one for Windows.
+Download the Oovcde software from [Sourceforge]
+(http://sourceforge.net/projects/oovcde/files/). There is a version for Linux,
+and one for Windows.
 
 
 ## Quick Start
 
-The quickest way to get started is to download the program, then run the examples. The explanation of the examples is 
-
-here. [oovcde.sourceforge.net/userguide/examples.shtml](http://oovcde.sourceforge.net/userguide/examples.shtml)
+The quickest way to get started is to download the program, then run the examples.
+The explanation of the examples is here.
+[oovcde.sourceforge.net/userguide/examples.shtml]
+(http://oovcde.sourceforge.net/userguide/examples.shtml)
 
 
 ## Project Goals
