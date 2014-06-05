@@ -19,7 +19,9 @@ Linux, and one for Windows.
 
 ## Quick Start
 
-The quickest way to get started is to download the program, then run the examples.
+The quickest way to get started is to download the program, then run the examples. The explanation of the examples is 
+
+here. [oovcde.sourceforge.net/userguide/examples.shtml](http://oovcde.sourceforge.net/userguide/examples.shtml)
 
 
 
