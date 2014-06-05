@@ -8,6 +8,7 @@ A C++ build, class, sequence, and component diagram tool
 
  - [Download](#download)
  - [Quick start](#quick-start)
+ - [Other Documentation](#other-documentation)
 
 
 ## Download
@@ -24,8 +25,6 @@ The quickest way to get started is to download the program, then run the example
 here. [oovcde.sourceforge.net/userguide/examples.shtml](http://oovcde.sourceforge.net/userguide/examples.shtml)
 
 
+## Other Documentation
 
-
-The existing Oovcde website is at: http://oovcde.sourceforge.net/
-
-The binary downloads are at: https://sourceforge.net/projects/oovcde/files/?source=directory
+ - The existing Oovcde website is at: http://oovcde.sourceforge.net/
