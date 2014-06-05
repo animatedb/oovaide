@@ -18,7 +18,12 @@ and Objective C languages.
 
 ## Goals
 
-- A platform that maximizes programmer productivity.
+- Maximize programmer productivity
+	- simple setup
+	- background operations
+	- fast (written in C++)
+	- simple (minimal dependencies)
+
 
 ## Features
 
@@ -27,7 +32,9 @@ and Objective C languages.
 - The analysis system uses CLang to parse the object relationships and automatically
   generates diagrams as the programmer can navigate between the relationships.
   Diagrams can be edited in Oovcde, then saved as SVG and edited using tools such as Inkscape.
-- A multithreaded build system.
+- A multithreaded build system that uses the analysis information for easy setup.
+- A simple code editor with a debugger.
+
 
 ## Download
 
@@ -53,3 +60,4 @@ here. [oovcde.sourceforge.net/userguide/examples.shtml](http://oovcde.sourceforg
 
 
 ## License
+The software is licensed using the GPLv2.
