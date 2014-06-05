@@ -6,8 +6,8 @@ A C++ build, class, sequence, and component diagram tool
 
 ## Contents
 
- - [Download](#Download)
- - [Quick start](#Quick Start)
+ - [Download](## Download)
+ - [Quick start](## Quick Start)
 
 
 ## Download
