@@ -21,9 +21,9 @@ and Objective C languages.
 - An analysis system that searches directories for source code and uses CLang
   to generate dependencies between files and components.
 - The analysis system uses CLang to parse the object relationships and
-  sequence information. Oovcde can dynamically generate diagrams allowing
-  quick navigation between objects.
-  Diagrams can be edited in Oovcde, then saved as SVG and edited using tools
+  sequence information.
+- Oovcde can dynamically generate diagrams allowing quick navigation between objects.
+- Diagrams can be edited in Oovcde, then saved as SVG and edited using tools
   such as Inkscape.
 - A multithreaded build system that uses the analysis information for easy setup.
 - A simple code editor with a debugger.
