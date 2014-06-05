@@ -8,21 +8,12 @@ and Objective C languages.
 
 ## Contents
 
- - [Goals](#goals)
  - [Features](#features)
  - [Download](#download)
  - [Quick start](#quick-start)
+ - [Project Goals](#project-goals)
  - [Other Documentation](#other-documentation)
  - [License](#license)
-
-
-## Goals
-
-- Maximize programmer productivity
-	- simple setup
-	- background operations
-	- fast (written in C++)
-	- simple (minimal dependencies)
 
 
 ## Features
@@ -48,6 +39,15 @@ Linux, and one for Windows.
 The quickest way to get started is to download the program, then run the examples. The explanation of the examples is 
 
 here. [oovcde.sourceforge.net/userguide/examples.shtml](http://oovcde.sourceforge.net/userguide/examples.shtml)
+
+
+## Project Goals
+
+- Maximize programmer productivity
+	- simple setup
+	- background operations
+	- fast (written in C++)
+	- simple (minimal dependencies)
 
 
 ## Other Documentation
