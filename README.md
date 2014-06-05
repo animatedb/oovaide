@@ -1,8 +1,8 @@
 
 # Oovcde
 
-An object oriented analysis and code development platform that includes automatically
-generated build, class, sequence, and component diagrams for C++
+An object oriented analysis and code development platform that automatically
+generates build, class, sequence, and component diagrams for C++
 and Objective C languages.
 
 
