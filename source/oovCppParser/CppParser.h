@@ -65,9 +65,9 @@ class CppParser
 	char const *mTopParseFn;   /// The top level file that is being parsed.
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;
-	ModelType *createOrGetTypeRef(CXCursor cursor, SplitType &st);
-	ModelType *createOrGetSemanticTypeRef(CXCursor cursor, RefType &rt);
+	ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);
 	ModelClassifier *createOrGetClassRef(char const * const name);
+	ModelType *createOrGetDataTypeRef(CXCursor cursor);
 	void addOperationParts(CXCursor cursor, bool addParams);
 	void addRecord(CXCursor cursor, Visibility vis);
     };

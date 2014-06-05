@@ -262,7 +262,7 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget
     if(node)
 	{
 	const ModelClassifier *classifier = ModelObject::getClass(node->getType());
-	if(classifier)
+	if(classifier && classifier->getModule())
 	    {
 	    viewSource(classifier->getModule()->getModulePath().c_str(), classifier->getLineNum());
 	    }

@@ -3,6 +3,8 @@
 <!-- DC Blaha - 6/8/2009 -->
 
 
+
+
 <link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
 
 <h2>OOVCDE Release Details</h2>
@@ -13,7 +15,28 @@ Created: 6-8-2009
 <img src="OovLogo.png">
 
 </p><h2>Releases</h2>
-The following lists releases in reverse chronological order.
+The following lists releases in reverse chronological order.<br>
+<br>
+<h2>2014-06</h2>
+
+This version contains:<br>
+
+
+
+<ul>
+<li>Fixed namespaces</li>
+  <li>Multi-threaded builds</li>
+  <li>Improved class drawing for long names<br>
+</li>
+  <li>Added scroll bars to component graphs</li>
+
+  <li>Allowed adding classes from class list to class diagrams<br>
+  </li>
+  <li>Fixed crash in object model for some class definitions after declarations</li>
+  <li>Fixed module save .tmp file bug.<br>
+  </li>
+</ul>
+
 
 <h2>2014-05</h2>
 This version contains:<br>

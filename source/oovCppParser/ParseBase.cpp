@@ -11,29 +11,6 @@
 
 
 
-void removeIdentName(char const * const name, std::string &str)
-    {
-    size_t pos = str.rfind(name);
-    if(pos != std::string::npos)
-	{
-	str.erase(pos, std::string(str).length());
-	}
-    }
-
-void removeClass(std::string &name)
-    {
-    size_t pos = name.find("class ");
-    if(pos != std::string::npos)
-	name.erase(pos, 5);
-    }
-
-void removeTypeRefEnd(std::string &name)
-    {
-    size_t pos = name.find_first_of(",;()=");
-    if(pos != std::string::npos)
-	name.resize(pos);
-    }
-
 bool isIdentC(char c)
     {
     return(isalnum(c) || c == '_');
@@ -70,22 +47,6 @@ void buildTokenStringForCursor(CXCursor cursor, std::string &str)
 	    }
 	}
     clang_disposeTokens(tu, tokens, nTokens);
-    }
-
-void SplitType::setSplitType(char const * const fullDecl, char const * const name)
-    {
-    isConst = false;
-    isRef = false;
-    std::string stdType = fullDecl;
-    if(stdType.find("const") != std::string::npos)
-	isConst = true;
-    if((stdType.find('*') != std::string::npos) || (stdType.find('&') != std::string::npos))
-	isRef = true;
-    removeIdentName(name, stdType);
-    size_t ei = stdType.find_last_not_of(" \t\n");
-    if(ei != std::string::npos)
-	stdType.resize(ei+1);
-    baseType = stdType;
     }
 
 void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers)
@@ -129,6 +90,30 @@ bool isMethodConst(CXCursor cursor)
     return(std::find(quals.begin(), quals.end(), "const") != quals.end());
     }
 
+// clang_isConstQualifiedType returns false for a type that has a type spelling like "const type &"
+// This function returns const for any type with const left of & or *.
+bool isConstType(CXCursor cursor)
+    {
+    CXStringDisposer sp = clang_getTypeSpelling(clang_getCursorType(cursor));
+    bool isConst = false;
+
+    size_t constPos = sp.find("const");
+    if(constPos != std::string::npos)
+	{
+	size_t pointPos = sp.find('*');
+	if(pointPos == std::string::npos)
+	    pointPos = sp.find('&');
+	if(pointPos != std::string::npos)
+	    {
+	    if(constPos < pointPos)
+		{
+		isConst = true;
+		}
+	    }
+	}
+    return isConst;
+    }
+
 struct ChildKindVisitor
 {
     ChildKindVisitor(CXCursorKind cursKind):
@@ -154,14 +139,20 @@ bool childOfCursor(CXCursor cursor, CXCursorKind cursKind)
     return visitorData.mFound;
     }
 
-std::string getFullSemanticTypeName(CXCursor cursor)
+std::string getFullBaseTypeName(CXCursor cursor)
     {
-    std::string fullName;
-//    fullName.reserve(200);
+/*    std::string fullName;
     while(1)
 	{
-//	CXStringDisposer name = clang_getCursorSpelling(cursor);
 	CXStringDisposer name = clang_getTypeSpelling(clang_getCursorType(cursor));
+	if(fullName.length() == 0 && name.length() == 0)
+	    {
+	    // getTypeSpelling for class templates returns "".
+//	    name = clang_getCursorSpelling(cursor);
+	    // clang_getCursorDisplayName shows Displayer<T>, but cursorSpelling
+	    // only displays Displayer.
+	    name = clang_getCursorDisplayName(cursor);
+	    }
 	if(name.length() > 0)
 	    {
 	    if(fullName.length() == 0)
@@ -178,4 +169,25 @@ std::string getFullSemanticTypeName(CXCursor cursor)
 	    }
 	}
     return fullName;
+*/
+    CXType cursorType = clang_getCursorType(cursor);
+    while(cursorType.kind == CXType_LValueReference ||
+	    cursorType.kind == CXType_RValueReference || cursorType.kind == CXType_Pointer)
+	{
+	// clang_getPointeeType does the following conversions:
+	// char *			char
+	// const Teaching::Star &	const TeachingStar::Star
+	// Imaginary::PretendStar **	Imaginary::PretendStar *
+	cursorType = clang_getPointeeType(cursorType);
+	}
+    if(cursorType.kind == CXType_Unexposed)
+	{
+	CXCursor newCursor = clang_getTypeDeclaration(cursorType);
+	if(newCursor.kind != CXCursor_NoDeclFound)
+	    {
+	    cursorType = clang_getCursorType(newCursor);
+	    }
+	}
+    CXStringDisposer spell = clang_getTypeSpelling(cursorType);
+    return spell;
     }

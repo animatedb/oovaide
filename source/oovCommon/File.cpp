@@ -48,11 +48,12 @@ SharedFile::eOpenStatus SharedFile::openFile(char const * const fn, eModes mode)
 	    }
 	else
 	    {
-	    flags = O_CREAT | O_RDWR, S_IRWXU | S_IRWXG | S_IRWXO;
+	    flags = O_CREAT | O_RDWR;
 	    if(mode == M_ReadWriteExclusiveAppend)
 		flags |= O_APPEND;
 	    }
-	mFd = open(fn, flags);
+	// Set permissions for new file so that user/group/others have access for read/write/exec.
+	mFd = open(fn, flags, S_IRWXU | S_IRWXG | S_IRWXO);
 	if(mFd != -1)
 	    lockStat = flock(mFd, LOCK_EX);
 	if(mFd == -1)

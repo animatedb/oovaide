@@ -15,6 +15,7 @@ Missing Features
 ----------------
 - General
 	- Only 64 bit linux build is provided.
+	- Should release with mingw-builds headers
 	- Code improvements: Use unique_ptr for model objects
 - Gui
 	- Clicking on warnings doesn't display editor. Also change to double click?
@@ -25,44 +26,32 @@ Missing Features
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
 - C++ parsing
-	- BUG: Some model relations not shown
-		- std::vector<ModelType... does not show ModelData
 	- BUG: Drive letters in path unable to write to bad filename.
+	- Templates don't list operations
+	- Typedefs not listed (oovCommon/Filepaths)
+	- function return type not listed
 	- remove module ids from most/all elements, remove built in types
 	- Multiple case statements without breaks appear nested.
 	- Overloaded operations are not differentiated
-	- function return type not listed
 	- Some statements not parsed: else (currently faked), goto, default, return, etc.
-	- May want to save complete type info (explicit const, *, &, etc) in the XMI files.
-	- Should discard internal function names/operations?
-	- Not finding template derived types for calls to functions. vector<type>.resize()
-	- Should save whether a class is defined in the XMI file to find correct source module
+	- Save complete type info (explicit const, *, &, etc) in the XMI files?
+	- Change class def/decl description in XMI file to find correct source module
 		for empty classes.
-	- no packages
-	- template class relations?
-	- no nested classes
 - Journal
 	- Allow more copies of diagrams?
 - Component Diagrams
 	- Changing build settings/dependencies should update components
 - Class Diagrams
 	- filter some standard template classes: iterator, allocator
-	- examples/names - MyThoughts doesn't display attribute with
-		Hollywood::Star (twinkle.cpp) - CPP.xmi is wrong
-		visitRecord - createOrGetTypeRef - needs to get semantic name
-		not Universe::Hollywood::Star (twinkle.h)
 	- BUG: forward class definitions mess up source line numbers
 	- When class members are not shown, should be easy way to view members
-	- FilePath not showing inheritance - templates?
 	- Add filter for class list
 	- Show return value for class methods
 	- Show progress/cancel dlg for long operations, loading class list and large drawings
 	- Set each class drawing preferences by whether component is the same.
 	- Need either show classes that will be added, or undo, or multiple drawing copies
-	- Fix const indicator to indicate target modification, not const pointers, etc.
 	- Add go to operation (callbacks to journal)
 	- Allow saving editable drawings (save name and position of all classes, options)
-	- Templates have replicated operations for each file (new_allocator, vector)
 	- Relation options should be per diagram.
 	- reparenting preference options window messes up draw node options page.
 	- Improve drawing, optimize graph for reduced line crosses
@@ -77,12 +66,12 @@ Missing Features
 	- Could allow multiple selection to add relations, remove, properties
 	- Could have grid for class placement, option for grid size
 - Sequence Diagrams
-	- don't allow removing top call
+	- BUG: don't allow removing top call
+	- Should try to find top level function in diagram, may not be first class.
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
 	- shorten exetremely long names
 	- Diagram width not correct in svg diagrams for long operation names
-	- Should try to find top level function in diagram, may not be first class.
 	- Const calls aren't shown correctly for overloaded functions?
 	- Add depth
 	- Add option to display parameters.

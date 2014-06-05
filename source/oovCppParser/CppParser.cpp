@@ -247,85 +247,24 @@ static CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor p
 
 /////////////////////////
 
-#define SEMA 1
-#if(!SEMA)
-ModelType *CppParser::createOrGetTypeRef(CXCursor cursor, SplitType &st)
-    {
-    std::string typeStr;
-    CXStringDisposer name = clang_getCursorDisplayName(cursor);
-    if(cursor.kind == CXCursor_FieldDecl || cursor.kind == CXCursor_ParmDecl ||
-	    cursor.kind == CXCursor_VarDecl)
-	{
-	buildTokenStringForCursor(cursor, typeStr);
-	removeTypeRefEnd(typeStr);
-	}
-    else
-	{
-	buildTokenStringForCursor(cursor, typeStr);
-	typeStr += "-***";
-	}
-    st.setSplitType(typeStr.c_str(), name.c_str());
-#if(DEBUG_PARSE)
-    if(sLog.mFp)
-	fprintf(sLog.mFp, "    Create Type: %s\n", st.baseType.c_str());
-#endif
-    CXType cursortype = clang_getCursorType(cursor);
-    ObjectType oType = (cursortype.kind == CXType_Record) ? otClass : otDatatype;
-    return mModelData.createOrGetTypeRef(st.baseType.c_str(), oType);
-    }
-#endif
 
-ModelType *CppParser::createOrGetSemanticTypeRef(CXCursor origCursor, RefType &rt)
+ModelType *CppParser::createOrGetBaseTypeRef(CXCursor cursor, RefType &rt)
     {
-    CXCursor cursor = origCursor;
-    CXType cursorType = clang_getCursorType(origCursor);
+    CXType cursorType = clang_getCursorType(cursor);
     ObjectType oType = (cursorType.kind == CXType_Record) ? otClass : otDatatype;
-    if(clang_isConstQualifiedType(cursorType))
-	rt.isConst = true;
+    rt.isConst = isConstType(cursor);
     switch(cursorType.kind)
 	{
 	case CXType_LValueReference:
 	case CXType_RValueReference:
 	case CXType_Pointer:
-	    {
 	    rt.isRef = true;
-//	    cursor = clang_getCursorDefinition(cursor);
-//	    cursor = clang_getCursorReferenced(cursor);
-	    CXType newCursType = clang_getPointeeType(cursorType);
-	    CXCursor newCursor = clang_getTypeDeclaration(cursorType);
-	    if(newCursor.kind != CXCursor_NoDeclFound)
-		{
-		cursorType = newCursType;
-		cursor = newCursor;
-		}
-	    }
-	    break;
-
-	case CXType_Typedef:
-//	    cursorType = clang_getTypedefDeclUnderlyingType(cursor);
-//	    cursor = clang_getTypeDeclaration(cursorType);
 	    break;
 
 	default:
 	    break;
 	}
-    std::string typeName;
-    if(cursorType.kind == CXType_Unexposed)
-	{
-	/*
-	CXCursor declCursor = clang_getTypeDeclaration(cursorType);
-	if(declCursor.kind != CXCursor_NoDeclFound)
-	    {
-	    cursor = declCursor;
-	    }
-*/
-	typeName = getFullSemanticTypeName(cursor);
-	}
-    else
-	{
-	CXStringDisposer spell = clang_getTypeSpelling(cursorType);
-	typeName = spell;
-	}
+    std::string typeName = getFullBaseTypeName(cursor);
 
 #if(DEBUG_PARSE)
     if(sLog.mFp && !mModelData.getTypeRef(typeName.c_str()))
@@ -353,6 +292,12 @@ ModelClassifier *CppParser::createOrGetClassRef(char const * const name)
 	mModelData.replaceType(type, classifier);
 	}
     return classifier;
+    }
+
+ModelType *CppParser::createOrGetDataTypeRef(CXCursor cursor)
+    {
+    std::string typeName = getFullBaseTypeName(cursor);
+    return mModelData.createOrGetTypeRef(typeName.c_str(), otDatatype);
     }
 
 void CppParser::addOperationParts(CXCursor cursor, bool addParams)
@@ -394,13 +339,8 @@ CXChildVisitResult CppParser::visitFunctionAddArgs(CXCursor cursor, CXCursor par
     if(ckind == CXCursor_ParmDecl)
 	{
 	CXStringDisposer name = clang_getCursorDisplayName(cursor);
-#if(SEMA)
 	RefType rt;
-	ModelType *type = createOrGetSemanticTypeRef(cursor, rt);
-#else
-	SplitType rt;
-	ModelType *type = createOrGetTypeRef(cursor, rt);
-#endif
+	ModelType *type = createOrGetBaseTypeRef(cursor, rt);
 	if(type)
 	    {
 	    ModelFuncParam *param = mOperation->addMethodParameter(name, type, false);
@@ -468,17 +408,11 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
 	std::string fn = getFileLoc(cursor);
 	if(fn == mTopParseFn)
 	    {
-	    CXStringDisposer name = clang_getCursorDisplayName(cursor);
-	    CXStringDisposer parentName = clang_getCursorDisplayName(parent);
-	    removeClass(name);
-	    // The parentName contains the child class.
 	    // These have to be made datatypes (not classes) so that these don't define
 	    // the type.  For example, std::string may not be defined in a file,
 	    // so these would create a new model number for the type.
-	    ModelClassifier *child = static_cast<ModelClassifier*>(
-		    mModelData.createOrGetTypeRef(parentName.c_str(), otDatatype));
-	    ModelClassifier *parent = static_cast<ModelClassifier*>(
-		    mModelData.createOrGetTypeRef(name.c_str(), otDatatype));
+	    ModelClassifier *child = static_cast<ModelClassifier*>(createOrGetDataTypeRef(parent));
+	    ModelClassifier *parent = static_cast<ModelClassifier*>(createOrGetDataTypeRef(cursor));
 	    ModelAssociation *assoc = new ModelAssociation(child,
 		parent, getAccess(cursor));
 	    mModelData.mAssociations.push_back(assoc);
@@ -510,13 +444,8 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
 		if(isField(cursor))
 		    {
 		    CXStringDisposer name = clang_getCursorDisplayName(cursor);
-#if(SEMA)
 		    RefType rt;
-		    ModelType *type = createOrGetSemanticTypeRef(cursor, rt);
-#else
-		    SplitType rt;
-		    ModelType *type = createOrGetTypeRef(cursor, rt);
-#endif
+		    ModelType *type = createOrGetBaseTypeRef(cursor, rt);
 		    ModelAttribute *attr = mClassifier->addAttribute(name,
 			    type, mClassMemberAccess.getVis());
 		    attr->setConst(rt.isConst);
@@ -542,13 +471,8 @@ CXChildVisitResult CppParser::visitFunctionAddVars(CXCursor cursor, CXCursor par
 	    if(cursType.kind == CXType_Record)
 		{
 		CXStringDisposer name = clang_getCursorDisplayName(cursor);
-#if(SEMA)
 		RefType rt;
-		ModelType *type = createOrGetSemanticTypeRef(cursor, rt);
-#else
-		SplitType rt;
-		ModelType *type = createOrGetTypeRef(cursor, rt);
-#endif
+		ModelType *type = createOrGetBaseTypeRef(cursor, rt);
 		if(type)
 		    {
 		    mOperation->addBodyVarDeclarator(name, type,
@@ -655,11 +579,11 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    CXCursor cursorDef = clang_getCursorDefinition(cursor);
 	    if(cursorDef.kind == CXCursor_FirstInvalid)
 		cursorDef = clang_getCursorReferenced(cursor);
-	    CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
-	    std::string className = getFullSemanticTypeName(classCursor);
 	    if(functionName.length() != 0)
 		{
-		const ModelType *classType = mModelData.createOrGetTypeRef(className.c_str(), otClass);
+		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
+		RefType rt;
+		const ModelType *classType = createOrGetBaseTypeRef(classCursor, rt);
 		/// @todo - use make_unique when supported.
 		mCondStatements->addStatement(std::unique_ptr<ModelOperationCall>(new ModelOperationCall(
 			functionName, classType)));
@@ -709,7 +633,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 void CppParser::addRecord(CXCursor cursor, Visibility vis)
     {
     // Save all classes so that the access specifiers in the declared classes from other TU's are saved.
-    std::string name = getFullSemanticTypeName(cursor);
+    std::string name = getFullBaseTypeName(cursor);
     mClassifier = createOrGetClassRef(name.c_str());
     if(mClassifier)
 	{
@@ -744,8 +668,15 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	    break;
 
 	// Don't do enum
-	// Don't do template now, instead create the type at TemplateRef time.
-//	case CXCursor_ClassTemplate:
+	case CXCursor_ClassTemplate:
+	    // CXCursor_TemplateTypeParameter
+	    // CXCursor_NonTypeTemplateParameter
+	    // CXCursor_TemplateTemplateParameter
+	    // CXCursor_ClassTemplatePartialSpecialization
+	    // CXCursor_TemplateRef
+	    addRecord(cursor, Visibility::Public);
+	    break;
+
 	case CXCursor_ClassDecl:
 	    addRecord(cursor, Visibility::Public);
 	    break;
@@ -770,14 +701,9 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	    if(classCursor.kind == CXCursor_ClassDecl ||
 		    classCursor.kind == CXCursor_ClassTemplate)
 		{
-		className = getFullSemanticTypeName(classCursor);
+		className = getFullBaseTypeName(classCursor);
 		}
-/*	    else
-		{
-		CXStringDisposer classNameSpelling(clang_getCursorSpelling(classCursor));
-		className = classNameSpelling;
-		}
-*/	    mClassifier = createOrGetClassRef(className.c_str());
+	    mClassifier = createOrGetClassRef(className.c_str());
 	    if(mClassifier)
 		{
 		int line;

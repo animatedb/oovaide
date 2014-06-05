@@ -112,7 +112,41 @@ void ClassDrawer::getStrings(const ClassNode &node,
 	}
     }
 
-void ClassDrawer::splitStrings(std::vector<std::string> &nodeStrs,
+static size_t findEarlierBreakPos(size_t pos, std::string const &str,
+	char const *breakStr, size_t startPos)
+    {
+    size_t spacePos = str.find(breakStr, startPos);
+    if(spacePos != std::string::npos)
+	{
+	spacePos += std::string(breakStr).length();
+	if(pos == std::string::npos || spacePos < pos)
+	    {
+	    pos = spacePos;
+	    }
+	}
+    return pos;
+    }
+
+static void splitStrings(std::vector<std::string> &strs, size_t desiredLength)
+    {
+    for(size_t i=0; i<strs.size(); i++)
+	{
+	if(strs[i].length() > desiredLength)
+	    {
+	    size_t pos = strs[i].find(',', desiredLength);
+	    pos = findEarlierBreakPos(pos, strs[i], "::", desiredLength);
+	    pos = findEarlierBreakPos(pos, strs[i], " ", desiredLength);
+	    if(pos == std::string::npos)
+		pos = desiredLength;
+	    std::string temp = "   " + strs[i].substr(pos);
+	    strs[i].resize(pos);
+	    strs.insert(strs.begin()+i+1, temp);
+	    i++;	// One line was inserted, so don't split next line.
+	    }
+	}
+    }
+
+void ClassDrawer::splitClassStrings(std::vector<std::string> &nodeStrs,
 	std::vector<std::string> &attrStrs, std::vector<std::string> &operStrs)
     {
     std::vector<size_t> lengths;
@@ -131,36 +165,36 @@ void ClassDrawer::splitStrings(std::vector<std::string> &nodeStrs,
     std::sort(lengths.begin(), lengths.end());
     float biggestRatio = 0;
     size_t biggestRatioIndex = 0;
+    size_t desiredLength = 0;
     size_t maxLength = lengths[lengths.size()-1];
-    for(size_t i=lengths.size()/2; i<lengths.size()-1; i++)
+    if(lengths.size() == 1)
 	{
-	float ratio = (maxLength - lengths[i]) / (lengths.size() - i);
-	if(ratio > biggestRatio)
-	    {
-	    biggestRatio = ratio;
-	    biggestRatioIndex = i;
-	    }
+	if(lengths[0] > 60)
+	    desiredLength = lengths[0] / 2;
 	}
-    size_t biggestRatioLength = lengths[biggestRatioIndex];
-    if(biggestRatio > 8)
+    else
+	{
+	for(size_t i=lengths.size()/2; i<lengths.size()-1; i++)
+	    {
+	    float ratio = (maxLength - lengths[i]) / (lengths.size() - i);
+	    if(ratio > biggestRatio)
+		{
+		biggestRatio = ratio;
+		biggestRatioIndex = i;
+		}
+	    }
+	if(biggestRatio > 8)
+	    desiredLength = lengths[biggestRatioIndex];
+	}
+    if(desiredLength != 0)
 	{
 	// Split into a maximum of two lines.
 	size_t minSplitLength = maxLength / 2;
-	if(biggestRatioLength < minSplitLength)
-	    biggestRatioLength = minSplitLength;
-	for(size_t i=0; i<operStrs.size(); i++)
-	    {
-	    if(operStrs[i].length() > biggestRatioLength)
-		{
-		size_t pos = operStrs[i].find(' ', biggestRatioLength);
-		if(pos == std::string::npos)
-		    pos = biggestRatioLength;
-		std::string temp = "   " + operStrs[i].substr(pos);
-		operStrs[i].resize(pos);
-		operStrs.insert(operStrs.begin()+i+1, temp);
-		i++;	// Don't split next line.
-		}
-	    }
+	if(desiredLength < minSplitLength)
+	    desiredLength = minSplitLength;
+	splitStrings(nodeStrs, desiredLength);
+	splitStrings(attrStrs, desiredLength);
+	splitStrings(operStrs, desiredLength);
 	}
     }
 
@@ -181,7 +215,7 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
     std::vector<std::string> operStrs;
 
     getStrings(node, nodeStrs, attrStrs, operStrs);
-    splitStrings(nodeStrs, attrStrs, operStrs);
+    splitClassStrings(nodeStrs, attrStrs, operStrs);
     int y = startpos.y;
     for(auto const &str : nodeStrs)
 	{

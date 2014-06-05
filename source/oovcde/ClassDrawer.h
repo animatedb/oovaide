@@ -31,7 +31,7 @@ class ClassDrawer
 	void getStrings(const ClassNode &node,
 		std::vector<std::string> &nodeStrs, std::vector<std::string> &attrStrs,
 		std::vector<std::string> &operStrs);
-	void splitStrings(std::vector<std::string> &nodeStrs,
+	void splitClassStrings(std::vector<std::string> &nodeStrs,
 		std::vector<std::string> &attrStrs, std::vector<std::string> &operStrs);
     };
 

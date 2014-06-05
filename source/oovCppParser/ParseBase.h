@@ -22,18 +22,15 @@ class CXStringDisposer:public std::string
 	    }
     };
 
-// This will do funny things if the str does not contain a type and identifier.
-// For example, str=eParamCategories, name="mCategories" will become ePara.
-void removeIdentName(char const * const name, std::string &str);
-void removeClass(std::string &name);
-void removeTypeRefEnd(std::string &name);
 void removeLastNonIdentChar(std::string &name);
 
 void buildTokenStringForCursor(CXCursor cursor, std::string &str);
 void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers);
 bool isMethodConst(CXCursor cursor);
+bool isConstType(CXCursor cursor);
 bool isIdentC(char c);
-std::string getFullSemanticTypeName(CXCursor cursor);
+// Gets the type name without pointer/reference.
+std::string getFullBaseTypeName(CXCursor cursor);
 
 struct RefType
     {
@@ -43,18 +40,6 @@ struct RefType
     bool isConst;
     bool isRef;
     };
-
-struct SplitType
-    {
-    public:
-	void setSplitType(char const * const fullDecl, char const * const name);
-
-	std::string baseType;
-	bool isConst;
-	bool isRef;
-    };
-
-void getSplitType(char const * const fullDecl, char const * const name, SplitType &st);
 
 bool childOfCursor(CXCursor cursor, CXCursorKind cursKind);
 
