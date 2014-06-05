@@ -1,8 +1,8 @@
 
 # Oovcde
 
-An object oriented code development platform that includes automatically
-generated build, class, sequence, and component diagram tools for C++
+An object oriented analysis and code development platform that includes automatically
+generated build, class, sequence, and component diagrams for C++
 and Objective C languages.
 
 
@@ -18,10 +18,10 @@ and Objective C languages.
 
 ## Features
 
-- An analysis system that finds all source code and uses CLang to generate
+- An analysis system that searches directories for source code and uses CLang to generate
   dependencies between files and components.
-- The analysis system uses CLang to parse the object relationships and automatically
-  generates diagrams as the programmer can navigate between the relationships.
+- The analysis system uses CLang to parse the object relationships and dynamically
+  generates diagrams allowing quick navigation between objects.
   Diagrams can be edited in Oovcde, then saved as SVG and edited using tools such as Inkscape.
 - A multithreaded build system that uses the analysis information for easy setup.
 - A simple code editor with a debugger.
