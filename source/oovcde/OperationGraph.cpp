@@ -406,7 +406,7 @@ void OperationGraph::addOperCallers(const ModelData &model, const OperationCall 
     {
     for(const auto &type : model.mTypes)
 	{
-	const ModelClassifier *srcCls = ModelObject::getClass(type);
+	const ModelClassifier *srcCls = ModelObject::getClass(type.get());
 	if(srcCls)
 	    {
 	    for(const auto &oper : srcCls->getOperations())

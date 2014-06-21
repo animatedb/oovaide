@@ -27,7 +27,16 @@ void OperationDiagram::clearGraphAndAddOperation(char const * const className,
     {
     getOpGraph().clearGraphAndAddOperation(getModelData(),
 	    getOptions(), className, opName, isConst, 2);
+    mLastOperDiagramParams.mClassName = className;
+    mLastOperDiagramParams.mOpName = opName;
+    mLastOperDiagramParams.mIsConst = isConst;
     updateDiagram();
+    }
+
+void OperationDiagram::relayout()
+    {
+    clearGraphAndAddOperation(mLastOperDiagramParams.mClassName.c_str(),
+	    mLastOperDiagramParams.mOpName.c_str(), mLastOperDiagramParams.mIsConst);
     }
 
 void OperationDiagram::drawSvgDiagram(FILE *fp)
@@ -247,4 +256,17 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
 	if(cls->getModule())
 	    viewSource(cls->getModule()->getModulePath().c_str(), cls->getLineNum());
 	}
+    }
+
+extern "C" G_MODULE_EXPORT void on_OperRelayoutMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    gOperationDiagram->relayout();
+    }
+
+extern "C" G_MODULE_EXPORT void on_OperRemoveAllMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    gOperationDiagram->getOpGraph().clearGraph();
+    gOperationDiagram->updateDiagram();
     }

@@ -10,6 +10,7 @@
 
 #include "ModelObjects.h"
 #include "ClassGenes.h"
+#include "Gui.h"
 #include <gtk/gtk.h>	// For GtkWidget and cairo_t
 #include <map>
 
@@ -63,8 +64,8 @@ class ClassNode
 	    { return rect.start; }
 	void setSize(GraphSize &size)
 	    { rect.size = size; }
-	void getRect(GraphRect &r) const
-	    { r = rect; }
+	GraphRect const &getRect() const
+	    { return rect; }
 	const ClassNodeDrawOptions &getDrawOptions() const
 	    { return mDrawOptions; }
 	ClassNodeDrawOptions &getDrawOptions()
@@ -143,13 +144,6 @@ class ClassGraph
 	    AN_All=0xFF,
 	    AN_AllStandard=AN_Superclass | AN_Subclass | AN_MemberChildren | AN_MemberUsers,
 	};
-	/// Adds nodes/classes/types to a graph.
-	/// @param model Used to look up related classes.
-	/// @param type The type/class to be added to the graph.
-	/// @param addType Defines the relationship types to look for.
-	/// @param maxDepth Recurses to the specified depth.
-	void addRelatedNodes(const ModelData &model, const ModelType *type,
-		const ClassNodeDrawOptions &options, eAddNodeTypes addType, int maxDepth);
 	void clearGraph()
 	    {
 	    mNodes.clear();
@@ -158,18 +152,27 @@ class ClassGraph
 	/// Clears the graph and adds nodes. See the addRelatedNodes function for more
 	/// description.
 	void clearGraphAndAddNode(const ModelData &model, const ClassDrawOptions &options,
-		char const * const className, int nodeDepth);
+		char const * const className, int nodeDepth)
+	    {
+	    addNode(model, options, className, nodeDepth, true);
+	    }
 	void addNode(const ModelData &model, const ClassDrawOptions &options,
-		char const * const className, int nodeDepth);
+		char const * const className, int nodeDepth, bool clear=false);
+	/// Adds nodes/classes/types to a graph.
+	/// @param model Used to look up related classes.
+	/// @param type The type/class to be added to the graph.
+	/// @param addType Defines the relationship types to look for.
+	/// @param maxDepth Recurses to the specified depth.
+	void addRelatedNodesRecurse(const ModelData &model, const ModelType *type,
+		const ClassNodeDrawOptions &options, eAddNodeTypes addType, int maxDepth);
+
 	/// Initializes genes from the model.
 	/// Updates node sizes and node connections in the graph.
 	/// The nodes generally must have been added with the same modelData.
-	void updateGraph(const ModelData &modelData, const ClassDrawOptions &options);
+	GraphSize updateGraph(const ModelData &modelData, const ClassDrawOptions &options);
 	void updateNodeSizes();
 	/// Update connections between nodes.
 	void updateConnections(const ModelData &modelData, const ClassRelationDrawOptions &options);
-	/// Redraw the graph. Does not change the graph or change or access the model.
-	void drawDiagram(const ClassDrawOptions &options);
 	GraphSize getNodeSizeWithPadding(int nodeIndex) const;
 	GraphSize getGraphSize() const;
 	ClassNode *getNode(int x, int y);
@@ -198,6 +201,7 @@ class ClassGraph
 	GraphSize mPad;
 	GtkWidget *mDrawingArea;
 	bool mModified;
+	RecursiveBackgroundLevel mBackgroundDialogLevel;
 
 	/// This updates quality information, runs the genetic algorithm for
 	/// placing the nodes, and then draws them.
@@ -208,6 +212,11 @@ class ClassGraph
 		const ClassConnectItem &connectItem);
 	void insertConnection(int node1, const ModelType *type,
 		const ClassConnectItem &connectItem);
+
+	/// @param modelType The type to check to see if it is a user.
+	void addRelatedNodesRecurseUser(const ModelData &model, const ModelType *type,
+		const ModelType *modelType, const ClassNodeDrawOptions &options,
+		eAddNodeTypes addType, int maxDepth);
 
 	/// Update the visual node size based on font size, number of attributes, etc.
 	/// Each node is a class.

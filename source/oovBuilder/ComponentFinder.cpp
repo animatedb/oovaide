@@ -135,6 +135,7 @@ bool ComponentFinder::readProject(char const * const oovProjectDir,
 void ComponentFinder::scanProject()
     {
     mScanningPackage = nullptr;
+    mExcludeDirs = mProject.getProjectExcludeDirs();
     recurseDirs(mProject.getSrcRootDirectory().c_str());
     }
 
@@ -142,7 +143,7 @@ void ComponentFinder::scanExternalProject(char const * const externalRootSrch,
 	Package const *pkg)
     {
     std::string externalRootDir;
-    ComponentsFile::parseProjRefs(externalRootSrch, externalRootDir, mExcludes);
+    ComponentsFile::parseProjRefs(externalRootSrch, externalRootDir, mExcludeDirs);
 
     Package rootPkg;
     if(pkg)
@@ -191,28 +192,41 @@ std::string ComponentFinder::getComponentName(char const * const filePath) const
     return compName;
     }
 
+static FilePath getParent(FilePath const &filePath)
+    {
+    FilePath parent(filePath);
+    parent.moveToEndDir();
+    parent.moveLeftPathSep();
+    parent.discardTail();
+    return parent;
+    }
+
 bool ComponentFinder::processFile(const std::string &filePath)
     {
     /// @todo - find files with no extension? to match things like std::vector include
-    bool inc = isHeader(filePath.c_str());
-    bool src = isSource(filePath.c_str());
-    bool lib = isLibrary(filePath.c_str());
-    if(mScanningPackage)
+    if(!ComponentsFile::excludesMatch(filePath, mExcludeDirs))
 	{
-	if(!ComponentsFile::excludesMatch(filePath, mExcludes))
+	bool inc = isHeader(filePath.c_str());
+	bool src = isSource(filePath.c_str());
+	bool lib = isLibrary(filePath.c_str());
+	if(mScanningPackage)
 	    {
 	    if(inc)
 		{
 		FilePath path(filePath, FP_File);
 		path.discardFilename();
 
-		// Insert parent for things like #include "gtk/gtk.h" or "sys/stat.h"
-		FilePath parent(path);
-		parent.moveToEndDir();
-		parent.moveLeftPathSep();
-		parent.discardTail();
-		mScanningPackage->appendAbsoluteIncDir(parent.getDrivePath().c_str());
 		mScanningPackage->appendAbsoluteIncDir(path.getDrivePath().c_str());
+
+		// Insert parent for things like #include "gtk/gtk.h" or "sys/stat.h"
+		FilePath parent(getParent(path));
+		if(parent.length() > 0)
+		    mScanningPackage->appendAbsoluteIncDir(parent.getDrivePath().c_str());
+
+		// Insert grandparent for things like "llvm/ADT/APInt.h"
+		FilePath grandparent(getParent(parent));
+		if(grandparent.length() > 0)
+		    mScanningPackage->appendAbsoluteIncDir(grandparent.getDrivePath().c_str());
 		}
 	    else if(lib)
 		{
@@ -220,21 +234,21 @@ bool ComponentFinder::processFile(const std::string &filePath)
 		mScanningPackage->appendAbsoluteLibName(filePath.c_str());
 		}
 	    }
-	}
-    else
-	{
-	if(src)
+	else
 	    {
-	    std::string name = getComponentName(filePath.c_str());
-	    mScannedInfo.addSourceFile(name.c_str(), filePath.c_str());
-	    }
-	else if(inc)
-	    {
-	    FilePath path(filePath, FP_File);
-	    path.discardFilename();
-	    mScannedInfo.addProjectIncludePath(path.c_str());
-	    std::string name = getComponentName(filePath.c_str());
-	    mScannedInfo.addIncludeFile(name.c_str(), filePath.c_str());
+	    if(src)
+		{
+		std::string name = getComponentName(filePath.c_str());
+		mScannedInfo.addSourceFile(name.c_str(), filePath.c_str());
+		}
+	    else if(inc)
+		{
+		FilePath path(filePath, FP_File);
+		path.discardFilename();
+		mScannedInfo.addProjectIncludePath(path.c_str());
+		std::string name = getComponentName(filePath.c_str());
+		mScannedInfo.addIncludeFile(name.c_str(), filePath.c_str());
+		}
 	    }
 	}
     return true;

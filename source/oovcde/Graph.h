@@ -54,14 +54,12 @@ class GraphPoint
 	void sub(const GraphPoint &p)
 	    { x-=p.x; y-=p.y; }
 	GraphPoint operator+(const GraphPoint &p) const
-	    {
-	    GraphPoint retP;
-	    retP.x = x + p.x;
-	    retP.y = y + p.y;
-	    return retP;
-	    }
+	    { return GraphPoint(x + p.x, y + p.y); }
 	void clear()
 	    { x=0; y=0; }
+	GraphPoint getZoomed(double zoomX, double zoomY) const
+	    { return GraphPoint(x * zoomX, y * zoomY); }
+
     public:
 	int x;
 	int y;
@@ -95,8 +93,19 @@ class GraphRect
 	    return(point.x >= start.x && point.x <= endx() &&
 		    point.y >= start.y && point.y <= endy());
 	    }
+	// Given two rectangles, find the points at the edges of the rectangles
+	// if a line were drawn to the centers of both rectangles.
 	void findConnectPoints(GraphRect const &rect2, GraphPoint &p1e,
 		GraphPoint &p2e) const;
+	GraphRect getZoomed(double zoomX, double zoomY) const
+	    {
+	    GraphRect rect;
+	    rect.start = start.getZoomed(zoomX, zoomY);
+	    rect.size = size.getZoomed(zoomX, zoomY);
+	    return rect;
+	    }
+
+
     public:
 	GraphPoint start;
 	GraphSize size;

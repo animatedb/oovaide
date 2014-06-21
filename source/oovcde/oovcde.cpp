@@ -142,12 +142,19 @@ void oovGui::openProject()
     if(open)
 	{
 	int typeIndex = 0;
-	for(const auto &filename : fileNames)
+	BackgroundDialog backDlg;
+	backDlg.setDialogText("Loading files.");
+	backDlg.setProgressIterations(fileNames.size());
+	for(size_t i=0; i<fileNames.size() ; i++)
 	    {
-	    File file(filename.c_str(), "r");
+	    File file(fileNames[i].c_str(), "r");
 	    if(file.isOpen())
 		{
-		loadXmiFile(file.getFp(), mModelData, filename.c_str(), typeIndex);
+		loadXmiFile(file.getFp(), mModelData, fileNames[i].c_str(), typeIndex);
+		}
+	    if(!backDlg.updateProgressIteration(i))
+		{
+		break;
 		}
 	    }
 	mModelData.resolveModelIds();
@@ -293,7 +300,7 @@ void oovGui::updateOperationList(const ModelData &modelData,
 	{
 	for(size_t i=0; i<cls->getOperations().size(); i++)
 	    {
-	    const ModelOperation *oper = cls->getOperations()[i];
+	    const ModelOperation *oper = cls->getOperations()[i].get();
 	    std::string opStr = oper->getName().c_str();
 	    if(oper->isConst())
 		{
@@ -425,6 +432,21 @@ extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
     gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
     }
 
+extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
+	GtkWidget *button, gpointer data)
+    {
+    PathChooser ch;
+    std::string dir;
+    if(ch.ChoosePath(gOovGui.getWindow(), "Add Exclude Directory",
+	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
+	{
+	GtkTextView *dirTextView = GTK_TEXT_VIEW(gOovGui.getBuilder().getWidget(
+		"ExcludeDirsTextview"));
+	dir += '\n';
+	Gui::appendText(dirTextView, dir.c_str());
+	}
+    }
+
 extern "C" G_MODULE_EXPORT void on_NewProjectOkButton_clicked(
 	GtkWidget *button, gpointer data)
     {
@@ -439,6 +461,13 @@ extern "C" G_MODULE_EXPORT void on_NewProjectOkButton_clicked(
 	    Project::setProjectDirectory(projDir.c_str());
 
 	    gBuildOptions.setFilename(Project::getProjectFilePath().c_str());
+
+	    GtkTextView *excDirTextView = GTK_TEXT_VIEW(gOovGui.getBuilder().getWidget(
+		    "ExcludeDirsTextview"));
+	    CompoundValue val;
+	    val.parseString(Gui::getText(excDirTextView).c_str(), '\n');
+	    gBuildOptions.setNameValue(OptProjectExcludeDirs, val.getAsString(';').c_str());
+
 	    gGuiOptions.setFilename(Project::getGuiOptionsFilePath().c_str());
 	    if(gBuildOptions.writeFile())
 		{

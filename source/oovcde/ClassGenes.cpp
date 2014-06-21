@@ -9,6 +9,7 @@
 #include "ClassGraph.h"
 #include <stdlib.h>	// For abs
 #include "Debug.h"
+#include "Gui.h"
 
 #define DEBUG_GENES 0
 #if(DEBUG_GENES)
@@ -251,9 +252,16 @@ void ClassGenes::getPosition(int geneIndex, int nodeIndex, GraphPoint &pos) cons
 
 void ClassGenes::updatePositionsInGraph(class ClassGraph &graph)
     {
+    BackgroundDialog backDlg;
+    backDlg.setDialogText("Optimizing layout.");
+    backDlg.setProgressIterations(NumGenerations);
     for(int i=0; i<NumGenerations; i++)
 	{
 	singleGeneration();
+	if(!backDlg.updateProgressIteration(i))
+	    {
+	    break;
+	    }
 	}
     int bestGeneI = getBestGeneIndex();
 #if(DEBUG_GENES)

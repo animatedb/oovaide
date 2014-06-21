@@ -645,11 +645,6 @@ extern "C" G_MODULE_EXPORT void on_FindImagemenuitem_activate(GtkWidget *widget,
     gEditor.findDialog();
     }
 
-extern "C" G_MODULE_EXPORT void on_FindDialog_delete_event(GtkWidget *button, gpointer data)
-    {
-    gtk_widget_hide(gEditor.getBuilder().getWidget("FindDialog"));
-    }
-
 extern "C" G_MODULE_EXPORT void on_FindNextMenuItem_activate(GtkWidget *button, gpointer data)
     {
     gEditor.findAgain(true);

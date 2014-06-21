@@ -590,7 +590,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		    }
 		if(newType)
 		    {
-		    mModel.addType(newType);
+		    /// @todo - use make_unique when supported.
+		    mModel.addType(std::unique_ptr<ModelType>(newType));
 	            mPotentialRemapIndicesTypes.push_back(newType);
 		    }
 		}
@@ -604,7 +605,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		    {
 		    ModelAttribute *attr = static_cast<ModelAttribute*>(elItem);
 		    ModelClassifier *cls = static_cast<ModelClassifier*>(obj);
-		    cls->addAttribute(attr);
+		    /// @todo - use make_unique when supported.
+		    cls->addAttribute(std::unique_ptr<ModelAttribute>(attr));
 		    }
 		}
 		break;
@@ -616,7 +618,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		    {
 		    ModelOperation *oper = static_cast<ModelOperation*>(elItem);
 		    ModelClassifier *cls = static_cast<ModelClassifier*>(obj);
-		    cls->addOperation(oper);
+		    /// @todo - use make_unique when supported.
+		    cls->addOperation(std::unique_ptr<ModelOperation>(oper));
 		    }
 		}
 		break;
@@ -629,7 +632,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		    {
 		    ModelBodyVarDecl *dec = static_cast<ModelBodyVarDecl*>(elItem);
 		    ModelOperation *op = static_cast<ModelOperation*>(obj);
-		    op->addBodyVarDeclarator(dec);
+		    /// @todo - use make_unique when supported.
+		    op->addBodyVarDeclarator(std::unique_ptr<ModelBodyVarDecl>(dec));
 		    }
 		}
 		break;
@@ -642,7 +646,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		    {
 		    ModelFuncParam *param = static_cast<ModelFuncParam*>(elItem);
 		    ModelOperation *op = static_cast<ModelOperation*>(obj);
-		    op->addMethodParameter(param);
+		    /// @todo - use make_unique when supported.
+		    op->addMethodParameter(std::unique_ptr<ModelFuncParam>(param));
 		    }
 		}
 		break;
@@ -660,14 +665,16 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 	    case otAssociation:
 		{
 		ModelAssociation *assoc = static_cast<ModelAssociation*>(elItem);
-		mModel.mAssociations.push_back(assoc);
+		/// @todo - use make_unique when supported.
+		mModel.mAssociations.push_back(std::unique_ptr<ModelAssociation>(assoc));
 		}
 		break;
 
 	    case otModule:
 		{
 		ModelModule *mod = static_cast<ModelModule*>(elItem);
-		mModel.mModules.push_back(mod);
+		/// @todo - use make_unique when supported.
+		mModel.mModules.push_back(std::unique_ptr<ModelModule>(mod));
 #if(DEBUG_LOAD)
 		sCurrentModule = mod;
 #endif

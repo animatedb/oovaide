@@ -40,7 +40,7 @@ class CppParser
     public:
 	CppParser():
 	    mClassifier(nullptr), mOperation(nullptr),
-	    mCondStatements(nullptr), mTopParseFn(nullptr)
+	    mCondStatements(nullptr)
 	    {}
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
 	    ET_NoSourceFile, ET_ParseError };
@@ -62,7 +62,7 @@ class CppParser
 	ModelClassifier *mClassifier;      /// Current class being parsed.
 	ModelOperation *mOperation;        /// Current operation being parsed.
 	ModelCondStatements *mCondStatements;  /// Current conditional statement
-	char const *mTopParseFn;   /// The top level file that is being parsed.
+	FilePath mTopParseFn;   /// The top level file that is being parsed.
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;
 	ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);

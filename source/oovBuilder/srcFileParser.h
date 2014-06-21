@@ -50,6 +50,7 @@ private:
     InProcMutex mListenerStdMutex;
     char const * mSrcRootDir;
     char const * mAnalysisDir;
+    std::vector<std::string> mExcludeDirs;
     std::vector<std::string> mIncDirArgs;
     const ComponentFinder &mComponentFinder;
 

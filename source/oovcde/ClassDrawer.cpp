@@ -34,7 +34,7 @@ static void getLeafPath(std::string &moduleStr)
 	}
     }
 
-void ClassDrawer::getStrings(const ClassNode &node,
+static void getStrings(const ClassNode &node,
 	std::vector<std::string> &nodeStrs, std::vector<std::string> &attrStrs,
 	std::vector<std::string> &operStrs)
     {
@@ -146,7 +146,7 @@ static void splitStrings(std::vector<std::string> &strs, size_t desiredLength)
 	}
     }
 
-void ClassDrawer::splitClassStrings(std::vector<std::string> &nodeStrs,
+void splitClassStrings(std::vector<std::string> &nodeStrs,
 	std::vector<std::string> &attrStrs, std::vector<std::string> &operStrs)
     {
     std::vector<size_t> lengths;
@@ -200,13 +200,13 @@ void ClassDrawer::splitClassStrings(std::vector<std::string> &nodeStrs,
 
 GraphSize ClassDrawer::drawNode(const ClassNode &node)
     {
-    GraphPoint startpos = node.getPosition();
-    int height = mDrawer.getTextExtentHeight("W");
-    int pad = height / 10;
-    if(pad < 1)
-	pad = 1;
-    int pad2 = pad*2;
-    int padLine = pad*3;
+    GraphPoint startpos(node.getPosition().getZoomed(mActualZoomX, mActualZoomY));
+    float fontHeight = mDrawer.getTextExtentHeight("W");
+    float pad = fontHeight / 7.f;
+//    if(pad < 1)
+//	pad = 1;
+    float pad2 = pad*2;
+    float padLine = pad*3;
     int line1 = startpos.y;
     int line2 = startpos.y;
     std::vector<DrawString> drawStrings;
@@ -216,24 +216,24 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
 
     getStrings(node, nodeStrs, attrStrs, operStrs);
     splitClassStrings(nodeStrs, attrStrs, operStrs);
-    int y = startpos.y;
+    float y = startpos.y;
     for(auto const &str : nodeStrs)
 	{
-	y += height + pad2;
+	y += fontHeight + pad2;
 	drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
 	}
     y += padLine;	// Space for line.
     line1 = y;
     for(auto const &str : attrStrs)
 	{
-	y += height + pad2;
+	y += fontHeight + pad2;
 	drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
 	}
     y += padLine;	// Space for line.
     line2 = y;
     for(auto const &str : operStrs)
 	{
-	y += height + pad2;
+	y += fontHeight + pad2;
 	drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
 	}
 
@@ -273,14 +273,14 @@ static void drawPolyWithOffset(DiagramDrawer &drawer, const GraphPoint &offset,
     }
 
 static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
-	GraphPoint producer, const ClassConnectItem &connectItem)
+	GraphPoint producer, const ClassConnectItem &connectItem, double zoom)
     {
-    const int halfSymbolSize = 11;
+    const int halfSymbolSize = 11 * zoom;
     // baseOffset is center of visibility circles
-    const int baseOffset = 30;
+    const int baseOffset = 30 * zoom;
     const int baseFuncParamOffset = baseOffset - halfSymbolSize;
 //    const int totalOffset = baseOffset + (halfSymbolSize*2);
-    const int quarterSymbolSize = 5;
+    const int quarterSymbolSize = 5 * zoom;
     const int eighthSymbolSize = quarterSymbolSize/2;
     int xdist = producer.x-consumer.x;
     int ydist = producer.y-consumer.y;
@@ -308,10 +308,10 @@ static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
         	// startPoint is Y position of point of V
                 int startPoint;
                 if(connectItem.mConnectType == ctFuncParam)
-                    startPoint = baseFuncParamOffset - 14;
+                    startPoint = baseFuncParamOffset - 14 * zoom;
                 else
-                    startPoint = baseOffset - 14;
-                int vtop = startPoint+10;
+                    startPoint = baseOffset - 14 * zoom;
+                int vtop = startPoint + 10 * zoom;
 		const double triangleAngle = (2 * M_PI) / vtop;
 		OovPolygon polygon;
 		// Set start point (point of V)
@@ -322,8 +322,8 @@ static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
 			cos(lineAngleRadians-triangleAngle) * vtop);
 		polygon.push_back(p);
 
-		p.set(sin(lineAngleRadians) * (startPoint+4),
-		    cos(lineAngleRadians) * (startPoint+4));
+		p.set(sin(lineAngleRadians) * (startPoint + 4 * zoom),
+		    cos(lineAngleRadians) * (startPoint + 4 * zoom));
 		polygon.push_back(p);
 		// calc right point of symbol
 		p.set(sin(lineAngleRadians+triangleAngle) * vtop,
@@ -377,7 +377,7 @@ static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
     }
 
 static void drawHasSymbol(DiagramDrawer &drawer, GraphPoint owner,
-	GraphPoint ownedMember, bool isRef)
+	GraphPoint ownedMember, bool isRef, double zoom)
     {
     int xdist = ownedMember.x-owner.x;
     int ydist = ownedMember.y-owner.y;
@@ -392,7 +392,7 @@ static void drawHasSymbol(DiagramDrawer &drawer, GraphPoint owner,
             lineAngleRadians = -M_PI/2;
         }
     const double hasAngle = (2 * M_PI) / 12;
-    const double hasHalfSize = 9;
+    double hasHalfSize = 9 * zoom;
 
     OovPolygon polygon;
     // Do start point
@@ -420,7 +420,7 @@ static void drawHasSymbol(DiagramDrawer &drawer, GraphPoint owner,
     drawPolyWithOffset(drawer, GraphPoint(owner.x, owner.y), polygon, color);
     }
 
-static void drawIsSymbol(DiagramDrawer &drawer, GraphPoint parent, GraphPoint child)
+static void drawIsSymbol(DiagramDrawer &drawer, GraphPoint parent, GraphPoint child, double zoom)
     {
     int xdist = child.x-parent.x;
     int ydist = child.y-parent.y;
@@ -435,7 +435,7 @@ static void drawIsSymbol(DiagramDrawer &drawer, GraphPoint parent, GraphPoint ch
             lineAngleRadians = M_PI/2;
         }
     const double isAngle = (2 * M_PI) / 16;
-    const double isSize = 14;
+    double isSize = 14 * zoom;
 
     OovPolygon polygon;
     // Do start point
@@ -454,13 +454,10 @@ static void drawIsSymbol(DiagramDrawer &drawer, GraphPoint parent, GraphPoint ch
     drawPolyWithOffset(drawer, GraphPoint(parent.x, parent.y), polygon, Color(255,255,255));
     }
 
-
 void ClassDrawer::drawConnectionLine(const ClassNode &node1, const ClassNode &node2)
     {
-    GraphRect rect1;
-    GraphRect rect2;
-    node1.getRect(rect1);
-    node2.getRect(rect2);
+    GraphRect rect1 = node1.getRect().getZoomed(mActualZoomX, mActualZoomY);
+    GraphRect rect2 = node2.getRect().getZoomed(mActualZoomX, mActualZoomY);
     GraphPoint p1e;
     GraphPoint p2e;
     rect1.findConnectPoints(rect2, p1e, p2e);
@@ -471,10 +468,8 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
 	const ClassNode &node1, const ClassNode &node2,
 	const ClassConnectItem &connectItem)
     {
-    GraphRect rect1;
-    GraphRect rect2;
-    node1.getRect(rect1);
-    node2.getRect(rect2);
+    GraphRect rect1 = node1.getRect().getZoomed(mActualZoomX, mActualZoomY);
+    GraphRect rect2 = node2.getRect().getZoomed(mActualZoomX, mActualZoomY);
 
     GraphPoint p1e;
     GraphPoint p2e;
@@ -484,12 +479,12 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
 	{
 	case ctAggregation:
 	    // node1=owner, node2=owned.
-	    drawHasSymbol(mDrawer, p1e, p2e, connectItem.mRefer);
+	    drawHasSymbol(mDrawer, p1e, p2e, connectItem.mRefer, mActualZoomY);
 	    break;
 
 	case ctIneritance:
 	    // node1=parent, node2=child.
-	    drawIsSymbol(mDrawer, p1e, p2e);
+	    drawIsSymbol(mDrawer, p1e, p2e, mActualZoomY);
 	    break;
 
 	default:
@@ -497,8 +492,25 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
 	}
     if(options.drawOovSymbols)
 	{
-	drawOovSymbol(mDrawer, p1e, p2e, connectItem);
+	drawOovSymbol(mDrawer, p1e, p2e, connectItem, mActualZoomY);
 	}
+    }
+
+void ClassDrawer::setZoom(double desiredZoom)
+    {
+    /*
+    mDrawer.setFontSize(10);	// Set to default font size.
+    double noZoomHeight = mDrawer.getTextExtentHeight("W");
+//    double noZoomWidth = mDrawer.getTextExtentWidth("W");
+    mDrawer.setFontSize(desiredZoom*10);
+    double zoomHeight = mDrawer.getTextExtentHeight("W");
+//    double zoomWidth = mDrawer.getTextExtentWidth("W");
+    mActualZoomY = zoomHeight / noZoomHeight;
+    mActualZoomX = mActualZoomY; // zoomWidth / noZoomWidth;
+*/
+    mDrawer.setFontSize(desiredZoom*10);
+    mActualZoomX = desiredZoom;
+    mActualZoomY = desiredZoom;
     }
 
 void ClassDrawer::drawDiagram(const ClassGraph &graph,
@@ -506,7 +518,8 @@ void ClassDrawer::drawDiagram(const ClassGraph &graph,
     {
     if(graph.getNodes().size() > 0)
 	{
-	mDrawer.setDiagramSize(graph.getGraphSize());
+	mDrawer.setDiagramSize(graph.getGraphSize().getZoomed(mActualZoomX,
+		mActualZoomY));
 	for(size_t ni1=0; ni1<graph.getNodes().size(); ni1++)
 	    {
 	    drawNode(graph.getNodes()[ni1]);

@@ -15,6 +15,7 @@
 #include "OovString.h"
 
 #define OptSourceRootDir "SourceRootDir"
+#define OptProjectExcludeDirs "ExcludeDirs"
 #define OptBaseArgs "BuildArgsBase"
 
 // These are stored per configuration. They will have the build configuration
@@ -113,6 +114,7 @@ class ProjectReader:public NameValueFile
 	const StdStringVec getAllCrcLinkArgs() const;
 	static std::string &getSrcRootDirectory()
 	    { return Project::getSrcRootDirectory(); }
+	CompoundValue getProjectExcludeDirs() const;
 
     private:
 	StdStringVec mCompileArgs;

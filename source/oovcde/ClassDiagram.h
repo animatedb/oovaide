@@ -27,18 +27,25 @@ class ClassDiagram
     {
     public:
 	ClassDiagram():
-	    mModelData(nullptr), mBuilder(nullptr), mListener(nullptr)
+	    mModelData(nullptr), mBuilder(nullptr), mListener(nullptr), mDesiredZoom(1.0)
 	    {}
 	void initialize(Builder &builder, const ModelData &modelData,
 		ClassDiagramListener *listener);
 	void updateGraph();
+	void updateGraphSize();
+	void relayout();
+	/// Redraw the graph. Does not change the graph or change or access the model.
+	void drawDiagram(const ClassDrawOptions &options);
 	// Create a new graph and add a class node.
 	void clearGraphAndAddClass(char const * const className);
 	// Add a class node to an existing graph.
 	void addClass(char const * const className);
 	void drawSvgDiagram(FILE *fp);
+	GtkWidget *getDiagramWidget()
+	    { return getBuilder().getWidget("DiagramDrawingarea"); }
 
 	// For use by extern functions.
+	ClassNode *getNode(int x, int y);
 	void buttonPressEvent(const GdkEventButton *event);
 	void buttonReleaseEvent(const GdkEventButton *event);
 	void drawToDrawingArea();
@@ -57,12 +64,20 @@ class ClassDiagram
 		mListener->gotoClass(className);
 		}
 	    }
+	std::string const &getLastSelectedClassName() const
+	    { return mLastSelectedClassName; }
+	void setZoom(double zoom)
+	    { mDesiredZoom = zoom; }
+	double getDesiredZoom() const
+	    { return mDesiredZoom; }
+
     private:
 	const ModelData *mModelData;
 	ClassGraph mClassGraph;
 	Builder *mBuilder;
 	std::string mLastSelectedClassName;
 	ClassDiagramListener *mListener;
+	double mDesiredZoom;
 	void displayContextMenu(guint button, guint32 acttime, gpointer data);
 	void setLastSelectedClassName(const std::string name)
 	    { mLastSelectedClassName = name; }

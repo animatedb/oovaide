@@ -14,9 +14,10 @@ class SvgDrawer:public DiagramDrawer
     {
     public:
 	SvgDrawer(FILE *fp, cairo_t *c):
-	    mFp(fp), cr(c)
+	    mFp(fp), mFontSize(10.0), cr(c)
 	    {}
 	virtual void setDiagramSize(GraphSize size);
+	virtual void setFontSize(double size);
 	virtual void drawRect(const GraphRect &rect);
 	virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
 		bool dashed=false);
@@ -25,10 +26,11 @@ class SvgDrawer:public DiagramDrawer
 	virtual void groupShapes(bool start, Color fillColor);
 	virtual void groupText(bool start);
 	virtual void drawText(const GraphPoint &p, char const * const text);
-	virtual int getTextExtentWidth(char const * const name) const;
-	virtual int getTextExtentHeight(char const * const name) const;
+	virtual float getTextExtentWidth(char const * const name) const;
+	virtual float getTextExtentHeight(char const * const name) const;
     private:
 	FILE *mFp;
+	double mFontSize;
 	cairo_t *cr;
     };
 

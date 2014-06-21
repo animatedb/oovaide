@@ -458,7 +458,7 @@ bool ClassPreferencesDialog::run(Builder &builder, ClassNodeDrawOptions &options
 
     // Steal the options, then put them back.
     GtkWidget *optionsBox = builder.getWidget("ClassesOptionsBox");
-    Gui::reparentWidget(optionsBox, GTK_CONTAINER(dlg.getActionArea()));
+    Gui::reparentWidget(optionsBox, GTK_CONTAINER(dlg.getContentArea()));
 
     for(auto const &opt : PrefOptions)
 	{

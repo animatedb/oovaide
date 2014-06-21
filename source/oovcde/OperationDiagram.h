@@ -20,6 +20,13 @@ class OperationDiagramListener
 	virtual void gotoClass(char const * const className) = 0;
     };
 
+struct OperationDiagramParams
+    {
+    std::string mClassName;
+    std::string mOpName;
+    bool mIsConst;
+    };
+
 class OperationDiagram
     {
     public:
@@ -32,6 +39,7 @@ class OperationDiagram
 	void clearGraphAndAddOperation(char const * const className,
 		char const * const opName, bool isConst);
 	void drawSvgDiagram(FILE *fp);
+	void relayout();
 
 	// For use by extern functions.
 	void buttonPressEvent(const GdkEventButton *event);
@@ -62,6 +70,7 @@ class OperationDiagram
 	OperationGraph mOpGraph;
 	Builder *mBuilder;
 	OperationDiagramListener *mListener;
+	OperationDiagramParams mLastOperDiagramParams;
     };
 
 

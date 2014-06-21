@@ -21,9 +21,6 @@
 *  @date      5/27/2009
 */
 
-
-
-
 #ifndef MODEL_OBJECTS_H
 #define MODEL_OBJECTS_H
 #include <string>
@@ -246,13 +243,12 @@ public:
         ModelObject(name, otOperation), mCondStatements(""), mAccess(access),
         mIsConst(isConst), mModule(nullptr), mLineNum(0)
         {}
-    ~ModelOperation();
     // Returns a pointer to the added parameter so that it can be modified.
     ModelFuncParam *addMethodParameter(const std::string &name, const ModelType *type,
         bool isConst);
-    void addMethodParameter(ModelFuncParam *param)
+    void addMethodParameter(std::unique_ptr<ModelFuncParam> param)
 	{
-        mParameters.push_back(param);
+	mParameters.push_back(std::move(param));
         }
     // The operation's definition has declarations.
 /*    void addMethodDefinitionDeclarator(const std::string &name, const ModelType *type,
@@ -266,14 +262,14 @@ public:
 */
     ModelBodyVarDecl *addBodyVarDeclarator(const std::string &name, const ModelType *type,
         bool isConst, bool isRef);
-    void addBodyVarDeclarator(ModelBodyVarDecl *var)
+    void addBodyVarDeclarator(std::unique_ptr<ModelBodyVarDecl> var)
 	{
-        mBodyVarDeclarators.push_back(var);
+        mBodyVarDeclarators.push_back(std::move(var));
         }
     bool isDefinition() const;
-    const std::vector<ModelFuncParam*> getParams() const
+    const std::vector<std::unique_ptr<ModelFuncParam>> &getParams() const
 	{ return mParameters; }
-    const std::vector<ModelBodyVarDecl*> getBodyVarDeclarators() const
+    const std::vector<std::unique_ptr<ModelBodyVarDecl>> &getBodyVarDeclarators() const
 	{ return mBodyVarDeclarators; }
     ModelCondStatements &getCondStatements()
 	{ return mCondStatements; }
@@ -297,10 +293,10 @@ public:
 	{ return mLineNum; }
 
 private:
-    std::vector<ModelFuncParam*> mParameters;
+    std::vector<std::unique_ptr<ModelFuncParam>> mParameters;
     // This could be expanded to contain ref/ptr/const
 //    ModelDeclarator* mDefinitionDeclarator;	// return type
-    std::vector<ModelBodyVarDecl*> mBodyVarDeclarators;
+    std::vector<std::unique_ptr<ModelBodyVarDecl>> mBodyVarDeclarators;
     ModelCondStatements mCondStatements;
     Visibility mAccess;
     bool mIsConst;
@@ -323,38 +319,31 @@ class ModelClassifier:public ModelType
 {
 public:
     explicit ModelClassifier(const std::string &name):
-        ModelType(name, otClass), mOutput(O_NoOutput), mModule(nullptr),
-        mLineNum(0)
+        ModelType(name, otClass), mModule(nullptr), mLineNum(0)
         {}
-    ~ModelClassifier();
     void clearOperations();
     void clearAttributes();
     ModelAttribute *addAttribute(const std::string &name, ModelType *attrType,
 	    Visibility scope);
-    void addAttribute(ModelAttribute *attr)
+    void addAttribute(std::unique_ptr<ModelAttribute> &&attr)
 	{
-        mAttributes.push_back(attr);
+        mAttributes.push_back(std::move(attr));
 	}
     ModelOperation *addOperation(const std::string &name, Visibility access,
 	    bool isConst);
     void removeOperation(ModelOperation *oper);
     ModelOperation *findMatchingOperation(ModelOperation const * const oper);
     int findMatchingOperationIndex(ModelOperation const * const oper);
-    void addOperation(ModelOperation *oper)
+    void addOperation(std::unique_ptr<ModelOperation> &&oper)
         {
-        mOperations.push_back(oper);
+        mOperations.push_back(std::move(oper));
         }
     void replaceOperation(ModelOperation const * const operToReplace,
-	    ModelOperation * const newOper)
-	{
-	int index = findMatchingOperationIndex(operToReplace);
-	if(index != -1)
-	    mOperations[index] = newOper;
-	}
+	    std::unique_ptr<ModelOperation> &&newOper);
     // These allow removing the pointer from the collections so that they
     // won't be destructed later.
-    void takeAttribute(const ModelAttribute *attr);
-    void takeOperation(const ModelOperation *oper);
+    void eraseAttribute(const ModelAttribute *attr);
+    void eraseOperation(const ModelOperation *oper);
     /// @todo - this doesn't work for overloaded functions.
     const ModelOperation *getOperation(const std::string &name, bool isConst) const;
     int getOperationIndex(const std::string &name, bool isConst) const;
@@ -365,9 +354,13 @@ public:
 	}
     /// @todo - This isn't really correct.
     const ModelOperation *getOperationAnyConst(const std::string &name, bool isConst) const;
-    const std::vector<ModelAttribute*> getAttributes() const
+    std::vector<std::unique_ptr<ModelAttribute>> &getAttributes()
 	{ return mAttributes; }
-    const std::vector<ModelOperation*> getOperations() const
+    const std::vector<std::unique_ptr<ModelAttribute>> &getAttributes() const
+	{ return mAttributes; }
+    std::vector<std::unique_ptr<ModelOperation>> &getOperations()
+	{ return mOperations; }
+    const std::vector<std::unique_ptr<ModelOperation>> &getOperations() const
 	{ return mOperations; }
     void setModule(const class ModelModule *module)
 	{ mModule = module; }
@@ -378,27 +371,13 @@ public:
     int getLineNum() const
 	{ return mLineNum; }
     bool isDefinition() const;
-    // These are used for the ModelWriter for XMI files.
-    enum ModelOutputs
-	{
-	O_NoOutput=0x0,
-	O_DefineOperations=0x01,
-	O_DefineAttributes=0x02,
-	O_DefineClass=0x03	// Define attributes and operations
-	};
-    void setOutput(enum ModelOutputs out)
-	{ mOutput = static_cast<ModelOutputs>(mOutput | out); }
-    enum ModelOutputs getOutput() const
-	{ return mOutput; }
 
 private:
-    std::vector<ModelAttribute*> mAttributes;
-    std::vector<ModelOperation*> mOperations;
-    enum ModelOutputs mOutput;
+    std::vector<std::unique_ptr<ModelAttribute>> mAttributes;
+    std::vector<std::unique_ptr<ModelOperation>> mOperations;
     const class ModelModule *mModule;
     int mLineNum;
 };
-
 
 class ModelAssociation:public ModelObject
 {
@@ -468,18 +447,17 @@ typedef std::vector<const ModelClassifier*> ConstModelClassifierVector;
 class ModelData
     {
     public:
-	std::vector<ModelType*> mTypes;			// Some of these (otClasses) are Nodes
-	std::vector<ModelAssociation*> mAssociations;	// Edges
-	std::vector<ModelModule*> mModules;
+	std::vector<std::unique_ptr<ModelType>> mTypes;			// Some of these (otClasses) are Nodes
+	std::vector<std::unique_ptr<ModelAssociation>> mAssociations;	// Edges
+	std::vector<std::unique_ptr<ModelModule>> mModules;
 
 	void clear();
 	/// Use the model ids from the file to resolve references.  This should
 	/// be done for every loaded file since ID's are specific for each file.
         void resolveModelIds();
-        void resolveStatements(ModelStatement *stmt);
-        void resolveDecl(ModelDeclarator &decl);
+        bool isTypeReferencedByDefinedObjects(ModelType const &type) const;
 
-        void addType(ModelType *type);
+        void addType(std::unique_ptr<ModelType> &&type);
         ModelModule const * const findModuleById(int id);
 
         // otype is only used if a type is created.
@@ -493,7 +471,7 @@ class ModelData
 	void replaceType(ModelType *existingType, ModelClassifier *newType);
 	void replaceStatementType(ModelStatement *stmts, ModelType *existingType,
 		ModelClassifier *newType);
-	void deleteType(ModelType *existingType);
+	void eraseType(ModelType *existingType);
 	/// Takes the attributes from the source type, and moves them to the dest type.
 	void takeAttributes(ModelClassifier *sourceType, ModelClassifier *destType);
 	void getRelatedTemplateClasses(const ModelType &type,
@@ -507,6 +485,9 @@ class ModelData
 	std::string getBaseType(char const * const fullStr) const;
 	const ModelClassifier *findClassByModelId(int id) const;
 	const ModelType *findTypeByModelId(int id) const;
+        void resolveStatements(ModelStatement *stmt);
+        void resolveDecl(ModelDeclarator &decl);
+	bool isTypeReferencedByStatements(ModelStatement *stmt, ModelType const &type) const;
 	void dumpTypes();
     };
 

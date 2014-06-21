@@ -54,6 +54,12 @@ void SvgDrawer::setDiagramSize(GraphSize size)
 	    "width=\"%d\" height=\"%d\">\n", size.x, size.y);
     }
 
+void SvgDrawer::setFontSize(double size)
+    {
+    DiagramDrawer::setFontSize(size);
+    mFontSize = size;
+    }
+
 void SvgDrawer::drawRect(const GraphRect &rect)
     {
     fprintf(mFp, "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" />\n",
@@ -113,7 +119,7 @@ void SvgDrawer::groupShapes(bool start, Color fillColor)
 void SvgDrawer::groupText(bool start)
     {
     if(start)
-	fprintf(mFp, "<g font-size=\"10\">\n");
+	fprintf(mFp, "<g font-size=\"%f\">\n", mFontSize);
     else
 	fprintf(mFp, "</g>\n");
     }
@@ -126,14 +132,14 @@ void SvgDrawer::drawText(const GraphPoint &p, char const * const text)
 	    p.x, p.y, str.c_str());
     }
 
-int SvgDrawer::getTextExtentWidth(char const * const name) const
+float SvgDrawer::getTextExtentWidth(char const * const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);
     return extents.width;
     }
 
-int SvgDrawer::getTextExtentHeight(char const * const name) const
+float SvgDrawer::getTextExtentHeight(char const * const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);

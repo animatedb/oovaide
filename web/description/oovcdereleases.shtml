@@ -1,6 +1,9 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<!-- DC Blaha - 6/8/2009 -->
+<html><head><!-- DC Blaha - 6/8/2009 -->
+
+
+
+
 
 
 
@@ -17,6 +20,25 @@ Created: 6-8-2009
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.<br>
 <br>
+<h2>2014-06-2</h2>
+
+
+This version contains:<br>
+<ul>
+<li>Reduced analysis file size<br>
+</li><li>Project exclude directories</li>
+  <li>Zoom on class diagrams</li>
+  <li>Added background process dialogs<br>
+  </li>
+  <li>Fixed parsing of some conditional expressions<br>
+  </li>
+
+
+</ul>
+
+
+
+
 <h2>2014-06</h2>
 
 This version contains:<br>

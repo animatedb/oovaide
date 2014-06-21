@@ -60,11 +60,16 @@ static void writeDebugStr(std::string const &str)
 // - "Datatype" values are simple data types or class references. For example,
 //	a class can inherit from std::string and the std::string will be output
 //	as a Datatype.
+//	Only referenced datatypes are output in the XMI file.
 //
-// - "Class" values are structs or class definitions (CXType_Record). These are
-// 	always output as "Class", but they will be empty if they are not
-//	defined in this TU.  (For example, classes included from other header
-//	files)
+// - "Class" values are class, struct or union definitions (CXType_Record) or
+//	class templates.
+// 	The class is defined in this TU if it has a module.
+//	A class is defined if it has operations or attributes.
+//	(An example of a class not in this TU is from other header files)
+//	Only defined classes or defined in this TU or referenced types will
+//	be output in the XMI file,
+//	except class templates will always be output and contain definitions?
 //      Only defined classes in the parsed translation unit have a module name/id.
 //
 // - Inheritance relations are also only defined if they are defined in this TU.
@@ -164,111 +169,125 @@ void ModelWriter::writeStatements(const ModelStatement *stmts, int level)
 	}
     }
 
+void ModelWriter::writeClassDefinition(const ModelClassifier &classifier, bool isClassDef)
+    {
+    if(isClassDef)
+	{
+	for(const auto &attr : classifier.getAttributes())
+	    {
+	    fprintf(mFp, "    <Attribute name=\"%s\" type=\"%d\" "
+		"const=\"%s\" ref=\"%s\" access=\"%s\" />\n",
+		attr->getName().c_str(),
+		getObjectModelId(attr->getDeclType()->getName()),
+		boolStr(attr->isConst()), boolStr(attr->isRefer()), attr->getAccess().asStr());
+	    }
+	}
+
+    for(const auto &oper : classifier.getOperations())
+	{
+	char locStr[50];
+	if(oper->getModule())
+	    {
+	    snprintf(locStr, sizeof(locStr), "module=\"%d\" line=\"%d\"", MIO_Module, oper->getLineNum());
+
+	    fprintf(mFp, "    <Operation name=\"%s\" access=\"%s\" const=\"%s\" %s>\n",
+		oper->getName().c_str(), oper->getAccess().asStr(),
+		boolStr(oper->isConst()), locStr);
+
+	    for(const auto &param : oper->getParams())
+		{
+		fprintf(mFp, "      <Parameter name=\"%s\" type=\"%d\" "
+		    "const=\"%s\" ref=\"%s\" />\n",
+		    param->getName().c_str(),
+		    getObjectModelId(param->getDeclType()->getName()),
+		    boolStr(param->isConst()), boolStr(param->isRefer()));
+		}
+/*
+	    for(const auto &decl : oper->getDefinitionDeclarators())
+		{
+		fprintf(mFp, "      <FuncDefDecl name=\"%s\" type=\"%d\" "
+		    "const=\"%s\" ref=\"%s\" />\n",
+		    decl->getName().c_str(),
+		    getClassModelId(decl->getDeclType()->getName()),
+		    boolStr(decl->isConst()), boolStr(decl->isRefer()));
+		}
+*/
+	    for(const auto &decl : oper->getBodyVarDeclarators())
+		{
+		fprintf(mFp, "      <BodyVarDecl name=\"%s\" type=\"%d\" "
+		    "const=\"%s\" ref=\"%s\" />\n",
+		    decl->getName().c_str(),
+		    getObjectModelId(decl->getDeclType()->getName()),
+		    boolStr(decl->isConst()), boolStr(decl->isRefer()));
+		}
+	    writeStatements(&oper->getCondStatements(), 0);
+
+	    fprintf(mFp, "    </Operation>\n");
+	    }
+	}
+    }
+
 void ModelWriter::writeType(const ModelType &mtype)
-{
+    {
     if(mFp)
         {
         int classXmiId = getObjectModelId(mtype.getName());
-        char const *typeName;
-        char lineNumStr[50];
-        if(mtype.getObjectType() == otClass)
-            {
-            typeName = "Class";
-	    const ModelClassifier *cl = ModelObject::getClass(&mtype);
-	    snprintf(lineNumStr, sizeof(lineNumStr), "line=\"%d\"", cl->getLineNum());
-            }
-        else
-            {
-            typeName = "DataType";
-            lineNumStr[0] = '\0';
-            }
-        /// @todo - Only output types that are defined in this file, or are used
-        /// by types in this file.
-
-        // Only defined classes in the parsed translation unit have a module name.
-        OovString moduleStr;
-        if(mtype.getObjectType() == otClass)
-            {
-	    const ModelClassifier *cl = ModelObject::getClass(&mtype);
+        bool isDefinedClass = false;
+        bool isDefinedOpers = false;
+	const ModelClassifier *cl = ModelObject::getClass(&mtype);
+	if(cl)
+	    {
 	    if(cl->getModule())
+		isDefinedClass = true;
+	    for(const auto &oper : cl->getOperations())
 		{
-		moduleStr = "module=\"";
-		moduleStr.appendInt(MIO_Module);
-		moduleStr += "\" ";
+		if(oper->getModule())
+		    isDefinedOpers = true;
 		}
-            }
-        fprintf(mFp, "  <%s xmi.id=\"%d\" name=\"%s\" %s%s>\n",
-            typeName, classXmiId, translate(mtype.getName()).c_str(),
-            moduleStr.c_str(), lineNumStr);
-
-        if(mtype.getObjectType() == otClass)
+	    }
+        if(isDefinedClass || isDefinedOpers || mModelData.isTypeReferencedByDefinedObjects(mtype))
             {
-            const ModelClassifier &classifier = static_cast<const ModelClassifier&>(mtype);
-	    for(const auto &attr : classifier.getAttributes())
+	    char const *typeName;
+	    char lineNumStr[50];
+	    if(mtype.getObjectType() == otClass)
 		{
-		fprintf(mFp, "    <Attribute name=\"%s\" type=\"%d\" "
-		    "const=\"%s\" ref=\"%s\" access=\"%s\" />\n",
-		    attr->getName().c_str(),
-		    getObjectModelId(attr->getDeclType()->getName()),
-		    boolStr(attr->isConst()), boolStr(attr->isRefer()), attr->getAccess().asStr());
+		typeName = "Class";
+		const ModelClassifier *cl = ModelObject::getClass(&mtype);
+		snprintf(lineNumStr, sizeof(lineNumStr), "line=\"%d\"", cl->getLineNum());
 		}
-
-	    for(const auto &oper : classifier.getOperations())
+	    else
 		{
-		if(oper)
+		typeName = "DataType";
+		lineNumStr[0] = '\0';
+		}
+	    // Only defined classes in the parsed translation unit have a module.
+	    OovString moduleStr;
+	    if(mtype.getObjectType() == otClass)
+		{
+		const ModelClassifier *cl = ModelObject::getClass(&mtype);
+		if(cl->getModule())
 		    {
-		    char locStr[50];
-		    if(oper->getModule())
-			{
-			snprintf(locStr, sizeof(locStr), "module=\"%d\" line=\"%d\"", MIO_Module, oper->getLineNum());
-			}
-		    else
-			{
-			locStr[0] = '\0';
-			}
-
-		    fprintf(mFp, "    <Operation name=\"%s\" access=\"%s\" const=\"%s\" %s>\n",
-			oper->getName().c_str(), oper->getAccess().asStr(),
-			boolStr(oper->isConst()), locStr);
-
-		    for(const auto &param : oper->getParams())
-			{
-			fprintf(mFp, "      <Parameter name=\"%s\" type=\"%d\" "
-			    "const=\"%s\" ref=\"%s\" />\n",
-			    param->getName().c_str(),
-			    getObjectModelId(param->getDeclType()->getName()),
-			    boolStr(param->isConst()), boolStr(param->isRefer()));
-			}
-    /*
-		    for(const auto &decl : oper->getDefinitionDeclarators())
-			{
-			fprintf(mFp, "      <FuncDefDecl name=\"%s\" type=\"%d\" "
-			    "const=\"%s\" ref=\"%s\" />\n",
-			    decl->getName().c_str(),
-			    getClassModelId(decl->getDeclType()->getName()),
-			    boolStr(decl->isConst()), boolStr(decl->isRefer()));
-			}
-    */
-		    for(const auto &decl : oper->getBodyVarDeclarators())
-			{
-			fprintf(mFp, "      <BodyVarDecl name=\"%s\" type=\"%d\" "
-			    "const=\"%s\" ref=\"%s\" />\n",
-			    decl->getName().c_str(),
-			    getObjectModelId(decl->getDeclType()->getName()),
-			    boolStr(decl->isConst()), boolStr(decl->isRefer()));
-			}
-		    writeStatements(&oper->getCondStatements(), 0);
-
-		    fprintf(mFp, "    </Operation>\n");
+		    moduleStr = "module=\"";
+		    moduleStr.appendInt(MIO_Module);
+		    moduleStr += "\" ";
 		    }
 		}
-            }
-        fprintf(mFp, "  </%s>\n", typeName);
+	    fprintf(mFp, "  <%s xmi.id=\"%d\" name=\"%s\" %s%s>\n",
+		typeName, classXmiId, translate(mtype.getName()).c_str(),
+		moduleStr.c_str(), lineNumStr);
+
+	    if(mtype.getObjectType() == otClass)
+		{
+		const ModelClassifier &classifier = static_cast<const ModelClassifier&>(mtype);
+		writeClassDefinition(classifier, isDefinedClass);
+		}
+	    fprintf(mFp, "  </%s>\n", typeName);
+	    }
         }
-}
+    }
 
 void ModelWriter::writeAssociation(const ModelAssociation &assoc)
-{
+    {
     if(mFp)
         {
         fprintf(mFp, "  <Generalization xmi.id=\"%d\" child=\"%d\" parent=\"%d\" "
@@ -276,7 +295,7 @@ void ModelWriter::writeAssociation(const ModelAssociation &assoc)
             newModelId(), getObjectModelId(assoc.getChild()->getName()),
             getObjectModelId(assoc.getParent()->getName()), assoc.getAccess().asStr());
         }
-}
+    }
 
 bool ModelWriter::writeFile(char const * const filename)
 {
@@ -292,7 +311,8 @@ bool ModelWriter::writeFile(char const * const filename)
 #endif
         for(auto &type : mModelData.mTypes)
             {
-	    ModelClassifier *cl = ModelObject::getClass(type);
+            /*
+	    ModelClassifier *cl = ModelObject::getClass(type.get());
 	    if(cl)
 		{
 		if(!(cl->getOutput() & ModelClassifier::O_DefineOperations))
@@ -300,6 +320,7 @@ bool ModelWriter::writeFile(char const * const filename)
 		if(!(cl->getOutput() & ModelClassifier::O_DefineAttributes))
 		    cl->clearAttributes();
 		}
+		*/
 	    writeType(*type);
             }
 #if(DEBUG_WRITE)

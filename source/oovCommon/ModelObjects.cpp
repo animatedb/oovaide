@@ -13,6 +13,7 @@
 #include <algorithm>
 #include <cassert>
 
+
 #define DEBUG_TYPES 0
 
 static void strReplace(const std::string &origPatt, const std::string &newPatt, std::string &str)
@@ -86,26 +87,13 @@ const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     return getDeclType() ? getClass(getDeclType()) : nullptr;
     }
 
-ModelOperation::~ModelOperation()
-    {
-    for(auto &params : mParameters)
-	{
-	delete params;
-	}
-    mParameters.clear();
-    for(auto &vd : mBodyVarDeclarators)
-	{
-	delete vd;
-	}
-    mBodyVarDeclarators.clear();
-    }
-
 ModelFuncParam *ModelOperation::addMethodParameter(const std::string &name, const ModelType *type,
     bool isConst)
     {
     ModelFuncParam *param = new ModelFuncParam(name, type);
     param->setConst(isConst);
-    mParameters.push_back(param);
+    /// @todo - use make_unique when supported.
+    addMethodParameter(std::unique_ptr<ModelFuncParam>(param));
     return param;
     }
 
@@ -115,7 +103,8 @@ ModelBodyVarDecl *ModelOperation::addBodyVarDeclarator(const std::string &name, 
     ModelBodyVarDecl *decl = new ModelBodyVarDecl(name, type);
     decl->setConst(isConst);
     decl->setRefer(isRef);
-    mBodyVarDeclarators.push_back(decl);
+    /// @todo - use make_unique when supported.
+    mBodyVarDeclarators.push_back(std::unique_ptr<ModelBodyVarDecl>(decl));
     return decl;
     }
 
@@ -126,22 +115,12 @@ bool ModelOperation::isDefinition() const
 
 void ModelClassifier::clearAttributes()
     {
-    for(auto &attr : mAttributes)
-	delete attr;
     mAttributes.clear();
     }
 
 void ModelClassifier::clearOperations()
     {
-    for(auto &oper : mOperations)
-	delete oper;
     mOperations.clear();
-    }
-
-ModelClassifier::~ModelClassifier()
-    {
-    clearAttributes();
-    clearOperations();
     }
 
 bool ModelClassifier::isDefinition() const
@@ -152,7 +131,8 @@ bool ModelClassifier::isDefinition() const
 ModelAttribute *ModelClassifier::addAttribute(const std::string &name, ModelType *attrType, Visibility scope)
     {
     ModelAttribute *attr = new ModelAttribute(name, attrType, scope);
-    mAttributes.push_back(attr);
+    /// @todo - use make_unique when supported.
+    addAttribute(std::unique_ptr<ModelAttribute>(attr));
     return attr;
     }
 
@@ -160,7 +140,7 @@ ModelOperation *ModelClassifier::addOperation(const std::string &name,
 	Visibility access, bool isConst)
     {
     ModelOperation *oper = new ModelOperation(name, access, isConst);
-    mOperations.push_back(oper);
+    addOperation(std::unique_ptr<ModelOperation>(oper));
     return oper;
     }
 
@@ -174,11 +154,24 @@ ModelOperation *ModelClassifier::findMatchingOperation(ModelOperation const * co
     return getOperation(oper->getName(), oper->isConst());
     }
 
-void ModelClassifier::takeAttribute(const ModelAttribute *attr)
+
+void ModelClassifier::replaceOperation(ModelOperation const * const operToReplace,
+	    std::unique_ptr<ModelOperation> &&newOper)
+	{
+	int index = findMatchingOperationIndex(operToReplace);
+	if(index != -1)
+	    {
+//	    mOperations.erase(mOperations.begin() + index);
+//	    mOperations.push_back(std::move(newOper));
+	    mOperations[index] = std::move(newOper);
+	    }
+	}
+
+void ModelClassifier::eraseAttribute(const ModelAttribute *attr)
     {
     for(size_t i=0; i<mAttributes.size(); i++)
 	{
-	if(mAttributes[i] == attr)
+	if(mAttributes[i].get() == attr)
 	    {
 	    mAttributes.erase(mAttributes.begin() + i);
 	    break;
@@ -186,11 +179,11 @@ void ModelClassifier::takeAttribute(const ModelAttribute *attr)
 	}
     }
 
-void ModelClassifier::takeOperation(const ModelOperation *oper)
+void ModelClassifier::eraseOperation(const ModelOperation *oper)
     {
     for(size_t i=0; i<mOperations.size(); i++)
 	{
-	if(mOperations[i] == oper)
+	if(mOperations[i].get() == oper)
 	    {
 	    mOperations.erase(mOperations.begin() + i);
 	    break;
@@ -203,7 +196,7 @@ void ModelClassifier::removeOperation(ModelOperation *oper)
     int index = -1;
     for(size_t i=0; i<mOperations.size(); i++)
 	{
-	if(oper == mOperations[i])
+	if(oper == mOperations[i].get())
 	    index = i;
 	}
     if(index != -1)
@@ -234,7 +227,7 @@ const ModelOperation *ModelClassifier::getOperation(const std::string &name, boo
     int index = getOperationIndex(name, isConst);
     if(index != -1)
 	{
-	oper = mOperations[index];
+	oper = mOperations[index].get();
 	}
     return oper;
     }
@@ -249,20 +242,8 @@ const ModelOperation *ModelClassifier::getOperationAnyConst(const std::string &n
 
 void ModelData::clear()
     {
-    for(auto &mod : mModules)
-	{
-	delete mod;
-	}
     mModules.clear();
-    for(auto &assoc : mAssociations)
-	{
-	delete assoc;
-	}
     mAssociations.clear();
-    for(auto &type : mTypes)
-	{
-	delete type;
-	}
     mTypes.clear();
     }
 
@@ -315,7 +296,7 @@ void ModelData::resolveModelIds()
 	{
 	if(type->getObjectType() == otClass)
 	    {
-	    ModelClassifier *classifier = ModelObject::getClass(type);
+	    ModelClassifier *classifier = ModelObject::getClass(type.get());
 	    for(auto &attr : classifier->getAttributes())
 		{
 		resolveDecl(*attr);
@@ -365,27 +346,132 @@ void ModelData::resolveModelIds()
 */
     }
 
+bool ModelData::isTypeReferencedByStatements(ModelStatement *stmt, ModelType const &type) const
+    {
+    bool referenced = false;
+    if(stmt->getObjectType() == otCondStatement)
+	{
+	ModelCondStatements *condStmt = static_cast<ModelCondStatements *>(stmt);
+	for(auto &childstmt : condStmt->getStatements())
+	    {
+	    referenced = isTypeReferencedByStatements(childstmt.get(), type);
+	    if(referenced)
+		{
+		break;
+		}
+	    }
+	}
+    else if(stmt->getObjectType() == otOperCall)
+	{
+	if(static_cast<ModelOperationCall *>(stmt)->getDecl().getDeclType() == &type)
+	    {
+	    referenced = true;
+	    }
+	}
+    return referenced;
+    }
+
+bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) const
+    {
+    bool referenced = false;
+    for(const auto &type : mTypes)
+	{
+	if(type->getObjectType() == otClass)
+	    {
+	    ModelClassifier *classifier = ModelObject::getClass(type.get());
+	    // Only defined classes in the parsed translation unit have a module.
+	    if(classifier->getModule())
+		{
+		for(auto &attr : classifier->getAttributes())
+		    {
+		    if(attr->getDeclType() == &checkType)
+			{
+			referenced = true;
+			break;
+			}
+		    }
+		}
+	    if(!referenced)
+		{
+		for(auto &oper : classifier->getOperations())
+		    {
+		    // Only defined operations in the translation unit have a module.
+		    if(oper->getModule())
+			{
+			// Check function parameters.
+			for(auto &param : oper->getParams())
+			    {
+			    if(param->getDeclType() == &checkType)
+				{
+				referenced = true;
+				break;
+				}
+			    }
+			if(!referenced)
+			    {
+			    // Check function call decls.
+			    ModelCondStatements &stmts = oper->getCondStatements();
+			    referenced = isTypeReferencedByStatements(&stmts, checkType);
+			    }
+			if(!referenced)
+			    {
+			    // Check body variables.
+			    for(auto &vd : oper->getBodyVarDeclarators())
+				{
+				if(vd->getDeclType() == &checkType)
+				    {
+				    referenced = true;
+				    break;
+				    }
+				}
+			    }
+			}
+		    }
+		}
+	    if(referenced)
+		{
+		break;
+		}
+	    }
+	}
+    // Check relations.
+    if(!referenced)
+	{
+	for(auto &assoc : mAssociations)
+	    {
+	    if(assoc->getChild() == &checkType || assoc->getParent() == &checkType)
+		{
+		referenced = true;
+		break;
+		}
+	    }
+	}
+    return referenced;
+    }
+
 void ModelData::takeAttributes(ModelClassifier *sourceType, ModelClassifier *destType)
     {
     for(auto &attr : sourceType->getAttributes())
 	{
-	sourceType->takeAttribute(attr);
-	destType->addAttribute(attr);
+	ModelAttribute *attrPtr = attr.get();
+	destType->addAttribute(std::move(attr));
+	sourceType->eraseAttribute(attrPtr);
 	}
     for(auto &oper : sourceType->getOperations())
 	{
-	ModelOperation *destOper = destType->findMatchingOperation(oper);
+	ModelOperation *destOper = destType->findMatchingOperation(oper.get());
 	if(destOper && destOper->isDefinition())
 	    {
 	    // dest operation already has a good definition.
 	    }
 	else
 	    {
-	    sourceType->takeOperation(oper);
+	    ModelOperation *operPtr = oper.get();
 	    if(destOper)
-		destType->replaceOperation(destOper, oper);
+		destType->replaceOperation(destOper, std::move(oper));
 	    else
-		destType->addOperation(oper);
+		destType->addOperation(std::move(oper));
+	    sourceType->eraseOperation(operPtr);
 	    }
 	}
     // Function parameters have references to types, but they do not need to
@@ -427,7 +513,7 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
 	{
 	if(type->getObjectType() == otClass)
 	    {
-	    ModelClassifier *classifier = ModelObject::getClass(type);
+	    ModelClassifier *classifier = ModelObject::getClass(type.get());
 	    for(auto &attr : classifier->getAttributes())
 		{
 		if(attr->getDeclType() == existingType)
@@ -456,7 +542,7 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
 	    }
 	}
     // Resolve relations.
-    for(auto assoc : mAssociations)
+    for(auto &assoc : mAssociations)
         {
 	if(assoc->getChild() == existingType)
 	    {
@@ -467,18 +553,17 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
 	    assoc->setParentClass(newType);
 	    }
         }
-    deleteType(existingType);
+    eraseType(existingType);
     }
 
-void ModelData::deleteType(ModelType *existingType)
+void ModelData::eraseType(ModelType *existingType)
     {
     // Delete the old type
     for(size_t ci=0; ci<mTypes.size(); ci++)
 	{
-	if(mTypes[ci] == existingType)
+	if(mTypes[ci].get() == existingType)
 	    mTypes.erase(mTypes.begin()+ci);
 	}
-    delete existingType;
     }
 
 const ModelType *ModelData::getTypeRef(char const * const typeName) const
@@ -512,7 +597,8 @@ ModelObject *ModelData::createObject(ObjectType type, const std::string &id)
 	case otDatatype:
 	    {
 	    ModelType *type = new ModelType(id);
-	    addType(type);
+	    /// @todo - use make_unique when supported.
+	    addType(std::unique_ptr<ModelType>(type));
 	    obj = type;
 	    }
 	    break;
@@ -520,7 +606,8 @@ ModelObject *ModelData::createObject(ObjectType type, const std::string &id)
 	case otClass:
 	    {
 	    ModelClassifier *classifier = new ModelClassifier(id);
-	    addType(classifier);
+	    /// @todo - use make_unique when supported.
+	    addType(std::unique_ptr<ModelType>(classifier));
 	    obj = classifier;
 	    break;
 	    }
@@ -645,15 +732,15 @@ static inline bool compareStrs(char const * const tstr1, char const * const tstr
     return (strcmp(tstr1, tstr2) < 0);
     }
 
-void ModelData::addType(ModelType *type)
+void ModelData::addType(std::unique_ptr<ModelType> &&type)
     {
 #if(BINARYSPEED)
     std::string baseTypeName = getBaseType(type->getName().c_str());
     type->setName(baseTypeName.c_str());
     auto it = std::upper_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
-	[](char const * const mod1Name, ModelType const *mod2) -> bool
+	[](char const * const mod1Name, std::unique_ptr<ModelType> &mod2) -> bool
 	{ return(compareStrs(mod1Name, mod2->getName().c_str())); } );
-    mTypes.insert(it, type);
+    mTypes.insert(it, std::move(type));
 #else
     mTypes.push_back(type);
 #endif
@@ -666,12 +753,12 @@ const ModelType *ModelData::findType(char const * const name) const
     // This comparison must produce the same sort order as addType.
     std::string baseTypeName = getBaseType(name);
     auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
-	[](ModelType const *mod1, char const * const mod2Name) -> bool
+	[](std::unique_ptr<ModelType> const &mod1, char const * const mod2Name) -> bool
 	{ return(compareStrs(mod1->getName().c_str(), mod2Name)); } );
     if(iter != mTypes.end())
 	{
 	if(baseTypeName.compare((*iter)->getName()) == 0)
-	    type = *iter;
+	    type = (*iter).get();
 	}
 #else
     std::string baseTypeName = getBaseType(name);
@@ -704,7 +791,7 @@ ModelModule const * const ModelData::findModuleById(int id)
 	    {
 	    if(mModules[i]->getModelId() == id)
 		{
-		mod = mModules[i];
+		mod = mModules[i].get();
 		break;
 		}
 	    }
@@ -725,7 +812,7 @@ const ModelType *ModelData::findTypeByModelId(int id) const
 	{
 	if (type->getModelId() == id)
 	    {
-	    rettype = type;
+	    rettype = type.get();
 	    break;
 	    }
 	}
@@ -810,7 +897,7 @@ void ModelData::getRelatedFuncParamClasses(const ModelClassifier &classifier,
 	    {
 	    const ModelClassifier *cl = param->getDeclClassType();
 	    if(cl)
-		declClasses.push_back(ModelDeclClass(param, cl));
+		declClasses.push_back(ModelDeclClass(param.get(), cl));
 	    }
 	}
     }
@@ -825,7 +912,7 @@ void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
 	    {
 	    const ModelClassifier *cl = vd->getDeclClassType();
 	    if(cl)
-		declClasses.push_back(ModelDeclClass(vd, cl));
+		declClasses.push_back(ModelDeclClass(vd.get(), cl));
 	    }
 	}
     }

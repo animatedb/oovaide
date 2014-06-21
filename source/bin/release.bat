@@ -25,6 +25,11 @@ xcopy /s "%gtk%\share\glib-2.0\schemas" %dst%\share\glib-2.0\schemas\
 xcopy /s "%clang%\bin\libclang.dll" %dst%\bin\
 xcopy /s "%clang%\lib\*.*" %dst%\bin\
 
+; also copy to non-release build directory
+rd /s /q .\clang
+xcopy /s "%clang%\bin\libclang.dll" .\
+xcopy /s /i "%clang%\lib\*.*" .\
+
 copy "%gtk%\bin\libatk-1.0-0.dll" %dst%\bin
 copy "%gtk%\bin\libcairo-2.dll" %dst%\bin
 copy "%gtk%\bin\libcairo-gobject-2.dll" %dst%\bin

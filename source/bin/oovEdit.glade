@@ -6,7 +6,7 @@
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
     <property name="type_hint">dialog</property>
-    <signal name="delete-event" handler="on_FindDialog_delete_event" swapped="no"/>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="can_focus">False</property>

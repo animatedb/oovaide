@@ -485,7 +485,9 @@ bool ComponentsFile::excludesMatch(const std::string &filePath,
     bool exclude = false;
     for(const auto &str : excludes)
 	{
-	if(filePath.find(str) != std::string::npos)
+	FilePath normFilePath(filePath, FP_Dir);
+	FilePath normExcludePath(str, FP_Dir);
+	if(normFilePath.find(normExcludePath) != std::string::npos)
 	    {
 	    exclude = true;
 	    break;

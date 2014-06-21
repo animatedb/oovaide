@@ -1,3 +1,4 @@
+Comp-inc-examples/names|/home/dave/software/oovcde/2.0/svn/trunk/examples/names/twinkle.h
 Comp-inc-examples/sharedlibgtk/kingdom|/home/dave/software/oovcde/2.0/svn/trunk/examples/sharedlibgtk/kingdom/kingdom.h
 Comp-inc-examples/sharedlibgtk/resources/horses|/home/dave/software/oovcde/2.0/svn/trunk/examples/sharedlibgtk/resources/horses/horses.h
 Comp-inc-examples/sharedlibgtk/resources/men|/home/dave/software/oovcde/2.0/svn/trunk/examples/sharedlibgtk/resources/men/men.h
@@ -14,7 +15,7 @@ Comp-inc-oovcde|/home/dave/software/oovcde/2.0/svn/trunk/oovcde/BuildSettingsDia
 Comp-inc-test/TestCpp|/home/dave/software/oovcde/2.0/svn/trunk/test/TestCpp/TestCpp.h;/home/dave/software/oovcde/2.0/svn/trunk/test/TestCpp/TestDebug.h;/home/dave/software/oovcde/2.0/svn/trunk/test/TestCpp/TestProcess.h
 Comp-inc-test/python/oovCppParserIn|/home/dave/software/oovcde/2.0/svn/trunk/test/python/oovCppParserIn/testAggregation.h;/home/dave/software/oovcde/2.0/svn/trunk/test/python/oovCppParserIn/testInherit.h;/home/dave/software/oovcde/2.0/svn/trunk/test/python/oovCppParserIn/testTemplates.h
 Comp-src-.metadata/.plugins/org.eclipse.cdt.make.core|/home/dave/software/oovcde/2.0/svn/trunk/.metadata/.plugins/org.eclipse.cdt.make.core/specs.cpp
-Comp-src-build-cmake/CMakeFiles/CompilerIdCXX|/home/dave/software/oovcde/2.0/svn/trunk/build-cmake/CMakeFiles/CompilerIdCXX/CMakeCXXCompilerId.cpp
+Comp-src-examples/names|/home/dave/software/oovcde/2.0/svn/trunk/examples/names/twinkle.cpp
 Comp-src-examples/sharedlibgtk/kingdom|/home/dave/software/oovcde/2.0/svn/trunk/examples/sharedlibgtk/kingdom/kingdom.cpp
 Comp-src-examples/sharedlibgtk/resources/horses|/home/dave/software/oovcde/2.0/svn/trunk/examples/sharedlibgtk/resources/horses/horses.cpp
 Comp-src-examples/sharedlibgtk/resources/men|/home/dave/software/oovcde/2.0/svn/trunk/examples/sharedlibgtk/resources/men/men.cpp
@@ -30,11 +31,4 @@ Comp-src-oovGuiCommon|/home/dave/software/oovcde/2.0/svn/trunk/oovGuiCommon/Buil
 Comp-src-oovcde|/home/dave/software/oovcde/2.0/svn/trunk/oovcde/BuildSettingsDialog.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/CairoDrawer.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ClassDiagram.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ClassDrawer.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ClassGenes.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ClassGraph.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ComponentDiagram.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ComponentDrawer.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ComponentGraph.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/ComponentList.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/DiagramDrawer.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/FastGene.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/Graph.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/Journal.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/OperationDiagram.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/OperationDrawer.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/OperationGraph.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/Options.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/OptionsDialog.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/PackagesDialogs.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/Svg.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/Xmi2Object.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/XmlParser.cpp;/home/dave/software/oovcde/2.0/svn/trunk/oovcde/oovcde.cpp
 Comp-src-test/TestCpp|/home/dave/software/oovcde/2.0/svn/trunk/test/TestCpp/TestCpp.cpp;/home/dave/software/oovcde/2.0/svn/trunk/test/TestCpp/TestDebug.cpp;/home/dave/software/oovcde/2.0/svn/trunk/test/TestCpp/TestProcess.cpp
 Comp-src-test/python/oovCppParserIn|/home/dave/software/oovcde/2.0/svn/trunk/test/python/oovCppParserIn/testAggregation.cpp;/home/dave/software/oovcde/2.0/svn/trunk/test/python/oovCppParserIn/testStatements.cpp
-Comp-type-oovBuilder|Program
-Comp-type-oovCMaker|Program
-Comp-type-oovCommon|StaticLib
-Comp-type-oovCppParser|StaticLib
-Comp-type-oovEdit|Program
-Comp-type-oovGuiCommon|StaticLib
-Comp-type-oovcde|Program
-Components|.metadata/.plugins/org.eclipse.cdt.make.core;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCppParser;oovEdit;oovGuiCommon;oovcde;test/TestCpp;test/python/oovCppParserIn
+Components|.metadata/.plugins/org.eclipse.cdt.make.core;examples/names;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCppParser;oovEdit;oovGuiCommon;oovcde;test/TestCpp;test/python/oovCppParserIn

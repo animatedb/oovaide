@@ -56,10 +56,11 @@ int main(int argc, char const * const argv[])
     else
 	{
 	fprintf(stderr, "OovBuilder version %s\n", OOV_VERSION);
-        fprintf(stderr, "oovBuilder: Args are: oovProjectDir [args]...\n");
-        fprintf(stderr, "args are:\n");
-        fprintf(stderr, "   -bld-<mode>   mode is Debug or Release, no flag is build analysis docs\n");
-        fprintf(stderr, "   -v            verbose\n");
+        fprintf(stderr, "Command format:    <oovProjectDir> [args]...\n");
+        fprintf(stderr, "  The oovProjectDir can have exclusion paths using <oovProjectDir>!<path> \n");
+        fprintf(stderr, "  The args are:\n");
+        fprintf(stderr, "    -bld-<mode>   mode is Debug or Release, no flag is build analysis docs\n");
+        fprintf(stderr, "    -v            verbose\n");
 	}
 
     if(success)
@@ -82,11 +83,13 @@ int main(int argc, char const * const argv[])
 	if(cfg.isConfigDifferent(buildConfigName.c_str(),
 		BuildConfig::CT_ExtPathArgsCrc))
 	    {
+	    /*
 	    for(auto const &arg : compFinder.getProject().getExternalArgs())
 		{
 		printf("Scanning %s\n", &arg[3]);
 		compFinder.scanExternalProject(&arg[3]);
 		}
+		*/
 	    for(auto const &pkg : compFinder.getProject().getProjectPackages().
 		    getPackages())
 		{

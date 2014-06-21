@@ -15,8 +15,8 @@ Windows versions:
 	Using Oovcde to build requires MinGW or MinGW-builds because
 	they supply the nm and ld tools.
 
-	Required for analysis with standard MinGW include files:
-	MinGW:
+	Required for analysis if using standard include files:
+	MinGW or cygwin:
 		For Oovcde Analysis: CLang has hard coded paths,
 		typical path is \MinGW, use -v to see paths
 
@@ -32,7 +32,7 @@ Windows versions:
 		File: "GTK+ 3.6.4 Bundle for Windows"
 			Extract to "C:\Program Files\GTK+-Bundle-3.6.4"
 
-	Clang 3.4:
+	Clang 3.4 or 3.4.1:
 		From: http://llvm.org/releases/download.html
 		File: "Clang for Windows (.sig)"
 			Install to C:\Program Files\LLVM

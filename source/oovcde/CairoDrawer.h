@@ -47,8 +47,8 @@ class NullDrawer:public DiagramDrawer
 	    {}
 	virtual void drawText(const GraphPoint &p, char const * const text)
 	    {}
-	virtual int getTextExtentWidth(char const * const name) const;
-	virtual int getTextExtentHeight(char const * const name) const;
+	virtual float getTextExtentWidth(char const * const name) const;
+	virtual float getTextExtentHeight(char const * const name) const;
     protected:
 	cairo_t *cr;
     };
@@ -61,6 +61,7 @@ class CairoDrawer:public NullDrawer
 	    {}
 	virtual void setDiagramSize(GraphSize size)
 	    {}
+	virtual void setFontSize(double size);
 	virtual void drawRect(const GraphRect &rect);
 	virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
 		bool dashed=false);

@@ -132,7 +132,7 @@ class ComponentFinder:public dirRecurser
     private:
 	mutable std::string mRootPathName;
 	// This is overwritten for every external project.
-	std::vector<std::string> mExcludes;
+	std::vector<std::string> mExcludeDirs;
 
 	ScannedComponentsInfo mScannedInfo;
 

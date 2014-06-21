@@ -23,6 +23,7 @@ bool srcFileParser::analyzeSrcFiles(char const * const srcRootDir,
     setupQueue(1);
 #endif
     mIncDirArgs = mComponentFinder.getAllIncludeDirs();
+    mExcludeDirs = mComponentFinder.getProject().getProjectExcludeDirs();
     bool success = recurseDirs(srcRootDir);
     mIncDirArgs.clear();
     waitForCompletion();
@@ -71,53 +72,56 @@ void Logger::logProcessStatus(bool success)
 bool srcFileParser::processFile(const std::string &srcFile)
     {
     bool success = true;
-    FilePath ext(srcFile, FP_File);
-    if(isHeader(ext.c_str()) || isSource(ext.c_str()))
-        {
-        struct OovStat32 srcFileStat;
-        bool success = (OovStatFunc(srcFile.c_str(), &srcFileStat) == 0);
-        if(success)
-            {
-            std::string outFileName;
-	    std::string srcRoot = mSrcRootDir;
-	    ensureLastPathSep(srcRoot);
-	    Project::makeAnalysisFileName(srcFile, srcRoot, mAnalysisDir, outFileName);
-	    if(FileStat::isOutputOld(outFileName.c_str(), srcFile.c_str()))
+    if(!ComponentsFile::excludesMatch(srcFile, mExcludeDirs))
+	{
+	FilePath ext(srcFile, FP_File);
+	if(isHeader(ext.c_str()) || isSource(ext.c_str()))
+	    {
+	    struct OovStat32 srcFileStat;
+	    bool success = (OovStatFunc(srcFile.c_str(), &srcFileStat) == 0);
+	    if(success)
 		{
-#ifdef __linux__
-		char const * const procPath = "./oovCppParser";
-#else
-		char const * const procPath = "./oovCppParser.exe";
-#endif
-		CppChildArgs ca;
-		ca.addArg(procPath);
-		ca.addArg(srcFile.c_str());
-		ca.addArg(mSrcRootDir);
-		ca.addArg(mAnalysisDir);
-
-		ca.addCompileArgList(mComponentFinder, mIncDirArgs);
-		addTask(ca);
-/*
-		sLog.logProcess(srcFile.c_str(), ca.getArgv(), ca.getArgc());
-		printf("\noovBuilder Analyzing: %s\n", srcFile.c_str());
-		fflush(stdout);
-		OovProcessStdListener listener;
-		int exitCode;
-		OovPipeProcess pipeProc;
-		success = pipeProc.spawn(procPath, ca.getArgv(), listener, exitCode);
-		sLog.logProcessStatus(success);
-		if(!success || exitCode != 0)
+		std::string outFileName;
+		std::string srcRoot = mSrcRootDir;
+		ensureLastPathSep(srcRoot);
+		Project::makeAnalysisFileName(srcFile, srcRoot, mAnalysisDir, outFileName);
+		if(FileStat::isOutputOld(outFileName.c_str(), srcFile.c_str()))
 		    {
-		    fprintf(stderr, "oovBuilder: Errors from %s\nArguments were: ", procPath);
-		    ca.printArgs(stderr);
+    #ifdef __linux__
+		    char const * const procPath = "./oovCppParser";
+    #else
+		    char const * const procPath = "./oovCppParser.exe";
+    #endif
+		    CppChildArgs ca;
+		    ca.addArg(procPath);
+		    ca.addArg(srcFile.c_str());
+		    ca.addArg(mSrcRootDir);
+		    ca.addArg(mAnalysisDir);
+
+		    ca.addCompileArgList(mComponentFinder, mIncDirArgs);
+		    addTask(ca);
+    /*
+		    sLog.logProcess(srcFile.c_str(), ca.getArgv(), ca.getArgc());
+		    printf("\noovBuilder Analyzing: %s\n", srcFile.c_str());
+		    fflush(stdout);
+		    OovProcessStdListener listener;
+		    int exitCode;
+		    OovPipeProcess pipeProc;
+		    success = pipeProc.spawn(procPath, ca.getArgv(), listener, exitCode);
+		    sLog.logProcessStatus(success);
+		    if(!success || exitCode != 0)
+			{
+			fprintf(stderr, "oovBuilder: Errors from %s\nArguments were: ", procPath);
+			ca.printArgs(stderr);
+			}
+		    fflush(stdout);
+		    fflush(stderr);
+    */
 		    }
-		fflush(stdout);
-		fflush(stderr);
-*/
+		/// @todo - notify oovcde when files are ready to parse?
 		}
-	    /// @todo - notify oovcde when files are ready to parse?
-            }
-        }
+	    }
+	}
     return success;
     }
 

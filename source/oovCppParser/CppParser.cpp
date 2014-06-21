@@ -20,6 +20,15 @@
 #include <algorithm>
 
 
+// This must save a superset of what gets written to the file. For exmample,
+// when parsing a class in a header file, the access specifiers must be
+// saved for the operations in the class, so that when an operation is
+// defined in a source file, the operation can be defined with the
+// correct access specifier.
+//
+// setModule is called for every class defined in the current TU.
+// setModule is called for every operation defined in the current TU.
+
 #define DEBUG_PARSE 0
 #if(DEBUG_PARSE)
 static DebugFile sLog("DebugCppParse.txt");
@@ -149,7 +158,7 @@ static void dumpCursor(FILE *fp, char const * const str, CXCursor cursor)
 	CXStringDisposer name(clang_getCursorSpelling(cursor));
 	CXStringDisposer spstr = clang_getCursorKindSpelling(clang_getCursorKind(cursor));
 	std::string tokenStr;
-	buildTokenStringForCursor(cursor, tokenStr);
+	appendCursorTokenString(cursor, tokenStr);
 	if(tokenStr.length() > 100)
 	    {
 	    tokenStr.resize(100);
@@ -405,7 +414,7 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
     CXCursorKind ckind = clang_getCursorKind(cursor);
     if(ckind == CXCursor_CXXBaseSpecifier)
 	{
-	std::string fn = getFileLoc(cursor);
+	FilePath fn(getFileLoc(cursor), FP_File);
 	if(fn == mTopParseFn)
 	    {
 	    // These have to be made datatypes (not classes) so that these don't define
@@ -415,7 +424,8 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
 	    ModelClassifier *parent = static_cast<ModelClassifier*>(createOrGetDataTypeRef(cursor));
 	    ModelAssociation *assoc = new ModelAssociation(child,
 		parent, getAccess(cursor));
-	    mModelData.mAssociations.push_back(assoc);
+	    /// @todo - use make_unique when supported.
+	    mModelData.mAssociations.push_back(std::unique_ptr<ModelAssociation>(assoc));
 	    }
 	}
     else if(ckind == CXCursor_CXXAccessSpecifier)
@@ -429,10 +439,16 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
 	    {
 	    case CXType_FunctionProto:
 		{
+		// Add all operations in all TU's so that the correct access is defined.
 		CXStringDisposer str(clang_getCursorSpelling(cursor));
 		bool isConst = isMethodConst(cursor);
 		mOperation = mClassifier->addOperation(str, mClassMemberAccess, isConst);
 		addOperationParts(cursor, true);
+		FilePath fn(getFileLoc(cursor), FP_File);
+		if(fn == mTopParseFn)
+		    {
+		    mOperation->setModule(mModelData.mModules[0].get());
+		    }
 		}
 		break;
 
@@ -506,7 +522,7 @@ static CXChildVisitResult getConditionStr(CXCursor cursor, CXCursor parent,
 	    cursKind == CXCursor_FirstExpr ||
 	    cursKind == CXCursor_CallExpr)
 	{
-	buildTokenStringForCursor(cursor, *op);
+	appendConditionString(cursor, *op);
 	removeLastNonIdentChar(*op);
 	return CXChildVisit_Break;
 	}
@@ -591,14 +607,14 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    }
 	    break;
 
-	case CXCursor_NullStmt:
-	    break;
+//	case CXCursor_NullStmt:
+//	    break;
 
 	case CXCursor_CompoundStmt:
 	    {
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    std::string stmtStr;
-	    buildTokenStringForCursor(cursor, stmtStr);
+	    appendCursorTokenString(cursor, stmtStr);
 	    int len = stmtStr.length();
 	    if(len >= 4)
 		{
@@ -632,19 +648,19 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 
 void CppParser::addRecord(CXCursor cursor, Visibility vis)
     {
-    // Save all classes so that the access specifiers in the declared classes from other TU's are saved.
+    // Save all classes so that the access specifiers in the declared classes
+    // from other TU's are saved. (Ex, the header for this source file)
     std::string name = getFullBaseTypeName(cursor);
     mClassifier = createOrGetClassRef(name.c_str());
     if(mClassifier)
 	{
 	int line;
 	std::string fn = getFileLoc(cursor, &line);
-	// Indicate to the modelwriter, that this class should be output with
-	// this TU.
-	if(fn == mTopParseFn)
+	// Indicate to the modelwriter, that this class is in this TU.
+	FilePath normFn(fn, FP_File);
+	if(normFn == mTopParseFn)
 	    {
-	    mClassifier->setOutput(ModelClassifier::O_DefineClass);
-	    mClassifier->setModule(mModelData.mModules[0]);
+	    mClassifier->setModule(mModelData.mModules[0].get());
 	    }
 	else
 	    {
@@ -707,22 +723,21 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	    if(mClassifier)
 		{
 		int line;
-		std::string fn = getFileLoc(cursor, &line);
+		FilePath fn(getFileLoc(cursor, &line), FP_File);
 		// For CPP files, output the class definition also, so that the
 		// function definitions get written out as part of the class. The
 		// reader of the files will have to resolve duplicate .h/.cpp definitions.
 		if(fn == mTopParseFn)
 		    {
-		    mClassifier->setOutput(ModelClassifier::O_DefineOperations);
-		    }
-		CXStringDisposer funcName(clang_getCursorSpelling(cursor));
-		/// @todo - this doesn't work for overloaded functions.
-		mOperation = mClassifier->getOperation(funcName, isMethodConst(cursor));
-		if(mOperation)
-		    {
-		    addOperationParts(cursor, false);
-		    mOperation->setModule(mModelData.mModules[0]);
-		    mOperation->setLineNum(line);
+		    CXStringDisposer funcName(clang_getCursorSpelling(cursor));
+		    /// @todo - this doesn't work for overloaded functions.
+		    mOperation = mClassifier->getOperation(funcName, isMethodConst(cursor));
+		    if(mOperation)
+			{
+			addOperationParts(cursor, false);
+			mOperation->setModule(mModelData.mModules[0].get());
+			mOperation->setLineNum(line);
+			}
 		    }
 		}
 	    }
@@ -783,11 +798,12 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
     {
     eErrorTypes errType = ET_None;
 
-    mTopParseFn = srcFn;
+    mTopParseFn.setPath(srcFn, FP_File);
     /// Create a module so the modelwriter has a filename.
-    ModelModule module;
-    module.setModulePath(srcFn);
-    mModelData.mModules.push_back(&module);
+    ModelModule *module = new ModelModule();;
+    module->setModulePath(srcFn);
+    /// @todo - use make_unique when supported.
+    mModelData.mModules.push_back(std::unique_ptr<ModelModule>(module));
     mIncDirDeps.read(outDir, Project::getAnalysisIncDepsFilename());
 
     CXIndex index = clang_createIndex(1, 1);
@@ -817,7 +833,7 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
 	fprintf(sLog.mFp, "DUMP TYPES\n");
 	for(const auto & tp: mModelData.mTypes)
 	    {
-	    fprintf(sLog.mFp, "%s %p\n", tp->getName().c_str(), tp);
+	    fprintf(sLog.mFp, "%s %p\n", tp.get()->getName().c_str(), tp.get());
 	    }
 	fflush(sLog.mFp);
 #endif

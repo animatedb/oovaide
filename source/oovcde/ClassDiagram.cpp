@@ -35,12 +35,30 @@ void ClassDiagram::initialize(Builder &builder, const ModelData &modelData,
     mBuilder = &builder;
     mModelData = &modelData;
     mListener = listener;
-    mClassGraph.initialize(builder.getWidget("DiagramDrawingarea"));
+    mClassGraph.initialize(getDiagramWidget());
     }
 
 void ClassDiagram::updateGraph()
     {
     mClassGraph.updateGraph(getModelData(), getDrawOptions());
+    updateGraphSize();
+    }
+
+void ClassDiagram::updateGraphSize()
+    {
+    GraphSize size = mClassGraph.getGraphSize().getZoomed(getDesiredZoom(),
+	    getDesiredZoom());
+    GtkWidget *widget = getDiagramWidget();
+    gtk_widget_set_size_request(widget, size.x, size.y);
+    }
+
+void ClassDiagram::relayout()
+    {
+    if(mClassGraph.getNodes().size() == 0)
+	{
+	clearGraphAndAddClass(getLastSelectedClassName().c_str());
+	}
+    updateGraph();
     }
 
 void ClassDiagram::clearGraphAndAddClass(char const * const className)
@@ -48,6 +66,7 @@ void ClassDiagram::clearGraphAndAddClass(char const * const className)
     mClassGraph.clearGraphAndAddNode(getModelData(),
 	    getDrawOptions(), className, NODE_DEPTH);
     setLastSelectedClassName(className);
+    updateGraphSize();
     }
 
 void ClassDiagram::addClass(char const * const className)
@@ -62,14 +81,19 @@ void ClassDiagram::drawSvgDiagram(FILE *fp)
     SvgDrawer svgDrawer(fp, cairo.getCairo());
     ClassDrawer drawer(svgDrawer);
 
+    drawer.setZoom(getDesiredZoom());
     drawer.drawDiagram(mClassGraph, getDrawOptions());
     }
 
 void ClassDiagram::drawToDrawingArea()
     {
-    mClassGraph.drawDiagram(getDrawOptions());
+    drawDiagram(getDrawOptions());
     }
 
+ClassNode *ClassDiagram::getNode(int x, int y)
+    {
+    return mClassGraph.getNode(x / getDesiredZoom(), y / getDesiredZoom());
+    }
 
 static ClassDiagram *gClassDiagram;
 static struct StartPosInfo
@@ -86,7 +110,7 @@ void ClassDiagram::buttonPressEvent(const GdkEventButton *event)
 void ClassDiagram::displayContextMenu(guint button, guint32 acttime, gpointer data)
     {
     GdkEventButton *event = static_cast<GdkEventButton*>(data);
-    ClassNode *node = getClassGraph().getNode(event->x, event->y);
+    ClassNode *node = getNode(event->x, event->y);
     char const * const nodeMenus[] =
 	{
 	"GotoClassMenuitem",
@@ -115,25 +139,25 @@ void ClassDiagram::buttonReleaseEvent(const GdkEventButton *event)
 //	if(abs(event->x - gPressInfo.startPos.x) > 5 ||
 //		abs(event->y - gPressInfo.startPos.y) > 5)
 	    {
-	    ClassNode *node = getClassGraph().getNode(
+	    ClassNode *node = getNode(
 		    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
 	    if(node)
 		{
-		GraphPoint offset = gStartPosInfo.startPos;
-		offset.sub(node->getPosition());
-
-		GraphPoint newPos = GraphPoint(event->x, event->y);
-		newPos.sub(offset);
+		GraphPoint clickOffset(event->x, event->y);
+		clickOffset.sub(gStartPosInfo.startPos);
+		GraphPoint newPos(node->getPosition());
+		newPos.add(clickOffset.getZoomed(1/getDesiredZoom(),
+			1/getDesiredZoom()));
 
 		node->setPosition(newPos);
 		getClassGraph().setModified();
-		getClassGraph().drawDiagram(getDrawOptions());
+		drawDiagram(getDrawOptions());
 		}
 	    }
 //	else
 	    {
 /*
-	    DiagramNode *node = gDiagramGraph.getNode(event->x, event->y);
+	    DiagramNode *node = getNode(event->x, event->y);
 	    if(node)
 		{
 //		gDiagramGraph.clearGraph();
@@ -152,11 +176,33 @@ void ClassDiagram::buttonReleaseEvent(const GdkEventButton *event)
 	}
     }
 
+static void clearBackground(cairo_t *cr)
+    {
+    cairo_set_source_rgb(cr, 255,255,255);
+    cairo_paint(cr);
+    }
+
+void ClassDiagram::drawDiagram(const ClassDrawOptions &options)
+{
+    GtkWidget *widget = getDiagramWidget();
+    GtkCairoContext cairo(widget);
+    clearBackground(cairo.getCairo());
+    cairo_set_source_rgb(cairo.getCairo(), 0,0,0);
+    cairo_set_line_width(cairo.getCairo(), 1.0);
+    CairoDrawer cairoDrawer(cairo.getCairo());
+    ClassDrawer drawer(cairoDrawer);
+
+    drawer.setZoom(getDesiredZoom());
+    drawer.drawDiagram(getClassGraph(), options);
+    cairo_stroke(cairo.getCairo());
+}
+
+
 // Class Diagram Popup menu
 
 extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getClassGraph().getNode(gStartPosInfo.startPos.x,
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
 	    gStartPosInfo.startPos.y);
     if(node)
 	{
@@ -166,20 +212,24 @@ extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(GtkWidget *widget,
 
 extern "C" G_MODULE_EXPORT void on_RelayoutMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    gClassDiagram->getClassGraph().updateGraph(gClassDiagram->getModelData(),
-	    getDrawOptions());
+    gClassDiagram->relayout();
     }
 
 void handlePopup(ClassGraph::eAddNodeTypes addType)
     {
-    ClassNode *node = gClassDiagram->getClassGraph().getNode(gStartPosInfo.startPos.x,
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
 	    gStartPosInfo.startPos.y);
     if(node)
 	{
-	gClassDiagram->getClassGraph().addRelatedNodes(gClassDiagram->getModelData(),
-		node->getType(), getDrawOptions(), addType, 2);
-	gClassDiagram->getClassGraph().updateGraph(gClassDiagram->getModelData(),
-		getDrawOptions());
+	static int depth = 0;
+	depth++;
+	if(depth == 1)
+	    {
+	    gClassDiagram->getClassGraph().addRelatedNodesRecurse(gClassDiagram->getModelData(),
+		    node->getType(), getDrawOptions(), addType, 2);
+	    gClassDiagram->updateGraph();
+	    }
+	depth--;
 	}
     }
 
@@ -235,29 +285,27 @@ extern "C" G_MODULE_EXPORT void on_AddFuncBodyVarUsersMenuitem_activate(GtkWidge
 
 extern "C" G_MODULE_EXPORT void on_RemoveClassMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getClassGraph().getNode(gStartPosInfo.startPos.x,
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
 	    gStartPosInfo.startPos.y);
     if(node)
 	{
 	gClassDiagram->getClassGraph().removeNode(*node);
 	gClassDiagram->getClassGraph().updateConnections(gClassDiagram->getModelData(),
 		    getDrawOptions());
-	gClassDiagram->getClassGraph().drawDiagram(getDrawOptions());
-//	gClassDiagram->getClassGraph().updateGraph(gClassDiagram->getModelData(),
-//		getDrawOptions());
+	gClassDiagram->drawDiagram(getDrawOptions());
+//	gClassDiagram->updateGraph();
 	}
     }
 
 extern "C" G_MODULE_EXPORT void on_RemoveAllMenuitem_activate(GtkWidget *widget, gpointer data)
     {
     gClassDiagram->getClassGraph().clearGraph();
-    gClassDiagram->getClassGraph().updateGraph(gClassDiagram->getModelData(),
-	    getDrawOptions());
+    gClassDiagram->updateGraph();
     }
 
 extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getClassGraph().getNode(gStartPosInfo.startPos.x,
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
 	    gStartPosInfo.startPos.y);
     if(node)
 	{
@@ -271,7 +319,7 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget
 
 extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getClassGraph().getNode(gStartPosInfo.startPos.x,
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
 	    gStartPosInfo.startPos.y);
     if(node)
 	{
@@ -280,8 +328,28 @@ extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *
 	    {
 	    gClassDiagram->getClassGraph().setModified();
 	    gClassDiagram->getClassGraph().updateNodeSizes();
-	    gClassDiagram->getClassGraph().drawDiagram(getDrawOptions());
+	    gClassDiagram->drawDiagram(getDrawOptions());
 	    }
 	}
     }
 
+extern "C" G_MODULE_EXPORT void on_Zoom1Menuitem_activate(GtkWidget *widget, gpointer data)
+    {
+    gClassDiagram->setZoom(1);
+    gClassDiagram->drawDiagram(getDrawOptions());
+    gClassDiagram->updateGraphSize();
+    }
+
+extern "C" G_MODULE_EXPORT void on_ZoomHalfMenuitem_activate(GtkWidget *widget, gpointer data)
+    {
+    gClassDiagram->setZoom(0.5);
+    gClassDiagram->drawDiagram(getDrawOptions());
+    gClassDiagram->updateGraphSize();
+    }
+
+extern "C" G_MODULE_EXPORT void on_ZoomQuarterMenuitem_activate(GtkWidget *widget, gpointer data)
+    {
+    gClassDiagram->setZoom(0.25);
+    gClassDiagram->drawDiagram(getDrawOptions());
+    gClassDiagram->updateGraphSize();
+    }

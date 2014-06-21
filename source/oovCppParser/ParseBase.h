@@ -22,9 +22,10 @@ class CXStringDisposer:public std::string
 	    }
     };
 
+void debugDumpCursor(CXCursor cursor, bool recurse=true);
 void removeLastNonIdentChar(std::string &name);
-
-void buildTokenStringForCursor(CXCursor cursor, std::string &str);
+void appendConditionString(CXCursor cursor, std::string &str);
+void appendCursorTokenString(CXCursor cursor, std::string &str);
 void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers);
 bool isMethodConst(CXCursor cursor);
 bool isConstType(CXCursor cursor);

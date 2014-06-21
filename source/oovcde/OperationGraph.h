@@ -16,11 +16,8 @@
 
 struct OperationDrawOptions
     {
-    OperationDrawOptions():
-	showConst(true)
+    OperationDrawOptions()
 	{}
-
-    bool showConst;
     };
 
 /// This has information about the size and position of a class
@@ -186,9 +183,8 @@ class OperationGraph
 	/// @param oper The operation to be added to the graph.
 	/// @param addType Defines the relationship types to look for.
 	/// @param maxDepth Recurses to the specified depth. 1 adds operation with no relations.
-	void addRelatedOperations(/*const ModelData &model, const OperationDrawOptions &options,*/
-		const ModelClassifier &operClass, const ModelOperation &oper,
-		eAddOperationTypes addType, int maxDepth);
+	void addRelatedOperations(const ModelClassifier &operClass,
+            const ModelOperation &oper, eAddOperationTypes addType, int maxDepth);
 	void clearGraph()
 	    {
 	    for(const auto &oper : mOperations)

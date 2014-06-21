@@ -1,0 +1,419 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="720" height="1041">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="22" y="289" width="237" height="233" />
+<line x1="22" y1="310" x2="259" y2="310" />
+<line x1="22" y1="358" x2="259" y2="358" />
+</g>
+<g font-size="10">
+<text x="23" y="298">ClassDiagram</text>
+<text x="23" y="307">/oovcde/</text>
+<text x="23" y="319">-ModelData mModelData</text>
+<text x="23" y="328">-ClassGraph mClassGraph</text>
+<text x="23" y="337">-Builder mBuilder</text>
+<text x="23" y="346">-string mLastSelectedClassName</text>
+<text x="23" y="355">-ClassDiagramListener mListener</text>
+<text x="23" y="367">+ClassDiagram()</text>
+<text x="23" y="376">+initialize(Builder builder, ModelData modelData</text>
+<text x="23" y="385">   , ClassDiagramListener listener)</text>
+<text x="23" y="394">+updateGraph()</text>
+<text x="23" y="403">+clearGraphAndAddClass(char className)</text>
+<text x="23" y="412">+addClass(char className)</text>
+<text x="23" y="421">+drawSvgDiagram(FILE fp)</text>
+<text x="23" y="430">+buttonPressEvent(GdkEventButton event)</text>
+<text x="23" y="439">+buttonReleaseEvent(GdkEventButton event)</text>
+<text x="23" y="448">+drawToDrawingArea()</text>
+<text x="23" y="457">+getClassGraph()</text>
+<text x="23" y="466">+getClassGraph()</text>
+<text x="23" y="475">+getBuilder()</text>
+<text x="23" y="484">+getModelData()</text>
+<text x="23" y="493">+gotoClass(char className)</text>
+<text x="23" y="502">-displayContextMenu(guint button, guint32 </text>
+<text x="23" y="511">   acttime, gpointer data)</text>
+<text x="23" y="520">-setLastSelectedClassName(string name)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="146" y="699" width="418" height="341" />
+<line x1="146" y1="720" x2="564" y2="720" />
+<line x1="146" y1="786" x2="564" y2="786" />
+</g>
+<g font-size="10">
+<text x="147" y="708">ClassGraph</text>
+<text x="147" y="717">/oovcde/</text>
+<text x="147" y="729">-std::vector&lt;ClassNode,std::allocator&lt;ClassNode&gt; &gt; mNodes</text>
+<text x="147" y="738">-std::map&lt;nodePair,ClassConnectItem,std::less&lt;nodePair&gt;,std::allocator&lt;std::</text>
+<text x="147" y="747">   pair&lt;nodePair,ClassConnectItem&gt; &gt; &gt; mConnectMap</text>
+<text x="147" y="756">-ClassGenes mGenes</text>
+<text x="147" y="765">-GraphSize mPad</text>
+<text x="147" y="774">-GtkWidget mDrawingArea</text>
+<text x="147" y="783">-bool mModified</text>
+<text x="147" y="795">+ClassGraph()</text>
+<text x="147" y="804">+initialize(GtkWidget drawingArea)</text>
+<text x="147" y="813">+addNode(ClassNode node)</text>
+<text x="147" y="822">+removeNode(ClassNode node)</text>
+<text x="147" y="831">+addRelatedNodes(ModelData model, ModelType type, ClassNodeDrawOptions options</text>
+<text x="147" y="840">   , ClassGraph::eAddNodeTypes addType, int maxDepth)</text>
+<text x="147" y="849">+clearGraph()</text>
+<text x="147" y="858">+clearGraphAndAddNode(ModelData model, ClassDrawOptions options, char className</text>
+<text x="147" y="867">   , int nodeDepth)</text>
+<text x="147" y="876">+updateGraph(ModelData modelData, ClassDrawOptions options)</text>
+<text x="147" y="885">+updateNodeSizes()</text>
+<text x="147" y="894">+updateConnections(ModelData modelData, ClassRelationDrawOptions options)</text>
+<text x="147" y="903">+drawDiagram(ClassDrawOptions options)</text>
+<text x="147" y="912">+getNodeSizeWithPadding(int nodeIndex)</text>
+<text x="147" y="921">+getGraphSize()</text>
+<text x="147" y="930">+getNode(int x, int y)</text>
+<text x="147" y="939">+isModified()</text>
+<text x="147" y="948">+setModified()</text>
+<text x="147" y="957">+getNodeConnection(int node1, int node2)</text>
+<text x="147" y="966">+getDiagramWidget()</text>
+<text x="147" y="975">+getNodes()</text>
+<text x="147" y="984">+getNodes()</text>
+<text x="147" y="993">+getConnections()</text>
+<text x="147" y="1002">-updateGenes(ModelData modelData, ClassRelationDrawOptions options)</text>
+<text x="147" y="1011">-insertConnection(int node1, int node2, ClassConnectItem connectItem)</text>
+<text x="147" y="1020">-getAvgNodeSize()</text>
+<text x="147" y="1029">-getNodeIndex(ModelType type)</text>
+<text x="147" y="1038">-redraw()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="445" y="380" width="90" height="26" />
+<line x1="445" y1="401" x2="535" y2="401" />
+<line x1="445" y1="404" x2="535" y2="404" />
+</g>
+<g font-size="10">
+<text x="446" y="389">OperationDiagram</text>
+<text x="446" y="398">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="15" y="20" width="646" height="107" />
+<line x1="15" y1="41" x2="661" y2="41" />
+<line x1="15" y1="53" x2="661" y2="53" />
+</g>
+<g font-size="10">
+<text x="16" y="29">ClassDrawer</text>
+<text x="16" y="38">/oovcde/</text>
+<text x="16" y="50">-DiagramDrawer mDrawer</text>
+<text x="16" y="62">+ClassDrawer(DiagramDrawer drawer)</text>
+<text x="16" y="71">+drawDiagram(ClassGraph graph, ClassDrawOptions options)</text>
+<text x="16" y="80">+drawNode(ClassNode node)</text>
+<text x="16" y="89">-drawConnectionLine(ClassNode node1, ClassNode node2)</text>
+<text x="16" y="98">-drawConnectionSymbols(ClassRelationDrawOptions options, ClassNode node1, ClassNode node2, ClassConnectItem connectItem)</text>
+<text x="16" y="107">-getStrings(ClassNode node, int )</text>
+<text x="16" y="116">-splitClassStrings(std::vector&lt;std::basic_string&lt;char&gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt; nodeStrs, std::vector&lt;std::basic_string&lt;char&gt;</text>
+<text x="16" y="125">   ,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt; attrStrs, std::vector&lt;std::basic_string&lt;char&gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt; operStrs)</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="504" y="194" width="76" height="26" />
+<line x1="504" y1="215" x2="580" y2="215" />
+<line x1="504" y1="218" x2="580" y2="218" />
+</g>
+<g font-size="10">
+<text x="505" y="203">DiagramDrawer</text>
+<text x="505" y="212">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="379" y="173" width="87" height="17" />
+<line x1="379" y1="185" x2="466" y2="185" />
+<line x1="379" y1="188" x2="466" y2="188" />
+</g>
+<g font-size="10">
+<text x="380" y="182">ClassDrawOptions</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="464" y="470" width="255" height="143" />
+<line x1="464" y1="491" x2="719" y2="491" />
+<line x1="464" y1="521" x2="719" y2="521" />
+</g>
+<g font-size="10">
+<text x="465" y="479">ClassNode</text>
+<text x="465" y="488">/oovcde/</text>
+<text x="465" y="500">-ModelType mType</text>
+<text x="465" y="509">-GraphRect rect</text>
+<text x="465" y="518">-ClassNodeDrawOptions mDrawOptions</text>
+<text x="465" y="530">+ClassNode(ModelType type, ClassNodeDrawOptions </text>
+<text x="465" y="539">   options)</text>
+<text x="465" y="548">+getType()</text>
+<text x="465" y="557">+getSize()</text>
+<text x="465" y="566">+setPosition(GraphPoint pos)</text>
+<text x="465" y="575">+getPosition()</text>
+<text x="465" y="584">+setSize(GraphSize size)</text>
+<text x="465" y="593">+getRect(GraphRect r)</text>
+<text x="465" y="602">+getDrawOptions()</text>
+<text x="465" y="611">+getDrawOptions()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="270" y="237" width="161" height="62" />
+<line x1="270" y1="258" x2="431" y2="258" />
+<line x1="270" y1="288" x2="431" y2="288" />
+</g>
+<g font-size="10">
+<text x="271" y="246">ClassRelationDrawOptions</text>
+<text x="271" y="255">/oovcde/</text>
+<text x="271" y="267">-bool drawOovSymbols</text>
+<text x="271" y="276">-bool drawOperParamRelations</text>
+<text x="271" y="285">-bool drawOperBodyVarRelations</text>
+<text x="271" y="297">-ClassRelationDrawOptions()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="19" y="166" width="247" height="89" />
+<line x1="19" y1="187" x2="266" y2="187" />
+<line x1="19" y1="226" x2="266" y2="226" />
+</g>
+<g font-size="10">
+<text x="20" y="175">ClassConnectItem</text>
+<text x="20" y="184">/oovcde/</text>
+<text x="20" y="196">-eDiagramConnectType mConnectType</text>
+<text x="20" y="205">-bool mConst</text>
+<text x="20" y="214">-bool mRefer</text>
+<text x="20" y="223">-Visibility mAccess</text>
+<text x="20" y="235">-ClassConnectItem(eDiagramConnectType conType</text>
+<text x="20" y="244">   , bool isConst, bool isRef, Visibility vis)</text>
+<text x="20" y="253">-hasAccess()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="532" y="154" width="185" height="26" />
+<line x1="532" y1="175" x2="717" y2="175" />
+<line x1="532" y1="178" x2="717" y2="178" />
+</g>
+<g font-size="10">
+<text x="533" y="163">std::vector&lt;std::basic_string&lt;char&gt;,std::</text>
+<text x="533" y="172">   allocator&lt;std::basic_string&lt;char&gt; &gt; &gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="521" y="270" width="55" height="26" />
+<line x1="521" y1="291" x2="576" y2="291" />
+<line x1="521" y1="294" x2="576" y2="294" />
+</g>
+<g font-size="10">
+<text x="522" y="279">NullDrawer</text>
+<text x="522" y="288">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="641" y="274" width="54" height="26" />
+<line x1="641" y1="295" x2="695" y2="295" />
+<line x1="641" y1="298" x2="695" y2="298" />
+</g>
+<g font-size="10">
+<text x="642" y="283">SvgDrawer</text>
+<text x="642" y="292">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="598" y="344" width="61" height="26" />
+<line x1="598" y1="365" x2="659" y2="365" />
+<line x1="598" y1="368" x2="659" y2="368" />
+</g>
+<g font-size="10">
+<text x="599" y="353">CairoDrawer</text>
+<text x="599" y="362">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="22" y="747" width="58" height="26" />
+<line x1="22" y1="768" x2="80" y2="768" />
+<line x1="22" y1="771" x2="80" y2="771" />
+</g>
+<g font-size="10">
+<text x="23" y="756">ClassGenes</text>
+<text x="23" y="765">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="27" y="677" width="51" height="26" />
+<line x1="27" y1="698" x2="78" y2="698" />
+<line x1="27" y1="701" x2="78" y2="701" />
+</g>
+<g font-size="10">
+<text x="28" y="686">GenePool</text>
+<text x="28" y="695">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="474" y="653" width="239" height="17" />
+<line x1="474" y1="665" x2="713" y2="665" />
+<line x1="474" y1="668" x2="713" y2="668" />
+</g>
+<g font-size="10">
+<text x="475" y="662">std::vector&lt;ClassNode,std::allocator&lt;ClassNode&gt; &gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="35" y="613" width="296" height="26" />
+<line x1="35" y1="634" x2="331" y2="634" />
+<line x1="35" y1="637" x2="331" y2="637" />
+</g>
+<g font-size="10">
+<text x="36" y="622">std::map&lt;nodePair,ClassConnectItem,std::less&lt;nodePair&gt;,std::</text>
+<text x="36" y="631">   allocator&lt;std::pair&lt;nodePair,ClassConnectItem&gt; &gt; &gt;</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="271" y="556" width="71" height="26" />
+<line x1="271" y1="577" x2="342" y2="577" />
+<line x1="271" y1="580" x2="342" y2="580" />
+</g>
+<g font-size="10">
+<text x="272" y="565">ModelData</text>
+<text x="272" y="574">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="300" y="332" width="125" height="89" />
+<line x1="300" y1="353" x2="425" y2="353" />
+<line x1="300" y1="410" x2="425" y2="410" />
+</g>
+<g font-size="10">
+<text x="301" y="341">ClassNodeDrawOptions</text>
+<text x="301" y="350">/oovcde/</text>
+<text x="301" y="362">+bool drawAttributes</text>
+<text x="301" y="371">+bool drawOperations</text>
+<text x="301" y="380">+bool drawOperParams</text>
+<text x="301" y="389">+bool drawAttrTypes</text>
+<text x="301" y="398">+bool drawOperTypes</text>
+<text x="301" y="407">+bool drawPackageName</text>
+<text x="301" y="419">+ClassNodeDrawOptions()</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="73" y="553" width="80" height="26" />
+<line x1="73" y1="574" x2="153" y2="574" />
+<line x1="73" y1="577" x2="153" y2="577" />
+</g>
+<g font-size="10">
+<text x="74" y="562">GtkCairoContext</text>
+<text x="74" y="571">/oovcde/</text>
+</g>
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="193" y1="521" x2="277" y2="699" />
+<polygon points="193,521 193,529 200,537 200,526 193,521 " style="fill:#000000" />
+<circle cx="205" cy="548" r="5" style="fill:#000000" />
+<circle cx="205" cy="548" r="2" style="fill:#000000" />
+<line x1="209" y1="289" x2="307" y2="126" />
+<circle cx="216" cy="277" r="5" style="fill:#ffffff" />
+<line x1="258" y1="379" x2="641" y2="293" />
+<circle cx="271" cy="375" r="5" style="fill:#ffffff" />
+<line x1="257" y1="521" x2="293" y2="556" />
+<polygon points="257,521 259,529 269,533 265,523 257,521 " style="fill:#ffffff" />
+<polygon points="268,532 270,543 271,534 279,534 268,532 " style="fill:#ffffff" />
+<circle cx="270" cy="534" r="5" style="fill:#ffffff" />
+<circle cx="278" cy="541" r="5" style="fill:#000000" />
+<circle cx="278" cy="541" r="2" style="fill:#000000" />
+<line x1="121" y1="521" x2="115" y2="553" />
+<circle cx="118" cy="534" r="5" style="fill:#ffffff" />
+<line x1="352" y1="699" x2="339" y2="126" />
+<circle cx="351" cy="685" r="5" style="fill:#ffffff" />
+<polygon points="339,130 334,139 339,134 345,139 339,130 " style="fill:#ffffff" />
+<circle cx="339" cy="144" r="5" style="fill:#ffffff" />
+<circle cx="339" cy="150" r="2" style="fill:#ffffff" />
+<line x1="371" y1="699" x2="422" y2="189" />
+<polygon points="371,695 378,686 371,691 367,685 371,695 " style="fill:#ffffff" />
+<circle cx="372" cy="680" r="5" style="fill:#ffffff" />
+<circle cx="373" cy="674" r="2" style="fill:#ffffff" />
+<line x1="477" y1="699" x2="540" y2="612" />
+<polygon points="479,695 489,692 482,692 480,685 479,695 " style="fill:#ffffff" />
+<circle cx="488" cy="683" r="5" style="fill:#ffffff" />
+<circle cx="491" cy="678" r="2" style="fill:#ffffff" />
+<line x1="354" y1="699" x2="350" y2="299" />
+<polygon points="354,695 359,686 354,691 348,686 354,695 " style="fill:#ffffff" />
+<circle cx="353" cy="680" r="5" style="fill:#ffffff" />
+<circle cx="353" cy="674" r="2" style="fill:#ffffff" />
+<line x1="301" y1="699" x2="156" y2="254" />
+<polygon points="300,695 302,685 299,691 291,688 300,695 " style="fill:#ffffff" />
+<circle cx="295" cy="680" r="5" style="fill:#ffffff" />
+<circle cx="293" cy="675" r="2" style="fill:#ffffff" />
+<line x1="410" y1="699" x2="544" y2="296" />
+<circle cx="414" cy="685" r="5" style="fill:#ffffff" />
+<line x1="445" y1="699" x2="622" y2="370" />
+<circle cx="451" cy="686" r="5" style="fill:#ffffff" />
+<line x1="146" y1="795" x2="80" y2="770" />
+<polygon points="146,795 141,789 130,789 138,796 146,795 " style="fill:#000000" />
+<circle cx="117" cy="784" r="5" style="fill:#000000" />
+<circle cx="117" cy="784" r="2" style="fill:#000000" />
+<polygon points="80,770 85,776 96,776 88,769 80,770 " style="fill:#ffffff" />
+<polygon points="94,775 101,784 98,777 105,773 94,775 " style="fill:#ffffff" />
+<circle cx="97" cy="776" r="5" style="fill:#ffffff" />
+<circle cx="108" cy="780" r="5" style="fill:#000000" />
+<circle cx="108" cy="780" r="2" style="fill:#000000" />
+<line x1="549" y1="699" x2="584" y2="669" />
+<polygon points="549,699 557,698 562,688 551,691 549,699 " style="fill:#000000" />
+<circle cx="571" cy="679" r="5" style="fill:#000000" />
+<circle cx="571" cy="679" r="2" style="fill:#000000" />
+<line x1="235" y1="699" x2="192" y2="639" />
+<polygon points="235,699 235,691 225,685 227,696 235,699 " style="fill:#000000" />
+<circle cx="217" cy="674" r="5" style="fill:#000000" />
+<circle cx="217" cy="674" r="2" style="fill:#000000" />
+<line x1="328" y1="699" x2="308" y2="582" />
+<polygon points="328,695 331,685 327,691 320,687 328,695 " style="fill:#ffffff" />
+<circle cx="324" cy="680" r="5" style="fill:#ffffff" />
+<circle cx="323" cy="674" r="2" style="fill:#ffffff" />
+<line x1="357" y1="699" x2="362" y2="420" />
+<polygon points="357,695 363,686 357,691 352,686 357,695 " style="fill:#ffffff" />
+<circle cx="357" cy="680" r="5" style="fill:#ffffff" />
+<circle cx="357" cy="674" r="2" style="fill:#ffffff" />
+<line x1="220" y1="699" x2="123" y2="579" />
+<circle cx="211" cy="688" r="5" style="fill:#ffffff" />
+<line x1="484" y1="380" x2="363" y2="126" />
+<circle cx="477" cy="367" r="5" style="fill:#ffffff" />
+<line x1="496" y1="380" x2="542" y2="296" />
+<circle cx="502" cy="367" r="5" style="fill:#ffffff" />
+<line x1="511" y1="380" x2="647" y2="300" />
+<circle cx="523" cy="372" r="5" style="fill:#ffffff" />
+<line x1="535" y1="382" x2="598" y2="364" />
+<circle cx="548" cy="378" r="5" style="fill:#ffffff" />
+<line x1="477" y1="406" x2="319" y2="556" />
+<polygon points="477,406 469,408 464,418 475,414 477,406 " style="fill:#ffffff" />
+<polygon points="466,417 455,418 463,419 463,427 466,417 " style="fill:#ffffff" />
+<circle cx="463" cy="419" r="5" style="fill:#ffffff" />
+<circle cx="455" cy="426" r="5" style="fill:#000000" />
+<circle cx="455" cy="426" r="2" style="fill:#000000" />
+<line x1="462" y1="406" x2="141" y2="553" />
+<circle cx="449" cy="411" r="5" style="fill:#ffffff" />
+<line x1="418" y1="126" x2="523" y2="194" />
+<polygon points="418,126 422,134 433,135 426,126 418,126 " style="fill:#ffffff" />
+<circle cx="433" cy="136" r="5" style="fill:#ffffff" />
+<circle cx="443" cy="142" r="5" style="fill:#000000" />
+<circle cx="443" cy="142" r="2" style="fill:#000000" />
+<line x1="379" y1="126" x2="416" y2="173" />
+<polygon points="382,129 382,140 384,133 392,132 382,129 " style="fill:#ffffff" />
+<circle cx="390" cy="140" r="5" style="fill:#ffffff" />
+<circle cx="394" cy="145" r="2" style="fill:#ffffff" />
+<line x1="366" y1="126" x2="553" y2="470" />
+<polygon points="368,130 367,140 370,133 377,135 368,130 " style="fill:#ffffff" />
+<circle cx="375" cy="142" r="5" style="fill:#ffffff" />
+<circle cx="377" cy="147" r="2" style="fill:#ffffff" />
+<line x1="341" y1="126" x2="349" y2="237" />
+<polygon points="341,130 336,140 341,134 348,139 341,130 " style="fill:#ffffff" />
+<circle cx="342" cy="144" r="5" style="fill:#ffffff" />
+<circle cx="342" cy="150" r="2" style="fill:#ffffff" />
+<line x1="263" y1="126" x2="204" y2="166" />
+<polygon points="259,128 249,128 256,131 256,138 259,128 " style="fill:#ffffff" />
+<circle cx="247" cy="136" r="5" style="fill:#ffffff" />
+<circle cx="242" cy="140" r="2" style="fill:#ffffff" />
+<line x1="499" y1="126" x2="585" y2="154" />
+<circle cx="517" cy="131" r="5" style="fill:#ffffff" />
+<circle cx="522" cy="133" r="2" style="fill:#ffffff" />
+<line x1="543" y1="220" x2="547" y2="270" />
+<polygon points="543,220 539,233 549,232 543,220 " style="fill:#ffffff" />
+<circle cx="545" cy="249" r="5" style="fill:#ffffff" />
+<circle cx="545" cy="249" r="2" style="fill:#ffffff" />
+<line x1="562" y1="220" x2="648" y2="274" />
+<polygon points="562,220 570,231 575,222 562,220 " style="fill:#ffffff" />
+<circle cx="587" cy="235" r="5" style="fill:#ffffff" />
+<circle cx="587" cy="235" r="2" style="fill:#ffffff" />
+<line x1="416" y1="189" x2="375" y2="237" />
+<polygon points="375,237 387,231 379,224 375,237 " style="fill:#ffffff" />
+<circle cx="394" cy="214" r="5" style="fill:#ffffff" />
+<circle cx="394" cy="214" r="2" style="fill:#ffffff" />
+<line x1="420" y1="189" x2="375" y2="332" />
+<polygon points="375,332 383,322 374,319 375,332 " style="fill:#ffffff" />
+<circle cx="384" cy="303" r="5" style="fill:#ffffff" />
+<circle cx="384" cy="303" r="2" style="fill:#ffffff" />
+<line x1="592" y1="612" x2="593" y2="653" />
+<line x1="493" y1="470" x2="423" y2="420" />
+<polygon points="493,470 490,462 479,460 485,470 493,470 " style="fill:#000000" />
+<circle cx="477" cy="458" r="5" style="fill:#ffffff" />
+<circle cx="468" cy="452" r="5" style="fill:#000000" />
+<circle cx="468" cy="452" r="2" style="fill:#000000" />
+<line x1="146" y1="254" x2="182" y2="613" />
+<line x1="562" y1="296" x2="614" y2="344" />
+<polygon points="562,296 567,308 575,300 562,296 " style="fill:#ffffff" />
+<circle cx="584" cy="316" r="5" style="fill:#ffffff" />
+<circle cx="584" cy="316" r="2" style="fill:#ffffff" />
+<line x1="51" y1="747" x2="52" y2="703" />
+<polygon points="52,703 47,715 57,716 52,703 " style="fill:#ffffff" />
+<circle cx="51" cy="732" r="5" style="fill:#ffffff" />
+<circle cx="51" cy="732" r="2" style="fill:#ffffff" />
+</g>
+</svg>

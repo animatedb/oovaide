@@ -8,7 +8,48 @@
 
 #include "ParseBase.h"
 #include <algorithm>
+#include "Debug.h"
 
+
+
+#define DEBUG_CHILDREN 0
+#if(DEBUG_CHILDREN)
+static DebugFile sDumpChildFile("DumpCursor.txt");
+static CXChildVisitResult debugDumpCursorVisitor(CXCursor cursor, CXCursor parent,
+	void *clientData)
+    {
+    static int depth = 0;
+    depth++;
+    CXStringDisposer dispName = clang_getCursorDisplayName(cursor);
+    std::string tokStr;
+    appendCursorTokenString(cursor, tokStr);
+    CXStringDisposer typeSp = clang_getTypeSpelling(clang_getCursorType(cursor));
+    CXStringDisposer kindSp = clang_getCursorKindSpelling(clang_getCursorKind(cursor));
+    size_t maxLen = 80;
+    if(tokStr.length() > maxLen)
+	{
+	tokStr.resize(maxLen);
+	tokStr += "...";
+	}
+    if(depth > 1)
+	sDumpChildFile.printflush("  ");
+    sDumpChildFile.printflush("%d %s %s %s @%s@\n\n", depth, kindSp.c_str(), typeSp.c_str(),
+	    dispName.c_str(), tokStr.c_str());
+
+    bool recurse = false;
+    if(clientData && *((bool*)clientData))
+	recurse = true;
+    if(recurse)
+	clang_visitChildren(cursor, ::debugDumpCursorVisitor, clientData);
+    depth--;
+    return CXChildVisit_Continue;
+    }
+    void debugDumpCursor(CXCursor cursor, bool recurse)
+        {
+        // clang_getCursorLexicalParent (CXCursor cursor)
+        debugDumpCursorVisitor(cursor, cursor, &recurse);
+        }
+#endif
 
 
 bool isIdentC(char c)
@@ -28,7 +69,29 @@ void removeLastNonIdentChar(std::string &name)
 	}
     }
 
-void buildTokenStringForCursor(CXCursor cursor, std::string &str)
+void appendConditionString(CXCursor cursor, std::string &str)
+    {
+    appendCursorTokenString(cursor, str);
+    int nestParenCount = 0;
+    for(size_t i=0; i<str.length(); i++)
+	{
+	if(str[i] == '(')
+	    {
+	    nestParenCount++;
+	    }
+	else if(str[i] == ')')
+	    {
+	    if(nestParenCount == 0)
+		{
+		str.resize(i);
+		break;
+		}
+	    nestParenCount--;
+	    }
+	}
+    }
+
+void appendCursorTokenString(CXCursor cursor, std::string &str)
     {
     CXSourceRange range = clang_getCursorExtent(cursor);
     CXToken *tokens = 0;

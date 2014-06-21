@@ -1,5 +1,5 @@
 /*
- * DrawDiagram.cpp
+ * ClassGraph.cpp
  *
  *  Created on: Jun 20, 2013
  *  \copyright 2013 DCBlaha.  Distributed under the GPL.
@@ -37,10 +37,9 @@ void ClassGraph::initialize(GtkWidget *drawingArea)
 void ClassGraph::updateNodeSizes(GtkWidget *widget)
     {
     GtkCairoContext cairo(widget);
-    cairo_text_extents_t extents;
-    cairo_text_extents(cairo.getCairo(), "W", &extents);
-    mPad.x = extents.height;
-    mPad.y = extents.width;
+    CairoDrawer cairoDrawer(cairo.getCairo());
+    mPad.x = cairoDrawer.getTextExtentWidth("W");
+    mPad.y = cairoDrawer.getTextExtentHeight("W");
     NullDrawer nulDrawer(cairo.getCairo());
     ClassDrawer drawer(nulDrawer);
     for(auto &node : mNodes)
@@ -76,7 +75,7 @@ int ClassGraph::getAvgNodeSize() const
 void ClassGraph::updateGenes(const ModelData &modelData,
 	const ClassRelationDrawOptions &options)
     {
-    updateNodeSizes(getDiagramWidget());
+    updateNodeSizes();
     updateConnections(modelData, options);
     if(mNodes.size() > 1)
 	{
@@ -147,9 +146,91 @@ void ClassGraph::removeNode(const ClassNode &node)
     mModified = true;
     }
 
-void ClassGraph::addRelatedNodes(const ModelData &model, const ModelType *type,
+void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelType *type,
+	const ModelType *modelType, const ClassNodeDrawOptions &options,
+	eAddNodeTypes addType, int maxDepth)
+    {
+    // Add nodes for template types if they refer to the passed in type.
+    if(modelType->isTemplateType())
+	{
+	ConstModelClassifierVector relatedClassifiers;
+	model.getRelatedTemplateClasses(*modelType, relatedClassifiers);
+	for(const auto &rc : relatedClassifiers)
+	    {
+	    if(rc == type)
+		{
+#if(DEBUG_ADD)
+		DebugAdd("Templ Rel", modelType);
+#endif
+		addRelatedNodesRecurse(model, modelType, options, addType, maxDepth);
+		}
+	    }
+	}
+    // Add nodes if members refer to the passed in type.
+    if((addType & AN_MemberUsers) > 0)
+	{
+	const ModelClassifier*cl = ModelObject::getClass(modelType);
+	if(cl)
+	    {
+	    for(const auto &attr : cl->getAttributes())
+		{
+		const ModelType *attrType = attr->getDeclType();
+		if(attrType == type)
+		    {
+#if(DEBUG_ADD)
+		    DebugAdd("Memb User", cl);
+#endif
+		    addRelatedNodesRecurse(model, cl, options, addType, maxDepth);
+		    }
+		}
+	    }
+	}
+    // Add nodes if func params refer to the passed in type.
+    if((addType & AN_FuncParamsUsers) > 0)
+	{
+	const ModelClassifier*cl = ModelObject::getClass(modelType);
+	if(cl)
+	    {
+	    ConstModelDeclClassVector relatedDeclClasses;
+	    model.getRelatedFuncParamClasses(*cl, relatedDeclClasses);
+	    for(auto &rdc : relatedDeclClasses)
+		{
+		if(rdc.cl == type)
+		    {
+#if(DEBUG_ADD)
+		    DebugAdd("Param User", cl);
+#endif
+		    addRelatedNodesRecurse(model, cl, options, addType, maxDepth);
+		    }
+		}
+	    }
+	}
+    // Add nodes if func body variables refer to the passed in type.
+    if((addType & AN_FuncBodyUsers) > 0)
+	{
+	const ModelClassifier*cl = ModelObject::getClass(modelType);
+	if(cl)
+	    {
+	    ConstModelDeclClassVector relatedDeclClasses;
+	    model.getRelatedBodyVarClasses(*cl, relatedDeclClasses);
+	    for(auto &rdc : relatedDeclClasses)
+		{
+		if(rdc.cl == type)
+		    {
+#if(DEBUG_ADD)
+		    DebugAdd("Var User", cl);
+#endif
+		    addRelatedNodesRecurse(model, cl, options, addType, maxDepth);
+		    }
+		}
+	    }
+	}
+    }
+
+void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType *type,
 	const ClassNodeDrawOptions &options, eAddNodeTypes addType, int maxDepth)
     {
+    RecursiveBackgroundDialog backDlg(mBackgroundDialogLevel);
     -- maxDepth;
     if(maxDepth >= 0 && type /* && type->getObjectType() == otClass*/)
 	{
@@ -163,100 +244,25 @@ void ClassGraph::addRelatedNodes(const ModelData &model, const ModelType *type,
 #if(DEBUG_ADD)
 		DebugAdd("Templ User", rc);
 #endif
-		addRelatedNodes(model, rc, options, addType, maxDepth);
+		addRelatedNodesRecurse(model, rc, options, addType, maxDepth);
 		}
 	    addNode(ClassNode(type, options));
 	    }
-	// Go through all template types and see if they refer to the passed in type.
-	for(const auto &templType : model.mTypes)
+	backDlg.setDialogText("Adding user relations.");
+	backDlg.setProgressIterations(model.mTypes.size());
+	for(size_t i=0; i<model.mTypes.size(); i++)
 	    {
-	    if(templType->isTemplateType())
+	    addRelatedNodesRecurseUser(model, type, model.mTypes[i].get(), options,
+		    addType, maxDepth);
+	    if(!backDlg.updateProgressIteration(i))
 		{
-		ConstModelClassifierVector relatedClassifiers;
-		model.getRelatedTemplateClasses(*templType, relatedClassifiers);
-		for(const auto &rc : relatedClassifiers)
-		    {
-		    if(rc == type)
-			{
-#if(DEBUG_ADD)
-			DebugAdd("Templ Rel", templType);
-#endif
-			addRelatedNodes(model, templType, options, addType, maxDepth);
-			}
-		    }
-		}
-	    }
-	// Go through all classes and see if members refer to the passed in type.
-	if((addType & AN_MemberUsers) > 0)
-	    {
-	    for(const auto &modelType : model.mTypes)
-		{
-		const ModelClassifier*cl = ModelObject::getClass(modelType);
-		if(cl)
-		    {
-		    for(const auto &attr : cl->getAttributes())
-			{
-			const ModelType *attrType = attr->getDeclType();
-			if(attrType == type)
-			    {
-#if(DEBUG_ADD)
-			    DebugAdd("Memb User", cl);
-#endif
-			    addRelatedNodes(model, cl, options, addType, maxDepth);
-			    }
-			}
-		    }
-		}
-	    }
-	// Go through all classes and see if func params refer to the passed in type.
-	if((addType & AN_FuncParamsUsers) > 0)
-	    {
-	    for(const auto &modelType : model.mTypes)
-		{
-		const ModelClassifier*cl = ModelObject::getClass(modelType);
-		if(cl)
-		    {
-		    ConstModelDeclClassVector relatedDeclClasses;
-		    model.getRelatedFuncParamClasses(*cl, relatedDeclClasses);
-		    for(auto &rdc : relatedDeclClasses)
-			{
-			if(rdc.cl == type)
-			    {
-#if(DEBUG_ADD)
-			    DebugAdd("Param User", cl);
-#endif
-			    addRelatedNodes(model, cl, options, addType, maxDepth);
-			    }
-			}
-		    }
-		}
-	    }
-	// Go through all classes and see if func body variables refer to the passed in type.
-	if((addType & AN_FuncBodyUsers) > 0)
-	    {
-	    for(const auto &modelType : model.mTypes)
-		{
-		const ModelClassifier*cl = ModelObject::getClass(modelType);
-		if(cl)
-		    {
-		    ConstModelDeclClassVector relatedDeclClasses;
-		    model.getRelatedBodyVarClasses(*cl, relatedDeclClasses);
-		    for(auto &rdc : relatedDeclClasses)
-			{
-			if(rdc.cl == type)
-			    {
-#if(DEBUG_ADD)
-			    DebugAdd("Var User", cl);
-#endif
-			    addRelatedNodes(model, cl, options, addType, maxDepth);
-			    }
-			}
-		    }
+		break;
 		}
 	    }
 	const ModelClassifier *classifier = ModelObject::getClass(type);
 	if(classifier)
 	    {
+	    backDlg.setDialogText("Adding member relations.");
 	    addNode(ClassNode(classifier, options));
 	    if((addType & AN_MemberChildren) > 0)
 		{
@@ -265,7 +271,7 @@ void ClassGraph::addRelatedNodes(const ModelData &model, const ModelType *type,
 #if(DEBUG_ADD)
 		    DebugAdd("Member", attr->getDeclType());
 #endif
-		    addRelatedNodes(model, attr->getDeclType(), options, addType, maxDepth);
+		    addRelatedNodesRecurse(model, attr->getDeclType(), options, addType, maxDepth);
 		    }
 		}
 	    if((addType & AN_Superclass) > 0)
@@ -279,7 +285,7 @@ void ClassGraph::addRelatedNodes(const ModelData &model, const ModelType *type,
 #if(DEBUG_ADD)
 			    DebugAdd("Super", assoc->getParent());
 #endif
-			    addRelatedNodes(model, assoc->getParent(), options, addType, maxDepth);
+			    addRelatedNodesRecurse(model, assoc->getParent(), options, addType, maxDepth);
 			    }
 			}
 		    }
@@ -296,7 +302,7 @@ void ClassGraph::addRelatedNodes(const ModelData &model, const ModelType *type,
 #if(DEBUG_ADD)
 			    DebugAdd("Subclass", assoc->getChild());
 #endif
-			    addRelatedNodes(model, assoc->getChild(), options, addType, maxDepth);
+			    addRelatedNodesRecurse(model, assoc->getChild(), options, addType, maxDepth);
 			    }
 			}
 		    }
@@ -310,7 +316,7 @@ void ClassGraph::addRelatedNodes(const ModelData &model, const ModelType *type,
 #if(DEBUG_ADD)
 		    DebugAdd("Param Using", rdc.cl);
 #endif
-		    addRelatedNodes(model, rdc.cl, options, addType, maxDepth);
+		    addRelatedNodesRecurse(model, rdc.cl, options, addType, maxDepth);
 		    }
 		}
 	    if((addType & AN_FuncBodyUsing) > 0)
@@ -322,10 +328,11 @@ void ClassGraph::addRelatedNodes(const ModelData &model, const ModelType *type,
 #if(DEBUG_ADD)
 		    DebugAdd("Body Using", rdc.cl);
 #endif
-		    addRelatedNodes(model, rdc.cl, options, addType, maxDepth);
+		    addRelatedNodesRecurse(model, rdc.cl, options, addType, maxDepth);
 		    }
 		}
 	    }
+	backDlg.setDialogText("Done adding relations.");
 	}
     }
 
@@ -439,31 +446,27 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 	}
     }
 
-void ClassGraph::clearGraphAndAddNode(const ModelData &model,
-	const ClassDrawOptions &options, char const * const className, int nodeDepth)
-    {
-    const ModelType *type = model.getTypeRef(className);
-    const ModelClassifier *classifier = ModelObject::getClass(type);
-    if(classifier)
-	{
-	clearGraph();
-	addRelatedNodes(model, classifier, options, ClassGraph::AN_All, nodeDepth);
-	updateGraph(model, options);
-	}
-    mModified = false;
-    }
-
 void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options,
-	char const * const className, int nodeDepth)
+	char const * const className, int nodeDepth, bool clear)
     {
-    const ModelType *type = model.getTypeRef(className);
-    const ModelClassifier *classifier = ModelObject::getClass(type);
-    if(classifier)
+    static int depth = 0;
+    depth++;
+    if(depth == 1)
 	{
-	addRelatedNodes(model, classifier, options, ClassGraph::AN_All, nodeDepth);
-	updateGraph(model, options);
+	const ModelType *type = model.getTypeRef(className);
+	const ModelClassifier *classifier = ModelObject::getClass(type);
+	if(classifier)
+	    {
+	    if(clear)
+		{
+		clearGraph();
+		}
+	    addRelatedNodesRecurse(model, classifier, options, ClassGraph::AN_All, nodeDepth);
+	    updateGraph(model, options);
+	    }
+	mModified = false;
 	}
-    mModified = false;
+    depth--;
     }
 
 GraphSize ClassGraph::getGraphSize() const
@@ -471,8 +474,7 @@ GraphSize ClassGraph::getGraphSize() const
     GraphSize size;
     for(const auto &node : mNodes)
 	{
-	GraphRect rect;
-	node.getRect(rect);
+	GraphRect rect = node.getRect();
 	if(rect.endx() > size.x)
 	    size.x = rect.endx();
 	if(rect.endy() > size.y)
@@ -488,8 +490,7 @@ ClassNode *ClassGraph::getNode(int x, int y)
     ClassNode *node = nullptr;
     for(size_t i=0; i<mNodes.size(); i++)
 	{
-	GraphRect rect;
-	mNodes[i].getRect(rect);
+	GraphRect rect = mNodes[i].getRect();
 	if(rect.isPointIn(GraphPoint(x, y)))
 	    node = &mNodes[i];
 	}
@@ -504,31 +505,9 @@ GraphSize ClassGraph::getNodeSizeWithPadding(int nodeIndex) const
     return size;
     }
 
-static void clearBackground(cairo_t *cr)
-    {
-    cairo_set_source_rgb(cr, 255,255,255);
-    cairo_paint(cr);
-    }
-
-void ClassGraph::updateGraph(const ModelData &modelData, const ClassDrawOptions &options)
+GraphSize ClassGraph::updateGraph(const ModelData &modelData, const ClassDrawOptions &options)
     {
     updateGenes(modelData, options);
-    GraphSize size = getGraphSize();
-    GtkWidget *widget = getDiagramWidget();
-    gtk_widget_set_size_request(widget, size.x, size.y);
+    return(getGraphSize());
     }
-
-void ClassGraph::drawDiagram(const ClassDrawOptions &options)
-{
-    GtkWidget *widget = getDiagramWidget();
-    GtkCairoContext cairo(widget);
-    clearBackground(cairo.getCairo());
-    cairo_set_source_rgb(cairo.getCairo(), 0,0,0);
-    cairo_set_line_width(cairo.getCairo(), 1.0);
-    CairoDrawer cairoDrawer(cairo.getCairo());
-    ClassDrawer drawer(cairoDrawer);
-
-    drawer.drawDiagram(*this, options);
-    cairo_stroke(cairo.getCairo());
-}
 

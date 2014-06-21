@@ -34,7 +34,7 @@ std::string &Project::getSrcRootDirectory()
 	{
 	NameValueFile file(getProjectFilePath().c_str());
 	file.readFile();
-	sSourceRootDirectory = file.getValue("SourceRootDir");
+	sSourceRootDirectory = file.getValue(OptSourceRootDir);
 	}
     return sSourceRootDirectory;
     }
@@ -181,6 +181,13 @@ void ProjectReader::parseArgs(StdStringVec const &args)
 	if(arg.find("-EP", 0, 3) == 0)
 	    handleExternalPackage(arg.substr(3).c_str());
 	}
+    }
+
+CompoundValue ProjectReader::getProjectExcludeDirs() const
+    {
+    CompoundValue val;
+    val.parseString(getValue(OptProjectExcludeDirs).c_str());
+    return val;
     }
 
 void ProjectReader::handleExternalPackage(char const * const pkgName)

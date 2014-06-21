@@ -7,20 +7,26 @@
 
 #include "CairoDrawer.h"
 
-int NullDrawer::getTextExtentWidth(char const * const name) const
+float NullDrawer::getTextExtentWidth(char const * const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);
     return extents.width;
     }
 
-int NullDrawer::getTextExtentHeight(char const * const name) const
+float NullDrawer::getTextExtentHeight(char const * const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);
     return extents.height;
     }
 
+
+void CairoDrawer::setFontSize(double size)
+    {
+    NullDrawer::setFontSize(size);
+    cairo_set_font_size(cr, size);
+    }
 
 void CairoDrawer::drawRect(const GraphRect &rect)
     {

@@ -46,6 +46,7 @@ private:
     bool openFile(char const * const filename);
     int getObjectModelId(const std::string &name);
     void writeType(const ModelType &type);
+    void writeClassDefinition(const ModelClassifier &classifier, bool isClassDef);
     void writeStatements(const ModelStatement *stmts, int level);
     void writeAssociation(const ModelAssociation &assoc);
 };

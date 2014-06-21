@@ -32,30 +32,41 @@ class PathChooser
 class Dialog
     {
     public:
-	Dialog(GtkDialog *dlg, GtkWindow *parent):
+	Dialog(GtkDialog *dlg=nullptr, GtkWindow *parent=nullptr):
 	    mDialog(dlg)
 	    {
-	    gtk_window_set_transient_for(GTK_WINDOW(dlg), parent);
+	    setDialog(dlg, parent);
 	    }
 	virtual ~Dialog()
 	    {}
+	void setDialog(GtkDialog *dlg, GtkWindow *parent=nullptr)
+	    {
+	    mDialog = dlg;
+	    if(parent)
+		gtk_window_set_transient_for(GTK_WINDOW(dlg), parent);
+	    }
 	GtkWidget *addButton(const gchar *text, gint response_id)
 	    { return gtk_dialog_add_button(mDialog, text, response_id); }
 	int runHideCancel();
 	// The response from this only works if the OK button Response ID in
 	// Glade is set to -5 (GTK_RESPONSE_OK), and cancel is set to
 	// -6 (GTK_RESPONSE_CANCEL).
+	//
+	// Use gtk_widget_hide_on_delete to prevent the close button from
+	// destroying the dialog. In glade, this is set on the GtkDialog
+	// top level window under the GtkWidget signals.
 	bool run(bool hideDialogAfterButtonPress = false);
 	virtual void beforeRun()
 	    {}
 	virtual void afterRun(bool ok)
 	    {}
-	GtkWidget *getActionArea()
+	GtkWidget *getContentArea()
 	    { return gtk_dialog_get_content_area(mDialog); }
 	void destroy()
 	    { gtk_widget_destroy(GTK_WIDGET(mDialog)); }
 	GtkDialog *getDialog()
 	    { return mDialog; }
+
     private:
 	GtkDialog *mDialog;
     };
@@ -82,6 +93,8 @@ class Gui
 	static void scrollToCursor(GtkTextView *textview);
 	static void setText(GtkEntry *textentry, char const * const text)
 	    { gtk_entry_set_text(textentry, text); }
+	static void setText(GtkLabel *label, char const * const text)
+	    { gtk_label_set_text(label, text); }
 	static void setText(GtkTextView *view, char const * const text)
 	    {
 	    clear(view);
@@ -199,6 +212,69 @@ class GuiTree
 
     private:
 	GtkTreeView *mTreeWidget;
+    };
+
+class BackgroundDialog:public Dialog
+    {
+    public:
+	BackgroundDialog();
+	~BackgroundDialog();
+	void setParentWindow(GtkWindow *parent)
+	    { mParent = parent; }
+	void setDialogText(char const *str);
+	void setProgressIterations(int totalIters);
+	// Return is false when a cancel is performed.
+	bool updateProgressIteration(int currentIter);
+	// Set from signal
+	void cancelButtonPressed()
+	    { mKeepGoing = false; }
+
+    private:
+	Builder *mBuilder;
+	GtkWindow *mParent;
+	bool mKeepGoing;
+	int mTotalIters;
+	time_t mStartTime;
+	void showDialog(bool show);
+    };
+
+class RecursiveBackgroundLevel
+    {
+    public:
+	RecursiveBackgroundLevel():
+	    mLevel(0)
+	    {}
+	int mLevel;
+    };
+
+class RecursiveBackgroundDialog:public BackgroundDialog
+    {
+    public:
+	RecursiveBackgroundDialog(RecursiveBackgroundLevel &level):
+	    mLevel(level)
+	    { ++mLevel.mLevel; }
+	~RecursiveBackgroundDialog()
+	    { --mLevel.mLevel; }
+	void setDialogText(char const *str)
+	    {
+	    if(mLevel.mLevel == 1)
+		BackgroundDialog::setDialogText(str);
+	    }
+	void setProgressIterations(int totalIters)
+	    {
+	    if(mLevel.mLevel == 1)
+		BackgroundDialog::setProgressIterations(totalIters);
+	    }
+	bool updateProgressIteration(int currentIter)
+	    {
+	    if(mLevel.mLevel == 1)
+		return BackgroundDialog::updateProgressIteration(currentIter);
+	    else
+		return true;
+	    }
+
+    private:
+	RecursiveBackgroundLevel &mLevel;
     };
 
 #endif /* GUI_H_ */

@@ -3,6 +3,7 @@ BuildArgsExtra-Analyze|-x;c++;-std=c++11
 BuildArgsExtra-Debug|-std=c++0x;-O0;-g3
 BuildArgsExtra-Release|-std=c++0x;-O3
 SourceRootDir|C:/Dave/Mine/software/oovcde/svn/trunk/
+ExcludeDirs|C:/Dave/Mine/software/oovcde/svn/trunk/bin;C:/Dave/Mine/software/oovcde/svn/trunk/.metadata
 Tool-CompilerPath-Debug|g++.exe
 Tool-CompilerPath-Release|g++.exe
 Tool-DebuggerPath|gdb.exe

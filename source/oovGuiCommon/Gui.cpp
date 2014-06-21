@@ -411,3 +411,92 @@ void GuiTree::getSelected(std::vector<std::string> &names) const
             }
         }
     }
+
+BackgroundDialog::BackgroundDialog():
+	mBuilder(nullptr), mParent(nullptr), mKeepGoing(true),
+	mTotalIters(0), mStartTime(0)
+    {
+    mBuilder = Builder::getBuilder();
+    }
+
+BackgroundDialog::~BackgroundDialog()
+    {
+    showDialog(false);
+    }
+
+void BackgroundDialog::setProgressIterations(int totalIters)
+    {
+    mTotalIters = totalIters;
+    time(&mStartTime);
+    mKeepGoing = true;
+    }
+
+static void BackgroundResponse(GtkDialog *dialog, gint response_id,
+	gpointer bkgDlg)
+    {
+    if(response_id == GTK_RESPONSE_CANCEL)
+	{
+	static_cast<BackgroundDialog*>(bkgDlg)->cancelButtonPressed();
+	}
+    }
+
+void BackgroundDialog::showDialog(bool show)
+    {
+    if(mBuilder)
+	{
+	GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
+	if(show != gtk_widget_get_visible(dlg))
+	    {
+	    if(show)
+		{
+		setDialog(GTK_DIALOG(dlg), mParent);
+		g_signal_connect(G_OBJECT(dlg), "response",
+		      G_CALLBACK(BackgroundResponse), this);
+		gtk_widget_show_all(dlg);
+		}
+	    else
+		{
+		gtk_widget_hide(dlg);
+		}
+	    }
+	}
+    }
+
+void BackgroundDialog::setDialogText(char const *str)
+    {
+    if(mBuilder)
+	{
+	std::string totalStr = str;
+	totalStr += "\nPress cancel to abort this operation.";
+	Gui::setText(GTK_LABEL(mBuilder->getWidget("ProgressTextLabel")), totalStr.c_str());
+	updateProgressIteration(-1);
+	}
+    }
+
+bool BackgroundDialog::updateProgressIteration(int currentIter)
+    {
+    if(mKeepGoing)	// It appears that after a cancel, the widgets are not valid.
+	{
+	time_t curTime;
+	time(&curTime);
+	GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
+	bool visible = gtk_widget_get_visible(dlg);
+	if(!visible && mTotalIters != 0 && curTime > mStartTime+1)
+	    showDialog(true);
+	if(visible)
+	    {
+	    if(mBuilder && currentIter >= 0)
+		{
+		GtkProgressBar *bar = GTK_PROGRESS_BAR(mBuilder->getWidget("BackgroundProgressbar"));
+		gtk_progress_bar_set_fraction(bar, (double)currentIter/mTotalIters);
+		}
+	    // Allow progress update to display.
+	    // For some reason, gtk_events_pending never quits.
+	    for(int i=0; i<50 && gtk_events_pending(); i++)
+		{
+		gtk_main_iteration();
+		}
+	    }
+	}
+    return mKeepGoing;
+    }
