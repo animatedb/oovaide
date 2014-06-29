@@ -2,7 +2,7 @@
 add_executable(oovBuilder BuildConfigWriter.cpp ComponentBuilder.cpp ComponentFinder.cpp 
   ObjSymbols.cpp oovBuilder.cpp srcFileParser.cpp)
 
-target_link_libraries(oovBuilder oovCommon ${GTK_LIBRARIES})
+target_link_libraries(oovBuilder oovCommon)
 
 install(TARGETS oovBuilder
   EXPORT OovcdeTargets

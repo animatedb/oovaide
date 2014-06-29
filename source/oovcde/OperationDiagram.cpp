@@ -252,7 +252,7 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
 	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
     if(node)
 	{
-	const ModelClassifier *cls = ModelObject::getClass(node->getType());
+	const ModelClassifier *cls = node->getType()->getClass();
 	if(cls->getModule())
 	    viewSource(cls->getModule()->getModulePath().c_str(), cls->getLineNum());
 	}

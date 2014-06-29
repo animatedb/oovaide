@@ -47,6 +47,7 @@ private:
     int getObjectModelId(const std::string &name);
     void writeType(const ModelType &type);
     void writeClassDefinition(const ModelClassifier &classifier, bool isClassDef);
-    void writeStatements(const ModelStatement *stmts, int level);
+    void writeOperation(ModelOperation const &oper);
+    void writeStatements(const ModelStatements &stmts);
     void writeAssociation(const ModelAssociation &assoc);
 };

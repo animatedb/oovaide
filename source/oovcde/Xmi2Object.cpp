@@ -29,12 +29,8 @@
 #include <stdio.h>
 #include <algorithm>
 #include <cassert>
+#include <limits.h>
 #include "Debug.h"
-
-
-enum elementTypes { ET_None, ET_Class, ET_DataType,
-    ET_Attr, ET_Function, ET_FuncParam, ET_BodyVarDecl,
-    ET_Generalization, ET_Module, ET_OperCall, ET_CondStatement };
 
 
 #define DEBUG_LOAD 0
@@ -44,24 +40,6 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
     static bool sDumpFile = false;
     // This can be used for debugging. FN format is something like "DiagramDrawer_h.xmi".
     static char const *sCurrentFilename;
-    static char const * const getObjectTypeName(ObjectType ot)
-	{
-	char const *p = nullptr;
-	switch(ot)
-	    {
-	    case otClass:	p = "Class";	break;
-	    case otAssociation:	p = "Assoc";	break;
-	    case otAttribute:	p = "Attr ";	break;
-	    case otOperation:	p = "Oper ";	break;
-	    case otCondStatement:	p = "Cond ";	break;
-	    case otBodyVarDecl:	p = "var  ";	break;
-	    case otDatatype:	p = "DataT";	break;
-	    case otOperCall:	p = "Call ";	break;
-	    case otOperParam:	p = "Param";	break;
-	    case otModule:	p = "Modul";	break;
-	    }
-	return p;
-	}
     static void dumpFilename(char const * const fn, int typeIndex)
 	{
 	if(sDumpFile)
@@ -70,30 +48,31 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 	    fprintf(sLog.mFp, "\n***** %s - %d *****\n\n", fn, typeIndex);
 	    }
 	}
-    static void dumpStatements(const ModelStatement *stmt, int level)
+    static void dumpStatements(const ModelStatements &stmts, int level)
 	{
 	if(sDumpFile)
 	    {
 	    level++;
 	    std::string ws(level*2, ' ');
-	    if(stmt->getObjectType() == otCondStatement)
+	    for(auto const &stmt : stmts)
 		{
-		const ModelCondStatements *condStmts = static_cast<const ModelCondStatements*>(stmt);
-		fprintf(sLog.mFp, "   %s%s   %s\n", ws.c_str(),
-			getObjectTypeName(condStmts->getObjectType()),
-			condStmts->getName().c_str());
-		for(const auto &stmt : condStmts->getStatements())
+		if(stmt.getStatementType() == ST_OpenNest)
 		    {
-		    dumpStatements(stmt, level);
+		    fprintf(sLog.mFp, "  %s OpenStmt   %s\n", ws.c_str(),
+			    stmt.getName().c_str());
 		    }
-		}
-	    else if(stmt->getObjectType() == otOperCall)
-		{
-		const ModelOperationCall *call = static_cast<const ModelOperationCall*>(stmt);
-		fprintf(sLog.mFp, "   %s%s   %d:%s\n", ws.c_str(),
-			getObjectTypeName(call->getObjectType()),
-			call->getDecl().getDeclTypeModelId(), call->getName().c_str());
-		fflush(sLog.mFp);
+		else if(stmt.getStatementType() == ST_Call)
+		    {
+		    fprintf(sLog.mFp, "  %s Call   %d:%s\n", ws.c_str(),
+			    stmt.getDecl().getDeclTypeModelId(), stmt.getName().c_str());
+		    fflush(sLog.mFp);
+		    }
+		else if(stmt.getStatementType() == ST_VarRef)
+		    {
+		    fprintf(sLog.mFp, "  %s VarRef   %d:%s\n", ws.c_str(),
+			    stmt.getDecl().getDeclTypeModelId(), stmt.getName().c_str());
+		    fflush(sLog.mFp);
+		    }
 		}
 	    }
 	}
@@ -102,31 +81,26 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 	if(sDumpFile)
 	    {
 	    fprintf(sLog.mFp, "\n** Type Dump **\n");
-	    for(size_t i=0; i<graph.mTypes.size(); i++)
+	    for(auto &mt : graph.mTypes)
 		{
-		const ModelType *mt = graph.mTypes[i];
-		fprintf(sLog.mFp, " %s   %s %d\n", getObjectTypeName(mt->getObjectType()),
+		const char *typeStr = (mt->getDataType()==DT_Class) ? "Class": "DataType";
+		fprintf(sLog.mFp, " %s   %s %d\n", typeStr,
 			mt->getName().c_str(), mt->getModelId());
 		fflush(sLog.mFp);
-		if(mt->getObjectType() == otClass)
+		const ModelClassifier*c = mt->getClass();
+		if(c && c->getModule() == sCurrentModule)
 		    {
-		    const ModelClassifier*c = ModelObject::getClass(mt);
-		    if(c->getModule() == sCurrentModule)
+		    for(const auto &attr : c->getAttributes())
 			{
-			for(const auto &attr : c->getAttributes())
-			    {
-			    fprintf(sLog.mFp, "   %s   %s\n", getObjectTypeName(attr->getObjectType()),
-				    attr->getName().c_str());
-			    }
-			for(const auto &oper : c->getOperations())
-			    {
-			    fprintf(sLog.mFp, "   %s   %s", getObjectTypeName(oper->getObjectType()),
-				    oper->getName().c_str());
-			    if(oper->getModule())
-				fprintf(sLog.mFp, " %d", oper->getLineNum());
-			    fprintf(sLog.mFp, "\n");
-			    dumpStatements(&oper->getCondStatements(), 0);
-			    }
+			fprintf(sLog.mFp, "   Attr   %s\n", attr->getName().c_str());
+			}
+		    for(const auto &oper : c->getOperations())
+			{
+			fprintf(sLog.mFp, "   Obj   %s", oper->getName().c_str());
+			if(oper->getModule())
+			    fprintf(sLog.mFp, " %d", oper->getLineNum());
+			fprintf(sLog.mFp, "\n");
+			dumpStatements(oper->getStatements(), 0);
 			}
 		    }
 		fflush(sLog.mFp);
@@ -140,8 +114,8 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 	    fprintf(sLog.mFp, "\n** Relations Dump **\n");
 	    for(const auto &assoc : graph.mAssociations)
 		{
-		const ModelClassifier *child = ModelObject::getClass(assoc->getChild());
-		const ModelClassifier *parent = ModelObject::getClass(assoc->getParent());
+		const ModelClassifier *child = assoc->getChild()->getClass();
+		const ModelClassifier *parent = assoc->getParent()->getClass();
 		if(child && parent)
 		    {
 		    if(child->getModule() == sCurrentModule ||
@@ -158,7 +132,7 @@ enum elementTypes { ET_None, ET_Class, ET_DataType,
 	}
 #endif
 
-static void replaceAttrChars(tString &str)
+static void replaceAttrChars(OovString &str)
 {
     static struct
     {
@@ -178,11 +152,11 @@ static void replaceAttrChars(tString &str)
 	do
 	    {
 	    starti = str.find(words[i].mSrch);
-	    if(starti != tString::npos)
+	    if(starti != OovString::npos)
 		{
 		str.replace(starti, strlen(words[i].mSrch), words[i].mRep);
 		}
-	    } while(starti != tString::npos);
+	    } while(starti != OovString::npos);
         }
 }
 
@@ -206,102 +180,87 @@ void XmiParser::onOpenElem(char const * const name, int len)
     struct nameLookup
         {
         char const * const mName;
-        elementTypes mElType;
+        XmiElementTypes mElType;
         };
     static nameLookup names[] =
     {
-	{ "Attribute", ET_Attr, },
+	{ "Attr", ET_Attr, },
         { "Class", ET_Class, },
         { "DataType", ET_DataType, },
-        { "Generalization", ET_Generalization, },
+        { "Genrl", ET_Generalization, },
         // { "Enumeration", ET_Enumeration, },
         { "Module", ET_Module },
-        { "Operation", ET_Function },
-        { "Parameter", ET_FuncParam },
+        { "Oper", ET_Function },
+        { "Parms", ET_FuncParams },
         { "BodyVarDecl", ET_BodyVarDecl },
-        { "Call", ET_OperCall },
-        { "Condition", ET_CondStatement },
+        { "Statements", ET_Statements },
     };
-    elementTypes elType = ET_None;
+    XmiElement elem;
+    OovString elName(name, len);
     for(size_t ni=0; ni<sizeof(names)/sizeof(names[0]); ni++)
         {
-        tString elName(name, len);
         if(elName.compare(names[ni].mName) == 0)
             {
-            elType = names[ni].mElType;
+            elem.mType = names[ni].mElType;
             break;
             }
         }
-    ModelObject *elem = nullptr;
-    switch(elType)
+    switch(elem.mType)
         {
 	case ET_None:
 	    break;
 
 	case ET_Class:
-	    elem = new ModelClassifier("");
+	    elem.mModelObject = new ModelClassifier("");
 	    break;
 
 	case ET_DataType:
-	    elem = new ModelType("");
+	    elem.mModelObject = new ModelType("");
 	    break;
 
 	case ET_Attr:
-            elem = new ModelAttribute("", nullptr, Visibility::Public);
+	    elem.mModelObject = new ModelAttribute("", nullptr, Visibility::Public);
             break;
 
         case ET_Function:
-            elem = new ModelOperation("", Visibility(), true);
+            elem.mModelObject = new ModelOperation("", Visibility(), true);
             break;
 
-        case ET_FuncParam:
-            elem = new ModelFuncParam("", nullptr);
+        case ET_FuncParams:
+            elem.mModelObject = findParentInStack(ET_Function, false);
             break;
 
         case ET_BodyVarDecl:
-            elem = new ModelBodyVarDecl("", nullptr);
+            elem.mModelObject = new ModelBodyVarDecl("", nullptr);
             break;
 
         case ET_Generalization:
             {
             Visibility vis;
-            elem = new ModelAssociation(nullptr, nullptr, vis);
+            elem.mModelObject = new ModelAssociation(nullptr, nullptr, vis);
             }
             break;
 
         case ET_Module:
-            elem = new ModelModule();
+            elem.mModelObject = new ModelModule();
             break;
 
-        case ET_OperCall:
-            elem = new ModelOperationCall("", nullptr);
-            break;
-
-        case ET_CondStatement:
-            elem = new ModelCondStatements("");
+        case ET_Statements:
+            elem.mModelObject = findParentInStack(ET_Function, false);
             break;
         }
 #if(DEBUG_LOAD)
     if(sDumpFile)
 	{
-	if(elem)
-	    { fprintf(sLog.mFp, "< %s  ", getObjectTypeName(elem->getObjectType())); }
+	fprintf(sLog.mFp, "< %s  ", elName.c_str());
 	}
 #endif
-    if(elType != ET_None)
-	mElementStack.push_back(elem);
+    mElementStack.push_back(elem);
     }
 
 Visibility::VisType getAccess(char const * const accessStr)
     {
-    Visibility::VisType access = Visibility::Public;
-    switch(accessStr[2])
-        {
-        case 'b':   access = Visibility::Public;     break;
-        case 'i':   access = Visibility::Private;    break;
-        case 'o':   access = Visibility::Protected;  break;
-        }
-    return access;
+    return Visibility(accessStr).getVis();
     }
 
 static int getInt(char const * const str)
@@ -327,205 +286,260 @@ void XmiParser::setDeclAttr(const std::string &attrName,
         decl.setConst(isTrue(attrVal));
     }
 
+void XmiParser::addFuncParams(OovString const &attrName,
+	OovString const &attrVal, ModelOperation &oper)
+    {
+    if(strcmp(attrName.c_str(), "list") == 0)
+	{
+	std::vector<OovString> parms = attrVal.split('#');
+	for(auto const &parm : parms)
+	    {
+	    std::vector<OovString> parmVals = parm.split('@');
+	    if(parmVals.size() == 4)
+		{
+		ModelFuncParam *param = oper.addMethodParameter(parmVals[0].c_str(),
+			nullptr, false);
+	        param->setDeclTypeModelId(mStartingModuleTypeIndex + getInt(parmVals[1].c_str()));
+		param->setConst(parmVals[2][0] == 't');
+		param->setRefer(parmVals[3][0] == 't');
+		}
+	    }
+	}
+    }
+
+void XmiParser::addFuncStatements(OovString const &attrName,
+	OovString const &attrVal, ModelOperation &oper)
+    {
+    if(strcmp(attrName.c_str(), "list") == 0)
+	{
+	std::vector<OovString> statements = attrVal.split('#');
+	for(auto const &stmt : statements)
+	    {
+	    std::vector<OovString> stmtVals = stmt.split('@');
+	    switch(stmtVals[0][0])
+		{
+		case '{':
+		    {
+		    ModelStatement modStmt(&stmtVals[0][1], ST_OpenNest);
+		    oper.getStatements().addStatement(modStmt);
+		    }
+		    break;
+
+		case '}':
+		    {
+		    ModelStatement modStmt("", ST_CloseNest);
+		    oper.getStatements().addStatement(modStmt);
+		    }
+		    break;
+
+		case 'c':
+		    {
+		    ModelStatement modStmt(&stmtVals[0][2], ST_Call);
+		    int typeId = 0;
+		    if(stmtVals[1].getInt(0, INT_MAX, typeId))
+			{
+			modStmt.getDecl().setDeclTypeModelId(
+				mStartingModuleTypeIndex + typeId);
+			oper.getStatements().addStatement(modStmt);
+			}
+		    }
+		    break;
+
+#if(VAR_REF)
+		case 'v':
+		    {
+		    ModelStatement modStmt(&stmtVals[0][2], ST_VarRef);
+		    int typeId = 0;
+		    if(stmtVals[1].getInt(0, INT_MAX, typeId))
+			{
+			modStmt.getDecl().setDeclTypeModelId(
+				mStartingModuleTypeIndex + typeId);
+			oper.getStatements().addStatement(modStmt);
+			}
+		    }
+		    break;
+#endif
+		}
+	    }
+	}
+    }
+
 void XmiParser::onAttr(char const * const name, int &nameLen,
 	char const * const val, int &valLen)
     {
-    ModelObject *elItem = nullptr;
-    if(mElementStack.size() > 0)	// XML version header is not a model object.
-	elItem = mElementStack.back();
-    if(elItem)
-        {
-        tString attrName(name, nameLen);
-        tString attrVal(val, valLen);
-        replaceAttrChars(attrVal);
-        if(strcmp(attrName.c_str(), "xmi.id") == 0)
-            {
-            int index = getInt(attrVal.c_str());
-            if(elItem->getObjectType() == otModule ||
-        	    elItem->getObjectType() == otAssociation)
-        	{
-		elItem->setModelId(index);
-        	}
-            else
-        	{
-		elItem->setModelId(mStartingModuleTypeIndex + index);
-		if(mEndingModuleTypeIndex < mStartingModuleTypeIndex + index)
-		    mEndingModuleTypeIndex = mStartingModuleTypeIndex + index;
-        	}
-            }
-        if(strcmp(attrName.c_str(), "name") == 0)
-            {
-            elItem->setName(attrVal.c_str());
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-	fprintf(sLog.mFp, "  %s ", attrVal.c_str());
-#endif
-            }
-        switch(elItem->getObjectType())
-            {
-	    case otClass:
-                {
-                ModelClassifier *cl = static_cast<ModelClassifier*>(elItem);
-                if(strcmp(attrName.c_str(), "module") == 0)
-                    {
-                    int modId = getInt(attrVal.c_str());
-                    const ModelModule *mod = mModel.findModuleById(modId);
-                    if(mod)
-                	cl->setModule(mod);
-                    else
-                	{
-                	assert(false);
-                	}
-                    }
-                else if(strcmp(attrName.c_str(), "line") == 0)
-                    {
-                    cl->setLineNum(getInt(attrVal.c_str()));
-                    }
-                }
-                break;
-
-            case otAttribute:
-                {
-                ModelAttribute *attr = static_cast<ModelAttribute*>(elItem);
-                if(strcmp(attrName.c_str(), "access") == 0)
-                    attr->setAccess(getAccess(attrVal.c_str()));
-                else
-                    setDeclAttr(attrName, attrVal, *attr);
-                }
-                break;
-
-	    case otOperParam:
+    if(mElementStack.size() > 0)
+	{
+	OovString attrName(name, nameLen);
+	OovString attrVal(val, valLen);
+	XmiElement const &elItem = mElementStack.back();
+	if(elItem.mModelObject)
+	    {
+	    replaceAttrChars(attrVal);
+	    if(strcmp(attrName.c_str(), "id") == 0)
 		{
-		ModelFuncParam *fp = static_cast<ModelFuncParam*>(elItem);
-		setDeclAttr(attrName, attrVal, *fp);
+		int index = getInt(attrVal.c_str());
+		if(elItem.mType == ET_Module || elItem.mType == ET_Generalization)
+		    {
+		    elItem.mModelObject->setModelId(index);
+		    }
+		else
+		    {
+		    elItem.mModelObject->setModelId(mStartingModuleTypeIndex + index);
+		    if(mEndingModuleTypeIndex < mStartingModuleTypeIndex + index)
+			mEndingModuleTypeIndex = mStartingModuleTypeIndex + index;
+		    }
+		}
+	    if(strcmp(attrName.c_str(), "name") == 0)
+		{
+		elItem.mModelObject->setName(attrVal.c_str());
+    #if(DEBUG_LOAD)
+	if(sDumpFile)
+	    fprintf(sLog.mFp, "  %s ", attrVal.c_str());
+    #endif
+		}
+	    }
+	switch(elItem.mType)
+	    {
+	    case ET_Class:
+		{
+		ModelClassifier *cl = static_cast<ModelClassifier*>(elItem.mModelObject);
+		if(strcmp(attrName.c_str(), "module") == 0)
+		    {
+		    int modId = getInt(attrVal.c_str());
+		    const ModelModule *mod = mModel.findModuleById(modId);
+		    if(mod)
+			cl->setModule(mod);
+		    else
+			{
+			assert(false);
+			}
+		    }
+		else if(strcmp(attrName.c_str(), "line") == 0)
+		    {
+		    cl->setLineNum(getInt(attrVal.c_str()));
+		    }
 		}
 		break;
 
-	    case otBodyVarDecl:
+	    case ET_Attr:
 		{
-		ModelBodyVarDecl *vd = static_cast<ModelBodyVarDecl*>(elItem);
+		ModelAttribute *attr = static_cast<ModelAttribute*>(elItem.mModelObject);
+		if(strcmp(attrName.c_str(), "access") == 0)
+		    attr->setAccess(getAccess(attrVal.c_str()));
+		else
+		    setDeclAttr(attrName, attrVal, *attr);
+		}
+		break;
+
+	    case ET_FuncParams:
+		{
+		ModelOperation *oper = static_cast<ModelOperation*>(elItem.mModelObject);
+		if(oper)
+		    {
+		    addFuncParams(attrName, attrVal, *oper);
+		    }
+		}
+		break;
+
+	    case ET_Statements:
+		{
+		ModelOperation *oper = static_cast<ModelOperation*>(elItem.mModelObject);
+		if(oper)
+		    {
+		    addFuncStatements(attrName, attrVal, *oper);
+		    }
+		}
+		break;
+
+
+	    case ET_BodyVarDecl:
+		{
+		ModelBodyVarDecl *vd = static_cast<ModelBodyVarDecl*>(elItem.mModelObject);
 		setDeclAttr(attrName, attrVal, *vd);
 		}
 		break;
 
-	    case otOperCall:
+	    case ET_Generalization:
 		{
-		ModelOperationCall *oc = static_cast<ModelOperationCall*>(elItem);
-		setDeclAttr(attrName, attrVal, oc->getDecl());
+		ModelAssociation *assoc = static_cast<ModelAssociation*>(elItem.mModelObject);
+		if(strcmp(attrName.c_str(), "parent") == 0)
+		    assoc->setParentModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
+		else if(strcmp(attrName.c_str(), "child") == 0)
+		    assoc->setChildModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
+		else if(strcmp(attrName.c_str(), "access") == 0)
+		    assoc->setAccess(getAccess(attrVal.c_str()));
 		}
 		break;
 
-            case otAssociation:
-                {
-                ModelAssociation *assoc = static_cast<ModelAssociation*>(elItem);
-                if(strcmp(attrName.c_str(), "parent") == 0)
-                    assoc->setParentModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
-                else if(strcmp(attrName.c_str(), "child") == 0)
-                    assoc->setChildModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
-                else if(strcmp(attrName.c_str(), "access") == 0)
-                    assoc->setAccess(getAccess(attrVal.c_str()));
-                }
-                break;
-
-            case otModule:
-                {
-                ModelModule *mod = static_cast<ModelModule*>(elItem);
-                if(strcmp(attrName.c_str(), "module") == 0)
-                    mod->setModulePath(attrVal);
-                }
-                break;
-
-            case otOperation:
-        	{
-                ModelOperation *oper = static_cast<ModelOperation*>(elItem);
-                if(strcmp(attrName.c_str(), "access") == 0)
-                    oper->setAccess(getAccess(attrVal.c_str()));
-                else if(strcmp(attrName.c_str(), "const") == 0)
-                    oper->setConst(isTrue(attrVal));
-                else if(strcmp(attrName.c_str(), "module") == 0)
-                    {
-                    int modId = getInt(attrVal.c_str());
-                    const ModelModule *mod = mModel.findModuleById(modId);
-                    if(mod)
-                	oper->setModule(mod);
-                    }
-                else if(strcmp(attrName.c_str(), "line") == 0)
-                    {
-                    oper->setLineNum(getInt(attrVal.c_str()));
-                    }
-        	}
-        	break;
-
-            case otDatatype:
-	    case otCondStatement:
+	    case ET_Module:
+		{
+		ModelModule *mod = static_cast<ModelModule*>(elItem.mModelObject);
+		if(strcmp(attrName.c_str(), "module") == 0)
+		    mod->setModulePath(attrVal);
+		}
 		break;
-            }
-        }
+
+	    case ET_Function:
+		{
+		ModelOperation *oper = static_cast<ModelOperation*>(elItem.mModelObject);
+		if(strcmp(attrName.c_str(), "access") == 0)
+		    oper->setAccess(getAccess(attrVal.c_str()));
+		else if(strcmp(attrName.c_str(), "const") == 0)
+		    oper->setConst(isTrue(attrVal));
+		else if(strcmp(attrName.c_str(), "line") == 0)
+		    {
+		    if(mModel.mModules.size() > 0)
+			{
+			oper->setModule(
+				mModel.mModules[mModel.mModules.size()-1].get());
+			}
+		    oper->setLineNum(getInt(attrVal.c_str()));
+		    }
+		}
+		break;
+
+	    case ET_DataType:
+	    case ET_None:
+		break;
+	    }
+	}
     }
 
-ModelObject *XmiParser::findParentInStack(ObjectType type)
+ModelObject *XmiParser::findParentInStack(XmiElementTypes type, bool afterAddingSelf)
     {
     ModelObject *obj = nullptr;
     // -1 gets to highest element on stack, which is self, another -1 to get lower than self.
-    for(int i=mElementStack.size()-2; i >= 0; i--)
+    for(int i=mElementStack.size()-1-afterAddingSelf; i >= 0; i--)
 	{
-	if(mElementStack[i] && mElementStack[i]->getObjectType() == type)
+	if(mElementStack[i].mModelObject && mElementStack[i].mType == type)
 	    {
-	    obj = mElementStack[i];
+	    obj = mElementStack[i].mModelObject;
 	    break;
 	    }
 	}
     return obj;
     }
 
-// The stack order is normally
-// 	operation
-//		cond
-//		    cond
-//
-// So find the first parent condition, and if there aren't any, search for
-// the operation.
-ModelCondStatements *XmiParser::findStatementsParentInStack()
-    {
-    ModelCondStatements *stmts = NULL;
-    ModelObject *obj = findParentInStack(otCondStatement);
-    if(obj)
-	{
-	stmts = static_cast<ModelCondStatements*>(obj);
-	}
-    else
-	{
-	obj = findParentInStack(otOperation);
-	if(obj)
-	    {
-	    stmts = &static_cast<ModelOperation*>(obj)->getCondStatements();
-	    }
-	}
-    return stmts;
-    }
-
 void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
     {
-    ModelObject *elItem = nullptr;
-    if(mElementStack.size() > 0)	// XML version header is not a model object.
-	elItem = mElementStack.back();
-    if(elItem)
-        {
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-	fprintf(sLog.mFp, "> ");
-#endif
-	switch(elItem->getObjectType())
+    if(mElementStack.size() > 0)
+	{
+	XmiElement const &elItem = mElementStack.back();
+    #if(DEBUG_LOAD)
+	if(sDumpFile)
+	    fprintf(sLog.mFp, "> ");
+    #endif
+	switch(elItem.mType)
 	    {
-	    case otClass:
-	    case otDatatype:
+	    case ET_Class:
+	    case ET_DataType:
 		{
-		ModelType *newType = static_cast<ModelType*>(elItem);
+		ModelType *newType = static_cast<ModelType*>(elItem.mModelObject);
 		ModelType *existingType = mModel.findType(newType->getName().c_str());
 		if(existingType)
 		    {
-		    if(newType->getObjectType() == otClass &&
-			    existingType->getObjectType() == otDatatype)
+		    if(newType->getDataType() == DT_Class &&
+			    existingType->getDataType() == DT_DataType)
 			{
 			// Upgrade the type from a datatype to a class.
 			mModel.replaceType(existingType, static_cast<ModelClassifier*>(newType));
@@ -534,8 +548,8 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 	fprintf(sLog.mFp, "Replaced and upgraded to class %s\n", newType->getName().c_str());
 #endif
 			}
-		    else if(newType->getObjectType() == otClass &&
-			    existingType->getObjectType() == otClass)
+		    else if(newType->getDataType() == DT_Class &&
+			    existingType->getDataType() == DT_Class)
 			{
 			// Classes from the XMI files can either be defined struct/classes
 			// with data members or function declarations or definitions, or
@@ -573,7 +587,7 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 			}
 		    // If the new type is a datatype, use the old type whether it
 		    // was a class or datatype.
-		    else if(newType->getObjectType() == otDatatype)
+		    else if(newType->getDataType() == DT_DataType)
 			{
 			mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
 #if(DEBUG_LOAD)
@@ -592,18 +606,18 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		    {
 		    /// @todo - use make_unique when supported.
 		    mModel.addType(std::unique_ptr<ModelType>(newType));
-	            mPotentialRemapIndicesTypes.push_back(newType);
+		    mPotentialRemapIndicesTypes.push_back(newType);
 		    }
 		}
 		break;
 
-	    case otAttribute:
+	    case ET_Attr:
 		{
 		// Search back up until the enclosing element with a class is found.
-		ModelObject *obj = findParentInStack(otClass);
+		ModelObject *obj = findParentInStack(ET_Class);
 		if(obj)
 		    {
-		    ModelAttribute *attr = static_cast<ModelAttribute*>(elItem);
+		    ModelAttribute *attr = static_cast<ModelAttribute*>(elItem.mModelObject);
 		    ModelClassifier *cls = static_cast<ModelClassifier*>(obj);
 		    /// @todo - use make_unique when supported.
 		    cls->addAttribute(std::unique_ptr<ModelAttribute>(attr));
@@ -611,12 +625,12 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		}
 		break;
 
-	    case otOperation:
+	    case ET_Function:
 		{
-		ModelObject *obj = findParentInStack(otClass);
+		ModelObject *obj = findParentInStack(ET_Class);
 		if(obj)
 		    {
-		    ModelOperation *oper = static_cast<ModelOperation*>(elItem);
+		    ModelOperation *oper = static_cast<ModelOperation*>(elItem.mModelObject);
 		    ModelClassifier *cls = static_cast<ModelClassifier*>(obj);
 		    /// @todo - use make_unique when supported.
 		    cls->addOperation(std::unique_ptr<ModelOperation>(oper));
@@ -624,13 +638,13 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		}
 		break;
 
-	    case otBodyVarDecl:
+	    case ET_BodyVarDecl:
 		{
 		// Search back up until the enclosing element with an operation is found.
-		ModelObject *obj = findParentInStack(otOperation);
+		ModelObject *obj = findParentInStack(ET_Function);
 		if(obj)
 		    {
-		    ModelBodyVarDecl *dec = static_cast<ModelBodyVarDecl*>(elItem);
+		    ModelBodyVarDecl *dec = static_cast<ModelBodyVarDecl*>(elItem.mModelObject);
 		    ModelOperation *op = static_cast<ModelOperation*>(obj);
 		    /// @todo - use make_unique when supported.
 		    op->addBodyVarDeclarator(std::unique_ptr<ModelBodyVarDecl>(dec));
@@ -638,41 +652,17 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 		}
 		break;
 
-	    case otOperParam:
+	    case ET_Generalization:
 		{
-		// Search back up until the enclosing element with an operation is found.
-		ModelObject *obj = findParentInStack(otOperation);
-		if(obj)
-		    {
-		    ModelFuncParam *param = static_cast<ModelFuncParam*>(elItem);
-		    ModelOperation *op = static_cast<ModelOperation*>(obj);
-		    /// @todo - use make_unique when supported.
-		    op->addMethodParameter(std::unique_ptr<ModelFuncParam>(param));
-		    }
-		}
-		break;
-
-	    case otCondStatement:
-	    case otOperCall:
-		{
-		ModelCondStatements *condStmts = findStatementsParentInStack();
-		/// @todo - use make_unique when supported.
-		ModelStatement *stmt = static_cast<ModelStatement*>(elItem);
-		condStmts->addStatement(std::unique_ptr<ModelStatement>(stmt));
-		}
-		break;
-
-	    case otAssociation:
-		{
-		ModelAssociation *assoc = static_cast<ModelAssociation*>(elItem);
+		ModelAssociation *assoc = static_cast<ModelAssociation*>(elItem.mModelObject);
 		/// @todo - use make_unique when supported.
 		mModel.mAssociations.push_back(std::unique_ptr<ModelAssociation>(assoc));
 		}
 		break;
 
-	    case otModule:
+	    case ET_Module:
 		{
-		ModelModule *mod = static_cast<ModelModule*>(elItem);
+		ModelModule *mod = static_cast<ModelModule*>(elItem.mModelObject);
 		/// @todo - use make_unique when supported.
 		mModel.mModules.push_back(std::unique_ptr<ModelModule>(mod));
 #if(DEBUG_LOAD)
@@ -680,17 +670,22 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 #endif
 		}
 		break;
+
+	    case ET_None:
+	    case ET_Statements:
+	    case ET_FuncParams:
+		break;
 	    }
-        }
+	}
 #if(DEBUG_LOAD)
     if(sDumpFile)
 	fprintf(sLog.mFp, "\n");
 #endif
-    if(mElementStack.size() > 0)	// XML version header is not a model object.
+    if(mElementStack.size() > 0)
 	mElementStack.pop_back();
     }
 
-void XmiParser::updateDeclTypeIndices(ModelDeclarator &decl)
+void XmiParser::updateDeclTypeIndices(ModelTypeRef &decl)
     {
     auto const &iter = mFileTypeIndexMap.find(decl.getDeclTypeModelId());
     if(iter != mFileTypeIndexMap.end())
@@ -699,19 +694,19 @@ void XmiParser::updateDeclTypeIndices(ModelDeclarator &decl)
 	}
     }
 
-void XmiParser::updateStatementTypeIndices(ModelStatement *stmt)
+void XmiParser::updateStatementTypeIndices(ModelStatements &stmts)
     {
-    if(stmt->getObjectType() == otCondStatement)
+    for(auto &stmt : stmts)
 	{
-	ModelCondStatements *condStmt = static_cast<ModelCondStatements *>(stmt);
-	for(auto &childstmt : condStmt->getStatements())
+	if(stmt.getStatementType() == ST_Call
+#if(VAR_REF)
+		||
+		stmt.getStatementType() == ST_VarRef
+#endif
+		)
 	    {
-	    updateStatementTypeIndices(childstmt.get());
+	    updateDeclTypeIndices(stmt.getDecl());
 	    }
-	}
-    else if(stmt->getObjectType() == otOperCall)
-	{
-	updateDeclTypeIndices(static_cast<ModelOperationCall *>(stmt)->getDecl());
 	}
     }
 
@@ -730,9 +725,9 @@ void XmiParser::updateTypeIndices()
 #endif
     for(const auto &type : mPotentialRemapIndicesTypes)
 	{
-	if(type->getObjectType() == otClass)
+	if(type->getDataType() == DT_Class)
 	    {
-	    ModelClassifier *classifier = ModelObject::getClass(type);
+	    ModelClassifier *classifier = type->getClass();
 	    for(auto &attr : classifier->getAttributes())
 		{
 		updateDeclTypeIndices(*attr);
@@ -745,8 +740,8 @@ void XmiParser::updateTypeIndices()
 		    updateDeclTypeIndices(*param);
 		    }
 		// Resolve function call decls.
-		ModelCondStatements &stmts = oper->getCondStatements();
-		updateStatementTypeIndices(&stmts);
+		ModelStatements &stmts = oper->getStatements();
+		updateStatementTypeIndices(stmts);
 
 		// Resolve body variables.
 		for(auto &vd : oper->getBodyVarDeclarators())

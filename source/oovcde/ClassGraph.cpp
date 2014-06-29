@@ -169,7 +169,7 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
     // Add nodes if members refer to the passed in type.
     if((addType & AN_MemberUsers) > 0)
 	{
-	const ModelClassifier*cl = ModelObject::getClass(modelType);
+	const ModelClassifier*cl = modelType->getClass();
 	if(cl)
 	    {
 	    for(const auto &attr : cl->getAttributes())
@@ -188,7 +188,7 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
     // Add nodes if func params refer to the passed in type.
     if((addType & AN_FuncParamsUsers) > 0)
 	{
-	const ModelClassifier*cl = ModelObject::getClass(modelType);
+	const ModelClassifier*cl = modelType->getClass();
 	if(cl)
 	    {
 	    ConstModelDeclClassVector relatedDeclClasses;
@@ -208,7 +208,7 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
     // Add nodes if func body variables refer to the passed in type.
     if((addType & AN_FuncBodyUsers) > 0)
 	{
-	const ModelClassifier*cl = ModelObject::getClass(modelType);
+	const ModelClassifier*cl = modelType->getClass();
 	if(cl)
 	    {
 	    ConstModelDeclClassVector relatedDeclClasses;
@@ -259,7 +259,7 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 		break;
 		}
 	    }
-	const ModelClassifier *classifier = ModelObject::getClass(type);
+	const ModelClassifier *classifier = type->getClass();
 	if(classifier)
 	    {
 	    backDlg.setDialogText("Adding member relations.");
@@ -384,7 +384,7 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 		}
 	    }
 
-	const ModelClassifier *classifier = ModelObject::getClass(type);
+	const ModelClassifier *classifier = type->getClass();
 	if(classifier)
 	    {
 	    // Get attributes of classifier, and get the decl type
@@ -454,7 +454,7 @@ void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options
     if(depth == 1)
 	{
 	const ModelType *type = model.getTypeRef(className);
-	const ModelClassifier *classifier = ModelObject::getClass(type);
+	const ModelClassifier *classifier = type->getClass();
 	if(classifier)
 	    {
 	    if(clear)

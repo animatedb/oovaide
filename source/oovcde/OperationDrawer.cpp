@@ -33,7 +33,7 @@ GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
 	OperationClass &opClass = graph.mOpClasses[i];
 	opClass.setPosition(pos);
 	size = drawClass(opClass, options);
-	condDepth = graph.getCondDepth(i);
+	condDepth = graph.getNestDepth(i);
 	size.x += condDepth * mPad;
 	opClass.setSize(size);
 	pos.x += size.x + mCharHeight;
@@ -80,7 +80,7 @@ GraphSize OperationDrawer::drawClass(const OperationClass &node,
     int recty = mCharHeight + mPad*2;
     int totaly = startpos.y + recty;
     int rectx = mDrawer.getTextExtentWidth(typeName) + mPad*2;
-    const ModelClassifier *classifier = ModelObject::getClass(type);
+    const ModelClassifier *classifier = type->getClass();
     if(classifier)
 	{
 	mDrawer.groupShapes(true, Color(245,245,255));
@@ -178,7 +178,7 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 	int condOffset = condDepth * mPad;
 	switch(stmt->getStatementType())
 	    {
-	    case os_Call:
+	    case ST_Call:
 		{
 		OperationCall *call = stmt->getCall();
 
@@ -243,11 +243,57 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 		}
 		break;
 
-	    case os_CondStart:
+#if(VAR_REF)
+	    case ST_VarRef:
+		{
+		OperationVarRef *ref = stmt->getVarRef();
+
+		int targetIndex = ref->getOperClassIndex();
+		int lineY = y + mCharHeight + mPad*2;
+		int sourcex = cls.getLifelinePosX();
+		sourcex += condOffset;
+		const OperationClass &targetCls = graph.getClass(targetIndex);
+		int targetx = targetCls.getLifelinePosX();
+		if(targetIndex == -1)
+		    {
+		    int len = mCharHeight*3;
+		    mDrawer.drawLine(GraphPoint(sourcex, lineY),
+			    GraphPoint(sourcex+len, lineY), ref->isConst());
+		    }
+		else if(targetIndex != sourceIndex)
+		    {
+		    drawCall(mDrawer, GraphPoint(sourcex, lineY),
+			    GraphPoint(targetx, lineY), ref->isConst(), arrowLen);
+		    }
+		else
+		    {
+		    // Draw line back to same class
+		    int len = mCharHeight*3;
+		    int height = 3;
+		    mDrawer.drawLine(GraphPoint(sourcex, lineY),
+			    GraphPoint(sourcex+len, lineY), ref->isConst());
+		    mDrawer.drawLine(GraphPoint(sourcex+len, lineY),
+			    GraphPoint(sourcex+len, lineY+height));
+		    mDrawer.drawLine(GraphPoint(sourcex, lineY+height),
+			    GraphPoint(sourcex+len, lineY+height), ref->isConst());
+		    y += height;
+		    }
+		int textX = (sourceIndex < targetIndex) ? cls.getLifelinePosX() :
+			targetCls.getLifelinePosX();
+		GraphPoint callPos(textX+condOffset+mPad, y+mCharHeight);
+		drawStrings.push_back(DrawString(callPos, ref->getName()));
+		ref->setRect(GraphPoint(callPos.x, callPos.y-mCharHeight),
+			GraphSize(mCharHeight*50, mCharHeight+mPad));
+		y += mCharHeight*2;
+		}
+		break;
+#endif
+
+	    case ST_OpenNest:
 		{
 		GraphPoint pos(cls.getLifelinePosX()+condOffset+
 			mPad, y+mCharHeight);
-		const OperationConditionStart *cond = stmt->getCondStart();
+		const OperationNestStart *cond = stmt->getNestStart();
 		drawStrings.push_back(DrawString(pos, cond->getExpr()));
 		condStartPosY.push_back(y);
 		y += mCharHeight*2;
@@ -257,7 +303,7 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 		}
 		break;
 
-	    case os_CondEnd:
+	    case ST_CloseNest:
 		{
 		poly.changeBlockCondDepth(condDepth, condDepth-1, y);
 		condDepth--;

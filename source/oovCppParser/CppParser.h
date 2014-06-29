@@ -39,8 +39,7 @@ class CppParser
     {
     public:
 	CppParser():
-	    mClassifier(nullptr), mOperation(nullptr),
-	    mCondStatements(nullptr)
+	    mClassifier(nullptr), mOperation(nullptr)
 	    {}
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
 	    ET_NoSourceFile, ET_ParseError };
@@ -59,9 +58,9 @@ class CppParser
     private:
         /// This contains all parsed information.
 	ModelData mModelData;
-	ModelClassifier *mClassifier;      /// Current class being parsed.
-	ModelOperation *mOperation;        /// Current operation being parsed.
-	ModelCondStatements *mCondStatements;  /// Current conditional statement
+	ModelClassifier *mClassifier;    /// Current class being parsed.
+	ModelOperation *mOperation;      /// Current operation being parsed.
+	ModelStatements *mStatements; 	 /// Current statements of a function.
 	FilePath mTopParseFn;   /// The top level file that is being parsed.
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;

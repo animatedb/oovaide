@@ -29,6 +29,7 @@ void strRemoveSpaceAround(char const * const c, std::string &str)
     strReplace(std::string(" ") + c, std::string(c), str);
     }
 
+/*
 char const * const Visibility::asStr() const
 {
     char const *str = "";
@@ -41,6 +42,7 @@ char const * const Visibility::asStr() const
         }
     return str;
 }
+*/
 
 char const * const Visibility::asUmlStr() const
     {
@@ -55,24 +57,35 @@ char const * const Visibility::asUmlStr() const
     return str;
     }
 
-const ModelClassifier *ModelObject::getClass(const ModelObject *type)
+Visibility::Visibility(char const *umlStr)
+    {
+    switch(umlStr[0])
+        {
+	default:	// fall through
+        case '+':	vis = Visibility::Public;      	break;
+        case '#':	vis = Visibility::Protected;	break;
+        case '-':	vis = Visibility::Private;      break;
+        }
+    }
+
+const ModelClassifier *ModelType::getClass() const
     {
     const ModelClassifier *cl = nullptr;
-    if(type)
+    if(this)
 	{
-	if(type->getObjectType() == otClass)
-	    cl = static_cast<const ModelClassifier*>(type);
+	if(mDataType == DT_Class)
+	    cl = static_cast<const ModelClassifier*>(this);
 	}
     return cl;
     }
 
-ModelClassifier *ModelObject::getClass(ModelObject *type)
+ModelClassifier *ModelType::getClass()
     {
     ModelClassifier *cl = nullptr;
-    if(type)
+    if(this)
 	{
-	if(type->getObjectType() == otClass)
-	    cl = static_cast<ModelClassifier*>(type);
+	if(mDataType == DT_Class)
+	    cl = static_cast<ModelClassifier*>(this);
 	}
     return cl;
     }
@@ -84,7 +97,7 @@ bool ModelType::isTemplateType() const
 
 const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     {
-    return getDeclType() ? getClass(getDeclType()) : nullptr;
+    return getDeclType() ? getDeclType()->getClass() : nullptr;
     }
 
 ModelFuncParam *ModelOperation::addMethodParameter(const std::string &name, const ModelType *type,
@@ -110,7 +123,7 @@ ModelBodyVarDecl *ModelOperation::addBodyVarDeclarator(const std::string &name, 
 
 bool ModelOperation::isDefinition() const
     {
-    return(mCondStatements.getStatements().size() > 0);
+    return(mStatements.size() > 0);
     }
 
 void ModelClassifier::clearAttributes()
@@ -128,7 +141,8 @@ bool ModelClassifier::isDefinition() const
     return(getAttributes().size() + getOperations().size() > 0);
     }
 
-ModelAttribute *ModelClassifier::addAttribute(const std::string &name, ModelType *attrType, Visibility scope)
+ModelAttribute *ModelClassifier::addAttribute(const std::string &name,
+	ModelType const *attrType, Visibility scope)
     {
     ModelAttribute *attr = new ModelAttribute(name, attrType, scope);
     /// @todo - use make_unique when supported.
@@ -206,6 +220,31 @@ void ModelClassifier::removeOperation(ModelOperation *oper)
 	}
     }
 
+int ModelClassifier::getAttributeIndex(const std::string &name) const
+    {
+    int index = -1;
+    for(size_t i=0; i<mAttributes.size(); i++)
+	{
+	if(mAttributes[i]->getName().compare(name) == 0)
+	    {
+	    index = i;
+	    break;
+	    }
+	}
+    return index;
+    }
+
+const ModelAttribute *ModelClassifier::getAttribute(const std::string &name) const
+    {
+    ModelAttribute *attr = nullptr;
+    int index = getAttributeIndex(name);
+    if(index != -1)
+	{
+	attr = mAttributes[index].get();
+	}
+    return attr;
+    }
+
 int ModelClassifier::getOperationIndex(const std::string &name, bool isConst) const
     {
     int index = -1;
@@ -247,7 +286,7 @@ void ModelData::clear()
     mTypes.clear();
     }
 
-void ModelData::resolveDecl(ModelDeclarator &decl)
+void ModelData::resolveDecl(ModelTypeRef &decl)
     {
     if(decl.getDeclTypeModelId() != UNDEFINED_ID)
 	{
@@ -272,19 +311,19 @@ void ModelData::dumpTypes()
 #endif
     }
 
-void ModelData::resolveStatements(ModelStatement *stmt)
+void ModelData::resolveStatements(ModelStatements &stmts)
     {
-    if(stmt->getObjectType() == otCondStatement)
+    for(auto &stmt : stmts)
 	{
-	ModelCondStatements *condStmt = static_cast<ModelCondStatements *>(stmt);
-	for(auto &childstmt : condStmt->getStatements())
+	if(stmt.getStatementType() == ST_Call
+#if(VAR_REF)
+		||
+		stmt.getStatementType() == ST_VarRef
+#endif
+		)
 	    {
-	    resolveStatements(childstmt.get());
+	    resolveDecl(stmt.getDecl());
 	    }
-	}
-    else if(stmt->getObjectType() == otOperCall)
-	{
-	resolveDecl(static_cast<ModelOperationCall *>(stmt)->getDecl());
 	}
     }
 
@@ -294,9 +333,9 @@ void ModelData::resolveModelIds()
     // Resolve class member attributes and operations.
     for(const auto &type : mTypes)
 	{
-	if(type->getObjectType() == otClass)
+	if(type->getDataType() == DT_Class)
 	    {
-	    ModelClassifier *classifier = ModelObject::getClass(type.get());
+	    ModelClassifier *classifier = type->getClass();
 	    for(auto &attr : classifier->getAttributes())
 		{
 		resolveDecl(*attr);
@@ -309,8 +348,8 @@ void ModelData::resolveModelIds()
 		    resolveDecl(*param);
 		    }
 		// Resolve function call decls.
-		ModelCondStatements &stmts = oper->getCondStatements();
-		resolveStatements(&stmts);
+		ModelStatements &stmts = oper->getStatements();
+		resolveStatements(stmts);
 
 		// Resolve body variables.
 		for(auto &vd : oper->getBodyVarDeclarators())
@@ -346,26 +385,16 @@ void ModelData::resolveModelIds()
 */
     }
 
-bool ModelData::isTypeReferencedByStatements(ModelStatement *stmt, ModelType const &type) const
+bool ModelData::isTypeReferencedByStatements(ModelStatements const &stmts,
+	ModelType const &type) const
     {
     bool referenced = false;
-    if(stmt->getObjectType() == otCondStatement)
+    for(auto &stmt : stmts)
 	{
-	ModelCondStatements *condStmt = static_cast<ModelCondStatements *>(stmt);
-	for(auto &childstmt : condStmt->getStatements())
-	    {
-	    referenced = isTypeReferencedByStatements(childstmt.get(), type);
-	    if(referenced)
-		{
-		break;
-		}
-	    }
-	}
-    else if(stmt->getObjectType() == otOperCall)
-	{
-	if(static_cast<ModelOperationCall *>(stmt)->getDecl().getDeclType() == &type)
+	if(stmt.getStatementType() == ST_Call && stmt.getDecl().getDeclType() == &type)
 	    {
 	    referenced = true;
+	    break;
 	    }
 	}
     return referenced;
@@ -376,9 +405,9 @@ bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) con
     bool referenced = false;
     for(const auto &type : mTypes)
 	{
-	if(type->getObjectType() == otClass)
+	if(type->getDataType() == DT_Class)
 	    {
-	    ModelClassifier *classifier = ModelObject::getClass(type.get());
+	    ModelClassifier *classifier = type->getClass();
 	    // Only defined classes in the parsed translation unit have a module.
 	    if(classifier->getModule())
 		{
@@ -410,8 +439,8 @@ bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) con
 			if(!referenced)
 			    {
 			    // Check function call decls.
-			    ModelCondStatements &stmts = oper->getCondStatements();
-			    referenced = isTypeReferencedByStatements(&stmts, checkType);
+			    ModelStatements &stmts = oper->getStatements();
+			    referenced = isTypeReferencedByStatements(stmts, checkType);
 			    }
 			if(!referenced)
 			    {
@@ -478,27 +507,22 @@ void ModelData::takeAttributes(ModelClassifier *sourceType, ModelClassifier *des
     // be handled since those types haven't been resolved yet.
     }
 
-void ModelData::replaceStatementType(ModelStatement *stmts, ModelType *existingType,
+void ModelData::replaceStatementType(ModelStatements &stmts, ModelType *existingType,
 	ModelClassifier *newType)
     {
-    if(stmts->getObjectType() == otCondStatement)
+    for(auto &stmt : stmts)
 	{
-	const ModelCondStatements *condstmts = static_cast<const ModelCondStatements*>(stmts);
-	if(condstmts->getStatements().size() != 0)
+	if(stmt.getStatementType() == ST_Call
+#if(VAR_REF)
+		||
+		stmt.getStatementType() == ST_VarRef
+#endif
+		)
 	    {
-	    for(const auto &childstmt : condstmts->getStatements())
+	    if(stmt.getDecl().getDeclType() == existingType)
 		{
-		// Recurse
-		replaceStatementType(childstmt.get(), existingType, newType);
+		stmt.getDecl().setDeclType(newType);
 		}
-	    }
-	}
-    else
-	{
-	ModelOperationCall *call = static_cast<ModelOperationCall*>(stmts);
-	if(call->getDecl().getDeclType() == existingType)
-	    {
-	    call->getDecl().setDeclType(newType);
 	    }
 	}
     }
@@ -511,9 +535,9 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
     // update member attributes.
     for(const auto &type : mTypes)
 	{
-	if(type->getObjectType() == otClass)
+	if(type->getDataType() == DT_Class)
 	    {
-	    ModelClassifier *classifier = ModelObject::getClass(type.get());
+	    ModelClassifier *classifier = type->getClass();
 	    for(auto &attr : classifier->getAttributes())
 		{
 		if(attr->getDeclType() == existingType)
@@ -537,7 +561,7 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
 			vd->setDeclType(newType);
 			}
 		    }
-		replaceStatementType(&oper->getCondStatements(), existingType, newType);
+		replaceStatementType(oper->getStatements(), existingType, newType);
 		}
 	    }
 	}
@@ -572,29 +596,29 @@ const ModelType *ModelData::getTypeRef(char const * const typeName) const
     return findType(baseTypeName.c_str());
     }
 
-ModelType *ModelData::createOrGetTypeRef(char const * const typeName, ObjectType otype)
+ModelType *ModelData::createOrGetTypeRef(char const * const typeName, eModelDataTypes dtype)
     {
     std::string baseTypeName = getBaseType(typeName);
     ModelType *type = findType(baseTypeName.c_str());
     if(!type)
 	{
-	type = static_cast<ModelType*>(createObject(otype, baseTypeName.c_str()));
+	type = static_cast<ModelType*>(createDataType(dtype, baseTypeName.c_str()));
 	}
     return type;
     }
 
-ModelType *ModelData::createTypeRef(char const * const typeName, ObjectType otype)
+ModelType *ModelData::createTypeRef(char const * const typeName, eModelDataTypes dtype)
     {
     std::string baseTypeName = getBaseType(typeName);
-    return static_cast<ModelType*>(createObject(otype, baseTypeName.c_str()));
+    return static_cast<ModelType*>(createDataType(dtype, baseTypeName.c_str()));
     }
 
-ModelObject *ModelData::createObject(ObjectType type, const std::string &id)
+ModelObject *ModelData::createDataType(eModelDataTypes type, const std::string &id)
     {
     ModelObject *obj = nullptr;
     switch(type)
 	{
-	case otDatatype:
+	case DT_DataType:
 	    {
 	    ModelType *type = new ModelType(id);
 	    /// @todo - use make_unique when supported.
@@ -603,7 +627,7 @@ ModelObject *ModelData::createObject(ObjectType type, const std::string &id)
 	    }
 	    break;
 
-	case otClass:
+	case DT_Class:
 	    {
 	    ModelClassifier *classifier = new ModelClassifier(id);
 	    /// @todo - use make_unique when supported.
@@ -802,7 +826,7 @@ ModelModule const * const ModelData::findModuleById(int id)
 
 const ModelClassifier *ModelData::findClassByModelId(int id) const
     {
-    return ModelObject::getClass(findTypeByModelId(id));
+    return findTypeByModelId(id)->getClass();
     }
 
 const ModelType *ModelData::findTypeByModelId(int id) const
@@ -880,7 +904,7 @@ void ModelData::getRelatedTemplateClasses(const ModelType &type,
 	getIdents(name.substr(startPos, endPos-startPos), idents);
 	for(auto &id : idents)
 	    {
-	    const ModelClassifier *tempCl = ModelObject::getClass(findType(id.c_str()));
+	    const ModelClassifier *tempCl = findType(id.c_str())->getClass();
 	    if(tempCl)
 		classes.push_back(tempCl);
 	    }

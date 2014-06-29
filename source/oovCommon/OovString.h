@@ -24,7 +24,7 @@ typedef const char* tIntlStrPtrConst;
 typedef char tIntlByte;		// This is one byte of a UTF-8 character
 
 typedef std::vector<std::string> StdStringVec;
-std::vector<std::string> split(const std::string &str, char delimiter);
+std::vector<class OovString> split(const std::string &str, char delimiter);
 
 bool StringToFloat(char const * const str, float min, float max, float &val);
 bool StringToInt(char const * const str, int min, int max, int &val);
@@ -63,6 +63,14 @@ class OovString:public OovStringRefInterface, public std::string
 	OovString(std::string const &str):
 	    std::string(str)
 	    {}
+	OovString(std::string const &str, size_t pos, size_t len = npos):
+	    std::string(str, pos, len)
+	    {}
+	OovString(char const * const str, size_t n):
+	    std::string(str, n)
+	    {}
+	std::vector<OovString> split(char delim) const
+	    { return ::split(*this, delim); }
 	void setUpperCase(char const * const str);
 	void setLowerCase(char const * const str);
 	void appendInt(int val, int radix=10);

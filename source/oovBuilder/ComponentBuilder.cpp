@@ -512,10 +512,17 @@ void ComponentBuilder::makeLibSymbols(char const * const clumpName,
 	    getSymbolBasePath().c_str(), objSymbolTool.c_str(), *this);
     }
 
-void ComponentBuilder::makeLib(const std::string &libName,
+void ComponentBuilder::makeLib(const std::string &libPath,
 	const std::vector<std::string> &objectFileNames)
     {
-    std::string outFileName = mOutputPath + "lib" + libName + ".a";
+    std::string libName = libPath;
+    size_t libNamePos = rfindPathSep(libName.c_str());
+    if(libNamePos != std::string::npos)
+	libNamePos++;
+    else
+	libNamePos = 0;
+    libName.insert(libNamePos, "lib");
+    std::string outFileName = mOutputPath + libName + ".a";
     if(FileStat::isOutputOld(outFileName.c_str(), objectFileNames))
 	{
 	std::string procPath = mToolPathFile.getLibberPath();

@@ -134,14 +134,22 @@ void NameValueRecord::write(FILE *fp)
 
 bool NameValueRecord::getLine(FILE *fp, std::string &str)
     {
-    std::string lineBuf;
+    char lineBuf[1000];
     str.resize(0);
-    lineBuf.resize(1000);
-    while(fgets(&lineBuf[0], lineBuf.size(), fp))
+    // Read many times until the \n is found.
+    while(fgets(lineBuf, sizeof(lineBuf), fp))
 	{
-	str += &lineBuf[0];
-	if(strchr(&lineBuf[0], '\n'))
+	str += lineBuf;
+	int len = str.length();
+	if(str[len-1] == '\n')
+	    {
+	    str.resize(len-1);
 	    break;
+	    }
+	else if(len > 50000)
+	    {
+	    break;
+	    }
 	}
     return(str.length() > 0);
     }

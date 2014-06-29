@@ -52,6 +52,12 @@ Linux versions:
 	libclang.so is included, but either the Gnu or CLang compiler
 	is required for building.
 
+	To build oovcde on Linux (Debian/Ubuntu):
+		- Run "sudo apt-get install libgtk-3-dev clang" from a terminal
+		- LLVM include and lib paths are in the top level CMakeLists.txt
+		- Run "cmake ./" from the oovcde top level directory
+		- Run "make" from the same directory
+
 
 Windows versions on or before 2014-01:
 	GTK-3.0

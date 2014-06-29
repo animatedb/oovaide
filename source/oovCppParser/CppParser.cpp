@@ -260,7 +260,7 @@ static CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor p
 ModelType *CppParser::createOrGetBaseTypeRef(CXCursor cursor, RefType &rt)
     {
     CXType cursorType = clang_getCursorType(cursor);
-    ObjectType oType = (cursorType.kind == CXType_Record) ? otClass : otDatatype;
+    eModelDataTypes dType = (cursorType.kind == CXType_Record) ? DT_Class : DT_DataType;
     rt.isConst = isConstType(cursor);
     switch(cursorType.kind)
 	{
@@ -279,7 +279,7 @@ ModelType *CppParser::createOrGetBaseTypeRef(CXCursor cursor, RefType &rt)
     if(sLog.mFp && !mModelData.getTypeRef(typeName.c_str()))
 	fprintf(sLog.mFp, "    Create Type Ref: %s\n", typeName.c_str());
 #endif
-    return mModelData.createOrGetTypeRef(typeName.c_str(), oType);
+    return mModelData.createOrGetTypeRef(typeName.c_str(), dType);
     }
 
 // This upgrades an otDatatype to an otClass in order to handle forward references
@@ -290,14 +290,14 @@ ModelClassifier *CppParser::createOrGetClassRef(char const * const name)
     if(sLog.mFp && !mModelData.getTypeRef(name))
 	fprintf(sLog.mFp, "    Create Type Class: %s\n", name);
 #endif
-    ModelType *type = mModelData.createOrGetTypeRef(name, otClass);
-    if(type->getObjectType() == otClass)
+    ModelType *type = mModelData.createOrGetTypeRef(name, DT_Class);
+    if(type->getDataType() == DT_Class)
 	{
 	classifier = static_cast<ModelClassifier*>(type);
 	}
     else
 	{
-	classifier = static_cast<ModelClassifier*>(mModelData.createTypeRef(name, otClass));
+	classifier = static_cast<ModelClassifier*>(mModelData.createTypeRef(name, DT_Class));
 	mModelData.replaceType(type, classifier);
 	}
     return classifier;
@@ -306,7 +306,7 @@ ModelClassifier *CppParser::createOrGetClassRef(char const * const name)
 ModelType *CppParser::createOrGetDataTypeRef(CXCursor cursor)
     {
     std::string typeName = getFullBaseTypeName(cursor);
-    return mModelData.createOrGetTypeRef(typeName.c_str(), otDatatype);
+    return mModelData.createOrGetTypeRef(typeName.c_str(), DT_DataType);
     }
 
 void CppParser::addOperationParts(CXCursor cursor, bool addParams)
@@ -317,7 +317,7 @@ void CppParser::addOperationParts(CXCursor cursor, bool addParams)
 	clang_visitChildren(cursor, ::visitFunctionAddArgs, this);
 	}
     clang_visitChildren(cursor, ::visitFunctionAddVars, this);
-    mCondStatements = &mOperation->getCondStatements();
+    mStatements = &mOperation->getStatements();
     clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
     }
 
@@ -444,9 +444,11 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
 		bool isConst = isMethodConst(cursor);
 		mOperation = mClassifier->addOperation(str, mClassMemberAccess, isConst);
 		addOperationParts(cursor, true);
-		FilePath fn(getFileLoc(cursor), FP_File);
+		int line;
+		FilePath fn(getFileLoc(cursor, &line), FP_File);
 		if(fn == mTopParseFn)
 		    {
+		    mOperation->setLineNum(line);
 		    mOperation->setModule(mModelData.mModules[0].get());
 		    }
 		}
@@ -577,12 +579,9 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    fullop += opStr;
 	    fullop += ']';
 
-	    ModelCondStatements *savedCD = mCondStatements;
-	    /// @todo - use make_unique when supported.
-	    mCondStatements = new ModelCondStatements(fullop);
-	    savedCD->addStatement(std::unique_ptr<ModelCondStatements>(mCondStatements));
+	    mStatements->addStatement(ModelStatement(fullop, ST_OpenNest));
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
-	    mCondStatements = savedCD;
+	    mStatements->addStatement(ModelStatement("", ST_CloseNest));
 	    }
 	    break;
 
@@ -600,15 +599,35 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
 		RefType rt;
 		const ModelType *classType = createOrGetBaseTypeRef(classCursor, rt);
-		/// @todo - use make_unique when supported.
-		mCondStatements->addStatement(std::unique_ptr<ModelOperationCall>(new ModelOperationCall(
-			functionName, classType)));
+		ModelStatement stmt(functionName, ST_Call);
+		stmt.getDecl().setDeclType(classType);
+		mStatements->addStatement(stmt);
 		}
 	    }
 	    break;
 
-//	case CXCursor_NullStmt:
-//	    break;
+#if(VAR_REF)
+	case CXCursor_MemberRefExpr:
+	    {
+	    CXStringDisposer name = clang_getCursorDisplayName(cursor);
+
+	    // This returns the CXCursor_CXXMethod cursor
+	    CXCursor cursorDef = clang_getCursorDefinition(cursor);
+	    if(cursorDef.kind == CXCursor_FieldDecl)
+		{
+		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
+		if(classCursor.kind == CXCursor_ClassDecl)
+		    {
+		    RefType rt;
+		    const ModelType *classType = createOrGetBaseTypeRef(classCursor, rt);
+		    ModelStatement stmt(name, ST_VarRef);
+		    stmt.getDecl().setDeclType(classType);
+		    mStatements->addStatement(stmt);
+		    }
+		}
+	    }
+	    break;
+#endif
 
 	case CXCursor_CompoundStmt:
 	    {
@@ -628,11 +647,12 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		    /// @todo - The next statement (compound/null) should really be under this else.
 		    /// This is wrong in the XMI since it indicates an operation, but it looks
 		    /// fairly good in the graphs.
-		    if(mCondStatements)
+		    if(mStatements)
 			{
-			/// @todo - use make_unique when supported.
-			mCondStatements->addStatement(std::unique_ptr<ModelOperationCall>
-			    (new ModelOperationCall("[else]", nullptr)));
+			ModelStatement stmt("[else]", ST_Call);
+			mStatements->addStatement(stmt);
+//			mStatements->addStatement(std::unique_ptr<ModelOperationCall>
+//			    (new ModelOperationCall("[else]", nullptr)));
 			}
 		    }
 		}

@@ -5,6 +5,7 @@
 #include "Components.h"
 #include "IncludeMap.h"
 #include "Packages.h"
+#include "Options.h"
 #include "BuildConfigReader.h"
 
 
@@ -21,11 +22,10 @@ class CMaker
         std::vector<std::string> getCompSources(char const * const compName);
         std::vector<std::string> getCompLibraries(char const * const compName);
         void makeTopMakelistsFile(char const * const destName);
-        void makeTopInFile(char const * const destName);
-        void makeTopVerInFile(char const * const destName);
-        void makeComponentFile(char const * const compName,
-            ComponentTypesFile::CompTypes compType,
-            std::vector<std::string> const &source, char const * const destName);
+        void makeTopLevelFiles(char const * const outDir);
+        void makeToolchainFiles(char const * const outDir);
+        void makeComponentFiles(bool writeToProject, char const * const outDir,
+        	std::vector<std::string> const &compNames);
         void writeFile(char const * const destName, const std::string &str);
 
     public:
@@ -34,6 +34,7 @@ class CMaker
         BuildConfigReader mConfig;
         ComponentTypesFile mCompTypes;
         BuildPackages mBuildPkgs;
+        BuildOptions mBuildOptions;
         IncDirDependencyMapReader mIncMap;
         bool mVerbose;
 
@@ -41,4 +42,10 @@ class CMaker
             std::string &str);
 	void addPackageDefines(char const * const pkgName, std::string &str);
 	void makeDefineName(char const * const pkgName, OovString &defName);
+        void makeToolchainFile(const char * const compilePath, char const * const destName);
+        void makeTopInFile(char const * const destName);
+        void makeTopVerInFile(char const * const destName);
+        void makeComponentFile(char const * const compName,
+            ComponentTypesFile::CompTypes compType,
+            std::vector<std::string> const &source, char const * const destName);
     };

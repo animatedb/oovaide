@@ -184,9 +184,9 @@ void OovString::appendInt(int val, int radix)
     append(buf);
     }
 
-std::vector<std::string> split(const std::string &str, char delimiter)
+std::vector<OovString> split(const std::string &str, char delimiter)
 {
-    std::vector<std::string> tokens;
+    std::vector<OovString> tokens;
     size_t start = 0;
     size_t end = 0;
     const int delimLen = 1;

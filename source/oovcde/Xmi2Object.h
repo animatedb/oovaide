@@ -31,10 +31,31 @@
 #include "ModelObjects.h"
 #include <map>
 #include <vector>
-#include <string>
+#include "OovString.h"
 
-typedef std::string tString;
 
+enum XmiElementTypes
+    { ET_None, ET_Class, ET_DataType,
+    ET_Attr,
+    ET_Function,	// Same as operation
+    ET_FuncParams,
+    ET_BodyVarDecl,
+    ET_Statements,
+    ET_Generalization,	// Same as association
+    ET_Module,
+    };
+
+
+class XmiElement
+    {
+    public:
+	XmiElement(XmiElementTypes type=ET_None):
+	    mType(type),
+	    mModelObject(nullptr)
+	    {}
+	XmiElementTypes mType;
+	ModelObject *mModelObject;
+    };
 
 class XmiParser:private XmlParser
     {
@@ -60,7 +81,7 @@ class XmiParser:private XmlParser
 
     private:
         ModelData &mModel;
-        std::vector<ModelObject*> mElementStack;
+        std::vector<XmiElement> mElementStack;
         ModelClassifier *mCurrentClassifier;
         int mStartingModuleTypeIndex;
         int mEndingModuleTypeIndex;
@@ -70,8 +91,8 @@ class XmiParser:private XmlParser
         // These are the types that were loaded from the current module that
         // may need to have indices remapped.
         std::vector<ModelType*> mPotentialRemapIndicesTypes;
-        void updateDeclTypeIndices(ModelDeclarator &decl);
-        void updateStatementTypeIndices(ModelStatement *stmt);
+        void updateDeclTypeIndices(ModelTypeRef &decl);
+        void updateStatementTypeIndices(ModelStatements &stmt);
         void updateTypeIndices();
         virtual void onOpenElem(char const * const name, int len);
         virtual void onCloseElem(char const * const /*name*/, int /*len*/);
@@ -81,10 +102,13 @@ class XmiParser:private XmlParser
         void addAttrs(const ModelClassifier *obj);
         void addOpers(const ModelClassifier *obj);
         void dumpTypeMap(char const * const str1, char const * const str2);
-        ModelObject *findParentInStack(ObjectType type);
-        ModelCondStatements *findStatementsParentInStack();
+        ModelObject *findParentInStack(XmiElementTypes type, bool afterAddingSelf = true);
         void setDeclAttr(const std::string &attrName,
         	const std::string &attrVal, ModelDeclarator &decl);
+        void addFuncParams(OovString const &attrName,
+        	OovString const &attrVal, ModelOperation &oper);
+        void addFuncStatements(OovString const &attrName,
+        	OovString const &attrVal, ModelOperation &oper);
     };
 
 bool loadXmiFile(FILE *fp, ModelData &model, char const * const fn, int &typeIndex);

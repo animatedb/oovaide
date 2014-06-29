@@ -18,17 +18,26 @@ static DebugFile sLog("OperGraph.txt");
 
 OperationCall *OperationStatement::getCall()
     {
-    return(mStatementType == os_Call ? static_cast<OperationCall*>(this) : nullptr);
+    return(mStatementType == ST_Call ? static_cast<OperationCall*>(this) : nullptr);
     }
 
-const OperationConditionStart *OperationStatement::getCondStart() const
+#if(VAR_REF)
+OperationVarRef *OperationStatement::getVarRef()
     {
-    return(mStatementType == os_CondStart ? static_cast<const OperationConditionStart*>(this) : nullptr);
+    return(mStatementType == ST_VarRef ? static_cast<OperationVarRef*>(this) : nullptr);
+    }
+#endif
+
+const OperationNestStart *OperationStatement::getNestStart() const
+    {
+    return(mStatementType == ST_OpenNest ?
+	    static_cast<const OperationNestStart*>(this) : nullptr);
     }
 
-const OperationConditionEnd *OperationStatement::getCondEnd() const
+const OperationNestEnd *OperationStatement::getNestEnd() const
     {
-    return(mStatementType == os_CondEnd ? static_cast<const OperationConditionEnd*>(this) : nullptr);
+    return(mStatementType == ST_CloseNest ?
+	    static_cast<const OperationNestEnd*>(this) : nullptr);
     }
 
 bool OperationCall::compareOperation(const OperationCall &call) const
@@ -38,19 +47,19 @@ bool OperationCall::compareOperation(const OperationCall &call) const
 	    isConst() == call.isConst());
     }
 
-int OperationDefinition::getCondDepth() const
+int OperationDefinition::getNestDepth() const
     {
     int maxDepth = 0;
     int depth = 0;
     for(const auto &stmt : mStatements)
 	{
-	if(stmt->getStatementType() == os_CondStart)
+	if(stmt->getStatementType() == ST_OpenNest)
 	    {
 	    depth++;
 	    if(depth > maxDepth)
 		maxDepth = depth;
 	    }
-	else if(stmt->getStatementType() == os_CondEnd)
+	else if(stmt->getStatementType() == ST_CloseNest)
 	    {
 	    depth--;
 	    }
@@ -63,9 +72,9 @@ const OperationCall *OperationDefinition::getCall(int x, int y) const
     OperationCall *retCall = NULL;
     for(const auto &stmt : mStatements)
 	{
-	if(stmt->getStatementType() == os_Call)
+	if(stmt->getStatementType() == ST_Call)
 	    {
-	    OperationCall *call = static_cast<OperationCall*>(stmt);
+	    OperationCall *call = stmt->getCall();
 	    GraphRect rect;
 	    call->getRect(rect);
 	    if(rect.isPointIn(GraphPoint(x, y)))
@@ -83,9 +92,9 @@ bool OperationDefinition::isCalled(const OperationCall &opcall) const
     bool called = false;
     for(const auto &stmt : mStatements)
 	{
-	if(stmt->getStatementType() == os_Call)
+	if(stmt->getStatementType() == ST_Call)
 	    {
-	    const OperationCall *stmtcall = static_cast<OperationCall*>(stmt);
+	    const OperationCall *stmtcall = stmt->getCall();
 	    if(stmtcall->compareOperation(opcall))
 		{
 		called = true;
@@ -103,14 +112,11 @@ bool OperationDefinition::isClassReferred(int classIndex) const
 	{
 	for(const auto &stmt : mStatements)
 	    {
-	    if(stmt->getStatementType() == os_Call)
+	    OperationCall *call = stmt->getCall();
+	    if(call && call->getOperClassIndex() == classIndex)
 		{
-		OperationCall *call = static_cast<OperationCall*>(stmt);
-		if(call->getOperClassIndex() == classIndex)
-		    {
-		    referred = true;
-		    break;
-		    }
+		referred = true;
+		break;
 		}
 	    }
 	}
@@ -163,61 +169,80 @@ class DummyOperationCall:public OperationCall
 	DummyOperation *mDo;
     };
 
-void OperationGraph::fillDefinition(const ModelStatement *stmt, OperationDefinition &opDef,
+void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefinition &opDef,
 	eGetClass gc)
     {
-    if(stmt->getObjectType() == otCondStatement)
+    for(auto &stmt : stmts)
 	{
-	const ModelCondStatements *condStmts = static_cast<const ModelCondStatements*>(stmt);
-	if(condStmts->getStatements().size() > 0)
+	if(stmt.getStatementType() == ST_OpenNest)
 	    {
-	    opDef.addCondStart(condStmts->getName().c_str());
-	    for(const auto &stmt : condStmts->getStatements())
-		{
-		fillDefinition(stmt.get(), opDef, gc);
-		}
-	    opDef.addCondEnd();
+	    opDef.addNestStart(stmt.getName().c_str());
 	    }
-	}
-    else if(stmt->getObjectType() == otOperCall)
-	{
-	const ModelOperationCall *call = static_cast<const ModelOperationCall*>(stmt);
-	const ModelClassifier *cls = ModelObject::getClass(call->getDecl().getDeclType());
-	int classIndex = -1;
-	if(cls)
+	else if(stmt.getStatementType() == ST_CloseNest)
 	    {
-	    classIndex = addOrGetClass(cls, gc);
-	    if(classIndex != -1)
+	    opDef.addNestEnd();
+	    }
+#if(VAR_REF)
+	else if(stmt.getStatementType() == ST_VarRef)
+	    {
+	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
+	    int classIndex = -1;
+	    if(cls)
 		{
-		const ModelOperation *targetOper = cls->getOperationAnyConst(call->getName(),
-			call->getDecl().isConst());
-		if(targetOper)
+		classIndex = addOrGetClass(cls, gc);
+		if(classIndex != -1)
 		    {
-		    opDef.addCall(new OperationCall(classIndex, *targetOper));
-#if(DEBUG_OPERGRAPH)
-		    fprintf(sLog.mFp, "%d %s\n", classIndex, targetOper->getName().c_str());
+		    const ModelAttribute *targetAttr = cls->getAttribute(stmt.getName());
+			{
+			opDef.addStatement(std::unique_ptr<OperationStatement>(
+			    new OperationVarRef(classIndex, *targetAttr)));
+			}
+		    }
+		}
+	    }
 #endif
+	else if(stmt.getStatementType() == ST_Call)
+	    {
+	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
+	    int classIndex = -1;
+	    if(cls)
+		{
+		classIndex = addOrGetClass(cls, gc);
+		if(classIndex != -1)
+		    {
+		    const ModelOperation *targetOper = cls->getOperationAnyConst(stmt.getName(),
+			    stmt.getDecl().isConst());
+		    if(targetOper)
+			{
+			/// @todo - use make_unique when supported.
+			opDef.addStatement(std::unique_ptr<OperationStatement>(
+				new OperationCall(classIndex, *targetOper)));
+    #if(DEBUG_OPERGRAPH)
+			fprintf(sLog.mFp, "%d %s\n", classIndex, targetOper->getName().c_str());
+    #endif
+			}
+		    else
+			{
+			opDef.addStatement(std::unique_ptr<OperationStatement>(
+				new DummyOperationCall(classIndex, stmt.getName(),
+				stmt.getDecl().isConst())));
+    #if(DEBUG_OPERGRAPH)
+			fprintf(sLog.mFp, "Bad Oper %d %s %d\n", classIndex,
+				call->getName().c_str(), call->getDecl().isConst());
+			for(const auto oper : cls->getOperations())
+			    {
+			    fprintf(sLog.mFp, "  %s %d\n", oper->getName().c_str(),
+				    oper->isConst());
+			    }
+    #endif
+			}
 		    }
 		else
 		    {
-		    opDef.addCall(new DummyOperationCall(classIndex, call->getName(),
-			    call->getDecl().isConst()));
-#if(DEBUG_OPERGRAPH)
-		    fprintf(sLog.mFp, "Bad Oper %d %s %d\n", classIndex,
-			    call->getName().c_str(), call->getDecl().isConst());
-		    for(const auto oper : cls->getOperations())
-			{
-			fprintf(sLog.mFp, "  %s %d\n", oper->getName().c_str(),
-				oper->isConst());
-			}
-#endif
+    #if(DEBUG_OPERGRAPH)
+		    fprintf(sLog.mFp, "Bad Class %d\n", classIndex);
+    #endif
 		    }
-		}
-	    else
-		{
-#if(DEBUG_OPERGRAPH)
-		fprintf(sLog.mFp, "Bad Class %d\n", classIndex);
-#endif
 		}
 	    }
 	}
@@ -226,7 +251,7 @@ void OperationGraph::fillDefinition(const ModelStatement *stmt, OperationDefinit
 void OperationGraph::addDefinition(int classIndex, const ModelOperation &oper)
     {
     OperationDefinition *opDef = new OperationDefinition(classIndex, oper);
-    fillDefinition(&oper.getCondStatements(), *opDef, GC_AddClasses);
+    fillDefinition(oper.getStatements(), *opDef, GC_AddClasses);
     mOperations.push_back(opDef);
     mModified = true;
     }
@@ -253,8 +278,7 @@ void OperationGraph::clearGraphAndAddOperation(const ModelData &model,
     fprintf(sLog.mFp, "---------\n");
 #endif
     clearGraph();
-    const ModelClassifier *sourceClass = ModelObject::getClass(
-	    model.getTypeRef(className));
+    const ModelClassifier *sourceClass = model.getTypeRef(className)->getClass();
     if(sourceClass)
 	{
 	const ModelOperation *sourceOper = sourceClass->getOperation(operName, isConst);
@@ -307,19 +331,19 @@ void OperationGraph::removeNode(const OperationClass *classNode)
 	    if(oper->getOperClassIndex() > classIndex)
 		oper->decrementClassIndex();
 	    oper->removeStatements();
-	    fillDefinition(&oper->getOperation().getCondStatements(), *oper, FT_OnlyGetClasses);
+	    fillDefinition(oper->getOperation().getStatements(), *oper, FT_OnlyGetClasses);
 	    }
 	}
     }
 
-int OperationGraph::getCondDepth(int classIndex)
+int OperationGraph::getNestDepth(int classIndex)
     {
     int maxDepth = 0;
     for(const auto &oper : mOperations)
 	{
 	if(oper->getOperClassIndex() == classIndex)
 	    {
-	    int depth = oper->getCondDepth();
+	    int depth = oper->getNestDepth();
 	    if(depth > maxDepth)
 		maxDepth = depth;
 	    }
@@ -366,38 +390,29 @@ std::string OperationGraph::getClassName(const OperationCall &opcall) const
 
 void OperationGraph::addOperDefinition(const OperationCall &opcall)
     {
-    const ModelClassifier *cls = ModelObject::getClass(
-	    mOpClasses[opcall.getOperClassIndex()].getType());
-    const ModelOperation *targetOper = cls->getOperation(opcall.getName(), opcall.isConst());
+    const ModelClassifier *cls = mOpClasses[opcall.getOperClassIndex()].
+	    getType()->getClass();
+    const ModelOperation *targetOper = cls->getOperation(opcall.getName(),
+	    opcall.isConst());
     if(!isOperDefined(opcall) && targetOper)
 	addDefinition(opcall.getOperClassIndex(), *targetOper);
     }
 
-void OperationGraph::addOperCallers(const ModelStatement *stmt,
+void OperationGraph::addOperCallers(const ModelStatements &stmts,
 	const ModelClassifier &srcCls, const ModelOperation &oper,
 	const OperationCall &callee)
     {
-    if(stmt->getObjectType() == otCondStatement)
+    for(auto const &stmt : stmts)
 	{
-	const ModelCondStatements *condStmts = static_cast<const ModelCondStatements*>(stmt);
-	if(condStmts->getStatements().size() > 0)
+	if(stmt.getStatementType() == ST_Call)
 	    {
-	    for(const auto &stmt : condStmts->getStatements())
+	    const ModelClassifier *callerCls = stmt.getDecl().getDeclType()->
+		    getClass();
+	    if((stmt.getName().compare(callee.getName()) == 0) &&
+		    callerCls == mOpClasses[callee.getOperClassIndex()].getType())
 		{
-		addOperCallers(stmt.get(), srcCls, oper, callee);
+		addRelatedOperations(srcCls, oper, OperationGraph::AO_All, 1);
 		}
-	    }
-	}
-    else if(stmt->getObjectType() == otOperCall)
-	{
-	const ModelOperationCall *caller = static_cast<const
-		ModelOperationCall *>(stmt);
-	const ModelClassifier *callerCls = ModelObject::getClass(
-		caller->getDecl().getDeclType());
-	if((caller->getName().compare(callee.getName()) == 0) &&
-		callerCls == mOpClasses[callee.getOperClassIndex()].getType())
-	    {
-	    addRelatedOperations(srcCls, oper, OperationGraph::AO_All, 1);
 	    }
 	}
     }
@@ -406,15 +421,12 @@ void OperationGraph::addOperCallers(const ModelData &model, const OperationCall 
     {
     for(const auto &type : model.mTypes)
 	{
-	const ModelClassifier *srcCls = ModelObject::getClass(type.get());
+	const ModelClassifier *srcCls = type->getClass();
 	if(srcCls)
 	    {
 	    for(const auto &oper : srcCls->getOperations())
 		{
-		for(const auto &stmt : oper->getCondStatements().getStatements())
-		    {
-		    addOperCallers(stmt.get(), *srcCls, *oper, callee);
-		    }
+		addOperCallers(oper->getStatements(), *srcCls, *oper, callee);
 		}
 	    }
 	}
@@ -422,9 +434,10 @@ void OperationGraph::addOperCallers(const ModelData &model, const OperationCall 
 
 void OperationGraph::removeOperDefinition(const OperationCall &opcall)
     {
-    const ModelClassifier *cls = ModelObject::getClass(
-	    mOpClasses[opcall.getOperClassIndex()].getType());
-    const ModelOperation *targetOper = cls->getOperation(opcall.getName(), opcall.isConst());
+    const ModelClassifier *cls = mOpClasses[opcall.getOperClassIndex()].getType()->
+	    getClass();
+    const ModelOperation *targetOper = cls->getOperation(opcall.getName(),
+	    opcall.isConst());
     if(targetOper)
 	{
 	const OperationDefinition *operDef = getOperDefinition(opcall);

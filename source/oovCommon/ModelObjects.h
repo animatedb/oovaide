@@ -35,41 +35,7 @@ class ModelType;
 
 // The basic structure is that a class contains attributes and operations.
 // A class can also inherit from another class, which must already be declared.
-enum ObjectType
-{
-    // Class or struct
-    otClass,
 
-    // Generalization/inheritance
-    otAssociation,
-
-    // Class data member, same as data type, but includes reference/const and
-    // visibility.
-    otAttribute,
-
-    // Function definition in a class with arguments, statements, etc.
-    otOperation,
-
-    // Function parameters, same as data type, but includes reference/const?
-    otOperParam,
-
-    // Call to a function
-    otOperCall,
-
-    // Conditional statement
-    otCondStatement,
-
-    // Variable declarations in a function body
-    otBodyVarDecl,
-
-    // This is used for types not defined in the current file.  This might be class
-    // names defined elsewhere, or simple data types.
-    // For encoding func params, type such as "unsigned int", "MyObject", etc.
-    otDatatype,
-
-    // This defines the source module that some entity came from.
-    otModule,
-};
 
 class Visibility
     {
@@ -81,11 +47,12 @@ class Visibility
     };
     Visibility(VisType v=Private)
         { vis = v; }
+    Visibility(char const *umlStr);
     void setVis(VisType v)
 	{ vis = v; }
     VisType getVis() const
 	{ return vis; }
-    char const * const asStr() const;
+//    char const * const asStr() const;
     char const * const asUmlStr() const;
   private:
     VisType vis;
@@ -94,81 +61,81 @@ class Visibility
 class ModelObject
 {
 public:
-    ModelObject(const std::string &name, ObjectType type):
-        mName(name), mObjectType(type), mModelId(UNDEFINED_ID)
+    ModelObject(const std::string &name):
+        mName(name), mModelId(UNDEFINED_ID)
         {}
     const std::string &getName() const
         { return mName; }
     void setName(char const * const name)
 	{ mName = name; }
-    ObjectType getObjectType() const
-        { return mObjectType; }
     void setModelId(int id)
 	{ mModelId = id; }
     int getModelId() const
 	{ return mModelId; }
-    static const class ModelClassifier *getClass(const ModelObject *type);
-    static class ModelClassifier *getClass(ModelObject *type);
 private:
     std::string mName;
-    ObjectType mObjectType;
     int mModelId;
 };
 
 
-// A declarator can be a function return, function argument, or attribute.
-// Basically anything that refers to a type.
-class ModelDeclarator:public ModelObject
-{
-public:
-    explicit ModelDeclarator(const std::string &name, ObjectType type, const ModelType *declType):
-        ModelObject(name, type), mDeclType(declType),  mDeclTypeModelId(0), mStatic(false),
-        mConst(false), mRefer(false)
-        {}
-    void setStatic(bool isStatic)
-        { mStatic = isStatic; }
-    void setConst(bool isConst)
-        { mConst = isConst; }
-    void setRefer(bool isRefer)
-        { mRefer = isRefer; }
-    const ModelType *getDeclType() const
-        { return mDeclType; }
-    const class ModelClassifier *getDeclClassType() const;
-    void setDeclType(const ModelType *type)
-        { mDeclType = type; }
-    void setDeclTypeModelId(int id)
-	{ mDeclTypeModelId = id; }
-    int getDeclTypeModelId() const
-	{ return mDeclTypeModelId; }
-    bool isConst() const
-        { return mConst; }
-    bool isRefer() const
-        { return mRefer; }
+class ModelTypeRef
+    {
+    public:
+	ModelTypeRef(ModelType  const *declType):
+	    mDeclType(declType), mDeclTypeModelId(0), mStatic(false),
+	    mConst(false), mRefer(false)
+	    {}
+	void setStatic(bool isStatic)
+	    { mStatic = isStatic; }
+	void setConst(bool isConst)
+	    { mConst = isConst; }
+	void setRefer(bool isRefer)
+	    { mRefer = isRefer; }
+	const ModelType *getDeclType() const
+	    { return mDeclType; }
+	void setDeclType(ModelType const *type)
+	    { mDeclType = type; }
+	void setDeclTypeModelId(int id)
+	    { mDeclTypeModelId = id; }
+	int getDeclTypeModelId() const
+	    { return mDeclTypeModelId; }
+	bool isConst() const
+	    { return mConst; }
+	bool isRefer() const
+	    { return mRefer; }
+
     private:
-        const ModelType *mDeclType;
-        int mDeclTypeModelId;
-        bool mStatic;
-        bool mConst;
-        bool mRefer;
-};
+	ModelType const *mDeclType;
+	unsigned int mDeclTypeModelId:29;
+	unsigned int mStatic:1;
+	unsigned int mConst:1;
+	unsigned int mRefer:1;
+    };
+
+// A C++ declarator is a type and a name.
+// A declarator can be a function return, function argument, attribute, etc.
+class ModelDeclarator:public ModelObject, public ModelTypeRef
+    {
+    public:
+	explicit ModelDeclarator(const std::string &name,
+		ModelType const *declType):
+	    ModelObject(name), ModelTypeRef(declType)
+	    {}
+	const class ModelClassifier *getDeclClassType() const;
+    };
 
 
-class ModelFuncParam:public ModelDeclarator
-{
-public:
-    ModelFuncParam(const std::string &name, const ModelType *type):
-	ModelDeclarator(name, otOperParam, type)
-        {}
-};
+typedef ModelDeclarator ModelFuncParam;
+typedef ModelDeclarator ModelBodyVarDecl;
 
 
 // This is a record(class/struct) data member.
 class ModelAttribute:public ModelDeclarator
 {
 public:
-    explicit ModelAttribute(const std::string &name, const ModelType *attrType,
+    explicit ModelAttribute(const std::string &name, ModelType const *attrType,
 	    Visibility access):
-        ModelDeclarator(name, otAttribute, attrType), mAccess(access)
+        ModelDeclarator(name, attrType), mAccess(access)
         {}
     void setAccess(Visibility access)
         { mAccess = access; }
@@ -178,59 +145,57 @@ public:
         Visibility mAccess;
 };
 
-class ModelBodyVarDecl:public ModelDeclarator
-{
-public:
-    ModelBodyVarDecl(const std::string &name, const ModelType *type):
-	ModelDeclarator(name, otBodyVarDecl, type)
-        {}
+#define VAR_REF 0
+enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call,
+#if(VAR_REF)
+    ST_VarRef
+#endif
 };
 
-// Derived types are conditionals or function calls.
+// These aren't really statements. These are important things in a function
+// that must be displayed in sequence/operation diagrams.
 class ModelStatement:public ModelObject
     {
     public:
-	ModelStatement(const std::string &name, ObjectType type):
-	    ModelObject(name, type)
+	// Different types contain different parts of this class. This is done
+	// to reduce memory in the ModelStatements vector.
+	// OpenNest
+	//	The name is the conditional statement and is optional.
+	//	There is no decl
+	// Call
+	//	The name is the function name.
+	//	The decl points to the type.
+	// CloseNest
+	//	There is no name or decl.
+	// VarRef
+	//	The name is the class's attribute name
+	//	The decl points to the type.
+	ModelStatement(const std::string name, eModelStatementTypes type):
+	    ModelObject(name), mStatementType(type), mDecl(nullptr)
 	    {}
-    };
+	eModelStatementTypes getStatementType() const
+	    { return mStatementType; }
+	// These are only valid if this statement is a call.
+	ModelTypeRef &getDecl()
+	    { return mDecl; }
+	const ModelTypeRef &getDecl() const
+	    { return mDecl; }
 
-class ModelOperationCall:public ModelStatement
-    {
-    public:
-	// The type is the class that owns the operation.
-	ModelOperationCall(const std::string &name, const ModelType *modType):
-	    ModelStatement(name, otOperCall), mDecl("", otOperCall, modType)
-	    {}
-	ModelDeclarator &getDecl()
-	    { return mDecl; }
-	const ModelDeclarator &getDecl() const
-	    { return mDecl; }
     private:
-	ModelDeclarator mDecl;
+	eModelStatementTypes mStatementType;
+	ModelTypeRef mDecl;
     };
 
-/// This holds recursive statements.  The statements can be operation calls
-/// or conditionals with nested statements.
-/// The name contains the conditional operation string or will be empty.
-/// For a function, this will not have a name for the top level compound
-/// statements.  Then for any conditionals, all function call statements
-/// that are children of the conditional are stored.
-/// This container owns all pointers (statements) given to it.
-class ModelCondStatements:public ModelStatement
+/// This is a list of statements in a function.
+class ModelStatements:public std::vector<ModelStatement>
     {
     public:
-	ModelCondStatements(const std::string &name):
-	    ModelStatement(name, otCondStatement)
+	ModelStatements()
 	    {}
-	void addStatement(std::unique_ptr<ModelStatement> stmt)
+	void addStatement(ModelStatement const &stmt)
 	    {
-	    mStatements.push_back(std::move(stmt));
+	    push_back(stmt);
 	    }
-	const std::vector<std::unique_ptr<ModelStatement>> &getStatements() const
-	    { return mStatements; }
-    private:
-	std::vector<std::unique_ptr<ModelStatement>> mStatements;
     };
 
 /// This container owns all pointers (parameters, etc.) given to it, except for
@@ -240,7 +205,7 @@ class ModelOperation:public ModelObject
 public:
     ModelOperation(const std::string &name, Visibility access,
 	    bool isConst):
-        ModelObject(name, otOperation), mCondStatements(""), mAccess(access),
+        ModelObject(name), mAccess(access),
         mIsConst(isConst), mModule(nullptr), mLineNum(0)
         {}
     // Returns a pointer to the added parameter so that it can be modified.
@@ -271,10 +236,10 @@ public:
 	{ return mParameters; }
     const std::vector<std::unique_ptr<ModelBodyVarDecl>> &getBodyVarDeclarators() const
 	{ return mBodyVarDeclarators; }
-    ModelCondStatements &getCondStatements()
-	{ return mCondStatements; }
-    const ModelCondStatements &getCondStatements() const
-	{ return mCondStatements; }
+    ModelStatements &getStatements()
+	{ return mStatements; }
+    const ModelStatements &getStatements() const
+	{ return mStatements; }
     void setAccess(Visibility access)
         { mAccess = access; }
     Visibility getAccess() const
@@ -297,33 +262,43 @@ private:
     // This could be expanded to contain ref/ptr/const
 //    ModelDeclarator* mDefinitionDeclarator;	// return type
     std::vector<std::unique_ptr<ModelBodyVarDecl>> mBodyVarDeclarators;
-    ModelCondStatements mCondStatements;
+    ModelStatements mStatements;
     Visibility mAccess;
     bool mIsConst;
     const class ModelModule *mModule;
     int mLineNum;
 };
 
+enum eModelDataTypes { DT_DataType, DT_Class };
 
+// This stores info about simple (non-class) types, and is the base for all types.
 class ModelType:public ModelObject
     {
     public:
-	explicit ModelType(const std::string &name, ObjectType type=otDatatype):
-	    ModelObject(name, type)
+	explicit ModelType(const std::string &name, eModelDataTypes type=DT_DataType):
+	    ModelObject(name), mDataType(type)
 	    {}
 	bool isTemplateType() const;
+	eModelDataTypes getDataType() const
+	    { return mDataType; }
+	const class ModelClassifier *getClass() const;
+	class ModelClassifier *getClass();
+
+    private:
+	eModelDataTypes mDataType;
     };
 
+/// This stores data for class definitions.
 /// This owns all pointers except for the modules, and other types.
 class ModelClassifier:public ModelType
 {
 public:
     explicit ModelClassifier(const std::string &name):
-        ModelType(name, otClass), mModule(nullptr), mLineNum(0)
+        ModelType(name, DT_Class), mModule(nullptr), mLineNum(0)
         {}
     void clearOperations();
     void clearAttributes();
-    ModelAttribute *addAttribute(const std::string &name, ModelType *attrType,
+    ModelAttribute *addAttribute(const std::string &name, ModelType const *attrType,
 	    Visibility scope);
     void addAttribute(std::unique_ptr<ModelAttribute> &&attr)
 	{
@@ -344,6 +319,8 @@ public:
     // won't be destructed later.
     void eraseAttribute(const ModelAttribute *attr);
     void eraseOperation(const ModelOperation *oper);
+    int getAttributeIndex(const std::string &name) const;
+    const ModelAttribute *getAttribute(const std::string &name) const;
     /// @todo - this doesn't work for overloaded functions.
     const ModelOperation *getOperation(const std::string &name, bool isConst) const;
     int getOperationIndex(const std::string &name, bool isConst) const;
@@ -379,12 +356,13 @@ private:
     int mLineNum;
 };
 
+// This is used for inheritance relations
 class ModelAssociation:public ModelObject
 {
 public:
     ModelAssociation(const ModelClassifier *child,
         const ModelClassifier *parent, Visibility access):
-        ModelObject("", otAssociation),
+        ModelObject(""),
         mChildModelId(UNDEFINED_ID), mParentModelId(UNDEFINED_ID),
         mChild(child), mParent(parent), mAccess(access)
         {}
@@ -417,20 +395,22 @@ private:
     Visibility mAccess;
 };
 
+// This stores the module where an operation or class was defined.
 class ModelModule:public ModelObject
     {
     public:
 	ModelModule():
-	    ModelObject("", otModule)
+	    ModelObject("")
 	    {}
 	void setModulePath(const std::string &str)
-	    { mModulePath = str; }
+	    { setName(str.c_str()); }
 	const std::string &getModulePath() const
-	    { return mModulePath; }
-    private:
-	std::string mModulePath;
+	    { return getName(); }
     };
 
+// This is used for references to types in other classes.
+// It is used for function parameters, and function body variable references
+// This is only used for temporary access, and is not stored in the model memory.
 class ModelDeclClass
     {
     public:
@@ -461,15 +441,15 @@ class ModelData
         ModelModule const * const findModuleById(int id);
 
         // otype is only used if a type is created.
-	ModelType *createOrGetTypeRef(char const * const typeName, ObjectType otype);
-	ModelType *createTypeRef(char const * const typeName, ObjectType otype);
+	ModelType *createOrGetTypeRef(char const * const typeName, eModelDataTypes otype);
+	ModelType *createTypeRef(char const * const typeName, eModelDataTypes otype);
 	const ModelType *getTypeRef(char const * const typeName) const;
 	ModelType *findType(char const * const name);
 	const ModelType *findType(char const * const name) const;
 	/// For all pointers to the old type, sets to the new type, then
 	/// deletes the old type.
 	void replaceType(ModelType *existingType, ModelClassifier *newType);
-	void replaceStatementType(ModelStatement *stmts, ModelType *existingType,
+	void replaceStatementType(ModelStatements &stmts, ModelType *existingType,
 		ModelClassifier *newType);
 	void eraseType(ModelType *existingType);
 	/// Takes the attributes from the source type, and moves them to the dest type.
@@ -480,14 +460,15 @@ class ModelData
 		ConstModelDeclClassVector &declclasses) const;
 	void getRelatedBodyVarClasses(const ModelClassifier &type,
 		ConstModelDeclClassVector &declclasses) const;
+
     private:
-	ModelObject *createObject(ObjectType type, const std::string &id);
+	ModelObject *createDataType(eModelDataTypes type, const std::string &id);
 	std::string getBaseType(char const * const fullStr) const;
 	const ModelClassifier *findClassByModelId(int id) const;
 	const ModelType *findTypeByModelId(int id) const;
-        void resolveStatements(ModelStatement *stmt);
-        void resolveDecl(ModelDeclarator &decl);
-	bool isTypeReferencedByStatements(ModelStatement *stmt, ModelType const &type) const;
+        void resolveStatements(ModelStatements &stmt);
+        void resolveDecl(ModelTypeRef &decl);
+	bool isTypeReferencedByStatements(ModelStatements const &stmts, ModelType const &type) const;
 	void dumpTypes();
     };
 

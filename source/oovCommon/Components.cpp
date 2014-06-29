@@ -147,6 +147,10 @@ std::string ComponentTypesFile::getComponentAbsolutePath(char const * const comp
     {
     std::string path;
     std::vector<std::string> src = getComponentSources(compName);
+    if(src.size() == 0)
+	{
+	src = getComponentIncludes(compName);
+	}
     if(src.size() > 0)
 	{
 	FilePath fp;
@@ -170,7 +174,7 @@ void ComponentsFile::parseProjRefs(char const * const arg, std::string &rootDir,
 	std::vector<std::string> &excludes)
     {
     excludes.clear();
-    std::vector<std::string> tokens = split(std::string(arg), '!');
+    std::vector<OovString> tokens = split(std::string(arg), '!');
     if(rootDir.size() == 0)
 	rootDir = tokens[0];
     std::copy(tokens.begin()+1, tokens.end(), excludes.begin());

@@ -43,7 +43,7 @@ static void getStrings(const ClassNode &node,
     nodeStrs.push_back(typeName);
     if(node.getDrawOptions().drawPackageName)
 	{
-	const ModelClassifier *cls = ModelObject::getClass(node.getType());
+	const ModelClassifier *cls = node.getType()->getClass();
 	if(cls)
 	    {
 	    const ModelModule *module = cls->getModule();
@@ -55,7 +55,7 @@ static void getStrings(const ClassNode &node,
 		}
 	    }
 	}
-    const ModelClassifier *classifier = ModelObject::getClass(type);
+    const ModelClassifier *classifier = type->getClass();
     if(classifier)
 	{
 	if(node.getDrawOptions().drawAttributes)

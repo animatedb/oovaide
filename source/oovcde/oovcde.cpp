@@ -76,6 +76,8 @@ void Menu::updateMenuEnables()
 		mGui.getBuilder().getWidget("BuildReleaseMenuitem"), idle && open);
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("StopBuildMenuitem"), !idle);
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("MakeCMakeMenuitem"), open);
 	mBuildIdle = idle;
 	mProjectOpen = open;
 	}
@@ -163,7 +165,7 @@ void oovGui::openProject()
 #else
 	for(size_t i=0; i<mModelData.mTypes.size(); i++)
 	    {
-	    if(mModelData.mTypes[i]->getObjectType() == otClass)
+	    if(mModelData.mTypes[i]->getDataType() == DT_Class)
 		mClassList.appendText(mModelData.mTypes[i]->getName().c_str());
 	    }
 	mClassList.sort();
@@ -253,9 +255,9 @@ void oovGui::stopSrcManager()
 
 void oovGui::updateProject()
     {
-    if(gBuildOptions.readFile())
+    if(gBuildOptions.read())
 	{
-	gGuiOptions.readFile();
+	gGuiOptions.read();
 //	mOpenProject = true;
 	runSrcManager(BuildConfigAnalysis);
 	}
@@ -295,7 +297,7 @@ void oovGui::updateOperationList(const ModelData &modelData,
 	char const * const className)
     {
     mOperationList.clear();
-    const ModelClassifier *cls = ModelObject::getClass(modelData.getTypeRef(className));
+    const ModelClassifier *cls = modelData.getTypeRef(className)->getClass();
     if(cls)
 	{
 	for(size_t i=0; i<cls->getOperations().size(); i++)
@@ -605,8 +607,6 @@ extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
 	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, projectDir))
 	{
 	Project::setProjectDirectory(projectDir.c_str());
-	gBuildOptions.setFilename(Project::getProjectFilePath().c_str());
-	gGuiOptions.setFilename(Project::getGuiOptionsFilePath().c_str());
 	gOovGui.clear();
 	gOovGui.updateProject();
 	}
@@ -657,6 +657,37 @@ extern "C" G_MODULE_EXPORT void on_StopBuildMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
     gOovGui.stopSrcManager();
+    }
+
+extern "C" G_MODULE_EXPORT void on_MakeCMakeMenuitem_activate(
+	GtkWidget *button, gpointer data)
+    {
+    OovProcessChildArgs args;
+    std::string proc = makeExeFilename("./oovCMaker");
+
+    std::string projNameArg;
+    Dialog cmakeDlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("CMakeDialog")));
+    if(cmakeDlg.run(true))
+	{
+	GtkEntry *entry = GTK_ENTRY(gOovGui.getBuilder().getWidget("CMakeProjectNameEntry"));
+	projNameArg = std::string("-n") + Gui::getText(entry);
+	}
+
+    bool putInSource = Gui::messageBox("Put files in source directory?",
+	    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
+    args.addArg(proc.c_str());
+    args.addArg(Project::getProjectDirectory().c_str());
+    if(putInSource)
+	args.addArg("-w");
+    args.addArg(projNameArg.c_str());
+    spawnNoWait(proc.c_str(), args.getArgv());
+    std::string stat = std::string("Building CMake files for ") +
+	    Project::getProjectDirectory() + ".";
+    if(putInSource)
+	stat += "\nCheck the source directory for CMake files.";
+    else
+	stat += "\nCheck the oovcde directory for CMake files.";
+    Gui::messageBox(stat.c_str(), GTK_MESSAGE_INFO);
     }
 
 static bool sDisplayClassViewRightClick = false;

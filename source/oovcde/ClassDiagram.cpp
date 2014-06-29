@@ -309,7 +309,7 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget
 	    gStartPosInfo.startPos.y);
     if(node)
 	{
-	const ModelClassifier *classifier = ModelObject::getClass(node->getType());
+	const ModelClassifier *classifier = node->getType()->getClass();
 	if(classifier && classifier->getModule())
 	    {
 	    viewSource(classifier->getModule()->getModulePath().c_str(), classifier->getLineNum());

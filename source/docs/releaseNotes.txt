@@ -18,6 +18,10 @@ Missing Features
 	- Should release with mingw-builds headers
 	- fix sleepMs
 - Gui
+	- BUG: First component in list doesn't save type in Build/Settings
+	- BUG: Sometimes the Add Package dialog doesn't hide/close.
+		- window might be busy and is not responding (oovCommon/PackagesProcess?)
+	- Allow directory tree to be a single component.
 	- Clicking on warnings doesn't display editor. Also change to double click?
 	- Doesn't load new include paths when reopening a project. (Close oovcde and restart)
 	- Changing preferences should update drawings
@@ -30,36 +34,36 @@ Missing Features
 	- Make it clear which files must be saved to save project settings.
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
-- C++ parsing
-	- Smaller XMI: names: Operation, Parameter, Condition, Attribute, xmi.id
-	- Smaller XMI: Datatype end element, spaces?
-	- Smaller XMI: Remove calls, conditions, only keep relations.
+- Building
+	- A static lib without source should not be on link lines
+	- Allow debug/release and cross compile in cmake
+		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
+		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
+	- TEST const calls/oper overloading
+	- Fast loading XMI, parse func defs later (first store statement string)
 	- Should include mingw-builds includes so that threading errors don't occur
-	- ClassDrawer::drawDiagram not showing calls inside loops. CLang 3.4.1 works
 	- oovcde-incdeps once got corrupted during debugging and slowed down and
 	  prevented parsing.
 	- BUG: Drive letters in path unable to write to bad filename.
 	- Templates don't list operations
 	- Typedefs not listed (oovCommon/Filepaths)
 	- function return type not listed
-	- remove module ids from most/all elements, remove built in types
 	- Multiple case statements without breaks appear nested.
-	- Overloaded operations are not differentiated
+	- Overloaded operations are not differentiated except const
 	- Some statements not parsed: else (currently faked), goto, default, return, etc.
 	- Save complete type info (explicit const, *, &, etc) in the XMI files?
 	- Change class def/decl description in XMI file to find correct source module
 		for empty classes.
+	- ClassDrawer::drawDiagram not showing calls inside loops. CLang 3.4.1 works
 - Journal
 	- Allow more copies of diagrams?
 - Component Diagrams
+	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
+	- Add right click menu to remove component
 - Class Diagrams
-	- Show progress/cancel dlg for long operations, loading class list and large drawings
-	- Abort graph generation if interrupted somehow (click?)
 	- BUG: forward class definitions mess up source line numbers
-	- Zoom out for huge drawings
 	- When class members are not shown, should be easy way to view members
-	- Add filter for class list
 	- Show return value for class methods
 	- Set each class drawing preferences by whether component is the same.
 	- Need either show classes that will be added, or undo, or multiple drawing copies
@@ -77,16 +81,17 @@ Missing Features
 	- Show function return type relations (basically already handled by body decls)
 	- Could allow multiple selection to add relations, remove, properties
 	- Could have grid for class placement, option for grid size
+	- Add filter for class list (GTK search feature exists)
 - Sequence Diagrams
 	- Should try to find top level function in diagram, may not be first class.
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
-	- shorten exetremely long names
+	- shorten extremely long names
+	- Add option to wrap long class names for denser diagrams
 	- Diagram width not correct in svg diagrams for long operation names
 	- Const calls aren't shown correctly for overloaded functions?
 	- Add depth
 	- Add option to display parameters.
-	- Add option to wrap long class names for denser diagrams
 	- Option for not replicating operation definitions if already displayed. New ... notation?
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
@@ -143,7 +148,10 @@ Missing Features
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future
-	- Add timing diagram that can show state changes over time from method calls
+	- Add timing diagram that can show state changes/variables over time from method calls
+	- Add find methods that use class variable
+	- Add display of unused methods?
+	- Sloppy code indicator (unused members, single use members, etc.)
 	- static analysis: clang++ --analyze -I/home/ad/IP/Lib/src/  -Weverything
 		 -pedantic -fshow-column -fcaret-diagnostics -fcolor-diagnostics
 		 -ferror-limit=9999999 -fdiagnostics-show-category -std=c++98 file1.cpp

@@ -94,9 +94,13 @@ XmlError XmlParser::parseAttr(char const *&buf)
             }
         if(startVal)
             {
-            int len = strchr(startVal, quoteChar) - startVal;
-            onAttr(attrName, attrNameLen, startVal, len);
-            buf = startVal + len;
+            char const *end = strchr(startVal, quoteChar);
+            if(end)
+        	{
+		int len = end - startVal;
+		onAttr(attrName, attrNameLen, startVal, len);
+		buf = startVal + len;
+        	}
             }
         else
             errCode.setError(ERROR_BAD_VALUE);

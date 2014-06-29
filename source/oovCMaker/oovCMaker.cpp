@@ -49,6 +49,13 @@ void CMaker::makeDefineName(char const * const pkgName, OovString &defName)
     defName.setUpperCase(shortName.c_str());
     }
 
+static std::string makeComponentNameFromDir(std::string const &str)
+    {
+    std::string fixedCompName = str;
+    std::replace(fixedCompName.begin(), fixedCompName.end(), '/', '-');
+    return fixedCompName;
+    }
+
 void CMaker::addPackageDefines(char const * const pkgName, std::string &str)
     {
     OovString pkgDefName;
@@ -99,6 +106,11 @@ void CMaker::makeTopMakelistsFile(char const * const destName)
     str += "   endif()\n";
     str += "endforeach()\n\n";
 
+    str += "# Add debug and release flags\n";
+    str += "# Use from the command line with -DCMAKE_BUILD_TYPE=Release or Debug\n";
+    str += "set(CMAKE_CXX_FLAGS_DEBUG \"${CMAKE_CXX_FLAGS_DEBUG} -Wall\")\n";
+    str += "set(CMAKE_CXX_FLAGS_RELEASE \"${CMAKE_CXX_FLAGS_RELEASE} -Wall\")\n";
+
     str += "# External Packages\n";
     str += "if(NOT WIN32)\n";
     for(auto const &pkg : mBuildPkgs.getPackages())
@@ -142,7 +154,7 @@ void CMaker::makeTopMakelistsFile(char const * const destName)
         if(compType != ComponentTypesFile::CT_Unknown)
             {
 	    str += ' ';
-	    str += name;
+	    str += makeComponentNameFromDir(name);
             }
 	}
     str += "\n";
@@ -253,30 +265,104 @@ void CMaker::makeTopVerInFile(char const * const destName)
     writeFile(destName, str);
     }
 
+void CMaker::makeToolchainFile(const char * const compilePath,
+	char const * const destFileName)
+    {
+    std::string str;
+    str += "SET(CMAKE_SYSTEM_NAME Linux)\n";
+    str += "SET(CMAKE_SYSTEM_PROCESSOR \"arm\")\n";
+    str += "include(CMakeForceCompiler)\n";
+//    str += "CMAKE_FORCE_C_COMPILER(arm-linux-gnueabihf-gcc GNU)\n";
+    str += "CMAKE_FORCE_CXX_COMPILER(";
+    str += compilePath;
+    str += " GNU)\n";
+
+    writeFile(destFileName, str);
+    }
+
+
+void CMaker::appendNames(std::vector<std::string> const &names,
+	char delim, std::string &str)
+    {
+    for(auto const &name : names)
+        {
+        str += name;
+        str += delim;
+        size_t startpos = str.rfind('\n');
+        if(startpos == std::string::npos)
+            startpos = 0;
+        if(str.length() - startpos > 70)
+            {
+            str += "\n  ";
+            }
+        }
+    int len = str.length();
+    if(len > 0 && str[len-1] == delim)
+        str.resize(len-1);
+    }
+
+enum eCommandTypes { CT_Exec, CT_Shared, CT_Static,
+    CT_Interface, // A library with only headers
+    CT_TargHeaders, CT_TargLinkLibs };
+
+static void appendCommandAndNames(eCommandTypes ct, char const *compName,
+	std::vector<std::string> const &names, std::string &str)
+    {
+    switch(ct)
+	{
+	case CT_Shared:
+	case CT_Static:
+	case CT_Interface:
+	    str += "add_library";
+	    break;
+
+	case CT_Exec:		str += "add_executable";	break;
+	case CT_TargHeaders:	str += "set_target_properties";	break;
+	case CT_TargLinkLibs:	str += "target_link_libraries";	break;
+	}
+    str += "(";
+    str += compName;
+    switch(ct)
+	{
+	case CT_Exec:		str += ' ';		break;
+	case CT_Shared:		str += " SHARED ";	break;
+	case CT_Static:		str += " STATIC ";	break;
+	// Using INTERFACE at this time gives:
+	// "Cannot find source file:", since CMake doesn't understand interface keyword.
+//	case CT_Interface:	str += " INTERFACE ";	break;
+	case CT_Interface:	str += " STATIC ";	break;
+	case CT_TargHeaders:	str += " PROPERTIES\n  PUBLIC_HEADER ";	break;
+	case CT_TargLinkLibs:	str += ' ';		break;
+	}
+    if(ct == CT_TargHeaders)
+	{
+	str += '\"';
+	CMaker::appendNames(names, ';', str);
+	str += '\"';
+	}
+    else
+	{
+	CMaker::appendNames(names, ' ', str);
+	}
+    str += ")\n\n";
+    }
+
 void CMaker::makeComponentFile(char const * const compName,
     ComponentTypesFile::CompTypes compType,
     std::vector<std::string> const &sources, char const * const destName)
     {
     std::string str;
     if(mVerbose)
-        printf("Processing %s\n", compName);
+        printf("Processing %s\n      %s\n", compName, destName);
     if(compType == ComponentTypesFile::CT_Program)
         {
         if(mVerbose)
             printf("  Executable\n");
+
+	appendCommandAndNames(CT_Exec, compName, sources, str);
+
         std::vector<std::string> libs = getCompLibraries(compName);
-
-        str += "add_executable(";
-        str += compName;
-        str += ' ';
-        appendNames(sources, ' ', str);
-        str += ")\n\n";
-
-        str += "target_link_libraries(";
-        str += compName;
-        str += ' ';
-        appendNames(libs, ' ', str);
-        str += ")\n\n";
+        appendCommandAndNames(CT_TargLinkLibs, compName, libs, str);
 
         str += "install(TARGETS ";
         str += compName;
@@ -285,6 +371,19 @@ void CMaker::makeComponentFile(char const * const compName,
         str += "Targets";
         str += "\n  RUNTIME DESTINATION \"${INSTALL_BIN_DIR}\" COMPONENT lib)\n";
         }
+    else if(compType == ComponentTypesFile::CT_SharedLib)
+	{
+        if(mVerbose)
+            printf("  SharedLib\n");
+        appendCommandAndNames(CT_Shared, compName, sources, str);
+
+        std::vector<std::string> libs = getCompLibraries(compName);
+        appendCommandAndNames(CT_TargLinkLibs, compName, libs, str);
+
+        str += "install(TARGETS ";
+        str += compName;
+        str += "\n  LIBRARY DESTINATION \"${INSTALL_LIB_DIR}\" COMPONENT lib)\n";
+	}
     else if(compType == ComponentTypesFile::CT_StaticLib)
         {
         if(mVerbose)
@@ -292,20 +391,20 @@ void CMaker::makeComponentFile(char const * const compName,
         std::vector<std::string> headers = mCompTypes.getComponentIncludes(compName);
         discardDirs(headers);
 
-        str = "add_library(";
-        str += compName;
-        str += " STATIC ";
         std::vector<std::string> allFiles = headers;
         allFiles.insert(allFiles.end(), sources.begin(), sources.end() );
         std::sort(allFiles.begin(), allFiles.end(), compareNoCase);
-        appendNames(allFiles, ' ', str);
-        str += ")\n\n";
+        if(sources.size() == 0)
+            {
+            appendCommandAndNames(CT_Interface, compName, allFiles, str);
+            str += "set_target_properties(";
+	    str += compName;
+	    str += " PROPERTIES LINKER_LANGUAGE CXX)\n";
+            }
+        else
+            appendCommandAndNames(CT_Static, compName, allFiles, str);
 
-        str += "set_target_properties(";
-        str += compName;
-        str += " PROPERTIES\n  PUBLIC_HEADER \"";
-        appendNames(headers, ';', str);
-        str += "\")\n\n";
+        appendCommandAndNames(CT_TargHeaders, compName, headers, str);
 
         str += "install(TARGETS ";
         str += compName;
@@ -385,25 +484,76 @@ std::vector<std::string> CMaker::getCompLibraries(char const * const compName)
     return libs;
     }
 
-void CMaker::appendNames(std::vector<std::string> const &names, char delim, std::string &str)
+void CMaker::makeTopLevelFiles(char const * const outDir)
     {
-    for(auto const &name : names)
-        {
-        str += name;
-        str += delim;
-        size_t startpos = str.rfind('\n');
-        if(startpos == std::string::npos)
-            startpos = 0;
-        if(str.length() - startpos > 70)
-            {
-            str += "\n  ";
-            }
-        }
-    int len = str.length();
-    if(len > 0)
-        str.resize(len-1);
+    FilePath topVerInFp(outDir, FP_File);
+    topVerInFp.appendFile(std::string(mProjectName + "ConfigVersion.cmake.in").c_str());
+    makeTopVerInFile(topVerInFp.c_str());
+
+    FilePath topInFp(outDir, FP_File);
+    topInFp.appendFile(std::string(mProjectName + "Config.cmake.in").c_str());
+    makeTopInFile(topInFp.c_str());
     }
 
+void CMaker::makeToolchainFiles(char const * const outDir)
+    {
+    if(mBuildOptions.read())
+	{
+	std::string buildConfigStr = mBuildOptions.getValue(OptBuildConfigs);
+	if(buildConfigStr.length() > 0)
+	    {
+	    CompoundValue buildConfigs(buildConfigStr.c_str());
+	    for(auto const &config : buildConfigs)
+		{
+		std::string optStr = makeBuildConfigArgName(OptToolCompilePath,
+			config.c_str());
+		std::string compilePath = mBuildOptions.getValue(optStr.c_str());
+
+		FilePath outFp(outDir, FP_Dir);
+		std::string fn = config + ".cmake";
+		outFp.appendFile(fn.c_str());
+		makeToolchainFile(compilePath.c_str(), outFp.c_str());
+		}
+	    }
+	}
+    }
+
+// outDir ignored if writeToProject is true.
+void CMaker::makeComponentFiles(bool writeToProject, char const * const outDir,
+	std::vector<std::string> const &compNames)
+    {
+    FilePath incMapFn(getAnalysisPath().c_str(), FP_Dir);
+    incMapFn.appendFile(Project::getAnalysisIncDepsFilename());
+    mIncMap.read(incMapFn.c_str());
+    if(mVerbose)
+        printf("Read incmap\n");
+    for(auto const &compName : compNames)
+        {
+        ComponentTypesFile::CompTypes compType =
+    	    mCompTypes.getComponentType(compName.c_str());
+        if(compType != ComponentTypesFile::CT_Unknown)
+            {
+	    std::vector<std::string> sources = getCompSources(compName.c_str());
+	    FilePath outFp;
+	    std::string fixedCompName = makeComponentNameFromDir(compName);
+	    if(writeToProject)
+		{
+		outFp.setPath(mCompTypes.getComponentAbsolutePath(
+			compName.c_str()).c_str(), FP_Dir);
+		outFp.appendFile("CMakeLists.txt");
+		}
+	    else
+		{
+		outFp.setPath(outDir, FP_File);
+		outFp.appendFile(std::string(fixedCompName + "-CMakeLists.txt").c_str());
+		}
+	    // Using the filepath here gives:
+	    // "Error evaluating generator expression", and "Target name not supported"
+	    makeComponentFile(fixedCompName.c_str(), compType,
+		    sources, outFp.c_str());
+    	    }
+        }
+    }
 
 int main(int argc, char const * const argv[])
     {
@@ -438,66 +588,36 @@ int main(int argc, char const * const argv[])
     if(projDir)
         {
         Project::setProjectDirectory(projDir);
-
         CMaker maker(projName, verbose);
+
+        FilePath outDir;
+        if(writeToProject)
+            {
+            outDir.setPath(Project::getSrcRootDirectory().c_str(), FP_Dir);
+            }
+        else
+            {
+            outDir.setPath(Project::getOutputDir("CMake").c_str(), FP_Dir);
+            ensurePathExists(outDir.c_str());
+            if(maker.mVerbose)
+                printf("Output directory %s\n", outDir.c_str());
+            }
+
+        maker.makeToolchainFiles(outDir.c_str());
+        maker.makeTopLevelFiles(outDir.c_str());
+
         if(maker.mCompTypes.read())
             {
             maker.mBuildPkgs.read();
-            ret = 0;
+
+            FilePath topMlFp(outDir, FP_File);
+            topMlFp.appendFile("CMakeLists.txt");
+            maker.makeTopMakelistsFile(topMlFp.c_str());
+
             std::vector<std::string> compNames = maker.mCompTypes.getComponentNames();
             if(compNames.size() > 0)
                 {
-                FilePath incMapFn(maker.getAnalysisPath().c_str(), FP_Dir);
-                incMapFn.appendFile(Project::getAnalysisIncDepsFilename());
-                maker.mIncMap.read(incMapFn.c_str());
-                if(maker.mVerbose)
-                    printf("Read incmap\n");
-                FilePath outDir;
-                if(writeToProject)
-                    {
-                    outDir.setPath(Project::getSrcRootDirectory().c_str(), FP_Dir);
-                    }
-                else
-                    {
-                    outDir.setPath(Project::getOutputDir("CMake").c_str(), FP_Dir);
-                    ensurePathExists(outDir.c_str());
-                    if(maker.mVerbose)
-                        printf("Output director %s\n", outDir.c_str());
-                    }
-                FilePath topMlFp(outDir, FP_File);
-                topMlFp.appendFile("CMakeLists.txt");
-                maker.makeTopMakelistsFile(topMlFp.c_str());
-
-                FilePath topInFp(outDir, FP_File);
-                topInFp.appendFile(std::string(maker.mProjectName + "Config.cmake.in").c_str());
-                maker.makeTopInFile(topInFp.c_str());
-
-                FilePath topVerInFp(outDir, FP_File);
-                topVerInFp.appendFile(std::string(maker.mProjectName + "ConfigVersion.cmake.in").c_str());
-                maker.makeTopVerInFile(topVerInFp.c_str());
-                for(auto const &compName : compNames)
-                    {
-                    ComponentTypesFile::CompTypes compType =
-                	    maker.mCompTypes.getComponentType(compName.c_str());
-                    if(compType != ComponentTypesFile::CT_Unknown)
-                	{
-			std::vector<std::string> sources = maker.getCompSources(compName.c_str());
-			FilePath outFp;
-			if(writeToProject)
-			    {
-			    outFp.setPath(maker.mCompTypes.getComponentAbsolutePath(
-				    compName.c_str()).c_str(), FP_Dir);
-			    outFp.appendFile("CMakeLists.txt");
-			    }
-			else
-			    {
-			    outFp.setPath(outDir.c_str(), FP_File);
-			    outFp.appendFile(std::string(compName + "-CMakeLists.txt").c_str());
-			    }
-			maker.makeComponentFile(compName.c_str(), compType,
-				sources, outFp.c_str());
-                	}
-                    }
+        	maker.makeComponentFiles(writeToProject, outDir.c_str(), compNames);
                 }
             else
                 fprintf(stderr, "Components must be defined\n");

@@ -1,4 +1,3 @@
-// fastgene.cpp	- fast genetic algorithm code
 // \copyright 1992 DCBlaha.  Distributed under the GPL.
 
 #include "FastGene.h"
@@ -65,18 +64,27 @@ static int customRand(void)
     res = res & 32767;
     return(res);
     }
+#else
+// Because of the simple int math below, this max must be less than half
+// the bits in an int.
+#define CUSTOM_RAND_MAX (0xFFFF & RAND_MAX)
+static int customRand(void)
+    {
+    return(rand() & CUSTOM_RAND_MAX);
+    }
 #endif
 
-/// Generate a random number between 0 and numpossibles-1
+/// Generate a random number from 0 to numpossibles
+/// numpossibles must be a max of half the bits in an int.
 static int randmax(int numpossibles)
     {
-    return((int)(((long)rand() * numpossibles) / ((long)RAND_MAX + 1)));
+    return((int)(((long)customRand() * numpossibles) / ((long)CUSTOM_RAND_MAX)));
     }
 
 GeneValue GenePool::randRange(int min, int max)
     {
     return(static_cast<GeneValue>(
-	    (min + ((long)rand() * (max - min + 1)) / ((long)RAND_MAX + 1))
+	    (min + ((long)customRand() * (max - min + 1)) / ((long)CUSTOM_RAND_MAX))
 	    ));
     }
 
@@ -227,9 +235,9 @@ void GenePool::crossover()
     // into the 2 worst genes.
     while (genesRemaining)
 	{
-	int splitpos = geneValueBoundary(randmax(genesize));
-	int srcgene1 = randmax(genesRemaining);
-	int srcgene2 = randmax(genesRemaining - 1);
+	int splitpos = geneValueBoundary(randmax(genesize-1));
+	int srcgene1 = randmax(genesRemaining - 1);
+	int srcgene2 = randmax(genesRemaining - 2);
 	if (srcgene1 == srcgene2)
 	    {
 	    if (srcgene1 < genesRemaining - 1)
@@ -270,8 +278,8 @@ void GenePool::mutate()
     for(int i = 0; i < mutebits; i++)
 	{
 	// Get the offset of a byte in any portion of any gene
-	int gene = randmax(numgenes);
-	int offset = randmax(genesize);
+	int gene = randmax(numgenes-1);
+	int offset = randmax(genesize-1);
 	randomizeGeneValue(gene, offset);
 
 	/*

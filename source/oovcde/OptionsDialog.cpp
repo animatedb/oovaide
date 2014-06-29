@@ -266,6 +266,7 @@ void OptionsDialog::updateBuildMenu(std::vector<std::string> &names)
 	{
 	std::string menuName = std::string("Build ") + name;
 	GtkWidget *newItem = gtk_menu_item_new_with_label(menuName.c_str());
+	mMenuItems.push_back(newItem);
 	gtk_menu_shell_append(GTK_MENU_SHELL(buildMenu), newItem);
 	g_signal_connect(newItem, "activate", G_CALLBACK(menuItemCallback), nullptr);
 	gtk_widget_show(newItem);
@@ -333,13 +334,13 @@ void OptionsDialog::addConfig()
     cfgs.push_back(BuildConfigAnalysis);
     cfgs.push_back(BuildConfigDebug);
     cfgs.push_back(BuildConfigRelease);
-    bool found = std::find(cfgs.begin(), cfgs.end(), newName) != compVal.end();
+    bool found = std::find(cfgs.begin(), cfgs.end(), newName) != cfgs.end();
     if(!found)
 	{
 	compVal.addArg(newName.c_str());
 	gBuildOptions.setNameValue(OptBuildConfigs, compVal.getAsString().c_str());
 
-	// Leave what is on the screen, and change the conig name.Save the
+	// Leave what is on the screen, and change the config name.Save the
 	// screen data to the new config.
 	mCurrentBuildConfig = newName;
     //    ScreenOptions options(mCurrentBuildConfig.c_str());

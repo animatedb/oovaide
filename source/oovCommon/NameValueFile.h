@@ -48,6 +48,10 @@ class CompoundValueRef
 class CompoundValue:public std::vector<std::string>
     {
     public:
+	CompoundValue()
+	    {}
+	CompoundValue(char const * const str, char delimiter=';')
+	    { parseString(str, delimiter); }
 	static const int npos = -1;
 	void addArg(char const * const arg)
 	    { push_back(arg); }

@@ -38,10 +38,11 @@ include_directories(${GTK_INCLUDE_DIRS})
 link_directories(${GTK_LIBRARY_DIRS})
 add_definitions(${GTK_CFLAGS_OTHER})
 # LLVM
+# pkg_check_modules(CLANG REQUIRED libclang-dev)
 # pkg_check_modules(LLVM REQUIRED llvm)
-include_directories(../../clang+llvm-3.4-x86_64/include)
+include_directories(/usr/lib/llvm-3.4/include)
 cmake_policy(SET CMP0015 NEW)
-link_directories(../../clang+llvm-3.4-x86_64/lib)
+link_directories(/usr/lib/llvm-3.4/lib)
 set(LLVM_LIBRARIES clang)
 # include_directories(${LLVM_INCLUDE_DIRS})
 # link_directories(${LLVM_LIBRARY_DIRS})
@@ -53,8 +54,8 @@ include_directories(
    "${PROJECT_SOURCE_DIR}/oovCommon"
    "${PROJECT_SOURCE_DIR}/oovGuiCommon"
    )
-#add_definitions(-std=c++11)
-add_definitions(-std=c++0x)
+add_definitions(-std=c++11)
+set(CMAKE_EXE_LINKER_FLAGS "-pthread -Wl,--no-as-needed")
 
 # Add sub directories
 add_subdirectory(oovBuilder)

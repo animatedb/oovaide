@@ -47,30 +47,34 @@ class OperationClass
 	GraphRect rect;
     };
 
-enum OpStatementType { os_CondStart, os_CondEnd, os_Call };
 
-/// A statement either defines a call, or a conditional start or end.
+/// A statement either defines a call, or a conditional(nest) start or end.
 class OperationStatement
     {
     public:
-	OperationStatement(OpStatementType type):
+	OperationStatement(eModelStatementTypes type):
 	    mStatementType(type)
 	    {}
-	OpStatementType getStatementType() const
+	eModelStatementTypes getStatementType() const
 	    { return mStatementType; }
+	virtual ~OperationStatement()
+	    {}
 	// Returns non-const, so that the rect can be modified.
 	class OperationCall *getCall();
-	const class OperationConditionStart *getCondStart() const;
-	const class OperationConditionEnd *getCondEnd() const;
+#if(VAR_REF)
+	class OperationVarRef *getVarRef();
+#endif
+	const class OperationNestStart *getNestStart() const;
+	const class OperationNestEnd *getNestEnd() const;
     private:
-	OpStatementType mStatementType;
+	eModelStatementTypes mStatementType;
     };
 
-class OperationConditionStart:public OperationStatement
+class OperationNestStart:public OperationStatement
     {
     public:
-	OperationConditionStart(char const * const expr):
-	    OperationStatement(os_CondStart), mExpression(expr)
+	OperationNestStart(char const * const expr):
+	    OperationStatement(ST_OpenNest), mExpression(expr)
 	    {}
 	char const * const getExpr() const
 	    { return mExpression.c_str(); }
@@ -78,11 +82,11 @@ class OperationConditionStart:public OperationStatement
 	std::string mExpression;
     };
 
-class OperationConditionEnd:public OperationStatement
+class OperationNestEnd:public OperationStatement
     {
     public:
-	OperationConditionEnd():
-	    OperationStatement(os_CondEnd)
+	OperationNestEnd():
+	    OperationStatement(ST_CloseNest)
 	    {}
     };
 
@@ -92,7 +96,7 @@ class OperationCall:public OperationStatement
     public:
 	/// operClassIndex is the class of the operation that is called.
 	OperationCall(int operClassIndex, const ModelOperation &operation):
-	    OperationStatement(os_Call), mOperClassIndex(operClassIndex),
+	    OperationStatement(ST_Call), mOperClassIndex(operClassIndex),
 	    mOperation(operation)
 	    {}
 	int getOperClassIndex() const
@@ -120,6 +124,41 @@ class OperationCall:public OperationStatement
 	GraphRect rect;
     };
 
+#if(VAR_REF)
+class OperationVarRef:public OperationStatement
+    {
+    public:
+	/// operClassIndex is the class of the operation that is referred to.
+	OperationVarRef(int operClassIndex, const ModelAttribute &attr):
+	    OperationStatement(ST_VarRef), mOperClassIndex(operClassIndex),
+	    mAttribute(attr)
+	    {}
+	int getOperClassIndex() const
+	    { return mOperClassIndex; }
+	char const * const getName() const
+	    { return mAttribute.getName().c_str(); }
+	bool isConst() const
+	    { return false; }
+	void setRect(const GraphPoint &pos, const GraphSize &size)
+	    {
+	    rect.start = pos;
+	    rect.size = size;
+	    }
+	void getRect(GraphRect &r) const
+	    { r = rect; }
+	const ModelAttribute &getAttribute() const
+	    { return mAttribute; }
+	bool compareAttribute(const OperationVarRef &ref) const;
+	void decrementClassIndex()
+	    { mOperClassIndex--; }
+
+    private:
+	int mOperClassIndex;
+	const ModelAttribute &mAttribute;
+	GraphRect rect;
+    };
+#endif
+
 /// An operation definition is a method in a class, that defines all of the
 /// functions that are called in other classes.
 class OperationDefinition:public OperationCall
@@ -134,27 +173,32 @@ class OperationDefinition:public OperationCall
 	    }
 	void removeStatements()
 	    {
-	    for(size_t i=0; i<mStatements.size(); i++)
-		{ delete mStatements[i]; }
 	    mStatements.clear();
 	    }
-	void addCall(OperationCall *call)
+	void addStatement(std::unique_ptr<OperationStatement> stmt)
 	    {
-	    mStatements.push_back(call);
+	    mStatements.push_back(std::move(stmt));
 	    }
-	void addCondStart(char const * const exprName)
-	    { mStatements.push_back(new OperationConditionStart(exprName)); }
-	void addCondEnd()
-	    { mStatements.push_back(new OperationConditionEnd()); }
-	int getCondDepth() const;
-	const std::vector<OperationStatement*> &getStatements() const
+	void addNestStart(char const * const exprName)
+	    {
+	    /// @todo - use make_unique when supported.
+	    mStatements.push_back(std::unique_ptr<OperationStatement>(
+		    new OperationNestStart(exprName)));
+	    }
+	void addNestEnd()
+	    {
+	    mStatements.push_back(std::unique_ptr<OperationStatement>(
+		    new OperationNestEnd()));
+	    }
+	int getNestDepth() const;
+	const std::vector<std::unique_ptr<OperationStatement>> &getStatements() const
 	    { return mStatements; }
 	const OperationCall *getCall(int x, int y) const;
 	bool isCalled(const OperationCall &opcall) const;
 	bool isClassReferred(int classIndex) const;
 
     private:
-	std::vector<OperationStatement*> mStatements;
+	std::vector<std::unique_ptr<OperationStatement>> mStatements;
 	// Not defined to prevent copy.
 	OperationDefinition(const OperationDefinition &def);
 	void operator=(const OperationDefinition &def);
@@ -204,7 +248,7 @@ class OperationGraph
 //	OperationClass *getNode(int x, int y);
 	// Can only remove leaf operations?
 //	void removeOperation(const ModelOperation *oper);
-	int getCondDepth(int classIndex);
+	int getNestDepth(int classIndex);
 	const OperationClass *getNode(int x, int y) const;
 	void removeNode(const OperationClass *classNode);
 	const OperationCall *getOperation(int x, int y) const;
@@ -226,11 +270,11 @@ class OperationGraph
 	bool mModified;
 
 	void addDefinition(int classIndex, const ModelOperation &oper);
-	void addOperCallers(const ModelStatement *stmt, const ModelClassifier &srcCls,
+	void addOperCallers(const ModelStatements &stmts, const ModelClassifier &srcCls,
 		const ModelOperation &oper, const OperationCall &callee);
 	enum eGetClass { GC_AddClasses, FT_OnlyGetClasses };
 	int addOrGetClass(const ModelClassifier *cls, eGetClass gc);
-	void fillDefinition(const ModelStatement *stmt, OperationDefinition &opDef,
+	void fillDefinition(const ModelStatements &stmt, OperationDefinition &opDef,
 		eGetClass ft);
 	void removeUnusedClasses();
 	void removeOperation(int index);

@@ -3,8 +3,8 @@ add_executable(oovcde BuildSettingsDialog.cpp CairoDrawer.cpp ClassDiagram.cpp
   ClassDrawer.cpp ClassGenes.cpp ClassGraph.cpp ComponentDiagram.cpp ComponentDrawer.cpp 
   ComponentGraph.cpp ComponentList.cpp DiagramDrawer.cpp FastGene.cpp 
   Graph.cpp Journal.cpp oovcde.cpp OperationDiagram.cpp OperationDrawer.cpp 
-  OperationGraph.cpp Options.cpp OptionsDialog.cpp PackagesDialogs.cpp 
-  Svg.cpp Xmi2Object.cpp XmlParser.cpp)
+  OperationGraph.cpp OptionsDialog.cpp PackagesDialogs.cpp Svg.cpp Xmi2Object.cpp 
+  XmlParser.cpp)
 
 target_link_libraries(oovcde oovCommon oovGuiCommon ${GTK_LIBRARIES})
 
