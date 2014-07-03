@@ -90,7 +90,7 @@ class ProjectReader:public NameValueFile
     {
     public:
 	ProjectReader():
-	    mProjectPackages(false), mBuildPackages(false)
+	    mProjectPackages(false), mBuildPackages(false), mVerbose(false)
 	    {}
 	bool readOovProject(char const * const oovProjectDir,
 		char const * const buildConfigName);
@@ -105,6 +105,14 @@ class ProjectReader:public NameValueFile
 	    { return mCompileArgs; }
 	const StdStringVec &getLinkArgs() const
 	    { return mLinkArgs; }
+// This hasn't been needed yet. It was added because documentation
+// said that -lrt must be after objects, but that is true of all libs,
+// and the libs are already placed after objects.
+#define LATE_LINK_ARG 0
+#if(LATE_LINK_ARG)
+	const StdStringVec &getLateLinkArgs() const
+	    { return mLateLinkArgs; }
+#endif
 	const StdStringVec &getExternalArgs() const
 	    { return mExternalRootArgs; }
 	// These are only used for computing CRC's. The builder will later get
@@ -115,10 +123,15 @@ class ProjectReader:public NameValueFile
 	static std::string &getSrcRootDirectory()
 	    { return Project::getSrcRootDirectory(); }
 	CompoundValue getProjectExcludeDirs() const;
+	bool getVerbose() const
+	    { return mVerbose; }
 
     private:
 	StdStringVec mCompileArgs;
 	StdStringVec mLinkArgs;
+#if(LATE_LINK_ARG)
+	StdStringVec mLateLinkArgs;
+#endif
 	StdStringVec mExternalRootArgs;
 	StdStringVec mPackageCrcCompileArgs;
 	StdStringVec mPackageCrcLinkArgs;
@@ -128,11 +141,16 @@ class ProjectReader:public NameValueFile
 	/// These may be modified by the build and contains project packages and
 	/// external root directories.
 	BuildPackages mBuildPackages;
+	bool mVerbose;
 
 	void addCompileArg(char const * const str)
 	    { mCompileArgs.push_back(str); }
 	void addLinkArg(char const * const str)
 	    { mLinkArgs.push_back(str); }
+#if(LATE_LINK_ARG)
+	void addLateLinkArg(char const * const str)
+	    { mLateLinkArgs.push_back(str); }
+#endif
 	void addExternalArg(char const * const str)
 	    { mExternalRootArgs.push_back(str); }
 

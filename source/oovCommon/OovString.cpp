@@ -116,9 +116,8 @@ bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInBytes, int
 
 // This can count the number of multibyte or ASCII characters.
 // Count all first-bytes (the ones that don't match 10xxxxxx).
-int OovStringRefInterface::numChars() const
+int StringNumChars(const char *s)
     {
-    const char *s = c_str();
     int len = 0;
     while(*s)
 	    {
@@ -127,9 +126,8 @@ int OovStringRefInterface::numChars() const
     return len;
     }
 
-bool OovStringRefInterface::isAscii() const
+bool StringIsAscii(const char *p)
     {
-    const char *p = c_str();
     while(*p)
 	    {
 	    if(*p & 0x80)	// Stop on any character that is not ASCII
@@ -139,9 +137,9 @@ bool OovStringRefInterface::isAscii() const
     return *p == '\0';	// If at end, there is no non-ASCII character
     }
 
-size_t OovStringRefInterface::findSpace(size_t startPos) const
+size_t StringFindSpace(char const *str, size_t startPos)
     {
-    char const * p = c_str()+startPos;
+    char const * p = str + startPos;
     while(*p)
 	{
 	if(isspace(*p))
@@ -152,7 +150,7 @@ size_t OovStringRefInterface::findSpace(size_t startPos) const
     if(*p == '\0')
 	return std::string::npos;
     else
-	return p-c_str();
+	return p - str;
     }
 
 //////////////
@@ -184,16 +182,17 @@ void OovString::appendInt(int val, int radix)
     append(buf);
     }
 
-std::vector<OovString> split(const std::string &str, char delimiter)
+std::vector<OovString> StringSplit(char const * str, char delimiter)
 {
+    std::string tempStr = str;
     std::vector<OovString> tokens;
     size_t start = 0;
     size_t end = 0;
     const int delimLen = 1;
     while(end != std::string::npos)
 	{
-        end = str.find(delimiter, start);
-        tokens.push_back(str.substr(start,
+        end = tempStr.find(delimiter, start);
+        tokens.push_back(tempStr.substr(start,
 	   (end == std::string::npos) ? std::string::npos : end - start));
         start = (( end > (std::string::npos - delimLen)) ?
         	std::string::npos : end + delimLen);

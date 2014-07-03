@@ -174,7 +174,7 @@ void ComponentsFile::parseProjRefs(char const * const arg, std::string &rootDir,
 	std::vector<std::string> &excludes)
     {
     excludes.clear();
-    std::vector<OovString> tokens = split(std::string(arg), '!');
+    std::vector<OovString> tokens = StringSplit(arg, '!');
     if(rootDir.size() == 0)
 	rootDir = tokens[0];
     std::copy(tokens.begin()+1, tokens.end(), excludes.begin());

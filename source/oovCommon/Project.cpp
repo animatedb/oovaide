@@ -167,6 +167,16 @@ void ProjectReader::parseArgs(StdStringVec const &args)
 	else if(arg.find("-EP", 0, 3) == 0)
 	    {
 	    }
+	else if(arg.find("-bv", 0, 3) == 0)
+	    {
+	    mVerbose = true;
+	    }
+#if(LATE_LINK_ARG)
+	else if(arg.find("-lnkl", 0, 5) == 0)
+	    {
+	    addLateLinkArg(arg.substr(5).c_str());
+	    }
+#endif
 	else if(arg.find("-lnk", 0, 4) == 0)
 	    {
 	    addLinkArg(arg.substr(4).c_str());

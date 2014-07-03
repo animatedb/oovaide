@@ -648,7 +648,12 @@ void ComponentBuilder::makeExe(char const * const compName,
 		}
 	    ca.addArg(arg.c_str());
 	    }
-
+#if(LATE_LINK_ARG)
+	for(const auto &arg : mComponentFinder.getProject().getLateLinkArgs())
+	    {
+	    ca.addArg(arg.c_str());
+	    }
+#endif
 	sLog.logProcess(outFileName.c_str(), ca.getArgv(), ca.getArgc());
         addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
 	}

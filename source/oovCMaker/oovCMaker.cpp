@@ -458,7 +458,9 @@ std::vector<std::string> CMaker::getCompLibraries(char const * const compName)
                 if(compDir.compare(incDir) == 0)
                     {
                     if(supCompName.compare(compName) != 0)
-                        projLibs.insert(supCompName.c_str());
+                	{
+                        projLibs.insert(makeComponentNameFromDir(supCompName.c_str()));
+                	}
                     }
                 }
             }

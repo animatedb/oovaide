@@ -36,6 +36,7 @@ int main(int argc, char const * const argv[])
     ComponentFinder compFinder;
     char const *oovProjDir = NULL;
     std::string buildConfigName = BuildConfigAnalysis;	// analysis is default.
+    bool verbose = false;
     bool success = (argc >= 2);
     if(success)
 	{
@@ -47,9 +48,9 @@ int main(int argc, char const * const argv[])
 		{
 		buildConfigName = testArg.substr(5);	// skip "-bld-"
 		}
-	    else if(testArg.compare("-v") == 0)
+	    else if(testArg.compare("-bv") == 0)
 		{
-		sLog.open(oovProjDir);
+		verbose = true;
 		}
 	    }
 	}
@@ -60,13 +61,20 @@ int main(int argc, char const * const argv[])
         fprintf(stderr, "  The oovProjectDir can have exclusion paths using <oovProjectDir>!<path> \n");
         fprintf(stderr, "  The args are:\n");
         fprintf(stderr, "    -bld-<mode>   mode is Debug or Release, no flag is build analysis docs\n");
-        fprintf(stderr, "    -v            verbose\n");
+        fprintf(stderr, "    -bv           builder verbose - OovBuilder.txt file\n");
 	}
 
     if(success)
 	{
 	success = compFinder.readProject(oovProjDir, buildConfigName.c_str());
-	if(!success)
+	if(success)
+	    {
+	    if(compFinder.getProject().getVerbose() || verbose)
+		{
+		sLog.open(oovProjDir);
+		}
+	    }
+	else
 	    {
 	    fprintf(stderr, "oovBuilder: Oov project file must exist in %s\n",
 		    oovProjDir);

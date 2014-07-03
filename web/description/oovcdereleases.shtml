@@ -1,6 +1,7 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<!-- DC Blaha - 6/8/2009 -->
+<html><head><!-- DC Blaha - 6/8/2009 -->
+
+
 
 
 
@@ -27,14 +28,19 @@ The following lists releases in reverse chronological order.<br>
 This version contains:<br>
 
 <ul>
-<li>Reduced analysis file size (xmi files) and memory reduction<br>
-</li>
+<li>Reduced analysis file size (xmi files) and memory reduction</li>
+  <li>Improved cross compiler support</li>
+  <li>Ability to create cmake files from menu<br>
+  </li>
+
   <li>Updated cmake files<br>
   </li>
   <li>Fixed graph drawing problems in Linux<br>
   </li>
-<li>Fixed class graph layout in 32 bit Linux<br>
-</li>
+<li>Fixed class graph layout in 32 bit Linux</li>
+  <li>Many other bug fixes<br>
+  </li>
+
 </ul>
 <h2>2014-06-2</h2>
 

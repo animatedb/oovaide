@@ -301,8 +301,9 @@ void OptionsDialog::showScreen()
     ScreenOptions options(mCurrentBuildConfig.c_str());
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")),
 	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
-    options.optionsToScreen();
     updateBuildConfig();
+    mBuildConfigList.setSelected(mCurrentBuildConfig.c_str());
+    options.optionsToScreen();
     enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
     mDialogRunning = true;
     dlg.run();

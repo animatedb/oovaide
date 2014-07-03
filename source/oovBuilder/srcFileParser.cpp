@@ -36,7 +36,7 @@ void Logger::open(char const * const outPath)
     {
     std::string path = outPath;
     ensureLastPathSep(path);
-    path += "oovcde-OovBuilder.txt";
+    path += "OovBuilder.txt";
     DebugFile::open(path.c_str());
     }
 

@@ -105,10 +105,10 @@ class XmiParser:private XmlParser
         ModelObject *findParentInStack(XmiElementTypes type, bool afterAddingSelf = true);
         void setDeclAttr(const std::string &attrName,
         	const std::string &attrVal, ModelDeclarator &decl);
-        void addFuncParams(OovString const &attrName,
-        	OovString const &attrVal, ModelOperation &oper);
-        void addFuncStatements(OovString const &attrName,
-        	OovString const &attrVal, ModelOperation &oper);
+        void addFuncParams(OovStringRef const &attrName,
+        	OovStringRef const &attrVal, ModelOperation &oper);
+        void addFuncStatements(OovStringRef const &attrName,
+        	OovStringRef const &attrVal, ModelOperation &oper);
     };
 
 bool loadXmiFile(FILE *fp, ModelData &model, char const * const fn, int &typeIndex);

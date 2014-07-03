@@ -35,10 +35,8 @@ Missing Features
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
 - Building
+	- Multithreaded build output is not synchronized well enough
 	- A static lib without source should not be on link lines
-	- Allow debug/release and cross compile in cmake
-		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
-		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 	- TEST const calls/oper overloading
 	- Fast loading XMI, parse func defs later (first store statement string)
 	- Should include mingw-builds includes so that threading errors don't occur
@@ -55,6 +53,11 @@ Missing Features
 	- Change class def/decl description in XMI file to find correct source module
 		for empty classes.
 	- ClassDrawer::drawDiagram not showing calls inside loops. CLang 3.4.1 works
+- CMaker
+	- Add include directories that are not components
+	- Allow debug/release and cross compile in cmake
+		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
+		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Journal
 	- Allow more copies of diagrams?
 - Component Diagrams

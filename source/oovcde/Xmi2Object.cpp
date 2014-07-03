@@ -286,8 +286,8 @@ void XmiParser::setDeclAttr(const std::string &attrName,
         decl.setConst(isTrue(attrVal));
     }
 
-void XmiParser::addFuncParams(OovString const &attrName,
-	OovString const &attrVal, ModelOperation &oper)
+void XmiParser::addFuncParams(OovStringRef const &attrName,
+	OovStringRef const &attrVal, ModelOperation &oper)
     {
     if(strcmp(attrName.c_str(), "list") == 0)
 	{
@@ -307,8 +307,8 @@ void XmiParser::addFuncParams(OovString const &attrName,
 	}
     }
 
-void XmiParser::addFuncStatements(OovString const &attrName,
-	OovString const &attrVal, ModelOperation &oper)
+void XmiParser::addFuncStatements(OovStringRef const &attrName,
+	OovStringRef const &attrVal, ModelOperation &oper)
     {
     if(strcmp(attrName.c_str(), "list") == 0)
 	{
@@ -436,7 +436,7 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
 		ModelOperation *oper = static_cast<ModelOperation*>(elItem.mModelObject);
 		if(oper)
 		    {
-		    addFuncParams(attrName, attrVal, *oper);
+		    addFuncParams(attrName.c_str(), attrVal.c_str(), *oper);
 		    }
 		}
 		break;
@@ -446,7 +446,7 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
 		ModelOperation *oper = static_cast<ModelOperation*>(elItem.mModelObject);
 		if(oper)
 		    {
-		    addFuncStatements(attrName, attrVal, *oper);
+		    addFuncStatements(attrName.c_str(), attrVal.c_str(), *oper);
 		    }
 		}
 		break;

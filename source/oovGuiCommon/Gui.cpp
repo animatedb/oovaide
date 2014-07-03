@@ -310,8 +310,8 @@ void GuiList::setSelected(char const * const str)
 		    GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
 		    if(path)
 			{
-			gtk_tree_view_set_cursor(mListWidget, path, NULL, false);
 			gtk_tree_view_scroll_to_cell(mListWidget, path, NULL, false, 0, 0);
+			gtk_tree_view_set_cursor(mListWidget, path, NULL, false);
 			gtk_tree_path_free(path);
 			}
 		    break;
