@@ -186,7 +186,7 @@ bool anyExtensionMatch(FilePaths const &paths, char const * const file)
 
 ///////////
 
-size_t FilePathImmutableBase::moveToStartDir(char const * const path)
+size_t FilePathImmutable::moveToStartDir(char const * const path)
     {
     mPos = std::string(path).rfind(':');
     if(mPos == std::string::npos)
@@ -194,7 +194,7 @@ size_t FilePathImmutableBase::moveToStartDir(char const * const path)
     return mPos;
     }
 
-size_t FilePathImmutableBase::moveToEndDir(char const * const path)
+size_t FilePathImmutable::moveToEndDir(char const * const path)
     {
     size_t pos;
     if(isEndPathSep(path))
@@ -213,7 +213,7 @@ size_t FilePathImmutableBase::moveToEndDir(char const * const path)
     return pos;
     }
 
-size_t FilePathImmutableBase::moveToExtension(char const * const path)
+size_t FilePathImmutable::moveToExtension(char const * const path)
     {
     size_t pos = findExtension(path);
     if(pos == std::string::npos)
@@ -223,7 +223,7 @@ size_t FilePathImmutableBase::moveToExtension(char const * const path)
     return pos;
     }
 
-size_t FilePathImmutableBase::moveLeftPathSep(char const * const path)
+size_t FilePathImmutable::moveLeftPathSep(char const * const path)
     {
     if(isPathSep(path, mPos) && mPos > 0)
 	mPos--;
@@ -233,19 +233,19 @@ size_t FilePathImmutableBase::moveLeftPathSep(char const * const path)
     return mPos;
     }
 
-std::string FilePathImmutableBase::getHead(char const * const path) const
+std::string FilePathImmutable::getHead(char const * const path) const
     {
     std::string str = std::string(path).substr(0, mPos+1);
     return str;
     }
 
-std::string FilePathImmutableBase::getTail(char const * const path) const
+std::string FilePathImmutable::getTail(char const * const path) const
     {
     std::string str = std::string(path).substr(mPos);
     return str;
     }
 
-std::string FilePathImmutableBase::getPathSegment(char const * const path) const
+std::string FilePathImmutable::getPathSegment(char const * const path) const
     {
     std::string part;
     size_t startPos = 0;
@@ -267,7 +267,7 @@ std::string FilePathImmutableBase::getPathSegment(char const * const path) const
     return part;
     }
 
-size_t FilePathImmutableBase::findPathSegment(char const * const path,
+size_t FilePathImmutable::findPathSegment(char const * const path,
 	char const * const seg) const
     {
     OovString lowerPath;
@@ -300,21 +300,21 @@ size_t FilePathImmutableBase::findPathSegment(char const * const path,
     return foundPos;
     }
 
-std::string FilePathImmutableBase::getWithoutEndPathSep(char const * const path) const
+std::string FilePathImmutable::getWithoutEndPathSep(char const * const path) const
     {
     std::string str = path;
     removePathSep(str, str.length()-1);
     return str;
     }
 
-std::string FilePathImmutableBase::getDrivePath(char const * const path) const
+std::string FilePathImmutable::getDrivePath(char const * const path) const
     {
     FilePath fp(path, FP_File);
     fp.moveToEndDir();
     return fp.getHead();
     }
 
-std::string FilePathImmutableBase::getName(char const * const path) const
+std::string FilePathImmutable::getName(char const * const path) const
     {
     FilePath fp(path, FP_File);
     if(fp.moveToEndDir() != std::string::npos)
@@ -324,7 +324,7 @@ std::string FilePathImmutableBase::getName(char const * const path) const
     return fp;
     }
 
-std::string FilePathImmutableBase::getNameExt(char const * const path) const
+std::string FilePathImmutable::getNameExt(char const * const path) const
     {
     FilePath fp(path, FP_File);
     if(fp.moveToEndDir() != std::string::npos)
@@ -332,7 +332,7 @@ std::string FilePathImmutableBase::getNameExt(char const * const path) const
     return fp;
     }
 
-std::string FilePathImmutableBase::getExtension(char const * const path) const
+std::string FilePathImmutable::getExtension(char const * const path) const
     {
     std::string ext;
     size_t extPos = findExtension(path);
@@ -341,20 +341,20 @@ std::string FilePathImmutableBase::getExtension(char const * const path) const
     return ext;
     }
 
-bool FilePathImmutableBase::matchExtension(char const * const path1, char const * const path2) const
+bool FilePathImmutable::matchExtension(char const * const path1, char const * const path2) const
     {
     std::string ext1 = getExtension(path1);
     std::string ext2 = getExtension(path2);
     return(ext1.length() > 0 && ext1.compare(ext2) == 0);
     }
 
-bool FilePathImmutableBase::isEndPathSep(char const * const path)
+bool FilePathImmutable::isEndPathSep(char const * const path)
     {
     int len = std::string(path).length();
     return(isPathSep(path, len-1));
     }
 
-size_t FilePathImmutableBase::findExtension(char const * const path)
+size_t FilePathImmutable::findExtension(char const * const path)
     {
     size_t pathPos = rfindPathSep(path);
     size_t extPos = std::string(path).rfind('.');
@@ -363,13 +363,13 @@ size_t FilePathImmutableBase::findExtension(char const * const path)
     return extPos;
     }
 
-bool FilePathImmutableBase::isDirOnDisk(char const * const path)
+bool FilePathImmutable::isDirOnDisk(char const * const path)
     {
     struct OovStat32 statval;
     return((OovStat32(path, &statval) == 0 && S_ISDIR(statval.st_mode)));
     }
 
-bool FilePathImmutableBase::isAbsolutePath(char const * const path)
+bool FilePathImmutable::isAbsolutePath(char const * const path)
     {
     bool absDrv = false;
     size_t drvPos = std::string(path).find(':');
@@ -380,7 +380,7 @@ bool FilePathImmutableBase::isAbsolutePath(char const * const path)
     return(isPathSep(path, 0) || absDrv);
     }
 
-int FilePathImmutableBase::comparePaths(char const * const path1,
+int FilePathImmutable::comparePaths(char const * const path1,
 	char const * const path2)
     {
 #ifdef __linux__
@@ -393,7 +393,7 @@ int FilePathImmutableBase::comparePaths(char const * const path1,
 
 ///////////
 
-std::string FilePathRef::normalizePathType(char const * const path, eFilePathTypes fpt)
+std::string FilePath::normalizePathType(char const * const path, eFilePathTypes fpt)
     {
     std::string dst;
     if(path)
@@ -422,7 +422,7 @@ std::string FilePathRef::normalizePathType(char const * const path, eFilePathTyp
     return dst;
     }
 
-eFilePathTypes FilePathRef::getType() const
+eFilePathTypes FilePath::getType() const
     {
     eFilePathTypes fpt;
     if(pathStdStr()[0] == '.')
@@ -434,7 +434,7 @@ eFilePathTypes FilePathRef::getType() const
     return fpt;
     }
 
-void FilePathRef::appendPathAtPos(char const * const pathPart)
+void FilePath::appendPathAtPos(char const * const pathPart)
     {
     char const *pp = pathPart;
     if(getPos() != std::string::npos)
@@ -451,14 +451,14 @@ void FilePathRef::appendPathAtPos(char const * const pathPart)
     pathStdStr().append(pp);
     }
 
-void FilePathRef::appendDirAtPos(char const * const pathPart)
+void FilePath::appendDirAtPos(char const * const pathPart)
     {
     appendPathAtPos(pathPart);
     if(!isEndPathSep(pathStdStr().c_str()))
 	pathStdStr().append("/");
     }
 
-void FilePathRef::appendPart(char const * const pathPart, eFilePathTypes fpt)
+void FilePath::appendPart(char const * const pathPart, eFilePathTypes fpt)
     {
     if(fpt == FP_Dir)
 	appendDir(pathPart);
@@ -466,13 +466,13 @@ void FilePathRef::appendPart(char const * const pathPart, eFilePathTypes fpt)
 	appendFile(pathPart);
     }
 
-void FilePathRef::appendDir(char const * const pathPart)
+void FilePath::appendDir(char const * const pathPart)
     {
     moveToEndDir();
     appendDirAtPos(pathPart);
     }
 
-void FilePathRef::discardTail()
+void FilePath::discardTail()
     {
     // Keep the end sep so that this is still indicated as a directory.
     if(isPathSep(pathStdStr().c_str(), getPos()))
@@ -481,7 +481,7 @@ void FilePathRef::discardTail()
 	pathStdStr().erase(getPos());
     }
 
-void FilePathRef::appendFile(char const * const fileName)
+void FilePath::appendFile(char const * const fileName)
     {
     moveToEndDir();
     std::string fn = fileName;
@@ -492,7 +492,7 @@ void FilePathRef::appendFile(char const * const fileName)
     pathStdStr().append(fn);
     }
 
-void FilePathRef::appendExtension(char const * const fileName)
+void FilePath::appendExtension(char const * const fileName)
     {
     discardExtension();
     if(findExtension(fileName) == std::string::npos)
@@ -500,7 +500,7 @@ void FilePathRef::appendExtension(char const * const fileName)
     pathStdStr().append(fileName);
     }
 
-void FilePathRef::getWorkingDirectory()
+void FilePath::getWorkingDirectory()
     {
     char buf[1000];
     pathStdStr().clear();
@@ -511,28 +511,28 @@ void FilePathRef::getWorkingDirectory()
     ensureLastPathSep(pathStdStr());
     }
 
-void FilePathRef::discardDirectory()
+void FilePath::discardDirectory()
     {
     moveToEndDir();
     discardHead();
     }
 
-void FilePathRef::discardFilename()
+void FilePath::discardFilename()
     {
     moveToEndDir();
     discardTail();
     }
 
-void FilePathRef::discardExtension()
+void FilePath::discardExtension()
     {
     if(moveToExtension() != std::string::npos)
 	discardTail();
     }
 
-void FilePathRef::discardHead()
+void FilePath::discardHead()
     { pathStdStr().erase(0, getPos()+1); }
 
-int FilePathRef::discardLeadingRelSegments()
+int FilePath::discardLeadingRelSegments()
     {
     int count = 0;
     bool didSeg = true;
@@ -556,7 +556,7 @@ int FilePathRef::discardLeadingRelSegments()
     return count;
     }
 
-void FilePathRef::discardMatchingHead(char const * const pathPart)
+void FilePath::discardMatchingHead(char const * const pathPart)
     {
     std::string part(pathPart);
     if(pathStdStr().compare(0, part.length(), part) == 0)
@@ -565,7 +565,7 @@ void FilePathRef::discardMatchingHead(char const * const pathPart)
 	}
     }
 
-void FilePathRef::getAbsolutePath(char const * const path, eFilePathTypes fpt)
+void FilePath::getAbsolutePath(char const * const path, eFilePathTypes fpt)
     {
     if(isAbsolutePath(path))
 	{
@@ -594,7 +594,7 @@ void FilePathRef::getAbsolutePath(char const * const path, eFilePathTypes fpt)
 	}
     }
 
-void FilePathRef::normalizePathSeps(std::string &path)
+void FilePath::normalizePathSeps(std::string &path)
     {
     for(auto &c : path)
 	{

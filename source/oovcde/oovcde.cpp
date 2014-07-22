@@ -783,14 +783,18 @@ extern "C" G_MODULE_EXPORT void on_ListNotebook_switch_page(GtkNotebook *noteboo
 	}
     }
 
-extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_release_event(GtkWidget *widget,
-	GdkEventExpose *event, gpointer user_data)
+extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_press_event(
+	GtkWidget *widget, GdkEventExpose *event, gpointer user_data)
     {
-    std::string fn;
-    int line = gOovGui.getStatusSourceFile(fn);
-    if(fn.length() > 0)
+    GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
+    if(buttEvent->type == GDK_2BUTTON_PRESS)
 	{
-	viewSource(fn.c_str(), line);
+	std::string fn;
+	int line = gOovGui.getStatusSourceFile(fn);
+	if(fn.length() > 0)
+	    {
+	    viewSource(fn.c_str(), line);
+	    }
 	}
     return FALSE;
     }

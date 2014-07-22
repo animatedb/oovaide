@@ -15,6 +15,7 @@
 #include "EditOptions.h"
 #include <sys/time.h>
 #include <vector>
+#include <memory>
 
 
 struct ScrolledFileView
@@ -57,19 +58,17 @@ class EditFiles
 	/// @param fn Full filename.
 	/// @param lineNum Line number of specified file.
 	void viewModule(char const * const fn, int lineNum);
+	/// @param fn Full filename.
+	/// @param lineNum Line number of specified file.
+	void viewFile(char const * const fn, int lineNum);
 	/// Go to the line number in the current view.
 	/// @param lineNum The line number to put the cursor on.
 	void gotoLine(int lineNum);
 	/// Displays a prompt if a buffer is modified.
 	/// return = true if it is ok to exit.
 	bool checkExitSave();
-	FileEditView *getEditView()
-	    {
-	    if(mFocusEditViewIndex < mFileViews.size())
-		return &mFileViews[mFocusEditViewIndex].mFileView;
-	    else
-		return nullptr;
-	    }
+	FileEditView *getEditView();
+	std::string getEditViewSelectedText();
 	// For signal handlers
 	void setFocusEditTextView(GtkTextView *editTextView);
 	/// Handles keys where the behavior is modified. The main keys are
@@ -85,23 +84,23 @@ class EditFiles
 	void removeNotebookPage(GtkWidget *pageWidget);
 	/// Displays an error if the debugger has not been setup in options.
 	bool checkDebugger();
+	void showInteractNotebookTab(char const * const tabName);
 
     private:
 	EditOptions &mEditOptions;
 	GtkNotebook *mHeaderBook;
 	GtkNotebook *mSourceBook;
 	Builder *mBuilder;
-	std::vector<ScrolledFileView> mFileViews;
+	std::vector<std::unique_ptr<ScrolledFileView>> mFileViews;
 	size_t mFocusEditViewIndex;
 	Debugger &mDebugger;
 	timeval mLastHightlightIdleUpdate;
-	void viewFile(char const * const fn, bool useMainView, int lineNum);
 	void idleHighlight();
 	int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
 	ScrolledFileView *getScrolledFileView()
 	    {
 	    if(mFocusEditViewIndex < mFileViews.size())
-		return &mFileViews[mFocusEditViewIndex];
+		return mFileViews[mFocusEditViewIndex].get();
 	    else
 		return nullptr;
 	    }

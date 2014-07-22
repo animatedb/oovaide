@@ -91,13 +91,12 @@ int main(int argc, char const * const argv[])
 	if(cfg.isConfigDifferent(buildConfigName.c_str(),
 		BuildConfig::CT_ExtPathArgsCrc))
 	    {
-	    /*
+	    // This is for the -ER switch.
 	    for(auto const &arg : compFinder.getProject().getExternalArgs())
 		{
 		printf("Scanning %s\n", &arg[3]);
 		compFinder.scanExternalProject(&arg[3]);
 		}
-		*/
 	    for(auto const &pkg : compFinder.getProject().getProjectPackages().
 		    getPackages())
 		{

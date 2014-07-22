@@ -15,22 +15,15 @@
 class ObjSymbols
     {
     public:
-	ObjSymbols():
-	    mForceUpdateSymbols(false)
-	    {}
-	void forceUpdate(bool force)
-	    {
-	    mForceUpdateSymbols = force;
-	    }
 	/// @param clumpName A clump is the collection of symbols from a list of
 	///	files. Normally it relates to a library path that may contain
 	///	many libraries.
-	/// @param libFileNames List of library file names.
+	/// @param libFileNames List of all library file names in a clump.
 	/// @param outPath Location of where to put symbol information.
 	/// @param objSymbolTool The executable name.
 	/// @param sortedLibFileNames Sorted names
-	bool makeObjectSymbols(char const * const clumpName,
-		const std::vector<std::string> &libFileNames, char const * const outPath,
+	bool makeClumpSymbols(char const * const clumpName,
+		const std::vector<std::string> &libFileNames, char const * const outSymPath,
 		char const * const objSymbolTool, class ComponentTaskQueue &queue);
 
 	// From the clump, append the ordered libraries with their directories.
@@ -42,8 +35,10 @@ class ObjSymbols
 		std::vector<std::string> &sortedLibFileNames);
 
     private:
-	bool mForceUpdateSymbols;
         InProcMutex mListenerStdMutex;
+        bool makeObjectSymbols(const std::vector<std::string> &libFiles,
+        	char const * const outSymPath, char const * const objSymbolTool,
+        	ComponentTaskQueue &queue, class ClumpSymbols &clumpSymbols);
     };
 
 

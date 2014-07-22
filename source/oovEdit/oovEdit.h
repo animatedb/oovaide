@@ -65,6 +65,26 @@ class Editor:public DebuggerListener
 	    {
 	    return mEditFiles.checkExitSave();
 	    }
+	void gotoToken(eFindTokenTypes ft)
+	    {
+	    if(mEditFiles.getEditView())
+		{
+		std::string fn;
+		int offset;
+		if(mEditFiles.getEditView()->find(ft, fn, offset))
+		    {
+		    mEditFiles.viewFile(fn.c_str(), offset);
+		    }
+		}
+	    }
+	void gotoDeclaration()
+	    {
+	    gotoToken(FT_FindDecl);
+	    }
+	void gotoDefinition()
+	    {
+	    gotoToken(FT_FindDef);
+	    }
 	Builder &getBuilder()
 	    { return mBuilder; }
 	Debugger &getDebugger()
@@ -94,6 +114,7 @@ class Editor:public DebuggerListener
 		mEditFiles.getEditView()->drawHighlight();
 	    }
 	void editPreferences();
+	void setPreferencesWorkingDir();
 	void idleDebugStatusChange(Debugger::eChangeStatus st);
 	virtual void DebugOutput(char const * const str)
 	    {
@@ -102,6 +123,7 @@ class Editor:public DebuggerListener
 	virtual void DebugStatusChanged()
 	    {
 	    }
+	void debugSetStackFrame(char const * const frameLine);
 
     private:
 	Builder mBuilder;

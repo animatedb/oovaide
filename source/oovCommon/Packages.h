@@ -31,7 +31,7 @@ class RootDirPackage
 	RootDirPackage()
 	    {}
 	RootDirPackage(char const * const pkgName, char const * const rootDir):
-		mName(pkgName), mRootDir(rootDir)
+		mName(pkgName), mRootDir(rootDir, FP_Dir)
 	    {}
 
 	bool addUndefinedPackage(char const * const pkgName, NameValueFile &file) const;
@@ -48,7 +48,7 @@ class RootDirPackage
 
 	void setRootDirPackage(char const *rootDir);
 	void setRootDir(char const *rootDir)
-	    { mRootDir = rootDir; }
+	    { mRootDir.setPath(rootDir, FP_Dir); }
 	void setExternalReferenceDir(std::string const &extRefDir)
 	    { mExternalReferenceDir = extRefDir; }
 
@@ -83,7 +83,7 @@ class RootDirPackage
 
     protected:
 	std::string mName;
-	std::string mRootDir;
+	FilePath mRootDir;
 
 	std::string mLibDir;			// Relative to root
 	std::string mLibNames;

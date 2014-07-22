@@ -26,9 +26,11 @@ class FileEditView
 	bool saveTextFile();
 	bool saveAsTextFileWithDialog();
 	bool checkExitSave();
+	std::string getSelectedText();
 	bool find(char const * const findStr, bool forward, bool caseSensitive);
 	bool findAndReplace(char const * const findStr, bool forward,
 		bool caseSensitive, char const * const replaceStr);
+	bool find(eFindTokenTypes ft, std::string &fn, int &offset);
 	void cut()
 	    {
 	    GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);

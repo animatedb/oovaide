@@ -10,7 +10,8 @@
 
 #define DBG_RESULT 0
 #if(DBG_RESULT)
-static DebugFile sDbgFile("DbgResult.txt");
+//static DebugFile sDbgFile("DbgResult.txt");
+static DebugFile sDbgFile(stdout);
 #endif
 
 static char const *skipSpace(char const *p)
@@ -29,13 +30,10 @@ static bool isEndListC(char c)
 static bool isListItemSepC(char c)
     { return(c == ','); }
 
-cDebugResult::~cDebugResult()
-    {
-    for(auto const &elem : mChildResults)
-	{
-	delete elem;
-	}
-    }
+// A name can be:
+//	<std::allocator<char>>
+static bool isVarnameC(char c)
+    { return(isalpha(c) || c == '<'); }
 
 std::string cDebugResult::getAsString(int level) const
     {
@@ -47,16 +45,21 @@ std::string cDebugResult::getAsString(int level) const
 	{
 	str = mVarName;
 	str += " = ";
-	if(mChildResults.size())
+	for(size_t i=0; i<mChildResults.size(); i++)
 	    {
-	    for(auto const &elem : mChildResults)
+	    if(i != 0)
 		{
-		str += elem->getAsString(level+1);
+		str += leadSpace;
 		}
+            str += mChildResults[i]->getAsString(level+1);
+            str += "\n";
 	    }
 	}
     str += mConst;
     str += "\n";
+#if(DBG_RESULT)
+    sDbgFile.printflush("getAsString %s\n", str.c_str());
+#endif
     return str;
     }
 
@@ -67,33 +70,39 @@ static char const *parseString(char const *resultStr, std::string &translatedStr
     {
 #if(DBG_RESULT)
 sDbgFile.printflush("parseString %s\n", resultStr);
+int transPos = translatedStr.length();
 #endif
     char const *p = resultStr;
     if(*p == '\"')
+        {
+        translatedStr += "\"";
 	p++;
+        }
     while(*p)
 	{
 	if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\\')
             {
-            translatedStr += "\\";
-            p+=3;
+            translatedStr += "\\\\";
+            p+=4;
             }
         else if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\"')
 	    {
-            translatedStr += "\"";
-	    p+=3;
+            translatedStr += "\\\"";
+	    p+=4;
 	    }
 	else if(*p == '\\' && *(p+1) == '\"')
 	    {
+            translatedStr += "\"";
+            p+=2;
 	    break;
 	    }
-        translatedStr += *p;
-	p++;
+        else
+            {
+            translatedStr += *p++;
+            }
 	}
-    if(*p)
-	p++;
 #if(DBG_RESULT)
-sDbgFile.printflush("   parseString %s\n", std::string(resultStr, p-resultStr).c_str());
+sDbgFile.printflush("   parseString %s\n", translatedStr.substr(transPos).c_str());
 #endif
     return p;
     }
@@ -104,6 +113,7 @@ static char const *parseItem(char const *resultStr, std::string &translatedStr)
     {
 #if(DBG_RESULT)
 sDbgFile.printflush("parseItem %s\n", resultStr);
+int transPos = translatedStr.length();
 #endif
     char const *start = skipSpace(resultStr);
     char const *p = start;
@@ -114,15 +124,20 @@ sDbgFile.printflush("parseItem %s\n", resultStr);
 	    p++;
 	    p = parseString(p, translatedStr);
 	    }
-        else if(*p == '=' || isListItemSepC(*p) || isEndListC(*p))
+        else if(*p == '=' || isListItemSepC(*p) || isEndListC(*p) ||
+            *p == '\"')
             {
             p++;
             break;
             }
+        else
+            {
+            translatedStr += *p;
+            }
         p++;
         }
 #if(DBG_RESULT)
-sDbgFile.printflush("   parseItem %s\n", std::string(start, p-start).c_str());
+sDbgFile.printflush("   parseItem %s\n", translatedStr.substr(transPos).c_str());
 #endif
     return p;
     }
@@ -161,7 +176,7 @@ sDbgFile.printflush("parseConst %s\n", resultStr);
 #if(DBG_RESULT)
 sDbgFile.printflush("   parseConst %s\n", translatedStr.c_str());
 #endif
-    mConst.assign(start, p-start);
+    mConst = translatedStr;
     return p;
     }
 
@@ -259,7 +274,13 @@ sDbgFile.printflush("parseResult %s\n", resultStr);
 #endif
     char const *start = skipSpace(resultStr);
     char const *p = start;
-    p = parseVarName(p);
-    p = parseValue(p);
+    if(*start)
+	{
+        if(isVarnameC(*p))
+            {
+            p = parseVarName(p);
+            }
+	p = parseValue(p);
+	}
     return p;
     }

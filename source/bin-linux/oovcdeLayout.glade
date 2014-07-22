@@ -267,20 +267,24 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="box6">
+          <object class="GtkPaned" id="paned3">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="homogeneous">True</property>
+            <property name="can_focus">True</property>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow5">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
                 <property name="shadow_type">in</property>
+                <property name="min_content_width">200</property>
                 <property name="min_content_height">200</property>
                 <child>
                   <object class="GtkTreeView" id="ComponentListTreeview">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="hexpand">True</property>
+                    <property name="vexpand">True</property>
                     <signal name="cursor-changed" handler="on_ComponentListTreeview_cursor_changed" swapped="no"/>
                     <child internal-child="selection">
                       <object class="GtkTreeSelection" id="treeview-selection7"/>
@@ -289,9 +293,8 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">True</property>
-                <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
               </packing>
             </child>
             <child>
@@ -347,6 +350,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="has_tooltip">True</property>
+                        <property name="tooltip_markup" translatable="yes">Example: -lnk-mwindows</property>
                         <property name="tooltip_text" translatable="yes">Example: -lnk-mwindows</property>
                       </object>
                     </child>
@@ -359,14 +363,13 @@
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
-                <property name="position">1</property>
+                <property name="resize">True</property>
+                <property name="shrink">True</property>
               </packing>
             </child>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
@@ -376,6 +379,98 @@
     <action-widgets>
       <action-widget response="0">BuildSettingsCancelButton</action-widget>
       <action-widget response="0">BuildSettingsOkButton</action-widget>
+    </action-widgets>
+  </object>
+  <object class="GtkDialog" id="CMakeDialog">
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="type_hint">dialog</property>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="dialog-vbox13">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="dialog-action_area13">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="button2">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button3">
+                <property name="label">gtk-ok</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box13">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkLabel" id="label38">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Enter the Project Name for the CMake files</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkEntry" id="CMakeProjectNameEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="invisible_char">●</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-6">button2</action-widget>
+      <action-widget response="-5">button3</action-widget>
     </action-widgets>
   </object>
   <object class="GtkMenu" id="DrawClassPopupMenu">
@@ -1329,9 +1424,16 @@ may not be important for analysis.
 Use the External Project Packages to specify some
 include and library files.
 
-Use -lnk before link options.
-Other common examples:
+Arguments are passed to the compiler and linker.
+Special arguments are:
+  -lnk&lt;arg&gt;		Sends arg to linker only
+  -bv				Builder verbose log OovBuilder.txt
+  -ER&lt;dir&gt;		External recursive lib and include directory
+  -EP&lt;package&gt;	External package reference
+
+Examples:
   -I../oovCommon
+  -lnk-L/mylibdir
   -lnk../Debug/DebugResult.o</property>
                           </object>
                         </child>
@@ -1448,6 +1550,11 @@ Other common examples:
                                       <object class="GtkEntry" id="CompilerPathEntry">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="has_tooltip">True</property>
+                                        <property name="tooltip_text" translatable="yes">This is the path to the executable including the executable
+name.
+
+This is specific to the selected configuration.</property>
                                         <property name="hexpand">True</property>
                                         <property name="invisible_char">●</property>
                                         <property name="invisible_char_set">True</property>
@@ -1582,11 +1689,19 @@ Other common examples:
                                       <object class="GtkScrolledWindow" id="scrolledwindow4">
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
+                                        <property name="hexpand">True</property>
+                                        <property name="vexpand">True</property>
                                         <property name="shadow_type">in</property>
                                         <child>
                                           <object class="GtkTextView" id="ExtraBuildArgsTextview">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="has_tooltip">True</property>
+                                            <property name="tooltip_text" translatable="yes">The format of arguments is the same as
+the Common Build Arguments.
+
+These arguments are specific to the selected configuration.
+</property>
                                             <property name="border_width">1</property>
                                           </object>
                                         </child>
@@ -2512,6 +2627,21 @@ Other common examples:
                         <signal name="activate" handler="on_StopBuildMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkSeparatorMenuItem" id="menuitem10">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="MakeCMakeMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Make CMake</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_MakeCMakeMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -2730,7 +2860,7 @@ Other common examples:
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
-                        <signal name="button-release-event" handler="on_StatusTextview_button_release_event" swapped="no"/>
+                        <signal name="button-press-event" handler="on_StatusTextview_button_press_event" swapped="no"/>
                       </object>
                     </child>
                   </object>

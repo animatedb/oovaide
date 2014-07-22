@@ -44,12 +44,32 @@ void EditFiles::onIdle()
     idleHighlight();
     for(auto &fv : mFileViews)
 	{
-	if(fv.mDesiredLine != -1)
+	if(fv->mDesiredLine != -1)
 	    {
-	    fv.mFileView.gotoLine(fv.mDesiredLine);
-	    fv.mDesiredLine = -1;
+	    fv->mFileView.gotoLine(fv->mDesiredLine);
+	    gtk_widget_grab_focus(GTK_WIDGET(fv->mFileView.getTextView()));
+	    fv->mDesiredLine = -1;
 	    }
 	}
+    }
+
+FileEditView *EditFiles::getEditView()
+    {
+    if(mFocusEditViewIndex < mFileViews.size())
+	return &mFileViews[mFocusEditViewIndex]->mFileView;
+    else
+	return nullptr;
+    }
+
+std::string EditFiles::getEditViewSelectedText()
+    {
+    FileEditView *view = getEditView();
+    std::string text;
+    if(view)
+	{
+	text = view->getSelectedText();
+	}
+    return text;
     }
 
 void EditFiles::updateDebugMenu()
@@ -166,11 +186,11 @@ void EditFiles::drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &
 
     DebuggerLocation dbgLoc = mDebugger.getStoppedLocation();
     auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
-	    [textView](ScrolledFileView const &fv) -> bool
-		{ return(fv.getTextView() == textView); });
+	    [textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+		{ return(fv->getTextView() == textView); });
     if(fvIter != mFileViews.end())
 	{
-	DebuggerLocation thisFileLoc((*fvIter).getFilename().c_str());
+	DebuggerLocation thisFileLoc((*fvIter)->getFilename().c_str());
 	int full = lineHeight*.8;
 	int half = full/2;
 	for(auto const & lineInfo : linesInfo)
@@ -237,12 +257,34 @@ void EditFiles::drawRightMargin(GtkWidget *widget, cairo_t *cr, int leftMargin, 
     cairo_fill(cr);
     }
 
+static void displayContextMenu(guint button, guint32 acttime, gpointer data)
+    {
+    GtkMenu *menu = Builder::getBuilder()->getMenu("EditPopupMenu");
+    GdbChildStates state = sEditFiles->getDebugger().getChildState();
+    Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget("DebugViewVariable")),
+	    state != GCS_GdbChildRunning);
+    gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
+    }
+
 extern "C" G_MODULE_EXPORT gboolean on_EditFiles_focus_in_event(GtkWidget *widget,
 	GdkEvent *event, gpointer user_data)
     {
     if(sEditFiles)
 	sEditFiles->setFocusEditTextView(GTK_TEXT_VIEW(widget));
     return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_EditFiles_button_press_event(GtkWidget *widget,
+        GdkEvent  *event, gpointer user_data)
+    {
+    bool handled = false;
+    GdkEventButton *eventBut = reinterpret_cast<GdkEventButton*>(event);
+    if(eventBut->button == 3)	// Right button
+	{
+	displayContextMenu(eventBut->button, eventBut->time, (gpointer)event);
+	handled = true;
+	}
+    return handled;
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_EditFiles_key_press_event(GtkWidget *widget,
@@ -277,8 +319,8 @@ void EditFiles::removeNotebookPage(GtkWidget *pageWidget)
 	page = gtk_notebook_page_num(book, pageWidget);
 	}
     auto const &iter = std::find_if(mFileViews.begin(), mFileViews.end(),
-	    [pageWidget](ScrolledFileView &fv) -> bool
-		{ return fv.getViewTopParent() == pageWidget; });
+	    [pageWidget](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+		{ return fv->getViewTopParent() == pageWidget; });
     mFileViews.erase(iter);
     gtk_notebook_remove_page(book, page);
     }
@@ -324,18 +366,26 @@ static GtkWidget *newTabLabel(char const * const tabText, GtkWidget *viewTopPare
 
     }
 
-void EditFiles::viewFile(char const * const fn, bool useMainView, int lineNum)
+static bool putInMainWindow(char const * const fn)
+    {
+    FilePath hExt("h", FP_Ext);
+    FilePath fileName(fn, FP_File);
+    bool header = fileName.matchExtension(hExt.c_str());
+    return(!header);
+    }
+
+void EditFiles::viewFile(char const * const fn, int lineNum)
     {
     FilePath fp;
 
     fp.getAbsolutePath(fn, FP_File);
     auto iter = std::find_if(mFileViews.begin(), mFileViews.end(),
-	    [fp](ScrolledFileView const &fv) -> bool
-		{ return fv.mFilename.comparePaths(fp.c_str()) == 0; });
+	[fp](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+	{ return fv->mFilename.comparePaths(fp.c_str()) == 0; });
     if(iter == mFileViews.end())
 	{
 	GtkNotebook *book = nullptr;
-	if(useMainView)
+	if(putInMainWindow(fn))
 	    book = mSourceBook;
 	else
 	    book = mHeaderBook;
@@ -344,15 +394,16 @@ void EditFiles::viewFile(char const * const fn, bool useMainView, int lineNum)
 	    GtkWidget *scrolled = gtk_scrolled_window_new(nullptr, nullptr);
 	    GtkWidget *editView = gtk_text_view_new();
 
-	    ScrolledFileView scrolledView;
-	    scrolledView.mFileView.init(GTK_TEXT_VIEW(editView));
-	    scrolledView.mFileView.openTextFile(fp.c_str());
-	    scrolledView.mScrolled = GTK_SCROLLED_WINDOW(scrolled);
-	    scrolledView.mFilename = fp;
+	    /// @todo - use make_unique when supported.
+	    ScrolledFileView *scrolledView = new ScrolledFileView();
+	    scrolledView->mFileView.init(GTK_TEXT_VIEW(editView));
+	    scrolledView->mFileView.openTextFile(fp.c_str());
+	    scrolledView->mScrolled = GTK_SCROLLED_WINDOW(scrolled);
+	    scrolledView->mFilename = fp;
 
 	    gtk_container_add(GTK_CONTAINER(scrolled), editView);
 	    Gui::appendPage(book, scrolled,
-		    newTabLabel(fp.getName().c_str(), scrolledView.getViewTopParent()));
+		    newTabLabel(fp.getName().c_str(), scrolledView->getViewTopParent()));
 	    gtk_widget_show_all(scrolled);
 	    gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(editView),
 		    GTK_TEXT_WINDOW_LEFT, 10);	// need to get text size
@@ -362,20 +413,23 @@ void EditFiles::viewFile(char const * const fn, bool useMainView, int lineNum)
 		    G_CALLBACK(on_EditFiles_focus_in_event), NULL);
 	    g_signal_connect(editView, "key_press_event",
 		    G_CALLBACK(on_EditFiles_key_press_event), NULL);
-	    mFileViews.push_back(scrolledView);
+	    g_signal_connect(editView, "button_press_event",
+		    G_CALLBACK(on_EditFiles_button_press_event), NULL);
+	    mFileViews.push_back(std::unique_ptr<ScrolledFileView>(scrolledView));
 	    iter = mFileViews.end()-1;
 	    }
 	}
-    GtkNotebook *notebook = (*iter).getBook();
+    GtkNotebook *notebook = (*iter)->getBook();
     if(notebook)
 	{
-	int pageIndex = getPageNumber(notebook, (*iter).getTextView());
+	int pageIndex = getPageNumber(notebook, (*iter)->getTextView());
 	Gui::setCurrentPage(notebook, pageIndex);
-	gtk_widget_grab_focus(GTK_WIDGET((*iter).getTextView()));
+	// focus is set after the screen is displayed by onIdle
+//	gtk_widget_grab_focus(GTK_WIDGET((*iter).getTextView()));
 #if(DBG_EDITF)
 	sDbgFile.printflush("ViewFile %d\n", pageIndex);
 #endif
-	(*iter).mDesiredLine = lineNum;
+	(*iter)->mDesiredLine = lineNum;
 	}
     }
 
@@ -404,7 +458,7 @@ void EditFiles::idleHighlight()
 	    abs(curTime.tv_usec - mLastHightlightIdleUpdate.tv_usec) > 300*/)
 	{
 	for(auto &view : mFileViews)
-	    view.getFileEditView().idleHighlight();
+	    view->getFileEditView().idleHighlight();
 	mLastHightlightIdleUpdate = curTime;
 	}
     }
@@ -421,19 +475,19 @@ void EditFiles::viewModule(char const * const fn, int lineNum)
 	{
 	moduleName.appendExtension("h");
 	if(header)
-	    viewFile(moduleName.c_str(), false, lineNum);
+	    viewFile(moduleName.c_str(), lineNum);
 	else
-	    viewFile(moduleName.c_str(), false, 1);
+	    viewFile(moduleName.c_str(), 1);
 
 	moduleName.appendExtension("cpp");
 	if(source)
-	    viewFile(moduleName.c_str(), true, lineNum);
+	    viewFile(moduleName.c_str(), lineNum);
 	else
-	    viewFile(moduleName.c_str(), true, 1);
+	    viewFile(moduleName.c_str(), 1);
 	}
     else
 	{
-	viewFile(fn, true, lineNum);
+	viewFile(fn, lineNum);
 	}
     }
 
@@ -442,7 +496,7 @@ void EditFiles::setFocusEditTextView(GtkTextView *editTextView)
     mFocusEditViewIndex = -1;
     for(size_t i=0; i<mFileViews.size(); i++)
 	{
-	if(mFileViews[i].mFileView.getTextView() == editTextView)
+	if(mFileViews[i]->mFileView.getTextView() == editTextView)
 	    {
 	    mFocusEditViewIndex = i;
 	    break;
@@ -463,7 +517,7 @@ bool EditFiles::checkExitSave()
     bool exitOk = true;
     for(auto &fileView : mFileViews)
 	{
-	exitOk = fileView.mFileView.checkExitSave();
+	exitOk = fileView->mFileView.checkExitSave();
 	if(!exitOk)
 	    break;
 	}
@@ -479,6 +533,7 @@ bool EditFiles::checkDebugger()
     getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath).c_str());
     getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
     getDebugger().setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
+    getDebugger().setWorkingDir(mEditOptions.getValue(OptEditDebuggerWorkingDir).c_str());
 //Gui::messageBox("Debugging is not recommended. It is very unstable.");
     std::string debugger = getDebugger().getDebuggerFilePath();
     std::string debuggee = getDebugger().getDebuggeeFilePath();
@@ -486,25 +541,33 @@ bool EditFiles::checkDebugger()
 	{
 	if(debuggee.length() > 0)
 	    {
-	    if(fileExists(debugger.c_str()))
+// The debugger could be on the path.
+//	    if(fileExists(debugger.c_str()))
 		{
 		if(fileExists(debuggee.c_str()))
 		    {
 		    ok = true;
 		    }
 		else
-		    Gui::messageBox("Component to be debug in Edit/Preferences does not exist");
+		    Gui::messageBox("Component to debug in Edit/Preferences does not exist");
 		}
-	    else
-		Gui::messageBox("Debugger in Edit/Preferences does not exist");
+//	    else
+//		Gui::messageBox("Debugger in Oovcde Edit/Preferences does not exist");
 	    }
 	else
-	    Gui::messageBox("Component to be debug must be set in Edit/Preferences");
+	    Gui::messageBox("Component to debug must be set in Edit/Preferences");
 	}
     else
 	Gui::messageBox("Debugger tool path must be set in Oovcde Edit/Preferences");
     return ok;
     }
+
+void EditFiles::showInteractNotebookTab(char const * const tabName)
+    {
+    GtkNotebook *book = GTK_NOTEBOOK(Builder::getBuilder()->getWidget("InteractNotebook"));
+    Gui::setCurrentPage(book, Gui::findTab(book, tabName));
+    }
+
 
 extern "C" G_MODULE_EXPORT gboolean on_DebugGo_activate(GtkWidget *widget,
 	GdkEvent *event, gpointer user_data)
@@ -571,23 +634,13 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *wid
 	FileEditView const *view = sEditFiles->getEditView();
 	if(view)
 	    {
+	    sEditFiles->showInteractNotebookTab("Data");
 	    sEditFiles->getDebugger().startGetVariable(
 		    Gui::getSelectedText(view->getTextView()));
 #if(DBG_EDITF)
     sDbgFile.printflush("ViewVar %s\n", Gui::getSelectedText(view->getTextView()));
 #endif
 	    }
-	}
-    return false;
-    }
-
-extern "C" G_MODULE_EXPORT gboolean on_StackTextview_button_press_event(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
-    {
-    GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
-    if(buttEvent->type == GDK_2BUTTON_PRESS)
-	{
-
 	}
     return false;
     }

@@ -1,5 +1,6 @@
 // twinkle.cpp
 
+#include <stdio.h>      // For printf
 #include "twinkle.h"
 
 using namespace Universe;
@@ -22,32 +23,34 @@ class MyThoughts
     public:
         MyThoughts();
         void displaySomeThoughts(InkStar::Star const &inkStar,
-            Imaginary::FakeStar fakeStar, char *noStar);
+            Imaginary::FakeStar fakeStar, char const * const noStar);
 
     private:
-        Hollywood::Star mHollywoodStar;
-        Teaching::Star const &mTeachingStar;
+        Teaching::Star mTeachingStar;
+        Teaching::Star const &mTeachingStarRef;
         Imaginary::PretendStar **mPretendStar;
         // Really Universe::Hollywood::Star
+        Hollywood::Star mHollywoodStar;
         Displayer<Hollywood::Star> mHollywoodStarDisplay;
     };
 
 #include <stdio.h>
 
-MyThoughts::MyThoughts()
+MyThoughts::MyThoughts():
+    mTeachingStarRef(mTeachingStar)
     {
     World();
     Star littleStar;
     InkStar::Star inkStar;
     Imaginary::FakeStar fakeStar;
 
-    mHollywoodStarDisplay.displayThoughts(mHollywoodStarDisplay);
-    littleStar.displayThoughts(littleStar));
-    displaySomeThoughts(inkStar, fakeStar);
+    mHollywoodStarDisplay.displayThoughts(mHollywoodStar);
+    littleStar.displayThoughts(littleStar);
+    displaySomeThoughts(inkStar, fakeStar, "");
     }
 
 void MyThoughts::displaySomeThoughts(InkStar::Star const &inkStar,
-    FakeStar fakeStar, char *noStar)
+    Imaginary::FakeStar fakeStar, char const * const noStar)
     {
     InkStar::Star anotherStar;
     printf("I am a %s\n", inkStar.whatAreYou());
@@ -56,5 +59,8 @@ void MyThoughts::displaySomeThoughts(InkStar::Star const &inkStar,
 
 int main(int argc, const char* argv[])
     {
-    MyThoughts thoughts();
+    MyThoughts thoughts;
+    InkStar::Star inkStar;
+    Imaginary::FakeStar fakeStar;
+    thoughts.displaySomeThoughts(inkStar, fakeStar, "noStar");
     }

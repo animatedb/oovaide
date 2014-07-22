@@ -17,7 +17,11 @@ Missing Features
 	- Only 64 bit linux build is provided.
 	- Should release with mingw-builds headers
 	- fix sleepMs
+- Docs
+	- __builtin_ia32_bsrsi, mmintrin.h are GNU files, and clang is not
+	  compatible. Compile with g++ instead? Ubuntu problem?
 - Gui
+	- BUG: Sometimes oovcde.txt settings other config copied to analysis
 	- BUG: First component in list doesn't save type in Build/Settings
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
 		- window might be busy and is not responding (oovCommon/PackagesProcess?)
@@ -35,7 +39,9 @@ Missing Features
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
 - Building
+	- The oovcde-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
+	- Should have a version error when the analysis dir has version problems
 	- A static lib without source should not be on link lines
 	- TEST const calls/oper overloading
 	- Fast loading XMI, parse func defs later (first store statement string)
@@ -57,7 +63,8 @@ Missing Features
 	- Add include directories that are not components
 	- Allow debug/release and cross compile in cmake
 		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
-		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
+		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
+			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Journal
 	- Allow more copies of diagrams?
 - Component Diagrams
@@ -66,6 +73,8 @@ Missing Features
 	- Add right click menu to remove component
 - Class Diagrams
 	- BUG: forward class definitions mess up source line numbers
+	- find way to reduce strlen: std::allocator, std::less, std::basic_string<char> etc.
+	  see ComponentBuilder
 	- When class members are not shown, should be easy way to view members
 	- Show return value for class methods
 	- Set each class drawing preferences by whether component is the same.
@@ -99,6 +108,7 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Allow more project directory structures, dir tree
 	- Build sometimes must have objects specified before or after other libs/objects
 	- split source of libraries into separate file for each function for release mode
 	- Component specific build args not used to recalculate crc's for rebuild
@@ -109,15 +119,15 @@ Missing Features
 	- Add -Wall, --analyzer
 	- Cross compiling: http://www.cmake.org/Wiki/CMake_Cross_Compiling
 	- date compares should not be for older, but even if date changed (in case of restore files)
-	- Allow more project directory structures?
 	- When a source file changes, or new file, the dependency list is typically updated.
 	  For now, if not, delete out/bld directory for clean build.
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Editor
+	- improve go to definition: clang_getCursorUSR
 	- Bug: view source displays wrong tab
+	- Hover over tab should display full file path
 	- tab name should change with file rename/save as.
-	- Add right click cut/paste, find in files, etc.
 	- Open include files
 	- find declaration/definition
 	- editor doesn't handle two files with same name
@@ -134,20 +144,20 @@ Missing Features
 	- error highlighting
 	- refactor-rename
 - Debugger (In editor)
-	- Need to switch tabs when view source / hit breakpoint
+	- view variable results not parsed well for complex values
+	- Adding variable to view should scroll to end
+	- stopped, reason="watchpoint-trigger" doesn't enable Debug/Go
+	- When view variables in call stack, show call stack location in editor?
+	- Need to switch tabs and raise window when view source / hit breakpoint
+	- Breakpoints not set in spawned executables?
 	- Current exec position doesn't go away/update at some times
 	- display variable doesn't work (wrong page?)
 	- Debug data could display graphs, unicode, etc.
 	- Debug data could be bound to functions in code
 	- Could execute functions in code with parameters
 	- remove breakpoint doesn't work
-	- Can't double click stack to go to source/line
-	- Parsing results not working in some cases
-	- Control window doesn't allow entering commands - must enter on blank line
+	- Control window requires that entering commands must enter on blank line
 	- When build starts, should stop debugger
-	- Need to exit child program/stop debugger when editor quits
-	- Add stack trace window/command
-	- Add variable examination window
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future

@@ -103,6 +103,8 @@ class Gui
 	static GuiText getText(GtkTextView *textview);
 	static char const * const getText(GtkEntry *entry)
 	    { return gtk_entry_get_text(entry); }
+	static char const * const getText(GtkLabel *label)
+	    { return gtk_label_get_text(label); }
 	static GuiText getText(GtkComboBoxText *cb)
 	    { return GuiText(gtk_combo_box_text_get_active_text(cb)); }
 	static char const * const getSelectedText(GtkTextView *textview);
@@ -139,6 +141,7 @@ class Gui
 	    { return gtk_notebook_get_current_page(notebook); }
 	static void setCurrentPage(GtkNotebook *notebook, int page)
 	    { gtk_notebook_set_current_page(notebook, page); }
+	static int findTab(GtkNotebook *notebook, char const * const tabName);
 	static int getNumPages(GtkNotebook *notebook)
 	    { return gtk_notebook_get_n_pages(notebook); }
 	static GtkWidget *getNthPage(GtkNotebook *notebook, int pageNum)

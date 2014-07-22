@@ -13,6 +13,7 @@
 
 #define OptEditDebuggee "Debuggee"
 #define OptEditDebuggeeArgs "DebuggeeArgs"
+#define OptEditDebuggerWorkingDir "DebuggerWorkDir"
 
 class EditOptions:public NameValueFile
     {

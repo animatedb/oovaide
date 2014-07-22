@@ -229,6 +229,20 @@ bool FileEditView::find(char const * const findStr, bool forward, bool caseSensi
     return found;
     }
 
+std::string FileEditView::getSelectedText()
+    {
+    GtkTextIter startSel;
+    GtkTextIter endSel;
+    std::string text;
+    bool haveSel = gtk_text_buffer_get_selection_bounds(mTextBuffer, &startSel, &endSel);
+    if(haveSel)
+	{
+	GuiText gText = gtk_text_buffer_get_text(mTextBuffer, &startSel, &endSel, true);
+	text = gText;
+	}
+    return text;
+    }
+
 bool FileEditView::findAndReplace(char const * const findStr, bool forward,
 	bool caseSensitive, char const * const replaceStr)
     {
@@ -345,3 +359,10 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
     return handled;
     }
 
+bool FileEditView::find(eFindTokenTypes ft, std::string &fn, int &offset)
+    {
+    GtkTextMark *mark = gtk_text_buffer_get_insert(mTextBuffer);
+    GtkTextIter curLoc;
+    gtk_text_buffer_get_iter_at_mark(mTextBuffer, &curLoc, mark);
+    return mHighlighter.getTokenizer().find(ft, gtk_text_iter_get_offset(&curLoc), fn, offset);
+    }

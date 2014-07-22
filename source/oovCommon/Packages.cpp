@@ -43,9 +43,10 @@ static std::string getTagVal(NameValueFile const &valFile, char const * const na
     return valFile.getValue(tag.c_str());
     }
 
-static std::string makeRelative(std::string &rootDir, char const * const absPath)
+static std::string makeRelative(std::string const &rootDir, char const * const absPath,
+	eFilePathTypes fpt)
     {
-    std::string fp = absPath;
+    FilePath fp(absPath, fpt);
     if(fp.compare(0, rootDir.length(), rootDir) == 0)
 	{
 	fp.erase(0, rootDir.length());
@@ -93,7 +94,7 @@ void RootDirPackage::setRootDirPackage(char const *rootDir)
     {
     if(mName.length() == 0)
 	mName = getPackageNameFromDir(rootDir);
-    mRootDir = rootDir;
+    mRootDir.setPath(rootDir, FP_Dir);
     }
 
 bool RootDirPackage::addUndefinedPackage(char const * const pkgName, NameValueFile &file) const
@@ -118,7 +119,7 @@ void RootDirPackage::loadFromMap(char const * const name, NameValueFile const &f
     mLibDir = getTagVal(file, name, TagPkgLibDirSuffix);
     mLibNames = getTagVal(file, name, TagPkgLibNamesSuffix);
     mExternalReferenceDir = getTagVal(file, name, TagPkgExtRefSuffix);
-    mRootDir = getTagVal(file, name, TagPkgRootDirSuffix);
+    mRootDir.setPath(getTagVal(file, name, TagPkgRootDirSuffix).c_str(), FP_Dir);
     mScannedLibFilePaths = getTagVal(file, name, TagPkgScannedLibPathsSuffix);;
     }
 
@@ -137,13 +138,13 @@ void RootDirPackage::saveToMap(NameValueFile &file) const
 
 void RootDirPackage::appendAbsoluteIncDir(char const * const absDir)
     {
-    std::string dir = makeRelative(mRootDir, absDir);
+    std::string dir = makeRelative(mRootDir, absDir, FP_Dir);
     appendStr(mIncludeDir, dir.c_str());
     }
 
 void RootDirPackage::appendAbsoluteLibName(char const * const fn)
     {
-    std::string fp = makeRelative(mRootDir, fn);
+    std::string fp = makeRelative(mRootDir, fn, FP_File);
     appendStr(mScannedLibFilePaths, fp.c_str());
     }
 
@@ -154,7 +155,7 @@ void RootDirPackage::setOrderedLibs(std::vector<std::string> const &libDirs,
     mLibDir.clear();
     for(auto const &dir : libDirs)
 	{
-	std::string fp = makeRelative(mRootDir, dir.c_str());
+	std::string fp = makeRelative(mRootDir, dir.c_str(), FP_Dir);
 	appendStr(mLibDir, fp.c_str());
 	}
     mLibNames = CompoundValueRef::getAsString(libNames);
@@ -170,7 +171,7 @@ std::vector<std::string> RootDirPackage::getValAddRootToVector(std::string const
 	{
 	FilePath fp(mRootDir, FP_Dir);
 	fp.appendPart(item.c_str(), fpt);
-	FilePathRef::normalizePathSeps(fp);
+	FilePath::normalizePathSeps(fp);
 	items.push_back(fp.c_str());
 	}
     return items;

@@ -14,7 +14,11 @@
 class DebugFile
     {
     public:
-	DebugFile(char const * const fn=nullptr, bool append=false)
+	DebugFile(FILE *fp):
+            mOwnFile(false)
+            { mFp = fp; }
+	DebugFile(char const * const fn=nullptr, bool append=false):
+            mOwnFile(true)
 	    {
 	    if(fn)
 		{
@@ -53,6 +57,7 @@ class DebugFile
 	    { return mFp; }
     public:
 	FILE *mFp;
+        bool mOwnFile;
     };
 
 #endif /* DEBUG_H_ */

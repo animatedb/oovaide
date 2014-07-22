@@ -18,8 +18,9 @@
 
 template<class T> class Displayer
     {
-    void displayThoughts(T type)
-        { printf("I am a %s\n", type.whatAreYou()); }
+    public:
+        void displayThoughts(T type)
+            { printf("I am a %s\n", type.whatAreYou()); }
     };
 
 
@@ -31,7 +32,7 @@ class Star:public Displayer<Star>
     public:
         void twinkle()
             {}
-        char const *whatAreYou()
+        char const *whatAreYou() const
             { return("little star"); }
     };
 
@@ -49,7 +50,7 @@ namespace Hollywood
 class Star
     {
     public:
-        char const *whatAreYou()
+        char const *whatAreYou() const
             { return("Hollywood star"); }
     };
 
@@ -60,7 +61,7 @@ namespace Teaching
 class Star
     {
     public:
-        char const *whatAreYou()
+        char const *whatAreYou() const
             { return("ink star"); }
     };
 };

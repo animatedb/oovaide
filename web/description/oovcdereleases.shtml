@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><!-- DC Blaha - 6/8/2009 -->
+<html><head>
+<!-- DC Blaha - 6/8/2009 -->
 
 
 
@@ -22,7 +23,23 @@ Created: 6-8-2009
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.<br>
 <br>
+<h2>2014-07-2</h2>
+
+
+This version contains:<br>
+
+
+<ul>
+  <li>Debugger now shows variables relative to call stack selection</li>
+  <li>Added working directory for debugging</li>
+  <li>Editor sets cursor focus when switching views</li>
+  <li>Added scrolled tabs for editor</li>
+  <li>Fixed static library rebuilding</li>
+  <li>Fixed library link order for multiple static library dependencies</li>
+  <li>Fixed path separators for Windows for external references</li>
+</ul>
 <h2>2014-07</h2>
+
 
 
 This version contains:<br>

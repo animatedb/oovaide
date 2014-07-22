@@ -74,27 +74,28 @@ static void setBuildConfigurationPaths(NameValueFile &file,
     std::string optStr = makeBuildConfigArgName(OptExtraBuildArgs, buildConfig);
     file.setNameValue(optStr.c_str(), extraArgs);
 
-    if(std::string(buildConfig).compare(BuildConfigAnalysis) != 0)
+    if(std::string(buildConfig).compare(BuildConfigAnalysis) == 0)
 	{
-	// Assume the archiver is installed and on path.
-	// llvm-ar gives link error.
-	// setNameValue(makeExeFilename("llvm-ar"));
-	optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
-	file.setNameValue(optStr.c_str(), makeExeFilename("ar").c_str());
-
-	// llvm-nm gives bad file error on Windows, and has no output on Linux.
-	// mPathObjSymbol = "makeExeFilename(llvm-nm)";
-	optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
-	file.setNameValue(optStr.c_str(), makeExeFilename("nm").c_str());
-
-	std::string compiler;
-	if(useclang)
-	    compiler = makeExeFilename("clang++");
-	else
-	    compiler = makeExeFilename("g++");
-	optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
-	file.setNameValue(optStr.c_str(), compiler.c_str());
+	useclang = true;
 	}
+    // Assume the archiver is installed and on path.
+    // llvm-ar gives link error.
+    // setNameValue(makeExeFilename("llvm-ar"));
+    optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
+    file.setNameValue(optStr.c_str(), makeExeFilename("ar").c_str());
+
+    // llvm-nm gives bad file error on Windows, and has no output on Linux.
+    // mPathObjSymbol = "makeExeFilename(llvm-nm)";
+    optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
+    file.setNameValue(optStr.c_str(), makeExeFilename("nm").c_str());
+
+    std::string compiler;
+    if(useclang)
+	compiler = makeExeFilename("clang++");
+    else
+	compiler = makeExeFilename("g++");
+    optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
+    file.setNameValue(optStr.c_str(), compiler.c_str());
     }
 
 void BuildOptions::setDefaultOptions()

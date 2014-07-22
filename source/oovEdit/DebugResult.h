@@ -9,6 +9,7 @@
 #define DEBUGRESULT_H_
 
 #include <deque>
+#include <memory>
 #include "OovString.h"
 
 // There are many GDB/MI output syntax BNF docs online, but they all
@@ -29,7 +30,6 @@
 class cDebugResult
     {
     public:
-	~cDebugResult();
 	void setVarName(char const *str, int len)
 	    { mVarName.assign(str, len); }
         char const *parseResult(char const *resultStr);
@@ -41,7 +41,7 @@ class cDebugResult
         // If child results is empty, then it contains a const.
         std::string mConst;
         // Using deque because it allows const reading.
-        std::deque<class cDebugResult*> mChildResults;
+        std::deque<std::unique_ptr<class cDebugResult>> mChildResults;
         char const *parseVarName(char const *resultStr);
         char const *parseValue(char const *resultStr);
         char const *parseList(char const *resultStr);
@@ -49,7 +49,8 @@ class cDebugResult
 	cDebugResult &addResult()
 	    {
             cDebugResult *newRes = new cDebugResult();
-            mChildResults.push_back(newRes);
+	   /// @todo - use make_unique when supported.
+            mChildResults.push_back(std::unique_ptr<cDebugResult>(newRes));
 	    return *newRes;
 	    }
     };

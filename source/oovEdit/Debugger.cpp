@@ -31,8 +31,10 @@ std::string DebuggerLocation::getAsString() const
 
 
 Debugger::Debugger():
-    mBkgPipeProc(*this), mDebuggerListener(nullptr), mCommandIndex(0)
+    mBkgPipeProc(*this), mDebuggerListener(nullptr), mCommandIndex(0),
+    mFrameNumber(0), mCurrentThread(1)
     {
+    resetFrameNumber();
     // It seems like "-exec-run" must be used to start the debugger,
     // so this is needed to prevent it from running to the end when
     // single stepping is used to start the program.
@@ -58,6 +60,7 @@ bool Debugger::runDebuggerProcess()
 
 void Debugger::resume()
     {
+    resetFrameNumber();
     ensureGdbChildRunning();
     sendMiCommand("-exec-continue");
     }
@@ -106,12 +109,14 @@ void Debugger::sendDeleteBreakpoint(const DebuggerBreakpoint &br)
 
 void Debugger::stepInto()
     {
+    resetFrameNumber();
     ensureGdbChildRunning();
     sendMiCommand("-exec-step");
     }
 
 void Debugger::stepOver()
     {
+    resetFrameNumber();
     ensureGdbChildRunning();
     sendMiCommand("-exec-next");
     }
@@ -161,7 +166,12 @@ void Debugger::ensureGdbChildRunning()
 
 void Debugger::startGetVariable(char const * const variable)
     {
-    std::string cmd = "-data-evaluate-expression ";
+    OovString cmd = "-data-evaluate-expression ";
+    cmd += "--thread ";
+    cmd.appendInt(mCurrentThread, 10);
+    cmd += " --frame ";
+    cmd.appendInt(mFrameNumber, 10);
+    cmd += ' ';
     cmd += variable;
     sendMiCommand(cmd.c_str());
     }
@@ -200,6 +210,10 @@ void Debugger::sendCommand(char const * const command)
 	}
     else
 	cmd += "\r\n";
+    if(mDebuggerListener)
+	{
+	mDebuggerListener->DebugOutput(cmd.c_str());
+	}
     mBkgPipeProc.childProcessSend(cmd.c_str());
 #if(DEBUG_DBG)
     sDbgFile.printflush("Sent Command %s\n", cmd.c_str());
@@ -256,6 +270,25 @@ std::string Debugger::getStack()
     LockGuard lock(mStatusLock);
     std::string str = mStack;
     return str;
+    }
+
+// The docs say that -stack-select-frame is deprecated for the --frame option.
+// When --frame is used, --thread must also be specified.
+// The --frame option does work with many commands such as -data-evaluate-expression
+void Debugger::setStackFrame(char const * const frameLine)
+    {
+    OovString line = frameLine;
+    size_t pos = line.find(':');
+    if(pos != std::string::npos)
+	{
+	int frameNumber;
+	OovString numStr = line;
+	numStr.resize(pos);
+	if(numStr.getInt(0, 10000, frameNumber))
+	    {
+	    mFrameNumber = frameNumber;
+	    }
+	}
     }
 
 std::string Debugger::getVarValue()
@@ -367,7 +400,8 @@ void Debugger::handleValue(const std::string &resultStr)
     debRes.parseResult(resultStr.c_str());
     mVarValue = debRes.getAsString();
     updateChangeStatus(Debugger::CS_Value);
-mDebuggerListener->DebugOutput(mVarValue.c_str());
+    if(mDebuggerListener)
+	mDebuggerListener->DebugOutput(mVarValue.c_str());
     }
 
 // 99^done,stack=[
@@ -381,12 +415,15 @@ void Debugger::handleStack(const std::string &resultStr)
 	{
 	LockGuard lock(mStatusLock);
 	mStack.clear();
+	int frameNum = 0;
 	do
 	    {
 	    std::string tuple;
 	    pos = getResultTuple(pos, resultStr, tuple);
 	    if(pos != std::string::npos)
 		{
+		mStack.appendInt(frameNum++, 10);
+		mStack += ':';
 		mStack += getTagValue(tuple, "func");
 		mStack += "   ";
 		DebuggerLocation loc = getLocationFromResult(tuple);

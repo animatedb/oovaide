@@ -6,7 +6,7 @@
  */
 
 #include "Gui.h"
-
+#include <string.h>
 
 PathChooser::~PathChooser()
     {
@@ -499,4 +499,20 @@ bool BackgroundDialog::updateProgressIteration(int currentIter)
 	    }
 	}
     return mKeepGoing;
+    }
+
+int Gui::findTab(GtkNotebook *book, char const * const tabName)
+    {
+    int tabIndex = -1;
+    for(int i=0; i<gtk_notebook_get_n_pages(book); i++)
+	{
+	GtkWidget *child = gtk_notebook_get_nth_page(book, i);
+	GtkLabel *label = GTK_LABEL(gtk_notebook_get_tab_label(book, child));
+	if(strcmp(getText(label), tabName) == 0)
+	    {
+	    tabIndex = i;
+	    break;
+	    }
+	}
+    return tabIndex;
     }

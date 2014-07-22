@@ -60,13 +60,32 @@ bool Editor::saveAsTextFileWithDialog()
     return saved;
     }
 
+class FindDialog:public Dialog
+    {
+    public:
+	FindDialog(EditFiles &editFiles):
+	    Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("FindDialog")),
+		    Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")))
+	    {
+	    GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
+	    FileEditView *view = editFiles.getEditView();
+	    std::string viewText;
+	    if(view)
+		{
+		viewText = view->getSelectedText();
+		}
+	    if(viewText.length() > 0)
+		{
+		Gui::setText(entry, viewText.c_str());
+		}
+	    gtk_widget_grab_focus(GTK_WIDGET(entry));
+	    gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
+	    }
+    };
+
 void Editor::findDialog()
     {
-    GtkEntry *entry = GTK_ENTRY(getBuilder().getWidget("FindEntry"));
-    gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
-    GtkWindow *parent = Gui::getWindow(mBuilder.getWidget("MainWindow"));
-    Dialog dialog(GTK_DIALOG(getBuilder().getWidget("FindDialog")),
-	    parent);
+    FindDialog dialog(mEditFiles);
     bool done = false;
     while(!done)
 	{
@@ -81,6 +100,7 @@ void Editor::findDialog()
 		    "FindDownCheckbutton"));
 	    GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
 		    "CaseSensitiveCheckbutton"));
+	    GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
 	    if(ret == GTK_RESPONSE_OK)
 		{
 		find(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
@@ -209,20 +229,18 @@ void Editor::findInFiles(char const * const srchStr, char const * const path,
 
 void Editor::findInFilesDialog()
     {
-    GtkEntry *entry = GTK_ENTRY(getBuilder().getWidget("FindEntry"));
-    gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
-    GtkWindow *parent = Gui::getWindow(mBuilder.getWidget("MainWindow"));
+    FindDialog dialog(mEditFiles);
     GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
 	    "FindDownCheckbutton"));
     Gui::setVisible(GTK_WIDGET(downCheck), false);
-    Dialog dialog(GTK_DIALOG(getBuilder().getWidget("FindDialog")),
-	    parent);
     if(dialog.run(true))
         {
 	GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
 		"CaseSensitiveCheckbutton"));
+	mEditFiles.showInteractNotebookTab("Find");
 	GtkTextView *findView = GTK_TEXT_VIEW(getBuilder().getWidget("FindTextview"));
 	Gui::clear(findView);
+	GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
 	findInFiles(gtk_entry_get_text(entry), Project::getSrcRootDirectory().c_str(),
 		gtk_toggle_button_get_active(caseCheck), findView);
         }
@@ -238,7 +256,7 @@ void Editor::gotoFileLine(std::string const &lineBuf)
 	OovString numStr(lineBuf.substr(pos+1, lineBuf.length()-pos).c_str());
 	if(numStr.getInt(0, INT_MAX, lineNum))
 	    {
-	    mEditFiles.viewModule(lineBuf.substr(0, pos).c_str(), lineNum);
+	    mEditFiles.viewFile(lineBuf.substr(0, pos).c_str(), lineNum);
 	    }
 	}
     }
@@ -341,6 +359,11 @@ void Editor::idleDebugStatusChange(Debugger::eChangeStatus st)
 	}
     }
 
+void Editor::debugSetStackFrame(char const * const frameLine)
+    {
+    mDebugger.setStackFrame(frameLine);
+    }
+
 void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
         gchar *text, gint len, gpointer user_data)
     {
@@ -425,6 +448,8 @@ void Editor::editPreferences()
 	}
     GtkEntry *debuggeeArgs = GTK_ENTRY(mBuilder.getWidget("CommandLineArgsEntry"));
     Gui::setText(debuggeeArgs, mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
+    GtkEntry *workDirEntry = GTK_ENTRY(mBuilder.getWidget("DebugWorkingDirEntry"));
+    Gui::setText(workDirEntry, mEditOptions.getValue(OptEditDebuggerWorkingDir).c_str());
 
     Dialog dlg(GTK_DIALOG(mBuilder.getWidget("Preferences")),
 	    GTK_WINDOW(mBuilder.getWidget("MainWindow")));
@@ -435,6 +460,7 @@ void Editor::editPreferences()
 	    std::string text = Gui::getText(cb);
 	    mEditOptions.setNameValue(OptEditDebuggee, text.c_str());
 	    mEditOptions.setNameValue(OptEditDebuggeeArgs, Gui::getText(debuggeeArgs));
+	    mEditOptions.setNameValue(OptEditDebuggerWorkingDir, Gui::getText(workDirEntry));
 //	    mDebugger.setDebuggee(text.c_str());
 //	    mDebugger.setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
 	    }
@@ -443,6 +469,19 @@ void Editor::editPreferences()
 	}
     }
 
+void Editor::setPreferencesWorkingDir()
+    {
+    PathChooser chooser;
+    chooser.setDefaultPath(Project::getOutputDir(BuildConfigDebug).c_str());
+    std::string dir;
+    if(chooser.ChoosePath(GTK_WINDOW(mBuilder.getWidget("MainWindow")),
+	    "Select Working Directory",
+	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
+	{
+	GtkEntry *workDirEntry = GTK_ENTRY(mBuilder.getWidget("DebugWorkingDirEntry"));
+	Gui::setText(workDirEntry, dir.c_str());
+	}
+    }
 
 
 #define SINGLE_INSTANCE 1
@@ -663,30 +702,73 @@ extern "C" G_MODULE_EXPORT void on_FindEntry_activate(GtkEditable *editable,
     g_signal_emit_by_name(dlg, "response", GTK_RESPONSE_OK);
     }
 
-extern "C" G_MODULE_EXPORT void on_FindInFilesMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_FindInFilesMenuitem_activate(
+	GtkWidget *widget, gpointer data)
     {
     gEditor.findInFilesDialog();
     }
 
-extern "C" G_MODULE_EXPORT bool on_FindTextview_button_release_event(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT bool on_FindTextview_button_press_event(
+	GtkWidget *widget, GdkEvent *event, gpointer data)
     {
-    GtkWidget *widget = gEditor.getBuilder().getWidget("FindTextview");
-    std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-    size_t pos = line.find(' ');
-    if(pos != std::string::npos)
+    GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
+    if(buttEvent->type == GDK_2BUTTON_PRESS)
 	{
-	line.resize(pos);
+	GtkWidget *widget = gEditor.getBuilder().getWidget("FindTextview");
+	std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+	size_t pos = line.find(' ');
+	if(pos != std::string::npos)
+	    {
+	    line.resize(pos);
+	    }
+	gEditor.gotoFileLine(line);
 	}
-    gEditor.gotoFileLine(line);
     return FALSE;
     }
 
-extern "C" G_MODULE_EXPORT void on_CutImagemenuitem_activate(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT gboolean on_StackTextview_button_press_event(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
+    if(buttEvent->type == GDK_2BUTTON_PRESS)
+	{
+	GtkWidget *widget = gEditor.getBuilder().getWidget("StackTextview");
+	std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+	gEditor.debugSetStackFrame(line.c_str());
+	size_t pos = line.rfind(' ');
+	if(pos != std::string::npos)
+	    {
+	    pos++;
+	    line.erase(0, pos);
+	    }
+	gEditor.gotoFileLine(line);
+	}
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_ControlTextview_key_press_event(GtkWidget *widget,
+	GdkEvent *event, gpointer data)
+    {
+    switch(event->key.keyval)
+	{
+	case GDK_KEY_Return:
+	    {
+	    std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+	    gEditor.getDebugger().sendCommand(str.c_str());
+	    }
+	    break;
+	}
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT void on_CutImagemenuitem_activate(GtkWidget *button,
+	gpointer data)
     {
     gEditor.cut();
     }
 
-extern "C" G_MODULE_EXPORT void on_CopyImagemenuitem_activate(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_CopyImagemenuitem_activate(GtkWidget *button,
+	gpointer data)
     {
     gEditor.copy();
     }
@@ -716,18 +798,17 @@ extern "C" G_MODULE_EXPORT void on_EditPreferences_activate(GtkWidget *button, g
     gEditor.editPreferences();
     }
 
-extern "C" G_MODULE_EXPORT gboolean on_ControlTextview_key_press_event(GtkWidget *widget,
-	GdkEvent *event, gpointer data)
+extern "C" G_MODULE_EXPORT void on_DebugWorkingDirButton_activate(GtkWidget *button, gpointer data)
     {
-    switch(event->key.keyval)
-	{
-	case GDK_KEY_Return:
-	    {
-	    std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-	    gEditor.getDebugger().sendCommand(str.c_str());
-	    }
-	    break;
-	}
-    return false;
+    gEditor.setPreferencesWorkingDir();
     }
 
+extern "C" G_MODULE_EXPORT void on_GoToDeclMenuitem_activate(GtkWidget *button, gpointer data)
+    {
+    gEditor.gotoDeclaration();
+    }
+
+extern "C" G_MODULE_EXPORT void on_GoToDefMenuitem_activate(GtkWidget *button, gpointer data)
+    {
+    gEditor.gotoDefinition();
+    }

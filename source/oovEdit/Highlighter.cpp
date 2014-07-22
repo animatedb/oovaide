@@ -8,8 +8,19 @@
 #include "Highlighter.h"
 
 
-void TokenRange::tokenize(CXTranslationUnit transUnit, CXFile srcFile,
-	int startLine, int endLine)
+class CXStringDisposer:public std::string
+    {
+    public:
+	CXStringDisposer(const CXString &xstr):
+	    std::string(clang_getCString(xstr))
+	    {
+	    clang_disposeString(xstr);
+	    }
+    };
+
+
+void TokenRange::tokenize(CXTranslationUnit transUnit, CXFile srcFile /*,
+	int startLine, int endLine*/)
     {
     CXCursor cursor = clang_getTranslationUnitCursor(transUnit);
     CXSourceRange range = clang_getCursorExtent(cursor);
@@ -30,12 +41,20 @@ void TokenRange::tokenize(CXTranslationUnit transUnit, CXFile srcFile,
     clang_disposeTokens(transUnit, tokens, numTokens);
     }
 
+Tokenizer::~Tokenizer()
+    {
+    // There is a bug somewhere that the wrong tokenizer is deleted.
+    // Probably related to EditFiles::removeNotebookPage(GtkWidget *pageWidget)
+    if(mTransUnit)
+	clang_disposeTranslationUnit(mTransUnit);
+    }
+
 void Tokenizer::parse(char const * const fileName, char const * const buffer, int bufLen,
 	char const * const clang_args[], int num_clang_args)
     {
     if(!mSourceFile)
 	{
-	unsigned options = 0;
+	unsigned options = CXTranslationUnit_DetailedPreprocessingRecord;
 	mSourceFilename = fileName;
 	CXIndex index = clang_createIndex(1, 1);
 	mTransUnit = clang_parseTranslationUnit(index, fileName,
@@ -58,11 +77,172 @@ void Tokenizer::parse(char const * const fileName, char const * const buffer, in
 	}
     }
 
-void Tokenizer::tokenize(int startLine, int endLine, TokenRange &tokens)
+void Tokenizer::tokenize(/*int startLine, int endLine, */TokenRange &tokens)
     {
     if(mTransUnit)
-	tokens.tokenize(mTransUnit, mSourceFile, startLine, endLine);
+	tokens.tokenize(mTransUnit, mSourceFile/*, startLine, endLine*/);
     }
+
+
+#if(0)
+static CXCursor getCursorUsingTokens(CXTranslationUnit tu, CXCursor cursor,
+	unsigned int desiredOffset)
+    {
+    // The following does not return a more definitive cursor.
+    // For example, if a compound statement is returned, this does not find
+    // any variables in the statement.
+    CXSourceRange range = clang_getCursorExtent(cursor);
+    CXToken *tokens;
+    unsigned numTokens;
+    clang_tokenize(tu, range, &tokens, &numTokens);
+    unsigned int closestOffset = 0;
+    for(unsigned int i=0; i<numTokens; i++)
+	{
+	CXSourceLocation loc = clang_getTokenLocation(tu, tokens[i]);
+	unsigned int offset;
+	CXFile file;
+	clang_getSpellingLocation(loc, &file, nullptr, nullptr, &offset);
+	if(offset < desiredOffset && offset > closestOffset)
+	    {
+	    closestOffset = offset;
+	    cursor = clang_getCursor(tu, loc);
+	    }
+	}
+    clang_disposeTokens(tu, tokens, numTokens);
+    return cursor;
+    }
+#endif
+
+#if(1)
+// For some reason, navigating the AST does not descend into a constructor's
+// compound statement: Blacksheep(). Doing it manually below
+// using visitTranslationUnit does not either.
+static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
+	unsigned desiredOffset)
+    {
+    CXSourceLocation loc = clang_getLocationForOffset(tu, file, desiredOffset);
+    CXCursor cursor = clang_getCursor(tu, loc);
+//    CXSourceRange range = clang_getTokenExtent(tu, CXToken)
+//    cursor = getCursorUsingTokens(tu, cursor, desiredOffset);
+    return cursor;
+    }
+
+#else
+
+struct visitTranslationUnitData
+    {
+    visitTranslationUnitData(CXFile file, unsigned offset):
+	mFile(file), mDesiredOffset(offset), mClosestOffset(0)
+	{}
+    CXFile mFile;
+    unsigned mDesiredOffset;
+    unsigned mClosestOffset;	// Closest offset before desired location
+    CXCursor mCursor;
+    };
+
+static CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent,
+	CXClientData client_data)
+    {
+    visitTranslationUnitData *data = static_cast<visitTranslationUnitData*>(client_data);
+    CXSourceLocation loc = clang_getCursorLocation(cursor);
+    unsigned offset;
+    unsigned line;
+    CXFile file;
+    clang_getSpellingLocation(loc, &file, &line, nullptr, &offset);
+//    if(file == data->mFile && offset < data->mDesiredOffset && offset > data->mClosestOffset)
+	{
+	data->mClosestOffset = offset;
+	data->mCursor = cursor;
+
+	CXStringDisposer sp = clang_getCursorSpelling(cursor);
+	CXStringDisposer kind = clang_getCursorKindSpelling(cursor.kind);
+	printf("%s %s %d %d, %d\n", kind.c_str(), sp.c_str(), offset, line, data->mDesiredOffset);
+	}
+//    clang_visitChildren(cursor, ::visitTranslationUnit, client_data);
+//    return CXChildVisit_Continue;
+    return CXChildVisit_Recurse;
+    }
+
+static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file, unsigned offset)
+    {
+    CXCursor rootCursor = clang_getTranslationUnitCursor(tu);
+    visitTranslationUnitData data(file, offset);
+    clang_visitChildren(rootCursor, ::visitTranslationUnit, &data);
+    printf("--\n");
+    fflush(stdout);
+    CXCursor cursor = data.mCursor;
+    return cursor;
+    }
+#endif
+
+// Desired functions:
+//	Go to definition of variable/function
+//	Go to declaration of function/class
+bool Tokenizer::find(eFindTokenTypes ft, int origOffset, std::string &fn,
+	int &line)
+    {
+    CXCursor cursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
+    // Instantiating type - <class> <type> - CXCursor_TypeRef
+    // Method declaration - <class> { <method>(); }; CXCursor_NoDeclFound
+    // Method definition - <class>::<method>(){} - CXCursor_CXXMethod
+    // Class/method usage - <class>.<method>()
+    // Instance usage - method(){ int v = typename[4]; } - CXCursor_DeclStmt
+    //		clang_getCursorSemanticParent returns method
+    //		clang_getCursorDefinition returns invalid
+    if(cursor.kind == CXCursor_InclusionDirective)
+	{
+	CXFile file = clang_getIncludedFile(cursor);
+	if(file)
+	    {
+	    CXStringDisposer cfn = clang_getFileName(file);
+	    fn = cfn;
+	    line = 1;
+	    }
+	else
+	    {
+	    /// @todo - need to get the full path.
+//	    CXStringDisposer cfn = clang_getCursorSpelling(cursor);
+//	    fn = cfn;
+	    line = 1;
+	    }
+	}
+    else
+	{
+	switch(ft)
+	    {
+	    case FT_FindDecl:
+		cursor = clang_getCursorReferenced(cursor);
+		break;
+
+	    case FT_FindDef:
+		// If instantiating a type (CXCursor_TypeRef), this goes to the type delaration.
+		cursor = clang_getCursorDefinition(cursor);
+    //	    cursor = clang_getCursor(mTransUnit, clang_getCursorLocation(cursor));
+    //	    cursor = clang_getCursorDefinition(cursor);
+		break;
+    //    	cursor = clang_getCursorReferenced(cursor);
+    //	cursor = clang_getCanonicalCursor(cursor);
+    //	cursor = clang_getCursorSemanticParent(cursor);
+    //	cursor = clang_getCursorLexicalParent(cursor);
+	    }
+	if(!clang_Cursor_isNull(cursor))
+	    {
+	    CXSourceLocation loc = clang_getCursorLocation(cursor);
+
+	    CXFile file;
+	    unsigned int uline;
+	    clang_getFileLocation(loc, &file, &uline, nullptr, nullptr);
+	    if(file)
+		{
+		line = uline;
+		CXStringDisposer cfn = clang_getFileName(file);
+		fn = cfn;
+		}
+	    }
+	}
+    return(fn.size() > 0);
+    }
+
 
 HighlightTag::HighlightTag():
 	mTag(nullptr)
@@ -113,13 +293,13 @@ void Highlighter::highlight(GtkTextView *textView, char const * const filename,
     gtk_text_view_get_line_at_y(textView, &endIter, endBufY, NULL);
 
     int startLineY = gtk_text_iter_get_line(&startIter);
-    int endLineY = gtk_text_iter_get_line(&endIter);
+//    int endLineY = gtk_text_iter_get_line(&endIter);
     if(startLineY < 1)
 	startLineY = 1;
 
     mTokenizer.parse(filename, buffer, bufLen, clang_args, num_clang_args);
     TokenRange tokens;
-    mTokenizer.tokenize(startLineY, endLineY, tokens);
+    mTokenizer.tokenize(/*startLineY, endLineY, */tokens);
     applyTags(gtk_text_view_get_buffer(textView), tokens);
     }
 

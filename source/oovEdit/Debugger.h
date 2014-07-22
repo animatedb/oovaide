@@ -114,6 +114,9 @@ class Debugger:public OovProcessListener
 	/// This is the working directory of the debuggee.
 	void setWorkingDir(char const * const dir)
 	    { mWorkingDir = dir; }
+	/// @param frameLine One line of text returned from getStack
+	///	Lines are separated with \n.
+	void setStackFrame(char const * const frameLine);
 	void toggleBreakpoint(const DebuggerBreakpoint &br);
 	void stepInto();
 	void stepOver();
@@ -151,16 +154,22 @@ class Debugger:public OovProcessListener
 	OovBackgroundPipeProcess mBkgPipeProc;
 	DebuggerListener *mDebuggerListener;
 	int mCommandIndex;
+	// Frame numbers start at 0
+	int mFrameNumber;
+	// Thread numbers start at 1
+	int mCurrentThread;
 
 	// Thread protected data
 	std::string mGdbOutputBuffer;
-	std::string mStack;
+	OovString mStack;
 	std::string mVarValue;
 	GdbChildStates mGdbChildState;
 	InProcMutex mStatusLock;
 	std::queue<Debugger::eChangeStatus> mChangeStatusQueue;
 	DebuggerLocation mStoppedLocation;
 
+	void resetFrameNumber()
+	    { mFrameNumber = 0; }
 	bool runDebuggerProcess();
 	void ensureGdbChildRunning();
 	void sendAddBreakpoint(const DebuggerBreakpoint &br);

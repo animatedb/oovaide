@@ -14,17 +14,26 @@
 
 
 
+
+
+
+
 <link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
 
 <h2><a class="mozTocH2" name="mozTocId260289"></a>OOVCDE User Guide</h2>
 
 Created: Jne 8, 2009
-Last update: May 7, 2015
+Last update: July 10, 2014
 <p>
 <img src="../description/OovLogo.png">
 </p><p>
 </p><h2><a class="mozTocH2" name="mozTocId927306"></a>Contents</h2>
-<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId260289">OOVCDE User Guide</a><ol><li><a href="#mozTocId927306">Contents</a></li><li><a href="#mozTocId937452">Quick Start</a></li><li><a href="#mozTocId381773">Drawing Overview</a></li><li><a href="#mozTocId651087">Oovcde</a><ol><li><a href="#mozTocId728139">Working With Projects</a></li><li><a href="#mozTocId269360">Modifying Class Diagrams</a></li><li><a href="#mozTocId213642">Changing Class Diagram Display Options</a></li><li><a href="#mozTocId261032">Displaying Sequence Diagrams</a></li><li><a href="#mozTocId120758">Editing SVG diagrams</a></li></ol></li><li><a href="#mozTocId246966">Build System</a><ol><li><a href="#mozTocId418717">Build Goals</a></li><li><a href="#mozTocId102170">Build Features</a></li><li><a href="#mozTocId505769">Future Build Features</a></li><li><a href="#mozTocId675000">Build Quick Start</a><ol><li><a href="#mozTocId206848">Resolving Include Problems</a></li><li><a href="#mozTocId450611">Linux Example</a></li><li><a href="#mozTocId913463">Windows Example</a></li><li><a href="#mozTocId813985">Build Sequence</a></li><li><a href="#mozTocId932506">Project Limitations</a></li></ol></li></ol></li><li><a href="#mozTocId21842">OovEdit</a></li></ol></li></ol>
+<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId260289">OOVCDE User Guide</a><ol><li><a href="#mozTocId927306">Contents</a></li><li><a href="#mozTocId937452">Quick Start
+</a></li><li><a href="#mozTocId381773">Drawing Overview</a></li><li><a href="#mozTocId651087">Oovcde</a><ol><li><a href="#mozTocId728139">Working With Projects</a></li><li><a href="#mozTocId269360">Modifying Class Diagrams</a></li><li><a href="#mozTocId213642">Changing Class Diagram Display Options</a></li><li><a href="#mozTocId261032">Displaying Sequence Diagrams</a></li><li><a href="#mozTocId120758">Editing SVG diagrams</a></li></ol></li><li><a href="#mozTocId246966">Build System</a><ol><li><a href="#mozTocId418717">Build Goals</a></li><li><a href="#mozTocId102170">Build Features</a></li><li><a href="#mozTocId675000">Build Quick Start</a></li><li><a href="#mozTocId349590">Cross Compiling</a></li><li><a href="#mozTocId206848">Resolving Include Problems During Analysis
+
+</a><ol><li><a href="#mozTocId824690">Windows Include Problems
+
+</a></li></ol></li><li><a href="#mozTocId450611">Linux Example</a></li><li><a href="#mozTocId913463">Windows Example</a></li><li><a href="#mozTocId813985">Build Sequence</a></li><li><a href="#mozTocId932506">Project Limitations</a></li></ol></li><li><a href="#mozTocId21842">OovEdit</a></li></ol></li></ol>
 <br>
 <h2><a class="mozTocH2" name="mozTocId937452"></a>Quick Start<br>
 </h2>To work with the examples, see <a href="examples.shtml">examples.shtml</a>.<br>
@@ -173,7 +182,7 @@ There must be a set of installed
   <li>Source directories are not cluttered up with build files.<br>
   </li>
 
-  <li>Longer term goal is fast build using multitasking.<br>
+  <li>Fast builds using multitasking.<br>
   </li>
 </ul>
 <br>
@@ -181,30 +190,29 @@ There must be a set of installed
 
 <ul>
   <li>Component names are derived from the directory names of directories that contain C++ source files.</li>
-  <li>Project include paths are generated from the locations of header files.</li>
-  <li>External packages can be specified by loading the package, or the root path of external projects can be specified for
-locations of header and library files. Exclusion criteria can be used
-to select only one of many types of library or header files.</li>
-  <li>Build tools are determined from paths and installed tools, but can be specified manually.</li>
+  <li>Directories are scanned to find header files, and generate include paths.</li>
+  <li>Directories are scanned to find libraries, and library symbols
+are parsed to determine library link order, and to determine which
+static libraries are required for executables and shared libraries.<br>
+  </li>
   <li>Source
-files are parsed to find include dependencies. Include dependencies are
+files are parsed using CLang to find include dependencies. Include dependencies are
 used to determine which files need to be built. Rebuilding will only
 compile files that need to be rebuilt based on dependencies.</li>
 
-  
-  <li>Symbols are parsed in directories of project libraries to determine library link order.</li>
+  <li>External packages can be specified by selecting the package, or
+the root path of external projects can be specified for
+locations of header and library files. On Linux, the pkg-config system
+is used to find available packages. Exclusion criteria can be used
+to select only one of many types of library or header files.</li>
+  <li>Build tools are determined from paths and installed tools, but can be specified manually.</li>
 
   <li>Project information is scanned and stored for different sets of
 build arguments. Debug and release configurations will not conflict.</li>
-
-</ul>
-<br>
-<h3><a class="mozTocH3" name="mozTocId505769"></a>Future Build Features</h3>
-<ul>
-  <li>Multitasking for optimal use of processors without disrupting editing.</li>
-  
-  <li>Library dependencies are optimized for each component. Currently a link uses all specified libraries for all components.<br>
+  <li>Multitasking is used to analyze and build multiple object, library, executables files<br>
   </li>
+
+
 </ul>
 <br>
 
@@ -218,7 +226,12 @@ The following steps can be followed:<br>
   <li>Run Oovcde and either create a new project, or open an existing project.</li>
   <li>Add some external project packages. These are specified
 	under Edit/Preferences/Cpp Arguments</li>
-  <li>If the external packages do not exist, either custom packages can
+  <ul>
+    <li>In Linux, this uses pkg-confg, and will define all includes, flags and libraries<br>
+    </li>
+  </ul>
+
+  <li>If the required external packages do not exist, either custom packages can
 be created, or add some external project root references. These are
 specified under Edit/Preferences/Cpp Arguments, and may look like
 "-ERC:\ExternalPackage", although some may already be set up. The full syntax
@@ -241,8 +254,48 @@ it uses both Gtk and Clang, and has multiple libraries and executables.
 Early versions of CLang on Windows required building CLang, and the
 complex library order for
 Clang was able to be determined by the build system.<br>
-<h4><a class="mozTocH4" name="mozTocId206848"></a>Resolving Include Problems During Analysis<br>
-</h4>The Oovcde analysis will produce usable output even when include files cannot
+<br>
+<h3><a class="mozTocH4" name="mozTocId349590"></a>Cross Compiling</h3>
+The following example shows the use of Ubuntu for cross compiling to an
+ARM hard float platform. This requires that the gcc-arm-linux-gnueabihf
+package is installed using apt-get or synaptic:<br>
+<ul>
+  <li>Select Edit/Preferences</li>
+  <li>Select Debug under Build Configurations, and click the NewConfig button. Enter "Arm-Debug" as a new configuration.<br>
+</li>
+  <li>Enter arm-linux-gnueabihf-g++ for the Compiler Path</li>
+  <li>Add to the Common Build Arguments:</li>
+  <ul>
+    <li>-fPIC</li>
+    <li>-march=armv7-a</li>
+    <li>-mfloat-abi=hard</li>
+  </ul>
+  <li>Add something like the fillowing to the Extra Build Arguments for the Arm-Debug configuration:</li>
+  <ul>
+    <li>-lnk-L/target-sysroot/arm-linux-gnueabihf/usr/lib</li>
+    <li>-lnk-L/target-sysroot/arm-linux-gnueabihf/lib</li>
+    <li>-lnk-Wl,-rpath-link,/target-sysroot/arm-linux-gnueabihf/usr/lib</li>
+    <li>-lnk-Wl,-rpath-link,/target-sysroot/arm-linux-gnueabihf/lib</li>
+
+
+  </ul>
+  <li>When compiling, the linker may say, "cannot find", and then list
+some library name. If the target files were copied from the device, the
+links may contain paths to the directories for the target machine. This
+files can be edited and the paths removed so that the local files are
+found.If shared libraries are created, there may be some cases where a static
+library can be hidden by being renamed to force the shared library to
+be used.
+  </li>
+
+
+</ul>
+<br>
+
+<h3><a class="mozTocH4" name="mozTocId206848"></a>Resolving Include Problems During Analysis<br>
+
+</h3>
+The Oovcde analysis will often produce usable output even when include files cannot
 be found, although this may result in missing classes, or methods in
 sequence diagrams.<br>
 
@@ -263,8 +316,10 @@ and GCC compilers. Build argument differences are used to make unique analysis
 directories. If they are using the same directory, and different include paths are needed, set an argument that
 is different so that different analysis directories are used.<br>
 <br>
-<h5>Windows Include Problems<br>
-</h5>Things can be difficult especially on Windows since Oovcde by
+<h4><a class="mozTocH5" name="mozTocId824690"></a>Windows Include Problems<br>
+
+</h4>
+Things can be difficult especially on Windows since Oovcde by
 default
 uses CLang&nbsp; for analysis, and either MinGW-builds or MinGW is used
 for a build. MinGW-builds is required to build Oovcde with proper
@@ -303,14 +358,16 @@ following MinGW installations on Windows.<br>
 </table>
 <br>
 <br>
-<h4><a class="mozTocH4" name="mozTocId450611"></a>Linux Example</h4>This
+<h3><a class="mozTocH4" name="mozTocId450611"></a>Linux Example</h3>
+This
 is an old Linux example. The best method currently is to load the
 required packages in the Edit Preferences/Build Arguments tab.<br>
 For Linux, the following arguments work to build all Oovcde components with the CLang compiler.
 These arguments
 	will build the complete oovcde project on Linux when the component types
 	are set in the components tab. This is how the arguments may look in the Edit Preferences/Build Arguments dialog.<pre>	-c<br>	-std=c++0x<br>	-ER/usr/include/gtk-3.0<br>	-ER/usr/include/glib-2.0<br>	-I/usr/include/c++<br>	-ER/usr/include/cairo<br>	-ER/usr/include/pango-1.0<br>	-ER/usr/lib/x86_64-linux-gnu/glib-2.0<br>	-ER/usr/include/gdk-pixbuf-2.0<br>	-ER/usr/include/atk-1.0<br>	-ER/usr/lib/x86_64-linux-gnu!libmcheck!libieee<br>	-ER/home/dave/software/oovcde/2.0/clang+llvm-3.2!libclang_rt<br>	-lnk-static-libstdc++<br>	-lnk-Wl,-rpath=./<br>	-lnk-rdynamic<br>	</pre>
-<h4><a class="mozTocH4" name="mozTocId913463"></a>Windows Example</h4>This
+<h3><a class="mozTocH4" name="mozTocId913463"></a>Windows Example</h3>
+This
 is an old Windows example. The best method currently is to load the
 required packages in the Edit Preferences/Build Arguments tab. For
 Windows, the following arguments work to build all Oovcde components
@@ -351,7 +408,8 @@ Extra Release Arguments<br>
 	the link with GTK fails.
 	
 <pre>	-c<br>	-std=c++0x<br>	-ERC:\Program Files\GTK+-Bundle-3.6.1<br>	-ERC:\Dave\Mine\software\oovcde\clang+llvm-3.2<br></pre>
-<h4><a class="mozTocH4" name="mozTocId813985"></a>Build Sequence</h4>
+<h3><a class="mozTocH4" name="mozTocId813985"></a>Build Sequence</h3>
+
 The detailed sequence of the build is:
 	<ul>
 	<li>The user specifies the source root directory and output oovcde project
@@ -397,11 +455,14 @@ opposite order. Project package order is determined by the builder.</li>
 
 	<li>Only out of date targets are built.</li>
 	</ul>
-<h4><a class="mozTocH4" name="mozTocId932506"></a>Project Limitations</h4>There
+<h3><a class="mozTocH4" name="mozTocId932506"></a>Project Limitations</h3>
+There
 are many limitations on projects. The basic rule is that multiple
 directories of source files (not counting header files) cannot be used
 in one component. The following shows a typical project that can be
-supported.<br>
+supported. One way to work around this limitation is to create many
+static libraries. Oovcde will determine static library link order
+automatically.<br>
 <br>Root directory of project source code<br>
 <div style="margin-left: 40px;">Sub-directory1 - Component1<br>
 </div>

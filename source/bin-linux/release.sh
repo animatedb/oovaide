@@ -22,4 +22,7 @@ find . -name '*.cproject' | cpio -pdm $dstFromTrunk
 find . -name '*.project' | cpio -pdm $dstFromTrunk
 
 rm -r $dstFromTrunk/.metadata
+rm -r $dstFromTrunk/examples/simple-oovcde
+rm -r $dstFromTrunk/examples/staticlib-oovcde
+rm -r $dstFromTrunk/examples/sharedlibgtk-oovcde
 

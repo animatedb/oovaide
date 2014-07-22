@@ -1,5 +1,5 @@
 PkgNames|gtk+-3.0;llvm;Qt;wxWidgets;Visual Studio
-Pkg-gtk+-3.0-Root|\Program Files\GTK+-Bundle-3.6.4
+Pkg-gtk+-3.0-Root|/Program Files/GTK+-Bundle-3.6.4
 Pkg-llvm-Root|/Program Files/LLVM
 Pkg-llvm-I|include
 Pkg-llvm-l|libclang.lib

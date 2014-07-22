@@ -22,20 +22,24 @@ struct Token
 class TokenRange:public std::vector<Token>
     {
     public:
-	void tokenize(CXTranslationUnit transUnit, CXFile srcFile,
-		int startLine, int endLine);
+	void tokenize(CXTranslationUnit transUnit, CXFile srcFile/*,
+		int startLine, int endLine*/);
     };
+
+enum eFindTokenTypes { FT_FindDecl, FT_FindDef };
 
 class Tokenizer
     {
     public:
 	Tokenizer():
-	    mSourceFile(nullptr)
+	    mTransUnit(0), mSourceFile(nullptr)
 	    {}
+	~Tokenizer();
 	void parse(char const * const fileName, char const * const buffer, int bufLen,
 		char const * const clang_args[], int num_clang_args);
 	// line numbers are 1 based.
-	void tokenize(int startLine, int endLine, TokenRange &highlight);
+	void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
+	bool find(eFindTokenTypes ft, int origOffset, std::string &fn, int &offset);
 
     private:
 	CXTranslationUnit mTransUnit;
@@ -75,11 +79,13 @@ class Highlighter
 	void highlight(GtkTextView *textView, char const * const filename,
 		char const * const buffer, int bufLen,
 		char const * const clang_args[], int num_clang_args);
-	void applyTags(GtkTextBuffer *textBuffer, const TokenRange &tokens);
+	Tokenizer &getTokenizer()
+	    { return mTokenizer; }
 
     private:
 	Tokenizer mTokenizer;
 	HighlightTags mHighlightTags;
+	void applyTags(GtkTextBuffer *textBuffer, const TokenRange &tokens);
     };
 
 #endif /* HIGHLIGHTER_H_ */

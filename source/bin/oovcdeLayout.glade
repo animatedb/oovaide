@@ -1426,8 +1426,10 @@ include and library files.
 
 Arguments are passed to the compiler and linker.
 Special arguments are:
-	-lnk&lt;arg&gt;	Sends arg to linker only
-	-bv			Builder verbose log OovBuilder.txt
+  -lnk&lt;arg&gt;		Sends arg to linker only
+  -bv				Builder verbose log OovBuilder.txt
+  -ER&lt;dir&gt;		External recursive lib and include directory
+  -EP&lt;package&gt;	External package reference
 
 Examples:
   -I../oovCommon
@@ -2858,7 +2860,7 @@ These arguments are specific to the selected configuration.
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="editable">False</property>
-                        <signal name="button-release-event" handler="on_StatusTextview_button_release_event" swapped="no"/>
+                        <signal name="button-press-event" handler="on_StatusTextview_button_press_event" swapped="no"/>
                       </object>
                     </child>
                   </object>

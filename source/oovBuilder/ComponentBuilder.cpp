@@ -165,6 +165,17 @@ std::set<std::string> ComponentBuilder::getComponentLinkArgs(char const * const 
     return linkArgs;
     }
 
+std::string makeLibFn(std::string const &outputPath, std::string const &packageName)
+    {
+    std::string libName = packageName;
+    size_t libNamePos = rfindPathSep(libName.c_str());
+    if(libNamePos != std::string::npos)
+    	libNamePos++;
+    else
+    	libNamePos = 0;
+    libName.insert(libNamePos, "lib");
+    return(outputPath + libName + ".a");
+    }
 
 class LibTaskListener:public TaskQueueListener
     {
@@ -278,34 +289,37 @@ void ComponentBuilder::buildComponents()
         }
 
     // Build all project libraries
-    std::vector<std::string> libFileNames;
+    std::vector<std::string> builtLibFileNames;
+    std::vector<std::string> allLibFileNames;
     if(compNames.size() > 0)
         {
         LibTaskListener libListener;
         setTaskListener(&libListener);
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
-	   {
-	   if(compTypesFile.getComponentType(name.c_str()) == ComponentTypesFile::CT_StaticLib)
-	       {
-	       std::vector<std::string> sources =
-		      compTypesFile.getComponentSources(name.c_str());
-	       for(size_t i=0; i<sources.size(); i++)
-		  {
-		  sources[i] = makeOutputObjectFileName(sources[i].c_str());
-		  }
-	       makeLib(name, sources);
-	       }
-	   }
+	    {
+	    if(compTypesFile.getComponentType(name.c_str()) == ComponentTypesFile::CT_StaticLib)
+		{
+		std::vector<std::string> sources =
+		    compTypesFile.getComponentSources(name.c_str());
+		for(size_t i=0; i<sources.size(); i++)
+		    {
+		    sources[i] = makeOutputObjectFileName(sources[i].c_str());
+		    }
+		if(sources.size() > 0)
+		    {
+		    allLibFileNames.push_back(makeLibFn(mOutputPath, name));
+		    makeLib(name, sources);
+		    }
+		}
+	    }
         waitForCompletion();
-        libFileNames = libListener.getBuiltLibs();
+        builtLibFileNames = libListener.getBuiltLibs();
         setTaskListener(nullptr);
 
-        if(libFileNames.size() > 0)
+        if(builtLibFileNames.size() > 0)
 	   {
-	   mObjSymbols.forceUpdate(true);
-	   makeLibSymbols("ProjLibs", libFileNames);
-	   mObjSymbols.forceUpdate(false);
+	   makeLibSymbols("ProjLibs", allLibFileNames);
 	   }
         }
 
@@ -508,21 +522,14 @@ void ComponentBuilder::makeLibSymbols(char const * const clumpName,
     {
     std::string objSymbolTool = mToolPathFile.getObjSymbolPath();
 
-    mObjSymbols.makeObjectSymbols(clumpName, files,
+    mObjSymbols.makeClumpSymbols(clumpName, files,
 	    getSymbolBasePath().c_str(), objSymbolTool.c_str(), *this);
     }
 
 void ComponentBuilder::makeLib(const std::string &libPath,
 	const std::vector<std::string> &objectFileNames)
     {
-    std::string libName = libPath;
-    size_t libNamePos = rfindPathSep(libName.c_str());
-    if(libNamePos != std::string::npos)
-	libNamePos++;
-    else
-	libNamePos = 0;
-    libName.insert(libNamePos, "lib");
-    std::string outFileName = mOutputPath + libName + ".a";
+    std::string outFileName = makeLibFn(mOutputPath, libPath);
     if(FileStat::isOutputOld(outFileName.c_str(), objectFileNames))
 	{
 	std::string procPath = mToolPathFile.getLibberPath();
@@ -584,7 +591,7 @@ void ComponentBuilder::makeExe(char const * const compName,
 
 	for(const auto &lib : projectLibFilePaths)
 	    {
-	    FilePathImmutableRef libPath(lib.c_str());
+	    FilePath libPath(lib.c_str(), FP_File);
 	    libDirs.insert(libPath.getDrivePath());
 	    libNames.push_back(libPath.getNameExt());
 	    }

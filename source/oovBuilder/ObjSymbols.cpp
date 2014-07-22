@@ -8,6 +8,7 @@
 #include "ObjSymbols.h"
 #include <string>
 #include <stdio.h>
+#include <algorithm>
 #include "OovProcess.h"
 #include "ComponentBuilder.h"
 
@@ -24,54 +25,65 @@ class FileSymbol
 	int mFileIndex;
     };
 
-// first file (client) is dependent on the second file (supplier) that
-// defines the symbol
-class FileDependencies:public std::map<int, int>
+// The first is the client file index, and the second is a container of supplier file indices.
+class FileDependencies:public std::map<int, std::set<int> >
     {
     public:
+	void addDependency(int clientIndex, int supplierIndex);
+	// Check if the file index passed in is dependent on any other files.
 	bool dependentOnAny(int fileIndex) const;
-	void removeValue(int val);
-	iterator findSecond(int val);
+	// Remove all references to the file index.
+	void removeValue(int fileIndex);
+
+    private:
+	// Remove a client if there are no suppliers
+	bool removeEmptyClient();
     };
 
-bool FileDependencies::dependentOnAny(int fileIndex) const
+void FileDependencies::addDependency(int clientIndex, int supplierIndex)
     {
-    bool dependent = false;
-    for(const auto &pos : *this)
+    auto iter = find(clientIndex);
+    if(iter == end())
 	{
-	if(pos.first == fileIndex)
-	    {
-	    dependent = true;
-	    break;
-	    }
+	std::set<int> suppliers;
+	suppliers.insert(supplierIndex);
+	insert(std::pair<int, std::set<int> >(clientIndex, suppliers));
 	}
-    return dependent;
-    }
-
-void FileDependencies::removeValue(int val)
-    {
-    while(1)
+    else
 	{
-	const auto &pos = findSecond(val);
-	if(pos != end())
-	    erase(pos);
-	else
-	    break;
+	iter->second.insert(supplierIndex);
 	}
     }
 
-std::map<int, int>::iterator FileDependencies::findSecond(int val)
+bool FileDependencies::dependentOnAny(int clientIndex) const
     {
-    iterator retiter = end();
-    for(iterator iter=begin(); iter!=end(); iter++)
+    return(find(clientIndex) != end());
+    }
+
+void FileDependencies::removeValue(int fileIndex)
+    {
+    for(auto &dep : *this)
 	{
-	if(val == (*iter).second)
+	dep.second.erase(fileIndex);
+	}
+    while(removeEmptyClient())
+	{
+	}
+    }
+
+bool FileDependencies::removeEmptyClient()
+    {
+    bool removed = false;
+    for(auto dep=begin(); dep != end(); dep++)
+	{
+	if((*dep).second.size() == 0)
 	    {
-	    retiter = iter;
+	    erase(dep);
+	    removed = true;
 	    break;
 	    }
 	}
-    return retiter;
+    return removed;
     }
 
 
@@ -182,7 +194,12 @@ static bool writeDepFileInfo(char const *const symFileName, const FileList &file
 	fileIndices.writeFile(outFp);
 	for(const auto &dep : fileDeps)
 	    {
-	    fprintf(outFp, "d:%d %d\n", dep.first, dep.second);
+	    fprintf(outFp, "d:%d ", dep.first);
+	    for(const auto &sup : dep.second)
+		{
+		fprintf(outFp, "%d ", sup);
+		}
+	    fprintf(outFp, "\n");
 	    }
 	fprintf(outFp, "o:");
 	for(const auto &dep : orderedDeps)
@@ -204,10 +221,13 @@ static void orderDependencies(size_t numFiles, const FileDependencies &fileDepen
 	{
 	origFiles.push_back(i);
 	}
+    // Go through all libraries
     for(size_t totaliter=0; totaliter<numFiles; totaliter++)
 	{
 	if(origFiles.size() == 0)
 	    break;
+	// If any library is not dependent on any others, then remove it
+	// as a client or provider for all libraries.
 	for(size_t i=0; i<origFiles.size(); i++)
 	    {
 	    int fileIndex = origFiles[i];
@@ -259,7 +279,6 @@ void ClumpSymbols::readRawSymbolFile(char const *outRawFileName, int fileIndex)
 		}
 	    }
 	fclose(inFp);
-	deleteFile(outRawFileName);
 	}
     }
 
@@ -275,8 +294,7 @@ void ClumpSymbols::resolveUndefinedSymbols()
 	    // file where it is not defined.
 	    if((*pos).mFileIndex != sym.mFileIndex)
 		{
-		mFileDependencies.insert(std::make_pair((*pos).mFileIndex,
-		    sym.mFileIndex));
+		mFileDependencies.addDependency((*pos).mFileIndex, sym.mFileIndex);
 		}
 	    mUndefinedSymbols.erase(pos);
 	    }
@@ -337,19 +355,59 @@ class ObjTaskListener:public TaskQueueListener
 	    }
     };
 
-bool ObjSymbols::makeObjectSymbols(char const * const clumpName,
-	const std::vector<std::string> &libFiles, char const * const outPath,
-	char const * const objSymbolTool, ComponentTaskQueue &queue)
+bool ObjSymbols::makeObjectSymbols(const std::vector<std::string> &libFiles,
+	char const * const outSymPath, char const * const objSymbolTool,
+	ComponentTaskQueue &queue, ClumpSymbols &clumpSymbols)
     {
-    bool success = true;
-    std::string defSymFileName = outPath;
-    ClumpSymbols clumpSymbols;
-    ensureLastPathSep(defSymFileName);
+    struct LibFileNames
+	{
+	LibFileNames(std::string const &libFileName,
+		std::string const &libSymFileName,
+		std::string const &libFilePath, bool genSymbolFile):
+	    mLibFileName(libFileName), mLibFilePath(libFilePath),
+	    mLibSymFileName(libSymFileName), mGenSymbolFile(genSymbolFile)
+	    {}
+	std::string mLibFileName;
+	std::string mLibFilePath;
+	std::string mLibSymFileName;
+	bool mGenSymbolFile;
+	};
+    bool generatedSymbols = false;
+    std::vector<LibFileNames> libFileNames;
+    for(const auto &libFilePath : libFiles)
+	{
+	FilePath libSymName(libFilePath, FP_File);
+	libSymName.discardDirectory();
+	libSymName.discardExtension();
+	std::string libSymPath = outSymPath;
+	ensureLastPathSep(libSymPath);
+	ensurePathExists(libSymPath.c_str());
+	std::string outSymRawFileName = libSymPath + libSymName + ".txt";
+/*
+	std::string libName = libFilePath;
+	size_t libNamePos = rfindPathSep(libName.c_str());
+	if(libNamePos != std::string::npos)
+	    libNamePos++;
+	else
+	    libNamePos = 0;
+	libName.insert(libNamePos, "lib");
+	std::string libFileName = // std::string(outLibPath) +
+	    libName + ".a";
+*/
+	if(FileStat::isOutputOld(outSymRawFileName.c_str(), libFilePath.c_str()))
+	    {
+	    libFileNames.push_back(LibFileNames(libFilePath, outSymRawFileName,
+		    libFilePath, true));
+	    generatedSymbols = true;
+	    }
+	else
+	    {
+	    libFileNames.push_back(LibFileNames(libFilePath, outSymRawFileName,
+		    libFilePath, false));
+	    }
+	}
 
-    defSymFileName += "LibSym-";
-    defSymFileName += clumpName;
-    defSymFileName += "-Def.txt";
-    if(!fileExists(defSymFileName.c_str()) || mForceUpdateSymbols)
+    if(generatedSymbols)
 	{
 #define MULTI_THREAD 1
 #if(MULTI_THREAD)
@@ -357,39 +415,58 @@ bool ObjSymbols::makeObjectSymbols(char const * const clumpName,
 	queue.setTaskListener(&listener);
 	queue.setupQueue(queue.getNumHardwareThreads());
 #endif
-	for(const auto &libFilePath : libFiles)
+	for(auto const &libFn : libFileNames)
 	    {
-	    FilePath libName(libFilePath, FP_File);
-	    libName.discardDirectory();
-	    libName.discardExtension();
-	    std::string libSymPath = outPath;
-	    ensureLastPathSep(libSymPath);
-	    ensurePathExists(libSymPath.c_str());
-	    std::string outRawFileName = libSymPath + libName + ".txt";
+	    if(libFn.mGenSymbolFile)
+		{
+		OovProcessChildArgs ca;
+		ca.addArg(objSymbolTool);
+		std::string quotedLibFilePath = libFn.mLibFilePath;
+		quoteCommandLinePath(quotedLibFilePath);
+		ca.addArg(quotedLibFilePath.c_str());
 
-	    OovProcessChildArgs ca;
-	    ca.addArg(objSymbolTool);
-	    std::string quotedLibFilePath = libFilePath;
-	    quoteCommandLinePath(quotedLibFilePath);
-	    ca.addArg(quotedLibFilePath.c_str());
-
-	    ProcessArgs procArgs(objSymbolTool, outRawFileName.c_str(), ca,
-	                    outRawFileName.c_str());
-	    procArgs.mLibFilePath = libFilePath;
+		ProcessArgs procArgs(objSymbolTool, libFn.mLibSymFileName.c_str(), ca,
+			libFn.mLibSymFileName.c_str());
+		procArgs.mLibFilePath = libFn.mLibFilePath;
 #if(MULTI_THREAD)
-            queue.addTask(procArgs);
+		queue.addTask(procArgs);
 #else
-success = ComponentBuilder::runProcess(objSymbolTool,
-    outRawFileName.c_str(), ca, mListenerStdMutex, outRawFileName.c_str());
-if(success)
-    clumpSymbols.addSymbols(libFilePath.c_str(), outRawFileName.c_str());
+		success = ComponentBuilder::runProcess(objSymbolTool,
+		    outRawFileName.c_str(), ca, mListenerStdMutex, outRawFileName.c_str());
+		if(success)
+		    clumpSymbols.addSymbols(libFilePath.c_str(), outRawFileName.c_str());
 #endif
+		}
+	    else
+		{
+		clumpSymbols.addSymbols(libFn.mLibFilePath.c_str(),
+			libFn.mLibSymFileName.c_str());
+		}
 	    }
 #if(MULTI_THREAD)
 	queue.waitForCompletion();
 	queue.setTaskListener(nullptr);
 #endif
-	clumpSymbols.writeClumpFiles(clumpName, outPath);
+	}
+    return generatedSymbols;
+    }
+
+bool ObjSymbols::makeClumpSymbols(char const * const clumpName,
+	const std::vector<std::string> &libFiles, char const * const outSymPath,
+	char const * const objSymbolTool, ComponentTaskQueue &queue)
+    {
+    bool success = true;
+    std::string defSymFileName = outSymPath;
+    ClumpSymbols clumpSymbols;
+//    ensureLastPathSep(defSymFileName);
+
+//    defSymFileName += "LibSym-";
+//    defSymFileName += clumpName;
+//    defSymFileName += "-Def.txt";
+    if(//!fileExists(defSymFileName.c_str()) ||
+	    makeObjectSymbols(libFiles, outSymPath, objSymbolTool, queue, clumpSymbols))
+	{
+	clumpSymbols.writeClumpFiles(clumpName, outSymPath);
 	}
     return success;
     }
