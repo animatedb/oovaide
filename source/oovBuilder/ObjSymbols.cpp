@@ -170,7 +170,7 @@ void FileIndices::removeValue(int val)
 std::vector<int>::iterator FileIndices::findValue(int val)
     {
     iterator retiter = end();
-    for(iterator iter=begin(); iter!=end(); iter++)
+    for(iterator iter=begin(); iter!=end(); ++iter)
 	{
 	if(val == (*iter))
 	    {
@@ -456,8 +456,8 @@ bool ObjSymbols::makeClumpSymbols(char const * const clumpName,
 	char const * const objSymbolTool, ComponentTaskQueue &queue)
     {
     bool success = true;
-    std::string defSymFileName = outSymPath;
     ClumpSymbols clumpSymbols;
+//    std::string defSymFileName = outSymPath;
 //    ensureLastPathSep(defSymFileName);
 
 //    defSymFileName += "LibSym-";

@@ -30,21 +30,24 @@ bool srcFileParser::analyzeSrcFiles(char const * const srcRootDir,
     return success;
     }
 
-Logger sLog;
+VerboseDumper sVerboseDump;
 
-void Logger::open(char const * const outPath)
+void VerboseDumper::open(char const * const outPath)
     {
+    mFp = stdout;
+    /*
     std::string path = outPath;
     ensureLastPathSep(path);
     path += "OovBuilder.txt";
     DebugFile::open(path.c_str());
+    */
     }
 
-void Logger::logProcess(char const * const srcFile, char const * const *argv, int argc)
+void VerboseDumper::logProcess(char const * const srcFile, char const * const *argv, int argc)
     {
     if(mFp)
 	{
-	fprintf(mFp, "\n%s\n", srcFile);
+	fprintf(mFp, "\nOovBuilder: %s", srcFile);
 	if(argc > 0)
 	    {
 	    for(int i=0; i<argc; i++)
@@ -54,18 +57,26 @@ void Logger::logProcess(char const * const srcFile, char const * const *argv, in
 	}
     }
 
-void Logger::logOutputOld(char const * const fn)
+void VerboseDumper::logProgress(char const * const progress)
     {
     if(mFp)
 	{
-	fprintf(mFp, "Output older than %s\n", fn);
+	fprintf(mFp, "\nOovBuilder: %s", progress);
 	}
     }
 
-void Logger::logProcessStatus(bool success)
+void VerboseDumper::logOutputOld(char const * const fn)
+    {
+    if(mFp)
+	{
+	fprintf(mFp, "OovBuilder: Output older than %s\n", fn);
+	}
+    }
+
+void VerboseDumper::logProcessStatus(bool success)
     {
     if(!success)
-	fprintf(mFp, "Unable to execute process\n");
+	fprintf(mFp, "OovBuilder: Unable to execute process\n");
     }
 
 
@@ -137,7 +148,7 @@ bool srcFileParser::processItem(CppChildArgs const &item)
     listener.setProcessIdStr(processStr.c_str());
     bool success = pipeProc.spawn(item.getArgv()[0], item.getArgv(),
 	    listener, exitCode);
-    sLog.logProcessStatus(success);
+    sVerboseDump.logProcessStatus(success);
     if(!success || exitCode != 0)
 	{
 	std::string tempStr = "oovBuilder: Errors from ";

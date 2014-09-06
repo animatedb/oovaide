@@ -239,19 +239,19 @@ void BuildConfigWriter::saveConfig(char const * const buildType)
 	unsigned int analysisCrc = computeCRC(analysisStr);
 
 	char tempStr[40];
-	snprintf(tempStr, sizeof(tempStr), "%d;%d;%d;%d;%d", analysisCrc,
+	snprintf(tempStr, sizeof(tempStr), "%u;%u;%u;%u;%u", analysisCrc,
 		extCrc, projCrc, linkCrc, otherCrc);
 	mConfigFile.setNameValue(mBuildConfigType.c_str(), tempStr);
 
-	snprintf(tempStr, sizeof(tempStr), "%d", analysisCrc);
+	snprintf(tempStr, sizeof(tempStr), "%u", analysisCrc);
 	mConfigFile.setNameValue(tempStr, analysisStr.c_str());
-	snprintf(tempStr, sizeof(tempStr), "%d", extCrc);
+	snprintf(tempStr, sizeof(tempStr), "%u", extCrc);
 	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mExternalConfig.c_str());
-	snprintf(tempStr, sizeof(tempStr), "%d", projCrc);
+	snprintf(tempStr, sizeof(tempStr), "%u", projCrc);
 	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mProjectConfig.c_str());
-	snprintf(tempStr, sizeof(tempStr), "%d", linkCrc);
+	snprintf(tempStr, sizeof(tempStr), "%u", linkCrc);
 	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mLinkArgsConfig.c_str());
-	snprintf(tempStr, sizeof(tempStr), "%d", otherCrc);
+	snprintf(tempStr, sizeof(tempStr), "%u", otherCrc);
 	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mOtherArgsConfig.c_str());
 
 	mConfigFile.writeFile();

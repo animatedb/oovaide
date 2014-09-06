@@ -9,7 +9,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Debug"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -39,6 +39,7 @@
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/cairo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gdk-pixbuf-2.0&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1028701353" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1709878177" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -62,7 +63,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Release"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -93,6 +94,7 @@
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/cairo&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gdk-pixbuf-2.0&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/atk-1.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.158750196" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -115,7 +117,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Debug"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -137,7 +139,7 @@
 								<option id="gnu.cpp.compiler.option.optimization.level.1078974500" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.231024594" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.788125855" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.include.paths.1125176717" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.1125176717" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
@@ -145,6 +147,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
 									<listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.798270653" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
@@ -170,7 +173,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovGuiCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovGuiCommon/Linux-Release"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovGuiCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -192,7 +195,7 @@
 								<option id="gnu.cpp.compiler.option.optimization.level.154798098" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1670732015" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.other.other.1039252182" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
-								<option id="gnu.cpp.compiler.option.include.paths.132254967" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.132254967" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/lib/x86_64-linux-gnu/glib-2.0/include"/>
@@ -200,6 +203,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
 									<listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.241314378" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>

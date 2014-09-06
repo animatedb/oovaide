@@ -89,17 +89,17 @@ void ProjectPackagesDialog::beforeRun()
 	if(pos != std::string::npos)
 	    {
 	    size_t endPos = args.findSpace(pos+3);
-	    std::string pkg;
+//	    std::string pkg;
 	    if(endPos != std::string::npos)
 		{
-		pkg = args.substr(pos+3, endPos-(pos+3));
+//		pkg = args.substr(pos+3, endPos-(pos+3));
 		if(args[endPos] == '\n')
 		    endPos++;
 		args.erase(pos, endPos-pos);
 		}
 	    else
 		{
-		pkg = args.substr(pos+3);
+//		pkg = args.substr(pos+3);
 		args.erase(pos);
 		}
 	    // Could use the package names for something.
@@ -150,7 +150,7 @@ void ProjectPackagesDialog::selectPackage()
     if(mAllowSelection)
 	{
 	std::string pkgName = mProjectPackagesList.getSelected();
-	savePackage(mLastSelectedPackage.c_str());
+	savePackage(mLastSelectedPackage);
 	Package pkg = mProjectPackages.getPackage(pkgName.c_str());
 
 	setEntry("PackageRootDirEntry", pkg.getRootDir().c_str());

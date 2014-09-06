@@ -153,7 +153,7 @@ bool dirRecurser::recurseDirs(char const * const srcDir)
                 if(isDir(fullName.c_str()))
 		    recurseDirs(fullName.c_str());
 		else
-		    success = processFile(fullName.c_str());
+		    success = processFile(fullName);
 		}
 	    }
 	closedir(dp);

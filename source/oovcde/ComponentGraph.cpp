@@ -22,7 +22,7 @@ void ComponentGraph::updateGraph()
     mNodes.clear();
     for(auto const &name : compFile.getComponentNames())
 	{
-	ComponentTypesFile::CompTypes ct = compFile.getComponentType(name.c_str());
+	ComponentTypesFile::eCompTypes ct = compFile.getComponentType(name.c_str());
 	if(ct != ComponentTypesFile::CT_Unknown)
 	    {
 	    mNodes.push_back(ComponentNode(name.c_str(),

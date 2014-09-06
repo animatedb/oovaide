@@ -199,3 +199,17 @@ std::vector<OovString> StringSplit(char const * str, char delimiter)
 	}
     return tokens;
     }
+
+OovString StringJoin(std::vector<class OovString> const &tokens, char delimiter)
+    {
+    OovString str;
+    for(size_t i=0; i<tokens.size(); i++)
+	{
+	str += tokens[i];
+	if(i < tokens.size()-1)
+	    {
+	    str += delimiter;
+	    }
+	}
+    return str;
+    }

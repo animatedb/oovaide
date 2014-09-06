@@ -12,14 +12,43 @@
 #include <string.h>
 
 
+#include "IncludeMap.h"
+#include "BuildConfigReader.h"
+#include "OovProcess.h"
+// This currently does not get the package command line arguments,
+// but usually these won't be needed for compilation.
+static void getCppArgs(char const * const srcName, OovProcessChildArgs &args)
+    {
+    ProjectReader proj;
+    proj.readOovProject(Project::getProjectDirectory().c_str(), BuildConfigAnalysis);
+    StdStringVec cppArgs = proj.getCompileArgs();
+    for(auto const &arg : cppArgs)
+	{
+	args.addArg(arg.c_str());
+	}
+
+    BuildConfigReader cfg;
+    std::string incDepsPath = cfg.getIncDepsFilePath(BuildConfigAnalysis);
+    IncDirDependencyMapReader incDirMap;
+    incDirMap.read(incDepsPath.c_str());
+    std::vector<std::string> incDirs = incDirMap.getNestedIncludeDirsUsedBySourceFile(srcName);
+    for(auto const &dir : incDirs)
+	{
+	std::string arg = "-I";
+	arg += dir;
+	args.addArg(arg.c_str());
+	}
+    }
+
+
+
 void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
         gchar *text, gint len, gpointer user_data);
 void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
         GtkTextIter *end, gpointer user_data);
 
 //static void scrollChild(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-//gboolean draw(GtkWidget *widget, CairoContext *cr, gpointer user_data);
-gboolean draw(GtkWidget *widget, void *cr, gpointer user_data);
+//gboolean draw(GtkWidget *widget, void *cr, gpointer user_data);
 
 
 
@@ -35,7 +64,7 @@ void FileEditView::init(GtkTextView *textView)
           G_CALLBACK(signalBufferDeleteRange), NULL);
 //	    g_signal_connect(G_OBJECT(mBuilder.getWidget("EditTextScrolledwindow")),
 //		    "scroll-child", G_CALLBACK(scrollChild), NULL);
-    g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), NULL);
+//    g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), NULL);
     }
 
 bool FileEditView::openTextFile(char const * const fn)
@@ -55,7 +84,7 @@ bool FileEditView::openTextFile(char const * const fn)
 	    gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
 	    gtk_text_buffer_set_modified(mTextBuffer, FALSE);
 	    }
-	setNeedHighlightUpdate(HS_ExternalChange);
+	setNeedHighlightUpdate(HS_NeedHighlight);
 	}
     return(file.isOpen());
     }
@@ -86,14 +115,17 @@ void FileEditView::highlight()
     {
     if(mFileName.length())
 	{
-	int numArgs = 0;
-	char const * cppArgv[40];
-//	    cppArgv[numArgs++] = "";
-//	    cppArgv[numArgs++] = mFileName.c_str();
+//	int numArgs = 0;
+//	char const * cppArgv[40];
+	OovProcessChildArgs cppArgs;
+	getCppArgs(mFileName.c_str(), cppArgs);
+
 	FilePath path;
 	path.getAbsolutePath(mFileName.c_str(), FP_File);
+//	mHighlighter.highlight(mTextView, path.c_str(), getBuffer().c_str(),
+//		gtk_text_buffer_get_char_count(mTextBuffer), cppArgv, numArgs);
 	mHighlighter.highlight(mTextView, path.c_str(), getBuffer().c_str(),
-		gtk_text_buffer_get_char_count(mTextBuffer), cppArgv, numArgs);
+		gtk_text_buffer_get_char_count(mTextBuffer), cppArgs.getArgv(), cppArgs.getArgc());
 	}
     }
 
@@ -176,7 +208,7 @@ bool FileEditView::checkExitSave()
 	prompt += mFileName;
 	GtkDialog *dlg = GTK_DIALOG(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
 		GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", prompt.c_str()));
-	GtkWidget *button = gtk_dialog_add_button(dlg, GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
+	gtk_dialog_add_button(dlg, GUI_CANCEL, GTK_RESPONSE_CANCEL);
 	gint result = gtk_dialog_run(dlg);
 	if(result == GTK_RESPONSE_YES)
 	    {
@@ -279,7 +311,7 @@ void FileEditView::bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *loca
 	int offset = HistoryItem::getOffset(location);
 	addHistoryItem(HistoryItem(true, offset, text, len));
 	}
-    setNeedHighlightUpdate(HS_ExternalChange);
+    setNeedHighlightUpdate(HS_NeedHighlight);
     }
 
 void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
@@ -291,37 +323,38 @@ void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *sta
 	GuiText str(gtk_text_buffer_get_text(textbuffer, start, end, false));
 	addHistoryItem(HistoryItem(false, offset, str.c_str(), str.length()));
 	}
-    setNeedHighlightUpdate(HS_ExternalChange);
+    setNeedHighlightUpdate(HS_NeedHighlight);
     }
 
+/*
 void FileEditView::drawHighlight()
     {
     if(getHighlightUpdate() == HS_DrawHighlight)
 	{
 	setNeedHighlightUpdate(HS_HighlightDone);
 	}
-    else if(getHighlightUpdate() != HS_HighlightDone)
-	{
-	setNeedHighlightUpdate(HS_ExternalChange);
-	}
     }
+*/
 
 void FileEditView::idleHighlight()
     {
-    if(getHighlightUpdate() == HS_ExternalChange)
+    if(getHighlightUpdate() == HS_NeedHighlight)
 	{
 	highlight();
-	setNeedHighlightUpdate(HS_DrawHighlight);
+	setNeedHighlightUpdate(HS_HighlightDone);
 	}
     }
 
 bool FileEditView::handleIndentKeys(GdkEvent *event)
     {
     bool handled = false;
+    int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
     switch(event->key.keyval)
 	{
 	case GDK_KEY_ISO_Left_Tab:	// This is shift tab on PC
-	    if(event->key.state == GDK_SHIFT_MASK || event->key.state == 0)
+	    // On Windows, modKeys==0, on Linux, modKeys==GDK_SHIFT_MASK
+	    if(event->key.state == GDK_SHIFT_MASK || modKeys == 0 ||
+		    modKeys == GDK_SHIFT_MASK)
 		{
 		if(mIndenter.shiftTabPressed())
 		    handled = true;
@@ -329,7 +362,7 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
 	    break;
 
 	case GDK_KEY_BackSpace:
-	    if(event->key.state == 0)
+	    if(modKeys == 0)
 		{
 		if(mIndenter.backspacePressed())
 		    handled = true;
@@ -337,7 +370,7 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
 	    break;
 
 	case GDK_KEY_Tab:
-	    if(event->key.state == 0)
+	    if(modKeys == 0)
 		{
 		if(mIndenter.tabPressed())
 		    handled = true;
@@ -346,7 +379,7 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
 
 	case GDK_KEY_KP_Home:
 	case GDK_KEY_Home:
-	    if(event->key.state == 0)
+	    if(modKeys == 0)
 		{
 		if(mIndenter.homePressed())
 		    {

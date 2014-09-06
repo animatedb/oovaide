@@ -23,7 +23,7 @@ class ComponentNode
 	    mComponentNodeType(CNT_Component)
 	    {}
 	ComponentNode(char const * const name, ComponentNodeTypes cnt,
-		ComponentTypesFile::CompTypes type=
+		ComponentTypesFile::eCompTypes type=
 			ComponentTypesFile::CT_Unknown):
 	    mCompName(name), mComponentType(type), mComponentNodeType(cnt)
 	    {
@@ -38,13 +38,13 @@ class ComponentNode
 	    { return mCompName.c_str(); }
 	ComponentNodeTypes getComponentNodeType() const
 	    { return mComponentNodeType; }
-	ComponentTypesFile::CompTypes getComponentType() const
+	ComponentTypesFile::eCompTypes getComponentType() const
 	    { return mComponentType; }
 
     private:
 	std::string mCompName;
 	GraphRect mRect;
-	ComponentTypesFile::CompTypes mComponentType;
+	ComponentTypesFile::eCompTypes mComponentType;
 	ComponentNodeTypes mComponentNodeType;
     };
 

@@ -125,7 +125,7 @@ void CMaker::makeTopMakelistsFile(char const * const destName)
     std::vector<std::string> const compNames = mCompTypes.getComponentNames();
     for(auto const &name : compNames)
 	{
-        ComponentTypesFile::CompTypes compType = mCompTypes.getComponentType(
+        ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(
         	name.c_str());
         if(compType == ComponentTypesFile::CT_StaticLib)
 	    str += std::string("   \"${PROJECT_SOURCE_DIR}/") + name + "\"\n";
@@ -136,7 +136,7 @@ void CMaker::makeTopMakelistsFile(char const * const destName)
     str += "# Add sub directories\n";
     for(auto const &name : compNames)
 	{
-        ComponentTypesFile::CompTypes compType = mCompTypes.getComponentType(
+        ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(
         	name.c_str());
         if(compType != ComponentTypesFile::CT_Unknown)
             {
@@ -149,7 +149,7 @@ void CMaker::makeTopMakelistsFile(char const * const destName)
     str += "export(TARGETS ";
     for(auto const &name : compNames)
 	{
-        ComponentTypesFile::CompTypes compType = mCompTypes.getComponentType(
+        ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(
         	name.c_str());
         if(compType != ComponentTypesFile::CT_Unknown)
             {
@@ -221,7 +221,7 @@ void CMaker::makeTopInFile(char const * const destName)
     str += std::string("set(") + projNameUpper + "_LIBRARIES";
     for(auto const &name : compNames)
 	{
-	ComponentTypesFile::CompTypes compType = mCompTypes.getComponentType(
+	ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(
 		name.c_str());
 	if(compType == ComponentTypesFile::CT_StaticLib)
 	    {
@@ -233,7 +233,7 @@ void CMaker::makeTopInFile(char const * const destName)
     str += std::string("set(") + projNameUpper + "_EXECUTABLE";
     for(auto const &name : compNames)
 	{
-	ComponentTypesFile::CompTypes compType = mCompTypes.getComponentType(
+	ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(
 		name.c_str());
 	if(compType == ComponentTypesFile::CT_Program)
 	    {
@@ -348,7 +348,7 @@ static void appendCommandAndNames(eCommandTypes ct, char const *compName,
     }
 
 void CMaker::makeComponentFile(char const * const compName,
-    ComponentTypesFile::CompTypes compType,
+    ComponentTypesFile::eCompTypes compType,
     std::vector<std::string> const &sources, char const * const destName)
     {
     std::string str;
@@ -531,7 +531,7 @@ void CMaker::makeComponentFiles(bool writeToProject, char const * const outDir,
         printf("Read incmap\n");
     for(auto const &compName : compNames)
         {
-        ComponentTypesFile::CompTypes compType =
+        ComponentTypesFile::eCompTypes compType =
     	    mCompTypes.getComponentType(compName.c_str());
         if(compType != ComponentTypesFile::CT_Unknown)
             {

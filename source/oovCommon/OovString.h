@@ -34,6 +34,7 @@ int StringNumChars(const char *s);
 bool StringIsAscii(const char *p);
 size_t StringFindSpace(char const *str, size_t startPos);
 std::vector<class OovString> StringSplit(char const * str, char delimiter);
+class OovString StringJoin(std::vector<class OovString> const &tokens, char delimiter);
 
 /// WARNING: the class that contains the c_str should be placed first in
 /// the inheritance tree of the derived class because this class uses a
@@ -102,6 +103,8 @@ class OovString:public std::string, public OovStringRefInterface<std::string>
 	void setUpperCase(char const * const str);
 	void setLowerCase(char const * const str);
 	void appendInt(int val, int radix=10);
+	void join(std::vector<class OovString> const &tokens, char delim)
+	    { *this = StringJoin(tokens, delim); }
 //	char const * const c_str() const
 //	    { return std::string::c_str(); }
     };

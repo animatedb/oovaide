@@ -57,10 +57,10 @@ void ClassGraph::updateNodeSizes()
 int ClassGraph::getAvgNodeSize() const
     {
     int size = 0;
-    int totalXSize = 0;
-    int totalYSize = 0;
     if(mNodes.size() > 0)
 	{
+        int totalXSize = 0;
+        int totalYSize = 0;
 	for(auto &node : mNodes)
 	    {
 	    GraphSize size = node.getSize();

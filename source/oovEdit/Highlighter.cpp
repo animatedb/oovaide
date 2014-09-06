@@ -52,18 +52,31 @@ Tokenizer::~Tokenizer()
 void Tokenizer::parse(char const * const fileName, char const * const buffer, int bufLen,
 	char const * const clang_args[], int num_clang_args)
     {
+    unsigned options = clang_defaultEditingTranslationUnitOptions();
     if(!mSourceFile)
 	{
-	unsigned options = CXTranslationUnit_DetailedPreprocessingRecord;
 	mSourceFilename = fileName;
 	CXIndex index = clang_createIndex(1, 1);
 	mTransUnit = clang_parseTranslationUnit(index, fileName,
 	    clang_args, num_clang_args, 0, 0, options);
-	mSourceFile = clang_getFile(mTransUnit, fileName);
+
+#if(0)
+	printf("%s\n", fileName);
+	int numDiags = clang_getNumDiagnostics(mTransUnit);
+	for (int i = 0; i<numDiags; i++)
+	    {
+	    CXDiagnostic diag = clang_getDiagnostic(mTransUnit, i);
+//	    CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
+//	    if(sev >= CXDiagnostic_Error)
+	    CXStringDisposer diagStr = clang_formatDiagnostic(diag,
+		clang_defaultDiagnosticDisplayOptions());
+		printf("%s\n", diagStr.c_str());
+	    }
+	fflush(stdout);
+#endif
 	}
     else
 	{
-	unsigned options = clang_defaultEditingTranslationUnitOptions();
 	CXUnsavedFile file;
 	file.Filename = mSourceFilename.c_str();
 	file.Contents = buffer;
@@ -75,6 +88,7 @@ void Tokenizer::parse(char const * const fileName, char const * const buffer, in
 	    mTransUnit = nullptr;
 	    }
 	}
+    mSourceFile = clang_getFile(mTransUnit, fileName);
     }
 
 void Tokenizer::tokenize(/*int startLine, int endLine, */TokenRange &tokens)
@@ -114,9 +128,8 @@ static CXCursor getCursorUsingTokens(CXTranslationUnit tu, CXCursor cursor,
 #endif
 
 #if(1)
-// For some reason, navigating the AST does not descend into a constructor's
-// compound statement: Blacksheep(). Doing it manually below
-// using visitTranslationUnit does not either.
+// If this doesn't descend to a detailed cursor, then most likely
+// there is a compile error.
 static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
 	unsigned desiredOffset)
     {
@@ -132,32 +145,63 @@ static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
 struct visitTranslationUnitData
     {
     visitTranslationUnitData(CXFile file, unsigned offset):
-	mFile(file), mDesiredOffset(offset), mClosestOffset(0)
+	mFile(file), mDesiredOffset(offset), mSize(INT_MAX)
 	{}
     CXFile mFile;
     unsigned mDesiredOffset;
-    unsigned mClosestOffset;	// Closest offset before desired location
+    unsigned mSize;
     CXCursor mCursor;
     };
+
+#include <memory.h>
+static bool clangFilesEqual(CXFile f1, CXFile f2)
+    {
+// Not declared?
+//    return clang_File_isEqual(f1, f2);
+    CXFileUniqueID f1id;
+    CXFileUniqueID f2id;
+    if(f1)
+	clang_getFileUniqueID(f1, &f1id);
+    if(f2)
+	clang_getFileUniqueID(f2, &f2id);
+    return(memcmp(&f1id.data, &f2id.data, sizeof(f1id.data)) == 0);
+    }
 
 static CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent,
 	CXClientData client_data)
     {
     visitTranslationUnitData *data = static_cast<visitTranslationUnitData*>(client_data);
-    CXSourceLocation loc = clang_getCursorLocation(cursor);
-    unsigned offset;
-    unsigned line;
+    CXSourceRange range = clang_getCursorExtent(cursor);
+    CXSourceLocation startLoc = clang_getRangeStart(range);
+    CXSourceLocation endLoc = clang_getRangeEnd(range);
     CXFile file;
-    clang_getSpellingLocation(loc, &file, &line, nullptr, &offset);
-//    if(file == data->mFile && offset < data->mDesiredOffset && offset > data->mClosestOffset)
+    unsigned startOffset;
+    unsigned endOffset;
+    clang_getSpellingLocation(startLoc, &file, nullptr, nullptr, &startOffset);
+    clang_getSpellingLocation(endLoc, &file, nullptr, nullptr, &endOffset);
+    // Use the smallest cursor that surrounds the desired location.
+    unsigned size = endOffset - startOffset;
+    if(clangFilesEqual(file, data->mFile) &&
+	    startOffset < data->mDesiredOffset && endOffset > data->mDesiredOffset)
 	{
-	data->mClosestOffset = offset;
-	data->mCursor = cursor;
+	if(size < data->mSize)
+	    {
+	    data->mCursor = cursor;
+	    data->mSize = size;
 
-	CXStringDisposer sp = clang_getCursorSpelling(cursor);
-	CXStringDisposer kind = clang_getCursorKindSpelling(cursor.kind);
-	printf("%s %s %d %d, %d\n", kind.c_str(), sp.c_str(), offset, line, data->mDesiredOffset);
+	    printf("GOOD:\n   ");
+	    }
 	}
+    CXStringDisposer sp = clang_getCursorSpelling(cursor);
+    CXStringDisposer kind = clang_getCursorKindSpelling(cursor.kind);
+    std::string fn;
+    if(file)
+	{
+	CXStringDisposer s = clang_getFileName(file);
+	fn = s;
+	}
+    printf("%s %s off %d size %d des offset %d file %s\n", kind.c_str(), sp.c_str(), startOffset,
+	    size, data->mDesiredOffset, fn.c_str());
 //    clang_visitChildren(cursor, ::visitTranslationUnit, client_data);
 //    return CXChildVisit_Continue;
     return CXChildVisit_Recurse;
@@ -292,10 +336,10 @@ void Highlighter::highlight(GtkTextView *textView, char const * const filename,
     gtk_text_view_get_line_at_y(textView, &startIter, startBufY, NULL);
     gtk_text_view_get_line_at_y(textView, &endIter, endBufY, NULL);
 
-    int startLineY = gtk_text_iter_get_line(&startIter);
+//    int startLineY = gtk_text_iter_get_line(&startIter);
 //    int endLineY = gtk_text_iter_get_line(&endIter);
-    if(startLineY < 1)
-	startLineY = 1;
+//    if(startLineY < 1)
+//	startLineY = 1;
 
     mTokenizer.parse(filename, buffer, bufLen, clang_args, num_clang_args);
     TokenRange tokens;

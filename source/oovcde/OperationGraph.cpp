@@ -186,10 +186,9 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	else if(stmt.getStatementType() == ST_VarRef)
 	    {
 	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
-	    int classIndex = -1;
 	    if(cls)
 		{
-		classIndex = addOrGetClass(cls, gc);
+		int classIndex = addOrGetClass(cls, gc);
 		if(classIndex != -1)
 		    {
 		    const ModelAttribute *targetAttr = cls->getAttribute(stmt.getName());
@@ -204,10 +203,9 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	else if(stmt.getStatementType() == ST_Call)
 	    {
 	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
-	    int classIndex = -1;
 	    if(cls)
 		{
-		classIndex = addOrGetClass(cls, gc);
+		int classIndex = addOrGetClass(cls, gc);
 		if(classIndex != -1)
 		    {
 		    const ModelOperation *targetOper = cls->getOperationAnyConst(stmt.getName(),

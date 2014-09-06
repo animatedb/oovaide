@@ -21,7 +21,7 @@
 struct ScrolledFileView
     {
     ScrolledFileView():
-	mDesiredLine(-1)
+    mScrolled(nullptr), mDesiredLine(-1)
 	{}
     GtkNotebook *getBook()
 	{

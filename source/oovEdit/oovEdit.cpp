@@ -116,6 +116,26 @@ void Editor::findDialog()
 	}
     }
 
+
+void Editor::gotoLineDialog()
+    {
+    Dialog dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("GoToLineDialog")),
+	    Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")));
+    int ret = dialog.run(true);
+    if(ret)
+	{
+	FileEditView *view = mEditFiles.getEditView();
+	GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("LineNumberEntry"));
+	OovString lineNumStr = gtk_entry_get_text(entry);
+	int lineNum;
+	if(lineNumStr.getInt(0, INT_MAX, lineNum))
+	    {
+	    view->gotoLine(lineNum);
+	    }
+	Gui::setText(entry, "");
+	}
+    }
+
 void Editor::findAgain(bool forward)
     {
     if(mLastSearch.length() == 0)
@@ -135,8 +155,16 @@ class FindFiles:public dirRecurser
 	~FindFiles()
 	    {}
 	FindFiles(char const *srchStr, bool caseSensitive, GtkTextView *view):
-	    mSrchStr(srchStr), mCaseSensitive(caseSensitive), mView(view)
+	    mSrchStr(srchStr), mCaseSensitive(caseSensitive), mView(view),
+	    mNumMatches(0)
 	    {}
+	bool recurseDirs(char const * const srcDir)
+	    {
+	    mNumMatches = 0;
+	    return dirRecurser::recurseDirs(srcDir);
+	    }
+	int getNumMatches() const
+	    { return mNumMatches; }
 
     private:
 	virtual bool processFile(const std::string &filePath);
@@ -145,6 +173,7 @@ class FindFiles:public dirRecurser
 	std::string mSrchStr;
 	bool mCaseSensitive;
 	GtkTextView *mView;
+	int mNumMatches;
     };
 
 #ifndef __linux__
@@ -205,6 +234,7 @@ bool FindFiles::processFile(const std::string &filePath)
 		    }
 		if(match)
 		    {
+		    mNumMatches++;
 		    OovString matchStr = filePath;
 		    matchStr += ':';
 		    matchStr.appendInt(lineNum);
@@ -225,6 +255,10 @@ void Editor::findInFiles(char const * const srchStr, char const * const path,
     {
     FindFiles findFiles(srchStr, caseSensitive, view);
     findFiles.recurseDirs(path);
+    OovString matchStr = "Found ";
+    matchStr.appendInt(findFiles.getNumMatches());
+    matchStr += " matches";
+    Gui::appendText(view, matchStr.c_str());
     }
 
 void Editor::findInFilesDialog()
@@ -256,6 +290,8 @@ void Editor::gotoFileLine(std::string const &lineBuf)
 	OovString numStr(lineBuf.substr(pos+1, lineBuf.length()-pos).c_str());
 	if(numStr.getInt(0, INT_MAX, lineNum))
 	    {
+	    if(lineNum == 0)
+		lineNum = 1;
 	    mEditFiles.viewFile(lineBuf.substr(0, pos).c_str(), lineNum);
 	    }
 	}
@@ -376,12 +412,15 @@ void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
     gEditor.bufferDeleteRange(textbuffer, start, end);
     }
 
+/*
+// This indicates if a scroll occurred.
 //gboolean draw(GtkWidget *widget, CairoContext *cr, gpointer user_data)
 gboolean draw(GtkWidget *widget, void *cr, gpointer user_data)
     {
     gEditor.drawHighlight();
     return FALSE;
     }
+*/
 /*
 static void scrollChild(GtkWidget *widget, GdkEvent *event, gpointer user_data)
     {
@@ -510,7 +549,7 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
     for(gint i = 0; i < argc && goodArgs; i++)
 	{
 	char const * fn = nullptr;
-	int line = 0;
+	int line = 1;
 	for(int argi=1; argi<argc; argi++)
 	    {
 	    if(argv[argi][0] == '+')
@@ -811,4 +850,17 @@ extern "C" G_MODULE_EXPORT void on_GoToDeclMenuitem_activate(GtkWidget *button, 
 extern "C" G_MODULE_EXPORT void on_GoToDefMenuitem_activate(GtkWidget *button, gpointer data)
     {
     gEditor.gotoDefinition();
+    }
+
+extern "C" G_MODULE_EXPORT void on_GoToLineMenuitem_activate(GtkWidget *button, gpointer data)
+    {
+    gEditor.gotoLineDialog();
+    }
+
+extern "C" G_MODULE_EXPORT void on_LineNumberEntry_activate(GtkEditable *editable,
+        gpointer user_data)
+    {
+    GtkWidget *dlg = gEditor.getBuilder().getWidget("GoToLineDialog");
+    gtk_widget_hide(dlg);
+    g_signal_emit_by_name(dlg, "response", GTK_RESPONSE_OK);
     }

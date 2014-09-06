@@ -176,7 +176,7 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 		    if(stmt.getDecl().getDeclType())
 			className = stmt.getDecl().getDeclType()->getName();
 		    fprintf(mFp, "c=%s@%d", translate(stmt.getName()).c_str(),
-			getObjectModelId(className.c_str()));
+			getObjectModelId(className));
 		    }
 		    break;
 
@@ -187,7 +187,7 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 		    if(stmt.getDecl().getDeclType())
 			className = stmt.getDecl().getDeclType()->getName();
 		    fprintf(mFp, "v=%s@%d", translate(stmt.getName()).c_str(),
-			getObjectModelId(className.c_str()));
+			getObjectModelId(className));
 		    }
 		    break;
 #endif

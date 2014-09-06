@@ -203,10 +203,23 @@ void OovPipeProcessLinux::linuxChildProcessListen(OovProcessListener &listener, 
 	    }
 	rfds[0].revents = 0;
 	rfds[1].revents = 0;
+#define PPOLL 1
+#if(PPOLL)
+        sigset_t signals;
+        sigemptyset(&signals);
+        sigaddset(&signals, POLLIN);
+        timespec waittime;
+        waittime.tv_sec = 1;
+        waittime.tv_nsec = 0;
+	int stat = ppoll(rfds, 2, &waittime, &signals);
+#else
 	int stat = poll(rfds, 2, 250);
-	bool didSomething = false;
+#endif
 	if(stat > 0)
 	    {
+#if(!PPOLL)
+            bool didSomething = false;
+#endif
 #if(DEBUG_PROC)
 	    sDbgFile.printflush("linuxChildProcessListen stat %d\n", stat);
 #endif
@@ -214,35 +227,34 @@ void OovPipeProcessLinux::linuxChildProcessListen(OovProcessListener &listener, 
 		{
 		if(rfds[i].revents & POLLIN)
 		    {
+#if(!PPOLL)
 		    didSomething = true;
-		    int size = 0;
-//		    do
-			{
-			char buf[500];
-#if(DEBUG_PROC)
-			sDbgFile.printflush("linuxChildProcessListen read start %d\n", i);
 #endif
-			size = read(rfds[i].fd, buf, sizeof(buf));
+                    char buf[500];
 #if(DEBUG_PROC)
-			sDbgFile.printflush("linuxChildProcessListen read %d\n", size);
+                    sDbgFile.printflush("linuxChildProcessListen read start %d\n", i);
 #endif
-			if(size > 0)
-			    {
-			    if(rfds[i].fd == mInPipe[P_Read])
-				listener.onStdOut(buf, size);
-			    else
-				listener.onStdErr(buf, size);
-			    }
+                    int size = read(rfds[i].fd, buf, sizeof(buf));
 #if(DEBUG_PROC)
-			sDbgFile.printflush("linuxChildProcessListen done read %d\n", size);
+                    sDbgFile.printflush("linuxChildProcessListen read %d\n", size);
 #endif
-			}
-//			while(size > 0);
+                    if(size > 0)
+			 {
+			 if(rfds[i].fd == mInPipe[P_Read])
+                            listener.onStdOut(buf, size);
+			 else
+                            listener.onStdErr(buf, size);
+			 }
+#if(DEBUG_PROC)
+                    sDbgFile.printflush("linuxChildProcessListen done read %d\n", size);
+#endif
 		    }
 		}
 	    }
+#if(!PPOLL)
 	if(!didSomething)
 	    sleepMs(10);
+#endif
 	}
 #if(DEBUG_PROC)
     sDbgFile.printflush("linuxChildProcessListen - done waiting\n");
@@ -260,6 +272,9 @@ void OovPipeProcessLinux::linuxChildProcessListen(OovProcessListener &listener, 
 	}
     else
 	exitCode = waitStatus;
+#if(DEBUG_PROC)
+    sDbgFile.printflush("linuxChildProcessListen - done\n");
+#endif
     }
 
 void OovPipeProcessLinux::linuxChildProcessSend(char const * const str)
@@ -520,11 +535,10 @@ void OovPipeProcessWindows::windowsChildProcessKill()
 bool OovPipeProcess::createProcess(char const * const procPath,
 	char const * const *argv)
     {
-    bool success = false;
 #ifdef __linux__
-    success = mPipeProcLinux.linuxCreatePipeProcess(procPath, argv);
+    bool success = mPipeProcLinux.linuxCreatePipeProcess(procPath, argv);
 #else
-    success = mPipeProcWindows.windowsCreatePipeProcess(procPath, argv);
+    bool success = mPipeProcWindows.windowsCreatePipeProcess(procPath, argv);
 #endif
     return success;
     }

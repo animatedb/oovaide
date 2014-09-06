@@ -11,6 +11,7 @@
 #include "ComponentFinder.h"
 #include "ObjSymbols.h"
 #include "OovThreadedQueue.h"
+#include "Project.h"
 
 
 class ComponentPkgDeps
@@ -114,20 +115,16 @@ class ComponentBuilder:public ComponentTaskQueue
 	ComponentPkgDeps mComponentPkgDeps;
 
 	void buildComponents();
-	void makeObj(const std::string &srcFile,
-		const std::vector<std::string> &incDirs,
-		const std::vector<std::string> &incFiles,
+	void makeObj(const std::string &srcFile, const StdStringVec &incDirs,
+		const StdStringVec &incFiles,
 		const std::set<std::string> &externPkgCompileArgs);
-	void makeLib(const std::string &libName,
-		const std::vector<std::string> &objectFileNames);
-	void makeLibSymbols(char const * const clumpName,
-		const std::vector<std::string> &files);
-	void makeExe(char const * const compName,
-		const std::vector<std::string> &sources,
-		const std::vector<std::string> &projectLibsFilePaths,
-		const std::vector<std::string> &externLibDirs,
-		const std::vector<std::string> &externOrderedLibNames,
-		const std::set<std::string> &externPkgLinkArgs,
+	void makeLib(const std::string &libName, const StdStringVec &objectFileNames);
+	void makeLibSymbols(char const * const clumpName, const StdStringVec &files);
+	void makeExe(char const * const compName, const StdStringVec &sources,
+		const StdStringVec &projectLibsFilePaths,
+		const StdStringVec &externLibDirs,
+		const IndexedStringVec &externOrderedLibNames,
+		const IndexedStringSet &externPkgLinkArgs,
 		bool shared);
 	std::string makeOutputObjectFileName(char const * const str);
 	std::string getSymbolBasePath();
@@ -138,11 +135,15 @@ class ComponentBuilder:public ComponentTaskQueue
 	void makePackageLibSymbols(char const * const compName);
 	void makeOrderedPackageLibs(char const * const compName,
 		std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames);
+	/// For the specified component, get the library directories and library names
+	/// from the external build packages.
 	void appendOrderedPackageLibs(char const * const compName,
-		std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames);
+		StdStringVec &libDirs, IndexedStringVec &sortedLibNames);
 	std::set<std::string> getComponentCompileArgs(char const * const compName,
 		ComponentTypesFile const &file);
-	std::set<std::string> getComponentLinkArgs(char const * const compName,
+	/// For the specified component, get the link arguments for the external build
+	/// packages.
+	IndexedStringSet getComponentPackageLinkArgs(char const * const compName,
 		ComponentTypesFile const &file);
     };
 

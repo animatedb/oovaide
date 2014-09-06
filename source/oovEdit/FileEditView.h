@@ -83,7 +83,6 @@ class FileEditView
 		wnd = GTK_WINDOW(mTextView);
 	    return wnd;
 	    }
-	void drawHighlight();
 	void idleHighlight();
 	void gotoLine(int lineNum);
 	void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
@@ -101,7 +100,11 @@ class FileEditView
 	std::vector<HistoryItem> mHistoryItems;
 	size_t mCurHistoryPos;		// Range is 0 to size()-1.
 	bool mDoingHistory;		// Doing undo or redo.
-	enum HightlightStates { HS_ExternalChange, HS_DrawHighlight, HS_HighlightDone };
+	enum HightlightStates
+	    {
+	    HS_NeedHighlight,	// The text buffer has changed and a highlight update is needed.
+	    HS_HighlightDone
+	    };
 	HightlightStates mNeedHighlightUpdate;
 	Highlighter mHighlighter;
 	Indenter mIndenter;

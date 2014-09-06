@@ -95,6 +95,7 @@ class Editor:public DebuggerListener
 	    { mProjectDir = projDir; }
 	void gotoLine(int lineNum)
 	    { mEditFiles.gotoLine(lineNum); }
+	void gotoLineDialog();
 	void gotoFileLine(std::string const &lineBuf);
 	void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
 	        gchar *text, gint len)
@@ -108,11 +109,13 @@ class Editor:public DebuggerListener
 	    if(mEditFiles.getEditView())
 		mEditFiles.getEditView()->bufferDeleteRange(textbuffer, start, end);
 	    }
+/*
 	void drawHighlight()
 	    {
 	    if(mEditFiles.getEditView())
 		mEditFiles.getEditView()->drawHighlight();
 	    }
+*/
 	void editPreferences();
 	void setPreferencesWorkingDir();
 	void idleDebugStatusChange(Debugger::eChangeStatus st);
@@ -138,10 +141,6 @@ class Editor:public DebuggerListener
 	void find(char const * const findStr, bool forward, bool caseSensitive);
 	void findAndReplace(char const * const findStr, bool forward, bool caseSensitive,
 		char const * const replaceStr);
-	void setModuleName(const char *mn)
-	    {
-	    gtk_window_set_title(GTK_WINDOW(mBuilder.getWidget("MainWindow")), mn);
-	    }
 };
 
 

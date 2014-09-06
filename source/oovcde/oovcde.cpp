@@ -55,7 +55,7 @@ void Menu::updateMenuEnables()
     bool idle = mGui.mBackgroundProc.isIdle();
     bool open = mGui.isProjectOpen();
 
-    if(idle != mBuildIdle || open != mProjectOpen)
+    if(idle != mBuildIdle || open != mProjectOpen || mInit)
 	{
 	gtk_widget_set_sensitive(mGui.getBuilder().getWidget(
 		"EditOptionsmenuitem"), open);
@@ -80,6 +80,7 @@ void Menu::updateMenuEnables()
 		mGui.getBuilder().getWidget("MakeCMakeMenuitem"), open);
 	mBuildIdle = idle;
 	mProjectOpen = open;
+	mInit = false;
 	}
     }
 
@@ -319,7 +320,7 @@ int oovGui::getStatusSourceFile(std::string &fn)
     {
     GtkWidget *widget = getBuilder().getWidget("StatusTextview");
     GtkTextView *textView = GTK_TEXT_VIEW(widget);
-    int lineNum;
+    int lineNum = 0;
     std::string line = Gui::getCurrentLineText(textView);
     size_t pos = 0;
     while(pos != std::string::npos)
@@ -540,7 +541,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
 
     FilePath compDir(basePath, FP_Dir);
     if(compName != "<Root>")
-	compDir.setPath(compName.c_str(), FP_Dir);
+	compDir.appendDir(compName.c_str());
     // Create the new component directory if it doesn't exist.
     ensurePathExists(compDir.c_str());
 

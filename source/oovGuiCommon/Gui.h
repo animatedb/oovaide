@@ -9,9 +9,12 @@
 #define GUI_H_
 
 #include "Builder.h"
-#include <string>
+#include "OovString.h"
 #include <vector>
 
+
+#define GUI_OK "_OK"
+#define GUI_CANCEL "_Cancel"
 
 class PathChooser
     {
@@ -79,79 +82,92 @@ class GuiText:public std::string
 	    { g_free(text); }
     };
 
-class Gui
+namespace Gui
     {
-    public:
-	static GtkWindow *getWindow(GtkWidget *widget)
+	inline GtkWindow *getWindow(GtkWidget *widget)
 	    { return GTK_WINDOW(widget); }
-	static void clear(GtkTextView *textview);
-	static void clear(GtkComboBoxText *box)
+	void clear(GtkTextView *textview);
+	inline void clear(GtkComboBoxText *box)
 	    { gtk_combo_box_text_remove_all(box); }
-	static void appendText(GtkTextView *textview, const std::string &text);
-	static void appendText(GtkComboBoxText *box, const std::string &text)
+	void appendText(GtkTextView *textview, const std::string &text);
+	inline void appendText(GtkComboBoxText *box, const std::string &text)
 	    { gtk_combo_box_text_append_text(box, text.c_str()); }
-	static void scrollToCursor(GtkTextView *textview);
-	static void setText(GtkEntry *textentry, char const * const text)
+	void scrollToCursor(GtkTextView *textview);
+	inline void setText(GtkEntry *textentry, char const * const text)
 	    { gtk_entry_set_text(textentry, text); }
-	static void setText(GtkLabel *label, char const * const text)
+	inline void setText(GtkLabel *label, char const * const text)
 	    { gtk_label_set_text(label, text); }
-	static void setText(GtkTextView *view, char const * const text)
+	inline void setText(GtkTextView *view, char const * const text)
 	    {
 	    clear(view);
 	    appendText(view, text);
 	    }
-	static GuiText getText(GtkTextView *textview);
-	static char const * const getText(GtkEntry *entry)
+	GuiText getText(GtkTextView *textview);
+	inline char const * const getText(GtkEntry *entry)
 	    { return gtk_entry_get_text(entry); }
-	static char const * const getText(GtkLabel *label)
+	inline char const * const getText(GtkLabel *label)
 	    { return gtk_label_get_text(label); }
-	static GuiText getText(GtkComboBoxText *cb)
+	inline GuiText getText(GtkComboBoxText *cb)
 	    { return GuiText(gtk_combo_box_text_get_active_text(cb)); }
-	static char const * const getSelectedText(GtkTextView *textview);
-	static int getCurrentLineNumber(GtkTextView *textView);
-	static GuiText getCurrentLineText(GtkTextView *textView);
-	static void setSelected(GtkComboBox *cb, int index)
+	char const * const getSelectedText(GtkTextView *textview);
+	int getCurrentLineNumber(GtkTextView *textView);
+	GuiText getCurrentLineText(GtkTextView *textView);
+	inline void setSelected(GtkComboBox *cb, int index)
 	    { gtk_combo_box_set_active(cb, index); }
-	static void setSelected(GtkComboBoxText *cb, int index)
+	inline void setSelected(GtkComboBoxText *cb, int index)
 	    { gtk_combo_box_set_active(GTK_COMBO_BOX(cb), index); }
 
-	static void setEnabled(GtkButton *w, bool enabled)
+	inline void setEnabled(GtkButton *w, bool enabled)
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
-	static void setEnabled(GtkLabel *w, bool enabled)
+	inline void setEnabled(GtkLabel *w, bool enabled)
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
 
-	static void setVisible(GtkButton *w, bool show)
-	    { setVisible(GTK_WIDGET(w), show); }
-	static void setVisible(GtkLabel *w, bool show)
-	    { setVisible(GTK_WIDGET(w), show); }
-	static void setVisible(GtkWidget *w, bool show)
+	inline void setVisible(GtkWidget *w, bool show)
 	    {
 	    if(show)
 		gtk_widget_show_all(GTK_WIDGET(w));
 	    else
 		gtk_widget_hide(GTK_WIDGET(w));
 	    }
+	inline void setVisible(GtkButton *w, bool show)
+	    { setVisible(GTK_WIDGET(w), show); }
+	inline void setVisible(GtkLabel *w, bool show)
+	    { setVisible(GTK_WIDGET(w), show); }
 
-	static bool messageBox(char const * const msg,
+	bool messageBox(char const * const msg,
 		GtkMessageType msgType=GTK_MESSAGE_ERROR,
 		GtkButtonsType buttons=GTK_BUTTONS_OK);
-	static int appendPage(GtkNotebook *notebook, GtkWidget *child, GtkWidget *tabLabel)
+	inline int appendPage(GtkNotebook *notebook, GtkWidget *child,
+            GtkWidget *tabLabel)
 	    { return gtk_notebook_append_page(notebook, child, tabLabel); }
-	static int getCurrentPage(GtkNotebook *notebook)
+	inline int getCurrentPage(GtkNotebook *notebook)
 	    { return gtk_notebook_get_current_page(notebook); }
-	static void setCurrentPage(GtkNotebook *notebook, int page)
+	inline void setCurrentPage(GtkNotebook *notebook, int page)
 	    { gtk_notebook_set_current_page(notebook, page); }
-	static int findTab(GtkNotebook *notebook, char const * const tabName);
-	static int getNumPages(GtkNotebook *notebook)
+	int findTab(GtkNotebook *notebook, char const * const tabName);
+	inline int getNumPages(GtkNotebook *notebook)
 	    { return gtk_notebook_get_n_pages(notebook); }
-	static GtkWidget *getNthPage(GtkNotebook *notebook, int pageNum)
+	inline GtkWidget *getNthPage(GtkNotebook *notebook, int pageNum)
 	    { return gtk_notebook_get_nth_page(notebook, pageNum); }
-	static void reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent);
-	static void redraw(GtkWidget *widget)
+	void reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent);
+	inline void redraw(GtkWidget *widget)
 	    { gtk_widget_queue_draw(widget); }
     };
 
-class GuiList
+class GuiTreeView
+    {
+    public:
+	GuiTreeView():
+	    mTreeView(nullptr)
+	    {}
+	void clear();
+	void removeSelected();
+
+    protected:
+	GtkTreeView *mTreeView;
+    };
+
+class GuiList:public GuiTreeView
     {
     public:
 	enum TreeViewItems
@@ -159,22 +175,29 @@ class GuiList
 	   LIST_ITEM = 0,
 	   N_COLUMNS
 	 };
-	GuiList():
-	    mListWidget(nullptr)
-	    {}
 	void init(Builder &builder, char const * const widgetName,
 		char const * const title);
 	void appendText(char const * const str);
-	void clear();
 	void sort();
 	std::vector<std::string> getText() const;
 	std::string getSelected() const;
 	int getSelectedIndex() const;
 	void setSelected(char const * const str);
-	void removeSelected();
+    };
 
-    private:
-	GtkTreeView *mListWidget;
+class GuiTreeValue
+    {
+    public:
+	GuiTreeValue():
+	    mStr(nullptr)
+	    {}
+	~GuiTreeValue()
+	    {
+	    if(mStr)
+		g_free(mStr);
+	    }
+
+    char *mStr;
     };
 
 class GuiTreeItem
@@ -186,35 +209,42 @@ class GuiTreeItem
 	    {}
 	bool isRoot() const
 	    { return mRoot; }
+	void setRoot(bool root=true)
+	    { mRoot = true; }
+	GtkTreeIter *getPtr()
+	    { return(mRoot ? NULL : &mIter); }
     private:
 	GtkTreeIter mIter;
 	bool mRoot;
     };
 
 /// This only supports a 2 level tree at this time.
-class GuiTree
+class GuiTree:public GuiTreeView
     {
     public:
 	enum TreeViewItems
-	 {
-	   LIST_ITEM = 0,
-	   N_COLUMNS
-	 };
-
+            {
+            LIST_ITEM = 0,
+            N_COLUMNS
+            };
 	void init(Builder &builder, char const * const widgetName,
 		char const * const title);
 	/// Returns the newly created child item.
 	GuiTreeItem appendText(GuiTreeItem parentItem, char const * const str);
-	void clear();
 	/// first element is parent, second is child
-	void getSelected(std::vector<std::string> &names) const;
+	std::vector<OovString> const getSelected() const;
+	OovString const getSelected(char delimiter) const;
 	void clearSelection()
-	    { gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(mTreeWidget)); }
-//	int getSelectedIndex() const;
-//	void setSelected(char const * const str);
+	    { gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(mTreeView)); }
+	void setSelected(std::vector<OovString> const &names);
+	void setSelected(OovString const &name, char delimeter);
+	GuiTreeItem getItem(OovString const &name, char delimiter);
 
     private:
-	GtkTreeView *mTreeWidget;
+	// parent can be nullptr to find top level nodes,
+	// otherwise this finds the child nodes.
+	bool findNodeIter(GtkTreeIter *parent, OovString const &name,
+		char delimiter, GtkTreeIter *childIter);
     };
 
 class BackgroundDialog:public Dialog

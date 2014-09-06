@@ -67,7 +67,7 @@ class Menu
     {
     public:
 	Menu(class oovGui &gui):
-	    mGui(gui)
+	    mGui(gui), mBuildIdle(true), mProjectOpen(false), mInit(true)
 	    {}
 	void updateMenuEnables();
 
@@ -75,6 +75,7 @@ class Menu
 	class oovGui &mGui;
 	bool mBuildIdle;
 	bool mProjectOpen;
+	bool mInit;
     };
 
 #define LAZY_UPDATE 0

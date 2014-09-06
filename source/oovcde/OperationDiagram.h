@@ -22,6 +22,9 @@ class OperationDiagramListener
 
 struct OperationDiagramParams
     {
+    OperationDiagramParams():
+        mIsConst(false)
+        {}
     std::string mClassName;
     std::string mOpName;
     bool mIsConst;

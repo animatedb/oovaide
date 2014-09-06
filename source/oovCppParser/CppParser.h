@@ -39,7 +39,7 @@ class CppParser
     {
     public:
 	CppParser():
-	    mClassifier(nullptr), mOperation(nullptr)
+	    mClassifier(nullptr), mOperation(nullptr), mStatements(nullptr)
 	    {}
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
 	    ET_NoSourceFile, ET_ParseError };

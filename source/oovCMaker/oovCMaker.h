@@ -46,6 +46,6 @@ class CMaker
         void makeTopInFile(char const * const destName);
         void makeTopVerInFile(char const * const destName);
         void makeComponentFile(char const * const compName,
-            ComponentTypesFile::CompTypes compType,
+            ComponentTypesFile::eCompTypes compType,
             std::vector<std::string> const &source, char const * const destName);
     };

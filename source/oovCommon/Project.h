@@ -86,6 +86,25 @@ class Project
 	static std::string sSourceRootDirectory;
     };
 
+enum eLinkOrderIndices { LOI_InternalProject=0, LOI_AfterInternalProject=1000,
+    LOI_PackageIncrement=1000 };
+struct IndexedString
+    {
+    int mLinkOrderIndex;
+    std::string mString;
+    IndexedString(int index, char const * const str):
+	mLinkOrderIndex(index), mString(str)
+	{}
+    IndexedString(int index, const std::string &str):
+	mLinkOrderIndex(index), mString(str)
+	{}
+    bool operator<(const IndexedString &rhs) const
+	{ return(mLinkOrderIndex < rhs.mLinkOrderIndex); }
+    };
+
+typedef std::vector<IndexedString> IndexedStringVec;
+typedef std::set<IndexedString> IndexedStringSet;
+
 class ProjectReader:public NameValueFile
     {
     public:
@@ -103,18 +122,11 @@ class ProjectReader:public NameValueFile
 	    { return mBuildPackages; }
 	const StdStringVec &getCompileArgs() const
 	    { return mCompileArgs; }
-	const StdStringVec &getLinkArgs() const
+	const IndexedStringVec &getLinkArgs() const
 	    { return mLinkArgs; }
-// This hasn't been needed yet. It was added because documentation
-// said that -lrt must be after objects, but that is true of all libs,
-// and the libs are already placed after objects.
-#define LATE_LINK_ARG 0
-#if(LATE_LINK_ARG)
-	const StdStringVec &getLateLinkArgs() const
-	    { return mLateLinkArgs; }
-#endif
 	const StdStringVec &getExternalArgs() const
 	    { return mExternalRootArgs; }
+	int getExternalPackageLinkOrder(char const * const pkgName) const;
 	// These are only used for computing CRC's. The builder will later get
 	// the arguments from the packages because not all packages are used by
 	// all components.
@@ -128,16 +140,18 @@ class ProjectReader:public NameValueFile
 
     private:
 	StdStringVec mCompileArgs;
-	StdStringVec mLinkArgs;
-#if(LATE_LINK_ARG)
-	StdStringVec mLateLinkArgs;
-#endif
+	IndexedStringVec mLinkArgs;
 	StdStringVec mExternalRootArgs;
+	IndexedStringVec mExternalPackageNames;
+
+	// The Crc vectors are only for computing CRC and are not used for building.
 	StdStringVec mPackageCrcCompileArgs;
 	StdStringVec mPackageCrcLinkArgs;
 	StdStringVec mPackageCrcNames;
+
 	/// These are chosen by the user and saved for the project.
 	ProjectPackages mProjectPackages;
+
 	/// These may be modified by the build and contains project packages and
 	/// external root directories.
 	BuildPackages mBuildPackages;
@@ -145,14 +159,12 @@ class ProjectReader:public NameValueFile
 
 	void addCompileArg(char const * const str)
 	    { mCompileArgs.push_back(str); }
-	void addLinkArg(char const * const str)
-	    { mLinkArgs.push_back(str); }
-#if(LATE_LINK_ARG)
-	void addLateLinkArg(char const * const str)
-	    { mLateLinkArgs.push_back(str); }
-#endif
+	void addLinkArg(int linkOrderIndex, char const * const str)
+	    { mLinkArgs.push_back(IndexedString(linkOrderIndex, str)); }
 	void addExternalArg(char const * const str)
 	    { mExternalRootArgs.push_back(str); }
+	void addExternalPackageName(int linkOrderIndex, char const * const str)
+	    { mExternalPackageNames.push_back(IndexedString(linkOrderIndex, str)); }
 
 	void addPackageCrcName(char const * const pkgName)
 	    { mPackageCrcNames.push_back(std::string("-EP") + pkgName); }

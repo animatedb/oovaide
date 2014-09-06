@@ -602,7 +602,7 @@ ModelType *ModelData::createOrGetTypeRef(char const * const typeName, eModelData
     ModelType *type = findType(baseTypeName.c_str());
     if(!type)
 	{
-	type = static_cast<ModelType*>(createDataType(dtype, baseTypeName.c_str()));
+	type = static_cast<ModelType*>(createDataType(dtype, baseTypeName));
 	}
     return type;
     }
@@ -610,7 +610,7 @@ ModelType *ModelData::createOrGetTypeRef(char const * const typeName, eModelData
 ModelType *ModelData::createTypeRef(char const * const typeName, eModelDataTypes dtype)
     {
     std::string baseTypeName = getBaseType(typeName);
-    return static_cast<ModelType*>(createDataType(dtype, baseTypeName.c_str()));
+    return static_cast<ModelType*>(createDataType(dtype, baseTypeName));
     }
 
 ModelObject *ModelData::createDataType(eModelDataTypes type, const std::string &id)

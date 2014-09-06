@@ -50,10 +50,13 @@ Linux versions:
 	For the prebuilt binaries, GTK3 and a 64 bit OS is required.
 	A compiler is not required for drawing analysis since
 	libclang.so is included, but either the Gnu or CLang compiler
-	is required for building.
+	is required for building. On ubuntu, external packages gtk+-3.0 and
+	gmodule-2.0 should be linked.
 
-	To build oovcde on Linux (Debian/Ubuntu):
-		- Run "sudo apt-get install libgtk-3-dev clang" from a terminal
+
+	To build oovcde on Linux using CMake (Debian/Ubuntu):
+		- Run "sudo apt-get install libgtk-3-dev clang libclang-dev"
+		  from a terminal
 		- LLVM include and lib paths are in the top level CMakeLists.txt
 		- Run "cmake ./" from the oovcde top level directory
 		- Run "make" from the same directory

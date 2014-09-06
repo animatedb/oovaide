@@ -158,6 +158,7 @@ bool ProjectReader::readOovProject(char const * const oovProjectDir,
 
 void ProjectReader::parseArgs(StdStringVec const &args)
     {
+    int linkOrderIndex = LOI_AfterInternalProject;
     for(auto const &arg : args)
 	{
 	if(arg.find("-ER", 0, 3) == 0)
@@ -166,20 +167,16 @@ void ProjectReader::parseArgs(StdStringVec const &args)
 	    }
 	else if(arg.find("-EP", 0, 3) == 0)
 	    {
+	    addExternalPackageName(linkOrderIndex, arg.substr(3).c_str());
+	    linkOrderIndex += LOI_PackageIncrement;
 	    }
 	else if(arg.find("-bv", 0, 3) == 0)
 	    {
 	    mVerbose = true;
 	    }
-#if(LATE_LINK_ARG)
-	else if(arg.find("-lnkl", 0, 5) == 0)
-	    {
-	    addLateLinkArg(arg.substr(5).c_str());
-	    }
-#endif
 	else if(arg.find("-lnk", 0, 4) == 0)
 	    {
-	    addLinkArg(arg.substr(4).c_str());
+	    addLinkArg(linkOrderIndex++, arg.substr(4).c_str());
 	    }
 	else
 	    {
@@ -251,8 +248,20 @@ const StdStringVec ProjectReader::getAllCrcCompileArgs() const
 const StdStringVec ProjectReader::getAllCrcLinkArgs() const
     {
     StdStringVec vec;
-    vec = mLinkArgs;
+    for(auto item : mLinkArgs)
+    	vec.push_back(item.mString);
     std::copy(mPackageCrcLinkArgs.begin(), mPackageCrcLinkArgs.end(),
 	    std::back_inserter(vec));
     return vec;
+    }
+
+int ProjectReader::getExternalPackageLinkOrder(char const * const pkgName) const
+    {
+    int index = LOI_AfterInternalProject;
+    for(auto &item : mExternalPackageNames)
+	{
+	if(item.mString.compare(pkgName) == 0)
+	    index = item.mLinkOrderIndex;
+	}
+    return index;
     }

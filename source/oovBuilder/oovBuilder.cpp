@@ -71,7 +71,7 @@ int main(int argc, char const * const argv[])
 	    {
 	    if(compFinder.getProject().getVerbose() || verbose)
 		{
-		sLog.open(oovProjDir);
+		sVerboseDump.open(oovProjDir);
 		}
 	    }
 	else
@@ -163,17 +163,17 @@ int main(int argc, char const * const argv[])
 	compFn.appendFile(Project::getAnalysisComponentsFilename());
 	compFinder.saveProject(compFn.c_str());
 
-	success = sfp.analyzeSrcFiles(
+	sfp.analyzeSrcFiles(
 		compFinder.getProject().getSrcRootDirectory().c_str(),
 		analysisPath.c_str());
 	if(buildConfigName.compare(BuildConfigAnalysis) != 0)
 	    {
 	    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName.c_str());
 	    ComponentBuilder builder(compFinder);
-#if(DEBUG_COMMANDS)
-	    sLog.logProcess(compFinder.getProject().getSrcRootDirectory().c_str(),
+/*
+	    sVerboseDump.logProcess(compFinder.getProject().getSrcRootDirectory().c_str(),
 		    Project::getIntermediateDir(buildConfigName.c_str()).c_str(), &argv[3], argc-3);
-#endif
+*/
 	    builder.build(compFinder.getProject().getSrcRootDirectory().c_str()
 		    , incDepsPath.c_str(), buildConfigName.c_str());
 	    }

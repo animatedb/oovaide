@@ -851,7 +851,7 @@ bool loadXmiFile(FILE *fp, ModelData &graph, char const * const fn, int &typeInd
         {
 	buf[size] = 0;
 	size_t actualSize = fread(buf, size, 1, fp);
-	if(ferror(fp) == 0)
+	if(ferror(fp) == 0 && actualSize >= 0)
 	    success = loadXmiBuf(buf, graph, typeIndex);
         delete [] buf;
         }

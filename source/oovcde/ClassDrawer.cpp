@@ -163,8 +163,6 @@ void splitClassStrings(std::vector<std::string> &nodeStrs,
 	lengths.push_back(str.length());
 	}
     std::sort(lengths.begin(), lengths.end());
-    float biggestRatio = 0;
-    size_t biggestRatioIndex = 0;
     size_t desiredLength = 0;
     size_t maxLength = lengths[lengths.size()-1];
     if(lengths.size() == 1)
@@ -174,6 +172,8 @@ void splitClassStrings(std::vector<std::string> &nodeStrs,
 	}
     else
 	{
+        float biggestRatio = 0;
+        size_t biggestRatioIndex = 0;
 	for(size_t i=lengths.size()/2; i<lengths.size()-1; i++)
 	    {
 	    float ratio = (maxLength - lengths[i]) / (lengths.size() - i);

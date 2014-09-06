@@ -26,20 +26,18 @@ GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
     GraphPoint pos = startpos;
     GraphSize size;
     GraphSize diagramSize;
-    int endClassY = 0;
-    int condDepth = 0;
     for(size_t i=0; i<graph.mOpClasses.size(); i++)
 	{
 	OperationClass &opClass = graph.mOpClasses[i];
 	opClass.setPosition(pos);
 	size = drawClass(opClass, options);
-	condDepth = graph.getNestDepth(i);
+	int condDepth = graph.getNestDepth(i);
 	size.x += condDepth * mPad;
 	opClass.setSize(size);
 	pos.x += size.x + mCharHeight;
 	}
     diagramSize.x = pos.x;
-    endClassY = startpos.y + size.y;
+    int endClassY = startpos.y + size.y;
 
     pos = startpos;
     pos.y = startpos.y + size.y + mCharHeight;	// space between class rect and operations

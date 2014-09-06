@@ -55,9 +55,10 @@ bool EditOptions::getScreenSize(int &width, int &height)
     bool gotPos = false;
     if(readFile())
 	{
-	int tempWidth, tempHeight;
+	int tempWidth;
 	if(getScreenCoord("ScreenWidth", tempWidth))
 	    {
+            int tempHeight;
 	    if(getScreenCoord("ScreenHeight", tempHeight))
 		{
 		width = tempWidth;

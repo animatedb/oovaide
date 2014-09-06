@@ -156,7 +156,7 @@
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="cdt.managedbuild.target.gnu.platform.base.1412028564" name="Debug Platform" osList="linux,hpux,aix,qnx" superClass="cdt.managedbuild.target.gnu.platform.base"/>
 							<builder buildPath="${workspace_loc:/oovCMaker}/Linux-Release" id="cdt.managedbuild.target.gnu.builder.base.291305238" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="cdt.managedbuild.target.gnu.builder.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.1306549136" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
-							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.compiler.base.160649506" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.compiler.base.160649506" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
 								<option id="gnu.cpp.compiler.option.include.paths.946235794" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 								</option>
@@ -248,7 +248,7 @@
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1245282564" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug.748431114" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.debug"/>
-							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.1905153603" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovCMaker ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug.1905153603" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.debug">
 								<option id="gnu.cpp.link.option.paths.1360827082" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Debug}&quot;"/>

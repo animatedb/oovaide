@@ -11,15 +11,18 @@
 #include "OovThreadedQueue.h"
 
 
-class Logger:public DebugFile
+class VerboseDumper
     {
     public:
 	void open(char const * const outPath);
 	void logOutputOld(char const * const fn);
 	void logProcess(char const * const srcFile, char const * const *argv, int argc);
+	void logProgress(char const * const progress);
 	void logProcessStatus(bool success);
+    private:
+	FILE *mFp;
     };
-extern Logger sLog;
+extern VerboseDumper sVerboseDump;
 
 
 struct fileInfo

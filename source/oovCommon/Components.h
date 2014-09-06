@@ -23,7 +23,7 @@ bool isLibrary(char const * const file);
 class ComponentTypesFile:public NameValueFile
     {
     public:
-	enum CompTypes
+	enum eCompTypes
 	    {
 	    CT_Unknown,
 	    CT_StaticLib,	// .a or .lib
@@ -35,20 +35,34 @@ class ComponentTypesFile:public NameValueFile
 	std::vector<std::string> getComponentNames() const
 	    { return CompoundValueRef::parseString(getValue("Components").c_str()); }
 	bool anyComponentsDefined() const;
-	enum CompTypes getComponentType(char const * const compName) const;
+	enum eCompTypes getComponentType(char const * const compName) const;
+        void setComponentType(char const * const compName, char const * const typeName);
+        void setComponentSources(char const * const compName,
+            std::set<std::string> const &srcs);
+        void setComponentIncludes(char const * const compName,
+            std::set<std::string> const &incs);
 	std::vector<std::string> getComponentSources(char const * const compName) const;
 	std::vector<std::string> getComponentIncludes(char const * const compName) const;
 	std::string getComponentBuildArgs(char const * const compName) const;
 	void setComponentBuildArgs(char const * const compName, char const * const args);
 
-	static enum CompTypes getComponentTypeFromTypeName(
-		char const * const compTypeName);
-	static char const * const getLongComponentTypeName(CompTypes ct);
-	static char const * const getShortComponentTypeName(CompTypes ct)
+	static char const * const getLongComponentTypeName(eCompTypes ct);
+	static char const * const getShortComponentTypeName(eCompTypes ct)
 	    { return getComponentTypeAsFileValue(ct); }
-	static char const * const getComponentTypeAsFileValue(CompTypes ct);
-	static std::string getCompTagName(std::string compName, char const * const tag);
 	std::string getComponentAbsolutePath(char const * const compName) const;
+
+    private:
+	std::vector<std::string> getComponentFiles(char const * const compName,
+		char const * const tagStr) const;
+        void setComponentType(char const * const compName, eCompTypes ct);
+        // Setting a component below some parent must make sure the parents are unknown
+	void coerceParentComponents(char const * const compName);
+	// Setting a component above some child must make sure children are unknown
+	void coerceChildComponents(char const * const compName);
+	static std::string getCompTagName(std::string const &compName, char const * const tag);
+	static char const * const getComponentTypeAsFileValue(eCompTypes ct);
+	static enum eCompTypes getComponentTypeFromTypeName(
+		char const * const compTypeName);
     };
 
 /// This file is stored in the analysis directory.

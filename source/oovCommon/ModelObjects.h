@@ -170,7 +170,7 @@ class ModelStatement:public ModelObject
 	// VarRef
 	//	The name is the class's attribute name
 	//	The decl points to the type.
-	ModelStatement(const std::string name, eModelStatementTypes type):
+	ModelStatement(const std::string &name, eModelStatementTypes type):
 	    ModelObject(name), mStatementType(type), mDecl(nullptr)
 	    {}
 	eModelStatementTypes getStatementType() const

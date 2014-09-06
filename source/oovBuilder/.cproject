@@ -191,7 +191,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.962165252" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovBuilder ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.519311354" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
 								<option id="gnu.cpp.link.option.libs.880837487" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="oovCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1170698971" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
@@ -340,7 +340,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1059366066" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovBuilder ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.230959523" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
 								<option id="gnu.cpp.link.option.libs.615347777" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="oovCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.612887061" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">

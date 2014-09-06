@@ -298,10 +298,10 @@ void OptionsDialog::updateBuildConfig()
 
 void OptionsDialog::showScreen()
     {
-    ScreenOptions options(mCurrentBuildConfig.c_str());
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")),
 	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     updateBuildConfig();
+    ScreenOptions options(mCurrentBuildConfig.c_str());
     mBuildConfigList.setSelected(mCurrentBuildConfig.c_str());
     options.optionsToScreen();
     enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
@@ -455,8 +455,8 @@ bool ClassPreferencesDialog::run(Builder &builder, ClassNodeDrawOptions &options
     {
     Dialog dlg(GTK_DIALOG(gtk_dialog_new()),
 	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
-    dlg.addButton(GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL);
-    dlg.addButton(GTK_STOCK_OK, GTK_RESPONSE_OK);
+    dlg.addButton(GUI_CANCEL, GTK_RESPONSE_CANCEL);
+    dlg.addButton(GUI_OK, GTK_RESPONSE_OK);
 
     // Steal the options, then put them back.
     GtkWidget *optionsBox = builder.getWidget("ClassesOptionsBox");

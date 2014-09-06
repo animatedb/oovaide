@@ -29,7 +29,7 @@ bool ensurePathExists(char const * const path)
     // Walk up the tree to find a base that exists.
     FilePath fp(path, FP_File);
     size_t pos = fp.moveToEndDir();
-    while(pos != std::string::npos)
+    while(pos != std::string::npos && pos != 0)
 	{
 	fp.discardTail();
 	if(fileExists(fp.c_str()))
@@ -37,7 +37,7 @@ bool ensurePathExists(char const * const path)
 	else
 	    pos = fp.moveLeftPathSep();
 	}
-    while(pos != std::string::npos && success)
+    while(pos != std::string::npos && pos != 0 && success)
 	{
 	pos = findPathSep(path, pos);
 	if(pos != std::string::npos)
@@ -509,6 +509,15 @@ void FilePath::getWorkingDirectory()
 	pathStdStr().append(buf);
 	}
     ensureLastPathSep(pathStdStr());
+    }
+
+FilePath FilePath::getParent() const
+    {
+    FilePath parent(*this);
+    parent.moveToEndDir();
+    parent.moveLeftPathSep();
+    parent.discardTail();
+    return parent;
     }
 
 void FilePath::discardDirectory()

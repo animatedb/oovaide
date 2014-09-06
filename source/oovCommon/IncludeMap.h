@@ -19,9 +19,9 @@ struct IncludedPath
 	IncludedPath():
 	    mPos(0)
 	    {}
-	IncludedPath(std::string const path, std::string const includedFn)
+	IncludedPath(std::string const &path, std::string const &includedFn):
+            mFullPath(path)
 	    {
-	    mFullPath = path;
 	    mPos = mFullPath.length();
 	    mFullPath += includedFn;
 	    }

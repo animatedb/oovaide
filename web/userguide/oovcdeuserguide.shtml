@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><!-- DC Blaha - 6/8/2009 -->
+<html><head>
+<!-- DC Blaha - 6/8/2009 -->
 
 
 
@@ -23,7 +24,7 @@
 <h2><a class="mozTocH2" name="mozTocId260289"></a>OOVCDE User Guide</h2>
 
 Created: Jne 8, 2009
-Last update: July 10, 2014
+Last update: August 21, 2014
 <p>
 <img src="../description/OovLogo.png">
 </p><p>
@@ -457,12 +458,18 @@ opposite order. Project package order is determined by the builder.</li>
 	</ul>
 <h3><a class="mozTocH4" name="mozTocId932506"></a>Project Limitations</h3>
 There
-are many limitations on projects. The basic rule is that multiple
-directories of source files (not counting header files) cannot be used
-in one component. The following shows a typical project that can be
-supported. One way to work around this limitation is to create many
+are some limitations on projects. The basic rule is that a directory
+can be defined as a component and all source files that are contained
+in that directory or other child directories will be used to build the
+component. The include files can be in any directory, and will be found
+automatically.<br>
+<br>
+If multiple directories are used to build a component that are not under one directory, it is possible to create many
 static libraries. Oovcde will determine static library link order
 automatically.<br>
+<br>
+The following shows a typical project that can be
+supported. <br>
 <br>Root directory of project source code<br>
 <div style="margin-left: 40px;">Sub-directory1 - Component1<br>
 </div>
@@ -478,6 +485,15 @@ automatically.<br>
 <div style="margin-left: 40px;">Sub-directory4 - Component2<br>
 <div style="margin-left: 40px;">*.cpp - These can only be used for Component2<br>
 *.h - These can be used by any component<br>
+</div>
+</div>
+</div>
+<div style="margin-left: 40px;">Sub-directory5 - Component3<br>
+<div style="margin-left: 40px;">Sub-directory6<br>
+<div style="margin-left: 40px;">*.cpp - These can be used for Component3<br>
+</div>
+Sub-directory7<br>
+<div style="margin-left: 40px;">*.cpp - These can be used for Component3<br>
 </div>
 </div>
 </div>

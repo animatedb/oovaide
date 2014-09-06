@@ -110,6 +110,15 @@ class FilePath:public std::string, public FilePathImmutable
 	    { pathStdStr() = normalizePathType(filePath, fpt); }
 	FilePath(std::string const &filePath, eFilePathTypes fpt)
 	    { pathStdStr() = normalizePathType(filePath.c_str(), fpt); }
+/*
+        // The default operator= works fine since the normalized path is copied.
+        FilePath &operator=(FilePath const &filePath)
+            {
+            pathStdStr() = normalizePathType(filePath.pathStdStr(),
+                filePath.getType());
+            return *this;
+            }
+*/
 	void setPath(char const * const path, eFilePathTypes fpt)
 	    { pathStdStr() = normalizePathType(path, fpt); }
 	eFilePathTypes getType() const;
@@ -139,6 +148,7 @@ class FilePath:public std::string, public FilePathImmutable
 	    { return FilePathImmutable::getNameExt(c_str()); }
 	std::string getExtension() const
 	    { return FilePathImmutable::getExtension(c_str()); }
+        FilePath getParent() const;
 	std::string getWithoutEndPathSep() const
 	    { return FilePathImmutable::getWithoutEndPathSep(c_str()); }
 	bool matchExtension(char const * const path2) const

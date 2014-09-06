@@ -283,6 +283,8 @@
                   <object class="GtkTreeView" id="ComponentListTreeview">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">Use Edit/Preferences to set up analysis settings.
+Use this dialog to set up component definitions.</property>
                     <property name="hexpand">True</property>
                     <property name="vexpand">True</property>
                     <signal name="cursor-changed" handler="on_ComponentListTreeview_cursor_changed" swapped="no"/>
@@ -2447,7 +2449,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="NewProjectMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">New Project...</property>
+                        <property name="label" translatable="yes">_New Project...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_NewProjectMenuitem_activate" swapped="no"/>
                       </object>
@@ -2456,7 +2458,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="NewModuleMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">New Module...</property>
+                        <property name="label" translatable="yes">New _Module...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_NewModuleMenuitem_activate" swapped="no"/>
                       </object>
@@ -2465,7 +2467,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="OpenProjectMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Open Project...</property>
+                        <property name="label" translatable="yes">_Open Project...</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_OpenProjectMenuitem_activate" swapped="no"/>
                       </object>
@@ -2480,7 +2482,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="SaveDrawingMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Save Drawing</property>
+                        <property name="label" translatable="yes">Save _Drawing</property>
                         <property name="use_underline">True</property>
                         <accelerator key="s" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="on_SaveDrawingMenuitem_activate" swapped="no"/>
@@ -2490,7 +2492,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="SaveDrawingAsMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Save Drawing As...</property>
+                        <property name="label" translatable="yes">Save Drawing _As...</property>
                         <property name="use_underline">True</property>
                         <accelerator key="a" signal="activate" modifiers="GDK_CONTROL_MASK"/>
                         <signal name="activate" handler="on_SaveDrawingAsMenuitem_activate" swapped="no"/>
@@ -2560,9 +2562,10 @@ These arguments are specific to the selected configuration.
                     </child>
                     <child>
                       <object class="GtkImageMenuItem" id="EditOptionsmenuitem">
-                        <property name="label">Preferences...</property>
+                        <property name="label">_Preferences...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="use_underline">True</property>
                         <property name="image">image5</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_EditOptionsmenuitem_activate" swapped="no"/>
@@ -2586,7 +2589,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="BuildAnalyzeMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Analyze</property>
+                        <property name="label" translatable="yes">_Analyze</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_BuildAnalyzeMenuitem_activate" swapped="no"/>
                       </object>
@@ -2604,7 +2607,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="BuildDebugMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Build Debug</property>
+                        <property name="label" translatable="yes">Build _Debug</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_BuildDebugMenuitem_activate" swapped="no"/>
                       </object>
@@ -2613,7 +2616,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="BuildReleaseMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Build Release</property>
+                        <property name="label" translatable="yes">Build _Release</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_BuildReleaseMenuitem_activate" swapped="no"/>
                       </object>
@@ -2622,7 +2625,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="StopBuildMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Stop Build</property>
+                        <property name="label" translatable="yes">_Stop Build</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_StopBuildMenuitem_activate" swapped="no"/>
                       </object>
@@ -2637,7 +2640,7 @@ These arguments are specific to the selected configuration.
                       <object class="GtkMenuItem" id="MakeCMakeMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Make CMake</property>
+                        <property name="label" translatable="yes">_Make CMake</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_MakeCMakeMenuitem_activate" swapped="no"/>
                       </object>

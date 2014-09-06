@@ -1,5 +1,3 @@
-EditorLineArg|+
-EditorPath|./oovEdit
 ShowAttrTypes|Yes
 ShowAttributes|Yes
 ShowOovSymbols|Yes

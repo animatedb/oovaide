@@ -21,6 +21,9 @@ struct StartLineInfo
 class Indenter
     {
     public:
+        Indenter():
+            mTextBuffer(nullptr)
+            {}
 	void init(GtkTextBuffer *textBuffer)
 	    { mTextBuffer = textBuffer; }
 	/// Run key press functions from GtkWidget key-press-event

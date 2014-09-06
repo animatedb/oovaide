@@ -11,6 +11,12 @@
 
 
 
+
+
+
+
+
+
 <link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
 
 <h2>OOVCDE Release Details</h2>
@@ -23,7 +29,44 @@ Created: 6-8-2009
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.<br>
 <br>
+<h2>2014-08-2</h2>
+
+
+This version contains:<br>
+
+
+
+
+<ul>
+<li>Added nested directory projects</li>
+  <li>Improved build verbose flag</li>
+  <li>Added go to line in editor from menu</li>
+  <li>Improved go to definition<br>
+  </li>
+
+  <li>Fixed unindent on Linux<br>
+  </li>
+
+
+</ul>
+<h2>2014-08</h2>
+
+
+
+This version contains:<br>
+
+
+
+<ul>
+<li>Fixed project library order for linking that was broken in version 2014-07-2<br>
+</li>
+  <li>Fixed overwrite of analysis path in Edit/Preferences<br>
+  </li>
+<li>Fixed hang when creating new module<br>
+</li>
+</ul>
 <h2>2014-07-2</h2>
+
 
 
 This version contains:<br>

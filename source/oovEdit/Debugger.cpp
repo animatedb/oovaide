@@ -410,12 +410,11 @@ void Debugger::handleValue(const std::string &resultStr)
 //    frame={level="1",...
 void Debugger::handleStack(const std::string &resultStr)
     {
-    size_t pos=0;
-
 	{
 	LockGuard lock(mStatusLock);
 	mStack.clear();
 	int frameNum = 0;
+        size_t pos=0;
 	do
 	    {
 	    std::string tuple;

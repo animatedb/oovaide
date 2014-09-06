@@ -16,7 +16,7 @@ static BuildSettingsDialog *gBuildDlg;
 BuildSettingsDialog::BuildSettingsDialog()
     {
     gBuildDlg = this;
-    mComponentList.init(*Builder::getBuilder(), "ComponentListTreeview", "Component List");
+    mComponentTree.init(*Builder::getBuilder(), "ComponentListTreeview", "Component List");
     }
 
 
@@ -40,29 +40,51 @@ void BuildSettingsDialog::enterScreen()
 	Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
 		ComponentTypesFile::CT_Program));
 
-	mComponentList.clear();
+	mComponentTree.clear();
 	for(auto const &name : mComponentFile.getComponentNames())
 	    {
 	    if(mLastCompName.length() == 0)
 		{
 		mLastCompName = name;
 		}
-	    mComponentList.appendText(name.c_str());
+	    mComponentTree.appendText(getParent(name), getChildName(name).c_str());
 	    }
 	}
-    mComponentList.setSelected(mLastCompName.c_str());
+    mComponentTree.setSelected(mLastCompName.c_str(), '/');
+    }
+
+std::string BuildSettingsDialog::getChildName(std::string const &compName)
+    {
+    OovString child = compName;
+    size_t pos = child.rfind('/');
+    if(pos != OovString::npos)
+	{
+	child.erase(0, pos+1);
+	}
+    return child;
+    }
+
+GuiTreeItem BuildSettingsDialog::getParent(std::string const &compName)
+    {
+    OovString parent = compName;
+    size_t pos = parent.rfind('/');
+    if(pos != OovString::npos)
+	{
+	parent.erase(pos);
+	}
+    return mComponentTree.getItem(parent, '/');
     }
 
 void BuildSettingsDialog::switchComponent()
     {
-    saveFromScreen(mLastCompName.c_str());
-    mLastCompName = mComponentList.getSelected();
+    saveFromScreen(mLastCompName);
+    mLastCompName = mComponentTree.getSelected('/');
     loadToScreen(mLastCompName);
     }
 
 void BuildSettingsDialog::saveScreen()
     {
-    saveFromScreen(mLastCompName.c_str());
+    saveFromScreen(mLastCompName);
     mComponentFile.writeFile();
     }
 
@@ -79,12 +101,7 @@ void BuildSettingsDialog::saveFromScreen(std::string const &compName)
 	{
 	if(boxValue)
 	    {
-	    std::string tag = ComponentTypesFile::getCompTagName(compName, "type");
-	    char const *value = ComponentTypesFile::getComponentTypeAsFileValue(
-		    ComponentTypesFile::CompTypes::CT_Unknown);
-	    value = ComponentTypesFile::getComponentTypeAsFileValue(
-		    ComponentTypesFile::getComponentTypeFromTypeName(boxValue));
-	    mComponentFile.setNameValue(tag.c_str(), value);
+            mComponentFile.setComponentType(compName.c_str(), boxValue);
 	    }
 	std::string str = Gui::getText(argsView);
 	CompoundValue buildArgs;
@@ -102,9 +119,8 @@ void BuildSettingsDialog::loadToScreen(std::string const &compName)
 		"ComponentTypeComboboxtext"));
 	GtkTextView *argsView = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(
 		"ComponentBuildArgsTextview"));
-	std::string tag = ComponentTypesFile::getCompTagName(compName, "type");
-	std::string val = mComponentFile.getValue(tag.c_str());
-	int index = ComponentTypesFile::getComponentTypeFromTypeName(val.c_str());
+
+        int index = mComponentFile.getComponentType(compName.c_str());
 	Gui::setSelected(GTK_COMBO_BOX(typeBox), index);
 
 	CompoundValue cppArgs;

@@ -79,7 +79,7 @@ class ClassDiagram
 	ClassDiagramListener *mListener;
 	double mDesiredZoom;
 	void displayContextMenu(guint button, guint32 acttime, gpointer data);
-	void setLastSelectedClassName(const std::string name)
+	void setLastSelectedClassName(const std::string &name)
 	    { mLastSelectedClassName = name; }
     };
 

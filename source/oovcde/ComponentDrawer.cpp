@@ -14,7 +14,7 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
     std::vector<std::string> drawStrings;
 
     drawStrings.push_back(node.getName());
-    ComponentTypesFile::CompTypes ct = node.getComponentType();
+    ComponentTypesFile::eCompTypes ct = node.getComponentType();
     if(node.getComponentNodeType() == ComponentNode::CNT_ExternalPackage)
 	{
 	drawStrings.push_back("<<External>>");

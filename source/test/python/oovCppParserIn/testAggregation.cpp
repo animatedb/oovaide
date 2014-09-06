@@ -7,24 +7,28 @@
 //                -> multiLeaf
 
 class classLeaf2a
-	{
-		int classLeaf2a_intMember;
-	public:
-		classLeaf3a classLeaf2a_leaf3aMember;
-	private:
-		const classMultiLeaf *classLeaf2a_multiLeafMember;
-	};
+    {
+    int classLeaf2a_intMember;
+
+    public:
+        classLeaf2a():
+            classLeaf2a_intMember(0), classLeaf2a_multiLeafMember(nullptr)
+            {}
+        classLeaf3a classLeaf2a_leaf3aMember;
+    private:
+        const classMultiLeaf *classLeaf2a_multiLeafMember;
+    };
 
 class classRootAggr:public classBase
-	{
-	classLeaf2a classRoot_leaf2aMember;
-	};
+    {
+    classLeaf2a classRoot_leaf2aMember;
+    };
 
 void classBase::func(int &a)
-	{
-	if(a==0)
-		{
-		int x=1;
-		func(x);
-		}
-	}
+    {
+    if(a==0)
+        {
+        int x=1;
+        func(x);
+        }
+    }

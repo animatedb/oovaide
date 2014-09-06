@@ -13,7 +13,10 @@
 class Builder
     {
     public:
-	~Builder()
+        Builder():
+            mGtkBuilder(nullptr)
+            {}
+        ~Builder()
 	    {
 	    g_object_unref(mGtkBuilder);
 	    }

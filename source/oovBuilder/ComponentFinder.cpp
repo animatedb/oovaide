@@ -49,51 +49,48 @@ bool FileStat::isOutputOld(char const * const outputFn,
     return old;
     }
 
-void ScannedComponent::saveComponentSourcesToFile(char const * const compName, NameValueFile &compFile) const
+void ScannedComponent::saveComponentSourcesToFile(char const * const compName,
+    ComponentTypesFile &compFile) const
     {
-    CompoundValue objArgs;
-    for(const auto &src : mSourceFiles)
-	{
-	objArgs.addArg(src.c_str());
-	}
-    std::string tag = ComponentTypesFile::getCompTagName(compName, "src");
-    std::string val = compFile.getValue(tag.c_str());
-    compFile.setNameValue(tag.c_str(), objArgs.getAsString().c_str());
-
-    CompoundValue incArgs;
-    for(const auto &src : mIncludeFiles)
-	{
-	incArgs.addArg(src.c_str());
-	}
-    tag = ComponentTypesFile::getCompTagName(compName, "inc");
-    val = compFile.getValue(tag.c_str());
-    compFile.setNameValue(tag.c_str(), incArgs.getAsString().c_str());
+    compFile.setComponentSources(compName, mSourceFiles);
+    compFile.setComponentIncludes(compName, mIncludeFiles);
     }
 
 //////////////
 
-void ScannedComponentsInfo::addSourceFile(char const * const compName, char const * const srcFileName)
+ScannedComponentsInfo::MapIter ScannedComponentsInfo::addComponents(
+    char const * const compName)
     {
-    auto it = mComponents.find(compName);
+    FilePath parent = FilePath(compName, FP_Dir).getParent();
+    if(parent.length() > 0)
+	{
+	removePathSep(parent, parent.length()-1);
+        addComponents(parent.c_str());
+	}
+    MapIter it = mComponents.find(compName);
     if(it == mComponents.end())
 	{
 	it = mComponents.insert(std::make_pair(compName, ScannedComponent())).first;
 	}
+    return it;
+    }
+
+void ScannedComponentsInfo::addSourceFile(char const * const compName,
+    char const * const srcFileName)
+    {
+    MapIter it = addComponents(compName);
     (*it).second.addSourceFileName(srcFileName);
     }
 
-void ScannedComponentsInfo::addIncludeFile(char const * const compName, char const * const srcFileName)
+void ScannedComponentsInfo::addIncludeFile(char const * const compName,
+    char const * const srcFileName)
     {
-    auto it = mComponents.find(compName);
-    if(it == mComponents.end())
-	{
-	it = mComponents.insert(std::make_pair(compName, ScannedComponent())).first;
-	}
+    MapIter it = addComponents(compName);
     (*it).second.addIncludeFileName(srcFileName);
     }
 
-static void setFileValues(char const * const tagName, const std::vector<std::string> &vals,
-	NameValueFile &compFile)
+static void setFileValues(char const * const tagName,
+    const std::vector<std::string> &vals, ComponentsFile &compFile)
     {
     CompoundValue incArgs;
     for(const auto &inc : vals)
@@ -103,12 +100,13 @@ static void setFileValues(char const * const tagName, const std::vector<std::str
     compFile.setNameValue(tagName, incArgs.getAsString().c_str());
     }
 
-void ScannedComponentsInfo::setProjectComponentsFileValues(NameValueFile &compFile)
+void ScannedComponentsInfo::setProjectComponentsFileValues(ComponentsFile &compFile)
     {
     setFileValues("Components-init-proj-incs", mProjectIncludeDirs, compFile);
     }
 
-void ScannedComponentsInfo::initializeComponentTypesFileValues(NameValueFile &compFile)
+void ScannedComponentsInfo::initializeComponentTypesFileValues(
+    ComponentTypesFile &compFile)
     {
     CompoundValue comps;
     for(const auto &comp : mComponents)
@@ -192,15 +190,6 @@ std::string ComponentFinder::getComponentName(char const * const filePath) const
     return compName;
     }
 
-static FilePath getParent(FilePath const &filePath)
-    {
-    FilePath parent(filePath);
-    parent.moveToEndDir();
-    parent.moveLeftPathSep();
-    parent.discardTail();
-    return parent;
-    }
-
 bool ComponentFinder::processFile(const std::string &filePath)
     {
     /// @todo - find files with no extension? to match things like std::vector include
@@ -219,12 +208,12 @@ bool ComponentFinder::processFile(const std::string &filePath)
 		mScanningPackage->appendAbsoluteIncDir(path.getDrivePath().c_str());
 
 		// Insert parent for things like #include "gtk/gtk.h" or "sys/stat.h"
-		FilePath parent(getParent(path));
+		FilePath parent(path.getParent());
 		if(parent.length() > 0)
 		    mScanningPackage->appendAbsoluteIncDir(parent.getDrivePath().c_str());
 
 		// Insert grandparent for things like "llvm/ADT/APInt.h"
-		FilePath grandparent(getParent(parent));
+		FilePath grandparent(parent.getParent());
 		if(grandparent.length() > 0)
 		    mScanningPackage->appendAbsoluteIncDir(grandparent.getDrivePath().c_str());
 		}

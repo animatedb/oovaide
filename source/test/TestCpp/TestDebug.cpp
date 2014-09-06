@@ -25,7 +25,7 @@ static std::string quoteStr(char const * const str)
 TEST_F(gDebugUnitTest, DebugResultIntTest)
     {
     // Starting variable
-    int var = 1;
+//    int var = 1;
     // Variable returned in debugger
         //  value="1"
     // Variable encoded in c++

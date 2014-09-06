@@ -44,11 +44,10 @@ void CompoundValueRef::parseStringRef(char const * const strIn,
 	std::vector<std::string> &vec, char delimiter)
     {
     std::string str = strIn;
-    size_t endColonPos = 0;
     size_t startArgPos = 0;
     while(startArgPos != std::string::npos)
 	{
-	endColonPos = str.find(delimiter, startArgPos);
+	size_t endColonPos = str.find(delimiter, startArgPos);
 	std::string tempStr = str.substr(startArgPos, endColonPos-startArgPos);
 	if(tempStr.length() > 0)
 	    vec.push_back(tempStr);

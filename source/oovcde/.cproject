@@ -270,9 +270,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.69456289" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovcde ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.1344445437" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
 								<option id="gnu.cpp.link.option.libs.1564571816" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
 									<listOptionValue builtIn="false" value="pthread"/>
-									<listOptionValue builtIn="false" value="oovCommon"/>
 									<listOptionValue builtIn="false" value="cairo"/>
 									<listOptionValue builtIn="false" value="gmodule-2.0"/>
 									<listOptionValue builtIn="false" value="glib-2.0"/>
@@ -497,9 +497,9 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.835710534" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovcde ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.156034542" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
 								<option id="gnu.cpp.link.option.libs.203476706" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovGuiCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
 									<listOptionValue builtIn="false" value="pthread"/>
-									<listOptionValue builtIn="false" value="oovCommon"/>
 									<listOptionValue builtIn="false" value="cairo"/>
 									<listOptionValue builtIn="false" value="gmodule-2.0"/>
 									<listOptionValue builtIn="false" value="glib-2.0"/>

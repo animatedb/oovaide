@@ -56,7 +56,8 @@ class ScannedComponent
 	    { mSourceFiles.insert(objPath); }
 	void addIncludeFileName(char const * const objPath)
 	    { mIncludeFiles.insert(objPath); }
-	void saveComponentSourcesToFile(char const * const compName, NameValueFile &file) const;
+	void saveComponentSourcesToFile(char const * const compName,
+            ComponentTypesFile &file) const;
     private:
 	std::set<std::string> mSourceFiles;
 	std::set<std::string> mIncludeFiles;
@@ -70,16 +71,19 @@ class ScannedComponentsInfo
 	    { mProjectIncludeDirs.insert(path); }
 	void addSourceFile(char const * const compName, char const * const srcFileName);
 	void addIncludeFile(char const * const compName, char const * const srcFileName);
-	void initializeComponentTypesFileValues(NameValueFile &file);
-	void setProjectComponentsFileValues(NameValueFile &file);
+	void initializeComponentTypesFileValues(ComponentTypesFile &file);
+	void setProjectComponentsFileValues(ComponentsFile &file);
 	InsertOrderedSet const &getProjectIncludeDirs() const
 	    { return mProjectIncludeDirs; }
 
     private:
 	std::map<std::string, ScannedComponent> mComponents;
+        typedef std::map<std::string, ScannedComponent>::iterator MapIter;
 
 	// Components-init-proj-incs
 	InsertOrderedSet mProjectIncludeDirs;
+
+        MapIter addComponents(char const * const compName);
     };
 
 
