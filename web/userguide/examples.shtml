@@ -1,8 +1,14 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><!-- DC Blaha - 1/1/2014 --></head><body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
 
-<h1><a class="mozTocH1" name="mozTocId437561"></a>Working with Oovcde Examples</h1>
-Last updated: Feb 8, 2014<br>
+
+
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><!-- DC Blaha - 1/1/2014 --><title>Oovcde Examples</title></head><body>
+<font size="+3">Oovcde Examples<br></font>
+<hr style="width: 100%; height: 3px;">
+
+Last updated: Sept 23, 2014<br>
 <br>
 <img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
 
@@ -12,17 +18,24 @@ Last updated: Feb 8, 2014<br>
 </div>
 
 
-<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId437561">Working with Oovcde Examples</a><ol><li><a href="#mozTocId985581">Example Notes</a></li><li><a href="#mozTocId81887">Simple Example
-</a><ol><li><a href="#mozTocId87333">Classes</a></li><li><a href="#mozTocId748070">Sequences</a></li></ol></li><li><a href="#mozTocId621873">StaticLib Example
-</a><ol><li><a href="#mozTocId632627">Components</a></li><li><a href="#mozTocId416335">Classes</a></li><li><a href="#mozTocId212466">Sequences</a></li></ol></li><li><a href="#mozTocId621873">SharedLib GTK Example</a><ol><li><a href="#mozTocId576588">Components</a></li><li><a href="#mozTocId723251">Classes</a></li><li><a href="#mozTocId212466">Sequences</a></li></ol></li><li><a href="#mozTocId382189">Oovcde Example</a></li></ol></li></ol>
+<h1>Contents</h1>
+<ol id="mozToc">
+<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId985581">Example Notes</a></li><li><a href="#mozTocId81887">Simple Example
+</a><ol><li><a href="#mozTocId87333">Classes</a></li><li><a href="#mozTocId748070">Sequences</a></li><li><a href="#mozTocId525410">Code Test Coverage</a></li></ol></li><li><a href="#mozTocId621873">StaticLib Example
+</a><ol><li><a href="#mozTocId632627">Components</a></li><li><a href="#mozTocId416335">Classes</a></li><li><a href="#mozTocId212466">Sequences</a></li></ol></li><li><a href="#mozTocId621873">SharedLib GTK Example</a><ol><li><a href="#mozTocId576588">Components</a></li><li><a href="#mozTocId723251">Classes</a></li><li><a href="#mozTocId212466">Sequences</a></li></ol></li><li><a href="#mozTocId382189">Oovcde Example</a></li>
+</ol>
 
-<h2><a class="mozTocH2" name="mozTocId985581"></a>Example Notes</h2>
+
+<h1><a class="mozTocH2" name="mozTocId985581"></a>Example Notes</h1>
+
 It should be fairly simple to analyze the samples with the downloadable
 Oovcde packages.&nbsp; The Build may take more setup depending on the
 configuration. If the builds fail, the build configuration can be set
-up in the Edit/Preferences menu.<br>
-<h2><a class="mozTocH2" name="mozTocId81887"></a>Simple Example<br>
-</h2>
+up in the Analysis/Settings menu.<br>
+<h1><a class="mozTocH2" name="mozTocId81887"></a>Simple Example<br>
+
+</h1>
+
 
 This example creates a single executable file. It only has two source files, and has a dependency on STL.<br>
 <br>
@@ -32,13 +45,14 @@ This example creates a single executable file. It only has two source files, and
   <li>Select trunk/examples/simple using the "..." button. The project directory will default to "simple-oovcde".</li>
   <li>Wait for the drawing analysis to complete.</li>
   <li>View the "Class" tab, and click on "Lamb". The class diagram will display.</li>
-  <li>Select Build/Build Settings from the menu. Select the Component Type of Program/Executable.</li>
+  <li>Select Build/Settings from the menu. Select the Component Type of Program/Executable.</li>
   <li>Select Build/Build Debug to create a debug version of the program.<br>
   </li>
   <li>The executable will be in trunk/examples/simple-oovcde/out-Debug.</li>
 </ol>
 Additional files can be added to the component, and are automatically built into the executable.<br>
-<h3><a class="mozTocH3" name="mozTocId87333"></a>Classes</h3>
+<h2><a class="mozTocH3" name="mozTocId87333"></a>Classes</h2>
+
 
 The class diagram looks like the following.<br>
 <embed src="Example1Classes.svg" type="image/svg+xml"> 
@@ -90,7 +104,8 @@ object, and the V symbol means that this is a const reference.<br>
   </tbody>
 </table>
 <br>
-<h3><a class="mozTocH3" name="mozTocId748070"></a>Sequences</h3>
+<h2><a class="mozTocH3" name="mozTocId748070"></a>Sequences</h2>
+
 The Sequence diagram looks like the following.<br>
 <embed src="Example1Seq.svg" type="image/svg+xml"><br>
 <br>
@@ -135,9 +150,33 @@ const operation, and will not modify the MoveableThing object.<br>
   </tbody>
 </table>
 <br>
+<h2><a class="mozTocH3" name="mozTocId525410"></a>Code Test Coverage</h2>
+
+The Oovcde program contains tools to support flow path test coverage analysis. This shows the percentage of paths that have <br>
+been tested in each source file and shows the number of times that each instrumented line was executed. See <a href="../articles/TestCoverage.html">Test Coverage</a> for more details.<br>
 <br>
-<h2><a class="mozTocH2" name="mozTocId621873"></a>StaticLib Example<br>
-</h2>
+<ol>
+<li>Start Oovcde if it is not already running and open the simple-oovcde example.<br>
+</li><li>Select Coverage/Instrument from the menu. This adds instrumented lines to the source code.<br>
+</li><li>Select Coverage/Build from the menu. This creates a new sub-project and builds it.</li>
+  <li>Run the output program in oov-cov-oovcde/out-Debug. This runs the
+program and generates a file that contains the number of times each
+instrumented line was executed.<br>
+  </li>
+  <li>Select
+Coverage/Statistics from the command line. The
+oov-cov-oovcde/oovCovStats.txt file contains the percentage of coverage
+for each file. In addition, theoov-cov-oovcde directory contains all
+source code with indications of which lines have been executed.
+Search for "//&lt;space&gt;" to find lines that have not been executed.
+  </li>
+</ol>
+<br>
+
+<h1><a class="mozTocH2" name="mozTocId621873"></a>StaticLib Example<br>
+
+</h1>
+
 This example creates an executable file with a static library.<br>
 <br>
 <ol>
@@ -149,7 +188,8 @@ This example creates an executable file with a static library.<br>
   </ol>
 <li>Select Build/Build Debug to create a debug version of the program.<br>
   </li><li>The executable and static library will be in trunk/examples/simple-oovcde/out-Debug.</li></ol>
-<h3><a class="mozTocH3" name="mozTocId632627"></a>Components</h3>
+<h2><a class="mozTocH3" name="mozTocId632627"></a>Components</h2>
+
 <embed src="Example2Comps.svg" type="image/svg+xml"><br> 
 <ul>
   <li>The BlackSheep component is a library that supplies classes for the MainClients component.<br>
@@ -158,7 +198,8 @@ This example creates an executable file with a static library.<br>
   </li>
 </ul>
 
-<h3><a class="mozTocH3" name="mozTocId416335"></a>Classes</h3>
+<h2><a class="mozTocH3" name="mozTocId416335"></a>Classes</h2>
+
 
 
 The class diagram looks like the following.<br>
@@ -166,7 +207,8 @@ The class diagram looks like the following.<br>
 <br>
 <br>
 The BlackSheep and the WoolBag classes are in the BlackSheep Component. The other classes are in the MainClients component.<br>
-<h3><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h3>
+<h2><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h2>
+
 
 
 The Sequence diagram looks like the following.
@@ -181,15 +223,15 @@ The lower takeBag operations are shown with square boxes to indicate that the de
 
 
 <br>
-<h2><a class="mozTocH2" name="mozTocId621873"></a>SharedLib GTK Example</h2>This example shows a more complex directory structure and contains shared libraries. (Known in Windows as DLL's).<br>
+<h1><a class="mozTocH2" name="mozTocId621873"></a>SharedLib GTK Example</h1>
+This example shows a more complex directory structure and contains shared libraries. (Known in Windows as DLL's).<br>
 <br>
 
 <ol>
 
 <li>Start Oovcde</li><li>Select File/New Project from the menu.</li><li>Select trunk/examples/shardlibgtk using the "..." button. The project directory will default to "sharedlibgtk-oovcde".</li><li>Wait for the analysis to complete.</li><li>View the "Class" tab, and click on "Kingdom". The class diagram will display.</li>
   <li>Right click on the ResourceClient, and select "Add All Relations". This will add one more class.</li>
-  <li>Select
-Edit/Preferences in the Build Arguments tab, and click on Extern
+  <li>Select Analysis/Settings in the Build Arguments tab, and click on Extern
 Project Packages. Press the Add button to add packages. Be
 sure to download the packages if they do not exist on your machine.
 Include paths are scanned in the order that packages and external
@@ -223,7 +265,8 @@ add gmodule-2.0. Add the -fPIC and -lnk-rdynamic flags also to the build argumen
 </ol>
 
 
-<h3><a class="mozTocH3" name="mozTocId576588"></a>Components</h3>
+<h2><a class="mozTocH3" name="mozTocId576588"></a>Components</h2>
+
 The components only show relationships to the external GTK package
 since they only
 have dynamic relationships between themselves. This dependency is on
@@ -239,12 +282,14 @@ On Linux, the dependencies look like the following:<br>
 This project directory structure looks like the following:<br>
 <pre>	sharedlibgtk<br>		kingdom<br>			kingdom.cpp<br>			kingdom.h<br>		resources<br>			horses<br>				horses.cpp<br>				horses.h<br>			men<br>				men.cpp<br>				men.h<br></pre>
 <br>
-<h3><a class="mozTocH3" name="mozTocId723251"></a>Classes</h3>The following is the class diagram. Only the main executable class diagram is shown here.<br>
+<h2><a class="mozTocH3" name="mozTocId723251"></a>Classes</h2>
+The following is the class diagram. Only the main executable class diagram is shown here.<br>
 <br>
 
 <embed src="Example3Classes.svg" type="image/svg+xml"> 
 <br>
-<h3><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h3>
+<h2><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h2>
+
 
 
 <embed src="Example3Seq.svg" type="image/svg+xml"><br>
@@ -283,13 +328,14 @@ is called.<br>
   </tbody>
 </table>
 <br>
-<h2><a class="mozTocH2" name="mozTocId382189"></a>Oovcde Example</h2>
+<h1><a class="mozTocH2" name="mozTocId382189"></a>Oovcde Example</h1>
+
 The Oovcde example will build all of the Oovcde programs, which
 includes multiple libraries and executables. This example has multiple
 processes and threads, graphics, and many other features.<br>
 This example is under the test directory, and there is a version for Windows and one for Linux.<br>
 <br>
-Open either project, and use Edit Preferences and run "External Project
+Open either project, and use Analysis/Settings and run "External Project
 Packages".&nbsp; On Linux, it may be required to remove and add the gtk
 +-3 package so that it is updated for your machine. Linux uses
 pkg-config, which should be on many distributions of Linux. On Windows,

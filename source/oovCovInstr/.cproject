@@ -168,7 +168,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.245438971" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/include&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.602478715" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1259536087" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
@@ -191,7 +191,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.paths.438279134" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/lib&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1852562208" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.1475633284" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -242,7 +242,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.515827141" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/include&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.1526083525" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.663286610" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
@@ -265,7 +265,7 @@
 								</option>
 								<option id="gnu.cpp.link.option.paths.396713005" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.4-x86_64/lib&quot;"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.242898416" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.284051836" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">

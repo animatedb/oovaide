@@ -24,7 +24,7 @@ static bool makeCoverageProjectFile(char const * const srcFn, char const * const
 	}
     else
 	{
-	fprintf(stderr, "Unable to open project file %s", srcFn);
+	fprintf(stderr, "Unable to make project file %s\n", srcFn);
 	}
     return success;
     }
@@ -51,7 +51,7 @@ static bool makeCoverageComponentTypesFile(char const * const srcFn, char const 
 	}
     else
 	{
-	fprintf(stderr, "Unable to open component types file %s", srcFn);
+	fprintf(stderr, "Unable to make component types file %s\n", srcFn);
 	}
     return success;
     }
@@ -60,19 +60,28 @@ bool copyPackageFile(char const * const srcFn, char const * const dstFn)
     {
     bool success = false;
     File srcFile(srcFn, "r");
-    if(srcFile.isOpen())
+    if(fileExists(srcFn))
 	{
-	ensurePathExists(dstFn);
-	File dstFile(dstFn, "w");
-	if(dstFile.isOpen())
+	if(srcFile.isOpen())
 	    {
-	    char buf[10000];
-	    while(fgets(buf, sizeof(buf), srcFile.getFp()))
+	    ensurePathExists(dstFn);
+	    File dstFile(dstFn, "w");
+	    if(dstFile.isOpen())
 		{
-		fputs(buf, dstFile.getFp());
-		success = true;
+		char buf[10000];
+		while(fgets(buf, sizeof(buf), srcFile.getFp()))
+		    {
+		    fputs(buf, dstFile.getFp());
+		    success = true;
+		    }
 		}
 	    }
+	}
+    else
+	success = true;
+    if(!success)
+	{
+	fprintf(stderr, "Unable to copy package file %s\n", srcFn);
 	}
     return success;
     }
@@ -149,6 +158,7 @@ void CoverageCountsReader::read(char const * const fn)
 	}
     }
 
+/// Use the filename to make an identifier.
 static std::string makeOrigCovFn(char const * const fn)
     {
     OovString covFn = fn;
@@ -249,6 +259,14 @@ static void updateCovSourceCounts(char const * const relSrcFn,
 		fputs(buf, dstFile.getFp());
 		}
 	    }
+	else
+	    {
+	    fprintf(stderr, "Unable to write file %s\n", dstFn.c_str());
+	    }
+	}
+    else
+	{
+	fprintf(stderr, "Unable to read file %s\n", srcFn.c_str());
 	}
     }
 

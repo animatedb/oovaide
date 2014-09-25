@@ -22,6 +22,7 @@
 
 #define DEBUG_PARSE 0
 #if(DEBUG_PARSE)
+#define DEBUG_DUMP_CURSORS 0
 static DebugFile sLog("DebugCppInstr.txt");
 #endif
 
@@ -67,11 +68,12 @@ static void dumpCursor(FILE *fp, char const * const str, CXCursor cursor)
     }
 
 #if(DEBUG_PARSE)
-void debugCount(CXCursor cursor, int instrCount)
+void debugCount(CXCursor cursor, char const * const str, int instrCount)
     {
-    if(instrCount == 3)
+    if(instrCount == 4)
 	{
-	dumpCursor(sLog.mFp, "insertNCI", cursor);
+	fprintf(sLog.mFp, "Found %d:\n", instrCount);
+	dumpCursor(sLog.mFp, str, cursor);
 	printf("argh!\n");
 	}
     }
@@ -89,21 +91,39 @@ static void appendLineEnding(std::string &str)
 
 bool CppFileContents::read(char const *fn)
     {
+    bool success = false;
     SimpleFile file(fn, M_ReadWriteExclusive, OE_Binary);
-    int size = file.getSize();
-    mFileContents.resize(size);
-    int actual = 0;
-    return file.read(mFileContents.data(), size, actual);
+    if(file.isOpen())
+	{
+	int size = file.getSize();
+	mFileContents.resize(size);
+	int actual = 0;
+	success = file.read(mFileContents.data(), size, actual);
+	}
+    if(!success)
+	{
+	fprintf(stderr, "Unable to read %s\n", fn);
+	}
+    return success;
     }
 
 bool CppFileContents::write(char const *fn)
     {
-    updateMemory();
     SimpleFile file(fn, M_WriteExclusiveTrunc, OE_Binary);
-    std::string includeCov = "#include \"OovCoverage.h\"";
-    appendLineEnding(includeCov);
-    file.write(includeCov.c_str(), includeCov.length());
-    return file.write(mFileContents.data(), mFileContents.size());
+    bool success = false;
+    if(file.isOpen())
+	{
+	std::string includeCov = "#include \"OovCoverage.h\"";
+	appendLineEnding(includeCov);
+	updateMemory();
+	file.write(includeCov.c_str(), includeCov.length());
+	success = file.write(mFileContents.data(), mFileContents.size());
+	}
+    if(!success)
+	{
+	fprintf(stderr, "Unable to write %s\n", fn);
+	}
+    return success;
     }
 
 void CppFileContents::updateMemory()
@@ -144,7 +164,7 @@ class cCrashDiagnostics
 	    {
 	    mDiagStr = diagStr;
 	    mMostRecentCursor = cursor;
-#if(DEBUG_PARSE)
+#if(DEBUG_DUMP_CURSORS)
 	    dumpCursor(sLog.mFp, diagStr, cursor);
 #endif
 	    }
@@ -294,11 +314,15 @@ void CppInstr::insertNonCompoundInstr(CXCursor cursor)
     if(!clang_Cursor_isNull(cursor))
 	{
 	CXCursorKind cursKind = clang_getCursorKind(cursor);
+// return statements that are children of if statements must be instrumented
+// if not in a compound statement.
 //	if(cursKind != CXCursor_CompoundStmt /*&& clang_isStatement(cursKind)*/)
-	if(!clang_isStatement(cursKind))
+
+	// If this is a compound statement, then it will be instrumented anyway.
+	if(cursKind != CXCursor_CompoundStmt)
 	    {
 #if(DEBUG_PARSE)
-	    debugCount(cursor, mInstrCount);
+	    debugCount(cursor, "insertNCI", mInstrCount);
 #endif
 	    SourceRange range(cursor);
 	    OovString covStr;
@@ -325,9 +349,8 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
     CXCursorKind cursKind = clang_getCursorKind(cursor);
     switch(cursKind)
 	{
-//	case CXCursor_SwitchStmt:
-
 	case CXCursor_DoStmt:
+	case CXCursor_DefaultStmt:
 	    if(isParseFile(cursor))
 		{
 		insertNonCompoundInstr(getNthChildCursor(cursor, 0));
@@ -362,20 +385,12 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 	    if(isParseFile(cursor))
 		{
 		insertNonCompoundInstr(getNthChildCursor(cursor, 1));
-		insertNonCompoundInstr(getNthChildCursor(cursor, 2));
+		CXCursor childCursor = getNthChildCursor(cursor, 2);
+		CXCursorKind childCursKind = clang_getCursorKind(childCursor);
+		if(childCursKind != CXCursor_IfStmt)
+		    insertNonCompoundInstr(childCursor);
 		}
 	    break;
-
-/*
-	case CXCursor_WhileStmt:
-	case CXCursor_DoStmt:
-	case CXCursor_CaseStmt:
-	case CXCursor_CXXForRangeStmt:
-	case CXCursor_ForStmt:
-	case CXCursor_IfStmt:
-	    instrChildNonCompoundStatements(cursor);
-	    break;
-*/
 
 	case CXCursor_CompoundStmt:
 	    {
@@ -387,7 +402,7 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 		if(isParseFile(cursor))
 		    {
 #if(DEBUG_PARSE)
-		    debugCount(cursor, mInstrCount);
+		    debugCount(cursor, "insertCS", mInstrCount);
 #endif
 		    insertCovInstr(loc.getOffset()+1);
 		    }
@@ -395,10 +410,27 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 	    }
 	    break;
 
+	// case CXCursor_SwitchStmt
+	// case CXCursor_StmtExpr
+	// case CXCursor_FirstStmt
+	// case CXCursor_LabelStmt
+	// case CXCursor_UnexposedStmt
+	// case CXCursor_GotoStmt
+	// case CXCursor_IndirectStmt
+	// case CXCursor_ContinueStmt
+	// case CXCursor_BreakStmt
+	// case CXCursor_AsmStmt
+	// case CXCursor_TryStmt, finally, etc.
 	default:
 	    break;
 	}
-    clang_visitChildren(cursor, ::visitFunctionAddInstr, this);
+    // The StmtExpr is a strange GNU extension that is present in things
+    // like "if(GTK_IS_LIST_STORE(model))". If this is instrumented, the coverage macro
+    // is inserted within the if expression part of the statement.
+    if(cursKind != CXCursor_StmtExpr)
+	{
+	clang_visitChildren(cursor, ::visitFunctionAddInstr, this);
+	}
 //    return CXChildVisit_Recurse;
 #if(DEBUG_PARSE)
     level--;
@@ -408,6 +440,7 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 
 CXChildVisitResult CppInstr::visitTranslationUnit(CXCursor cursor, CXCursor parent)
     {
+    CXChildVisitResult result = CXChildVisit_Recurse;
     sCrashDiagnostics.saveMostRecentParseLocation("TU", cursor);
     CXCursorKind cursKind = clang_getCursorKind(cursor);
     switch(cursKind)
@@ -419,10 +452,14 @@ CXChildVisitResult CppInstr::visitTranslationUnit(CXCursor cursor, CXCursor pare
 	    visitFunctionAddInstr(cursor, parent);
 	    break;
 
+	case CXCursor_InclusionDirective:
+	    result = CXChildVisit_Continue;	// Skip included files
+	    break;
+
 	default:
 	    break;
 	}
-    return CXChildVisit_Recurse;
+    return result;
     }
 
 class CoverageHeader:public CoverageHeaderReader
@@ -458,7 +495,7 @@ void CoverageHeader::write(SharedFile &outDefFile, std::string const &srcFn,
 	int numInstrLines)
     {
     std::string fnDef = getFileDefine();
-    mInstrDefineMap.insert(std::pair<std::string, int>(fnDef, numInstrLines));
+    mInstrDefineMap[fnDef] = numInstrLines;
 
     int totalCount = 0;
     for(auto const &defItem : mInstrDefineMap)
@@ -497,6 +534,7 @@ void CoverageHeader::write(SharedFile &outDefFile, std::string const &srcFn,
 	    def += "\n";
 	    buf += def;
 	    }
+	outDefFile.truncate();
 	outDefFile.seekBegin();
 	outDefFile.write(&buf[0], buf.size());
 	}
@@ -621,9 +659,10 @@ CppInstr::eErrorTypes CppInstr::parse(char const * const srcFn, char const * con
 //    clang_toggleCrashRecovery(true);
     // Get inclusion directives to be in AST.
     unsigned options = 0;
-    CXTranslationUnit tu = clang_parseTranslationUnit(index, srcFn,
-	clang_args, num_clang_args, 0, 0, options);
-    if(tu != nullptr)
+    CXTranslationUnit tu;
+    CXErrorCode errCode = clang_parseTranslationUnit2(index, srcFn,
+	clang_args, num_clang_args, 0, 0, options, &tu);
+    if(errCode == CXError_Success)
 	{
 	CXCursor rootCursor = clang_getTranslationUnitCursor(tu);
 	try
@@ -697,7 +736,7 @@ CppInstr::eErrorTypes CppInstr::parse(char const * const srcFn, char const * con
 	}
     else
 	{
-	errType = ET_NoSourceFile;
+	errType = ET_CLangError;
 	}
     return errType;
     }

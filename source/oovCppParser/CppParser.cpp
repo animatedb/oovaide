@@ -399,8 +399,13 @@ static std::string getFileLoc(CXCursor cursor, int *retLine = nullptr)
     unsigned line;
     unsigned column;
     unsigned offset;
+    std::string fn;
     clang_getExpansionLocation(loc, &file, &line, &column, &offset);
-    CXStringDisposer fn = clang_getFileName(file);
+    if(file != nullptr)
+	{
+	CXStringDisposer tempFn = clang_getFileName(file);
+	fn = tempFn;
+	}
     if(retLine)
 	*retLine = line;
     return fn;
@@ -833,9 +838,10 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
     // Get inclusion directives to be in AST.
     unsigned options = CXTranslationUnit_DetailedPreprocessingRecord;
 //    unsigned options = 0;
-    CXTranslationUnit tu = clang_parseTranslationUnit(index, srcFn,
-	clang_args, num_clang_args, 0, 0, options);
-    if(tu != nullptr)
+    CXTranslationUnit tu;
+    CXErrorCode errCode = clang_parseTranslationUnit2(index, srcFn,
+	clang_args, num_clang_args, 0, 0, options, &tu);
+    if(errCode == CXError_Success)
 	{
 	CXCursor rootCursor = clang_getTranslationUnitCursor(tu);
 	try
@@ -921,7 +927,7 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
 	}
     else
 	{
-	errType = ET_NoSourceFile;
+	errType = ET_CLangError;
 	}
     return errType;
     }

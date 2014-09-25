@@ -1,5 +1,6 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head><!-- DC Blaha - 6/8/2009 -->
+<html><head>
+<!-- DC Blaha - 6/8/2009 -->
 
 
 
@@ -34,7 +35,27 @@ Created: 6-8-2009
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.<br>
 <br>
+<h2>2014-09-2<br>
+</h2>
+<h2>
+
+
+
+This version contains:<br>
+
+
+
+
+
+
+</h2>
+<ul>
+<li>Fixed coverage build for projects with no packages<br>
+</li><li><br>
+</li>
+</ul>
 <h2>2014-09</h2>
+
 
 
 

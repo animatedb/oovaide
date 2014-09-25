@@ -34,6 +34,7 @@ class File
 		fclose(mFp);
             mFp = nullptr;
             }
+        void truncate(int size=0);
         bool isOpen() const
             { return(mFp != nullptr); }
 	FILE *getFp()
@@ -69,6 +70,7 @@ class BaseSimpleFile
 	    { mFd = fd; }
 	int getFd()
 	    { return mFd; }
+        void truncate(int size=0);
 
     protected:
 	int mFd;

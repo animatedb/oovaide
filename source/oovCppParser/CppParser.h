@@ -42,7 +42,7 @@ class CppParser
 	    mClassifier(nullptr), mOperation(nullptr), mStatements(nullptr)
 	    {}
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
-	    ET_NoSourceFile, ET_ParseError };
+	    ET_CLangError, ET_ParseError };
         /// Parses a C++ source file.
 	eErrorTypes parse(char const * const srcFn, char const * const srcRootDir,
 		char const * const outDir,

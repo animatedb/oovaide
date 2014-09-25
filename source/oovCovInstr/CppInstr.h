@@ -86,6 +86,7 @@ class CppFileContents
 	std::map<int, std::string> mInsertMap;
 	std::vector<char> mFileContents;
 
+	/// Reads the mInsertMap and writes the mFileContents.
 	void updateMemory();
     };
 
@@ -97,7 +98,7 @@ class CppInstr
 	    mInstrCount(0)
 	    {}
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
-	    ET_NoSourceFile, ET_ParseError };
+	    ET_CLangError, ET_ParseError };
         /// Parses a C++ source file.
 	eErrorTypes parse(char const * const srcFn, char const * const srcRootDir,
 		char const * const outDir,

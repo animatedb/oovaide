@@ -34,6 +34,16 @@ static void sleepMs(int ms)
     }
 
 
+void File::truncate(int size)
+    {
+#ifdef __linux__
+    ftruncate(fileno(mFp), size);
+#else
+    _chsize(fileno(mFp), size);
+#endif
+    }
+
+
 eOpenStatus BaseSimpleFile::open(char const * const fn, eOpenModes mode, eOpenEndings oe)
     {
     eOpenStatus status = OS_SharingProblem;
@@ -155,6 +165,14 @@ void BaseSimpleFile::close()
 #endif
     }
 
+void BaseSimpleFile::truncate(int size)
+    {
+#ifdef __linux__
+    ftruncate(mFd, size);
+#else
+    _chsize(mFd, size);
+#endif
+    }
 
 eOpenStatus SharedFile::open(char const * const fn, eOpenModes mode,
 	eOpenEndings oe)
