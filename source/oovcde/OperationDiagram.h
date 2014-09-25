@@ -30,6 +30,10 @@ struct OperationDiagramParams
     bool mIsConst;
     };
 
+/// This defines functions used to interact with an operation diagram. The
+/// OperationDiagram uses the OperationDrawer to draw the OperationGraph.
+/// This must remain for the life of the program since GUI events can be
+/// generated any time.
 class OperationDiagram
     {
     public:
@@ -42,7 +46,7 @@ class OperationDiagram
 	void clearGraphAndAddOperation(char const * const className,
 		char const * const opName, bool isConst);
 	void drawSvgDiagram(FILE *fp);
-	void relayout();
+	void restart();
 
 	// For use by extern functions.
 	void buttonPressEvent(const GdkEventButton *event);

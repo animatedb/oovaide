@@ -11,6 +11,7 @@
 #include "Gui.h"
 
 
+/// This defines the GUI to access the list of classes.
 class ClassList:public GuiList
     {
     public:

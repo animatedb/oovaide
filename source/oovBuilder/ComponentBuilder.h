@@ -25,25 +25,6 @@ class ComponentPkgDeps
 	std::map<std::string, std::set<std::string> > mCompPkgMap;
     };
 
-class ToolPathFile:public NameValueFile
-    {
-    public:
-	void setConfig(char const * const buildConfig)
-	    {
-	    mBuildConfig = buildConfig;
-	    }
-	std::string getCompilerPath();
-	std::string getLibberPath();
-	std::string getObjSymbolPath();
-    private:
-	std::string mBuildConfig;
-	std::string mPathLibber;
-	std::string mPathCompiler;
-	std::string mPathObjSymbol;
-	void getPaths();
-    };
-
-
 class ProcessArgs
     {
     public:
@@ -99,13 +80,13 @@ class ComponentBuilder:public ComponentTaskQueue
     {
     public:
 	ComponentBuilder(ComponentFinder &compFinder):
-	    mSrcRootDir(nullptr), mComponentFinder(compFinder)
+	    mComponentFinder(compFinder)
 	    {}
-	void build(char const * const srcRootDir,
-		char const * const incDepsFilePath, char const * const buildDirClass);
+	void build(eProcessModes mode, char const * const incDepsFilePath,
+		char const * const buildDirClass);
 
     private:
-	char const * mSrcRootDir;
+	FilePath mSrcRootDir;
 	FilePath mOutputPath;
 	FilePath mIntermediatePath;
 	ComponentFinder &mComponentFinder;
@@ -115,8 +96,10 @@ class ComponentBuilder:public ComponentTaskQueue
 	ComponentPkgDeps mComponentPkgDeps;
 
 	void buildComponents();
-	void makeObj(const std::string &srcFile, const StdStringVec &incDirs,
-		const StdStringVec &incFiles,
+	void processSourceForComponents(eProcessModes pm);
+	void generateDependencies();
+	void processSourceFile(eProcessModes pm, const std::string &srcFile,
+		const StdStringVec &incDirs, const StdStringVec &incFiles,
 		const std::set<std::string> &externPkgCompileArgs);
 	void makeLib(const std::string &libName, const StdStringVec &objectFileNames);
 	void makeLibSymbols(char const * const clumpName, const StdStringVec &files);

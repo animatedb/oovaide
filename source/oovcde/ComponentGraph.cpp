@@ -10,14 +10,10 @@
 #include "IncludeMap.h"
 #include <algorithm>
 
-void ComponentGraph::updateGraph()
+void ComponentGraph::updateGraph(const ComponentDrawOptions &options)
     {
-    BuildConfigReader buildConfig;
     ComponentTypesFile compFile;
     compFile.read();
-    std::string incDepsFilePath = buildConfig.getIncDepsFilePath(BuildConfigAnalysis);
-    IncDirDependencyMapReader incMap;
-    BuildPackages buildPkgs(true);
 
     mNodes.clear();
     for(auto const &name : compFile.getComponentNames())
@@ -29,19 +25,25 @@ void ComponentGraph::updateGraph()
 		    ComponentNode::CNT_Component, ct));
 	    }
 	}
+    BuildPackages buildPkgs(true);
     std::vector<Package> packages = buildPkgs.getPackages();
     for(auto const &pkg : packages)
 	{
 	mNodes.push_back(ComponentNode(pkg.getPkgName().c_str(),
 		ComponentNode::CNT_ExternalPackage));
 	}
-    incMap.read(incDepsFilePath.c_str());
-    updateConnections(incMap, compFile, packages);
+    updateConnections(compFile, options);
     }
 
-void ComponentGraph::updateConnections(const IncDirDependencyMapReader &incMap,
-	const ComponentTypesFile &compFile, std::vector<Package> const &packages)
+void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
+	const ComponentDrawOptions &options)
     {
+    IncDirDependencyMapReader incMap;
+    BuildConfigReader buildConfig;
+    std::string incDepsFilePath = buildConfig.getIncDepsFilePath(BuildConfigAnalysis);
+    incMap.read(incDepsFilePath.c_str());
+    BuildPackages buildPkgs(true);
+    std::vector<Package> packages = buildPkgs.getPackages();
     mConnections.clear();
 
     std::vector<std::string> compPaths;
@@ -100,6 +102,57 @@ void ComponentGraph::updateConnections(const IncDirDependencyMapReader &incMap,
 		}
 	    }
 	}
+    if(!options.drawImplicitRelations)
+	pruneConnections();
+    }
+
+void ComponentGraph::findNumPaths(int consumerIndex, int supplierIndex, int &numPaths)
+    {
+    for(auto const &connection : mConnections)
+	{
+	if(connection.mNodeConsumer == consumerIndex)
+	    {
+	    if(connection.mNodeSupplier == supplierIndex)
+		{
+		numPaths++;
+		}
+	    else
+		findNumPaths(connection.mNodeSupplier, supplierIndex, numPaths);
+	    }
+	}
+    }
+
+void ComponentGraph::pruneConnections()
+    {
+    for(auto & constConn : mConnections)
+	{
+	// The begin() iterator is const only in the <set> header file. Since
+	// the set sorting is not dependent on the mImpliedDependency, this code is ok.
+	ComponentConnection &connection = const_cast<ComponentConnection &>(constConn);
+	int numPaths = 0;
+	findNumPaths(connection.mNodeConsumer, connection.mNodeSupplier, numPaths);
+	if(numPaths > 1)
+	    {
+	    connection.setImpliedDependency(true);
+	    }
+	}
+    /*
+    std::set<ComponentConnection>::iterator iter = mConnections.begin();
+    while(iter != mConnections.end())
+	{
+	ComponentConnection const &connection = *iter;
+	int numPaths = 0;
+	findNumPaths(connection.mNodeConsumer, connection.mNodeSupplier, numPaths);
+	if(numPaths > 1)
+	    {
+	    mConnections.erase(iter++);
+	    }
+	else
+	    {
+	    iter++;
+	    }
+	}
+*/
     }
 
 int ComponentGraph::getComponentIndex(std::vector<std::string> const &compPaths,
@@ -127,6 +180,23 @@ ComponentNode *ComponentGraph::getNode(int x, int y)
 	    node = &mNodes[i];
 	}
     return node;
+    }
+
+void ComponentGraph::removeNode(const ComponentNode &node,
+	const ComponentDrawOptions &options)
+    {
+    for(size_t i=0; i<mNodes.size(); i++)
+	{
+	if(&node == &mNodes[i])
+	    {
+	    mNodes.erase(mNodes.begin() + i);
+	    break;
+	    }
+	}
+    ComponentTypesFile compFile;
+    compFile.read();
+    updateConnections(compFile, options);
+    mModified = true;
     }
 
 GraphSize ComponentGraph::getGraphSize() const

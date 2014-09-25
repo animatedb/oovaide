@@ -13,6 +13,8 @@
 #include "Gui.h"
 #include "PackagesDialogs.h"
 
+/// Provides an options/preferences/settings dialog. This supports a tabbed
+/// list of dialogs to display as options.
 class OptionsDialog
     {
     public:

@@ -47,7 +47,12 @@ static std::string makeRelative(std::string const &rootDir, char const * const a
 	eFilePathTypes fpt)
     {
     FilePath fp(absPath, fpt);
-    if(fp.compare(0, rootDir.length(), rootDir) == 0)
+    // Don't make relative directories higher than root.
+    if(rootDir.length() > fp.length())
+	{
+	fp.clear();
+	}
+    else if(fp.compare(0, rootDir.length(), rootDir) == 0)
 	{
 	fp.erase(0, rootDir.length());
 	}
@@ -57,16 +62,11 @@ static std::string makeRelative(std::string const &rootDir, char const * const a
 static void appendStr(std::string &val, char const * const str)
     {
     std::vector<std::string> vec = CompoundValueRef::parseString(val.c_str());
-    if(vec.size() != 0)
+    if(std::find(vec.begin(), vec.end(), str) == vec.end())
 	{
-	if(std::find(vec.begin(), vec.end(), str) == vec.end())
-	    {
-	    val += ';';
-	    val += str;
-	    }
-	}
-    else
 	val += str;
+	val += ';';
+	}
     }
 
 static std::string getPackageNameFromDir(char const * const path)
@@ -330,8 +330,7 @@ BuildPackages::BuildPackages(bool readNow)
 
 bool BuildPackages::read()
     {
-    FilePath fn(Project::getProjectDirectory(), FP_Dir);
-    fn.appendFile("oovcde-buildpkg.txt");
+    FilePath fn(Project::getBuildPackagesFilePath(), FP_File);
     mFile.setFilename(fn.c_str());
     return mFile.readFile();
     }

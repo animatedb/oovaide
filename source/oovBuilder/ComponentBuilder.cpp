@@ -15,20 +15,33 @@
 #include <algorithm>
 
 
-void ComponentBuilder::build(char const * const srcRootDir,
-	char const * const incDepsFilePath,
+void ComponentBuilder::build(eProcessModes mode, char const * const incDepsFilePath,
 	char const * const buildDirClass)
     {
-    mSrcRootDir = srcRootDir;
-
-    mOutputPath.setPath(Project::getOutputDir(buildDirClass).c_str(), FP_Dir);
+    mSrcRootDir.setPath(Project::getSrcRootDirectory().c_str(), FP_Dir);
+    if(mode == PM_CovInstr)
+	{
+	mOutputPath.setPath(Project::getCoverageSourceDirectory().c_str(), FP_Dir);
+	}
+    else
+	{
+	mOutputPath.setPath(Project::getOutputDir(buildDirClass).c_str(), FP_Dir);
+	}
     mIntermediatePath.setPath(Project::getIntermediateDir(buildDirClass).c_str(), FP_Dir);
 
     mToolPathFile.setConfig(buildDirClass);
 
     deleteFile(getDiagFileName().c_str());
     mIncDirMap.read(incDepsFilePath);
-    buildComponents();
+    if(mode == PM_CovInstr)
+	{
+	sVerboseDump.logProgress("Instrument source");
+	processSourceForComponents(PM_CovInstr);
+	}
+    else
+	{
+	buildComponents();
+	}
     }
 
 bool const ComponentPkgDeps::isDependent(char const * const compName,
@@ -197,6 +210,84 @@ class LibTaskListener:public TaskQueueListener
 	    }
     };
 
+void ComponentBuilder::processSourceForComponents(eProcessModes pm)
+    {
+    ComponentTypesFile const &compTypesFile =
+	    mComponentFinder.getComponentTypesFile();
+    std::vector<std::string> compNames = compTypesFile.getComponentNames();
+    if(compNames.size() > 0)
+        {
+        setupQueue(getNumHardwareThreads());
+        for(const auto &name : compNames)
+            {
+            std::set<std::string> compileArgs = getComponentCompileArgs(name.c_str(),
+                compTypesFile);
+            if(compTypesFile.getComponentType(name.c_str()) != ComponentTypesFile::CT_Unknown)
+                {
+                std::vector<std::string> sources =
+                    compTypesFile.getComponentSources(name.c_str());
+                if(pm == PM_CovInstr)
+                    {
+                    std::vector<std::string> includes =
+                        compTypesFile.getComponentIncludes(name.c_str());
+                    sources.insert(sources.end(), includes.begin(), includes.end());
+                    }
+
+                std::vector<std::string> orderedIncRoots =
+                    mComponentFinder.getAllIncludeDirs();
+                for(const auto &src : sources)
+                    {
+                    FilePath absSrc;
+                    absSrc.getAbsolutePath(src.c_str(), FP_File);
+                    std::vector<std::string> incDirs =
+                        mIncDirMap.getOrderedIncludeDirsForSourceFile(absSrc.c_str(),
+                        orderedIncRoots);
+                    /// @todo - this could be optimized to not check file times of external files.
+                    /// @todo - more optimization could use the times in the incdeps file.
+                    std::set<IncludedPath> incFilesSet;
+                    mIncDirMap.getNestedIncludeFilesUsedBySourceFile(absSrc.c_str(),
+                        incFilesSet);
+                    std::vector<std::string> incFiles;
+                    for(auto const &file : incFilesSet)
+                        {
+                        incFiles.push_back(file.getFullPath());
+                        }
+		    processSourceFile(pm, src, incDirs, incFiles, compileArgs);
+                    }
+                }
+            }
+        waitForCompletion();
+        }
+    }
+
+void ComponentBuilder::generateDependencies()
+    {
+    ComponentTypesFile const &compTypesFile =
+	    mComponentFinder.getComponentTypesFile();
+    std::vector<std::string> compNames = compTypesFile.getComponentNames();
+    BuildPackages const &buildPackages =
+	    mComponentFinder.getProject().getBuildPackages();
+
+    sVerboseDump.logProgress("Generate dependencies");
+    // Find component dependencies
+    for(const auto &compName : compNames)
+	{
+	/// @todo - this should be optimized so that only components with source files
+	/// that have changed include dependencies are processed.
+	// This is done for libraries too because they may need compile switches.
+	if(compTypesFile.getComponentType(compName.c_str()) != ComponentTypesFile::CT_Unknown)
+	    {
+	    for(auto const &pkg : buildPackages.getPackages())
+		{
+		if(anyIncDirsMatch(compName.c_str(), pkg))
+		    {
+		    mComponentPkgDeps.addPkgDep(compName.c_str(), pkg.getPkgName().c_str());
+		    }
+		}
+	    }
+	}
+    }
+
 // GCC-4.3 has c++0x
 // LLVM 3.2 has c++0x and experimental binaries for mingw32/x86
 // LLVM 3.3 has c++11
@@ -233,68 +324,11 @@ void ComponentBuilder::buildComponents()
     ComponentTypesFile const &compTypesFile =
 	    mComponentFinder.getComponentTypesFile();
     std::vector<std::string> compNames = compTypesFile.getComponentNames();
-    BuildPackages const &buildPackages =
-	    mComponentFinder.getProject().getBuildPackages();
 
-    sVerboseDump.logProgress("Generate dependencies");
-    // Find component dependencies
-    for(const auto &compName : compNames)
-	{
-	/// @todo - this should be optimized so that only components with source files
-	/// that have changed include dependencies are processed.
-	// This is done for libraries too because they may need compile switches.
-	if(compTypesFile.getComponentType(compName.c_str()) != ComponentTypesFile::CT_Unknown)
-	    {
-	    for(auto const &pkg : buildPackages.getPackages())
-		{
-		if(anyIncDirsMatch(compName.c_str(), pkg))
-		    {
-		    mComponentPkgDeps.addPkgDep(compName.c_str(), pkg.getPkgName().c_str());
-		    }
-		}
-	    }
-	}
-
+    generateDependencies();
     sVerboseDump.logProgress("Compile objects");
     // Compile all objects.
-    if(compNames.size() > 0)
-        {
-        setupQueue(getNumHardwareThreads());
-        for(const auto &name : compNames)
-            {
-            std::set<std::string> compileArgs = getComponentCompileArgs(name.c_str(),
-                compTypesFile);
-            if(compTypesFile.getComponentType(name.c_str()) != ComponentTypesFile::CT_Unknown)
-                {
-                std::vector<std::string> sources =
-                    compTypesFile.getComponentSources(name.c_str());
-
-                std::vector<std::string> orderedIncRoots =
-                    mComponentFinder.getAllIncludeDirs();
-                for(const auto &src : sources)
-                    {
-                    FilePath absSrc;
-                    absSrc.getAbsolutePath(src.c_str(), FP_File);
-                    std::vector<std::string> incDirs =
-                        mIncDirMap.getOrderedIncludeDirsForSourceFile(absSrc.c_str(),
-                        orderedIncRoots);
-                    /// @todo - this could be optimized to not check file times of external files.
-                    /// @todo - more optimization could use the times in the incdeps file.
-                    std::set<IncludedPath> incFilesSet;
-                    mIncDirMap.getNestedIncludeFilesUsedBySourceFile(absSrc.c_str(),
-                        incFilesSet);
-                    std::vector<std::string> incFiles;
-                    for(auto const &file : incFilesSet)
-                        {
-                        incFiles.push_back(file.getFullPath());
-                        }
-                    makeObj(src, incDirs, incFiles, compileArgs);
-                    }
-                }
-            }
-        waitForCompletion();
-        }
-
+    processSourceForComponents(PM_Build);
     sVerboseDump.logProgress("Build libraries");
 
     // Build all project libraries
@@ -374,41 +408,6 @@ void ComponentBuilder::buildComponents()
     }
 
 
-void ToolPathFile::getPaths()
-    {
-    if(mPathCompiler.length() == 0)
-	{
-	std::string projFileName = Project::getProjectFilePath();
-	setFilename(projFileName.c_str());
-	readFile();
-
-	std::string optStr = makeBuildConfigArgName(OptToolLibPath, mBuildConfig.c_str());
-	mPathLibber = getValue(optStr.c_str());
-	optStr = makeBuildConfigArgName(OptToolCompilePath, mBuildConfig.c_str());
-	mPathCompiler = getValue(optStr.c_str());
-	optStr = makeBuildConfigArgName(OptToolObjSymbolPath, mBuildConfig.c_str());
-	mPathObjSymbol = getValue(optStr.c_str());
-	}
-    }
-
-std::string ToolPathFile::getCompilerPath()
-    {
-    getPaths();
-    return(mPathCompiler);
-    }
-
-std::string ToolPathFile::getObjSymbolPath()
-    {
-    getPaths();
-    return(mPathObjSymbol);
-    }
-
-std::string ToolPathFile::getLibberPath()
-    {
-    getPaths();
-    return(mPathLibber);
-    }
-
 bool ComponentTaskQueue::runProcess(char const * const procPath,
 	char const * const outFile, const OovProcessChildArgs &args,
 	InProcMutex &listenerMutex, char const * const stdOutFn)
@@ -476,21 +475,47 @@ std::string ComponentBuilder::makeOutputObjectFileName(char const * const srcFil
     return outFileName;
     }
 
-void ComponentBuilder::makeObj(const std::string &srcFile,
-	const std::vector<std::string> &incDirs,
-	const std::vector<std::string> &incFiles,
+void ComponentBuilder::processSourceFile(eProcessModes pm, const std::string &srcFile,
+	const std::vector<std::string> &incDirs, const std::vector<std::string> &incFiles,
 	const std::set<std::string> &externPkgCompileArgs)
     {
-    if(isSource(srcFile.c_str()))
+    bool processFile = isSource(srcFile.c_str());
+    if(pm == PM_CovInstr && !processFile)
+	{
+	processFile = isHeader(srcFile.c_str());
+	}
+    if(processFile)
 	{
 	int incFileOlderIndex = -1;
-	std::string outFileName = makeOutputObjectFileName(srcFile.c_str());
+	std::string outFileName;
+	if(pm == PM_CovInstr)
+	    {
+	    outFileName = Project::makeCoverageSourceFileName(srcFile.c_str(), mSrcRootDir);
+	    }
+	else
+	    {
+	    outFileName = makeOutputObjectFileName(srcFile.c_str());
+	    }
 	if(FileStat::isOutputOld(outFileName.c_str(), srcFile.c_str()) ||
 		FileStat::isOutputOld(outFileName.c_str(), incFiles, &incFileOlderIndex))
 	    {
 	    CppChildArgs ca;
-	    std::string procPath = mToolPathFile.getCompilerPath();
+	    std::string procPath;
+	    if(pm == PM_CovInstr)
+		{
+		procPath = mToolPathFile.getCovInstrToolPath();
+		}
+	    else
+		{
+		procPath = mToolPathFile.getCompilerPath();
+		}
 	    ca.addArg(procPath.c_str());
+	    ca.addArg(srcFile.c_str());
+	    if(pm == PM_CovInstr)
+		{
+		ca.addArg(mSrcRootDir.c_str());
+		ca.addArg(mOutputPath.c_str());
+		}
 	    ca.addCompileArgList(mComponentFinder, incDirs);
 	    for(auto const &arg : externPkgCompileArgs)
 		{
@@ -498,7 +523,6 @@ void ComponentBuilder::makeObj(const std::string &srcFile,
 		}
 	    ca.addArg("-o");
 	    ca.addArg(outFileName.c_str());
-	    ca.addArg(srcFile.c_str());
 
 	    sVerboseDump.logProcess(srcFile.c_str(), ca.getArgv(), ca.getArgc());
             addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));

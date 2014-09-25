@@ -119,7 +119,7 @@ void IncDirDependencyMap::write()
 
 	for(const auto &str : mapItem.second)
 	    {
-	    int pos = compVal.find(str.c_str());
+	    size_t pos = compVal.find(str.c_str());
 	    if(pos == CompoundValue::npos)
 		{
 		compVal.addArg(str.c_str());

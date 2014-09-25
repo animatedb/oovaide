@@ -26,6 +26,7 @@ static const ClassDrawOptions &getDrawOptions()
     dopts.drawOovSymbols = gGuiOptions.getValueBool(OptGuiShowOovSymbols);
     dopts.drawOperParamRelations = gGuiOptions.getValueBool(OptGuiShowOperParamRelations);
     dopts.drawOperBodyVarRelations = gGuiOptions.getValueBool(OptGuiShowOperBodyVarRelations);
+    dopts.drawRelationKey = gGuiOptions.getValueBool(OptGuiShowRelationKey);
     return dopts;
     }
 
@@ -52,7 +53,7 @@ void ClassDiagram::updateGraphSize()
     gtk_widget_set_size_request(widget, size.x, size.y);
     }
 
-void ClassDiagram::relayout()
+void ClassDiagram::restart()
     {
     if(mClassGraph.getNodes().size() == 0)
 	{
@@ -210,9 +211,9 @@ extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(GtkWidget *widget,
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_RelayoutMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_RestartMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    gClassDiagram->relayout();
+    gClassDiagram->restart();
     }
 
 void handlePopup(ClassGraph::eAddNodeTypes addType)
@@ -327,7 +328,7 @@ extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *
 	if(dlg.run(gClassDiagram->getBuilder(), node->getDrawOptions()))
 	    {
 	    gClassDiagram->getClassGraph().setModified();
-	    gClassDiagram->getClassGraph().updateNodeSizes();
+	    gClassDiagram->getClassGraph().updateNodeSizes(getDrawOptions());
 	    gClassDiagram->drawDiagram(getDrawOptions());
 	    }
 	}

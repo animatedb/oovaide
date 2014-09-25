@@ -11,6 +11,9 @@
 #include "Gui.h"
 #include "Packages.h"
 
+/// This dialog lets the user select system packages to add to the Oovcde project.
+/// On Linux, this uses pkg-config to discover the system packages. On Windows,
+/// a package file is read.
 class AddPackageDialog:public Dialog
     {
     public:
@@ -25,6 +28,8 @@ class AddPackageDialog:public Dialog
 	AvailablePackages mAvailPackages;
     };
 
+/// This lists the packages in the Oovcde project, and select packages to view
+/// or change details.
 class ProjectPackagesDialog:public Dialog
     {
     public:

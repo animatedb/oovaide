@@ -11,6 +11,10 @@
 std::string Project::sProjectDirectory;
 std::string Project::sSourceRootDirectory;
 
+static char sCoverageSourceDir[] = "oov-cov";
+static char sCoverageProjectDir[] = "oov-cov-oovcde";
+
+
 std::string makeBuildConfigArgName(char const * const baseName,
 	char const * const buildConfig)
     {
@@ -28,7 +32,29 @@ std::string Project::getComponentTypesFilePath()
     return fn;
     }
 
-std::string &Project::getSrcRootDirectory()
+std::string Project::getComponentSourceListFilePath()
+    {
+    std::string fn = sProjectDirectory;
+    ensureLastPathSep(fn);
+    fn += "oovcde-tmp-compsources.txt";
+    return fn;
+    }
+
+std::string Project::getPackagesFilePath()
+    {
+    FilePath fn(Project::getProjectDirectory(), FP_Dir);
+    fn.appendFile("oovcde-pkg.txt");
+    return fn;
+    }
+
+std::string Project::getBuildPackagesFilePath()
+    {
+    FilePath fn(Project::getProjectDirectory(), FP_Dir);
+    fn.appendFile("oovcde-tmp-buildpkg.txt");
+    return fn;
+    }
+
+std::string const &Project::getSrcRootDirectory()
     {
     if(sSourceRootDirectory.length() == 0)
 	{
@@ -85,6 +111,26 @@ void Project::getSrcRootDirRelativeSrcFileName(const std::string &srcFileName,
 	}
     }
 
+std::string Project::getSrcRootDirRelativeSrcFileDir(const std::string &srcFileName)
+    {
+    FilePath relSrcFileDir(srcFileName, FP_Dir);
+    std::string srcRootDir = Project::getSrcRootDirectory();
+    size_t pos = relSrcFileDir.find(srcRootDir);
+    if(pos != std::string::npos)
+	{
+	relSrcFileDir.erase(pos, srcRootDir.length());
+	removePathSep(relSrcFileDir, 0);
+	}
+    return relSrcFileDir;
+    }
+
+std::string getAbsoluteDirFromSrcRootDirRelativeDir(const std::string &relSrcFileDir)
+    {
+    FilePath absSrcFileDir(Project::getSrcRootDirectory(), FP_Dir);
+    absSrcFileDir.appendDir(relSrcFileDir.c_str());
+    return absSrcFileDir;
+    }
+
 void Project::makeOutBaseFileName(const std::string &srcFileName,
 	const std::string &srcRootDir,
 	const std::string &outFilePath, std::string &outFileName)
@@ -114,6 +160,32 @@ void Project::makeTreeOutBaseFileName(const std::string &srcFileName,
     tmpOutFileName.discardExtension();
     outFileName = tmpOutFileName;
     }
+
+std::string Project::getCoverageSourceDirectory()
+    {
+    FilePath coverageDir(getProjectDirectory(), FP_Dir);
+    coverageDir.appendDir(sCoverageSourceDir);
+    return coverageDir;
+    }
+
+std::string Project::makeCoverageSourceFileName(const std::string &srcFileName,
+	const std::string &srcRootDir)
+    {
+    std::string coverageDir = getCoverageSourceDirectory();
+    std::string outFileName;
+    FilePath srcFn(srcFileName, FP_File);
+    makeTreeOutBaseFileName(srcFileName, srcRootDir, coverageDir, outFileName);
+    outFileName += srcFn.getExtension();
+    return outFileName;
+    }
+
+std::string Project::getCoverageProjectDirectory()
+    {
+    FilePath coverageDir(getProjectDirectory(), FP_Dir);
+    coverageDir.appendDir(sCoverageProjectDir);
+    return coverageDir;
+    }
+
 
 void Project::replaceChars(std::string &str, char oldC, char newC)
     {
@@ -194,6 +266,13 @@ CompoundValue ProjectReader::getProjectExcludeDirs() const
     {
     CompoundValue val;
     val.parseString(getValue(OptProjectExcludeDirs).c_str());
+// This doesn't work.
+//    val.push_back(sCoverageSourceDir);
+//    val.push_back(sCoverageProjectDir);
+    for(size_t i=0; i<val.size(); i++)
+	{
+	val[i] = getAbsoluteDirFromSrcRootDirRelativeDir(val[i]);
+	}
     return val;
     }
 

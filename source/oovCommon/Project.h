@@ -45,26 +45,37 @@ class Project
     public:
 	static void setProjectDirectory(char const * const projDir)
 	    { sProjectDirectory = projDir; }
+	static std::string const &getProjectDirectory()
+	    { return sProjectDirectory; }
+	static std::string getProjectFilePath();
+
+	static std::string getGuiOptionsFilePath();
+
 	static void setSourceRootDirectory(char const * const projDir)
 	    { sSourceRootDirectory = projDir; }
-	static const std::string &getProjectDirectory()
-	    { return sProjectDirectory; }
-	static std::string &getSrcRootDirectory();
+
 	static std::string getComponentTypesFilePath();
-	static char const * const getAnalysisIncDepsFilename()
-	    { return "oovcde-incdeps.txt"; }
-	static char const * const getAnalysisComponentsFilename()
-	    { return "oovcde-comps.txt"; }
-	static std::string getProjectFilePath();
-	static std::string getGuiOptionsFilePath();
+	static std::string getComponentSourceListFilePath();
+
+	static std::string getPackagesFilePath();
+	static std::string getBuildPackagesFilePath();
 
 	static FilePath getOutputDir(char const * const buildDirClass);
 	static FilePath getIntermediateDir(char const * const buildDirClass);
 
+	static std::string const &getSrcRootDirectory();
 	/// Returns a filename relative to the root source directory.
 	static void getSrcRootDirRelativeSrcFileName(const std::string &srcFileName,
 		const std::string &srcRootDir, std::string &relSrcFileName);
+	static std::string getSrcRootDirRelativeSrcFileDir(const std::string &absSrcFileDir);
+	static std::string getAbsoluteDirFromSrcRootDirRelativeDir(const std::string &relSrcFileDir);
+
+	static char const * const getAnalysisIncDepsFilename()
+	    { return "oovcde-incdeps.txt"; }
+	static char const * const getAnalysisComponentsFilename()
+	    { return "oovcde-extdirs.txt"; }
 	/// Make a filename for the compressed content file for each source file.
+	/// The analysisDir is retreived from the build configuration.
 	static void makeAnalysisFileName(const std::string &srcFileName,
 		const std::string &srcRootDir,
 		const std::string &analysisDir, std::string &outFileName)
@@ -72,6 +83,15 @@ class Project
 	    makeOutBaseFileName(srcFileName, srcRootDir, analysisDir, outFileName);
 	    outFileName += ".xmi";
 	    }
+
+	// Location for coverage source files
+	static std::string getCoverageSourceDirectory();
+	static std::string makeCoverageSourceFileName(const std::string &srcFileName,
+		const std::string &srcRootDir);
+	static std::string getCoverageProjectDirectory();
+	static char const * const getCovLibName()
+	    { return "covLib"; }
+
 	// This does not have an extension.
 	static void makeOutBaseFileName(const std::string &srcFileName,
 		const std::string &srcRootDir,
@@ -132,8 +152,9 @@ class ProjectReader:public NameValueFile
 	// all components.
 	const StdStringVec getAllCrcCompileArgs() const;
 	const StdStringVec getAllCrcLinkArgs() const;
-	static std::string &getSrcRootDirectory()
+	static std::string const &getSrcRootDirectory()
 	    { return Project::getSrcRootDirectory(); }
+	/// These are absolute directories
 	CompoundValue getProjectExcludeDirs() const;
 	bool getVerbose() const
 	    { return mVerbose; }

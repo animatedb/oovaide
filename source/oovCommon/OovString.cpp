@@ -6,6 +6,7 @@
  */
 #include "OovString.h"
 #include <memory.h>
+#include <string.h>
 #include <stdio.h>
 
 static int isAsciiLenOk(char const * const buf, int maxLen)
@@ -212,4 +213,17 @@ OovString StringJoin(std::vector<class OovString> const &tokens, char delimiter)
 	    }
 	}
     return str;
+    }
+
+void OovString::replaceStrs(char const *srchStr, char const *repStr)
+    {
+    size_t starti = 0;
+    do
+	{
+	starti = find(srchStr);
+	if(starti != OovString::npos)
+	    {
+	    std::string::replace(starti, strlen(srchStr), repStr);
+	    }
+	} while(starti != OovString::npos);
     }

@@ -68,6 +68,40 @@ void recursiveDeleteDir(char const * const path)
     rmdir(path);
     }
 
+/*
+bool recursivegetDirListMatchFileName(char const * const path, const FilePath &fn,
+	std::vector<std::string> &foundFiles)
+    {
+    bool success = false;
+    DIR *dp = opendir(path);
+    if(dp)
+	{
+	success = true;
+	struct dirent *dirp;
+	while(((dirp = readdir(dp)) != nullptr) && success)
+	    {
+	    if ((strcmp(dirp->d_name, ".") != 0) && (strcmp(dirp->d_name, "..") != 0))
+		{
+		FilePath foundFn(dirp->d_name, FP_File);
+		if(fn.getNameExt() == foundFn.getNameExt())
+		    {
+		    std::string fullName = path;
+		    ensureLastPathSep(fullName);
+		    fullName += dirp->d_name;
+		    foundFiles.push_back(fullName);
+		    }
+		}
+	    else
+		{
+		getDirListMatchFileName(path, fn, foundFiles);
+		}
+	    }
+	closedir(dp);
+	}
+    return success;
+    }
+*/
+
 bool getDirListMatchExt(char const * const path, const FilePaths &extensions,
 	std::vector<std::string> &fn)
     {

@@ -11,6 +11,7 @@
 #include "DiagramDrawer.h"
 #include "ComponentGraph.h"
 
+/// This is used to draw a component diagram
 class ComponentDrawer
     {
     public:

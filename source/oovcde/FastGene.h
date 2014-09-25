@@ -22,6 +22,7 @@ typedef const GeneByteValue *ConstGenePtr;	// A pointer to gene strings
 typedef std::vector<QualityType> QualityHistogram;
 
 
+/// This class holds the data for a genetic algorithm.
 // Each gene's layout is:
 //	uint8_t GeneBytes[genesize]
 //	QualityType Quality

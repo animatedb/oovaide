@@ -8,8 +8,10 @@
 #ifndef FILE_H_
 #define FILE_H_
 
-#include "stdio.h"
+#include <stdio.h>
+#define __NO_MINGW_LFS 1
 
+/// This is a simple file interface.
 class File
     {
     public:
@@ -40,28 +42,59 @@ class File
 	FILE *mFp;
     };
 
-class SharedFile
+enum eOpenModes { M_ReadShared, M_ReadWriteExclusive, M_ReadWriteExclusiveAppend,
+    M_WriteExclusiveTrunc };
+enum eOpenEndings { OE_Text, OE_Binary };
+enum eOpenStatus { OS_Opened, OS_SharingProblem, OS_NoFile, OS_OtherError };
+
+class BaseSimpleFile
     {
     public:
-	SharedFile():
+	BaseSimpleFile():
 	    mFd(-1)
 	    {}
-	~SharedFile()
-	    { closeFile(); }
-	enum eModes { M_ReadShared, M_ReadWriteExclusive, M_ReadWriteExclusiveAppend };
-	enum eOpenStatus { OS_Opened, OS_SharingProblem, OS_NoFile, OS_OtherError };
-	eOpenStatus openFile(char const * const fn, eModes mode);
+	~BaseSimpleFile()
+	    { close(); }
+	eOpenStatus open(char const * const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
+		eOpenEndings oe=OE_Text);
+	void close();
 	bool isOpen() const
 	    { return(mFd != -1); }
-	int getFileSize() const;
-	void seekBeginFile();
 	// actual size may be less than file size in text mode.
-	bool readFile(void *buf, int size, int &actualSize);
-	bool writeFile(void const *buf, int size);
-	void closeFile();
+	bool read(void *buf, int size, int &actualSize);
+	bool write(void const *buf, int size);
+	void seekBegin();
+	int getSize() const;
+	void setFd(int fd)
+	    { mFd = fd; }
+	int getFd()
+	    { return mFd; }
 
-    private:
+    protected:
 	int mFd;
+    };
+
+// non-buffered file
+class SimpleFile:public BaseSimpleFile
+    {
+    public:
+	SimpleFile(char const * const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
+		eOpenEndings oe=OE_Text)
+	    {
+	    if(fn)
+		open(fn, mode, oe);
+	    }
+    };
+
+/// This defines a shared file between processes.  This will prevent writing
+/// the same file from multiple processes at a time.  The open will delay
+/// if the file cannot be opened exclusively when the open flag indicates
+/// exclusive access is needed.
+class SharedFile: public BaseSimpleFile
+    {
+    public:
+	eOpenStatus open(char const * const fn, eOpenModes mode,
+		eOpenEndings oe=OE_Text);
     };
 
 #endif /* FILE_H_ */

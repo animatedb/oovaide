@@ -34,8 +34,8 @@
 
 #if(USE_THREADS)
 
-// This class reduces template code bloat. See  OovThreadSafeQueue for
-// description.
+/// This class reduces template code bloat. See  OovThreadSafeQueue for
+/// description.
 class OovThreadSafeQueuePrivate
     {
     public:
@@ -66,7 +66,7 @@ class OovThreadSafeQueuePrivate
         virtual void getFront(void *item) = 0;
     };
 
-// This is a thread safe queue, but does not handle the threads.
+/// This is a thread safe queue, but does not handle the threads.
 template<typename T_ThreadQueueItem>
     class OovThreadSafeQueue:public OovThreadSafeQueuePrivate
     {
@@ -125,30 +125,30 @@ class ThreadedWorkQueuePrivate
     };
 #endif
 
-// This uses a producer consumer model where a single producer places items in
-// the queue and multiple consumer threads remove and process the queue.
-// Also only stores so many items so that queue doesn't get too
-// large/take too much memory.
-//
-// This is meant to be used by a single client thread.
-// The processItem function can be overridden for the work that will be
-// processed by the worker/consumer threads.
-//
-// The threads are started by setup(), and are cleaned up by this class during
-// waitForCompletion().
-//
-// @param T_ThreadQueueItem The type of item that will be in the queue.
-// @param T_ProcessItem A type derived from ThreadedWorkQueue that contains a
-// 	function that returns true to continue processing:
-// 	bool processItem(T_ThreadQueueItem const &item)
-//
-// A usage example:
-// class ThreadedQueue:public ThreadedWorkQueue<std::string, class ThreadedQueue>
-//    {
-//    public:
-//        // The function that will be called by the worker threads.
-//        bool processItem(std::string const &item) {}
-//    };
+/// This uses a producer consumer model where a single producer places items in
+/// the queue and multiple consumer threads remove and process the queue.
+/// Also only stores so many items so that queue doesn't get too
+/// large/take too much memory.
+///
+/// This is meant to be used by a single client thread.
+/// The processItem function can be overridden for the work that will be
+/// processed by the worker/consumer threads.
+///
+/// The threads are started by setup(), and are cleaned up by this class during
+/// waitForCompletion().
+///
+/// @param T_ThreadQueueItem The type of item that will be in the queue.
+/// @param T_ProcessItem A type derived from ThreadedWorkQueue that contains a
+/// 	function that returns true to continue processing:
+/// 	bool processItem(T_ThreadQueueItem const &item)
+///
+/// A usage example:
+/// class ThreadedQueue:public ThreadedWorkQueue<std::string, class ThreadedQueue>
+///    {
+///    public:
+///        // The function that will be called by the worker threads.
+///        bool processItem(std::string const &item) {}
+///    };
 template<typename T_ThreadQueueItem, typename T_ProcessItem>
     class ThreadedWorkQueue
     {

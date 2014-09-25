@@ -9,7 +9,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Debug"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -31,7 +31,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.debug.903353918" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.lib.debug">
 								<option id="gnu.cpp.compiler.mingw.lib.debug.option.optimization.level.594632128" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.lib.debug.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.mingw.lib.debug.option.debugging.level.1339997220" name="Debug Level" superClass="gnu.cpp.compiler.mingw.lib.debug.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.506745248" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.506745248" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++11" valueType="string"/>
 								<option id="gnu.cpp.compiler.option.include.paths.194293965" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\include\glib-2.0&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/lib/glib-2.0/include&quot;"/>
@@ -57,7 +57,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -105,7 +105,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -155,7 +155,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release32"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>
@@ -201,7 +201,7 @@
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
-						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon"/>
+						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
 				<extensions>

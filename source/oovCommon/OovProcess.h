@@ -31,7 +31,7 @@ void sleepMs(int ms);
 int spawnNoWait(char const * const procPath, char const * const *argv);
 
 
-// Note that on Linux, this is not recursive.
+/// Note that on Linux, this is not recursive.
 class InProcMutex
     {
     public:
@@ -85,8 +85,8 @@ class OovProcessListener
 	    {}
     };
 
-// This is a listener that defaults to sending the output to the
-// the stdout and stderr.
+/// This is a listener that defaults to sending the output to the
+/// the stdout and stderr.
 class OovProcessStdListener:public OovProcessListener
     {
     public:
@@ -253,6 +253,7 @@ class OovProcessChildArgs
     };
 
 
+/// Runs a background process and redirects stdio
 class OovBackgroundPipeProcess:public OovPipeProcess
     {
     public:

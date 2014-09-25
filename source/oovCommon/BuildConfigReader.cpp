@@ -61,7 +61,7 @@ std::string BuildConfig::getCrcAsStr(char const * const buildType, CrcTypes crcT
 std::string BuildConfig::getBuildConfigFilename() const
     {
     FilePath fp(Project::getProjectDirectory(), FP_Dir);
-    fp.appendFile("oovcde-buildconfig.txt");
+    fp.appendFile("oovcde-tmp-buildconfig.txt");
     return fp;
     }
 

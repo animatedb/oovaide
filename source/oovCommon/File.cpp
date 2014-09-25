@@ -34,74 +34,84 @@ static void sleepMs(int ms)
     }
 
 
-SharedFile::eOpenStatus SharedFile::openFile(char const * const fn, eModes mode)
+eOpenStatus BaseSimpleFile::open(char const * const fn, eOpenModes mode, eOpenEndings oe)
     {
     eOpenStatus status = OS_SharingProblem;
-    for(int i=0; i<50 && status == OS_SharingProblem; i++)
-	{
 #ifdef __linux__
-	int lockStat;
-	int flags;
-	if(mode == M_ReadShared)
-	    {
-	    flags = O_RDONLY;
-	    }
-	else
-	    {
-	    flags = O_CREAT | O_RDWR;
-	    if(mode == M_ReadWriteExclusiveAppend)
-		flags |= O_APPEND;
-	    }
-	// Set permissions for new file so that user/group/others have access for read/write/exec.
-	mFd = open(fn, flags, S_IRWXU | S_IRWXG | S_IRWXO);
-	if(mFd != -1)
-	    lockStat = flock(mFd, LOCK_EX);
-	if(mFd == -1)
-	    {
-	    status = OS_NoFile;
-	    }
-	else if(lockStat == 0)
-	    {
-	    status = OS_Opened;
-	    }
-#else
-	if(mode == M_ReadShared)
-	    {
-	    _sopen_s(&mFd, fn, _O_RDONLY, _SH_DENYWR, _S_IREAD | _S_IWRITE);
-	    }
-	else
-	    {
-	    // Creates if it doesn't exist.
-	    int flags = _O_CREAT | _O_RDWR;
-	    if(mode == M_ReadWriteExclusiveAppend)
-		flags |= _O_APPEND;
-	    _sopen_s(&mFd, fn, flags, _SH_DENYRW, _S_IREAD | _S_IWRITE);
-	    }
-	if(mFd == -1)
-	    {
-	    switch(errno)
-		{
-		case ENOENT:	status = OS_NoFile;		break;
-//		case EACCES:	status = OS_SharingProblem;	break;
-//		default:	status = OS_OtherError;		break;
-		default:	status = OS_SharingProblem;	break;
-		}
-	    }
-	else
-	    {
-	    status = OS_Opened;
-	    }
-#endif
-	if(status == OS_SharingProblem)
-	    sleepMs(100);
+    int lockStat;
+    int flags;
+    if(mode == M_ReadShared)
+	{
+	flags = O_RDONLY;
 	}
+    else
+	{
+	flags = O_CREAT | O_RDWR;
+	if(mode == M_ReadWriteExclusiveAppend)
+	    flags |= O_APPEND;
+	}
+    // Set permissions for new file so that user/group/others have access for read/write/exec.
+    mFd = ::open(fn, flags, S_IRWXU | S_IRWXG | S_IRWXO);
+    if(mFd != -1)
+	lockStat = flock(mFd, LOCK_EX);
+    if(mFd == -1)
+	{
+	status = OS_NoFile;
+	}
+    else if(lockStat == 0)
+	{
+	status = OS_Opened;
+	}
+#else
+
+    int openFlags = 0;
+    int sharedFlags = 0;
+    int permissionFlags = _S_IREAD | _S_IWRITE;
+    if(mode == M_ReadShared)
+	{
+	openFlags = _O_RDONLY;
+	sharedFlags = _SH_DENYWR;
+	}
+    else if(mode == M_WriteExclusiveTrunc)
+	{
+	openFlags = _O_CREAT | _O_WRONLY | _O_TRUNC;
+	sharedFlags = _SH_DENYRW;
+	}
+    else
+	{
+	// Creates if it doesn't exist.
+	openFlags = _O_CREAT | _O_RDWR;
+	sharedFlags = _SH_DENYRW;
+	if(mode == M_ReadWriteExclusiveAppend)
+	    openFlags |= _O_APPEND;
+	}
+    if(oe == OE_Text)
+	openFlags |= _O_TEXT;
+    else
+	openFlags |= _O_BINARY;
+    _sopen_s(&mFd, fn, openFlags, sharedFlags, permissionFlags);
+    if(mFd == -1)
+	{
+	switch(errno)
+	    {
+	    case ENOENT:	status = OS_NoFile;		break;
+//	    case EACCES:	status = OS_SharingProblem;	break;
+//	    default:		status = OS_OtherError;		break;
+	    default:		status = OS_SharingProblem;	break;
+	    }
+	}
+    else
+	{
+	status = OS_Opened;
+	}
+#endif
     return status;
     }
 
-bool SharedFile::readFile(void *buf, int size, int &actualSize)
+bool BaseSimpleFile::read(void *buf, int size, int &actualSize)
     {
 #ifdef __linux__
-    actualSize = read(mFd, buf, size);
+    actualSize = ::read(mFd, buf, size);
 #else
     actualSize = _read(mFd, buf, size);
 #endif
@@ -109,14 +119,25 @@ bool SharedFile::readFile(void *buf, int size, int &actualSize)
     return(actualSize >= 0);
     }
 
-int SharedFile::getFileSize() const
+bool BaseSimpleFile::write(void const *buf, int size)
+    {
+    int bytesWritten;
+#ifdef __linux__
+    bytesWritten = ::write(mFd, buf, size);
+#else
+    bytesWritten = _write(mFd, buf, size);
+#endif
+    return(bytesWritten == size);
+    }
+
+int BaseSimpleFile::getSize() const
     {
     struct OovStat32 filestat;
     OovFStatFunc(mFd, &filestat);
     return filestat.st_size;
     }
 
-void SharedFile::seekBeginFile()
+void BaseSimpleFile::seekBegin()
     {
 #ifdef __linux__
     lseek(mFd, 0, SEEK_SET);
@@ -125,22 +146,25 @@ void SharedFile::seekBeginFile()
 #endif
     }
 
-bool SharedFile::writeFile(void const *buf, int size)
-    {
-    int bytesWritten;
-#ifdef __linux__
-    bytesWritten = write(mFd, buf, size);
-#else
-    bytesWritten = _write(mFd, buf, size);
-#endif
-    return(bytesWritten == size);
-    }
-
-void SharedFile::closeFile()
+void BaseSimpleFile::close()
     {
 #ifdef __linux__
-    close(mFd);
+    ::close(mFd);
 #else
     _close(mFd);
 #endif
+    }
+
+
+eOpenStatus SharedFile::open(char const * const fn, eOpenModes mode,
+	eOpenEndings oe)
+    {
+    eOpenStatus status = OS_SharingProblem;
+    for(int i=0; i<50 && status == OS_SharingProblem; i++)
+	{
+	status = BaseSimpleFile::open(fn, mode, oe);
+	if(status == OS_SharingProblem)
+	    sleepMs(100);
+	}
+    return status;
     }

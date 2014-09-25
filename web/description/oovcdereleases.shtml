@@ -1,6 +1,11 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
-<html><head>
-<!-- DC Blaha - 6/8/2009 -->
+<html><head><!-- DC Blaha - 6/8/2009 -->
+
+
+
+
+
+
 
 
 
@@ -24,11 +29,36 @@
 Created: 6-8-2009
 
 <p>
-<img src="OovLogo.png">
+<img src="OovLogo.png" style="height: 16mm; width: 30mm;">
 
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.<br>
 <br>
+<h2>2014-09</h2>
+
+
+
+This version contains:<br>
+
+
+
+
+
+<ul>
+<li>Added test path coverage<br>
+</li>
+  <li>Pruned component graph connections</li>
+
+  <li>Added more functionality to edit component graphs<br>
+  </li>
+<li>Added class relations key for class diagrams</li>
+  <li>Wrapped long class names on sequence diagrams</li>
+  <li>Fixed recursive directory search for top level files (-ER)</li>
+  <li>Changed to relative exclude directories<br>
+  </li>
+
+
+</ul>
 <h2>2014-08-2</h2>
 
 

@@ -506,12 +506,12 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="RelayoutMenuitem">
+      <object class="GtkMenuItem" id="RestartMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Relayout</property>
+        <property name="label" translatable="yes">Restart</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_RelayoutMenuitem_activate" swapped="no"/>
+        <signal name="activate" handler="on_RestartMenuitem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -680,6 +680,52 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
   </object>
+  <object class="GtkMenu" id="DrawComponentPopupMenu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="RestartComponentsMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RestartComponentsMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="RelayoutComponentsMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Relayout</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RelayoutComponentsMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="menuitem12">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="RemoveComponentMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Remove Component</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RemoveComponentMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="ShowImplicitRelationsMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show Implicit Relations</property>
+        <property name="use_underline">True</property>
+        <signal name="toggled" handler="on_ShowImplicitRelationsMenuitem_toggled" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="DrawOperationPopupMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -711,12 +757,12 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="OperRelayoutMenuitem">
+      <object class="GtkMenuItem" id="RestartOperationsMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Relayout</property>
+        <property name="label" translatable="yes">Restart</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_OperRelayoutMenuitem_activate" swapped="no"/>
+        <signal name="activate" handler="on_RestartOperationsMenuitem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -1911,6 +1957,21 @@ These arguments are specific to the selected configuration.
                     <property name="position">2</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkCheckButton" id="ShowRelationKeyCheckbutton">
+                    <property name="label" translatable="yes">Show Relation Key</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="draw_indicator">True</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="position">2</property>
@@ -2520,7 +2581,6 @@ These arguments are specific to the selected configuration.
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitem2">
-                <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">_Edit</property>
                 <property name="use_underline">True</property>
@@ -2560,15 +2620,47 @@ These arguments are specific to the selected configuration.
                         <property name="use_stock">True</property>
                       </object>
                     </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem13">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Analysis</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu1">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
                       <object class="GtkImageMenuItem" id="EditOptionsmenuitem">
-                        <property name="label">_Preferences...</property>
+                        <property name="label">Settings...</property>
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="use_underline">True</property>
                         <property name="image">image5</property>
                         <property name="use_stock">False</property>
                         <signal name="activate" handler="on_EditOptionsmenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="BuildAnalyzeMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Analyze</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_BuildAnalyzeMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="StopAnalyzeMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Stop Analyze</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_StopBuildMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>
@@ -2585,15 +2677,6 @@ These arguments are specific to the selected configuration.
                   <object class="GtkMenu" id="BuildMenu">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <child>
-                      <object class="GtkMenuItem" id="BuildAnalyzeMenuitem">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">_Analyze</property>
-                        <property name="use_underline">True</property>
-                        <signal name="activate" handler="on_BuildAnalyzeMenuitem_activate" swapped="no"/>
-                      </object>
-                    </child>
                     <child>
                       <object class="GtkMenuItem" id="BuildSettingsMenuitem">
                         <property name="visible">True</property>
@@ -2643,6 +2726,56 @@ These arguments are specific to the selected configuration.
                         <property name="label" translatable="yes">_Make CMake</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_MakeCMakeMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem15">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">_Coverage</property>
+                <property name="use_underline">True</property>
+                <child type="submenu">
+                  <object class="GtkMenu" id="menu2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkMenuItem" id="InstrumentMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Instrument</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_InstrumentMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="CoverageBuildMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Build</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_CoverageBuildMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="CoverageStatsMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Statistics</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_CoverageStatsMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="StopInstrumentMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Stop Coverage</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_StopBuildMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>

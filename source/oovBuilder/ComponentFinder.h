@@ -24,6 +24,29 @@ class FileStat
 		const std::vector<std::string> &inputs, int *oldIndex=nullptr);
     };
 
+class ToolPathFile:public NameValueFile
+    {
+    public:
+	void setConfig(char const * const buildConfig)
+	    {
+	    mBuildConfig = buildConfig;
+	    }
+	std::string getCompilerPath();
+	static std::string getAnalysisToolPath();
+	std::string getLibberPath();
+	std::string getObjSymbolPath();
+	static std::string getCovInstrToolPath();
+    private:
+	std::string mBuildConfig;
+//	std::string mPathAnalysisTool;
+	std::string mPathCompiler;
+	std::string mPathLibber;
+	std::string mPathObjSymbol;
+//	std::string mPathCovInstrTool;
+	void getPaths();
+    };
+
+
 /// This keeps the insertion order, but does not store duplicates.
 class InsertOrderedSet:public std::vector<std::string>
 {
@@ -86,6 +109,7 @@ class ScannedComponentsInfo
         MapIter addComponents(char const * const compName);
     };
 
+enum eProcessModes { PM_Analyze, PM_Build, PM_CovInstr, PM_CovBuild, PM_CovStats };
 
 /// This recursively searches a directory path and considers each directory that
 /// has C++ source files to be a component.  All directories that contain C++

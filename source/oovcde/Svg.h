@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <cairo.h>
 
+/// Defines functions to write to an SVG file.
 class SvgDrawer:public DiagramDrawer
     {
     public:
@@ -34,6 +35,7 @@ class SvgDrawer:public DiagramDrawer
 	cairo_t *cr;
     };
 
+/// Opens a file to write as SVG.
 class SvgWriter
     {
     public:

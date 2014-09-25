@@ -112,8 +112,8 @@ class ModelTypeRef
 	unsigned int mRefer:1;
     };
 
-// A C++ declarator is a type and a name.
-// A declarator can be a function return, function argument, attribute, etc.
+/// A C++ declarator is a type and a name.
+/// A declarator can be a function return, function argument, attribute, etc.
 class ModelDeclarator:public ModelObject, public ModelTypeRef
     {
     public:
@@ -129,7 +129,7 @@ typedef ModelDeclarator ModelFuncParam;
 typedef ModelDeclarator ModelBodyVarDecl;
 
 
-// This is a record(class/struct) data member.
+/// This is a record(class/struct) data member.
 class ModelAttribute:public ModelDeclarator
 {
 public:
@@ -152,8 +152,8 @@ enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call,
 #endif
 };
 
-// These aren't really statements. These are important things in a function
-// that must be displayed in sequence/operation diagrams.
+/// These aren't really statements. These are important things in a function
+/// that must be displayed in sequence/operation diagrams.
 class ModelStatement:public ModelObject
     {
     public:
@@ -271,7 +271,7 @@ private:
 
 enum eModelDataTypes { DT_DataType, DT_Class };
 
-// This stores info about simple (non-class) types, and is the base for all types.
+/// This stores info about simple (non-class) types, and is the base for all types.
 class ModelType:public ModelObject
     {
     public:
@@ -356,7 +356,7 @@ private:
     int mLineNum;
 };
 
-// This is used for inheritance relations
+/// This is used for inheritance relations
 class ModelAssociation:public ModelObject
 {
 public:
@@ -395,7 +395,7 @@ private:
     Visibility mAccess;
 };
 
-// This stores the module where an operation or class was defined.
+/// This stores the module where an operation or class was defined.
 class ModelModule:public ModelObject
     {
     public:
@@ -408,9 +408,9 @@ class ModelModule:public ModelObject
 	    { return getName(); }
     };
 
-// This is used for references to types in other classes.
-// It is used for function parameters, and function body variable references
-// This is only used for temporary access, and is not stored in the model memory.
+/// This is used for references to types in other classes.
+/// It is used for function parameters, and function body variable references
+/// This is only used for temporary access, and is not stored in the model memory.
 class ModelDeclClass
     {
     public:
@@ -424,6 +424,9 @@ class ModelDeclClass
 typedef std::vector<ModelDeclClass> ConstModelDeclClassVector;
 typedef std::vector<const ModelClassifier*> ConstModelClassifierVector;
 
+
+/// Holds all data used to make class and sequence diagrams. This data is read
+/// from the XMI files.
 class ModelData
     {
     public:

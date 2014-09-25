@@ -171,6 +171,8 @@ class Packages
     };
 
 /// This is information about all packages available on the system.
+/// On Linux, this uses pkg-config to discover the system packages. On Windows,
+/// a package file is read.
 class AvailablePackages
     {
     public:

@@ -53,6 +53,7 @@ void renameFile(char const * const oldPath, char const * const newPath);
 bool getFileTime(char const * const path, time_t &time);
 
 
+/// Provides functions for accessing an immutable path.
 class FilePathImmutable
     {
     public:
@@ -98,9 +99,9 @@ class FilePathImmutable
 
 enum eFilePathTypes { FP_File, FP_Dir, FP_Ext };
 
-// In this class, any path that ends with a path separator is a directory.
-// The special case is when FilePathRef is initialized with an empty string,
-// then a directory is not initialized to "/".
+/// In this class, any path that ends with a path separator is a directory.
+/// The special case is when FilePathRef is initialized with an empty string,
+/// then a directory is not initialized to "/".
 class FilePath:public std::string, public FilePathImmutable
     {
     public:

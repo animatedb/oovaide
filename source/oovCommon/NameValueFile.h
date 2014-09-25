@@ -52,7 +52,14 @@ class CompoundValue:public std::vector<std::string>
 	    {}
 	CompoundValue(char const * const str, char delimiter=';')
 	    { parseString(str, delimiter); }
-	static const int npos = -1;
+	CompoundValue(std::vector<std::string> const &strs)
+	    {
+	    for(auto const &str : strs)
+		{
+		addArg(str.c_str());
+		}
+	    }
+	static const size_t npos = -1;
 	void addArg(char const * const arg)
 	    { push_back(arg); }
 	/// The delimiter is \n for editing in an editor, and a semicolon
@@ -87,7 +94,7 @@ class NameValueRecord
 	    { return mNameValues; }
 	void write(FILE *fp);
 	void read(FILE *fp);
-	void insertBufToMap(std::string buf);
+	void insertBufToMap(std::string const &buf);
 	void readMapToBuf(std::string &buf);
 	void saveNullValues(bool save)
 	    { mSaveNullValues = save; }

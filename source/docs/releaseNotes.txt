@@ -18,10 +18,12 @@ Missing Features
 - General
 	- Should release with mingw-builds headers
 	- fix sleepMs
+	- Looks like NameValueFile::writeFileExclusive cannot make file smaller.
 - Docs
 	- __builtin_ia32_bsrsi, mmintrin.h are GNU files, and clang is not
 	  compatible. Compile with g++ instead? Ubuntu problem?
 - Gui
+	- Add External Directories button for Build Arguments dialog.
 	- BUG: Editing external package paths in dialogs doesn't work?
 	- BUG: Sometimes in Linux, Stop Build, doesn't change state, but builder
 	  is not running. Happens when resizing output window while building?
@@ -39,6 +41,8 @@ Missing Features
 	  Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
 - Building
+	- Coverage tool doesn't update OovCoverage.h when any source changes
+	- Analysis/component lists should ignore coverage directories
 	- The oovcde-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
 	- Should have a version error when the analysis dir has version problems
@@ -70,8 +74,8 @@ Missing Features
 - Component Diagrams
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
-	- Add right click menu to remove component
 - Class Diagrams
+	- Non-class types are not shown (even templated types)
 	- Show parameter reference/pointer/const in methods
 	- BUG: forward class definitions mess up source line numbers
 	- find way to reduce strlen: std::allocator, std::less, std::basic_string<char> etc.
@@ -86,7 +90,6 @@ Missing Features
 	- reparenting preference options window messes up draw node options page.
 	- Improve drawing, optimize graph for reduced line crosses
 	- graph doesn't display types through typedefs (DiagramRect in DiagramGraph.h)
-	- Show symbol key for diagrams
 	- Add more diagram options (add depth=2, more generations)
 	- Pointers/references/const not shown as part of types as text
 	- Add class list context menu to allow adding single nodes/multiple nodes
@@ -96,11 +99,11 @@ Missing Features
 	- Could have grid for class placement, option for grid size
 	- Add filter for class list (GTK search feature exists)
 - Sequence Diagrams
+	- Fix else/switch case
 	- Should show method parameters optionally
 	- Should try to find top level function in diagram, may not be first class.
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
-	- shorten extremely long names
 	- Add option to wrap long class names for denser diagrams
 	- Diagram width not correct in svg diagrams for long operation names
 	- Const calls aren't shown correctly for overloaded functions?
@@ -113,8 +116,6 @@ Missing Features
 	- Build sometimes must have objects specified before or after other libs/objects
 	- split source of libraries into separate file for each function for release mode
 	- Component specific build args not used to recalculate crc's for rebuild
-	- Separate oovcde-comptypes into user editable part (comp types), and file lists part
-	- Replace oovcde-comps.txt in analysis directory with oovcde-extdir.txt file.
 	- Changing package does not cause reanalysis (glib to gmodule)
 	- Add -Wall, --analyzer
 	- Cross compiling: http://www.cmake.org/Wiki/CMake_Cross_Compiling

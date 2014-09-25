@@ -34,7 +34,7 @@ void ClassGraph::initialize(GtkWidget *drawingArea)
 //	    GDK_FOCUS_CHANGE_MASK);
     }
 
-void ClassGraph::updateNodeSizes(GtkWidget *widget)
+void ClassGraph::updateNodeSizes(GtkWidget *widget, const ClassDrawOptions &options)
     {
     GtkCairoContext cairo(widget);
     CairoDrawer cairoDrawer(cairo.getCairo());
@@ -44,14 +44,14 @@ void ClassGraph::updateNodeSizes(GtkWidget *widget)
     ClassDrawer drawer(nulDrawer);
     for(auto &node : mNodes)
 	{
-	GraphSize size = drawer.drawNode(node);
+	GraphSize size = drawer.drawNode(node, options);
 	node.setSize(size);
 	}
     }
 
-void ClassGraph::updateNodeSizes()
+void ClassGraph::updateNodeSizes(const ClassDrawOptions &options)
     {
-    updateNodeSizes(getDiagramWidget());
+    updateNodeSizes(getDiagramWidget(), options);
     }
 
 int ClassGraph::getAvgNodeSize() const
@@ -73,9 +73,9 @@ int ClassGraph::getAvgNodeSize() const
     }
 
 void ClassGraph::updateGenes(const ModelData &modelData,
-	const ClassRelationDrawOptions &options)
+	const ClassDrawOptions &options)
     {
-    updateNodeSizes();
+    updateNodeSizes(options);
     updateConnections(modelData, options);
     if(mNodes.size() > 1)
 	{
@@ -348,7 +348,10 @@ void ClassGraph::insertConnection(int node1, int node2,
 	}
     else
 	{
-	mConnectMap.insert(std::make_pair(key, connectItem));
+	if(!mNodes[node1].isKey() && !mNodes[node2].isKey())
+	    {
+	    mConnectMap.insert(std::make_pair(key, connectItem));
+	    }
 	}
     }
 
@@ -373,73 +376,76 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 	{
 	const ModelType *type = mNodes[ni].getType();
 
-	// Go through templates
-	if(type->isTemplateType())
+	if(type)
 	    {
-	    ConstModelClassifierVector relatedClassifiers;
-	    modelData.getRelatedTemplateClasses(*type, relatedClassifiers);
-	    for(auto const &cl : relatedClassifiers)
+	    // Go through templates
+	    if(type->isTemplateType())
 		{
-		insertConnection(ni, cl, ClassConnectItem(ctAssociation));
-		}
-	    }
-
-	const ModelClassifier *classifier = type->getClass();
-	if(classifier)
-	    {
-	    // Get attributes of classifier, and get the decl type
-	    for(const auto &attr : classifier->getAttributes())
-		{
-		insertConnection(ni, attr->getDeclType(),
-			ClassConnectItem(ctAggregation, attr->isConst(),
-				    attr->isRefer(), attr->getAccess()));
-		}
-
-	    if(options.drawOperParamRelations)
-		{
-		// Get operations parameters of classifier, and get the decl type
-		ConstModelDeclClassVector declClasses;
-		modelData.getRelatedFuncParamClasses(*classifier, declClasses);
-		for(const auto &declCl : declClasses)
+		ConstModelClassifierVector relatedClassifiers;
+		modelData.getRelatedTemplateClasses(*type, relatedClassifiers);
+		for(auto const &cl : relatedClassifiers)
 		    {
-		    const ModelDeclarator *decl = declCl.decl;
-		    insertConnection(ni, declCl.cl, ClassConnectItem(ctFuncParam,
-			    decl->isConst(), decl->isRefer(), Visibility()));
+		    insertConnection(ni, cl, ClassConnectItem(ctAssociation));
 		    }
 		}
 
-	    if(options.drawOperBodyVarRelations)
+	    const ModelClassifier *classifier = type->getClass();
+	    if(classifier)
 		{
-		// Get operations parameters of classifier, and get the decl type
-		ConstModelDeclClassVector declClasses;
-		modelData.getRelatedBodyVarClasses(*classifier, declClasses);
-		for(const auto &declCl : declClasses)
+		// Get attributes of classifier, and get the decl type
+		for(const auto &attr : classifier->getAttributes())
 		    {
-		    const ModelDeclarator *decl = declCl.decl;
-		    insertConnection(ni, declCl.cl, ClassConnectItem(ctFuncVar,
-			    decl->isConst(), decl->isRefer(), Visibility()));
+		    insertConnection(ni, attr->getDeclType(),
+			    ClassConnectItem(ctAggregation, attr->isConst(),
+					attr->isRefer(), attr->getAccess()));
 		    }
-		}
 
-	    // Go through associations, and get related classes.
-	    for(const auto &assoc : modelData.mAssociations)
-		{
-		int n1Index = -1;
-		int n2Index = -1;
-		if(assoc->getChild() == classifier)
+		if(options.drawOperParamRelations)
 		    {
-		    n1Index = getNodeIndex(assoc->getParent());
-		    n2Index = ni;
+		    // Get operations parameters of classifier, and get the decl type
+		    ConstModelDeclClassVector declClasses;
+		    modelData.getRelatedFuncParamClasses(*classifier, declClasses);
+		    for(const auto &declCl : declClasses)
+			{
+			const ModelDeclarator *decl = declCl.decl;
+			insertConnection(ni, declCl.cl, ClassConnectItem(ctFuncParam,
+				decl->isConst(), decl->isRefer(), Visibility()));
+			}
 		    }
-		else if(assoc->getParent() == classifier)
+
+		if(options.drawOperBodyVarRelations)
 		    {
-		    n1Index = ni;
-		    n2Index = getNodeIndex(assoc->getChild());
+		    // Get operations parameters of classifier, and get the decl type
+		    ConstModelDeclClassVector declClasses;
+		    modelData.getRelatedBodyVarClasses(*classifier, declClasses);
+		    for(const auto &declCl : declClasses)
+			{
+			const ModelDeclarator *decl = declCl.decl;
+			insertConnection(ni, declCl.cl, ClassConnectItem(ctFuncVar,
+				decl->isConst(), decl->isRefer(), Visibility()));
+			}
 		    }
-		if(n1Index != -1 && n2Index != -1)
+
+		// Go through associations, and get related classes.
+		for(const auto &assoc : modelData.mAssociations)
 		    {
-		    insertConnection(n1Index, n2Index,
-			    ClassConnectItem(ctIneritance, assoc->getAccess()));
+		    int n1Index = -1;
+		    int n2Index = -1;
+		    if(assoc->getChild() == classifier)
+			{
+			n1Index = getNodeIndex(assoc->getParent());
+			n2Index = ni;
+			}
+		    else if(assoc->getParent() == classifier)
+			{
+			n1Index = ni;
+			n2Index = getNodeIndex(assoc->getChild());
+			}
+		    if(n1Index != -1 && n2Index != -1)
+			{
+			insertConnection(n1Index, n2Index,
+				ClassConnectItem(ctIneritance, assoc->getAccess()));
+			}
 		    }
 		}
 	    }
@@ -461,12 +467,21 @@ void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options
 		{
 		clearGraph();
 		}
+	    if(mNodes.size() == 0 && options.drawRelationKey)
+		{
+		addRelationKeyNode(options);
+		}
 	    addRelatedNodesRecurse(model, classifier, options, ClassGraph::AN_All, nodeDepth);
 	    updateGraph(model, options);
 	    }
 	mModified = false;
 	}
     depth--;
+    }
+
+void ClassGraph::addRelationKeyNode(const ClassNodeDrawOptions &options)
+    {
+    mNodes.push_back(ClassNode(nullptr, options));
     }
 
 GraphSize ClassGraph::getGraphSize() const

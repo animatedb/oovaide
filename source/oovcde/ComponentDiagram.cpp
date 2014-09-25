@@ -9,16 +9,28 @@
 #include "Svg.h"
 #include "ComponentDrawer.h"
 #include "CairoDrawer.h"
+#include "Options.h"
 
+static const ComponentDrawOptions &getDrawOptions()
+    {
+    static ComponentDrawOptions dopts;
+    dopts.drawImplicitRelations = gGuiOptions.getValueBool(OptGuiShowCompImplicitRelations);
+    return dopts;
+    }
 
 void ComponentDiagram::initialize(Builder &builder)
     {
     mDrawingArea = builder.getWidget("DiagramDrawingarea");
-    mComponentGraph.updateGraph();
-    updatePositionsInGraph();
+    updateGraph();
 
     GraphSize size = mComponentGraph.getGraphSize();
     gtk_widget_set_size_request(mDrawingArea, size.x, size.y);
+    }
+
+void ComponentDiagram::updateGraph()
+    {
+    mComponentGraph.updateGraph(getDrawOptions());
+    updatePositionsInGraph();
     }
 
 void ComponentDiagram::updatePositionsInGraph()
@@ -84,6 +96,7 @@ void ComponentDiagram::updatePositionsInGraph()
 		}
 	    }
 	}
+    redraw();
     }
 
 void ComponentDiagram::drawSvgDiagram(FILE *fp)
@@ -113,9 +126,11 @@ void ComponentDiagram::drawToDrawingArea()
     }
 
 static GraphPoint gStartPosInfo;
+static ComponentDiagram *gComponentDiagram;
 
 void ComponentDiagram::buttonPressEvent(const GdkEventButton *event)
     {
+    gComponentDiagram = this;
     gStartPosInfo.set(event->x, event->y);
     }
 
@@ -138,4 +153,51 @@ void ComponentDiagram::buttonReleaseEvent(const GdkEventButton *event)
 	    drawToDrawingArea();
 	    }
 	}
+    else
+	{
+	displayContextMenu(event->button, event->time, (gpointer)event);
+	}
+    }
+
+void ComponentDiagram::displayContextMenu(guint button, guint32 acttime, gpointer data)
+    {
+    GtkMenu *menu = Builder::getBuilder()->getMenu("DrawComponentPopupMenu");
+    GtkCheckMenuItem *implicitItem = GTK_CHECK_MENU_ITEM(
+	    Builder::getBuilder()->getWidget("DrawComponentPopupMenu"));
+    ComponentDrawOptions opts = getDrawOptions();
+    gtk_check_menu_item_set_active(implicitItem, opts.drawImplicitRelations);
+    gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
+    }
+
+extern "C" G_MODULE_EXPORT void on_RestartComponentsMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    gComponentDiagram->restart();
+    }
+
+extern "C" G_MODULE_EXPORT void on_RelayoutComponentsMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    gComponentDiagram->relayout();
+    }
+
+extern "C" G_MODULE_EXPORT void on_RemoveComponentMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    ComponentNode *node = gComponentDiagram->getGraph().getNode(gStartPosInfo.x,
+	    gStartPosInfo.y);
+    if(node)
+	{
+	gComponentDiagram->getGraph().removeNode(*node, getDrawOptions());
+	gComponentDiagram->relayout();
+	}
+    }
+
+extern "C" G_MODULE_EXPORT void on_ShowImplicitRelationsMenuitem_toggled(
+	GtkWidget *widget, gpointer data)
+    {
+    bool drawImplicitRelations = gGuiOptions.getValueBool(OptGuiShowCompImplicitRelations);
+    gGuiOptions.setNameValueBool(OptGuiShowCompImplicitRelations, !drawImplicitRelations);
+    gComponentDiagram->updateGraph();
+    gGuiOptions.writeFile();
     }

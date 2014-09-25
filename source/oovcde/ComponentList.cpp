@@ -7,20 +7,15 @@
 
 #include "ComponentList.h"
 #include "Project.h"
-#include "NameValueFile.h"
+#include "Components.h"
 #include <algorithm>	// For find_if
 
 
-static bool addNames(char const * const compName, NameValueFile &compFile,
+static bool addNames(char const * const compName, ComponentTypesFile &compFile,
 	char const * const compSrcTagName, std::vector<ComponentListItem> &names)
     {
     bool added = false;
-    std::string compSrcTag = compSrcTagName;
-    compSrcTag += compName;
-    std::string compSrcStr = compFile.getValue(compSrcTag.c_str());
-    CompoundValue srcVal;
-    srcVal.parseString(compSrcStr.c_str());
-    for(const auto &fn : srcVal)
+    for(const auto &fn : compFile.getComponentSources(compName))
 	{
 	FilePath modName(fn, FP_File);
 	modName.discardDirectory();
@@ -43,14 +38,10 @@ static bool addNames(char const * const compName, NameValueFile &compFile,
 void ComponentList::updateComponentList()
     {
     clear();
-    NameValueFile compFile;
-    compFile.setFilename(Project::getComponentTypesFilePath().c_str());
-    compFile.readFile();
-    std::string compStr = compFile.getValue("Components");
-    CompoundValue compVal;
-    compVal.parseString(compStr.c_str());
+    ComponentTypesFile compFile;
+    compFile.read();
     GuiTreeItem root;
-    for(const auto &compName:compVal)
+    for(const auto &compName : compFile.getComponentNames())
 	{
 	bool addedSrc = addNames(compName.c_str(), compFile, "Comp-src-", mListMap);
 	bool addedInc = addNames(compName.c_str(), compFile, "Comp-inc-", mListMap);

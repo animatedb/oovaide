@@ -105,6 +105,7 @@ class OovString:public std::string, public OovStringRefInterface<std::string>
 	void appendInt(int val, int radix=10);
 	void join(std::vector<class OovString> const &tokens, char delim)
 	    { *this = StringJoin(tokens, delim); }
+	void replaceStrs(char const *srchStr, char const *repStr);
 //	char const * const c_str() const
 //	    { return std::string::c_str(); }
     };

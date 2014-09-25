@@ -10,6 +10,8 @@
 
 #include "ClassDrawer.h"
 
+/// Defines a basic context for drawing that can be used for screen or
+/// printing to files.
 class GtkCairoContext
     {
     public:
@@ -26,6 +28,8 @@ class GtkCairoContext
 	cairo_t *mCr;
     };
 
+/// Provides a null interface for drawing. This allows drawing to a null device so
+/// that calculations can be performed for object sizes based on fonts.
 class NullDrawer:public DiagramDrawer
     {
     public:
@@ -53,6 +57,7 @@ class NullDrawer:public DiagramDrawer
 	cairo_t *cr;
     };
 
+/// This is an interface for drawing using cairo functions.
 class CairoDrawer:public NullDrawer
     {
     public:

@@ -6,7 +6,9 @@
 #include "srcFileParser.h"
 #include <stdio.h>
 #include "Project.h"
+#include "FilePath.h"
 #include "OovProcess.h"
+#include "ComponentFinder.h"
 
 
 bool srcFileParser::analyzeSrcFiles(char const * const srcRootDir,
@@ -98,13 +100,10 @@ bool srcFileParser::processFile(const std::string &srcFile)
 		Project::makeAnalysisFileName(srcFile, srcRoot, mAnalysisDir, outFileName);
 		if(FileStat::isOutputOld(outFileName.c_str(), srcFile.c_str()))
 		    {
-    #ifdef __linux__
-		    char const * const procPath = "./oovCppParser";
-    #else
-		    char const * const procPath = "./oovCppParser.exe";
-    #endif
+		    std::string procPath = ToolPathFile::getAnalysisToolPath();
+		    procPath = makeExeFilename(procPath.c_str());
 		    CppChildArgs ca;
-		    ca.addArg(procPath);
+		    ca.addArg(procPath.c_str());
 		    ca.addArg(srcFile.c_str());
 		    ca.addArg(mSrcRootDir);
 		    ca.addArg(mAnalysisDir);

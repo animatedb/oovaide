@@ -11,6 +11,7 @@
 #include "DiagramDrawer.h"
 #include "ClassGraph.h"
 
+/// This is used to draw a class diagram.
 class ClassDrawer
     {
     public:
@@ -24,7 +25,7 @@ class ClassDrawer
 	    { return(mActualZoomY); }
 	void drawDiagram(const ClassGraph &graph, const ClassDrawOptions &options);
 	// This is used publicly to calculate node sizes.
-	GraphSize drawNode(const ClassNode &node);
+	GraphSize drawNode(const ClassNode &node, const ClassDrawOptions &options);
 
     private:
 	DiagramDrawer &mDrawer;
@@ -33,8 +34,11 @@ class ClassDrawer
 	// Typically node1 is consumer, and node2 is producer
 	/// @todo - should make this constant and clear
 	void drawConnectionLine(const ClassNode &node1, const ClassNode &node2);
-	void drawConnectionSymbols(const ClassRelationDrawOptions &options, const ClassNode &node1,
+	void drawConnectionSymbols(const ClassRelationDrawOptions &options,
+		const ClassNode &node1,
 	    const ClassNode &node2, const ClassConnectItem &connectItem);
+	GraphSize drawRelationKey(const ClassNode &node,
+		const ClassDrawOptions &options);
     };
 
 

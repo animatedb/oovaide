@@ -14,6 +14,53 @@
 static DebugFile sLog("oov-finder-debug.txt");
 #endif
 
+void ToolPathFile::getPaths()
+    {
+    if(mPathCompiler.length() == 0)
+	{
+	std::string projFileName = Project::getProjectFilePath();
+	setFilename(projFileName.c_str());
+	readFile();
+
+	std::string optStr = makeBuildConfigArgName(OptToolLibPath, mBuildConfig.c_str());
+	mPathLibber = getValue(optStr.c_str());
+	optStr = makeBuildConfigArgName(OptToolCompilePath, mBuildConfig.c_str());
+	mPathCompiler = getValue(optStr.c_str());
+	optStr = makeBuildConfigArgName(OptToolObjSymbolPath, mBuildConfig.c_str());
+	mPathObjSymbol = getValue(optStr.c_str());
+	}
+    }
+
+std::string ToolPathFile::getAnalysisToolPath()
+    {
+	// ./ is needed in Linux
+    return("./oovCppParser");
+    }
+
+std::string ToolPathFile::getCompilerPath()
+    {
+    getPaths();
+    return(mPathCompiler);
+    }
+
+std::string ToolPathFile::getObjSymbolPath()
+    {
+    getPaths();
+    return(mPathObjSymbol);
+    }
+
+std::string ToolPathFile::getLibberPath()
+    {
+    getPaths();
+    return(mPathLibber);
+    }
+
+std::string ToolPathFile::getCovInstrToolPath()
+    {
+	// ./ is needed in Linux
+    return("./oovCovInstr");
+    }
+
 bool FileStat::isOutputOld(char const * const outputFn,
 	char const * const inputFn)
     {
@@ -114,7 +161,7 @@ void ScannedComponentsInfo::initializeComponentTypesFileValues(
 	comps.addArg(comp.first.c_str());
 	comp.second.saveComponentSourcesToFile(comp.first.c_str(), compFile);
 	}
-    compFile.setNameValue("Components", comps.getAsString().c_str());
+    compFile.setComponentNames(comps.getAsString().c_str());
     }
 
 //////////////
@@ -151,8 +198,7 @@ void ComponentFinder::scanExternalProject(char const * const externalRootSrch,
 
     recurseDirs(externalRootDir.c_str());
 
-    getProject().getBuildPackages().insertPackage(rootPkg);
-    getProject().getBuildPackages().savePackages();
+    addBuildPackage(rootPkg);
     }
 
 void ComponentFinder::addBuildPackage(Package const &pkg)

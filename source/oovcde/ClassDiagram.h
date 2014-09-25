@@ -20,9 +20,10 @@ class ClassDiagramListener
     };
 
 
-
-// This must remain for the life of the program since GUI events
-// can be generated any time.
+/// This defines functions used to interact with a class diagram. The
+/// ClassDiagram uses the ClassDrawer to draw the ClassGraph.
+/// This must remain for the life of the program since GUI events can be
+/// generated any time.
 class ClassDiagram
     {
     public:
@@ -33,7 +34,7 @@ class ClassDiagram
 		ClassDiagramListener *listener);
 	void updateGraph();
 	void updateGraphSize();
-	void relayout();
+	void restart();
 	/// Redraw the graph. Does not change the graph or change or access the model.
 	void drawDiagram(const ClassDrawOptions &options);
 	// Create a new graph and add a class node.

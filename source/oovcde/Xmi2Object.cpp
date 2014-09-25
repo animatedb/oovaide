@@ -148,15 +148,7 @@ static void replaceAttrChars(OovString &str)
     };
     for(unsigned int i=0; i<sizeof(words)/sizeof(words[0]); i++)
         {
-	size_t starti = 0;
-	do
-	    {
-	    starti = str.find(words[i].mSrch);
-	    if(starti != OovString::npos)
-		{
-		str.replace(starti, strlen(words[i].mSrch), words[i].mRep);
-		}
-	    } while(starti != OovString::npos);
+	str.replaceStrs(words[i].mSrch, words[i].mRep);
         }
 }
 

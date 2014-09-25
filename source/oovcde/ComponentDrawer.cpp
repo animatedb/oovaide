@@ -69,7 +69,10 @@ void ComponentDrawer::drawDiagram(const ComponentGraph &graph)
 
 	for(auto const &connect : graph.getConnections())
 	    {
-	    drawConnection(graph, connect);
+	    if(!connect.getImpliedDependency())
+		{
+		drawConnection(graph, connect);
+		}
 	    }
 	}
     }

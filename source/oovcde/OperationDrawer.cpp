@@ -26,6 +26,8 @@ GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
     GraphPoint pos = startpos;
     GraphSize size;
     GraphSize diagramSize;
+    int maxy = 0;
+    std::vector<int> classEndY;
     for(size_t i=0; i<graph.mOpClasses.size(); i++)
 	{
 	OperationClass &opClass = graph.mOpClasses[i];
@@ -35,12 +37,14 @@ GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
 	size.x += condDepth * mPad;
 	opClass.setSize(size);
 	pos.x += size.x + mCharHeight;
+	classEndY.push_back(startpos.y + size.y);
+	if(size.y > maxy)
+	    maxy = size.y;
 	}
     diagramSize.x = pos.x;
-    int endClassY = startpos.y + size.y;
 
     pos = startpos;
-    pos.y = startpos.y + size.y + mCharHeight;	// space between class rect and operations
+    pos.y = startpos.y + maxy;	// space between class rect and operations
     std::set<const OperationDefinition*> drawnOperations;
     for(const auto &oper : graph.mOperations)
 	{
@@ -50,21 +54,22 @@ GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
 	    pos.y += size.y;
 	    }
 	}
+    drawLifeLines(graph.mOpClasses, classEndY, pos.y);
 
-    drawLifeLines(graph.mOpClasses, endClassY, pos.y);
     diagramSize.y = pos.y + mCharHeight;
     return diagramSize;
     }
 
 void OperationDrawer::drawLifeLines(const std::vector<OperationClass> &classes,
-	int starty, int endy)
+	std::vector<int> const &classEndY, int endy)
     {
     mDrawer.groupShapes(true, Color(245,245,255));
     endy += mCharHeight;
-    for(const auto &cl : classes)
+    for(size_t i=0; i<classes.size(); i++)
 	{
+	const auto &cl = classes[i];
 	int x = cl.getLifelinePosX();
-	mDrawer.drawLine(GraphPoint(x, starty), GraphPoint(x, endy));
+	mDrawer.drawLine(GraphPoint(x, classEndY[i]), GraphPoint(x, endy));
 	}
     mDrawer.groupShapes(false, Color(245,245,255));
     }
@@ -75,21 +80,37 @@ GraphSize OperationDrawer::drawClass(const OperationClass &node,
     GraphPoint startpos = node.getPosition();
     const ModelType *type = node.getType();
     char const * const typeName = type->getName().c_str();
-    int recty = mCharHeight + mPad*2;
-    int totaly = startpos.y + recty;
-    int rectx = mDrawer.getTextExtentWidth(typeName) + mPad*2;
+    int rectx = 0;
+    int recty = 0;
     const ModelClassifier *classifier = type->getClass();
     if(classifier)
 	{
+	mDrawer.groupText(true);
+	std::vector<std::string> strs;
+	std::vector<GraphPoint> positions;
+	strs.push_back(typeName);
+	splitStrings(strs, 30);
+
+	for(auto const &str : strs)
+	    {
+	    recty += mCharHeight + mPad;
+	    positions.push_back(GraphPoint(startpos.x+mPad, startpos.y + recty - mPad));
+	    int curx = mDrawer.getTextExtentWidth(str.c_str()) + mPad*2;
+	    if(curx > rectx)
+		rectx = curx;
+	    }
+
 	mDrawer.groupShapes(true, Color(245,245,255));
 	mDrawer.drawRect(GraphRect(startpos.x, startpos.y, rectx, recty));
 	mDrawer.groupShapes(false, Color(245,245,255));
 
-	mDrawer.groupText(true);
-	mDrawer.drawText(GraphPoint(startpos.x+mPad, totaly-mPad), typeName);
+	for(size_t i=0; i<strs.size(); i++)
+	    {
+	    mDrawer.drawText(positions[i], strs[i].c_str());
+	    }
 	mDrawer.groupText(false);
 	}
-    return GraphSize(rectx, totaly-startpos.y);
+    return GraphSize(rectx, recty);
     }
 
 class BlockPolygon:public OovPolygon

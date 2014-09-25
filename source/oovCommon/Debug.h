@@ -11,6 +11,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
+/// This class is just used to aid debugging.
 class DebugFile
     {
     public:

@@ -1,6 +1,6 @@
-Pkg-gtk+-3.0-Root|\Program Files\GTK+-Bundle-3.6.4
+Pkg-gtk+-3.0-Root|/Program Files/GTK+-Bundle-3.6.4/
 Pkg-llvm-I|include
 Pkg-llvm-L|lib
-Pkg-llvm-Root|/Program Files/LLVM
+Pkg-llvm-Root|/Program Files/LLVM/
 Pkg-llvm-l|libclang.lib
-PkgNames|gtk+-3.0;llvm
+PkgNames|gtk+-3.0;llvm;

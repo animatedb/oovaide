@@ -57,6 +57,10 @@ class XmiElement
 	ModelObject *mModelObject;
     };
 
+/// Used to parse an XMI file. An XMI file is an XML format file that defines
+/// the data that is used to make diagrams.  The OovCppParser creates the files
+/// and then the Oovcde program does not need to rescan the cpp source or
+/// header files to create the diagrams.
 class XmiParser:private XmlParser
     {
     public:

@@ -181,6 +181,8 @@ ScreenOptions::ScreenOptions(char const * const buildConfig)
 	    OptGuiShowOperParamRelations, "ShowOperParamRelationsCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
 	    OptGuiShowOperBodyVarRelations, "ShowOperBodyVarRelationsCheckbutton")));
+    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+	    OptGuiShowRelationKey, "ShowRelationKeyCheckbutton")));
     }
 
 void ScreenOptions::optionsToScreen() const

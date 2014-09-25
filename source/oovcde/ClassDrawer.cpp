@@ -112,42 +112,9 @@ static void getStrings(const ClassNode &node,
 	}
     }
 
-static size_t findEarlierBreakPos(size_t pos, std::string const &str,
-	char const *breakStr, size_t startPos)
-    {
-    size_t spacePos = str.find(breakStr, startPos);
-    if(spacePos != std::string::npos)
-	{
-	spacePos += std::string(breakStr).length();
-	if(pos == std::string::npos || spacePos < pos)
-	    {
-	    pos = spacePos;
-	    }
-	}
-    return pos;
-    }
-
-static void splitStrings(std::vector<std::string> &strs, size_t desiredLength)
-    {
-    for(size_t i=0; i<strs.size(); i++)
-	{
-	if(strs[i].length() > desiredLength)
-	    {
-	    size_t pos = strs[i].find(',', desiredLength);
-	    pos = findEarlierBreakPos(pos, strs[i], "::", desiredLength);
-	    pos = findEarlierBreakPos(pos, strs[i], " ", desiredLength);
-	    if(pos == std::string::npos)
-		pos = desiredLength;
-	    std::string temp = "   " + strs[i].substr(pos);
-	    strs[i].resize(pos);
-	    strs.insert(strs.begin()+i+1, temp);
-	    i++;	// One line was inserted, so don't split next line.
-	    }
-	}
-    }
-
 void splitClassStrings(std::vector<std::string> &nodeStrs,
-	std::vector<std::string> &attrStrs, std::vector<std::string> &operStrs)
+	std::vector<std::string> &attrStrs, std::vector<std::string> &operStrs,
+	float fontWidth, float fontHeight)
     {
     std::vector<size_t> lengths;
     for(auto const &str : nodeStrs)
@@ -167,95 +134,111 @@ void splitClassStrings(std::vector<std::string> &nodeStrs,
     size_t maxLength = lengths[lengths.size()-1];
     if(lengths.size() == 1)
 	{
-	if(lengths[0] > 60)
-	    desiredLength = lengths[0] / 2;
+	desiredLength = 50;
+	int len = lengths[0] / 50;
+	if(len == 0)
+	    len = lengths[0];
+	else
+	    desiredLength = 50;
 	}
     else
 	{
         float biggestRatio = 0;
         size_t biggestRatioIndex = 0;
-	for(size_t i=lengths.size()/2; i<lengths.size()-1; i++)
-	    {
-	    float ratio = (maxLength - lengths[i]) / (lengths.size() - i);
-	    if(ratio > biggestRatio)
+        for(int numSplits=1; numSplits<2; numSplits++)
+            {
+	    for(size_t i=lengths.size()/2; i<lengths.size()-1; i++)
 		{
-		biggestRatio = ratio;
-		biggestRatioIndex = i;
+		float ratio = (maxLength - lengths[i]) / (lengths.size() - i);
+		if(ratio > biggestRatio)
+		    {
+		    biggestRatio = ratio;
+		    biggestRatioIndex = i;
+		    }
 		}
-	    }
+            }
 	if(biggestRatio > 8)
 	    desiredLength = lengths[biggestRatioIndex];
 	}
     if(desiredLength != 0)
 	{
-	// Split into a maximum of two lines.
-	size_t minSplitLength = maxLength / 2;
+	// Split into a maximum of four lines.
+	size_t minSplitLength = maxLength / 4;
 	if(desiredLength < minSplitLength)
 	    desiredLength = minSplitLength;
+
 	splitStrings(nodeStrs, desiredLength);
 	splitStrings(attrStrs, desiredLength);
 	splitStrings(operStrs, desiredLength);
 	}
     }
 
-GraphSize ClassDrawer::drawNode(const ClassNode &node)
+GraphSize ClassDrawer::drawNode(const ClassNode &node, const ClassDrawOptions &options)
     {
-    GraphPoint startpos(node.getPosition().getZoomed(mActualZoomX, mActualZoomY));
-    float fontHeight = mDrawer.getTextExtentHeight("W");
-    float pad = fontHeight / 7.f;
-//    if(pad < 1)
-//	pad = 1;
-    float pad2 = pad*2;
-    float padLine = pad*3;
-    int line1 = startpos.y;
-    int line2 = startpos.y;
-    std::vector<DrawString> drawStrings;
-    std::vector<std::string> nodeStrs;
-    std::vector<std::string> attrStrs;
-    std::vector<std::string> operStrs;
+    if(node.getType())
+	{
+	GraphPoint startpos(node.getPosition().getZoomed(mActualZoomX, mActualZoomY));
+	float fontHeight = mDrawer.getTextExtentHeight("W");
+	float fontWidth = mDrawer.getTextExtentWidth("W");
+	float pad = fontHeight / 7.f;
+    //    if(pad < 1)
+    //	pad = 1;
+	float pad2 = pad*2;
+	float padLine = pad*3;
+	int line1 = startpos.y;
+	int line2 = startpos.y;
+	std::vector<DrawString> drawStrings;
+	std::vector<std::string> nodeStrs;
+	std::vector<std::string> attrStrs;
+	std::vector<std::string> operStrs;
 
-    getStrings(node, nodeStrs, attrStrs, operStrs);
-    splitClassStrings(nodeStrs, attrStrs, operStrs);
-    float y = startpos.y;
-    for(auto const &str : nodeStrs)
-	{
-	y += fontHeight + pad2;
-	drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
-	}
-    y += padLine;	// Space for line.
-    line1 = y;
-    for(auto const &str : attrStrs)
-	{
-	y += fontHeight + pad2;
-	drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
-	}
-    y += padLine;	// Space for line.
-    line2 = y;
-    for(auto const &str : operStrs)
-	{
-	y += fontHeight + pad2;
-	drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
-	}
+	getStrings(node, nodeStrs, attrStrs, operStrs);
+	splitClassStrings(nodeStrs, attrStrs, operStrs, fontWidth, fontHeight);
+	float y = startpos.y;
+	for(auto const &str : nodeStrs)
+	    {
+	    y += fontHeight + pad2;
+	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
+	    }
+	y += padLine;	// Space for line.
+	line1 = y;
+	for(auto const &str : attrStrs)
+	    {
+	    y += fontHeight + pad2;
+	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
+	    }
+	y += padLine;	// Space for line.
+	line2 = y;
+	for(auto const &str : operStrs)
+	    {
+	    y += fontHeight + pad2;
+	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
+	    }
 
-    int maxWidth = 0;
-    for(const auto &dstr : drawStrings)
-	{
-	int width = mDrawer.getTextExtentWidth(dstr.str.c_str());
-	if(width > maxWidth)
-	    maxWidth = width;
+	int maxWidth = 0;
+	for(const auto &dstr : drawStrings)
+	    {
+	    int width = mDrawer.getTextExtentWidth(dstr.str.c_str());
+	    if(width > maxWidth)
+		maxWidth = width;
+	    }
+	maxWidth += pad2;
+	y += pad2;
+	mDrawer.groupShapes(true, Color(245,245,255));
+	mDrawer.drawRect(GraphRect(startpos.x, startpos.y, maxWidth, y-startpos.y));
+	mDrawer.drawLine(GraphPoint(startpos.x, line1), GraphPoint(startpos.x+maxWidth, line1));
+	mDrawer.drawLine(GraphPoint(startpos.x, line2), GraphPoint(startpos.x+maxWidth, line2));
+	mDrawer.groupShapes(false, Color(245,245,255));
+	mDrawer.groupText(true);
+	for(const auto &dstr : drawStrings)
+	    mDrawer.drawText(dstr.pos, dstr.str.c_str());
+	mDrawer.groupText(false);
+	return GraphSize(maxWidth, y - startpos.y);
 	}
-    maxWidth += pad2;
-    y += pad2;
-    mDrawer.groupShapes(true, Color(245,245,255));
-    mDrawer.drawRect(GraphRect(startpos.x, startpos.y, maxWidth, y-startpos.y));
-    mDrawer.drawLine(GraphPoint(startpos.x, line1), GraphPoint(startpos.x+maxWidth, line1));
-    mDrawer.drawLine(GraphPoint(startpos.x, line2), GraphPoint(startpos.x+maxWidth, line2));
-    mDrawer.groupShapes(false, Color(245,245,255));
-    mDrawer.groupText(true);
-    for(const auto &dstr : drawStrings)
-	mDrawer.drawText(dstr.pos, dstr.str.c_str());
-    mDrawer.groupText(false);
-    return GraphSize(maxWidth, y - startpos.y);
+    else
+	{
+	return drawRelationKey(node, options);
+	}
     }
 
 static void drawPolyWithOffset(DiagramDrawer &drawer, const GraphPoint &offset,
@@ -272,108 +255,143 @@ static void drawPolyWithOffset(DiagramDrawer &drawer, const GraphPoint &offset,
     drawer.drawPoly(polyWithOffset, color);
     }
 
+class RelationDrawInfo
+    {
+    public:
+	RelationDrawInfo(GraphPoint diconsumer, GraphPoint diproducer, int dizoom):
+	    zoom(dizoom), consumer(diconsumer), producer(diproducer)
+	    {
+	    halfSymbolSize = 11 * dizoom;
+	    // baseOffset is center of visibility circles
+	    baseVisibilityOffset = 30 * dizoom;
+	    quarterSymbolSize = 5 * dizoom;
+	    baseFuncOffset = (baseVisibilityOffset - quarterSymbolSize) - halfSymbolSize;
+	    eighthSymbolSize = quarterSymbolSize/2;
+	    xdist = producer.x-consumer.x;
+	    int ydist = producer.y-consumer.y;
+	    if(ydist != 0)
+		lineAngleRadians = atan2(xdist, ydist);
+	    else
+		{
+		if(producer.x > consumer.x)
+		    lineAngleRadians = M_PI/2;
+		else
+		    lineAngleRadians = -M_PI/2;
+		}
+	    }
+	void setPoints(GraphPoint diconsumer, GraphPoint diproducer)
+	    {
+	    consumer = diconsumer;
+	    producer = diproducer;
+	    }
+	int halfSymbolSize;
+	int baseVisibilityOffset;
+	int baseFuncOffset;
+	int quarterSymbolSize;
+	int eighthSymbolSize;
+	int xdist;
+	int zoom;
+	GraphPoint consumer;
+	GraphPoint producer;
+	double lineAngleRadians;
+    };
+
+static void drawConst(DiagramDrawer &drawer, RelationDrawInfo const &drawInfo)
+    {
+    Color color;
+    GraphPoint p;
+    // startPoint is Y position of point of V
+    int startPoint = 0;
+//    if(connectType == ctFuncParam || connectType == ctFuncVar)
+//	startPoint = drawInfo.baseFuncOffset - 14 * drawInfo.zoom;
+//    else
+//	startPoint = drawInfo.baseVisibilityOffset - 14 * drawInfo.zoom;
+    int vtop = startPoint + 10 * drawInfo.zoom;
+    const double triangleAngle = (2 * M_PI) / vtop;
+    OovPolygon polygon;
+    // Set start point (point of V)
+    p.set(sin(drawInfo.lineAngleRadians) * startPoint,
+	    cos(drawInfo.lineAngleRadians) * startPoint);
+    polygon.push_back(p);
+    // calc left point of symbol
+    p.set(sin(drawInfo.lineAngleRadians-triangleAngle) * vtop,
+	    cos(drawInfo.lineAngleRadians-triangleAngle) * vtop);
+    polygon.push_back(p);
+
+    p.set(sin(drawInfo.lineAngleRadians) * (startPoint + 4 * drawInfo.zoom),
+	cos(drawInfo.lineAngleRadians) * (startPoint + 4 * drawInfo.zoom));
+    polygon.push_back(p);
+    // calc right point of symbol
+    p.set(sin(drawInfo.lineAngleRadians+triangleAngle) * vtop,
+	cos(drawInfo.lineAngleRadians+triangleAngle) * vtop);
+    polygon.push_back(p);
+    // Go back to start point
+    p.set(sin(drawInfo.lineAngleRadians) * startPoint,
+	    cos(drawInfo.lineAngleRadians) * startPoint);
+    polygon.push_back(p);
+
+    color.set(255,255,255);
+    drawPolyWithOffset(drawer, GraphPoint(drawInfo.consumer.x, drawInfo.consumer.y),
+	    polygon, color);
+    }
+
+static void drawFuncRelation(DiagramDrawer &drawer, RelationDrawInfo const &drawInfo,
+	eDiagramConnectType connectType)
+    {
+    Color color;
+    GraphPoint p;
+    color.set(255,255,255);
+    p.set(drawInfo.consumer.x + sin(drawInfo.lineAngleRadians) * drawInfo.baseFuncOffset,
+	    drawInfo.consumer.y + cos(drawInfo.lineAngleRadians) * drawInfo.baseFuncOffset);
+    drawer.drawCircle(p, drawInfo.quarterSymbolSize, color);
+    if(connectType == ctFuncParam)
+	{
+	const int paramOffset = drawInfo.baseFuncOffset + drawInfo.quarterSymbolSize +
+		drawInfo.eighthSymbolSize;
+	p.set(drawInfo.consumer.x + sin(drawInfo.lineAngleRadians) * paramOffset,
+		drawInfo.consumer.y + cos(drawInfo.lineAngleRadians) * paramOffset);
+	drawer.drawCircle(p, drawInfo.eighthSymbolSize, color);
+	}
+    }
+
+static void drawVisibility(DiagramDrawer &drawer, RelationDrawInfo const &drawInfo,
+	Visibility vis)
+    {
+    Color color;
+    GraphPoint p;
+    color.set(255,255,255);
+    // Set circle center
+    p.set(drawInfo.consumer.x + sin(drawInfo.lineAngleRadians) * drawInfo.baseVisibilityOffset,
+	    drawInfo.consumer.y + cos(drawInfo.lineAngleRadians) * drawInfo.baseVisibilityOffset);
+    if(vis.getVis() == Visibility::Private)
+	color.set(0,0,0);
+    drawer.drawCircle(p, drawInfo.quarterSymbolSize, color);
+    if(vis.getVis() == Visibility::Protected)
+	color.set(0,0,0);
+    drawer.drawCircle(p, drawInfo.eighthSymbolSize, color);
+    }
+
 static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
 	GraphPoint producer, const ClassConnectItem &connectItem, double zoom)
     {
-    const int halfSymbolSize = 11 * zoom;
-    // baseOffset is center of visibility circles
-    const int baseOffset = 30 * zoom;
-    const int baseFuncParamOffset = baseOffset - halfSymbolSize;
-//    const int totalOffset = baseOffset + (halfSymbolSize*2);
-    const int quarterSymbolSize = 5 * zoom;
-    const int eighthSymbolSize = quarterSymbolSize/2;
-    int xdist = producer.x-consumer.x;
-    int ydist = producer.y-consumer.y;
-    double lineAngleRadians;
-    if(ydist != 0)
-        lineAngleRadians = atan2(xdist, ydist);
-    else
-        {
-        if(producer.x > consumer.x)
-            lineAngleRadians = M_PI/2;
-        else
-            lineAngleRadians = -M_PI/2;
-        }
-//    if(abs(xdist) > totalOffset && abs(ydist) > totalOffset)
-        {
-        GraphPoint p;
-        Color color;
-
-        if(connectItem.mConnectType & ctAggregation ||
-        	connectItem.mConnectType & ctFuncParam)
-            {
-            // Draw directional symbol
-            if(connectItem.mConst)
-        	{
-        	// startPoint is Y position of point of V
-                int startPoint;
-                if(connectItem.mConnectType == ctFuncParam)
-                    startPoint = baseFuncParamOffset - 14 * zoom;
-                else
-                    startPoint = baseOffset - 14 * zoom;
-                int vtop = startPoint + 10 * zoom;
-		const double triangleAngle = (2 * M_PI) / vtop;
-		OovPolygon polygon;
-		// Set start point (point of V)
-		p.set(sin(lineAngleRadians) * startPoint, cos(lineAngleRadians) * startPoint);
-		polygon.push_back(p);
-		// calc left point of symbol
-		p.set(sin(lineAngleRadians-triangleAngle) * vtop,
-			cos(lineAngleRadians-triangleAngle) * vtop);
-		polygon.push_back(p);
-
-		p.set(sin(lineAngleRadians) * (startPoint + 4 * zoom),
-		    cos(lineAngleRadians) * (startPoint + 4 * zoom));
-		polygon.push_back(p);
-		// calc right point of symbol
-		p.set(sin(lineAngleRadians+triangleAngle) * vtop,
-		    cos(lineAngleRadians+triangleAngle) * vtop);
-		polygon.push_back(p);
-		// Go back to start point
-		p.set(sin(lineAngleRadians) * startPoint,
-			cos(lineAngleRadians) * startPoint);
-		polygon.push_back(p);
-
-		color.set(255,255,255);
-		drawPolyWithOffset(drawer, GraphPoint(consumer.x, consumer.y), polygon, color);
-        	}
-            }
-        if(connectItem.mConnectType & ctFuncVar || connectItem.mConnectType & ctFuncParam)
-            {
-	    color.set(255,255,255);
-	    // Set function circle center
-	    // Make the func body param closer to more easily tell direction since the
-	    // symbol doesn't indicate direction by itself.
-	    int baseFuncOffset;
-	    if(connectItem.mConnectType == ctFuncVar)
-		baseFuncOffset = (baseOffset - quarterSymbolSize) - halfSymbolSize;
-	    else
-		baseFuncOffset = baseFuncParamOffset;
-	    p.set(consumer.x + sin(lineAngleRadians) * baseFuncOffset,
-		    consumer.y + cos(lineAngleRadians) * baseFuncOffset);
-	    drawer.drawCircle(p, quarterSymbolSize, color);
-	    if(connectItem.mConnectType == ctFuncParam)
-		{
-		const int baseFuncOffset = baseOffset - quarterSymbolSize;
-		p.set(consumer.x + sin(lineAngleRadians) * baseFuncOffset,
-			consumer.y + cos(lineAngleRadians) * baseFuncOffset);
-		drawer.drawCircle(p, eighthSymbolSize, color);
-		}
-            }
-        if(connectItem.hasAccess())
-            {
-	    color.set(255,255,255);
-	    // Set circle center
-	    p.set(consumer.x + sin(lineAngleRadians) * baseOffset,
-		    consumer.y + cos(lineAngleRadians) * baseOffset);
-	    if(connectItem.mAccess.getVis() == Visibility::Private)
-		color.set(0,0,0);
-	    drawer.drawCircle(p, quarterSymbolSize, color);
-	    if(connectItem.mAccess.getVis() == Visibility::Protected)
-		color.set(0,0,0);
-	    drawer.drawCircle(p, eighthSymbolSize, color);
-            }
-        }
+    RelationDrawInfo drawInfo(consumer, producer, zoom);
+    if(connectItem.mConnectType & ctAggregation ||
+	    connectItem.mConnectType & ctFuncParam)
+	{
+	// Draw const symbol
+	if(connectItem.mConst)
+	    {
+	    drawConst(drawer, drawInfo);
+	    }
+	}
+    if(connectItem.mConnectType & ctFuncVar || connectItem.mConnectType & ctFuncParam)
+	{
+	drawFuncRelation(drawer, drawInfo, connectItem.mConnectType);
+	}
+    if(connectItem.hasAccess())
+	{
+	drawVisibility(drawer, drawInfo, connectItem.mAccess);
+	}
     }
 
 static void drawHasSymbol(DiagramDrawer &drawer, GraphPoint owner,
@@ -393,6 +411,7 @@ static void drawHasSymbol(DiagramDrawer &drawer, GraphPoint owner,
         }
     const double hasAngle = (2 * M_PI) / 12;
     double hasHalfSize = 9 * zoom;
+    double hasSize = hasHalfSize * 2 - (4 * zoom);
 
     OovPolygon polygon;
     // Do start point
@@ -402,8 +421,7 @@ static void drawHasSymbol(DiagramDrawer &drawer, GraphPoint owner,
 	    cos(lineAngleRadians-hasAngle) * hasHalfSize);
     polygon.push_back(p);
     // Calc end point
-    p.set(sin(lineAngleRadians) * hasHalfSize * 2,
-	    cos(lineAngleRadians) * hasHalfSize * 2);
+    p.set(sin(lineAngleRadians) * hasSize, cos(lineAngleRadians) * hasSize);
     polygon.push_back(p);
     // calc right point of has symbol
     p.set(sin(lineAngleRadians+hasAngle) * hasHalfSize,
@@ -475,6 +493,12 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
     GraphPoint p2e;
     rect1.findConnectPoints(rect2, p1e, p2e);
 
+    if(options.drawOovSymbols)
+	{
+	drawOovSymbol(mDrawer, p1e, p2e, connectItem, mActualZoomY);
+	}
+    // Draw the aggregation symbol after the oov symbols so that it can show up
+    // over the const and function symbols.
     switch(connectItem.mConnectType & ctObjectRelationMask)
 	{
 	case ctAggregation:
@@ -490,10 +514,98 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
 	default:
 	    break;
 	}
+    }
+
+GraphSize ClassDrawer::drawRelationKey(const ClassNode &node,
+	const ClassDrawOptions &options)
+    {
+    GraphPoint startpos(node.getPosition().getZoomed(mActualZoomX, mActualZoomY));
+    float fontHeight = mDrawer.getTextExtentHeight("W");
+    float pad = fontHeight / 7.f;
+    std::vector<std::string> strs = { "Relations Key",
+	    "Generalization", "Aggregation(reference)", "Composition(owned)"};
+
     if(options.drawOovSymbols)
 	{
-	drawOovSymbol(mDrawer, p1e, p2e, connectItem, mActualZoomY);
+	strs.push_back("Const");
+	strs.push_back("Method Variable");
+	strs.push_back("Method Parameter");
+	strs.push_back("Public");
+	strs.push_back("Protected");
+	strs.push_back("Private");
 	}
+
+    int strLenPixels = 0;
+    for(auto const &str : strs)
+	{
+	float len = mDrawer.getTextExtentWidth(str.c_str());
+	if(len > strLenPixels)
+	    strLenPixels = len;
+	}
+
+    int shapeWidth = 18 * mActualZoomY;
+    int shapeHeight = 14 * mActualZoomY;
+    int keyWidth = strLenPixels+shapeWidth+pad*4;
+    int keyHeight = strs.size()*shapeHeight+pad*3;
+    mDrawer.groupShapes(true, Color(245,245,255));
+    mDrawer.drawRect(GraphRect(startpos.x, startpos.y, keyWidth, keyHeight));
+    GraphPoint p1 = startpos;
+    mDrawer.drawLine(GraphPoint(p1.x, p1.y+shapeHeight-pad),
+	    GraphPoint(p1.x+keyWidth, p1.y+shapeHeight-pad));	// Draw key header separator line
+    int startSymbolXPos = startpos.x + strLenPixels + pad * 2;
+    p1.x = startSymbolXPos;
+    p1.y += shapeHeight/2 + shapeHeight;	// Room for key header
+    GraphPoint p2 = p1;
+    p2.x += shapeWidth * 2;
+    drawIsSymbol(mDrawer, p1, p2, mActualZoomY);
+    p1.y += shapeHeight;
+    p2.y += shapeHeight;
+    drawHasSymbol(mDrawer, p1, p2, true, mActualZoomY);
+    p1.y += shapeHeight;
+    p2.y += shapeHeight;
+    drawHasSymbol(mDrawer, p1, p2, false, mActualZoomY);
+    if(options.drawOovSymbols)
+	{
+	p1.y += shapeHeight;
+	p2.y += shapeHeight;
+	RelationDrawInfo drawInfo(p1, p2, mActualZoomY);
+	drawConst(mDrawer, drawInfo);
+	p1.x = startSymbolXPos - drawInfo.baseFuncOffset;
+	p1.y += shapeHeight;
+	p2.y += shapeHeight;
+	drawInfo.setPoints(p1, p2);
+	drawFuncRelation(mDrawer, drawInfo, ctFuncVar);
+	p1.y += shapeHeight;
+	p2.y += shapeHeight;
+	drawInfo.setPoints(p1, p2);
+	drawFuncRelation(mDrawer, drawInfo, ctFuncParam);
+	p1.x = startSymbolXPos - drawInfo.baseVisibilityOffset;
+	p1.y += shapeHeight;
+	p2.y += shapeHeight;
+	drawInfo.setPoints(p1, p2);
+	drawVisibility(mDrawer, drawInfo, Visibility::Public);
+	p1.y += shapeHeight;
+	p2.y += shapeHeight;
+	drawInfo.setPoints(p1, p2);
+	drawVisibility(mDrawer, drawInfo, Visibility::Protected);
+	p1.y += shapeHeight;
+	p2.y += shapeHeight;
+	drawInfo.setPoints(p1, p2);
+	drawVisibility(mDrawer, drawInfo, Visibility::Private);
+	}
+    mDrawer.groupShapes(false, Color(245,245,255));
+
+    mDrawer.groupText(true);
+    p1 = startpos;
+    p1.x += pad;
+    p1.y += fontHeight + pad*2;
+    for(auto const &str : strs)
+	{
+	mDrawer.drawText(p1, str.c_str());
+	p1.y += shapeHeight;
+	}
+    mDrawer.groupText(false);
+    return GraphSize(keyWidth, keyHeight);
     }
 
 void ClassDrawer::setZoom(double desiredZoom)
@@ -522,7 +634,7 @@ void ClassDrawer::drawDiagram(const ClassGraph &graph,
 		mActualZoomY));
 	for(size_t ni1=0; ni1<graph.getNodes().size(); ni1++)
 	    {
-	    drawNode(graph.getNodes()[ni1]);
+	    drawNode(graph.getNodes()[ni1], options);
 	    }
 	mDrawer.groupShapes(true, Color(245,245,255));
 	for(size_t ni1=0; ni1<graph.getNodes().size(); ni1++)

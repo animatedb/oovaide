@@ -32,11 +32,12 @@ struct ClassRelationDrawOptions
     {
     ClassRelationDrawOptions():
 	drawOovSymbols(true), drawOperParamRelations(true),
-	drawOperBodyVarRelations(true)
+	drawOperBodyVarRelations(true), drawRelationKey(true)
 	{}
     bool drawOovSymbols;
     bool drawOperParamRelations;
     bool drawOperBodyVarRelations;
+    bool drawRelationKey;
     };
 
 struct ClassDrawOptions:public ClassNodeDrawOptions, public ClassRelationDrawOptions
@@ -50,9 +51,12 @@ struct ClassDrawOptions:public ClassNodeDrawOptions, public ClassRelationDrawOpt
 class ClassNode
     {
     public:
+	// @param type Is null for relation key.
 	ClassNode(const ModelType *type, const ClassNodeDrawOptions &options):
 	    mType(type),  mDrawOptions(options)
 	    {}
+	bool isKey() const
+	    { return(mType == nullptr);}
 	const ModelType *getType() const
 	    { return mType; }
 	/// Positions are only valid after positionNodes is called.
@@ -101,6 +105,7 @@ enum eDiagramConnectType
     ctFuncReferenceMask = 0xF0,
     };
 
+/// Defines a connection between two class nodes
 struct ClassConnectItem
     {
     ClassConnectItem(eDiagramConnectType ct = ctNone):
@@ -126,6 +131,8 @@ struct ClassConnectItem
     Visibility mAccess;
     };
 
+/// This defines a class graph that holds class nodes and connections between
+/// the class nodes.
 class ClassGraph
     {
     public:
@@ -170,7 +177,7 @@ class ClassGraph
 	/// Updates node sizes and node connections in the graph.
 	/// The nodes generally must have been added with the same modelData.
 	GraphSize updateGraph(const ModelData &modelData, const ClassDrawOptions &options);
-	void updateNodeSizes();
+	void updateNodeSizes(const ClassDrawOptions &options);
 	/// Update connections between nodes.
 	void updateConnections(const ModelData &modelData, const ClassRelationDrawOptions &options);
 	GraphSize getNodeSizeWithPadding(int nodeIndex) const;
@@ -206,7 +213,7 @@ class ClassGraph
 	/// This updates quality information, runs the genetic algorithm for
 	/// placing the nodes, and then draws them.
 	void updateGenes(const ModelData &modelData,
-		const ClassRelationDrawOptions &options);
+		const ClassDrawOptions &options);
 
 	void insertConnection(int node1, int node2,
 		const ClassConnectItem &connectItem);
@@ -217,10 +224,11 @@ class ClassGraph
 	void addRelatedNodesRecurseUser(const ModelData &model, const ModelType *type,
 		const ModelType *modelType, const ClassNodeDrawOptions &options,
 		eAddNodeTypes addType, int maxDepth);
+	void addRelationKeyNode(const ClassNodeDrawOptions &options);
 
 	/// Update the visual node size based on font size, number of attributes, etc.
 	/// Each node is a class.
-	void updateNodeSizes(GtkWidget *widget);
+	void updateNodeSizes(GtkWidget *widget, const ClassDrawOptions &options);
 	int getAvgNodeSize() const;
 
 	/// Get the index to the class.

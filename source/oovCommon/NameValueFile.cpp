@@ -19,9 +19,8 @@ std::string CompoundValueRef::getAsString(const std::vector<std::string> &vec,
     std::string str;
     for(size_t i=0; i<vec.size(); i++)
 	{
-	if(i != 0)
-	    str += delimiter;
 	str += vec[i];
+	str += delimiter;
 	}
     return str;
     }
@@ -32,9 +31,8 @@ std::string CompoundValueRef::getAsString(const std::set<std::string> &stdset,
     std::string str;
     for(auto const &item : stdset)
 	{
-	if(str.empty())
-	    str += delimiter;
 	str += item;
+	str += delimiter;
 	}
     return str;
     }
@@ -49,8 +47,13 @@ void CompoundValueRef::parseStringRef(char const * const strIn,
 	{
 	size_t endColonPos = str.find(delimiter, startArgPos);
 	std::string tempStr = str.substr(startArgPos, endColonPos-startArgPos);
-	if(tempStr.length() > 0)
+	// For compatibility with previous files, allow a string that is
+	// after the last colon. Previous versions that had the extra string
+	// did not allow null strings.
+	if(endColonPos != std::string::npos || tempStr.length() > 0)
+	    {
 	    vec.push_back(tempStr);
+	    }
 	startArgPos = endColonPos;
 	if(startArgPos != std::string::npos)
 	    startArgPos++;
@@ -174,14 +177,14 @@ void NameValueRecord::insertLine(std::string lineBuf)
 	}
     }
 
-void NameValueRecord::insertBufToMap(std::string buf)
+void NameValueRecord::insertBufToMap(std::string const &buf)
     {
     size_t pos = 0;
     mNameValues.clear();
     while(pos != std::string::npos)
 	{
 	size_t endPos = buf.find('\n', pos);
-	std::string line(buf, pos, endPos);
+	std::string line(buf, pos, endPos-pos);
 	insertLine(line);
 	pos = endPos;
 	if(pos != std::string::npos)
@@ -232,9 +235,9 @@ bool NameValueFile::readFile()
 bool NameValueFile::readOpenedFile(SharedFile &file)
     {
     clear();
-    std::string buf(file.getFileSize(), 0);
+    std::string buf(file.getSize(), 0);
     int actualSize;
-    bool success = file.readFile(&buf[0], buf.size(), actualSize);
+    bool success = file.read(&buf[0], buf.size(), actualSize);
     if(success)
 	{
 	buf.resize(actualSize);
@@ -247,13 +250,12 @@ bool NameValueFile::readFileShared()
     {
     SharedFile file;
     bool success = false;
-    SharedFile::eOpenStatus status = file.openFile(mFilename.c_str(),
-	    SharedFile::M_ReadShared);
-    if(status == SharedFile::OS_Opened)
+    eOpenStatus status = file.open(mFilename.c_str(), M_ReadShared);
+    if(status == OS_Opened)
 	{
 	success = readOpenedFile(file);
 	}
-    else if(status == SharedFile::OS_NoFile)
+    else if(status == OS_NoFile)
 	{
 	success = true;
 	}
@@ -263,9 +265,8 @@ bool NameValueFile::readFileShared()
 bool NameValueFile::writeFileExclusiveReadUpdate(class SharedFile &file)
     {
     bool success = false;
-    SharedFile::eOpenStatus status = file.openFile(mFilename.c_str(),
-	    SharedFile::M_ReadWriteExclusive);
-    if(status == SharedFile::OS_Opened)
+    eOpenStatus status = file.open(mFilename.c_str(), M_ReadWriteExclusive);
+    if(status == OS_Opened)
 	{
 	success = readOpenedFile(file);
 	}
@@ -279,8 +280,8 @@ bool NameValueFile::writeFileExclusive(class SharedFile &file)
 	{
 	std::string buf;
 	readMapToBuf(buf);
-	file.seekBeginFile();
-	success = file.writeFile(&buf[0], buf.size());
+	file.seekBegin();
+	success = file.write(&buf[0], buf.size());
 	}
     return success;
     }

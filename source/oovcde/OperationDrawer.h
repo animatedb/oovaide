@@ -23,7 +23,7 @@ struct DrawString
     std::string str;
     };
 
-
+/// Used to draw an operation graph.
 class OperationDrawer
     {
     public:
@@ -42,7 +42,7 @@ class OperationDrawer
 	int mCharHeight;
 	GraphSize drawClass(const OperationClass &node, const OperationDrawOptions &options);
 	void drawLifeLines(const std::vector<OperationClass> &classes,
-		int starty, int endy);
+		std::vector<int> const &classEndY, int endy);
 	GraphSize drawOperation(GraphPoint pos, OperationDefinition &operDef,
 		const OperationGraph &graph, const OperationDrawOptions &options,
 		std::set<const OperationDefinition*> &drawnOperations);

@@ -552,13 +552,13 @@ bool EditFiles::checkDebugger()
 		    Gui::messageBox("Component to debug in Edit/Preferences does not exist");
 		}
 //	    else
-//		Gui::messageBox("Debugger in Oovcde Edit/Preferences does not exist");
+//		Gui::messageBox("Debugger in Oovcde Analysis/Settings does not exist");
 	    }
 	else
 	    Gui::messageBox("Component to debug must be set in Edit/Preferences");
 	}
     else
-	Gui::messageBox("Debugger tool path must be set in Oovcde Edit/Preferences");
+	Gui::messageBox("Debugger tool path must be set in Oovcde Analysis/Settings");
     return ok;
     }
 

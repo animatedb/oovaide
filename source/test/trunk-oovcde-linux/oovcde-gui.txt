@@ -1,3 +1,4 @@
+EditorPath|./oovEdit
 ShowAttrTypes|Yes
 ShowAttributes|Yes
 ShowOovSymbols|Yes
@@ -7,3 +8,4 @@ ShowOperParams|Yes
 ShowOperTypes|Yes
 ShowOperations|Yes
 ShowPackageName|Yes
+ShowRelationKey|No

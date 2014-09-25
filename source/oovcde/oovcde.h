@@ -93,7 +93,8 @@ class oovGui:public JournalListener, public WindowBuildListener
 	void clear();
 	static gboolean onIdle(gpointer data);
 	void openProject();
-	bool runSrcManager(char const * const buildConfigName);
+	enum eSrcManagerOptions { SM_Analyze, SM_Build, SM_CovInstr, SM_CovBuild, SM_CovStats };
+	bool runSrcManager(char const * const buildConfigName, eSrcManagerOptions smo);
 	void stopSrcManager();
 	void updateProject();
 	virtual void displayClass(char const * const className);

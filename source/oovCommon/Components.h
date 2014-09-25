@@ -19,8 +19,9 @@ bool isHeader(char const * const file);
 bool isSource(char const * const file);
 bool isLibrary(char const * const file);
 
-// This file is read and written by both oovcde and oovBuilder.
-class ComponentTypesFile:public NameValueFile
+/// This file is read and written by both oovcde and oovBuilder.
+/// This defines each component's source and include files.
+class ComponentTypesFile
     {
     public:
 	enum eCompTypes
@@ -32,8 +33,16 @@ class ComponentTypesFile:public NameValueFile
 	    };
 
 	bool read();
+	bool readTypesOnly(char const * const fn);
+	void setComponentNames(char const * const compNames)
+	    {
+	    mCompTypesFile.setNameValue("Components", compNames);
+	    }
 	std::vector<std::string> getComponentNames() const
-	    { return CompoundValueRef::parseString(getValue("Components").c_str()); }
+	    {
+	    return CompoundValueRef::parseString(
+		    mCompTypesFile.getValue("Components").c_str());
+	    }
 	bool anyComponentsDefined() const;
 	enum eCompTypes getComponentType(char const * const compName) const;
         void setComponentType(char const * const compName, char const * const typeName);
@@ -50,8 +59,21 @@ class ComponentTypesFile:public NameValueFile
 	static char const * const getShortComponentTypeName(eCompTypes ct)
 	    { return getComponentTypeAsFileValue(ct); }
 	std::string getComponentAbsolutePath(char const * const compName) const;
+	void writeFile()
+	    {
+	    mCompTypesFile.writeFile();
+	    mCompSourceListFile.writeFile();
+	    }
+	void writeTypesOnly(char const * const fn)
+	    {
+	    mCompTypesFile.setFilename(fn);
+	    mCompTypesFile.writeFile();
+	    }
 
     private:
+	NameValueFile mCompTypesFile;
+	NameValueFile mCompSourceListFile;
+
 	std::vector<std::string> getComponentFiles(char const * const compName,
 		char const * const tagStr) const;
         void setComponentType(char const * const compName, eCompTypes ct);

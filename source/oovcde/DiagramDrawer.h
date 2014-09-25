@@ -9,11 +9,15 @@
 #define DIAGRAMDRAWER_H_
 
 #include <vector>
+#include <string>
 #include "Graph.h"
 
 
 typedef std::vector<GraphPoint> OovPolygon;
+void splitStrings(std::vector<std::string> &strs, size_t desiredLength);
 
+/// Provides an abstract interface for drawing. This interface can be used for
+/// drawing to screen, files (svg) or to a null device.
 class DiagramDrawer
     {
     public:
@@ -48,6 +52,8 @@ class DiagramDrawer
 	double mFontSize;
     };
 
+// This launches an editor to view source code at a certain line number in
+// the source code.
 void viewSource(char const * const module, int lineNum);
 
 #endif /* DIAGRAMDRAWER_H_ */

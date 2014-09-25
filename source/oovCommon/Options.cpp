@@ -177,6 +177,9 @@ void GuiOptions::setDefaultOptions()
     setNameValueBool(OptGuiShowOovSymbols, true);
     setNameValueBool(OptGuiShowOperParamRelations, true);
     setNameValueBool(OptGuiShowOperBodyVarRelations, true);
+    setNameValueBool(OptGuiShowRelationKey, true);
+
+    setNameValueBool(OptGuiShowCompImplicitRelations, false);
     /*
     #ifdef __linux__
         setNameValue(OptEditorPath, "/usr/bin/gedit");
@@ -192,3 +195,11 @@ void GuiOptions::setDefaultOptions()
         setNameValue(OptGuiEditorLineArg, "+");
     }
 
+void GuiOptions::read()
+    {
+    setFilename(Project::getGuiOptionsFilePath().c_str());
+    if(!NameValueFile::readFile())
+	{
+	setDefaultOptions();
+	}
+    }

@@ -24,6 +24,11 @@ struct DiagramLine
     GraphPoint e;
     };
 
+
+/// This defines functionality to use a genetic algorithm used to layout the
+/// class positions for the class diagram. Since the objects are all different
+/// sizes, the genetic algorithm will place the objects so that they do not
+/// overlap, and objects that have more relations are closer to each other.
 class ClassGenes:public GenePool
     {
     public:

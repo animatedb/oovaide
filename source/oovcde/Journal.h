@@ -139,6 +139,7 @@ class JournalRecordComponentDiagram:public JournalRecord
 	    { return mComponentDiagram.getGraph().isModified(); }
     };
 
+/// This class provides a non-volatile history of diagrams.
 class Journal
     {
     public:

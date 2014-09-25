@@ -48,8 +48,17 @@ bool isLibrary(char const * const file)
 
 bool ComponentTypesFile::read()
     {
-    setFilename(Project::getComponentTypesFilePath());
-    return readFile();
+    mCompTypesFile.setFilename(Project::getComponentTypesFilePath());
+    mCompSourceListFile.setFilename(Project::getComponentSourceListFilePath());
+    // source list file is optional, so ignore return
+    mCompSourceListFile.readFile();
+    return mCompTypesFile.readFile();
+    }
+
+bool ComponentTypesFile::readTypesOnly(char const * const fn)
+    {
+    mCompTypesFile.setFilename(fn);
+    return mCompTypesFile.readFile();
     }
 
 bool ComponentTypesFile::anyComponentsDefined() const
@@ -64,7 +73,7 @@ enum ComponentTypesFile::eCompTypes ComponentTypesFile::getComponentType(
 	char const * const compName) const
     {
     std::string tag = getCompTagName(compName, "type");
-    std::string typeStr = getValue(tag.c_str());
+    std::string typeStr = mCompTypesFile.getValue(tag.c_str());
     return getComponentTypeFromTypeName(typeStr.c_str());
     }
 
@@ -124,7 +133,7 @@ void ComponentTypesFile::setComponentType(char const * const compName, eCompType
     {
     std::string tag = getCompTagName(compName, "type");
     char const *value = getComponentTypeAsFileValue(ct);
-    setNameValue(tag.c_str(), value);
+    mCompTypesFile.setNameValue(tag.c_str(), value);
     }
 
 void ComponentTypesFile::setComponentType(char const * const compName,
@@ -195,7 +204,7 @@ void ComponentTypesFile::setComponentSources(char const * const compName,
 	objArgs.addArg(src.c_str());
 	}
     std::string tag = getCompTagName(compName, "src");
-    setNameValue(tag.c_str(), objArgs.getAsString().c_str());
+    mCompSourceListFile.setNameValue(tag.c_str(), objArgs.getAsString().c_str());
     }
 
 void ComponentTypesFile::setComponentIncludes(char const * const compName,
@@ -207,7 +216,7 @@ void ComponentTypesFile::setComponentIncludes(char const * const compName,
 	incArgs.addArg(src.c_str());
 	}
     std::string tag = getCompTagName(compName, "inc");
-    setNameValue(tag.c_str(), incArgs.getAsString().c_str());
+    mCompSourceListFile.setNameValue(tag.c_str(), incArgs.getAsString().c_str());
     }
 
 std::vector<std::string> ComponentTypesFile::getComponentSources(
@@ -233,7 +242,7 @@ std::vector<std::string> ComponentTypesFile::getComponentFiles(char const * cons
 	if(compareComponentNames(parentName, name))
 	    {
 	    std::string tag = ComponentTypesFile::getCompTagName(name, tagStr);
-	    std::string val = getValue(tag.c_str());
+	    std::string val = mCompSourceListFile.getValue(tag.c_str());
 	    std::vector<std::string> newFiles = CompoundValueRef::parseString(val.c_str());
 	    files.insert(files.end(), newFiles.begin(), newFiles.end());
 	    }
@@ -245,14 +254,14 @@ std::string ComponentTypesFile::getComponentBuildArgs(
 	char const * const compName) const
     {
     std::string tag = ComponentTypesFile::getCompTagName(compName, "args");
-    return getValue(tag.c_str());
+    return mCompTypesFile.getValue(tag.c_str());
     }
 
 void ComponentTypesFile::setComponentBuildArgs(char const * const compName,
 	char const * const args)
     {
     std::string tag = ComponentTypesFile::getCompTagName(compName, "args");
-    setNameValue(tag.c_str(), args);
+    mCompTypesFile.setNameValue(tag.c_str(), args);
     }
 
 std::string ComponentTypesFile::getComponentAbsolutePath(

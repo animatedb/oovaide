@@ -1,11 +1,16 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head><!-- DC Blaha - 1/1/2014 --></head><body>
-<h1><a class="mozTocH1" name="mozTocId437561"></a>Working with Oovcde Examples</h1>Last updated: Feb 8, 2014<br>
+
+<h1><a class="mozTocH1" name="mozTocId437561"></a>Working with Oovcde Examples</h1>
+Last updated: Feb 8, 2014<br>
 <br>
+<img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
+
 
 <div class="content">
 
 </div>
+
 
 <ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId437561">Working with Oovcde Examples</a><ol><li><a href="#mozTocId985581">Example Notes</a></li><li><a href="#mozTocId81887">Simple Example
 </a><ol><li><a href="#mozTocId87333">Classes</a></li><li><a href="#mozTocId748070">Sequences</a></li></ol></li><li><a href="#mozTocId621873">StaticLib Example
@@ -227,6 +232,7 @@ shared libraries are loaded by one
 program.<br>
 <embed src="Example3Comps.svg" type="image/svg+xml"><br><br>
 On Linux, the dependencies look like the following:<br>
+<br>
 <embed src="Example3Comps-linux.svg" type="image/svg+xml"><br> 
 <br>
 <br>

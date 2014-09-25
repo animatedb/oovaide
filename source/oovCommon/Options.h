@@ -38,6 +38,9 @@ class BuildOptions:public NameValueFile
 #define OptGuiShowOovSymbols "ShowOovSymbols"
 #define OptGuiShowOperParamRelations "ShowOperParamRelations"
 #define OptGuiShowOperBodyVarRelations "ShowOperBodyVarRelations"
+#define OptGuiShowRelationKey "ShowRelationKey"
+
+#define OptGuiShowCompImplicitRelations "ShowCompImplicitRelations"
 
 #define OptGuiEditorPath "EditorPath"
 #define OptGuiEditorLineArg "EditorLineArg"
@@ -47,11 +50,8 @@ class GuiOptions:public NameValueFile
     public:
 	void setDefaultOptions();
 	// Warning: project must be set up before calling this.
-	bool read()
-	    {
-	    setFilename(Project::getGuiOptionsFilePath().c_str());
-	    return NameValueFile::readFile();
-	    }
+	void read();
+
     private:
 	bool readFile();	// Prevent calling NameValueFile - Not defined
     };

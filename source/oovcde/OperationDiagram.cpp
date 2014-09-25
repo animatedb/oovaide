@@ -33,7 +33,7 @@ void OperationDiagram::clearGraphAndAddOperation(char const * const className,
     updateDiagram();
     }
 
-void OperationDiagram::relayout()
+void OperationDiagram::restart()
     {
     clearGraphAndAddOperation(mLastOperDiagramParams.mClassName.c_str(),
 	    mLastOperDiagramParams.mOpName.c_str(), mLastOperDiagramParams.mIsConst);
@@ -258,10 +258,10 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_OperRelayoutMenuitem_activate(
+extern "C" G_MODULE_EXPORT void on_RestartOperationsMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
-    gOperationDiagram->relayout();
+    gOperationDiagram->restart();
     }
 
 extern "C" G_MODULE_EXPORT void on_OperRemoveAllMenuitem_activate(

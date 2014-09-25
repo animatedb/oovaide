@@ -14,6 +14,15 @@
 #include "Components.h"
 #include "Packages.h"
 
+struct ComponentDrawOptions
+    {
+    ComponentDrawOptions():
+	drawImplicitRelations(false)
+	{}
+    bool drawImplicitRelations;
+    };
+
+/// This defines a component that can be in a component graph.
 class ComponentNode
     {
     public:
@@ -48,26 +57,39 @@ class ComponentNode
 	ComponentNodeTypes mComponentNodeType;
     };
 
-struct ComponentConnection
+/// This defines a connection between two components.
+class ComponentConnection
     {
-    ComponentConnection(int nodeConsumer, int nodeSupplier):
-	mNodeConsumer(nodeConsumer), mNodeSupplier(nodeSupplier)
-	{}
-    uint16_t mNodeConsumer;
-    uint16_t mNodeSupplier;
-    uint32_t getAsInt() const
-	{ return (mNodeConsumer<<16) + mNodeSupplier; }
-    bool operator<(const ComponentConnection &np) const
-	{ return getAsInt() < np.getAsInt(); }
+    public:
+	ComponentConnection(int nodeConsumer, int nodeSupplier):
+	    mNodeConsumer(nodeConsumer), mNodeSupplier(nodeSupplier), mImpliedDependency(false)
+	    {}
+	uint16_t mNodeConsumer;
+	uint16_t mNodeSupplier;
+	uint32_t getAsInt() const
+	    { return (mNodeConsumer<<16) + mNodeSupplier; }
+	bool operator<(const ComponentConnection &np) const
+	    { return getAsInt() < np.getAsInt(); }
+	void setImpliedDependency(bool imp)
+	    { mImpliedDependency = imp; }
+	bool getImpliedDependency() const
+	    { return mImpliedDependency; }
+
+    private:
+	bool mImpliedDependency;
     };
 
+/// This defines functions used to interact with a component diagram. The
+/// ComponentDiagram uses the ComponentDrawer to draw the ComponentGraph.
+/// This must remain for the life of the program since GUI events can be
+/// generated any time.
 class ComponentGraph
     {
     public:
 	ComponentGraph():
 	    mModified(false)
 	    {}
-	void updateGraph();
+	void updateGraph(const ComponentDrawOptions &options);
 	GraphSize getGraphSize() const;
 	const std::vector<ComponentNode> &getNodes() const
 	    { return mNodes; }
@@ -76,6 +98,7 @@ class ComponentGraph
 	const std::set<ComponentConnection> &getConnections() const
 	    { return mConnections; }
 	ComponentNode *getNode(int x, int y);
+	void removeNode(const ComponentNode &node, const ComponentDrawOptions &options);
 	bool isModified() const
 	    { return mModified; }
 	void setModified()
@@ -87,10 +110,12 @@ class ComponentGraph
 	bool mModified;
 
 	// This finds include paths for all source files of each component.
-	void updateConnections(const class IncDirDependencyMapReader &incMap,
-		const ComponentTypesFile &compFile, std::vector<Package> const &packages);
+	void updateConnections(const ComponentTypesFile &compFile,
+		const ComponentDrawOptions &options);
 	int getComponentIndex(std::vector<std::string> const &compPaths,
 		char const * const dir);
+	void pruneConnections();
+	void findNumPaths(int consumerIndex, int supplierIndex, int &numPaths);
     };
 
 

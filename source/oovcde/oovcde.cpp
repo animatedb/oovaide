@@ -66,8 +66,12 @@ void Menu::updateMenuEnables()
 		mGui.getBuilder().getWidget("SaveDrawingMenuitem"), open);
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("SaveDrawingAsMenuitem"), open);
+
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("BuildAnalyzeMenuitem"), idle && open);
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("StopAnalyzeMenuitem"), !idle);
+
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("BuildSettingsMenuitem"), open);
 	gtk_widget_set_sensitive(
@@ -78,6 +82,15 @@ void Menu::updateMenuEnables()
 		mGui.getBuilder().getWidget("StopBuildMenuitem"), !idle);
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("MakeCMakeMenuitem"), open);
+
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("InstrumentMenuitem"), idle && open);
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("CoverageBuildMenuitem"), idle && open);
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("CoverageStatsMenuitem"), idle && open);
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("StopInstrumentMenuitem"), !idle);
 	mBuildIdle = idle;
 	mProjectOpen = open;
 	mInit = false;
@@ -209,7 +222,20 @@ void oovGui::displayOperation(char const * const className,
 	}
     }
 
-bool oovGui::runSrcManager(char const * const buildConfigName)
+static bool checkAnyComponents()
+    {
+    ComponentTypesFile compFile;
+    compFile.read();
+    bool success = compFile.anyComponentsDefined();
+    if(!success)
+	{
+	Gui::messageBox("Define some components in Build/Settings",
+		GTK_MESSAGE_INFO);
+	}
+    return success;
+    }
+
+bool oovGui::runSrcManager(char const * const buildConfigName, eSrcManagerOptions smo)
     {
     bool success = true;
 #ifdef __linux__
@@ -224,22 +250,36 @@ bool oovGui::runSrcManager(char const * const buildConfigName)
 
     mMenu.updateMenuEnables();
     char const *str = NULL;
-    if(std::string(buildConfigName) == BuildConfigAnalysis)
+    if(smo == SM_Analyze)
 	{
 	str = "\nAnalyzing\n";
+	args.addArg("-mode-analyze");
 	}
-    else
+    else if(smo == SM_Build)
 	{
 	str = "\nBuilding\n";
-	args.addArg(makeBuildConfigArgName("-bld", buildConfigName).c_str());
-	ComponentTypesFile compFile;
-	compFile.read();
-	success = compFile.anyComponentsDefined();
-	if(!success)
-	    {
-	    Gui::messageBox("Define some components in Build/Settings",
-		    GTK_MESSAGE_INFO);
-	    }
+	args.addArg("-mode-build");
+	args.addArg(makeBuildConfigArgName("-cfg", buildConfigName).c_str());
+	success = checkAnyComponents();
+	}
+    else if(smo == SM_CovInstr)
+	{
+	str = "\nInstrumenting\n";
+	args.addArg("-mode-cov-instr");
+	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigAnalysis).c_str());
+	success = checkAnyComponents();
+	}
+    else if(smo == SM_CovBuild)
+	{
+	str = "\nBuilding coverage\n";
+	args.addArg("-mode-cov-build");
+	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug).c_str());
+	}
+    else if(smo == SM_CovStats)
+	{
+	str = "\nGenerating coverage statistics\n";
+	args.addArg("-mode-cov-stats");
+	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug).c_str());
 	}
     if(success)
 	{
@@ -260,7 +300,7 @@ void oovGui::updateProject()
 	{
 	gGuiOptions.read();
 //	mOpenProject = true;
-	runSrcManager(BuildConfigAnalysis);
+	runSrcManager(BuildConfigAnalysis, SM_Analyze);
 	}
     else
 	Gui::messageBox("Unable to open project");
@@ -362,7 +402,7 @@ class OptionsDialogUpdate:public OptionsDialog
 	}
     virtual void buildConfig(char const * const name)
 	{
-	gOovGui.runSrcManager(name);
+	gOovGui.runSrcManager(name, oovGui::SM_Build);
 	}
     };
 
@@ -431,6 +471,7 @@ extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
 	    "OovcdeProjectDirEntry"));
 
     removePathSep(rootSrcText, rootSrcText.length()-1);
+    Project::setSourceRootDirectory(rootSrcText.c_str());
     rootSrcText.appendFile("-oovcde");
     gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
     }
@@ -445,8 +486,10 @@ extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
 	{
 	GtkTextView *dirTextView = GTK_TEXT_VIEW(gOovGui.getBuilder().getWidget(
 		"ExcludeDirsTextview"));
-	dir += '\n';
-	Gui::appendText(dirTextView, dir.c_str());
+	std::string relDir;
+	relDir = Project::getSrcRootDirRelativeSrcFileDir(dir);
+	relDir += '\n';
+	Gui::appendText(dirTextView, relDir.c_str());
 	}
     }
 
@@ -639,25 +682,43 @@ extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_BuildAnalyzeMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigAnalysis);
+    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_Analyze);
     }
 
 extern "C" G_MODULE_EXPORT void on_BuildDebugMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigDebug);
+    gOovGui.runSrcManager(BuildConfigDebug, oovGui::SM_Build);
     }
 
 extern "C" G_MODULE_EXPORT void on_BuildReleaseMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigRelease);
+    gOovGui.runSrcManager(BuildConfigRelease, oovGui::SM_Build);
     }
 
 extern "C" G_MODULE_EXPORT void on_StopBuildMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
     gOovGui.stopSrcManager();
+    }
+
+extern "C" G_MODULE_EXPORT void on_InstrumentMenuitem_activate(
+	GtkWidget *button, gpointer data)
+    {
+    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_CovInstr);
+    }
+
+extern "C" G_MODULE_EXPORT void on_CoverageBuildMenuitem_activate(
+	GtkWidget *button, gpointer data)
+    {
+    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_CovBuild);
+    }
+
+extern "C" G_MODULE_EXPORT void on_CoverageStatsMenuitem_activate(
+	GtkWidget *button, gpointer data)
+    {
+    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_CovStats);
     }
 
 extern "C" G_MODULE_EXPORT void on_MakeCMakeMenuitem_activate(
