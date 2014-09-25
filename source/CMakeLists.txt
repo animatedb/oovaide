@@ -61,12 +61,13 @@ set(CMAKE_EXE_LINKER_FLAGS "-pthread -Wl,--no-as-needed")
 add_subdirectory(oovBuilder)
 add_subdirectory(oovCMaker)
 add_subdirectory(oovCommon)
+add_subdirectory(oovCovInstr)
 add_subdirectory(oovCppParser)
 add_subdirectory(oovEdit)
 add_subdirectory(oovGuiCommon)
 add_subdirectory(oovcde)
 # Add all targets to the build-tree export set
-export(TARGETS  oovBuilder oovCMaker oovCommon oovCppParser oovEdit oovGuiCommon oovcde
+export(TARGETS  oovBuilder oovCMaker oovCommon oovCovInstr oovCppParser oovEdit oovGuiCommon oovcde
    FILE "${PROJECT_BINARY_DIR}/OovcdeTargets.cmake")
 
 # Export the package for use from the build-tree
