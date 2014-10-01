@@ -328,10 +328,12 @@ void XmiParser::addFuncStatements(OovStringRef const &attrName,
 		    {
 		    ModelStatement modStmt(&stmtVals[0][2], ST_Call);
 		    int typeId = 0;
-		    if(stmtVals[1].getInt(0, INT_MAX, typeId))
+		    // -1 is used for [else]
+		    if(stmtVals[1].getInt(-1, INT_MAX, typeId))
 			{
-			modStmt.getDecl().setDeclTypeModelId(
-				mStartingModuleTypeIndex + typeId);
+			if(typeId != -1)
+			    typeId += mStartingModuleTypeIndex;
+			modStmt.getDecl().setDeclTypeModelId(typeId);
 			oper.getStatements().addStatement(modStmt);
 			}
 		    }

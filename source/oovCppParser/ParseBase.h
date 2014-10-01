@@ -22,6 +22,17 @@ class CXStringDisposer:public std::string
 	    }
     };
 
+struct RefType
+    {
+    RefType():
+	isConst(false), isRef(false)
+	{}
+    bool isConst;
+    bool isRef;
+    };
+
+CXCursor getNthChildCursor(CXCursor cursor, int nth);
+bool childOfCursor(CXCursor cursor, CXCursorKind cursKind);
 void debugDumpCursor(CXCursor cursor, bool recurse=true);
 void removeLastNonIdentChar(std::string &name);
 void appendConditionString(CXCursor cursor, std::string &str);
@@ -32,17 +43,6 @@ bool isConstType(CXCursor cursor);
 bool isIdentC(char c);
 // Gets the type name without pointer/reference.
 std::string getFullBaseTypeName(CXCursor cursor);
-
-struct RefType
-    {
-    RefType():
-	isConst(false), isRef(false)
-	{}
-    bool isConst;
-    bool isRef;
-    };
-
-bool childOfCursor(CXCursor cursor, CXCursorKind cursKind);
 
 
 #endif /* PARSEBASE_H_ */

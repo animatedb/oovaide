@@ -254,3 +254,38 @@ std::string getFullBaseTypeName(CXCursor cursor)
     CXStringDisposer spell = clang_getTypeSpelling(cursorType);
     return spell;
     }
+
+struct ChildCountVisitor
+{
+    ChildCountVisitor(int count):
+	mCount(count)
+	{
+	mFoundCursor = clang_getNullCursor();
+	}
+    int mCount;
+    CXCursor mFoundCursor;
+};
+static CXChildVisitResult ChildNthVisitor(CXCursor cursor, CXCursor parent,
+	CXClientData client_data)
+    {
+    ChildCountVisitor *context = static_cast<ChildCountVisitor*>(client_data);
+    CXChildVisitResult res = CXChildVisit_Continue;
+    if(context->mCount == 0)
+	{
+	context->mFoundCursor = cursor;
+	res = CXChildVisit_Break;
+	}
+    else
+	context->mCount--;
+    return res;
+    }
+
+CXCursor getNthChildCursor(CXCursor cursor, int nth)
+    {
+    ChildCountVisitor visitorData(nth);
+    clang_visitChildren(cursor, ChildNthVisitor, &visitorData);
+    CXCursor childCursor = clang_getNullCursor();
+    if(visitorData.mCount == 0)
+	childCursor = visitorData.mFoundCursor;
+    return childCursor;
+    }

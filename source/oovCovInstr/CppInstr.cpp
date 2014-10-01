@@ -26,6 +26,27 @@
 static DebugFile sLog("DebugCppInstr.txt");
 #endif
 
+std::string getFirstNonCommentToken(CXCursor cursor)
+    {
+    CXSourceRange range = clang_getCursorExtent(cursor);
+    CXToken *tokens = 0;
+    unsigned int nTokens = 0;
+    CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
+    clang_tokenize(tu, range, &tokens, &nTokens);
+    std::string str;
+    for (size_t i = 0; i < nTokens; i++)
+	{
+	CXTokenKind kind = clang_getTokenKind(tokens[i]);
+	if(kind != CXToken_Comment)
+	    {
+	    CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
+	    str += spelling;
+	    break;
+	    }
+	}
+    clang_disposeTokens(tu, tokens, nTokens);
+    return str;
+    }
 
 void appendCursorTokenString(CXCursor cursor, std::string &str)
     {
@@ -70,7 +91,7 @@ static void dumpCursor(FILE *fp, char const * const str, CXCursor cursor)
 #if(DEBUG_PARSE)
 void debugCount(CXCursor cursor, char const * const str, int instrCount)
     {
-    if(instrCount == 4)
+    if(instrCount == 9)
 	{
 	fprintf(sLog.mFp, "Found %d:\n", instrCount);
 	dumpCursor(sLog.mFp, str, cursor);
@@ -251,7 +272,15 @@ void CppInstr::insertCovInstr(int offset)
 
 bool CppInstr::isParseFile(SourceLocation const &loc) const
     {
+    // clang_File_isEqual
     FilePath fn(loc.getFn(), FP_File);
+    return(fn == mTopParseFn);
+    }
+
+bool CppInstr::isParseFile(CXFile const &file) const
+    {
+    CXStringDisposer fnStr(clang_getFileName(file));
+    FilePath fn(fnStr, FP_File);
     return(fn == mTopParseFn);
     }
 
@@ -321,6 +350,17 @@ void CppInstr::insertNonCompoundInstr(CXCursor cursor)
 	// If this is a compound statement, then it will be instrumented anyway.
 	if(cursKind != CXCursor_CompoundStmt)
 	    {
+	    // There is sometimes a parsing error where a null statement is returned.
+	    // This occurs when all headers are not included or defines are not proper?
+	    if(cursKind == CXCursor_NullStmt)
+		{
+		CXStringDisposer name(clang_getCursorSpelling(cursor));
+		if(name[0] != ';')
+		    {
+		    SourceLocation loc(cursor);
+		    fprintf(stderr, "Unable to instrument line %d\n", loc.getLine());
+		    }
+		}
 #if(DEBUG_PARSE)
 	    debugCount(cursor, "insertNCI", mInstrCount);
 #endif
@@ -338,7 +378,7 @@ void CppInstr::insertNonCompoundInstr(CXCursor cursor)
 // Finds variable declarations inside function bodies.
 CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor parent)
     {
-#if(DEBUG_PARSE)
+#if(DEBUG_DUMP_CURSORS)
     static int level = 0;
     level++;
     for(int i=0; i<level; i++)
@@ -404,7 +444,16 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 #if(DEBUG_PARSE)
 		    debugCount(cursor, "insertCS", mInstrCount);
 #endif
-		    insertCovInstr(loc.getOffset()+1);
+		    // Avoid macros such as the following:
+		    // #define DECLARE_FOOID(libid) static void InitLibId() { int x = libid; }
+		    // None of the get...Location functions return the defined macro location
+		    // This doesn't work either:    if(clang_Location_isFromMainFile(loc.getLoc()))
+//		    if(isParseFile(file))
+		    std::string str = getFirstNonCommentToken(cursor);
+		    if(str.length() > 0 && str[0] == '{')
+			{
+			insertCovInstr(loc.getOffset()+1);
+			}
 		    }
 		}
 	    }
@@ -432,7 +481,7 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 	clang_visitChildren(cursor, ::visitFunctionAddInstr, this);
 	}
 //    return CXChildVisit_Recurse;
-#if(DEBUG_PARSE)
+#if(DEBUG_DUMP_CURSORS)
     level--;
 #endif
     return CXChildVisit_Continue;
@@ -449,6 +498,7 @@ CXChildVisitResult CppInstr::visitTranslationUnit(CXCursor cursor, CXCursor pare
 	case CXCursor_FunctionDecl:
 	case CXCursor_Constructor:
 	case CXCursor_Destructor:
+	case  CXCursor_ConversionFunction:
 	    visitFunctionAddInstr(cursor, parent);
 	    break;
 

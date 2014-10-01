@@ -42,9 +42,11 @@ class SourceLocation
 	    return fn;
 	    }
 	int getOffset() const
-	    {
-	    return mOffset;
-	    }
+	    { return mOffset; }
+	int getLine() const
+	    { return mLine; }
+	CXSourceLocation getLoc() const
+	    { return mLoc; }
 
     private:
 	CXSourceLocation mLoc;
@@ -113,6 +115,7 @@ class CppInstr
 	CppFileContents mOutputFileContents;
 
 	bool isParseFile(SourceLocation const &loc) const;
+	bool isParseFile(CXFile const &file) const;
 
 	void makeCovInstr(OovString &covStr);
 	void insertOutputText(OovString &covStr, int offset)

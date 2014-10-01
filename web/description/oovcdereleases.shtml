@@ -2,27 +2,6 @@
 <html><head>
 <!-- DC Blaha - 6/8/2009 -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 <link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" --></head><body><div class="content">
 
 <h2>OOVCDE Release Details</h2>
@@ -37,91 +16,50 @@ The following lists releases in reverse chronological order.<br>
 <br>
 <h2>2014-09-2<br>
 </h2>
-<h2>
-
-
-
-This version contains:<br>
-
-
-
-
-
-
-</h2>
+This version contains:
 <ul>
-<li>Fixed coverage build for projects with no packages<br>
-</li><li><br>
-</li>
+<li>Converted to CLang 3.5</li>
+<li>Fixed sequence diagrams for else and switch/case</li>
+<li>Fixed coverage tool for default and return statements</li>
+<li>Fixed coverage build for projects with no packages</li>
 </ul>
 <h2>2014-09</h2>
 
-
-
-
 This version contains:<br>
 
-
-
-
-
 <ul>
-<li>Added test path coverage<br>
-</li>
+  <li>Added test path coverage</li>
   <li>Pruned component graph connections</li>
-
-  <li>Added more functionality to edit component graphs<br>
-  </li>
-<li>Added class relations key for class diagrams</li>
+  <li>Added more functionality to edit component graphs</li>
+  <li>Added class relations key for class diagrams</li>
   <li>Wrapped long class names on sequence diagrams</li>
   <li>Fixed recursive directory search for top level files (-ER)</li>
-  <li>Changed to relative exclude directories<br>
-  </li>
-
-
+  <li>Changed to relative exclude directories</li>
 </ul>
 <h2>2014-08-2</h2>
 
-
 This version contains:<br>
 
-
-
-
 <ul>
-<li>Added nested directory projects</li>
+  <li>Added nested directory projects</li>
   <li>Improved build verbose flag</li>
   <li>Added go to line in editor from menu</li>
-  <li>Improved go to definition<br>
-  </li>
-
-  <li>Fixed unindent on Linux<br>
-  </li>
-
-
+  <li>Improved go to definition</li>
+  <li>Fixed unindent on Linux</li>
 </ul>
 <h2>2014-08</h2>
 
-
-
 This version contains:<br>
-
-
 
 <ul>
-<li>Fixed project library order for linking that was broken in version 2014-07-2<br>
-</li>
-  <li>Fixed overwrite of analysis path in Edit/Preferences<br>
-  </li>
-<li>Fixed hang when creating new module<br>
-</li>
+  <li>Fixed project library order for linking that was broken in version 2014-07-2</li>
+  <li>Fixed overwrite of analysis path in Edit/Preferences</li>
+  <li>Fixed hang when creating new module</li>
 </ul>
+
 <h2>2014-07-2</h2>
 
-
-
 This version contains:<br>
-
 
 <ul>
   <li>Debugger now shows variables relative to call stack selection</li>
@@ -139,85 +77,64 @@ This version contains:<br>
 This version contains:<br>
 
 <ul>
-<li>Reduced analysis file size (xmi files) and memory reduction</li>
+  <li>Reduced analysis file size (xmi files) and memory reduction</li>
   <li>Improved cross compiler support</li>
   <li>Ability to create cmake files from menu<br>
   </li>
-
-  <li>Updated cmake files<br>
-  </li>
-  <li>Fixed graph drawing problems in Linux<br>
-  </li>
-<li>Fixed class graph layout in 32 bit Linux</li>
-  <li>Many other bug fixes<br>
-  </li>
-
+  <li>Updated cmake files</li>
+  <li>Fixed graph drawing problems in Linux</li>
+  <li>Fixed class graph layout in 32 bit Linux</li>
+  <li>Many other bug fixes</li>
 </ul>
+
 <h2>2014-06-2</h2>
-
-
 
 This version contains:<br>
 <ul>
-<li>Reduced analysis file size<br>
-</li><li>Project exclude directories</li>
+  <li>Reduced analysis file size</li>
+  <li>Project exclude directories</li>
   <li>Zoom on class diagrams</li>
-  <li>Added background process dialogs<br>
-  </li>
-  <li>Fixed parsing of some conditional expressions<br>
-  </li>
-
-
+  <li>Added background process dialogs</li>
+  <li>Fixed parsing of some conditional expressions</li>
 </ul>
-
-
 
 
 <h2>2014-06</h2>
 
 This version contains:<br>
 
-
-
 <ul>
-<li>Fixed namespaces</li>
+  <li>Fixed namespaces</li>
   <li>Multi-threaded builds</li>
-  <li>Improved class drawing for long names<br>
-</li>
+  <li>Improved class drawing for long names</li>
   <li>Added scroll bars to component graphs</li>
-
-  <li>Allowed adding classes from class list to class diagrams<br>
-  </li>
+  <li>Allowed adding classes from class list to class diagrams</li>
   <li>Fixed crash in object model for some class definitions after declarations</li>
-  <li>Fixed module save .tmp file bug.<br>
-  </li>
+  <li>Fixed module save .tmp file bug.</li>
 </ul>
 
 
 <h2>2014-05</h2>
 This version contains:<br>
 
-
 <ul>
   <li>Editor now includes a debugger</li>
   <li>Analysis uses multiple threads</li>
   <li>Editor includes find in files</li>
-  <li>Build arguments specific for components<br>
-  </li>
-<li>Many bug fixes<br>
-</li>
+  <li>Build arguments specific for components</li>
+  <li>Many bug fixes</li>
 </ul>
+
 <h2>2014-02-2</h2>
 
 This version contains:<br>
 
 <ul>
-<li>Improved editor with tabs for files</li>
-  <li>Editor line numbers<br>
-  </li>
-<li>Bug fixes introduced in 2014-02 related to type lookup<br>
-</li>
+  <li>Improved editor with tabs for files</li>
+  <li>Editor line numbers</li>
+  <li>Bug fixes introduced in 2014-02 related to type lookup</li>
 </ul>
+
 <h2>2014-02</h2>
 This version contains:<br>
 <ul>
@@ -227,58 +144,42 @@ This version contains:<br>
   </li>
 
 
-  <li>Automatically determines library and package link dependencies for each component<br>
-  </li>
+  <li>Automatically determines library and package link dependencies for each component</li>
   <li>The oovCMaker tool will generate CMake files from a project</li>
-  <li>Fixed namespace bug that prevented classes in namespaces from displaying<br>
-</li>
+  <li>Fixed namespace bug that prevented classes in namespaces from displaying</li>
   <li>Fixed bug for filename case problems</li>
-
-  <li>Fixed bug for deleting stale build data<br>
-  </li>
+  <li>Fixed bug for deleting stale build data</li>
 </ul>
+
 <h2>2014-01-04</h2>
 This version contains:<br>
 
-
-
 <ul>
-<li>Added external packages for easier builds</li>
+  <li>Added external packages for easier builds</li>
   <li>Fixed build bug for scanning projects (-ER is workaround for bug)</li>
   <li>Fixed bug during analysis for stddef.h</li>
   <li>Fixed bug in journal<br>
   </li>
-
-
-
 </ul>
+
 <h2>2014-01-3</h2>
 This version contains:<br>
 
-
 <ul>
-<li>Allow aborting analysis to enable quicker build argument setup and early analysis<br>
-</li>
-  
-  
+  <li>Allow aborting analysis to enable quicker build argument setup and early analysis</li>
   <li>Allow editing component diagrams</li>
-<li>Improved build display output</li>
+  <li>Improved build display output</li>
   <li>Added more build preferences</li>
   <li>Saves different build configurations when build arguments are changed</li>
-  <li>Added ability to create new configurations for cross compiling, etc.<br>
-  </li>
-
-  <li>Automatically cleans up build files when arguments are changed<br>
-  </li>
-
+  <li>Added ability to create new configurations for cross compiling, etc.</li>
+  <li>Automatically cleans up build files when arguments are changed</li>
   <li>Fixed process handling on Linux for processes with many errors</li>
-  <li>Fixed process handling on Windows to use less CPU time<br>
-  </li><li>Fixed build settings to allow many more components (without buying a bigger monitor)<br>
-  </li>
-
-<li>Added CMake files<br>
+  <li>Fixed process handling on Windows to use less CPU time</li>
+  <li>Fixed build settings to allow many more components (without buying a bigger monitor)</li>
+  <li>Added CMake files<br>
   </li>
 </ul>
+
 <h2>2014-01-2</h2>
 This version contains:<br>
 

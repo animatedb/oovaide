@@ -536,12 +536,49 @@ static CXChildVisitResult getConditionStr(CXCursor cursor, CXCursor parent,
     return CXChildVisit_Continue;
     }
 
+void CppParser::addCondStatement(CXCursor stmtCursor, int condExprIndex,
+	int condStatementIndex)
+    {
+    std::string fullop;
+    CXCursorKind cursKind = clang_getCursorKind(stmtCursor);
+
+    if(cursKind == CXCursor_DoStmt || CXCursor_WhileStmt || CXCursor_ForStmt
+	    || CXCursor_CXXForRangeStmt)
+	{
+	fullop += "*";
+	}
+
+    fullop += "[";
+
+    if(cursKind == CXCursor_CaseStmt)
+	{
+	std::string tempStr;
+	if(mSwitchStrings.size() > 0)
+	    fullop += mSwitchStrings[mSwitchStrings.size()-1];
+	fullop += " == ";
+	}
+
+    appendCursorTokenString(getNthChildCursor(stmtCursor, condExprIndex), fullop);
+    removeLastNonIdentChar(fullop);
+    fullop += ']';
+    mStatements->addStatement(ModelStatement(fullop, ST_OpenNest));
+//    clang_visitChildren(getNthChildCursor(stmtCursor, condStatementIndex),
+//	    ::visitFunctionAddStatements, this);
+    clang_visitChildren(stmtCursor, ::visitFunctionAddStatements, this);
+    mStatements->addStatement(ModelStatement("", ST_CloseNest));
+    }
+
 // Takes a CXType_FunctionProto cursor, and finds conditional statements and
 // calls to functions.
 CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCursor parent)
     {
+#if(DEBUG_PARSE)
+    static int level = 0;
+    level++;
+    for(int i=0; i<level; i++)
+	fprintf(sLog.mFp, "  ");
+#endif
     sCrashDiagnostics.saveMostRecentParseLocation("FS", cursor);
-    static std::vector<std::string> sSwitchStrings;
     CXCursorKind cursKind = clang_getCursorKind(cursor);
     switch(cursKind)
 	{
@@ -549,44 +586,34 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    {
 	    std::string tempStr;
 	    clang_visitChildren(cursor, getConditionStr, &tempStr);
-	    sSwitchStrings.push_back(tempStr);
+	    mSwitchStrings.push_back(tempStr);
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
-	    sSwitchStrings.pop_back();
+	    mSwitchStrings.pop_back();
 	    }
+	    break;
+
+	case CXCursor_DoStmt:
+	    addCondStatement(cursor, 1, 0);
 	    break;
 
 //	case CXCursor_GotoStmt, break, continue, return, CXCursor_DefaultStmt
 	/// Conditional statements
 	case CXCursor_WhileStmt:
-	case CXCursor_DoStmt:
-	case CXCursor_ForStmt:
-	case CXCursor_IfStmt:
 	case CXCursor_CaseStmt:
-	case CXCursor_CXXForRangeStmt:
-	    {
-	    std::string opStr;
-	    clang_visitChildren(cursor, getConditionStr, &opStr);
-	    std::string fullop;
-	    if(cursKind == CXCursor_CaseStmt)
-		{
-		std::string tempStr;
-		if(sSwitchStrings.size() > 0)
-		    tempStr += sSwitchStrings[sSwitchStrings.size()-1];
-		tempStr += " == ";
-		tempStr += opStr;
-		opStr = tempStr;
-		}
-	    else if(cursKind != CXCursor_IfStmt)
-		{
-		fullop += "*";
-		}
-	    fullop += "[";
-	    fullop += opStr;
-	    fullop += ']';
+	    addCondStatement(cursor, 0, 1);
+	    break;
 
-	    mStatements->addStatement(ModelStatement(fullop, ST_OpenNest));
-	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
-	    mStatements->addStatement(ModelStatement("", ST_CloseNest));
+	case CXCursor_CXXForRangeStmt:
+	    addCondStatement(cursor, 1, 5);
+	    break;
+
+	case CXCursor_ForStmt:
+	    addCondStatement(cursor, 1, 3);
+	    break;
+
+	case CXCursor_IfStmt:
+	    {
+	    addCondStatement(cursor, 0, 1);
 	    }
 	    break;
 
@@ -644,7 +671,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		{
 		if(stmtStr.find("else", stmtStr.length()-4) != std::string::npos)
 		    {
-		    /// @todo - There is no CXCursor_ElseStmt yet in clang.  The else is at the end of a
+		    /// @todo - There is no CXCursor_ElseStmt in clang.  The else is at the end of a
 		    /// statement (compound or null) at the moment, then the next compound statement is
 		    /// really under the else. So it is fairly difficult to parse here currently. The
 		    /// compound statement code that is under the else now shows up under the if.
@@ -656,8 +683,12 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 			{
 			ModelStatement stmt("[else]", ST_Call);
 			mStatements->addStatement(stmt);
-//			mStatements->addStatement(std::unique_ptr<ModelOperationCall>
-//			    (new ModelOperationCall("[else]", nullptr)));
+/*
+			ModelStatement stmt("[else]", ST_Call);
+			mStatements->addStatement(stmt);
+			mStatements->addStatement(std::unique_ptr<ModelOperationCall>
+			    (new ModelOperationCall("[else]", nullptr)));
+*/
 			}
 		    }
 		}
@@ -668,6 +699,9 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 	}
+#if(DEBUG_PARSE)
+    level--;
+#endif
     return CXChildVisit_Continue;
     }
 

@@ -203,6 +203,13 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	else if(stmt.getStatementType() == ST_Call)
 	    {
 	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
+	    // If there is no class, it must be an [else]
+	    if(!cls)
+		{
+		opDef.addStatement(std::unique_ptr<OperationStatement>(
+			new DummyOperationCall(-1, stmt.getName(),
+			stmt.getDecl().isConst())));
+		}
 	    if(cls)
 		{
 		int classIndex = addOrGetClass(cls, gc);

@@ -1,16 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<?fileVersion 4.0.0?>
-
-<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
 	<storageModule moduleId="org.eclipse.cdt.core.settings">
 		<cconfiguration id="cdt.managedbuild.config.gnu.mingw.exe.debug.226064677">
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.226064677" moduleId="org.eclipse.cdt.core.settings" name="Windows-Debug">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -50,7 +48,7 @@
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/oovBuilder ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.2074251616" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
 								<option id="gnu.cpp.link.option.flags.743417890" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<option id="gnu.cpp.link.option.paths.179830339" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
 								</option>
@@ -70,7 +68,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Debug"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -80,10 +78,10 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.release.1306080116" moduleId="org.eclipse.cdt.core.settings" name="Windows-Release">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.PE" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -121,7 +119,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release.52686504" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release.1228083891" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release">
 								<option id="gnu.cpp.link.option.paths.1484242712" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
 								</option>
@@ -145,7 +143,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Debug"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -155,12 +153,12 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.226064677.1785574234" moduleId="org.eclipse.cdt.core.settings" name="Linux-Debug">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -197,7 +195,7 @@
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1170698971" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.851626946" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.998442806" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -219,7 +217,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Debug"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -229,12 +227,12 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.226064677.1785574234.1859557379" moduleId="org.eclipse.cdt.core.settings" name="Linux-Release32">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -268,7 +266,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.401458306" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.nostart.982374857" name="Do not use standard start files (-nostartfiles)" superClass="gnu.cpp.link.option.nostart" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nodeflibs.1297954002" name="Do not use default libraries (-nodefaultlibs)" superClass="gnu.cpp.link.option.nodeflibs" value="false" valueType="boolean"/>
@@ -294,7 +292,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Debug"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -304,12 +302,12 @@
 			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="cdt.managedbuild.config.gnu.mingw.exe.debug.226064677.1785574234.1859557379.883221425" moduleId="org.eclipse.cdt.core.settings" name="Linux-Release">
 				<externalSettings/>
 				<extensions>
-					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
 					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
 				</extensions>
 			</storageModule>
 			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
@@ -346,7 +344,7 @@
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.612887061" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Debug}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.nostart.1754481286" name="Do not use standard start files (-nostartfiles)" superClass="gnu.cpp.link.option.nostart" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nodeflibs.750311123" name="Do not use default libraries (-nodefaultlibs)" superClass="gnu.cpp.link.option.nodeflibs" value="false" valueType="boolean"/>
@@ -372,7 +370,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Debug"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>

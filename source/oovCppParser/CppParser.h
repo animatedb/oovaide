@@ -54,6 +54,8 @@ class CppParser
 	CXChildVisitResult visitFunctionAddArgs(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddVars(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor parent);
+	void addCondStatement(CXCursor stmtCursor, int condExprIndex,
+		int condStatementIndex);
 
     private:
         /// This contains all parsed information.
@@ -61,6 +63,7 @@ class CppParser
 	ModelClassifier *mClassifier;    /// Current class being parsed.
 	ModelOperation *mOperation;      /// Current operation being parsed.
 	ModelStatements *mStatements; 	 /// Current statements of a function.
+	std::vector<std::string> mSwitchStrings;
 	FilePath mTopParseFn;   /// The top level file that is being parsed.
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;

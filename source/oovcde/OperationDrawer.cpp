@@ -209,9 +209,10 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 		int targetx = targetCls.getLifelinePosX();
 		if(targetIndex == -1)
 		    {
-		    int len = mCharHeight*3;
-		    mDrawer.drawLine(GraphPoint(sourcex, lineY),
-			    GraphPoint(sourcex+len, lineY), call->isConst());
+		    // Handle [else]
+//		    int len = mCharHeight*3;
+//		    mDrawer.drawLine(GraphPoint(sourcex, lineY),
+//			    GraphPoint(sourcex+len, lineY), call->isConst());
 		    }
 		else if(targetIndex != sourceIndex)
 		    {
