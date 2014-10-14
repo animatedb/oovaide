@@ -76,6 +76,14 @@ bool StringToUnsignedInt(const char *mbStr, unsigned int min, unsigned int max,
     return success;
     }
 
+void StringToLower(std::string &str)
+    {
+    for(size_t i=0; i<str.length(); ++i)
+	{
+	str.at(i) = tolower(str.at(i));
+	}
+    }
+
 int StringCompareNoCase(char const * str1, char const * str2)
     {
     while(*str1)
@@ -168,12 +176,8 @@ void OovString::setUpperCase(char const * const str)
 
 void OovString::setLowerCase(char const * const str)
 {
-    char const *p = str;
-    while(*p)
-	{
-	*this += tolower(*p);
-	p++;
-	}
+    *this = str;
+    StringToLower(*this);
 }
 
 void OovString::appendInt(int val, int radix)

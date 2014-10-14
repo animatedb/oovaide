@@ -85,7 +85,7 @@ class CppFileContents
 	void insert(char const *str, int origFileOffset);
 
     private:
-	std::map<int, std::string> mInsertMap;
+	std::multimap<int, std::string> mInsertMap;
 	std::vector<char> mFileContents;
 
 	/// Reads the mInsertMap and writes the mFileContents.

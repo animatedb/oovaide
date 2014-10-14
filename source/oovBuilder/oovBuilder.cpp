@@ -140,7 +140,7 @@ int main(int argc, char const * const argv[])
     ComponentFinder compFinder;
     char const *oovProjDir = NULL;
     std::string buildConfigName = BuildConfigAnalysis;	// analysis is default.
-    eProcessModes processMode;
+    eProcessModes processMode = PM_Analyze;
     bool verbose = false;
     bool success = (argc >= 2);
     if(success)

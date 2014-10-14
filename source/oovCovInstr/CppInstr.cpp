@@ -89,14 +89,15 @@ static void dumpCursor(FILE *fp, char const * const str, CXCursor cursor)
     }
 
 #if(DEBUG_PARSE)
-void debugCount(CXCursor cursor, char const * const str, int instrCount)
+void debugInstr(CXCursor cursor, char const * const str, int instrCount)
     {
     if(instrCount == 9)
 	{
-	fprintf(sLog.mFp, "Found %d:\n", instrCount);
-	dumpCursor(sLog.mFp, str, cursor);
-	printf("argh!\n");
+	printf("Found: %d\n", instrCount);
+	fprintf(sLog.mFp, "Found: %d\n", instrCount);
 	}
+    fprintf(sLog.mFp, "INSTR: ");
+    dumpCursor(sLog.mFp, str, cursor);
     }
 #endif
 
@@ -350,6 +351,7 @@ void CppInstr::insertNonCompoundInstr(CXCursor cursor)
 	// If this is a compound statement, then it will be instrumented anyway.
 	if(cursKind != CXCursor_CompoundStmt)
 	    {
+	    bool doInstr = true;
 	    // There is sometimes a parsing error where a null statement is returned.
 	    // This occurs when all headers are not included or defines are not proper?
 	    if(cursKind == CXCursor_NullStmt)
@@ -359,17 +361,21 @@ void CppInstr::insertNonCompoundInstr(CXCursor cursor)
 		    {
 		    SourceLocation loc(cursor);
 		    fprintf(stderr, "Unable to instrument line %d\n", loc.getLine());
+		    doInstr = false;
 		    }
 		}
+	    if(doInstr)
+		{
 #if(DEBUG_PARSE)
-	    debugCount(cursor, "insertNCI", mInstrCount);
+		debugInstr(cursor, "insertNCI", mInstrCount);
 #endif
-	    SourceRange range(cursor);
-	    OovString covStr;
-	    makeCovInstr(covStr);
-	    covStr.insert(0, "{");
-	    insertOutputText(covStr, range.getStartLocation().getOffset());
-	    insertOutputText("\n}\n", range.getEndLocation().getOffset()+1);
+		SourceRange range(cursor);
+		OovString covStr;
+		makeCovInstr(covStr);
+		covStr.insert(0, "{");
+		insertOutputText(covStr, range.getStartLocation().getOffset());
+		insertOutputText("\n}\n", range.getEndLocation().getOffset()+1);
+		}
 	    }
 	}
     }
@@ -390,7 +396,6 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
     switch(cursKind)
 	{
 	case CXCursor_DoStmt:
-	case CXCursor_DefaultStmt:
 	    if(isParseFile(cursor))
 		{
 		insertNonCompoundInstr(getNthChildCursor(cursor, 0));
@@ -398,7 +403,6 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 	    break;
 
 	case CXCursor_WhileStmt:
-	case CXCursor_CaseStmt:
 	    if(isParseFile(cursor))
 		{
 		insertNonCompoundInstr(getNthChildCursor(cursor, 1));
@@ -416,6 +420,30 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 	    if(isParseFile(cursor))
 		{
 		insertNonCompoundInstr(getNthChildCursor(cursor, 3));
+		}
+	    break;
+
+	case CXCursor_CaseStmt:
+	    if(isParseFile(cursor))
+		{
+		CXCursor childCursor = getNthChildCursor(cursor, 1);
+		CXCursorKind childCursKind = clang_getCursorKind(childCursor);
+		if(childCursKind != CXCursor_CaseStmt && childCursKind != CXCursor_DefaultStmt)
+		    {
+		    insertNonCompoundInstr(childCursor);
+		    }
+		}
+	    break;
+
+	case CXCursor_DefaultStmt:
+	    if(isParseFile(cursor))
+		{
+		CXCursor childCursor = getNthChildCursor(cursor, 0);
+		CXCursorKind childCursKind = clang_getCursorKind(childCursor);
+		if(childCursKind != CXCursor_CaseStmt && childCursKind != CXCursor_DefaultStmt)
+		    {
+		    insertNonCompoundInstr(childCursor);
+		    }
 		}
 	    break;
 
@@ -441,9 +469,6 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 		SourceLocation loc(cursor);
 		if(isParseFile(cursor))
 		    {
-#if(DEBUG_PARSE)
-		    debugCount(cursor, "insertCS", mInstrCount);
-#endif
 		    // Avoid macros such as the following:
 		    // #define DECLARE_FOOID(libid) static void InitLibId() { int x = libid; }
 		    // None of the get...Location functions return the defined macro location
@@ -452,6 +477,9 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
 		    std::string str = getFirstNonCommentToken(cursor);
 		    if(str.length() > 0 && str[0] == '{')
 			{
+#if(DEBUG_PARSE)
+			debugInstr(cursor, "insertCS", mInstrCount);
+#endif
 			insertCovInstr(loc.getOffset()+1);
 			}
 		    }

@@ -64,7 +64,6 @@ void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
 	CompoundValue compVal;
 	compVal.parseString(val.c_str());
 	// There are two time values followed by directory/filename pairs.
-	assert(compVal.size() % 2 == 0);
 	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
 	    {
 	    // Skip first two time values.
@@ -73,6 +72,11 @@ void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
 		IncludedPath incPath(compVal[i], compVal[i+1]);
 		incFiles.insert(incPath);
 		}
+	    }
+	else
+	    {
+	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.c_str());
+	    assert(false);
 	    }
 	}
     }
@@ -89,7 +93,6 @@ void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
 	CompoundValue compVal;
 	compVal.parseString(val.c_str());
 	// There are two time values followed by directory/filename pairs.
-	assert(compVal.size() % 2 == 0);
 	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
 	    {
 	    // Skip first two time values.
@@ -104,6 +107,11 @@ void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
 		    getNestedIncludeFilesUsedBySourceFile(incPath.getFullPath().c_str(), incFiles);
 		    }
 		}
+	    }
+	else
+	    {
+	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.c_str());
+	    assert(false);
 	    }
 	}
     }

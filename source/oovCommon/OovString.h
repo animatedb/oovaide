@@ -29,9 +29,10 @@ bool StringToFloat(char const * const str, float min, float max, float &val);
 bool StringToInt(char const * const str, int min, int max, int &val);
 bool StringToUnsignedInt(char const * const str, unsigned int min,
 	unsigned int max, unsigned int &val);
-int StringCompareNoCase(char const * str1, char const * str2);
+void StringToLower(std::string &str);
 int StringNumChars(const char *s);
 bool StringIsAscii(const char *p);
+int StringCompareNoCase(char const * str1, char const * str2);
 size_t StringFindSpace(char const *str, size_t startPos);
 std::vector<class OovString> StringSplit(char const * str, char delimiter);
 class OovString StringJoin(std::vector<class OovString> const &tokens, char delimiter);

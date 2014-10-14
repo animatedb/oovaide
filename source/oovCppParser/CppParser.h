@@ -54,8 +54,8 @@ class CppParser
 	CXChildVisitResult visitFunctionAddArgs(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddVars(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor parent);
-	void addCondStatement(CXCursor stmtCursor, int condExprIndex,
-		int condStatementIndex);
+	void addCondStatement(CXCursor parent, CXCursor stmtCursor, int condExprIndex,
+		int condStatementIndex, int condElseSatementIndex=-1);
 
     private:
         /// This contains all parsed information.

@@ -280,6 +280,7 @@ bool NameValueFile::writeFileExclusive(class SharedFile &file)
 	{
 	std::string buf;
 	readMapToBuf(buf);
+	file.truncate();
 	file.seekBegin();
 	success = file.write(&buf[0], buf.size());
 	}

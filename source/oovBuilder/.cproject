@@ -48,7 +48,7 @@
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/oovBuilder ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base.2074251616" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.base">
 								<option id="gnu.cpp.link.option.flags.743417890" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<option id="gnu.cpp.link.option.paths.179830339" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
 								</option>
@@ -68,7 +68,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -119,7 +119,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release.52686504" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin/${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release.1228083891" name="MinGW C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.mingw.exe.release">
 								<option id="gnu.cpp.link.option.paths.1484242712" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:\Program Files\GTK+-Bundle-3.6.4\lib&quot;"/>
 								</option>
@@ -143,7 +143,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -195,7 +195,7 @@
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1170698971" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.851626946" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.998442806" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -217,7 +217,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -266,7 +266,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.401458306" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.nostart.982374857" name="Do not use standard start files (-nostartfiles)" superClass="gnu.cpp.link.option.nostart" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nodeflibs.1297954002" name="Do not use default libraries (-nodefaultlibs)" superClass="gnu.cpp.link.option.nodeflibs" value="false" valueType="boolean"/>
@@ -292,7 +292,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -344,7 +344,7 @@
 									<listOptionValue builtIn="false" value="pthread"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.612887061" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Debug}&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.nostart.1754481286" name="Do not use standard start files (-nostartfiles)" superClass="gnu.cpp.link.option.nostart" value="false" valueType="boolean"/>
 								<option id="gnu.cpp.link.option.nodeflibs.750311123" name="Do not use default libraries (-nodefaultlibs)" superClass="gnu.cpp.link.option.nodeflibs" value="false" valueType="boolean"/>
@@ -370,7 +370,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Debug"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>

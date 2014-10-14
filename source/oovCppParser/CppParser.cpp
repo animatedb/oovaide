@@ -18,6 +18,7 @@
 #include <unistd.h>		// for unlink
 #include <limits.h>
 #include <algorithm>
+#include <assert.h>
 
 
 // This must save a superset of what gets written to the file. For exmample,
@@ -29,7 +30,7 @@
 // setModule is called for every class defined in the current TU.
 // setModule is called for every operation defined in the current TU.
 
-#define DEBUG_PARSE 0
+#define DEBUG_PARSE 1
 #if(DEBUG_PARSE)
 static DebugFile sLog("DebugCppParse.txt");
 #endif
@@ -536,16 +537,23 @@ static CXChildVisitResult getConditionStr(CXCursor cursor, CXCursor parent,
     return CXChildVisit_Continue;
     }
 
-void CppParser::addCondStatement(CXCursor stmtCursor, int condExprIndex,
-	int condStatementIndex)
+void CppParser::addCondStatement(CXCursor parentStmtCursor, int condExprIndex,
+	int condStatementIndex, int condElseSatementIndex)
     {
-    std::string fullop;
-    CXCursorKind cursKind = clang_getCursorKind(stmtCursor);
+    OovString fullop;
+    CXCursorKind cursKind = clang_getCursorKind(parentStmtCursor);
 
-    if(cursKind == CXCursor_DoStmt || CXCursor_WhileStmt || CXCursor_ForStmt
-	    || CXCursor_CXXForRangeStmt)
+    switch(cursKind)
 	{
-	fullop += "*";
+	case CXCursor_DoStmt:
+	case CXCursor_WhileStmt:
+	case CXCursor_ForStmt:
+	case CXCursor_CXXForRangeStmt:
+	    fullop += "*";
+	    break;
+
+	default:
+	    break;
 	}
 
     fullop += "[";
@@ -557,15 +565,45 @@ void CppParser::addCondStatement(CXCursor stmtCursor, int condExprIndex,
 	    fullop += mSwitchStrings[mSwitchStrings.size()-1];
 	fullop += " == ";
 	}
-
-    appendCursorTokenString(getNthChildCursor(stmtCursor, condExprIndex), fullop);
+#if(DEBUG_PARSE)
+    fprintf(sLog.mFp, "Cond expr not visited\n");
+#endif
+    appendCursorTokenString(getNthChildCursor(parentStmtCursor, condExprIndex), fullop);
     removeLastNonIdentChar(fullop);
     fullop += ']';
     mStatements->addStatement(ModelStatement(fullop, ST_OpenNest));
-//    clang_visitChildren(getNthChildCursor(stmtCursor, condStatementIndex),
-//	    ::visitFunctionAddStatements, this);
-    clang_visitChildren(stmtCursor, ::visitFunctionAddStatements, this);
+    CXCursor childCursor = getNthChildCursor(parentStmtCursor, condStatementIndex);
+#if(DEBUG_PARSE)
+    dumpCursor(sLog.mFp, "body visited", childCursor);
+#endif
+    visitFunctionAddStatements(childCursor, parentStmtCursor);
     mStatements->addStatement(ModelStatement("", ST_CloseNest));
+
+    if(condElseSatementIndex != -1)
+	{
+	CXCursor elseCursor = getNthChildCursor(parentStmtCursor, condElseSatementIndex);
+	if(!clang_Cursor_isNull(elseCursor))
+	    {
+	    CXCursorKind elseCursKind = clang_getCursorKind(elseCursor);
+	    if(elseCursKind == CXCursor_IfStmt)
+		{
+		visitFunctionAddStatements(elseCursor, parentStmtCursor);
+		}
+	    else
+		{
+#if(DEBUG_PARSE)
+    dumpCursor(sLog.mFp, "else visited", elseCursor);
+#endif
+		std::string elseop = "[else]";
+		mStatements->addStatement(ModelStatement(elseop, ST_OpenNest));
+		visitFunctionAddStatements(elseCursor, parentStmtCursor);
+		mStatements->addStatement(ModelStatement("", ST_CloseNest));
+		}
+#if(DEBUG_PARSE)
+    fprintf(sLog.mFp, "end else visited\n");
+#endif
+	    }
+	}
     }
 
 // Takes a CXType_FunctionProto cursor, and finds conditional statements and
@@ -598,9 +636,9 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 
 //	case CXCursor_GotoStmt, break, continue, return, CXCursor_DefaultStmt
 	/// Conditional statements
-	case CXCursor_WhileStmt:
+	case CXCursor_WhileStmt:	//   enum { VAR, COND, BODY, END_EXPR };
 	case CXCursor_CaseStmt:
-	    addCondStatement(cursor, 0, 1);
+	    addCondStatement(cursor, 0, 1);	// cond body
 	    break;
 
 	case CXCursor_CXXForRangeStmt:
@@ -611,10 +649,8 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    addCondStatement(cursor, 1, 3);
 	    break;
 
-	case CXCursor_IfStmt:
-	    {
-	    addCondStatement(cursor, 0, 1);
-	    }
+	case CXCursor_IfStmt:	    	//    enum { VAR, COND, THEN, ELSE, END_EXPR };
+	    addCondStatement(cursor, 0, 1, 2);	// cond, ifbody, [elsebody]
 	    break;
 
 	case CXCursor_CallExpr:
@@ -664,12 +700,13 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	case CXCursor_CompoundStmt:
 	    {
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+/*
 	    std::string stmtStr;
 	    appendCursorTokenString(cursor, stmtStr);
 	    int len = stmtStr.length();
 	    if(len >= 4)
 		{
-		if(stmtStr.find("else", stmtStr.length()-4) != std::string::npos)
+		if(stmtStr.find(" else ", stmtStr.length()-4) != std::string::npos)
 		    {
 		    /// @todo - There is no CXCursor_ElseStmt in clang.  The else is at the end of a
 		    /// statement (compound or null) at the moment, then the next compound statement is
@@ -683,15 +720,10 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 			{
 			ModelStatement stmt("[else]", ST_Call);
 			mStatements->addStatement(stmt);
-/*
-			ModelStatement stmt("[else]", ST_Call);
-			mStatements->addStatement(stmt);
-			mStatements->addStatement(std::unique_ptr<ModelOperationCall>
-			    (new ModelOperationCall("[else]", nullptr)));
-*/
 			}
 		    }
 		}
+*/
 	    }
 	    break;
 
@@ -830,15 +862,23 @@ CXChildVisitResult CppParser::visitTranslationUnitForIncludes(CXCursor cursor, C
 
 		// Find the base path minus the included path. This is for
 		// includes like "include <gtk/gtk.h>"
-		OovString lowerEd;
-		OovString edName;
-		lowerEd.setLowerCase(absEdFn.c_str());
-		edName.setLowerCase(includedNameString.c_str());
-		size_t pos = lowerEd.find(edName, absEdFn.length() -
+		FilePath edFullPath(absEdFn.c_str(), FP_File);
+		FilePath edName(includedNameString.c_str(), FP_File);
+#ifndef __linux__
+		StringToLower(edFullPath);
+		StringToLower(edName);
+#endif
+		size_t pos = edFullPath.find(edName, absEdFn.length() -
 			includedNameString.length());
 		if(pos != std::string::npos)
 		    {
 		    absEdFn.insert(pos, 1, ';');
+		    }
+		else
+		    {
+		    fprintf(stderr, "Unable to make oovcde-incdeps.txt: \n   %s\n",
+			    absEdFn.c_str());
+		    assert(false);
 		    }
 		mIncDirDeps.insert(absErFn, absEdFn);
 		}
