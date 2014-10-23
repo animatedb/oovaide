@@ -1,0 +1,530 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<head>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<!-- DC Blaha - 10/16/2014 -->
+
+<title>Oovcde Complexity</title></head>
+
+<body>
+
+
+<h1>C++ Complexity and Testing</h1>
+This document shows how complexity can be used to help determine the amount
+of testing that needs to be performed on some code, and clarifies existing
+tools and measures.  Much of this document applies to languages other than C++.
+
+
+<h2>Existing Measures</h2>
+The most common complexity measure appears to be cyclomatic or McCabe complexity that
+was developed in 1976. This complexity measurement finds the "number of linearly
+independent circuits" through a piece of code. McCabe also says in this document that,
+"using the total number of paths has been found to be impractical".
+<p>
+McCabe's idea was that finding "basic paths-that when taken in combination will
+generate every possible path". This is much less than the maximum possible number
+of combinations of groups of statements and is close to the minimum number of tests
+required for 100% path coverage. In addition, it calculates the number of
+flows without analyzing the conditional expressions, which can give higher complexity
+for some code (such as an else if that tests on the same variable as the initial if).
+This also means that the McCabe complexity is related to logical flow, but not
+data flow, threading, or arithmetic complexity.
+<p>
+The following examples will attempt to describe McCabe's cyclomatic complexity and
+show some of the confusion that can arise from McCabe's paper.  Hopefully a new
+measure of complexity can be found that closely indicates
+the number of tests that should be performed.
+<p>
+The paper printed in IEEE can be found here.
+<a href="http://www.literateprogramming.com/mccabe.pdf">McCabe Complexity</a>
+<a href="http://www.mccabe.com/pdf/mccabe-nist235r.pdf">Structured Testing</a>
+<br>Wikipedia has an article about some complexity measures.
+<a href = "https://en.wikipedia.org/wiki/Programming_complexity">Programming_complexity</a>
+
+<p>
+McCabe's original paper has some graph analysis ideas, followed by a keyword approach to
+finding complexity.
+<ul>
+<li>Increment one for every if, case, for, do, while or other conditional or looping construct</li>
+<li>Add two less than the logical alternatives in a case</li>
+<li>Add one for each logical operator in an if</li>
+</ul>
+
+
+<h3>Example 1</h3>
+<div class="container">
+  <div class="image-div" style="position:relative; float:right;">
+  <embed src="ComplexityExIfElse.svg" type="image/svg+xml"> 
+  </div>
+A source code example with an if and else statement is:
+<pre>
+  if(c1)
+    {
+    a();
+    }
+  else
+    {
+    b();
+    }
+</pre>
+
+The number of possible flows through this code is:
+<table border="1">
+<tr><th>Execution</th><th>Condition c1</th></tr>
+<tr><td>Function a() is executed</td><td>true</td></tr>
+<tr><td>Function b() is executed</td><td>false</td></tr>
+</table>
+</div>
+<br>
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	4 edges - 4 nodes + (2 * 1) = 2</li>
+<li>McCabe keyword complexity would indicate that the complexity is: main path(1) + 1 if = 2</li>
+</ul>
+<p>
+In graph theory, the edges are the connection lines between the nodes.
+<p>
+With McCabe complexity, an if statement always adds a complexity of one to
+an existing path.  This is true whether or not the conditional evaluates
+to a constant true or false, and the branch is always or never executed.
+<p>
+An if/else also only adds a complexity of one since the only difference is
+when the other path is taken.  An else statement is much simpler than two
+if statements even though the else condition path's expression is
+equivalent to "if(!(v1 == 1))".
+<p>
+This shows that the conditional expressions are important
+when evaluating complexity, and that McCabe complexity is a model,
+but is not accurate even for purely logical path complexity.
+<p>
+
+
+<h3>Example 2</h3>
+<div class="container">
+  <div class="image-div" style="position:relative; float:right;">
+  <embed src="ComplexityExIfElseIf.svg" type="image/svg+xml"> 
+  </div>
+A example with an if and else if statement is:
+<pre>
+  if(c1)
+    {
+    a();
+    }
+  else if(c2)
+    {
+    b();
+    }
+</pre>
+This example is similar this:
+<pre>
+  if(c1)
+    {
+    a();
+    }
+  else
+    {
+    if(c2)
+      {
+      b();
+      }
+    }
+</pre>
+The number of possible flows through this code with two independent conditions is:
+
+<table border="1">
+<tr><th>Execution</th><th>Condition c1</th><th>Condition c2</th></tr>
+<tr><td>No functions are executed</td><td>false</td><td>false</td></tr>
+<tr><td>Function a() is executed</td><td>true</td><td>true or false</td></tr>
+<tr><td>Function b() is executed</td><td>false</td><td>true</td></tr>
+</table>
+</div>
+<br>
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	5 edges - 4 nodes + (2 * 1) = 3</li>
+<li>McCabe keyword complexity would indicate that the complexity is:
+	main path(1) + 2 if's = 3</li>
+</ul>
+
+<p>
+If both conditionals were testing on the same variable,
+then the execution is more like a switch/case, and complexity
+is similar to Example 1.
+
+
+<h3>Example 3</h3>
+<div class="container">
+  <div class="image-div" style="position:relative; float:right;">
+  <embed src="ComplexityExNestedIf.svg" type="image/svg+xml"> 
+  </div>
+A nested if example is:
+<pre>
+  if(c1)
+    {
+    a();
+    if(c2)
+      {
+      b();
+      }
+    }
+</pre>
+The number of possible flows through this code is:
+
+<table border="1">
+<tr><th>Execution</th><th>Condition c1</th><th>Condition c2</th></tr>
+<tr><td>No functions are executed</td><td>false</td><td>true or false</td></tr>
+<tr><td>Function a() is executed</td><td>true</td><td>false</td></tr>
+<tr><td>Function a() and b() are executed</td><td>true</td><td>true</td></tr>
+</table>
+</div>
+<p>
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	5 edges - 4 nodes + (2 * 1) = 3</li>
+<li>McCabe keyword complexity would indicate that the complexity is:
+	main path(1) + 2 if's = 3</li>
+</ul>
+
+<p>
+In this example, the complexity is higher than in example 2 if the
+statements executed alter values that affect each other.  This also means
+that a function or method that has side effects will be more complex.
+<p>
+
+
+<h3>Example 4</h3>
+<div class="container">
+  <div class="image-div" style="position:relative; float:right;">
+  <embed src="ComplexityExSeqIf.svg" type="image/svg+xml"> 
+  </div>
+A source example with 2 sequential if statements is:
+<pre>
+  if(c1)
+    {
+    a();
+    }
+  if(c2)
+    {
+    b();
+    }
+</pre>
+
+The number of possible flows through this code is:
+<table border="1">
+<tr><th>Execution</th><th>Condition c1</th><th>Condition c2</th></tr>
+<tr><td>No functions are executed</td><td>false</td><td>false</td></tr>
+<tr><td>a() is executed</td><td>true</td><td>false</td></tr>
+<tr><td>b() is executed</td><td>false</td><td>true</td></tr>
+<tr><td>a() and b() are executed</td><td>true</td><td>true</td></tr>
+</table>
+</div>
+<br>
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	6 edges - 4 nodes + (2 * 1) = 4</li>
+<li>McCabe keyword complexity would indicate that the complexity is:
+	main path(1) + 2 if's = 3</li>
+</ul>
+McCabe's original paper can be confusing because at the beginning
+of the paper, graph analysis is used, then later only a single count is added
+for each keyword.  It is clear that he did not want McCabe complexity to be
+combinatorial complexity, but the fact that two sequential if's has the same
+complexity as two nested if's does not seem to be very accurate.
+<p>
+
+
+<h3>Example 5</h3>
+<div class="container">
+  <div class="image-div" style="position:relative; float:right;">
+  <embed src="ComplexityExSeq3If.svg" type="image/svg+xml"> 
+  </div>
+A source example with 3 sequential if statements is:
+<pre>
+  if(c1)
+    {
+    a();
+    }
+  if(c2)
+    {
+    b();
+    }
+  if(c3)
+    {
+    c();
+    }
+</pre>
+The number of possible flows through this code is:
+
+<table border="1">
+<tr><th>Execution</th><th>Condition c1</th><th>Condition c2</th><th>Condition c3</th></tr>
+<tr><td>No functions are executed</td><td>false</td><td>false</td><td>false</td></tr>
+<tr><td>a() is executed</td><td>true</td><td>false</td><td>false</td></tr>
+<tr><td>b() is executed</td><td>false</td><td>true</td><td>false</td></tr>
+<tr><td>c() is executed</td><td>false</td><td>false</td><td>true</td></tr>
+<tr><td>a() and b() are executed</td><td>true</td><td>true</td><td>false</td></tr>
+<tr><td>b() and c() are executed</td><td>false</td><td>true</td><td>true</td></tr>
+<tr><td>a() and c() are executed</td><td>true</td><td>false</td><td>true</td></tr>
+<tr><td>a(), b(), and c() are executed</td><td>true</td><td>true</td><td>true</td></tr>
+</table>
+</div>
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	10 edges - 5 nodes + (2 * 1) = 7</li>
+<li>McCabe keyword complexity would indicate that the complexity is:
+	main path(1) + 3 if's = 4</li>
+</ul>
+<p>
+This example shows that when analyzing graphs, the McCabe complexity (7) does not match
+the number of combinations (8). The discrepency is that the there is no extra edge indicated
+for the abc path compared to the ab and bc paths.
+
+
+<h3>Example 6</h3>
+An example of case statements is:
+<pre>
+  switch(c1)
+    {
+    case 1:
+    case 2:
+      a();
+      break;
+
+    case 3:
+      b();
+      break;
+
+    case 4:
+      c();
+    case 5:
+      d();
+      break;
+    }
+</pre>
+There are many variations of McCabe case statement complexity. None of the variations
+account for fall through case statements.
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	7 edges - 6 nodes + (2 * 1) = 3</li>
+<li>McCabe keyword complexity would indicate that the complexity is:
+	4 cases's = 4</li>
+</ul>
+
+
+<h3>Example 7</h3>
+An example with case and default statements:
+<pre>
+  switch(c1)
+    {
+    case 1:
+      a();
+      break;
+
+    default:
+      b();
+      break;
+    }
+</pre>
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	4 edges - 4 nodes + (2 * 1) = 2</li>
+<li>McCabe keyword complexity would indicate that the complexity is:
+	2 case's = 2</li>
+</ul>
+
+
+<h3>Example 8</h3>
+<div class="container">
+  <div class="image-div" style="position:relative; float:right;">
+  <embed src="ComplexityExLogical.svg" type="image/svg+xml"> 
+  </div>
+An example with Logical expressions:
+<pre>
+  if(cond1() && cond2())
+    a();
+</pre>
+This is equivalent to the following.
+<pre>
+  if(cond1())
+    {
+    if(cond2())
+      a();
+    }
+</pre>
+C++ has short-circuit evaluation for the logical or and logical and operators.
+This means not all conditions (which could be statements) are executed within
+a conditional test.
+
+<ul>
+<li>McCabe graph analysis complexity would indicate that this is a complexity of:
+	7 edges - 5 nodes + (2 * 1) = 4</li>
+<li>McCabe keyword complexity would indicate that the complexity is:
+	main path(1) + 1 if = 2</li>
+<li>Another variation of McCabe keyword complexity would indicate that the complexity is:
+	main path(1) + 1 if + 1 logical operator = 3</li>
+</ul>
+<a href="https://en.wikipedia.org/wiki/Short-circuit_evaluation">Short-circuit evaluation</a>
+
+
+<h3>Example 9</h3>
+Empty expressions<br>
+Counting keywords would generate a complexity of 2 for a function with an empty if statement.
+<pre>
+  if(v1 == 1)
+    {
+    }
+</pre>
+
+<p>
+
+<h2>Complexity Tools</h2>
+Here are some tool outputs using the above examples compared to the number of
+actual paths, and McCabe complexity.
+<table border="1">
+<tr><th></th><th>Combinations</th><th>McCabe</th><th>ACQC</th><th>vsCCM</th><th>Source Monitor</th></tr>
+<tr><td>Example 1<br>If Else</td>           <td>2</td><td>2</td><td>2</td><td>2</td><td>3</td></tr>
+<tr><td>Example 2<br> If/Else If</td>       <td>3</td><td>3</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><td>Example 3<br>Nested If</td>         <td>3</td><td>3</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><td>Example 4<br>Sequential If</td>     <td>4</td><td>3</td><td>3</td><td>3</td><td>3</td></tr>
+<tr><td>Example 5<br>3 Sequential Ifs</td>  <td>8</td><td>4</td><td>4</td><td>4</td><td>4</td></tr>
+<tr><td>Example 6<br>case</td>              <td>3</td><td>4</td><td>6</td><td>6</td><td>7</td></tr>
+<tr><td>Example 7<br>case/default</td>      <td>2</td><td>2</td><td>2</td><td>2</td><td>3</td></tr>
+<tr><td>Example 9<br>logical or/and</td>    <td>2</td><td>2:3</td><td>2</td><td>3</td><td>3</td></tr>
+</table>
+<p>
+
+
+<p>
+There are many documents on the web indicating roughly that cyclomatic complexity counts
+keywords and adds one. I think that the reason that everyone thinks that switch case counts
+are too high, is because case statements are the only type that the tools do somewhat correctly. The
+actual reason is that sequential if statement counts are too low! I also think most likely
+since many tools are simply counting keywords, that fall through case statements with
+no intervening statements are counted too high.
+<p>
+
+
+<h2>Other Reference Documents</h2>
+<a href="http://www.researchgate.net/publication/3407068_A_critique_of_cyclomatic_complexity_as_a_software_metric">
+A critique of cyclomatic complexity as a software metric</a>
+<br />
+<a href="https://dspace.mit.edu/bitstream/handle/1721.1/47149/cyclomaticcomple00gill.pdf?sequence=1">
+Cyclomatic complexity metrics revisited</a>
+<br />
+<a href="http://www.cob.calpoly.edu/~eli/pdf/QDP-1-3.pdf">On the cyclomatic metric of
+program complexity</a>
+<br />
+<a href="https://github.com/jshint/jshint/issues/840">
+High cyclomatic complexity on switch statements</a>
+<br />
+<a href="http://www.drdobbs.com/architecture-and-design/measuring-complexity-correctly/240007928">
+Measuring Complexity Correctly</a>
+
+
+<h2>Boundary Value Complexity</h2>
+OK, so far, McCabe complexity could be tweaked in some manner to produce
+improved numbers for C++ and path analysis of some form seems to be a pretty
+good measure of complexity. What about the following code?
+<pre>
+  int average(int a, int b) { return (a+b)/2; }
+</pre>
+McCabe complexity indicates 1, so only one test is needed to fully test this. Obviously
+this is wrong. It may be possible to use some set theory similar to what is used
+in abstract interpretation.
+<p>
+There is no mathematically automated way to find the correct number of tests
+for testing an arithmetic algorithm. Some examples of algorithms that could be
+difficult to test would be something like finding n digits of pi, or sorting
+a set of data.
+<p>
+The number of tests required for oring constants together does not increase.
+There is some complexity increase since there can be a mistake in selecting
+the constants.
+<pre>
+  var.vt = VT_ARRAY | VT_UI1;
+</pre>
+Number of variables seems important.
+<pre>
+  val = ((ULONG) (val4 << 24) + (ULONG) (val3 << 16);
+</pre>
+Once again, the number of values read adds to the number of tests that must
+be done.
+<p>
+Fewer state variables is simpler than more state variables.
+<p>
+Buffer indexing and pointers is usually more complex. (More errors)
+Typically it is just increment operations and limit tests.
+This tool calculates statements in a block.
+http://www.gnu.org/software/complexity/manual/complexity.html
+<p>
+Of course, Wikipedia has an article about boundary value analysis:
+<a href="https://en.wikipedia.org/wiki/Boundary-value_analysis">Boundary Value Analysis</a>
+<br>
+And for abstract interpretation:
+<a href="https://en.wikipedia.org/wiki/Abstract_interpretation">Abstract Interpretation</a>
+
+
+<h2>Input Parameter Complexity</h2>
+The complexity of a method in C++ will depend on the input parameters. This includes
+class members and global state. (Including files etc.)  It is likely that
+path and data complexity analysis will automatically cover this if done properly.
+
+
+<h2>Side Effect Complexity</h2>
+In C++, when a function calls a method in another class, the method may modify other
+state that could affect the complexity of the current function.  If a const method is
+called, then generally there are no side effects, and the complexity does not
+increase more than the values that are returned from the function.  Note that there are side effects
+if a mutable variable or global variable is modified.
+<p>
+In general, a const method will not increase complexity as much as a non-const method.
+
+
+<h2>Calculating Maximum Number of Path Combinations</h2>
+Sequential if statements are 2^n, where n is number of if statements in sequence.
+A recursive formula can be used to calculate complexity.
+<pre>
+  if()
+    {		a statements
+    if()
+	{
+	}
+    }
+  if()
+    {		b statements
+    }
+  else
+    {		c statements
+    }
+  a * b + a * c
+  a (if = *) b (else = +) a (if = *) c
+</pre>
+
+
+<h2>Goal</h2>
+A single number that represents the number of tests that should be performed on a function.
+The number should be the worst case, and reduced if possible.
+The number should not be dependent on analyzing called functions, in other words represent only
+the complexity of the analyzed function.
+<br><br>
+It is also possible to calculate the number of tests that could
+achieve 100% statement coverage (not combinations).
+
+
+<h2>General ideas on calculations</h2>
+<ul>
+<li>Single condition adds one.</li>
+<li>Multiple conditions add one if condition variables are the same, add roughly two
+ (depends on logic, etc.?) for others.</li>
+<li>Logical operators in conditions add (or rely on unique variables read below)</li>
+<li>Case statements with break add one. Empty fall-through adds one.</li>
+<li>Everywhere a new unique variable is read, it adds (bool=1, unsigned=2, numeric=3)
+Note that x = a > 5 is a boolean.</li>
+<li>Calling const function adds one (or same as adding new unique variable).
+Calling function with side effects adds two (or two times new unique variable).</li>
+<li>Reading a variable in a condition does not add more than the logical flow calc</li>
+</ul>
+
+
+</body>
+</html>

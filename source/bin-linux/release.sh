@@ -2,7 +2,7 @@
 
 trnk=..
 dst=../../../backup/oovcde
-clang=../../../clang+llvm-3.4-x86_64
+#clang=../../../clang+llvm-3.4-x86_64
 dstFromTrunk=../../backup/oovcde
 
 rm -r $dst
@@ -10,7 +10,7 @@ mkdir $dst
 
 rsync -av --exclude='.svn' $trnk/../web/ $dst/web/
 rsync -av --exclude='.svn' $trnk/bin-linux/ $dst/bin/
-rsync -av $clang/lib/clang $dst/lib/
+#rsync -av $clang/lib/clang $dst/lib/
 cd $trnk
 find . -name '*.cpp' | cpio -pdm $dstFromTrunk
 find . -name '*.h' | cpio -pdm $dstFromTrunk

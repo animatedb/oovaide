@@ -19,7 +19,9 @@ The following lists releases in reverse chronological order.<br>
 <h2>2014-10</h2>
 This version contains:
 <ul>
-  <li>Improved sequence diagrams for else/if</li>
+  <li>Added McCabe complexity calculation</li>
+  <li>Improved sequence diagrams for else if</li>
+  <li>Improved sequence diagrams for switch case</li>
   <li>Fixed instrumentation of switch case</li>
   <li>Fixed include dependencies in windows for relative paths</li>
 </ul>

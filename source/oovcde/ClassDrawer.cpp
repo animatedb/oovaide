@@ -375,8 +375,8 @@ static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
 	GraphPoint producer, const ClassConnectItem &connectItem, double zoom)
     {
     RelationDrawInfo drawInfo(consumer, producer, zoom);
-    if(connectItem.mConnectType & ctAggregation ||
-	    connectItem.mConnectType & ctFuncParam)
+    if((connectItem.mConnectType & ctAggregation) ||
+	    (connectItem.mConnectType & ctFuncParam))
 	{
 	// Draw const symbol
 	if(connectItem.mConst)
@@ -384,7 +384,7 @@ static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
 	    drawConst(drawer, drawInfo);
 	    }
 	}
-    if(connectItem.mConnectType & ctFuncVar || connectItem.mConnectType & ctFuncParam)
+    if((connectItem.mConnectType & ctFuncVar) || (connectItem.mConnectType & ctFuncParam))
 	{
 	drawFuncRelation(drawer, drawInfo, connectItem.mConnectType);
 	}

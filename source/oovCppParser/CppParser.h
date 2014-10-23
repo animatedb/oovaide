@@ -14,6 +14,7 @@
 #include <set>
 #include "NameValueFile.h"
 #include "FilePath.h"
+#include "OovString.h"
 
 /// This works to build include paths, and to build include file dependencies
 /// This makes a file that keeps a map of paths, and for each path:
@@ -33,6 +34,88 @@ class IncDirDependencyMap:public NameValueFile
 	/// This map is <includerPath, includedPath's>
 	std::map<std::string, std::set<std::string>> mParsedIncludeDependencies;
     };
+
+// This contains context while parsing a switch statement. Case statements are
+// kind of interesting to graph in a sequence diagram since cases without breaks
+// are actually ored together.
+//
+// The following code:
+//	switch(a)
+//		{
+//		case '5':
+//			func1();
+//		case '6':
+//			func2();
+//			break;
+//		}
+//
+// Gets represented as:
+//	[a == 5]
+//		-> func1
+//	[a == 5 || a == 6]
+//		-> func2
+class SwitchContext
+    {
+    public:
+	SwitchContext():
+	    mInCase(false), mOpenStatementIndex(5000)
+	    {}
+	SwitchContext(std::string exprString):
+	    mSwitchExprString(exprString), mInCase(false), mOpenStatementIndex(5000)
+	    {}
+	void maybeStartCase(ModelStatements *statements, OovString &opStr)
+	    {
+	    if(!mInCase)
+		{
+		statements->addStatement(ModelStatement(opStr, ST_OpenNest));
+		mOpenStatementIndex = statements->size()-1;
+		mInCase = true;
+		}
+	    else
+		{
+		if(mOpenStatementIndex < statements->size())
+		    {
+		    std::string expr = (*statements)[mOpenStatementIndex].getName();
+		    expr.erase(expr.size()-1);
+		    expr += " || ";
+		    expr += opStr.substr(1);
+		    statements->addStatement(ModelStatement("", ST_CloseNest));
+//		    (*statements)[mOpenStatementIndex].setName(expr.c_str());
+		    statements->addStatement(ModelStatement(expr, ST_OpenNest));
+		    mOpenStatementIndex = statements->size()-1;
+		    }
+		}
+	    }
+	// This is called for a break, or the end of a switch without a break.
+	void endCase(ModelStatements *statements)
+	    {
+	    if(mInCase)
+		{
+		statements->addStatement(ModelStatement("", ST_CloseNest));
+		mInCase = false;
+		}
+	    }
+	std::string mSwitchExprString;
+
+    private:
+	bool mInCase;
+	size_t mOpenStatementIndex;
+    };
+
+// This holds the context during a switch statement. Switch statements can
+// be nested, so this is a stack of switch statements. The containing
+// switch statement is always the last added to the stack.
+class SwitchContexts:public std::vector<SwitchContext>
+    {
+    public:
+	SwitchContext &getCurrentContext()
+	    {
+	    return((size() > 0) ? (*this)[size()-1] : mDummyContext);
+	    }
+    private:
+	SwitchContext mDummyContext;
+    };
+
 
 /// This parses a C++ source file, then saves important data into a file.
 class CppParser
@@ -54,8 +137,6 @@ class CppParser
 	CXChildVisitResult visitFunctionAddArgs(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddVars(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor parent);
-	void addCondStatement(CXCursor parent, CXCursor stmtCursor, int condExprIndex,
-		int condStatementIndex, int condElseSatementIndex=-1);
 
     private:
         /// This contains all parsed information.
@@ -63,7 +144,7 @@ class CppParser
 	ModelClassifier *mClassifier;    /// Current class being parsed.
 	ModelOperation *mOperation;      /// Current operation being parsed.
 	ModelStatements *mStatements; 	 /// Current statements of a function.
-	std::vector<std::string> mSwitchStrings;
+	SwitchContexts mSwitchContexts;
 	FilePath mTopParseFn;   /// The top level file that is being parsed.
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;
@@ -72,6 +153,18 @@ class CppParser
 	ModelType *createOrGetDataTypeRef(CXCursor cursor);
 	void addOperationParts(CXCursor cursor, bool addParams);
 	void addRecord(CXCursor cursor, Visibility vis);
+	OovString buildCondExpr(CXCursor condStmtCursor, int condExprIndex);
+	// Adds a conditional statement and its body. This gets added as an
+	// open nest and close nest statements. The name of the open nest
+	// statement is the conditional expression. This recurses to find
+	// all child conditionals and calls.
+	void addCondStatement(CXCursor stmtCursor, int condExprIndex,
+		int condStatementIndex);
+	// Adds an else statement and its body. This gets added as an
+	// open nest and close nest statements. The name of the open nest
+	// statement is "[else]". This recurses to find all child
+	// conditionals and calls.
+	void addElseStatement(CXCursor condStmtCursor, int elseBodyIndex);
     };
 
 

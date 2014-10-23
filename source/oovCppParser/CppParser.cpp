@@ -10,7 +10,6 @@
 #include "ModelWriter.h"
 #include "Debug.h"
 #include "NameValueFile.h"
-#include "OovString.h"
 // Prevent "error: 'off64_t' does not name a type"
 #define __NO_MINGW_LFS 1
 // Prevent "error: 'off_t' has not been declared"
@@ -30,7 +29,7 @@
 // setModule is called for every class defined in the current TU.
 // setModule is called for every operation defined in the current TU.
 
-#define DEBUG_PARSE 1
+#define DEBUG_PARSE 0
 #if(DEBUG_PARSE)
 static DebugFile sLog("DebugCppParse.txt");
 #endif
@@ -537,13 +536,12 @@ static CXChildVisitResult getConditionStr(CXCursor cursor, CXCursor parent,
     return CXChildVisit_Continue;
     }
 
-void CppParser::addCondStatement(CXCursor parentStmtCursor, int condExprIndex,
-	int condStatementIndex, int condElseSatementIndex)
+OovString CppParser::buildCondExpr(CXCursor condStmtCursor, int condExprIndex)
     {
     OovString fullop;
-    CXCursorKind cursKind = clang_getCursorKind(parentStmtCursor);
 
-    switch(cursKind)
+    CXCursorKind condStmtCursKind = clang_getCursorKind(condStmtCursor);
+    switch(condStmtCursKind)
 	{
 	case CXCursor_DoStmt:
 	case CXCursor_WhileStmt:
@@ -555,56 +553,68 @@ void CppParser::addCondStatement(CXCursor parentStmtCursor, int condExprIndex,
 	default:
 	    break;
 	}
-
     fullop += "[";
-
-    if(cursKind == CXCursor_CaseStmt)
+    if(condStmtCursKind == CXCursor_CaseStmt)
 	{
 	std::string tempStr;
-	if(mSwitchStrings.size() > 0)
-	    fullop += mSwitchStrings[mSwitchStrings.size()-1];
+	fullop += mSwitchContexts.getCurrentContext().mSwitchExprString;
 	fullop += " == ";
 	}
-#if(DEBUG_PARSE)
-    fprintf(sLog.mFp, "Cond expr not visited\n");
-#endif
-    appendCursorTokenString(getNthChildCursor(parentStmtCursor, condExprIndex), fullop);
+    appendCursorTokenString(getNthChildCursor(condStmtCursor, condExprIndex), fullop);
     removeLastNonIdentChar(fullop);
     fullop += ']';
-    mStatements->addStatement(ModelStatement(fullop, ST_OpenNest));
-    CXCursor childCursor = getNthChildCursor(parentStmtCursor, condStatementIndex);
-#if(DEBUG_PARSE)
-    dumpCursor(sLog.mFp, "body visited", childCursor);
-#endif
-    visitFunctionAddStatements(childCursor, parentStmtCursor);
-    mStatements->addStatement(ModelStatement("", ST_CloseNest));
+    return fullop;
+    }
 
-    if(condElseSatementIndex != -1)
+void CppParser::addCondStatement(CXCursor condStmtCursor, int condExprIndex,
+	int mainBodyIndex)
+    {
+    // Visit the expression since it may contain calls.
+    CXCursor condExprCursor = getNthChildCursor(condStmtCursor, condExprIndex);
+#if(DEBUG_PARSE)
+    dumpCursor(sLog.mFp, "cond expr visited", condExprCursor);
+#endif
+    OovString fullop = buildCondExpr(condStmtCursor, condExprIndex);
+    mStatements->addStatement(ModelStatement(fullop, ST_OpenNest));
+    // Add the expression statements after the conditional since it is a bit
+    // easier to find the beginning of the conditional. These should not
+    // really be shown as indented since they may or may not be run
+    // depending on the expression logic.
+    visitFunctionAddStatements(condExprCursor, condStmtCursor);
+    CXCursor bodyCursor = getNthChildCursor(condStmtCursor, mainBodyIndex);
+#if(DEBUG_PARSE)
+    dumpCursor(sLog.mFp, "body visited", bodyCursor);
+#endif
+    visitFunctionAddStatements(bodyCursor, condStmtCursor);
+    mStatements->addStatement(ModelStatement("", ST_CloseNest));
+    }
+
+void CppParser::addElseStatement(CXCursor condStmtCursor, int elseBodyIndex)
+    {
+    CXCursor elseCursor = getNthChildCursor(condStmtCursor, elseBodyIndex);
+    if(!clang_Cursor_isNull(elseCursor))
 	{
-	CXCursor elseCursor = getNthChildCursor(parentStmtCursor, condElseSatementIndex);
-	if(!clang_Cursor_isNull(elseCursor))
+	CXCursorKind elseCursKind = clang_getCursorKind(elseCursor);
+	if(elseCursKind == CXCursor_IfStmt)
 	    {
-	    CXCursorKind elseCursKind = clang_getCursorKind(elseCursor);
-	    if(elseCursKind == CXCursor_IfStmt)
-		{
-		visitFunctionAddStatements(elseCursor, parentStmtCursor);
-		}
-	    else
-		{
-#if(DEBUG_PARSE)
-    dumpCursor(sLog.mFp, "else visited", elseCursor);
-#endif
-		std::string elseop = "[else]";
-		mStatements->addStatement(ModelStatement(elseop, ST_OpenNest));
-		visitFunctionAddStatements(elseCursor, parentStmtCursor);
-		mStatements->addStatement(ModelStatement("", ST_CloseNest));
-		}
-#if(DEBUG_PARSE)
-    fprintf(sLog.mFp, "end else visited\n");
-#endif
+	    visitFunctionAddStatements(elseCursor, condStmtCursor);
 	    }
+	else
+	    {
+#if(DEBUG_PARSE)
+	    dumpCursor(sLog.mFp, "else visited", elseCursor);
+#endif
+	    std::string elseop = "[else]";
+	    mStatements->addStatement(ModelStatement(elseop, ST_OpenNest));
+	    visitFunctionAddStatements(elseCursor, condStmtCursor);
+	    mStatements->addStatement(ModelStatement("", ST_CloseNest));
+	    }
+#if(DEBUG_PARSE)
+	fprintf(sLog.mFp, "end else visited\n");
+#endif
 	}
     }
+
 
 // Takes a CXType_FunctionProto cursor, and finds conditional statements and
 // calls to functions.
@@ -624,9 +634,11 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    {
 	    std::string tempStr;
 	    clang_visitChildren(cursor, getConditionStr, &tempStr);
-	    mSwitchStrings.push_back(tempStr);
+	    mSwitchContexts.push_back(tempStr);
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
-	    mSwitchStrings.pop_back();
+	    SwitchContext &context = mSwitchContexts.getCurrentContext();
+	    context.endCase(mStatements);
+	    mSwitchContexts.pop_back();
 	    }
 	    break;
 
@@ -637,8 +649,35 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 //	case CXCursor_GotoStmt, break, continue, return, CXCursor_DefaultStmt
 	/// Conditional statements
 	case CXCursor_WhileStmt:	//   enum { VAR, COND, BODY, END_EXPR };
-	case CXCursor_CaseStmt:
 	    addCondStatement(cursor, 0, 1);	// cond body
+	    break;
+
+	case CXCursor_CaseStmt:
+//	    addCondStatement(cursor, 0, 1);	// cond body
+	    {
+	    OovString fullop = buildCondExpr(cursor, 0);
+	    SwitchContext &context = mSwitchContexts.getCurrentContext();
+	    context.maybeStartCase(mStatements, fullop);
+	    CXCursor childCursor = getNthChildCursor(cursor, 1);
+	    visitFunctionAddStatements(childCursor, cursor);
+	    }
+	    break;
+
+	case CXCursor_DefaultStmt:
+	    {
+	    SwitchContext &context = mSwitchContexts.getCurrentContext();
+	    OovString defStr("[default]");
+	    context.maybeStartCase(mStatements, defStr);
+	    CXCursor childCursor = getNthChildCursor(cursor, 0);
+	    visitFunctionAddStatements(childCursor, cursor);
+	    }
+	    break;
+
+	case CXCursor_BreakStmt:
+	    {
+	    SwitchContext &context = mSwitchContexts.getCurrentContext();
+	    context.endCase(mStatements);
+	    }
 	    break;
 
 	case CXCursor_CXXForRangeStmt:
@@ -650,7 +689,8 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    break;
 
 	case CXCursor_IfStmt:	    	//    enum { VAR, COND, THEN, ELSE, END_EXPR };
-	    addCondStatement(cursor, 0, 1, 2);	// cond, ifbody, [elsebody]
+	    addCondStatement(cursor, 0, 1);	// cond=0, ifbody=1, [elsebody]=2
+	    addElseStatement(cursor, 2);
 	    break;
 
 	case CXCursor_CallExpr:

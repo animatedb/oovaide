@@ -172,6 +172,8 @@ Missing Features
 	- Add find methods that use class variable
 	- Add display of unused methods?
 	- dup code http://scg.unibe.ch/archive/papers/Duca99bCodeDuplication.pdf
+		http://www.codergears.com/Blog/?p=201
+		http://www.ccfinder.net/ccfinderxos.html
 	- Sloppy code indicator (unused members, single use members, etc.)
 	- Refactoring functions
 		- Display unused public functions of a class

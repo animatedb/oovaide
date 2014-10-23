@@ -169,10 +169,72 @@ class DummyOperationCall:public OperationCall
 	DummyOperation *mDo;
     };
 
+
+static bool hasCall(const ModelStatements &stmts, int stmtIndex)
+    {
+    int nest=0;
+    bool hasCall = false;
+    for(size_t i=stmtIndex; i<stmts.size(); i++)
+	{
+	if(stmts[i].getStatementType() == ST_OpenNest)
+	    {
+	    nest++;
+	    }
+	else if(stmts[i].getStatementType() == ST_Call)
+	    {
+	    hasCall = true;
+	    }
+	else if(stmts[i].getStatementType() == ST_CloseNest)
+	    {
+	    nest--;
+	    if(nest == 0)
+		break;
+	    }
+	}
+    return hasCall;
+    }
+
+static const ModelStatements pruneEmpty(const ModelStatements &stmts)
+    {
+    ModelStatements pruned;
+    int discardClose = 0;
+    for(size_t i=0; i<stmts.size(); i++)
+	{
+	if(stmts[i].getStatementType() == ST_OpenNest)
+	    {
+	    if(hasCall(stmts, i))
+		{
+		pruned.addStatement(stmts[i]);
+		}
+	    else
+		{
+		discardClose++;
+		}
+	    }
+	else if(stmts[i].getStatementType() == ST_CloseNest)
+	    {
+	    if(discardClose == 0)
+		{
+		pruned.addStatement(stmts[i]);
+		}
+	    else
+		{
+		discardClose--;
+		}
+	    }
+	else
+	    {
+	    pruned.addStatement(stmts[i]);
+	    }
+	}
+    return pruned;
+    }
+
 void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefinition &opDef,
 	eGetClass gc)
     {
-    for(auto &stmt : stmts)
+    ModelStatements prunedStmts = pruneEmpty(stmts);
+    for(auto &stmt : prunedStmts)
 	{
 	if(stmt.getStatementType() == ST_OpenNest)
 	    {
@@ -204,12 +266,14 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	    {
 	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
 	    // If there is no class, it must be an [else]
+/*
 	    if(!cls)
 		{
 		opDef.addStatement(std::unique_ptr<OperationStatement>(
 			new DummyOperationCall(-1, stmt.getName(),
 			stmt.getDecl().isConst())));
 		}
+*/
 	    if(cls)
 		{
 		int classIndex = addOrGetClass(cls, gc);
