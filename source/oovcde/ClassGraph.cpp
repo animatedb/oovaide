@@ -191,11 +191,11 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
 	const ModelClassifier*cl = modelType->getClass();
 	if(cl)
 	    {
-	    ConstModelDeclClassVector relatedDeclClasses;
-	    model.getRelatedFuncParamClasses(*cl, relatedDeclClasses);
-	    for(auto &rdc : relatedDeclClasses)
+	    ConstModelClassifierVector relatedClasses;
+	    model.getRelatedFuncInterfaceClasses(*cl, relatedClasses);
+	    for(auto &cls : relatedClasses)
 		{
-		if(rdc.cl == type)
+		if(cls == type)
 		    {
 #if(DEBUG_ADD)
 		    DebugAdd("Param User", cl);
@@ -309,14 +309,14 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 		}
 	    if((addType & AN_FuncParamsUsing) > 0)
 		{
-		ConstModelDeclClassVector relatedDeclClasses;
-		model.getRelatedFuncParamClasses(*classifier, relatedDeclClasses);
-		for(const auto &rdc : relatedDeclClasses)
+		ConstModelClassifierVector relatedClasses;
+		model.getRelatedFuncInterfaceClasses(*classifier, relatedClasses);
+		for(const auto &cls : relatedClasses)
 		    {
 #if(DEBUG_ADD)
-		    DebugAdd("Param Using", rdc.cl);
+		    DebugAdd("Param Using", cls);
 #endif
-		    addRelatedNodesRecurse(model, rdc.cl, options, addType, maxDepth);
+		    addRelatedNodesRecurse(model, cls, options, addType, maxDepth);
 		    }
 		}
 	    if((addType & AN_FuncBodyUsing) > 0)

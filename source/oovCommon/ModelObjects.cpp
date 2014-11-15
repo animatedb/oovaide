@@ -322,7 +322,13 @@ void ModelData::resolveStatements(ModelStatements &stmts)
 #endif
 		)
 	    {
-	    resolveDecl(stmt.getDecl());
+	    resolveDecl(stmt.getClassDecl());
+#if(VAR_REF)
+	    if(stmt.getStatementType() == ST_VarRef)
+		{
+		resolveDecl(stmt.getVarDecl());
+		}
+#endif
 	    }
 	}
     }
@@ -356,6 +362,10 @@ void ModelData::resolveModelIds()
 		    {
 		    resolveDecl(*vd);
 		    }
+
+#if(OPER_RET_TYPE)
+		resolveDecl(oper->getReturnType());
+#endif
 		}
 	    }
 	}
@@ -391,11 +401,21 @@ bool ModelData::isTypeReferencedByStatements(ModelStatements const &stmts,
     bool referenced = false;
     for(auto &stmt : stmts)
 	{
-	if(stmt.getStatementType() == ST_Call && stmt.getDecl().getDeclType() == &type)
+	if(stmt.getStatementType() == ST_Call &&
+		stmt.getClassDecl().getDeclType() == &type)
 	    {
 	    referenced = true;
 	    break;
 	    }
+#if(VAR_REF)
+	if(stmt.getStatementType() == ST_VarRef &&
+		(stmt.getClassDecl().getDeclType() == &type ||
+		stmt.getVarDecl().getDeclType() == &type))
+	    {
+	    referenced = true;
+	    break;
+	    }
+#endif
 	}
     return referenced;
     }
@@ -454,6 +474,16 @@ bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) con
 				    }
 				}
 			    }
+#if(OPER_RET_TYPE)
+			if(!referenced)
+			    {
+			    if(oper->getReturnType().getDeclType() == &checkType)
+				{
+				referenced = true;
+				break;
+				}
+			    }
+#endif
 			}
 		    }
 		}
@@ -519,10 +549,19 @@ void ModelData::replaceStatementType(ModelStatements &stmts, ModelType *existing
 #endif
 		)
 	    {
-	    if(stmt.getDecl().getDeclType() == existingType)
+	    if(stmt.getClassDecl().getDeclType() == existingType)
 		{
-		stmt.getDecl().setDeclType(newType);
+		stmt.getClassDecl().setDeclType(newType);
 		}
+#if(VAR_REF)
+	    if(stmt.getStatementType() == ST_VarRef)
+		{
+		if(stmt.getVarDecl().getDeclType() == existingType)
+		    {
+		    stmt.getVarDecl().setDeclType(newType);
+		    }
+		}
+#endif
 	    }
 	}
     }
@@ -561,6 +600,12 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
 			vd->setDeclType(newType);
 			}
 		    }
+#if(OPER_RET_TYPE)
+		if(oper->getReturnType().getDeclType() == existingType)
+		    {
+		    oper->getReturnType().setDeclType(newType);
+		    }
+#endif
 		replaceStatementType(oper->getStatements(), existingType, newType);
 		}
 	    }
@@ -921,9 +966,43 @@ void ModelData::getRelatedFuncParamClasses(const ModelClassifier &classifier,
 	    {
 	    const ModelClassifier *cl = param->getDeclClassType();
 	    if(cl)
+		{
 		declClasses.push_back(ModelDeclClass(param.get(), cl));
+		}
 	    }
 	}
+    }
+
+void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier,
+	ConstModelClassifierVector &classes) const
+    {
+    classes.clear();
+    for(auto &oper : classifier.getOperations())
+	{
+	for(auto &param : oper->getParams())
+	    {
+	    const ModelClassifier *cl = param->getDeclClassType();
+	    if(cl)
+		{
+		/// @todo = this should be a set, no need to add duplicate
+		/// relations.
+		}
+		classes.push_back(cl);
+		}
+	    }
+// If the function's return is a relation, then the relation will already
+// be present as either a param, member or body user
+/*
+#if(OPER_RET_TYPE)
+	ModelTypeRef const &retType = oper->getReturnType();
+	const ModelClassifier *cl = retType.getDeclType()->getClass();
+	if(cl)
+	    {
+	    classes.push_back(cl);
+	    }
+	}
+#endif
+*/
     }
 
 void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,

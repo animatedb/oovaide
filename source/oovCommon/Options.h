@@ -31,6 +31,7 @@ class BuildOptions:public NameValueFile
 #define OptGuiShowAttributes "ShowAttributes"
 #define OptGuiShowOperations "ShowOperations"
 #define OptGuiShowOperParams "ShowOperParams"
+#define OptGuiShowOperReturn "ShowOperReturn"
 #define OptGuiShowAttrTypes "ShowAttrTypes"
 #define OptGuiShowOperTypes "ShowOperTypes"
 #define OptGuiShowPackageName "ShowPackageName"

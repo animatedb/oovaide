@@ -145,10 +145,10 @@ public:
         Visibility mAccess;
 };
 
-#define VAR_REF 0
 enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call,
+#define VAR_REF 1
 #if(VAR_REF)
-    ST_VarRef
+    ST_VarRef		// rename to member ref?
 #endif
 };
 
@@ -164,26 +164,45 @@ class ModelStatement:public ModelObject
 	//	There is no decl
 	// Call
 	//	The name is the function name.
-	//	The decl points to the type.
+	//	The class decl points to the class type.
 	// CloseNest
 	//	There is no name or decl.
 	// VarRef
 	//	The name is the class's attribute name
-	//	The decl points to the type.
+	//	The class decl points to the class type.
+	//	The var decl points to the variable type.
 	ModelStatement(const std::string &name, eModelStatementTypes type):
-	    ModelObject(name), mStatementType(type), mDecl(nullptr)
+	    ModelObject(name), mStatementType(type), mClassDecl(nullptr)
+#if(VAR_REF)
+	    , mVarDecl(nullptr), mVarAccessWrite(false)
+#endif
 	    {}
 	eModelStatementTypes getStatementType() const
 	    { return mStatementType; }
 	// These are only valid if this statement is a call.
-	ModelTypeRef &getDecl()
-	    { return mDecl; }
-	const ModelTypeRef &getDecl() const
-	    { return mDecl; }
+	ModelTypeRef &getClassDecl()
+	    { return mClassDecl; }
+	const ModelTypeRef &getClassDecl() const
+	    { return mClassDecl; }
+#if(VAR_REF)
+	ModelTypeRef &getVarDecl()
+	    { return mVarDecl; }
+	const ModelTypeRef &getVarDecl() const
+	    { return mVarDecl; }
+	void setVarAccessWrite(bool write)
+	    { mVarAccessWrite = write; }
+	bool getVarAccessWrite() const
+	    { return mVarAccessWrite; }
+#endif
 
     private:
 	eModelStatementTypes mStatementType;
-	ModelTypeRef mDecl;
+	ModelTypeRef mClassDecl;
+#if(VAR_REF)
+	// Only class member references are saved here.
+	ModelTypeRef mVarDecl;
+	bool mVarAccessWrite;	// Indicates whether the var decl is written or read.
+#endif
     };
 
 /// This is a list of statements in a function.
@@ -198,6 +217,8 @@ class ModelStatements:public std::vector<ModelStatement>
 	    }
     };
 
+#define OPER_RET_TYPE 1
+
 /// This container owns all pointers (parameters, etc.) given to it, except for
 /// types used to define parameters/variables.
 class ModelOperation:public ModelObject
@@ -207,6 +228,9 @@ public:
 	    bool isConst):
         ModelObject(name), mAccess(access),
         mIsConst(isConst), mModule(nullptr), mLineNum(0)
+#if(OPER_RET_TYPE)
+	, mReturnType(nullptr)
+#endif
         {}
     // Returns a pointer to the added parameter so that it can be modified.
     ModelFuncParam *addMethodParameter(const std::string &name, const ModelType *type,
@@ -236,6 +260,12 @@ public:
 	{ return mParameters; }
     const std::vector<std::unique_ptr<ModelBodyVarDecl>> &getBodyVarDeclarators() const
 	{ return mBodyVarDeclarators; }
+#if(OPER_RET_TYPE)
+    ModelTypeRef &getReturnType()
+	{ return mReturnType; }
+    ModelTypeRef const &getReturnType() const
+	{ return mReturnType; }
+#endif
     ModelStatements &getStatements()
 	{ return mStatements; }
     const ModelStatements &getStatements() const
@@ -259,14 +289,15 @@ public:
 
 private:
     std::vector<std::unique_ptr<ModelFuncParam>> mParameters;
-    // This could be expanded to contain ref/ptr/const
-//    ModelDeclarator* mDefinitionDeclarator;	// return type
     std::vector<std::unique_ptr<ModelBodyVarDecl>> mBodyVarDeclarators;
     ModelStatements mStatements;
     Visibility mAccess;
     bool mIsConst;
     const class ModelModule *mModule;
     int mLineNum;
+#if(OPER_RET_TYPE)
+    ModelTypeRef mReturnType;
+#endif
 };
 
 enum eModelDataTypes { DT_DataType, DT_Class };
@@ -459,8 +490,10 @@ class ModelData
 	void takeAttributes(ModelClassifier *sourceType, ModelClassifier *destType);
 	void getRelatedTemplateClasses(const ModelType &type,
 		ConstModelClassifierVector &classes) const;
+	void getRelatedFuncInterfaceClasses(const ModelClassifier &type,
+		ConstModelClassifierVector &classes) const;
 	void getRelatedFuncParamClasses(const ModelClassifier &type,
-		ConstModelDeclClassVector &declclasses) const;
+		ConstModelDeclClassVector &classes) const;
 	void getRelatedBodyVarClasses(const ModelClassifier &type,
 		ConstModelDeclClassVector &declclasses) const;
 

@@ -304,10 +304,10 @@ void XmiParser::addFuncStatements(OovStringRef const &attrName,
     {
     if(strcmp(attrName.c_str(), "list") == 0)
 	{
-	std::vector<OovString> statements = attrVal.split('#');
+	OovStringVec statements = attrVal.split('#');
 	for(auto const &stmt : statements)
 	    {
-	    std::vector<OovString> stmtVals = stmt.split('@');
+	    OovStringVec stmtVals = stmt.split('@');
 	    switch(stmtVals[0][0])
 		{
 		case '{':
@@ -329,11 +329,11 @@ void XmiParser::addFuncStatements(OovStringRef const &attrName,
 		    ModelStatement modStmt(&stmtVals[0][2], ST_Call);
 		    int typeId = 0;
 		    // -1 is used for [else]
-		    if(stmtVals[1].getInt(-1, INT_MAX, typeId))
+		    if(stmtVals.getStr(1).getInt(-1, INT_MAX, typeId))
 			{
 			if(typeId != -1)
 			    typeId += mStartingModuleTypeIndex;
-			modStmt.getDecl().setDeclTypeModelId(typeId);
+			modStmt.getClassDecl().setDeclTypeModelId(typeId);
 			oper.getStatements().addStatement(modStmt);
 			}
 		    }
@@ -343,13 +343,20 @@ void XmiParser::addFuncStatements(OovStringRef const &attrName,
 		case 'v':
 		    {
 		    ModelStatement modStmt(&stmtVals[0][2], ST_VarRef);
-		    int typeId = 0;
-		    if(stmtVals[1].getInt(0, INT_MAX, typeId))
+		    int classTypeId = 0;
+		    if(stmtVals.getStr(1).getInt(0, INT_MAX, classTypeId))
 			{
-			modStmt.getDecl().setDeclTypeModelId(
-				mStartingModuleTypeIndex + typeId);
-			oper.getStatements().addStatement(modStmt);
+			modStmt.getClassDecl().setDeclTypeModelId(
+				mStartingModuleTypeIndex + classTypeId);
 			}
+		    int varTypeId = 0;
+		    if(stmtVals.getStr(2).getInt(0, INT_MAX, varTypeId))
+			{
+			modStmt.getVarDecl().setDeclTypeModelId(
+				mStartingModuleTypeIndex + varTypeId);
+			}
+		    modStmt.setVarAccessWrite(isTrue(stmtVals.getStr(3)));
+		    oper.getStatements().addStatement(modStmt);
 		    }
 		    break;
 #endif
@@ -489,6 +496,23 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
 			}
 		    oper->setLineNum(getInt(attrVal.c_str()));
 		    }
+#if(OPER_RET_TYPE)
+		else if(strcmp(attrName.c_str(), "ret") == 0)
+		    {
+		    ModelTypeRef &retType = oper->getReturnType();
+		    retType.setDeclTypeModelId(mStartingModuleTypeIndex + getInt(attrVal.c_str()));
+		    }
+		else if(strcmp(attrName.c_str(), "retconst") == 0)
+		    {
+		    ModelTypeRef retType = oper->getReturnType();
+		    retType.setConst(isTrue(attrVal));
+		    }
+		else if(strcmp(attrName.c_str(), "retref") == 0)
+		    {
+		    ModelTypeRef retType = oper->getReturnType();
+		    retType.setRefer(isTrue(attrVal));
+		    }
+#endif
 		}
 		break;
 
@@ -699,7 +723,13 @@ void XmiParser::updateStatementTypeIndices(ModelStatements &stmts)
 #endif
 		)
 	    {
-	    updateDeclTypeIndices(stmt.getDecl());
+	    updateDeclTypeIndices(stmt.getClassDecl());
+#if(VAR_REF)
+	    if(stmt.getStatementType() == ST_VarRef)
+		{
+		updateDeclTypeIndices(stmt.getVarDecl());
+		}
+#endif
 	    }
 	}
     }
@@ -742,6 +772,9 @@ void XmiParser::updateTypeIndices()
 		    {
 		    updateDeclTypeIndices(*vd);
 		    }
+#if(OPER_RET_TYPE)
+		updateDeclTypeIndices(oper->getReturnType());
+#endif
 		}
 	    }
 	}

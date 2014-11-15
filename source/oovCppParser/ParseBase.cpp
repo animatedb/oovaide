@@ -157,7 +157,12 @@ bool isMethodConst(CXCursor cursor)
 // This function returns const for any type with const left of & or *.
 bool isConstType(CXCursor cursor)
     {
-    CXStringDisposer sp = clang_getTypeSpelling(clang_getCursorType(cursor));
+    return isConstType(clang_getCursorType(cursor));
+    }
+
+bool isConstType(CXType cursType)
+    {
+    CXStringDisposer sp = clang_getTypeSpelling(cursType);
     bool isConst = false;
 
     size_t constPos = sp.find("const");

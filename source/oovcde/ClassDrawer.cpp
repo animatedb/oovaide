@@ -82,7 +82,12 @@ static void getStrings(const ClassNode &node,
 	    for(const auto &oper : classifier->getOperations())
 		{
 		std::string operStr = oper->getAccess().asUmlStr();
-		operStr += oper->getName().c_str();
+		if(node.getDrawOptions().drawOperReturn)
+		    {
+		    operStr += oper->getReturnType().getDeclType()->getName();
+		    operStr += ' ';
+		    }
+		operStr += oper->getName();
 		operStr += "(";
 		if(node.getDrawOptions().drawOperParams)
 		    {

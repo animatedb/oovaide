@@ -149,6 +149,7 @@ class CppParser
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;
 	ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);
+	ModelType *createOrGetDataTypeRef(CXType type, RefType &rt);
 	ModelClassifier *createOrGetClassRef(char const * const name);
 	ModelType *createOrGetDataTypeRef(CXCursor cursor);
 	void addOperationParts(CXCursor cursor, bool addParams);

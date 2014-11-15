@@ -18,11 +18,13 @@ struct ClassNodeDrawOptions
     {
     ClassNodeDrawOptions():
 	drawAttributes(true), drawOperations(true), drawOperParams(true),
+	drawOperReturn(true),
 	drawAttrTypes(true), drawOperTypes(true), drawPackageName(true)
 	{}
     bool drawAttributes;
     bool drawOperations;
     bool drawOperParams;
+    bool drawOperReturn;
     bool drawAttrTypes;
     bool drawOperTypes;
     bool drawPackageName;
@@ -202,6 +204,9 @@ class ClassGraph
 	    { return mConnectMap; }
 
     private:
+	/// @todo - this should be a set?
+	// This may have some duplicate relations for the different types
+	// of relations.
 	std::vector<ClassNode> mNodes;
 	std::map<nodePair_t, ClassConnectItem> mConnectMap;
 	ClassGenes mGenes;

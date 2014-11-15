@@ -169,6 +169,8 @@ ScreenOptions::ScreenOptions(char const * const buildConfig)
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
 	    OptGuiShowOperParams, "ShowOperParamsCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+	    OptGuiShowOperReturn, "ShowOperReturnCheckbutton")));
+    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
 	    OptGuiShowAttrTypes, "ShowAttrTypesCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
 	    OptGuiShowOperTypes, "ShowOperTypesCheckbutton")));
@@ -448,6 +450,7 @@ static PrefOption PrefOptions[] =
     { offsetof(ClassNodeDrawOptions, drawAttributes), "ShowAttributesCheckbutton"},
     { offsetof(ClassNodeDrawOptions, drawOperations), "ShowOperationsCheckbutton" },
     { offsetof(ClassNodeDrawOptions, drawOperParams), "ShowOperParamsCheckbutton" },
+    { offsetof(ClassNodeDrawOptions, drawOperReturn), "ShowOperReturnCheckbutton" },
     { offsetof(ClassNodeDrawOptions, drawAttrTypes), "ShowAttrTypesCheckbutton" },
     { offsetof(ClassNodeDrawOptions, drawOperTypes), "ShowOperTypesCheckbutton" },
     { offsetof(ClassNodeDrawOptions, drawPackageName), "ShowPackageNameCheckbutton" },

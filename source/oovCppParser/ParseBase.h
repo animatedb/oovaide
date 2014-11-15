@@ -40,6 +40,7 @@ void appendCursorTokenString(CXCursor cursor, std::string &str);
 void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers);
 bool isMethodConst(CXCursor cursor);
 bool isConstType(CXCursor cursor);
+bool isConstType(CXType cursType);
 bool isIdentC(char c);
 // Gets the type name without pointer/reference.
 std::string getFullBaseTypeName(CXCursor cursor);

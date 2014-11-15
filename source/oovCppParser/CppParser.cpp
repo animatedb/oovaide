@@ -282,6 +282,34 @@ ModelType *CppParser::createOrGetBaseTypeRef(CXCursor cursor, RefType &rt)
     return mModelData.createOrGetTypeRef(typeName.c_str(), dType);
     }
 
+ModelType *CppParser::createOrGetDataTypeRef(CXType cursType, RefType &rt)
+    {
+    ModelType *type = nullptr;
+    rt.isConst = isConstType(cursType);
+    switch(cursType.kind)
+	{
+	case CXType_LValueReference:
+	case CXType_RValueReference:
+	case CXType_Pointer:
+	    rt.isRef = true;
+	    break;
+
+	default:
+	    break;
+	}
+//    CXCursor retTypeDeclCursor = clang_getTypeDeclaration(cursType);
+    CXStringDisposer retTypeStr(clang_getTypeSpelling(cursType));
+//    if(retTypeDeclCursor.kind != CXCursor_NoDeclFound)
+//	{
+//	type = mModelData.createOrGetTypeRef(retTypeStr.c_str(), DT_Class);
+//	}
+//    else
+	{
+	type = mModelData.createOrGetTypeRef(retTypeStr.c_str(), DT_DataType);
+	}
+    return type;
+    }
+
 // This upgrades an otDatatype to an otClass in order to handle forward references
 ModelClassifier *CppParser::createOrGetClassRef(char const * const name)
     {
@@ -316,6 +344,13 @@ void CppParser::addOperationParts(CXCursor cursor, bool addParams)
 	{
 	clang_visitChildren(cursor, ::visitFunctionAddArgs, this);
 	}
+#if(OPER_RET_TYPE)
+    CXType retType = clang_getResultType(clang_getCursorType(cursor));
+    RefType rt;
+    mOperation->getReturnType().setDeclType(createOrGetDataTypeRef(retType, rt));
+    mOperation->getReturnType().setConst(rt.isConst);
+    mOperation->getReturnType().setRefer(rt.isRef);
+#endif
     clang_visitChildren(cursor, ::visitFunctionAddVars, this);
     mStatements = &mOperation->getStatements();
     clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
@@ -626,6 +661,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
     for(int i=0; i<level; i++)
 	fprintf(sLog.mFp, "  ");
 #endif
+    static bool modifiedLhs = false;
     sCrashDiagnostics.saveMostRecentParseLocation("FS", cursor);
     CXCursorKind cursKind = clang_getCursorKind(cursor);
     switch(cursKind)
@@ -708,13 +744,47 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		RefType rt;
 		const ModelType *classType = createOrGetBaseTypeRef(classCursor, rt);
 		ModelStatement stmt(functionName, ST_Call);
-		stmt.getDecl().setDeclType(classType);
+		stmt.getClassDecl().setDeclType(classType);
 		mStatements->addStatement(stmt);
 		}
 	    }
 	    break;
 
+//	case CXCursor_CXXCatchStmt:
+//	    break;
+
+	case CXCursor_BinaryOperator:
+	    {
+	    // If assignment operator, and on lhs, variable is modified.
+	    CXCursor lhsChild = getNthChildCursor(cursor, 0);
+	    std::string lhsStr;
+	    // This returns the operator characters at the end.
+	    appendCursorTokenString(lhsChild, lhsStr);
+
+//	    CXStringDisposer lhsStr = clang_getCursorSpelling(lhsChild);
+	    if(lhsStr.length() >= 2)
+		{
+		std::string lastTwoChars = lhsStr.substr(lhsStr.length()-2);
+		if(lastTwoChars[0] != '=' && lastTwoChars[0] != '!' &&
+			lastTwoChars[0] != '>' && lastTwoChars[0] != '<' &&
+			lastTwoChars[1] == '=')
+		    {
+		    // The CXCursor_FirstExpr could be used to detect lhs, but
+		    // we still need to see if it is an assignment.
+		    modifiedLhs = true;
+		    }
+		}
+	    visitFunctionAddStatements(lhsChild, cursor);
+	    modifiedLhs = false;
+	    visitFunctionAddStatements(getNthChildCursor(cursor, 1), cursor);
+	    }
+	    break;
+
 #if(VAR_REF)
+//	case CXCursor_MemberRef:
+	// An expression that refers to a member of a struct, union, class, etc.
+	// If first child of CXCursor_BinaryOperator, it is read only.
+	// If child of CXCursor_UnaryOperator, it may be write or read.
 	case CXCursor_MemberRefExpr:
 	    {
 	    CXStringDisposer name = clang_getCursorDisplayName(cursor);
@@ -729,7 +799,12 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		    RefType rt;
 		    const ModelType *classType = createOrGetBaseTypeRef(classCursor, rt);
 		    ModelStatement stmt(name, ST_VarRef);
-		    stmt.getDecl().setDeclType(classType);
+		    stmt.getClassDecl().setDeclType(classType);
+
+		    const ModelType *varType = createOrGetBaseTypeRef(cursor, rt);
+		    stmt.getVarDecl().setDeclType(varType);
+
+		    stmt.setVarAccessWrite(modifiedLhs);
 		    mStatements->addStatement(stmt);
 		    }
 		}
@@ -737,36 +812,12 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    break;
 #endif
 
-	case CXCursor_CompoundStmt:
-	    {
-	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
-/*
-	    std::string stmtStr;
-	    appendCursorTokenString(cursor, stmtStr);
-	    int len = stmtStr.length();
-	    if(len >= 4)
-		{
-		if(stmtStr.find(" else ", stmtStr.length()-4) != std::string::npos)
-		    {
-		    /// @todo - There is no CXCursor_ElseStmt in clang.  The else is at the end of a
-		    /// statement (compound or null) at the moment, then the next compound statement is
-		    /// really under the else. So it is fairly difficult to parse here currently. The
-		    /// compound statement code that is under the else now shows up under the if.
+//	case CXCursor_BinaryOperator:
+//		The first child is the rhs. second is lhs.
+//		If first child is memberrefexpr, then it is read only
+//	    break;
 
-		    /// @todo - The next statement (compound/null) should really be under this else.
-		    /// This is wrong in the XMI since it indicates an operation, but it looks
-		    /// fairly good in the graphs.
-		    if(mStatements)
-			{
-			ModelStatement stmt("[else]", ST_Call);
-			mStatements->addStatement(stmt);
-			}
-		    }
-		}
-*/
-	    }
-	    break;
-
+//	case CXCursor_CompoundStmt:
 	default:
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;

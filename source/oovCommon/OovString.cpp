@@ -9,6 +9,14 @@
 #include <string.h>
 #include <stdio.h>
 
+OovString OovStringVec::getStr(size_t index)
+    {
+    OovString str;
+    if(index < size())
+	str = at(index);
+    return str;
+    }
+
 static int isAsciiLenOk(char const * const buf, int maxLen)
     {
     bool success = false;
@@ -187,16 +195,21 @@ void OovString::appendInt(int val, int radix)
     append(buf);
     }
 
-std::vector<OovString> StringSplit(char const * str, char delimiter)
+OovStringVec StringSplit(char const * str, char delimiter)
+    {
+    return StringSplit(str, std::string(1, delimiter).c_str());
+    }
+
+OovStringVec StringSplit(char const * str, char const *delimiterStr)
 {
     std::string tempStr = str;
-    std::vector<OovString> tokens;
+    OovStringVec tokens;
     size_t start = 0;
     size_t end = 0;
-    const int delimLen = 1;
+    const int delimLen = strlen(delimiterStr);
     while(end != std::string::npos)
 	{
-        end = tempStr.find(delimiter, start);
+        end = tempStr.find(delimiterStr, start);
         tokens.push_back(tempStr.substr(start,
 	   (end == std::string::npos) ? std::string::npos : end - start));
         start = (( end > (std::string::npos - delimLen)) ?
@@ -205,7 +218,36 @@ std::vector<OovString> StringSplit(char const * str, char delimiter)
     return tokens;
     }
 
-OovString StringJoin(std::vector<class OovString> const &tokens, char delimiter)
+OovStringVec StringSplit(char const * str, std::vector<std::string> const &delimiters)
+    {
+    std::string tempStr = str;
+    OovStringVec tokens;
+    size_t start = 0;
+    size_t end = 0;
+    size_t lowestEnd = 0;
+    while(end != std::string::npos)
+	{
+	lowestEnd = std::string::npos;
+	size_t delimLen = std::string::npos;
+	for(auto const &delim : delimiters)
+	    {
+	    end = tempStr.find(delim, start);
+	    if(end < lowestEnd)
+		{
+		delimLen = strlen(delim.c_str());
+		lowestEnd = end;
+		}
+	    }
+	end = lowestEnd;
+        tokens.push_back(tempStr.substr(start,
+	   (end == std::string::npos) ? std::string::npos : end - start));
+        start = (( end > (std::string::npos - delimLen)) ?
+        	std::string::npos : end + delimLen);
+	}
+    return tokens;
+    }
+
+OovString StringJoin(OovStringVec const &tokens, char delimiter)
     {
     OovString str;
     for(size_t i=0; i<tokens.size(); i++)

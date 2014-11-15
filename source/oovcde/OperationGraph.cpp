@@ -245,9 +245,11 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	    opDef.addNestEnd();
 	    }
 #if(VAR_REF)
+#define SHOW_VARS 0
+#if(SHOW_VARS)
 	else if(stmt.getStatementType() == ST_VarRef)
 	    {
-	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
+	    const ModelClassifier *cls = stmt.getClassDecl().getDeclType()->getClass();
 	    if(cls)
 		{
 		int classIndex = addOrGetClass(cls, gc);
@@ -262,9 +264,10 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 		}
 	    }
 #endif
+#endif
 	else if(stmt.getStatementType() == ST_Call)
 	    {
-	    const ModelClassifier *cls = stmt.getDecl().getDeclType()->getClass();
+	    const ModelClassifier *cls = stmt.getClassDecl().getDeclType()->getClass();
 	    // If there is no class, it must be an [else]
 /*
 	    if(!cls)
@@ -280,7 +283,7 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 		if(classIndex != -1)
 		    {
 		    const ModelOperation *targetOper = cls->getOperationAnyConst(stmt.getName(),
-			    stmt.getDecl().isConst());
+			    stmt.getClassDecl().isConst());
 		    if(targetOper)
 			{
 			/// @todo - use make_unique when supported.
@@ -294,7 +297,7 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 			{
 			opDef.addStatement(std::unique_ptr<OperationStatement>(
 				new DummyOperationCall(classIndex, stmt.getName(),
-				stmt.getDecl().isConst())));
+				stmt.getClassDecl().isConst())));
     #if(DEBUG_OPERGRAPH)
 			fprintf(sLog.mFp, "Bad Oper %d %s %d\n", classIndex,
 				call->getName().c_str(), call->getDecl().isConst());
@@ -475,7 +478,7 @@ void OperationGraph::addOperCallers(const ModelStatements &stmts,
 	{
 	if(stmt.getStatementType() == ST_Call)
 	    {
-	    const ModelClassifier *callerCls = stmt.getDecl().getDeclType()->
+	    const ModelClassifier *callerCls = stmt.getClassDecl().getDeclType()->
 		    getClass();
 	    if((stmt.getName().compare(callee.getName()) == 0) &&
 		    callerCls == mOpClasses[callee.getOperClassIndex()].getType())

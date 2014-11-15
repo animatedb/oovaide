@@ -232,11 +232,11 @@ class GuiTree:public GuiTreeView
 	/// Returns the newly created child item.
 	GuiTreeItem appendText(GuiTreeItem parentItem, char const * const str);
 	/// first element is parent, second is child
-	std::vector<OovString> const getSelected() const;
+	OovStringVec const getSelected() const;
 	OovString const getSelected(char delimiter) const;
 	void clearSelection()
 	    { gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(mTreeView)); }
-	void setSelected(std::vector<OovString> const &names);
+	void setSelected(OovStringVec const &names);
 	void setSelected(OovString const &name, char delimeter);
 	GuiTreeItem getItem(OovString const &name, char delimiter);
 

@@ -20,6 +20,7 @@ static const ClassDrawOptions &getDrawOptions()
     dopts.drawAttributes = gGuiOptions.getValueBool(OptGuiShowAttributes);
     dopts.drawOperations = gGuiOptions.getValueBool(OptGuiShowOperations);
     dopts.drawOperParams = gGuiOptions.getValueBool(OptGuiShowOperParams);
+    dopts.drawOperReturn = gGuiOptions.getValueBool(OptGuiShowOperReturn);
     dopts.drawAttrTypes = gGuiOptions.getValueBool(OptGuiShowAttrTypes);
     dopts.drawOperTypes = gGuiOptions.getValueBool(OptGuiShowOperTypes);
     dopts.drawPackageName = gGuiOptions.getValueBool(OptGuiShowPackageName);

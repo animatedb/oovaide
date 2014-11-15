@@ -15,6 +15,7 @@
 #include "OovString.h"
 #include "File.h"
 #include "Version.h"
+#include "Complexity.h"
 #include <stdlib.h>
 
 
@@ -393,44 +394,10 @@ int oovGui::getStatusSourceFile(std::string &fn)
     return lineNum;
     }
 
-// At the moment, this just calculates the number of paths.  This appears
-// to be pretty close to McCabe complexity.
-static int calcMcCabeComplexity(ModelStatements const &stmts)
-    {
-    int complexity = 1;
-    for(auto const &stmt : stmts)
-	{
-	if(stmt.getStatementType() == ST_OpenNest)
-	    {
-	    if(stmt.getName() != "[else]")
-		{
-		complexity++;
-		}
-	    }
-	}
-    return complexity;
-    }
-
 void oovGui::makeComplexityFile()
     {
-    FilePath fn(Project::getProjectDirectory().c_str(), FP_Dir);
-    fn.appendFile("oovComplex.txt");
-    File compFile(fn.c_str(), "w");
-    if(compFile.isOpen())
+    if(createComplexityFile("oovComplex.txt", mModelData))
 	{
-	for(auto const &type : mModelData.mTypes)
-	    {
-	    ModelClassifier *classifier = type->getClass();
-	    if(classifier)
-		{
-		for(auto const &oper : classifier->getOperations())
-		    {
-		    int complexity = calcMcCabeComplexity(oper->getStatements());
-		    fprintf(compFile.getFp(), "%s\t%s\t%d\n",
-			classifier->getName().c_str(), oper->getName().c_str(), complexity);
-		    }
-		}
-	    }
 	Gui::messageBox("The tab delimited complexity file oovComplex.txt has"
 		" been saved in the project directory. Use a spreadsheet"
 		" program to view and sort.", GTK_MESSAGE_INFO);

@@ -373,12 +373,12 @@ GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, char const * const str)
     return item;
     }
 
-std::vector<OovString> const GuiTree::getSelected() const
+OovStringVec const GuiTree::getSelected() const
     {
     GtkTreeIter parent;
     GtkTreeIter child;
     GtkTreeModel *model;
-    std::vector<OovString> names;
+    OovStringVec names;
 
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     if (gtk_tree_selection_get_selected(sel, &model, &child))
@@ -400,7 +400,7 @@ std::vector<OovString> const GuiTree::getSelected() const
     return names;
     }
 
-void GuiTree::setSelected(std::vector<OovString> const &names)
+void GuiTree::setSelected(OovStringVec const &names)
     {
     OovString name;
     name.join(names, ':');
@@ -411,7 +411,7 @@ void GuiTree::setSelected(std::vector<OovString> const &names)
 
 OovString const GuiTree::getSelected(char delimiter) const
     {
-    std::vector<OovString> names = getSelected();
+    OovStringVec names = getSelected();
     OovString name;
     name.join(names, delimiter);
     return name;
@@ -419,14 +419,14 @@ OovString const GuiTree::getSelected(char delimiter) const
 
 void GuiTree::setSelected(OovString const &name, char delimiter)
     {
-    std::vector<OovString> tokens = name.split(delimiter);
+    OovStringVec tokens = name.split(delimiter);
     setSelected(tokens);
     }
 
 bool GuiTree::findNodeIter(GtkTreeIter *parent,
 	OovString const &name, char delimiter, GtkTreeIter *iter)
     {
-    std::vector<OovString> tokens = name.split(delimiter);
+    OovStringVec tokens = name.split(delimiter);
     bool found = false;
     if(tokens.size() > 0)
 	{

@@ -138,15 +138,27 @@ static std::string translate(const std::string &str)
 
 
 // # symbol is between statement types
-// @ symbol separates values defining a statement.
+// For each statement type, the @ symbol separates values defining the statement.
+//
+// There are the following types of statements:
+//	Open nesting
+//	Close nesting
+//	Call
+//	Variable reference
+//
 // Format of values in a open nesting:
-//	{ optional conditional
+//	{ optional conditional @ ADD? list of non-const identifiers or functions
 // Format of values in a close nesting:
 //	}
 // Format of values in a call statement:
 //	c= call name @ type ID
+// Format of values in a variable statement:
+//	v= variable name @ class type ID @ type ID @ f=read/t=written
 // Example:
-//    <Parms list="symbolName@120@true@true#symbol@121@false@true" />
+//    <Parms list="{[ c1 ]#c=a@2#}#{[ c2 ]#c=b@2#}" />
+//	{[ c1 ]		Open nesting with conditional on variable c1
+//	c=a@2		Call to function a() with type id=2
+//	}		Close nesting
 void ModelWriter::writeStatements(const ModelStatements &stmts)
     {
     if(stmts.size() > 0)
@@ -173,8 +185,8 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 		case ST_Call:
 		    {
 		    std::string className;
-		    if(stmt.getDecl().getDeclType())
-			className = stmt.getDecl().getDeclType()->getName();
+		    if(stmt.getClassDecl().getDeclType())
+			className = stmt.getClassDecl().getDeclType()->getName();
 		    fprintf(mFp, "c=%s@%d", translate(stmt.getName()).c_str(),
 			getObjectModelId(className));
 		    }
@@ -184,10 +196,14 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 		case ST_VarRef:
 		    {
 		    std::string className;
-		    if(stmt.getDecl().getDeclType())
-			className = stmt.getDecl().getDeclType()->getName();
-		    fprintf(mFp, "v=%s@%d", translate(stmt.getName()).c_str(),
-			getObjectModelId(className));
+		    std::string varType;
+		    if(stmt.getClassDecl().getDeclType())
+			className = stmt.getClassDecl().getDeclType()->getName();
+		    if(stmt.getVarDecl().getDeclType())
+			varType = stmt.getVarDecl().getDeclType()->getName();
+		    fprintf(mFp, "v=%s@%d@%d@%s", translate(stmt.getName()).c_str(),
+			getObjectModelId(className), getObjectModelId(varType),
+			boolStr(stmt.getVarAccessWrite()));
 		    }
 		    break;
 #endif
@@ -198,7 +214,7 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
     }
 
 // # symbol is between parameters.
-// @ symbol separates values defining a parameter.
+// For each parameter, the @ symbol separates values defining a parameter.
 // Format of values in a parameter:
 //	parameter name @ type ID @ is const @ is reference
 // Example:
@@ -211,9 +227,21 @@ void ModelWriter::writeOperation(ModelOperation const &oper)
 	snprintf(locStr, sizeof(locStr), "line=\"%d\"", oper.getLineNum());
     else
 	locStr[0] = '\0';
+#if(OPER_RET_TYPE)
+    ModelTypeRef const &retType = oper.getReturnType();
+    fprintf(mFp, "  <Oper name=\"%s\" access=\"%s\" const=\"%s\" %s "
+	    "ret=\"%d\" retconst=\"%s\" retref=\"%s\">\n",
+#else
     fprintf(mFp, "  <Oper name=\"%s\" access=\"%s\" const=\"%s\" %s>\n",
+#endif
 	oper.getName().c_str(), oper.getAccess().asUmlStr(),
-	boolStr(oper.isConst()), locStr);
+	boolStr(oper.isConst()), locStr
+#if(OPER_RET_TYPE)
+	,
+	getObjectModelId(retType.getDeclType()->getName()),
+	boolStr(retType.isConst()), boolStr(retType.isRefer())
+#endif
+	);
 
     if(oper.getParams().size() > 0)
 	{
