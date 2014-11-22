@@ -7,11 +7,11 @@
 
 #include "ModelObjects.h"
 #include "OovString.h"
+#include "Debug.h"
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <algorithm>
-#include <cassert>
 
 
 #define DEBUG_TYPES 0
@@ -95,10 +95,35 @@ bool ModelType::isTemplateType() const
     return(getName().find('<') != std::string::npos);
     }
 
+bool ModelTypeRef::match(ModelTypeRef const &typeRef) const
+    {
+    return(getDeclType() == typeRef.getDeclType() &&
+	    isConst() == typeRef.isConst() && isRefer() == typeRef.isRefer());
+    }
+
 const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     {
     return getDeclType() ? getDeclType()->getClass() : nullptr;
     }
+
+std::string ModelStatement::getFuncName() const
+    {
+    std::string opName = getName();
+    size_t opPos = opName.find('.');
+    if(opPos != std::string::npos)
+	opName.erase(0, opPos+1);
+    return opName;
+    }
+
+std::string ModelStatement::getAttrName() const
+    {
+    std::string opName = getName();
+    size_t opPos = opName.find('.');
+    if(opPos != std::string::npos)
+	opName.erase(opPos);
+    return opName;
+    }
+
 
 ModelFuncParam *ModelOperation::addMethodParameter(const std::string &name, const ModelType *type,
     bool isConst)
@@ -124,6 +149,24 @@ ModelBodyVarDecl *ModelOperation::addBodyVarDeclarator(const std::string &name, 
 bool ModelOperation::isDefinition() const
     {
     return(mStatements.size() > 0);
+    }
+
+bool ModelOperation::paramsMatch(std::vector<std::unique_ptr<ModelFuncParam>> const &params) const
+    {
+    bool match = false;
+    if(mParameters.size() == params.size())
+	{
+	match = true;
+	for(size_t i=0; i<mParameters.size(); i++)
+	    {
+	    match = mParameters[i]->match(*params[i]);
+	    if(!match)
+		{
+		break;
+		}
+	    }
+	}
+    return match;
     }
 
 void ModelClassifier::clearAttributes()
@@ -158,21 +201,10 @@ ModelOperation *ModelClassifier::addOperation(const std::string &name,
     return oper;
     }
 
-int ModelClassifier::findMatchingOperationIndex(ModelOperation const * const oper)
-    {
-    return getOperationIndex(oper->getName(), oper->isConst());
-    }
-
-ModelOperation *ModelClassifier::findMatchingOperation(ModelOperation const * const oper)
-    {
-    return getOperation(oper->getName(), oper->isConst());
-    }
-
-
 void ModelClassifier::replaceOperation(ModelOperation const * const operToReplace,
 	    std::unique_ptr<ModelOperation> &&newOper)
 	{
-	int index = findMatchingOperationIndex(operToReplace);
+	int index = findExactMatchingOperationIndex(*operToReplace);
 	if(index != -1)
 	    {
 //	    mOperations.erase(mOperations.begin() + index);
@@ -250,7 +282,7 @@ int ModelClassifier::getOperationIndex(const std::string &name, bool isConst) co
     int index = -1;
     for(size_t i=0; i<mOperations.size(); i++)
 	{
-	if(mOperations[i]->getName().compare(name) == 0 &&
+	if(name.compare(mOperations[i]->getName()) == 0 &&
 		mOperations[i]->isConst() == isConst)
 	    {
 	    index = i;
@@ -258,6 +290,36 @@ int ModelClassifier::getOperationIndex(const std::string &name, bool isConst) co
 	    }
 	}
     return index;
+    }
+
+int ModelClassifier::findExactMatchingOperationIndex(const ModelOperation &matchOp) const
+    {
+    int index = -1;
+    for(size_t i=0; i<mOperations.size(); i++)
+	{
+	ModelOperation const &arrayOp = *mOperations[i];
+	if(matchOp.getName().compare(arrayOp.getName()) == 0 &&
+		matchOp.isConst() == arrayOp.isConst())
+	    {
+	    if(matchOp.paramsMatch(arrayOp.getParams()))
+		{
+		index = i;
+		break;
+		}
+	    }
+	}
+    return index;
+    }
+
+const ModelOperation *ModelClassifier::findExactMatchingOperation(const ModelOperation &op) const
+    {
+    ModelOperation *oper = nullptr;
+    int index = findExactMatchingOperationIndex(op);
+    if(index != -1)
+	{
+	oper = mOperations[index].get();
+	}
+    return oper;
     }
 
 const ModelOperation *ModelClassifier::getOperation(const std::string &name, bool isConst) const
@@ -315,20 +377,14 @@ void ModelData::resolveStatements(ModelStatements &stmts)
     {
     for(auto &stmt : stmts)
 	{
-	if(stmt.getStatementType() == ST_Call
-#if(VAR_REF)
-		||
-		stmt.getStatementType() == ST_VarRef
-#endif
-		)
+	if(stmt.getStatementType() == ST_Call ||
+		stmt.getStatementType() == ST_VarRef)
 	    {
 	    resolveDecl(stmt.getClassDecl());
-#if(VAR_REF)
 	    if(stmt.getStatementType() == ST_VarRef)
 		{
 		resolveDecl(stmt.getVarDecl());
 		}
-#endif
 	    }
 	}
     }
@@ -407,7 +463,6 @@ bool ModelData::isTypeReferencedByStatements(ModelStatements const &stmts,
 	    referenced = true;
 	    break;
 	    }
-#if(VAR_REF)
 	if(stmt.getStatementType() == ST_VarRef &&
 		(stmt.getClassDecl().getDeclType() == &type ||
 		stmt.getVarDecl().getDeclType() == &type))
@@ -415,7 +470,6 @@ bool ModelData::isTypeReferencedByStatements(ModelStatements const &stmts,
 	    referenced = true;
 	    break;
 	    }
-#endif
 	}
     return referenced;
     }
@@ -518,7 +572,7 @@ void ModelData::takeAttributes(ModelClassifier *sourceType, ModelClassifier *des
 	}
     for(auto &oper : sourceType->getOperations())
 	{
-	ModelOperation *destOper = destType->findMatchingOperation(oper.get());
+	ModelOperation const *destOper = destType->findExactMatchingOperation(*oper.get());
 	if(destOper && destOper->isDefinition())
 	    {
 	    // dest operation already has a good definition.
@@ -542,18 +596,13 @@ void ModelData::replaceStatementType(ModelStatements &stmts, ModelType *existing
     {
     for(auto &stmt : stmts)
 	{
-	if(stmt.getStatementType() == ST_Call
-#if(VAR_REF)
-		||
-		stmt.getStatementType() == ST_VarRef
-#endif
-		)
+	if(stmt.getStatementType() == ST_Call ||
+		stmt.getStatementType() == ST_VarRef)
 	    {
 	    if(stmt.getClassDecl().getDeclType() == existingType)
 		{
 		stmt.getClassDecl().setDeclType(newType);
 		}
-#if(VAR_REF)
 	    if(stmt.getStatementType() == ST_VarRef)
 		{
 		if(stmt.getVarDecl().getDeclType() == existingType)
@@ -561,7 +610,6 @@ void ModelData::replaceStatementType(ModelStatements &stmts, ModelType *existing
 		    stmt.getVarDecl().setDeclType(newType);
 		    }
 		}
-#endif
 	    }
 	}
     }
@@ -865,7 +913,10 @@ ModelModule const * const ModelData::findModuleById(int id)
 		}
 	    }
 	}
-    assert(mod);
+    if(!mod)
+	{
+	DebugAssert(__FILE__, __LINE__);
+	}
     return mod;
     }
 

@@ -61,9 +61,7 @@ class OperationStatement
 	    {}
 	// Returns non-const, so that the rect can be modified.
 	class OperationCall *getCall();
-#if(VAR_REF)
 	class OperationVarRef *getVarRef();
-#endif
 	const class OperationNestStart *getNestStart() const;
 	const class OperationNestEnd *getNestEnd() const;
     private:
@@ -124,7 +122,6 @@ class OperationCall:public OperationStatement
 	GraphRect rect;
     };
 
-#if(VAR_REF)
 class OperationVarRef:public OperationStatement
     {
     public:
@@ -157,7 +154,6 @@ class OperationVarRef:public OperationStatement
 	const ModelAttribute &mAttribute;
 	GraphRect rect;
     };
-#endif
 
 /// An operation definition is a method in a class, that defines all of the
 /// functions that are called in other classes.

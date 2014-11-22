@@ -15,7 +15,6 @@
 #include <io.h>		// For _sopen_s - in Windows, mingw-builds is required.
 #endif
 #include <errno.h>
-#include <assert.h>
 
 
 // Can't include OovProcess because some projects don't use glib.

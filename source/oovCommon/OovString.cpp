@@ -170,6 +170,26 @@ size_t StringFindSpace(char const *str, size_t startPos)
 	return p - str;
     }
 
+std::string StringMakeXml(std::string const &text)
+    {
+    std::string outStr;
+    char const *p = &text[0];
+    while(*p)
+	{
+	switch(*p)
+	    {
+	    case '>': 	outStr += "&gt;";	break;
+	    case '<':	outStr += "&lt;";	break;
+	    case '&':	outStr += "&amp;";	break;
+	    case '\'':	outStr += "&apos;";	break;
+	    case '\"':	outStr += "&quot;";	break;
+	    default:	outStr += *p;		break;
+	    }
+	p++;
+	}
+    return outStr;
+    }
+
 //////////////
 
 void OovString::setUpperCase(char const * const str)

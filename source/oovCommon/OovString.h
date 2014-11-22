@@ -43,6 +43,7 @@ OovStringVec StringSplit(char const * str, char delimiter);
 OovStringVec StringSplit(char const * str, char const *delimiterStr);
 OovStringVec StringSplit(char const * str, std::vector<std::string> const &delimiters);
 class OovString StringJoin(OovStringVec const &tokens, char delimiter);
+std::string StringMakeXml(std::string const &text);
 
 /// WARNING: the class that contains the c_str should be placed first in
 /// the inheritance tree of the derived class because this class uses a

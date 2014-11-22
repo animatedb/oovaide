@@ -263,7 +263,6 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 		}
 		break;
 
-#if(VAR_REF)
 	    case ST_VarRef:
 		{
 		OperationVarRef *ref = stmt->getVarRef();
@@ -307,7 +306,6 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 		y += mCharHeight*2;
 		}
 		break;
-#endif
 
 	    case ST_OpenNest:
 		{

@@ -80,6 +80,7 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
 	- analysis - doesn't work on filenames with spaces
 	- Coverage tool - fix switch/case fall throughs
 	- Coverage tool - fix precompiled header before include oovcoverage.h
@@ -89,7 +90,6 @@ Missing Features
 	- Multithreaded build output is not synchronized well enough
 	- Generate a version error when the analysis dir has version problems
 	- A static lib without source should not be on link lines
-	- TEST const calls/oper overloading
 	- Fast loading XMI, parse func defs later (first store statement string)
 	- Should include mingw-builds includes so that threading errors don't occur
 	- oovcde-incdeps once got corrupted during debugging and slowed down and
@@ -99,7 +99,6 @@ Missing Features
 	- Typedefs not listed (oovCommon/Filepaths)
 	- function return type not listed
 	- Multiple case statements without breaks appear nested.
-	- Overloaded operations are not differentiated except const
 	- Some statements not parsed: else (currently faked), goto, default, return, etc.
 	- Save complete type info (explicit const, *, &, etc) in the XMI files?
 	- Change class def/decl description in XMI file to find correct source module
@@ -172,6 +171,8 @@ Missing Features
 	- Add find methods that use class variable
 	- Add display of unused methods?
 	- dup code http://scg.unibe.ch/archive/papers/Duca99bCodeDuplication.pdf
+		http://www.ics.heacademy.ac.uk/resources/assessment/plagiarism/detectiontools_sourcecode.html
+		https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
 		http://www.codergears.com/Blog/?p=201
 		http://www.ccfinder.net/ccfinderxos.html
 	- Sloppy code indicator (unused members, single use members, etc.)

@@ -2693,6 +2693,15 @@ These arguments are specific to the selected configuration.
                         <signal name="activate" handler="on_ComplexityMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="MemberUsageMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Member Usage</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_MemberUsageMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -2830,6 +2839,15 @@ These arguments are specific to the selected configuration.
                         <property name="use_underline">True</property>
                         <property name="use_stock">True</property>
                         <signal name="activate" handler="on_HelpAboutmenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="HelpContentsMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Contents</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_HelpContentsMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>

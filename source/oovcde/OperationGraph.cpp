@@ -21,12 +21,10 @@ OperationCall *OperationStatement::getCall()
     return(mStatementType == ST_Call ? static_cast<OperationCall*>(this) : nullptr);
     }
 
-#if(VAR_REF)
 OperationVarRef *OperationStatement::getVarRef()
     {
     return(mStatementType == ST_VarRef ? static_cast<OperationVarRef*>(this) : nullptr);
     }
-#endif
 
 const OperationNestStart *OperationStatement::getNestStart() const
     {
@@ -244,7 +242,6 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	    {
 	    opDef.addNestEnd();
 	    }
-#if(VAR_REF)
 #define SHOW_VARS 0
 #if(SHOW_VARS)
 	else if(stmt.getStatementType() == ST_VarRef)
@@ -264,7 +261,6 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 		}
 	    }
 #endif
-#endif
 	else if(stmt.getStatementType() == ST_Call)
 	    {
 	    const ModelClassifier *cls = stmt.getClassDecl().getDeclType()->getClass();
@@ -282,8 +278,8 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 		int classIndex = addOrGetClass(cls, gc);
 		if(classIndex != -1)
 		    {
-		    const ModelOperation *targetOper = cls->getOperationAnyConst(stmt.getName(),
-			    stmt.getClassDecl().isConst());
+		    const ModelOperation *targetOper = cls->getOperationAnyConst(
+			    stmt.getFuncName(), stmt.getClassDecl().isConst());
 		    if(targetOper)
 			{
 			/// @todo - use make_unique when supported.

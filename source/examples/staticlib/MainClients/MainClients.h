@@ -29,10 +29,10 @@ class LittleBoy:public Client
             { return "LittleBoy"; }
     };
 
-class World
+class WoolWorld
     {
     public:
-        World();
+        WoolWorld();
 
     private:
     	BlackSheep sheep;

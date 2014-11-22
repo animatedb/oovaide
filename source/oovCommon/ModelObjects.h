@@ -103,6 +103,7 @@ class ModelTypeRef
 	    { return mConst; }
 	bool isRefer() const
 	    { return mRefer; }
+	bool match(ModelTypeRef const &typeRef) const;
 
     private:
 	ModelType const *mDeclType;
@@ -122,6 +123,9 @@ class ModelDeclarator:public ModelObject, public ModelTypeRef
 	    ModelObject(name), ModelTypeRef(declType)
 	    {}
 	const class ModelClassifier *getDeclClassType() const;
+	// Used for operation parameter matching
+	bool match(ModelDeclarator const &decl) const
+	    { return ModelTypeRef::match(decl); }
     };
 
 
@@ -145,12 +149,7 @@ public:
         Visibility mAccess;
 };
 
-enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call,
-#define VAR_REF 1
-#if(VAR_REF)
-    ST_VarRef		// rename to member ref?
-#endif
-};
+enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call, ST_VarRef };
 
 /// These aren't really statements. These are important things in a function
 /// that must be displayed in sequence/operation diagrams.
@@ -172,19 +171,18 @@ class ModelStatement:public ModelObject
 	//	The class decl points to the class type.
 	//	The var decl points to the variable type.
 	ModelStatement(const std::string &name, eModelStatementTypes type):
-	    ModelObject(name), mStatementType(type), mClassDecl(nullptr)
-#if(VAR_REF)
-	    , mVarDecl(nullptr), mVarAccessWrite(false)
-#endif
+	    ModelObject(name), mStatementType(type), mClassDecl(nullptr),
+	    mVarDecl(nullptr), mVarAccessWrite(false)
 	    {}
+	std::string getFuncName() const;	// Only valid for call statement
+	std::string getAttrName() const;	// Only valid for call statement
 	eModelStatementTypes getStatementType() const
 	    { return mStatementType; }
-	// These are only valid if this statement is a call.
+	// These are only valid for call statement.
 	ModelTypeRef &getClassDecl()
 	    { return mClassDecl; }
 	const ModelTypeRef &getClassDecl() const
 	    { return mClassDecl; }
-#if(VAR_REF)
 	ModelTypeRef &getVarDecl()
 	    { return mVarDecl; }
 	const ModelTypeRef &getVarDecl() const
@@ -193,16 +191,13 @@ class ModelStatement:public ModelObject
 	    { mVarAccessWrite = write; }
 	bool getVarAccessWrite() const
 	    { return mVarAccessWrite; }
-#endif
 
     private:
 	eModelStatementTypes mStatementType;
 	ModelTypeRef mClassDecl;
-#if(VAR_REF)
 	// Only class member references are saved here.
 	ModelTypeRef mVarDecl;
 	bool mVarAccessWrite;	// Indicates whether the var decl is written or read.
-#endif
     };
 
 /// This is a list of statements in a function.
@@ -286,6 +281,7 @@ public:
 	{ mLineNum = lineNum; }
     int getLineNum() const
 	{ return mLineNum; }
+    bool paramsMatch(std::vector<std::unique_ptr<ModelFuncParam>> const &params) const;
 
 private:
     std::vector<std::unique_ptr<ModelFuncParam>> mParameters;
@@ -338,8 +334,6 @@ public:
     ModelOperation *addOperation(const std::string &name, Visibility access,
 	    bool isConst);
     void removeOperation(ModelOperation *oper);
-    ModelOperation *findMatchingOperation(ModelOperation const * const oper);
-    int findMatchingOperationIndex(ModelOperation const * const oper);
     void addOperation(std::unique_ptr<ModelOperation> &&oper)
         {
         mOperations.push_back(std::move(oper));
@@ -352,7 +346,11 @@ public:
     void eraseOperation(const ModelOperation *oper);
     int getAttributeIndex(const std::string &name) const;
     const ModelAttribute *getAttribute(const std::string &name) const;
-    /// @todo - this doesn't work for overloaded functions.
+
+    int findExactMatchingOperationIndex(const ModelOperation &op) const;
+    const ModelOperation *findExactMatchingOperation(const ModelOperation &op) const;
+
+    /// @todo - these don't work for overloaded functions.
     const ModelOperation *getOperation(const std::string &name, bool isConst) const;
     int getOperationIndex(const std::string &name, bool isConst) const;
     ModelOperation *getOperation(const std::string &name, bool isConst)
@@ -362,6 +360,7 @@ public:
 	}
     /// @todo - This isn't really correct.
     const ModelOperation *getOperationAnyConst(const std::string &name, bool isConst) const;
+
     std::vector<std::unique_ptr<ModelAttribute>> &getAttributes()
 	{ return mAttributes; }
     const std::vector<std::unique_ptr<ModelAttribute>> &getAttributes() const

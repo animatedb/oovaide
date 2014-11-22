@@ -90,15 +90,12 @@ void OperationDiagram::drawToDrawingArea()
 
 static OperationDiagram *gOperationDiagram;
 
-static struct StartPosInfo
-    {
-    GraphPoint startPos;
-    } gStartPosInfo;
+static GraphPoint gStartPosInfo;
 
 void OperationDiagram::buttonPressEvent(const GdkEventButton *event)
     {
     gOperationDiagram = this;
-    gStartPosInfo.startPos.set(event->x, event->y);
+    gStartPosInfo.set(event->x, event->y);
     }
 
 static void displayContextMenu(guint button, guint32 acttime, gpointer data)
@@ -106,7 +103,7 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
     GdkEventButton *event = static_cast<GdkEventButton*>(data);
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(event->x, event->y);
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     char const * const nodeitems[] =
 	{
 	"OperGotoClassMenuitem",
@@ -134,7 +131,7 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
 
     GtkMenu *menu = gOperationDiagram->getBuilder().getMenu("DrawOperationPopupMenu");
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
-    gStartPosInfo.startPos.set(event->x, event->y);
+    gStartPosInfo.set(event->x, event->y);
     }
 
 void OperationDiagram::buttonReleaseEvent(const GdkEventButton *event)
@@ -142,7 +139,7 @@ void OperationDiagram::buttonReleaseEvent(const GdkEventButton *event)
     if(event->button == 1)
 	{
 	const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
-		gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+		gStartPosInfo.x, gStartPosInfo.y);
 	if(node)
 	    {
 	    /*
@@ -167,7 +164,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoOperationmenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(opcall)
 	{
 	std::string className = gOperationDiagram->getOpGraph().getClassName(*opcall);
@@ -181,7 +178,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoClassMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	gOperationDiagram->gotoClass(node->getType()->getName().c_str());
@@ -192,7 +189,7 @@ extern "C" G_MODULE_EXPORT void on_RemoveOperClassMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	gOperationDiagram->getOpGraph().removeNode(node);
@@ -204,7 +201,7 @@ extern "C" G_MODULE_EXPORT void on_AddCallsMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(opcall)
 	{
 	gOperationDiagram->getOpGraph().addOperDefinition(*opcall);
@@ -216,7 +213,7 @@ extern "C" G_MODULE_EXPORT void on_RemoveCallsMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(opcall)
 	{
 	gOperationDiagram->getOpGraph().removeOperDefinition(*opcall);
@@ -228,7 +225,7 @@ extern "C" G_MODULE_EXPORT void on_AddCallersMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(opcall)
 	{
 	gOperationDiagram->getOpGraph().addOperCallers(
@@ -241,7 +238,7 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(opcall)
 	{
 	const ModelOperation &oper = opcall->getOperation();
@@ -249,7 +246,7 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
 	    viewSource(oper.getModule()->getModulePath().c_str(), oper.getLineNum());
 	}
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
-	    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+	    gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	const ModelClassifier *cls = node->getType()->getClass();

@@ -8,7 +8,7 @@
 #include "IncludeMap.h"
 #include "Components.h"	// For isHeader
 #include <algorithm>
-#include <assert.h>
+#include "Debug.h"
 
 void IncDirDependencyMapReader::read(char const * const fn)
     {
@@ -76,7 +76,7 @@ void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
 	else
 	    {
 	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.c_str());
-	    assert(false);
+	    DebugAssert(__FILE__, __LINE__);
 	    }
 	}
     }
@@ -111,7 +111,7 @@ void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
 	else
 	    {
 	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.c_str());
-	    assert(false);
+	    DebugAssert(__FILE__, __LINE__);
 	    }
 	}
     }

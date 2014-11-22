@@ -8,7 +8,7 @@ void Client::takeBag(BlackSheep &sheep)
     printf("%s takes bag %s\n", getName(), bag.quantity());
     }
 
-World::World()
+WoolWorld::WoolWorld()
     {
     master.takeBag(sheep);
     dame.takeBag(sheep);
@@ -21,5 +21,5 @@ World::World()
 
 int main(int argc, const char* argv[])
     {
-    World world;
+    WoolWorld world;
     }

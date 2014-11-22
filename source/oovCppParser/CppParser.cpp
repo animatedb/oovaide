@@ -17,7 +17,6 @@
 #include <unistd.h>		// for unlink
 #include <limits.h>
 #include <algorithm>
-#include <assert.h>
 
 
 // This must save a superset of what gets written to the file. For exmample,
@@ -174,7 +173,7 @@ class cCrashDiagnostics
     {
     public:
 	cCrashDiagnostics():
-	    mCrashed(false)
+	    mCrashed(false), mEnableDumpCursor(true)
 	    {}
 	void saveMostRecentParseLocation(char const * const diagStr, CXCursor cursor)
 	    {
@@ -184,6 +183,8 @@ class cCrashDiagnostics
 	    dumpCursor(sLog.mFp, diagStr, cursor);
 #endif
 	    }
+	void enableDumpCursor(bool enable)
+	    { mEnableDumpCursor = enable; }
 	void setCrashed()
 	    { mCrashed = true; }
 	bool hasCrashed() const
@@ -204,6 +205,7 @@ class cCrashDiagnostics
 	    }
     private:
 	bool mCrashed;
+	bool mEnableDumpCursor;
 	std::string mDiagStr;
 	CXCursor mMostRecentCursor;
     };
@@ -446,76 +448,6 @@ static std::string getFileLoc(CXCursor cursor, int *retLine = nullptr)
     return fn;
     }
 
-// Takes a CXType_Record cursor and adds parts of a class including
-// inheritance, inline functions, and member variables.
-CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
-    {
-    sCrashDiagnostics.saveMostRecentParseLocation("R ", cursor);
-    CXCursorKind ckind = clang_getCursorKind(cursor);
-    if(ckind == CXCursor_CXXBaseSpecifier)
-	{
-	FilePath fn(getFileLoc(cursor), FP_File);
-	if(fn == mTopParseFn)
-	    {
-	    // These have to be made datatypes (not classes) so that these don't define
-	    // the type.  For example, std::string may not be defined in a file,
-	    // so these would create a new model number for the type.
-	    ModelClassifier *child = static_cast<ModelClassifier*>(createOrGetDataTypeRef(parent));
-	    ModelClassifier *parent = static_cast<ModelClassifier*>(createOrGetDataTypeRef(cursor));
-	    ModelAssociation *assoc = new ModelAssociation(child,
-		parent, getAccess(cursor));
-	    /// @todo - use make_unique when supported.
-	    mModelData.mAssociations.push_back(std::unique_ptr<ModelAssociation>(assoc));
-	    }
-	}
-    else if(ckind == CXCursor_CXXAccessSpecifier)
-	{
-	mClassMemberAccess = getAccess(cursor);
-	}
-    else
-	{
-	CXType cursortype = clang_getCursorType(cursor);
-	switch(cursortype.kind)
-	    {
-	    case CXType_FunctionProto:
-		{
-		// Add all operations in all TU's so that the correct access is defined.
-		CXStringDisposer str(clang_getCursorSpelling(cursor));
-		bool isConst = isMethodConst(cursor);
-		mOperation = mClassifier->addOperation(str, mClassMemberAccess, isConst);
-		addOperationParts(cursor, true);
-		int line;
-		FilePath fn(getFileLoc(cursor, &line), FP_File);
-		if(fn == mTopParseFn)
-		    {
-		    mOperation->setLineNum(line);
-		    mOperation->setModule(mModelData.mModules[0].get());
-		    }
-		}
-		break;
-
-	    case CXType_Invalid:
-		break;
-
-	    default:
-		{
-		if(isField(cursor))
-		    {
-		    CXStringDisposer name = clang_getCursorDisplayName(cursor);
-		    RefType rt;
-		    ModelType *type = createOrGetBaseTypeRef(cursor, rt);
-		    ModelAttribute *attr = mClassifier->addAttribute(name,
-			    type, mClassMemberAccess.getVis());
-		    attr->setConst(rt.isConst);
-		    attr->setRefer(rt.isRef);
-		    }
-		}
-		break;
-	    }
-	}
-    return CXChildVisit_Continue;
-    }
-
 // Finds variable declarations inside function bodies.
 CXChildVisitResult CppParser::visitFunctionAddVars(CXCursor cursor, CXCursor parent)
     {
@@ -742,6 +674,13 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		{
 		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
 		RefType rt;
+		CXCursor memberRefCursor = getCursorCallMemberRef(cursor);
+		if(!clang_Cursor_isNull(memberRefCursor))
+		    {
+		    CXStringDisposer attrName = clang_getCursorDisplayName(memberRefCursor);
+		    attrName += '.';
+		    functionName.insert(0, attrName);
+		    }
 		const ModelType *classType = createOrGetBaseTypeRef(classCursor, rt);
 		ModelStatement stmt(functionName, ST_Call);
 		stmt.getClassDecl().setDeclType(classType);
@@ -780,12 +719,11 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    }
 	    break;
 
-#if(VAR_REF)
-//	case CXCursor_MemberRef:
 	// An expression that refers to a member of a struct, union, class, etc.
 	// If first child of CXCursor_BinaryOperator, it is read only.
 	// If child of CXCursor_UnaryOperator, it may be write or read.
 	case CXCursor_MemberRefExpr:
+	case CXCursor_MemberRef:
 	    {
 	    CXStringDisposer name = clang_getCursorDisplayName(cursor);
 
@@ -794,7 +732,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    if(cursorDef.kind == CXCursor_FieldDecl)
 		{
 		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
-		if(classCursor.kind == CXCursor_ClassDecl)
+		if(classCursor.kind == CXCursor_ClassDecl || classCursor.kind == CXCursor_StructDecl)
 		    {
 		    RefType rt;
 		    const ModelType *classType = createOrGetBaseTypeRef(classCursor, rt);
@@ -807,10 +745,18 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		    stmt.setVarAccessWrite(modifiedLhs);
 		    mStatements->addStatement(stmt);
 		    }
+		else
+		    {
+		    LogAssertFile(__FILE__, __LINE__);
+		    }
+		}
+	    else if(cursorDef.kind != CXCursor_CXXMethod && cursorDef.kind != CXCursor_FirstInvalid &&
+		    cursorDef.kind != CXCursor_ConversionFunction)
+		{
+		LogAssertFile(__FILE__, __LINE__);
 		}
 	    }
 	    break;
-#endif
 
 //	case CXCursor_BinaryOperator:
 //		The first child is the rhs. second is lhs.
@@ -855,6 +801,75 @@ void CppParser::addRecord(CXCursor cursor, Visibility vis)
     mClassMemberAccess = vis;
     }
 
+// Takes a CXType_Record cursor and adds parts of a class including
+// inheritance, inline functions, and member variables.
+CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
+    {
+    sCrashDiagnostics.saveMostRecentParseLocation("R ", cursor);
+    CXCursorKind ckind = clang_getCursorKind(cursor);
+    switch(ckind)
+	{
+	case CXCursor_CXXBaseSpecifier:
+	    {
+	    FilePath fn(getFileLoc(cursor), FP_File);
+	    if(fn == mTopParseFn)
+		{
+		// These have to be made datatypes (not classes) so that these don't define
+		// the type.  For example, std::string may not be defined in a file,
+		// so these would create a new model number for the type.
+		ModelClassifier *child = static_cast<ModelClassifier*>(createOrGetDataTypeRef(parent));
+		ModelClassifier *parent = static_cast<ModelClassifier*>(createOrGetDataTypeRef(cursor));
+		ModelAssociation *assoc = new ModelAssociation(child,
+		    parent, getAccess(cursor));
+		/// @todo - use make_unique when supported.
+		mModelData.mAssociations.push_back(std::unique_ptr<ModelAssociation>(assoc));
+		}
+	    }
+	    break;
+
+	case CXCursor_CXXAccessSpecifier:
+	    {
+	    mClassMemberAccess = getAccess(cursor);
+	    }
+	    break;
+
+	case CXCursor_Constructor:
+	case CXCursor_CXXMethod:
+	case CXCursor_Destructor:
+	    {
+	    // Add all operations in all TU's so that the correct access is defined.
+	    CXStringDisposer str(clang_getCursorSpelling(cursor));
+	    bool isConst = isMethodConst(cursor);
+	    mOperation = mClassifier->addOperation(str, mClassMemberAccess, isConst);
+	    addOperationParts(cursor, true);
+	    int line;
+	    FilePath fn(getFileLoc(cursor, &line), FP_File);
+	    if(fn == mTopParseFn)
+		{
+		mOperation->setLineNum(line);
+		mOperation->setModule(mModelData.mModules[0].get());
+		}
+	    }
+	    break;
+
+	default:
+	    {
+	    if(isField(cursor))
+		{
+		CXStringDisposer name = clang_getCursorDisplayName(cursor);
+		RefType rt;
+		ModelType *type = createOrGetBaseTypeRef(cursor, rt);
+		ModelAttribute *attr = mClassifier->addAttribute(name,
+			type, mClassMemberAccess.getVis());
+		attr->setConst(rt.isConst);
+		attr->setRefer(rt.isRef);
+		}
+	    }
+	    break;
+	}
+    return CXChildVisit_Continue;
+    }
+
 CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor parent)
     {
     sCrashDiagnostics.saveMostRecentParseLocation("TU", cursor);
@@ -884,14 +899,9 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	    addRecord(cursor, Visibility::Private);
 	    break;
 
-	default:
-	    break;
-	}
-
-    CXType cursType = clang_getCursorType(cursor);
-    switch(cursType.kind)
-	{
-	case CXType_FunctionProto:	//  CXCursorKind = CXCursor_CXXMethod
+	case CXCursor_Constructor:
+	case CXCursor_CXXMethod:
+//	case CXType_FunctionProto:	//  CXCursorKind = CXCursor_CXXMethod
 	    {
 	    mClassifier = nullptr;
 	    CXCursor classCursor = clang_getCursorSemanticParent(cursor);
@@ -912,13 +922,22 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 		if(fn == mTopParseFn)
 		    {
 		    CXStringDisposer funcName(clang_getCursorSpelling(cursor));
-		    /// @todo - this doesn't work for overloaded functions.
-		    mOperation = mClassifier->getOperation(funcName, isMethodConst(cursor));
+		    ModelOperation tempOper(funcName, Visibility(), isMethodConst(cursor));
+		    mOperation = &tempOper;
+		    // Prevent double display of arg parsing since it is in addOperationParts().
+		    sCrashDiagnostics.enableDumpCursor(false);
+		    clang_visitChildren(cursor, ::visitFunctionAddArgs, this);
+		    sCrashDiagnostics.enableDumpCursor(true);
+		    mOperation = const_cast<ModelOperation*>(mClassifier->findExactMatchingOperation(tempOper));
 		    if(mOperation)
 			{
 			addOperationParts(cursor, false);
 			mOperation->setModule(mModelData.mModules[0].get());
 			mOperation->setLineNum(line);
+			}
+		    else
+			{
+			LogAssertFile(__FILE__, __LINE__);
 			}
 		    }
 		}
@@ -969,7 +988,7 @@ CXChildVisitResult CppParser::visitTranslationUnitForIncludes(CXCursor cursor, C
 		    {
 		    fprintf(stderr, "Unable to make oovcde-incdeps.txt: \n   %s\n",
 			    absEdFn.c_str());
-		    assert(false);
+		    DebugAssert(__FILE__, __LINE__);
 		    }
 		mIncDirDeps.insert(absErFn, absEdFn);
 		}
@@ -1004,8 +1023,17 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
     unsigned options = CXTranslationUnit_DetailedPreprocessingRecord;
 //    unsigned options = 0;
     CXTranslationUnit tu;
-    CXErrorCode errCode = clang_parseTranslationUnit2(index, srcFn,
-	clang_args, num_clang_args, 0, 0, options, &tu);
+
+    CXErrorCode errCode;
+    try
+	{
+	errCode = clang_parseTranslationUnit2(index, srcFn,
+		clang_args, num_clang_args, 0, 0, options, &tu);
+	}
+    catch(...)
+	{
+
+	}
     if(errCode == CXError_Success)
 	{
 	CXCursor rootCursor = clang_getTranslationUnitCursor(tu);

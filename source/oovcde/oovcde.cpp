@@ -16,6 +16,7 @@
 #include "File.h"
 #include "Version.h"
 #include "Complexity.h"
+#include "StaticAnalysis.h"
 #include <stdlib.h>
 
 
@@ -74,6 +75,8 @@ void Menu::updateMenuEnables()
 		mGui.getBuilder().getWidget("StopAnalyzeMenuitem"), !idle);
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("ComplexityMenuitem"), idle && open);
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("MemberUsageMenuitem"), idle && open);
 
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("BuildSettingsMenuitem"), open);
@@ -394,13 +397,58 @@ int oovGui::getStatusSourceFile(std::string &fn)
     return lineNum;
     }
 
+static void displayBrowserFile(char const *fn)
+    {
+#ifdef __linux__
+    FilePath fpTest(fn, FP_File);
+    if(!fileExists(fpTest.c_str()))
+#else
+    if(!fileExists(fn))
+#endif
+	{
+	fn = "..\\web\\userguide\\oovcdeuserguide.shtml";
+	}
+#ifdef __linux__
+    pid_t pid=fork();
+    if(!pid)
+	{
+	FilePath fp(fn, FP_File);
+	char const *prog = "/usr/bin/xdg-open";
+	char const *args[3];
+	args[0] = prog;
+	args[1] = fp.c_str();
+	args[2] = '\0';
+printf("FF %s\n", fp.c_str());
+        execvp(prog, const_cast<char**>(args));
+	}
+#else
+    ShellExecute(NULL, "open", fn, NULL, NULL, SW_SHOWNORMAL);
+#endif
+    }
+
 void oovGui::makeComplexityFile()
     {
-    if(createComplexityFile("oovComplex.txt", mModelData))
+    std::string fn;
+    if(createComplexityFile(mModelData, fn))
 	{
-	Gui::messageBox("The tab delimited complexity file oovComplex.txt has"
-		" been saved in the project directory. Use a spreadsheet"
-		" program to view and sort.", GTK_MESSAGE_INFO);
+	displayBrowserFile(fn.c_str());
+	}
+    else
+	{
+	Gui::messageBox("Unable to write oovcde-out-Complex.txt to project directory");
+	}
+    }
+
+void oovGui::makeMemberUseFile()
+    {
+    std::string fn;
+    if(createStaticAnalysisFile(mModelData, fn))
+	{
+	displayBrowserFile(fn.c_str());
+	}
+    else
+	{
+	Gui::messageBox("Unable to write file to project output directory");
 	}
     }
 
@@ -704,6 +752,11 @@ extern "C" G_MODULE_EXPORT void on_ComplexityMenuitem_activate(
     gOovGui.makeComplexityFile();
     }
 
+extern "C" G_MODULE_EXPORT void on_MemberUsageMenuitem_activate(
+	GtkWidget *button, gpointer data)
+    {
+    gOovGui.makeMemberUseFile();
+    }
 
 extern "C" G_MODULE_EXPORT void on_BuildDebugMenuitem_activate(
 	GtkWidget *button, gpointer data)
@@ -888,4 +941,10 @@ extern "C" G_MODULE_EXPORT void on_HelpAboutmenuitem_activate(GtkWidget *widget,
 	    " graphical navigation between drawings and source code.";
     gtk_show_about_dialog(nullptr, "program-name", "Oovcde",
 	    "version", "Version " OOV_VERSION, "comments", comments, nullptr);
+    }
+
+extern "C" G_MODULE_EXPORT void on_HelpContentsMenuitem_activate(GtkWidget *widget, gpointer data)
+    {
+    const char *fn = "..\\..\\web\\userguide\\oovcdeuserguide.shtml";
+    displayBrowserFile(fn);
     }

@@ -57,7 +57,12 @@ int main(int argc, char const *const argv[])
 	{
 	// This saves the CPP info in an XMI file.
 	et = sCppParser.parse(argv[1], argv[2], argv[3], &argv[4], argc-4);
-	if(et != CppParser::ET_None && et != CppParser::ET_CompileWarnings)
+	if(et == CppParser::ET_CLangError)
+	    {
+	    fprintf(stderr, "oovCppParser: CLang error analyzing file %s.\n"
+		    "It could be an argument error (Windows spaces in path), or a bug in CLang\n", argv[1]);
+	    }
+	else if(et != CppParser::ET_None && et != CppParser::ET_CompileWarnings)
 	    {
 	    fprintf(stderr, "oovCppParser: Error analyzing file %s\n", argv[1]);
 	    }

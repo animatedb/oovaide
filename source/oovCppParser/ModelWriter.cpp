@@ -44,13 +44,13 @@ enum ModelIdOffsets { MIO_Module=1, MIO_Object=2, MIO_NoLookup=100000 };
 static void writeDebugStr(std::string const &str)
     {
     SharedFile file;
-    file.openFile("DebugCppParseWriter.txt", SharedFile::M_ReadWriteExclusiveAppend);
+    file.open("DebugCppParseWriter.txt", M_ReadWriteExclusiveAppend);
     if(file.isOpen())
 	{
 	OovString tempStr;
 	tempStr.appendInt(getpid());
 	tempStr += str + '\n';
-	file.writeFile(tempStr.c_str(), tempStr.length());
+	file.write(tempStr.c_str(), tempStr.length());
 	}
     }
 #endif
@@ -152,6 +152,7 @@ static std::string translate(const std::string &str)
 //	}
 // Format of values in a call statement:
 //	c= call name @ type ID
+//	call name is membername.funcname, where dot is used for any member ref including "->".
 // Format of values in a variable statement:
 //	v= variable name @ class type ID @ type ID @ f=read/t=written
 // Example:
@@ -192,7 +193,6 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 		    }
 		    break;
 
-#if(VAR_REF)
 		case ST_VarRef:
 		    {
 		    std::string className;
@@ -206,7 +206,6 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 			boolStr(stmt.getVarAccessWrite()));
 		    }
 		    break;
-#endif
 		}
 	    }
 	fprintf(mFp, "\"/>\n");

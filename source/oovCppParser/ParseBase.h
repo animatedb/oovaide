@@ -32,7 +32,12 @@ struct RefType
     };
 
 CXCursor getNthChildCursor(CXCursor cursor, int nth);
-bool childOfCursor(CXCursor cursor, CXCursorKind cursKind);
+CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind);
+CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
+	const char *type);
+CXCursor getCursorChildKindAndNotTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
+	const char *type);
+CXCursor getCursorCallMemberRef(CXCursor cursor);
 void debugDumpCursor(CXCursor cursor, bool recurse=true);
 void removeLastNonIdentChar(std::string &name);
 void appendConditionString(CXCursor cursor, std::string &str);

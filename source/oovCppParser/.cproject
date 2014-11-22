@@ -55,7 +55,7 @@
 									<listOptionValue builtIn="false" value="psapi"/>
 									<listOptionValue builtIn="false" value="imagehlp"/>
 									<listOptionValue builtIn="false" value="pthread"/>
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="libclang"/>
+									<listOptionValue builtIn="false" value="libclang"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1134293610" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>

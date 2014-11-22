@@ -30,6 +30,9 @@ This version contains:
 <ul>
   <li>Added data complexity calculation</li>
   <li>Added return types to class diagrams</li>
+  <li>Added more struct parsing</li>
+  <li>Added member usage statistics</li>
+  <li>Added help</li>
 </ul>
 
 <h2>2014-10</h2>

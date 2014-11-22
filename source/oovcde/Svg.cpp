@@ -8,7 +8,7 @@
 
 #include "Svg.h"
 #include "DiagramDrawer.h"
-#include <string>
+#include "OovString.h"
 
 /*
 Simple SVG example.
@@ -32,20 +32,7 @@ static void addArg(std::string &str, char const * const argName, char const * co
 
 static void translateText(char const * const text, std::string &str)
     {
-    char const *p = text;
-    while(*p)
-	{
-	switch(*p)
-	    {
-	    case '>': 		str += "&gt;";		break;
-	    case '<':		str += "&lt;";		break;
-	    case '&':		str += "&amp;";		break;
-	    case '\'':		str += "&apos;";	break;
-	    case '\"':		str += "&quot;";	break;
-	    default:		str += *p;		break;
-	    }
-	p++;
-	}
+    str = StringMakeXml(std::string(text));
     }
 
 void SvgDrawer::setDiagramSize(GraphSize size)

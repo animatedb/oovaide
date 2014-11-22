@@ -1,34 +1,33 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<!-- DC Blaha - 6/8/2009 -->
+<html><head><!-- DC Blaha - 6/8/2009 -->
 
-<head>
+
+
+
 <link rel="stylesheet" type="text/css" href="../style.css">
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<title>Oovcde User Guide</title>
-</head>
-
-<body>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Oovcde User Guide</title></head><body>
 
 <font size="+3">Oovcde User Guide<br></font>
 <hr style="width: 100%; height: 3px;">
 
 Created: June 8, 2009
-Last update: Sept 22, 2014
+Last update: Nov 20, 2014
 <p>
 <img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
 </p><p>
 </p>
-<h1><a class="mozTocH2" name="mozTocId927306"></a>Contents</h1><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><a href="#mozTocId927306"></a><ol id="mozToc"><li><a href="#mozTocId937452">Quick Start
+<h1><a class="mozTocH2" name="mozTocId927306"></a>Contents</h1><span style="text-decoration: underline;"></span>
+<ol id="mozToc">
+<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId937452">Quick Start
 
-</a></li><li><a href="#mozTocId381773">Drawing Overview</a></li><li><a href="#mozTocId651087">Oovcde</a><ol><li><a href="#mozTocId728139">Analyzing Projects</a></li><li><a href="#mozTocId407903">Modifying Component Diagrams</a></li><li><a href="#mozTocId269360">Modifying Class Diagrams</a></li><li><a href="#mozTocId213642">Changing Class Diagram Display Options</a></li><li><a href="#mozTocId261032">Displaying Sequence Diagrams</a></li><li><a href="#mozTocId120758">Editing SVG diagrams</a></li></ol></li><li><a href="#mozTocId894354">Code Test Coverage System</a></li><li><a href="#mozTocId108517">Complexity Analysis</a></li><li><a href="#mozTocId246966">Build System</a><ol><li><a href="#mozTocId418717">Build Goals</a></li><li><a href="#mozTocId102170">Build Features</a></li><li><a href="#mozTocId675000">Build Quick Start</a></li><li><a href="#mozTocId349590">Cross Compiling</a></li><li><a href="#mozTocId206848">Resolving Include Problems During Analysis
+    </a></li><li><a href="#mozTocId381773">Drawing Overview</a></li><li><a href="#mozTocId651087">Oovcde</a><ol><li><a href="#mozTocId728139">Setting Up Analysis Projects</a></li><li><a href="#mozTocId407903">Modifying Component Diagrams</a></li><li><a href="#mozTocId269360">Modifying Class Diagrams</a></li><li><a href="#mozTocId213642">Changing Class Diagram Display Options</a></li><li><a href="#mozTocId261032">Displaying Sequence Diagrams</a></li><li><a href="#mozTocId120758">Editing SVG diagrams</a></li><li><a href="#mozTocId108517">Complexity Analysis</a></li><li><a href="#mozTocId108517">Member Usage Analysis</a></li></ol></li><li><a href="#mozTocId894354">Code Test Coverage System</a></li><li><a href="#mozTocId246966">Build System</a><ol><li><a href="#mozTocId418717">Build Goals</a></li><li><a href="#mozTocId102170">Build Features</a></li><li><a href="#mozTocId675000">Build Quick Start</a></li><li><a href="#mozTocId349590">Cross Compiling</a></li><li><a href="#mozTocId206848">Resolving Include Problems During Analysis
 
 
 </a><ol><li><a href="#mozTocId824690">Windows Include Problems
 
 
-</a></li></ol></li><li><a href="#mozTocId450611">Linux Example</a></li><li><a href="#mozTocId913463">Windows Example</a></li><li><a href="#mozTocId813985">Build Sequence</a></li><li><a href="#mozTocId932506">Project Limitations</a></li></ol></li><li><a href="#mozTocId21842">OovEdit</a></li></ol>
-
+</a></li></ol></li><li><a href="#mozTocId450611">Linux Example</a></li><li><a href="#mozTocId913463">Windows Example</a></li><li><a href="#mozTocId813985">Build Sequence</a></li><li><a href="#mozTocId932506">Project Limitations</a></li></ol></li><li><a href="#mozTocId21842">OovEdit</a></li>
+</ol>
 <h1><a class="mozTocH2" name="mozTocId937452"></a>Quick Start<br>
 
 </h1>
@@ -101,7 +100,7 @@ as possible on the diagram for quick understandability and verification of the c
 <h1><a class="mozTocH2" name="mozTocId651087"></a>Oovcde</h1>
 
 
-<h2><a class="mozTocH3" name="mozTocId728139"></a>Analyzing Projects</h2>Anlyzing
+<h2><a class="mozTocH3" name="mozTocId728139"></a>Setting Up Analysis Projects</h2>Anlyzing
 projects allows viewing class and sequence diagrams. It is also the
 first step towards building projects and running code coverage.<br>
 <br>
@@ -183,7 +182,30 @@ first step towards building projects and running code coverage.<br>
     <li>Download Inkscape from <a href="http://inkscape.org/">inkscape.org</a></li>
     </ol>
     When using File/Save, the file will be saved to the location of the executable
-    files.  This may be changed in the future.
+    files.  This may be changed in the future.<br>
+<h2><a class="mozTocH1" name="mozTocId108517"></a>Complexity Analysis<br>
+</h2>
+
+    
+<ol>
+<li>After the analysis has been performed, select Analysis/Complexity to update
+ the complexity information for each source file.<br>
+</li>
+</ol>
+
+For more complexity information, see
+<a href="../articles/Complexity.shtml">Complexity.shtml</a>.<br>
+<br>
+<h2><a class="mozTocH1" name="mozTocId108517"></a>Member Usage Analysis</h2>
+
+<ol>
+  <li>After the analysis has been performed, select Analysis/Member
+Usage to save usage information about members.&nbsp; This shows the
+number of member functions of a class that use each class member
+attribute.<br>
+  </li>
+</ol>
+
 
 <h1><a class="mozTocH1" name="mozTocId894354"></a>Code Test Coverage System</h1>
 
@@ -200,21 +222,7 @@ first step towards building projects and running code coverage.<br>
 For more coverage information, see 
 <a href="../articles/TestCoverage.shtml">TestCoverage.shtml</a>.<br>
 
-<br>
-
-
-<h1><a class="mozTocH1" name="mozTocId108517"></a>Complexity Analysis<br></h1>
-    
-<ol>
-<li>After the analysis has been performed, select Analysis/Complexity to update
- the complexity information for each source file.<br>
-</li>
-</ol>
-For more complexity information, see
-<a href="../articles/Complexity.shtml">Complexity.shtml</a>.<br>
-
-
-<h1><a class="mozTocH3" name="mozTocId246966"></a>Build System</h1>
+<br><h1><a class="mozTocH3" name="mozTocId246966"></a>Build System</h1>
 
 The build system is not required to view diagrams.<br>
 <br>
@@ -560,5 +568,5 @@ The OovEdit program is a simple text editor. It has the following features.<br>
 
 
 
-</div>
+
 </body></html>

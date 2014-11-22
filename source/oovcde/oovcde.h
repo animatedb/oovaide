@@ -107,6 +107,7 @@ class oovGui:public JournalListener, public WindowBuildListener
 	void updateOperationList(const ModelData &modelData, char const * const className);
 	void updateClassList(char const * const className);
 	void makeComplexityFile();
+	void makeMemberUseFile();
 	void setLastSavedPath(const std::string &fn)
 	    { mLastSavedPath = fn; }
 	std::string &getLastSavedPath()

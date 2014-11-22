@@ -18,35 +18,9 @@ class DebugFile
 	DebugFile(FILE *fp):
             mOwnFile(false)
             { mFp = fp; }
-	DebugFile(char const * const fn=nullptr, bool append=false):
-            mOwnFile(true)
-	    {
-	    if(fn)
-		{
-		if(append)
-		    mFp = fopen(fn, "a");
-		else
-		    mFp = fopen(fn, "w");
-		}
-	    }
-	~DebugFile()
-	    {
-	    if(mFp)
-		fclose(mFp);
-	    mFp = NULL;
-	    }
-	void printflush(char const * const format, ...)
-	    {
-	    if(mFp)
-		{
-		va_list argList;
-
-		va_start(argList, format);
-		vfprintf(mFp, format, argList);
-		va_end(argList);
-		fflush(mFp);
-		}
-	    }
+	DebugFile(char const * const fn=nullptr, bool append=false);
+	~DebugFile();
+	void printflush(char const * const format, ...);
 	void open(char const * const fn, char const * const mode = "w")
 	    {
 	    if(!mFp)
@@ -60,5 +34,9 @@ class DebugFile
 	FILE *mFp;
         bool mOwnFile;
     };
+
+void LogAssertFile(char const *file, int line);
+
+#define DebugAssert(file, line)		LogAssertFile(file, line);
 
 #endif /* DEBUG_H_ */

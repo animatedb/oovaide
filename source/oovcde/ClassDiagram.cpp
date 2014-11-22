@@ -98,15 +98,12 @@ ClassNode *ClassDiagram::getNode(int x, int y)
     }
 
 static ClassDiagram *gClassDiagram;
-static struct StartPosInfo
-    {
-    GraphPoint startPos;
-    } gStartPosInfo;
+static GraphPoint gStartPosInfo;
 
 void ClassDiagram::buttonPressEvent(const GdkEventButton *event)
     {
     gClassDiagram = this;
-    gStartPosInfo.startPos.set(event->x, event->y);
+    gStartPosInfo.set(event->x, event->y);
     }
 
 void ClassDiagram::displayContextMenu(guint button, guint32 acttime, gpointer data)
@@ -131,7 +128,7 @@ void ClassDiagram::displayContextMenu(guint button, guint32 acttime, gpointer da
 
     GtkMenu *menu = getBuilder().getMenu("DrawClassPopupMenu");
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
-    gStartPosInfo.startPos.set(event->x, event->y);
+    gStartPosInfo.set(event->x, event->y);
     }
 
 void ClassDiagram::buttonReleaseEvent(const GdkEventButton *event)
@@ -142,11 +139,11 @@ void ClassDiagram::buttonReleaseEvent(const GdkEventButton *event)
 //		abs(event->y - gPressInfo.startPos.y) > 5)
 	    {
 	    ClassNode *node = getNode(
-		    gStartPosInfo.startPos.x, gStartPosInfo.startPos.y);
+		    gStartPosInfo.x, gStartPosInfo.y);
 	    if(node)
 		{
 		GraphPoint clickOffset(event->x, event->y);
-		clickOffset.sub(gStartPosInfo.startPos);
+		clickOffset.sub(gStartPosInfo);
 		GraphPoint newPos(node->getPosition());
 		newPos.add(clickOffset.getZoomed(1/getDesiredZoom(),
 			1/getDesiredZoom()));
@@ -204,8 +201,7 @@ void ClassDiagram::drawDiagram(const ClassDrawOptions &options)
 
 extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
-	    gStartPosInfo.startPos.y);
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	gClassDiagram->gotoClass(node->getType()->getName().c_str());
@@ -219,8 +215,7 @@ extern "C" G_MODULE_EXPORT void on_RestartMenuitem_activate(GtkWidget *widget, g
 
 void handlePopup(ClassGraph::eAddNodeTypes addType)
     {
-    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
-	    gStartPosInfo.startPos.y);
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	static int depth = 0;
@@ -287,8 +282,7 @@ extern "C" G_MODULE_EXPORT void on_AddFuncBodyVarUsersMenuitem_activate(GtkWidge
 
 extern "C" G_MODULE_EXPORT void on_RemoveClassMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
-	    gStartPosInfo.startPos.y);
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	gClassDiagram->getClassGraph().removeNode(*node);
@@ -307,8 +301,7 @@ extern "C" G_MODULE_EXPORT void on_RemoveAllMenuitem_activate(GtkWidget *widget,
 
 extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
-	    gStartPosInfo.startPos.y);
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	const ModelClassifier *classifier = node->getType()->getClass();
@@ -321,8 +314,7 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget
 
 extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.startPos.x,
-	    gStartPosInfo.startPos.y);
+    ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
 	ClassPreferencesDialog dlg;

@@ -28,7 +28,6 @@
 #include <stdlib.h>     // for atoi
 #include <stdio.h>
 #include <algorithm>
-#include <cassert>
 #include <limits.h>
 #include "Debug.h"
 
@@ -64,13 +63,13 @@
 		else if(stmt.getStatementType() == ST_Call)
 		    {
 		    fprintf(sLog.mFp, "  %s Call   %d:%s\n", ws.c_str(),
-			    stmt.getDecl().getDeclTypeModelId(), stmt.getName().c_str());
+			    stmt.getClassDecl().getDeclTypeModelId(), stmt.getName().c_str());
 		    fflush(sLog.mFp);
 		    }
 		else if(stmt.getStatementType() == ST_VarRef)
 		    {
 		    fprintf(sLog.mFp, "  %s VarRef   %d:%s\n", ws.c_str(),
-			    stmt.getDecl().getDeclTypeModelId(), stmt.getName().c_str());
+			    stmt.getVarDecl().getDeclTypeModelId(), stmt.getName().c_str());
 		    fflush(sLog.mFp);
 		    }
 		}
@@ -96,7 +95,7 @@
 			}
 		    for(const auto &oper : c->getOperations())
 			{
-			fprintf(sLog.mFp, "   Obj   %s", oper->getName().c_str());
+			fprintf(sLog.mFp, "   Oper   %s", oper->getName().c_str());
 			if(oper->getModule())
 			    fprintf(sLog.mFp, " %d", oper->getLineNum());
 			fprintf(sLog.mFp, "\n");
@@ -339,7 +338,6 @@ void XmiParser::addFuncStatements(OovStringRef const &attrName,
 		    }
 		    break;
 
-#if(VAR_REF)
 		case 'v':
 		    {
 		    ModelStatement modStmt(&stmtVals[0][2], ST_VarRef);
@@ -359,7 +357,6 @@ void XmiParser::addFuncStatements(OovStringRef const &attrName,
 		    oper.getStatements().addStatement(modStmt);
 		    }
 		    break;
-#endif
 		}
 	    }
 	}
@@ -412,7 +409,7 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
 			cl->setModule(mod);
 		    else
 			{
-			assert(false);
+			DebugAssert(__FILE__, __LINE__);
 			}
 		    }
 		else if(strcmp(attrName.c_str(), "line") == 0)
@@ -585,13 +582,16 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 			    {
 			    ModelModule const *module = static_cast<ModelClassifier*>
 				(newType)->getModule();
-//			    assert(module);
 			    if(module)
 				{
 				static_cast<ModelClassifier*>(existingType)->setModule(
 				    module);
 				static_cast<ModelClassifier*>(existingType)->setLineNum(
 				    static_cast<ModelClassifier*>(newType)->getLineNum());
+				}
+			    else
+				{
+//				DebugAssert(__FILE__, __LINE__);
 				}
 			    }
 			mModel.takeAttributes(static_cast<ModelClassifier*>(newType),
@@ -716,20 +716,14 @@ void XmiParser::updateStatementTypeIndices(ModelStatements &stmts)
     {
     for(auto &stmt : stmts)
 	{
-	if(stmt.getStatementType() == ST_Call
-#if(VAR_REF)
-		||
-		stmt.getStatementType() == ST_VarRef
-#endif
-		)
+	if(stmt.getStatementType() == ST_Call ||
+		stmt.getStatementType() == ST_VarRef)
 	    {
 	    updateDeclTypeIndices(stmt.getClassDecl());
-#if(VAR_REF)
 	    if(stmt.getStatementType() == ST_VarRef)
 		{
 		updateDeclTypeIndices(stmt.getVarDecl());
 		}
-#endif
 	    }
 	}
     }
@@ -833,7 +827,7 @@ void XmiParser::updateTypeIndices()
 	if((*iterChild).second > mEndingModuleTypeIndex)
 	    {
 	    fflush(sLog.mFp);
-	    assert(false);
+	    DebugAssert(__FILE__, __LINE__);
 	    }
 	}
 #endif
