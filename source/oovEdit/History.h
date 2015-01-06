@@ -14,7 +14,7 @@
 class HistoryItem
     {
     public:
-	HistoryItem(bool insert, int offset, char const * const text, int len):
+	HistoryItem(bool insert, int offset, OovStringRef const text, int len):
 	    mInsert(insert), mOffset(offset), mText(text, len)
 	    {}
 	void undo(GtkTextBuffer *buffer)
@@ -34,7 +34,7 @@ class HistoryItem
     protected:
 	bool mInsert;
 	gint mOffset;
-	std::string mText;
+	OovString mText;
     };
 
 

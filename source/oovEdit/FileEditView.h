@@ -22,7 +22,7 @@ class FileEditView
 	    mNeedHighlightUpdate(HS_HighlightDone)
 	    {}
 	void init(GtkTextView *textView);
-	bool openTextFile(char const * const fn);
+	bool openTextFile(OovStringRef const fn);
 	bool saveTextFile();
 	bool saveAsTextFileWithDialog();
 	bool checkExitSave();
@@ -108,9 +108,9 @@ class FileEditView
 	HightlightStates mNeedHighlightUpdate;
 	Highlighter mHighlighter;
 	Indenter mIndenter;
-	void setFileName(char const * const fn)
+	void setFileName(OovStringRef const fn)
 	    { mFileName = fn; }
-	bool saveAsTextFile(char const * const fn);
+	bool saveAsTextFile(OovStringRef const fn);
 	void highlight();
 	void setNeedHighlightUpdate(HightlightStates hs)
 	    { mNeedHighlightUpdate = hs; }

@@ -352,8 +352,7 @@ Use this dialog to set up component definitions.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="has_tooltip">True</property>
-                        <property name="tooltip_markup" translatable="yes">Example: -lnk-mwindows</property>
-                        <property name="tooltip_text" translatable="yes">Example: -lnk-mwindows</property>
+                        <property name="tooltip_text" translatable="yes">Example: -lnk-W1,--subsystem:windows</property>
                       </object>
                     </child>
                   </object>
@@ -2336,6 +2335,7 @@ These arguments are specific to the selected configuration.
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="tooltip_text" translatable="yes">Scan standard program directories for matching package names</property>
                     <signal name="clicked" handler="on_ScanDirectoriesButton_clicked" swapped="no"/>
                   </object>
                   <packing>

@@ -58,7 +58,7 @@
 		if(stmt.getStatementType() == ST_OpenNest)
 		    {
 		    fprintf(sLog.mFp, "  %s OpenStmt   %s\n", ws.c_str(),
-			    stmt.getName().c_str());
+			    stmt.getName());
 		    }
 		else if(stmt.getStatementType() == ST_Call)
 		    {
@@ -280,15 +280,15 @@ void XmiParser::setDeclAttr(const std::string &attrName,
 void XmiParser::addFuncParams(OovStringRef const &attrName,
 	OovStringRef const &attrVal, ModelOperation &oper)
     {
-    if(strcmp(attrName.c_str(), "list") == 0)
+    if(strcmp(attrName.getStr(), "list") == 0)
 	{
-	std::vector<OovString> parms = attrVal.split('#');
+	OovStringVec parms = attrVal.split('#');
 	for(auto const &parm : parms)
 	    {
-	    std::vector<OovString> parmVals = parm.split('@');
+	    OovStringVec parmVals = parm.split('@');
 	    if(parmVals.size() == 4)
 		{
-		ModelFuncParam *param = oper.addMethodParameter(parmVals[0].c_str(),
+		ModelFuncParam *param = oper.addMethodParameter(parmVals[0],
 			nullptr, false);
 	        param->setDeclTypeModelId(mStartingModuleTypeIndex + getInt(parmVals[1].c_str()));
 		param->setConst(parmVals[2][0] == 't');
@@ -301,7 +301,7 @@ void XmiParser::addFuncParams(OovStringRef const &attrName,
 void XmiParser::addFuncStatements(OovStringRef const &attrName,
 	OovStringRef const &attrVal, ModelOperation &oper)
     {
-    if(strcmp(attrName.c_str(), "list") == 0)
+    if(strcmp(attrName.getStr(), "list") == 0)
 	{
 	OovStringVec statements = attrVal.split('#');
 	for(auto const &stmt : statements)
@@ -853,7 +853,7 @@ static bool loadXmiBuf(char const * const buf, ModelData &model, int &typeIndex)
     return(parsed);
     }
 
-bool loadXmiFile(FILE *fp, ModelData &graph, char const * const fn, int &typeIndex)
+bool loadXmiFile(FILE *fp, ModelData &graph, OovStringRef const fn, int &typeIndex)
     {
     bool success = false;
     fseek(fp , 0 , SEEK_END);

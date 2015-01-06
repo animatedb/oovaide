@@ -15,13 +15,13 @@
 class FileSymbol
     {
     public:
-	FileSymbol(char const * const symbolName, int len, int fileIndex):
+	FileSymbol(OovStringRef const symbolName, int len, int fileIndex):
 	    mSymbolName(symbolName, len), mFileIndex(fileIndex)
 	    {}
 	// For sorting and searching
 	bool operator<(const FileSymbol &rh) const
 	    { return(mSymbolName < rh.mSymbolName); }
-	std::string mSymbolName;
+	OovString mSymbolName;
 	int mFileIndex;
     };
 
@@ -90,24 +90,24 @@ bool FileDependencies::removeEmptyClient()
 class FileSymbols:public std::set<FileSymbol>
     {
     public:
-	void add(char const * const symbolName, int len, int fileIndex)
+	void add(OovStringRef const symbolName, int len, int fileIndex)
 	    { insert(FileSymbol(symbolName, len, fileIndex)); }
-	std::set<FileSymbol>::iterator findName(char const * const symbolName)
+	std::set<FileSymbol>::iterator findName(OovStringRef const symbolName)
 	    {
 	    FileSymbol fs(symbolName, std::string(symbolName).length(), -1);
 	    return find(fs);
 	    }
-	bool writeSymbols(char const * const symFileName);
+	bool writeSymbols(OovStringRef const symFileName);
     };
 
-bool FileSymbols::writeSymbols(char const * const symFileName)
+bool FileSymbols::writeSymbols(OovStringRef const symFileName)
     {
     FILE *outFp = fopen(symFileName, "w");
     if(outFp)
 	{
 	for(const auto &symbol : *this)
 	    {
-	    fprintf(outFp, "%s %d\n", symbol.mSymbolName.c_str(), symbol.mFileIndex);
+	    fprintf(outFp, "%s %d\n", symbol.mSymbolName.getStr(), symbol.mFileIndex);
 	    }
 	fclose(outFp);
 	}
@@ -115,7 +115,7 @@ bool FileSymbols::writeSymbols(char const * const symFileName)
     }
 
 
-class FileList:public std::vector<std::string>
+class FileList:public OovStringVec
     {
     public:
 	void writeFile(FILE *outFp) const;
@@ -125,7 +125,7 @@ void FileList::writeFile(FILE *outFp) const
     {
     for(const auto &fn : (*this))
 	{
-	fprintf(outFp, "f:%s\n", fn.c_str());
+	fprintf(outFp, "f:%s\n", fn.getStr());
 	}
     }
 
@@ -145,9 +145,9 @@ class ClumpSymbols
 	// U referenced objects, but not defined
 	// D global data object
 	// T global function object
-	void addSymbols(char const *libFilePath, char const *outFileName);
-	void writeClumpFiles(char const * const clumpName,
-		char const *outPath);
+	void addSymbols(OovStringRef const libFilePath, OovStringRef const outFileName);
+	void writeClumpFiles(OovStringRef const clumpName,
+		OovStringRef const outPath);
     private:
 	FileSymbols mDefinedSymbols;
 	FileSymbols mUndefinedSymbols;
@@ -156,7 +156,7 @@ class ClumpSymbols
 	FileIndices mOrderedDependencies;
         std::mutex mDataMutex;
 	void resolveUndefinedSymbols();
-	void readRawSymbolFile(char const *outRawFileName, int fileIndex);
+	void readRawSymbolFile(OovStringRef const outRawFileName, int fileIndex);
     };
 
 
@@ -185,7 +185,7 @@ std::vector<int>::iterator FileIndices::findValue(int val)
 // The .dep file is the master file. The filenames are listed first starting
 // with "f:". The are listed in order, so the first file is file index 0.
 // Then the "o:" indicates the order that the files should be linked.
-static bool writeDepFileInfo(char const *const symFileName, const FileList &fileIndices,
+static bool writeDepFileInfo(OovStringRef const symFileName, const FileList &fileIndices,
 	const FileDependencies &fileDeps, const FileIndices &orderedDeps)
     {
     FILE *outFp = fopen(symFileName, "w");
@@ -248,7 +248,7 @@ static void orderDependencies(size_t numFiles, const FileDependencies &fileDepen
 	}
     }
 
-void ClumpSymbols::readRawSymbolFile(char const *outRawFileName, int fileIndex)
+void ClumpSymbols::readRawSymbolFile(OovStringRef const outRawFileName, int fileIndex)
     {
     FILE *inFp = fopen(outRawFileName, "r");
     if(inFp)
@@ -286,7 +286,7 @@ void ClumpSymbols::resolveUndefinedSymbols()
     {
     for(const auto &sym : mDefinedSymbols)
 	{
-	auto pos = mUndefinedSymbols.findName(sym.mSymbolName.c_str());
+	auto pos = mUndefinedSymbols.findName(sym.mSymbolName);
 	if(pos != mUndefinedSymbols.end())
 	    {
 	    // The file indices can be the same if one library has
@@ -301,7 +301,7 @@ void ClumpSymbols::resolveUndefinedSymbols()
 	}
     }
 
-void ClumpSymbols::addSymbols(char const *libFilePath, char const *outRawFileName)
+void ClumpSymbols::addSymbols(OovStringRef const libFilePath, OovStringRef const outRawFileName)
     {
 	{
 	std::unique_lock<std::mutex> lock(mDataMutex);
@@ -310,15 +310,15 @@ void ClumpSymbols::addSymbols(char const *libFilePath, char const *outRawFileNam
     readRawSymbolFile(outRawFileName, mFileIndices.size()-1);
     }
 
-void ClumpSymbols::writeClumpFiles(char const * const clumpName,
-	char const *outPath)
+void ClumpSymbols::writeClumpFiles(OovStringRef const clumpName,
+	OovStringRef const outPath)
     {
     resolveUndefinedSymbols();
     orderDependencies(mFileIndices.size(), mFileDependencies, mOrderedDependencies);
 
-    std::string defSymFileName = outPath;
-    std::string undefSymFileName = defSymFileName;
-    std::string depSymFileName = defSymFileName;
+    OovString defSymFileName = outPath;
+    OovString undefSymFileName = defSymFileName;
+    OovString depSymFileName = defSymFileName;
     undefSymFileName += "LibSym-";
     undefSymFileName += clumpName;
     undefSymFileName += "-Undef.txt";
@@ -330,9 +330,9 @@ void ClumpSymbols::writeClumpFiles(char const * const clumpName,
     depSymFileName += "LibSym-";
     depSymFileName += clumpName;
     depSymFileName += "-Dep.txt";
-    mDefinedSymbols.writeSymbols(defSymFileName.c_str());
-    mUndefinedSymbols.writeSymbols(undefSymFileName.c_str());
-    writeDepFileInfo(depSymFileName.c_str(), mFileIndices, mFileDependencies,
+    mDefinedSymbols.writeSymbols(defSymFileName);
+    mUndefinedSymbols.writeSymbols(undefSymFileName);
+    writeDepFileInfo(depSymFileName, mFileIndices, mFileDependencies,
 	    mOrderedDependencies);
     }
 
@@ -344,32 +344,32 @@ class ObjTaskListener:public TaskQueueListener
 	    {}
     private:
 	ClumpSymbols &mClumpSymbols;
-	virtual void extraProcessing(bool success, char const * const outFile,
-		char const * const stdOutFn, ProcessArgs const &item) override
+	virtual void extraProcessing(bool success, OovStringRef const outFile,
+		OovStringRef const stdOutFn, ProcessArgs const &item) override
 	    {
 	    if(success)
 		{
-		mClumpSymbols.addSymbols(item.mLibFilePath.c_str(), stdOutFn);
+		mClumpSymbols.addSymbols(item.mLibFilePath, stdOutFn);
 		}
 
 	    }
     };
 
-bool ObjSymbols::makeObjectSymbols(const std::vector<std::string> &libFiles,
-	char const * const outSymPath, char const * const objSymbolTool,
+bool ObjSymbols::makeObjectSymbols(OovStringVec const &libFiles,
+	OovStringRef const outSymPath, OovStringRef const objSymbolTool,
 	ComponentTaskQueue &queue, ClumpSymbols &clumpSymbols)
     {
     struct LibFileNames
 	{
-	LibFileNames(std::string const &libFileName,
-		std::string const &libSymFileName,
-		std::string const &libFilePath, bool genSymbolFile):
+	LibFileNames(OovString const &libFileName,
+		OovString const &libSymFileName,
+		OovString const &libFilePath, bool genSymbolFile):
 	    mLibFileName(libFileName), mLibFilePath(libFilePath),
 	    mLibSymFileName(libSymFileName), mGenSymbolFile(genSymbolFile)
 	    {}
-	std::string mLibFileName;
-	std::string mLibFilePath;
-	std::string mLibSymFileName;
+	OovString mLibFileName;
+	OovString mLibFilePath;
+	OovString mLibSymFileName;
 	bool mGenSymbolFile;
 	};
     bool generatedSymbols = false;
@@ -379,13 +379,13 @@ bool ObjSymbols::makeObjectSymbols(const std::vector<std::string> &libFiles,
 	FilePath libSymName(libFilePath, FP_File);
 	libSymName.discardDirectory();
 	libSymName.discardExtension();
-	std::string libSymPath = outSymPath;
+	OovString libSymPath = outSymPath;
 	ensureLastPathSep(libSymPath);
-	ensurePathExists(libSymPath.c_str());
-	std::string outSymRawFileName = libSymPath + libSymName + ".txt";
+	ensurePathExists(libSymPath);
+	OovString outSymRawFileName = libSymPath + libSymName + ".txt";
 /*
 	std::string libName = libFilePath;
-	size_t libNamePos = rfindPathSep(libName.c_str());
+	size_t libNamePos = rfindPathSep(libName);
 	if(libNamePos != std::string::npos)
 	    libNamePos++;
 	else
@@ -394,7 +394,7 @@ bool ObjSymbols::makeObjectSymbols(const std::vector<std::string> &libFiles,
 	std::string libFileName = // std::string(outLibPath) +
 	    libName + ".a";
 */
-	if(FileStat::isOutputOld(outSymRawFileName.c_str(), libFilePath.c_str()))
+	if(FileStat::isOutputOld(outSymRawFileName, libFilePath))
 	    {
 	    libFileNames.push_back(LibFileNames(libFilePath, outSymRawFileName,
 		    libFilePath, true));
@@ -423,24 +423,24 @@ bool ObjSymbols::makeObjectSymbols(const std::vector<std::string> &libFiles,
 		ca.addArg(objSymbolTool);
 		std::string quotedLibFilePath = libFn.mLibFilePath;
 		quoteCommandLinePath(quotedLibFilePath);
-		ca.addArg(quotedLibFilePath.c_str());
+		ca.addArg(quotedLibFilePath);
 
-		ProcessArgs procArgs(objSymbolTool, libFn.mLibSymFileName.c_str(), ca,
-			libFn.mLibSymFileName.c_str());
+		ProcessArgs procArgs(objSymbolTool, libFn.mLibSymFileName, ca,
+			libFn.mLibSymFileName.getStr());
 		procArgs.mLibFilePath = libFn.mLibFilePath;
 #if(MULTI_THREAD)
 		queue.addTask(procArgs);
 #else
 		success = ComponentBuilder::runProcess(objSymbolTool,
-		    outRawFileName.c_str(), ca, mListenerStdMutex, outRawFileName.c_str());
+		    outRawFileName, ca, mListenerStdMutex, outRawFileName);
 		if(success)
-		    clumpSymbols.addSymbols(libFilePath.c_str(), outRawFileName.c_str());
+		    clumpSymbols.addSymbols(libFilePath, outRawFileName);
 #endif
 		}
 	    else
 		{
-		clumpSymbols.addSymbols(libFn.mLibFilePath.c_str(),
-			libFn.mLibSymFileName.c_str());
+		clumpSymbols.addSymbols(libFn.mLibFilePath,
+			libFn.mLibSymFileName);
 		}
 	    }
 #if(MULTI_THREAD)
@@ -451,9 +451,9 @@ bool ObjSymbols::makeObjectSymbols(const std::vector<std::string> &libFiles,
     return generatedSymbols;
     }
 
-bool ObjSymbols::makeClumpSymbols(char const * const clumpName,
-	const std::vector<std::string> &libFiles, char const * const outSymPath,
-	char const * const objSymbolTool, ComponentTaskQueue &queue)
+bool ObjSymbols::makeClumpSymbols(OovStringRef const clumpName,
+	OovStringVec const &libFiles, OovStringRef const outSymPath,
+	OovStringRef const objSymbolTool, ComponentTaskQueue &queue)
     {
     bool success = true;
     ClumpSymbols clumpSymbols;
@@ -463,7 +463,7 @@ bool ObjSymbols::makeClumpSymbols(char const * const clumpName,
 //    defSymFileName += "LibSym-";
 //    defSymFileName += clumpName;
 //    defSymFileName += "-Def.txt";
-    if(//!fileExists(defSymFileName.c_str()) ||
+    if(//!fileExists(defSymFileName) ||
 	    makeObjectSymbols(libFiles, outSymPath, objSymbolTool, queue, clumpSymbols))
 	{
 	clumpSymbols.writeClumpFiles(clumpName, outSymPath);
@@ -471,17 +471,17 @@ bool ObjSymbols::makeClumpSymbols(char const * const clumpName,
     return success;
     }
 
-void ObjSymbols::appendOrderedLibFileNames(char const * const clumpName,
-	char const * const outPath,
-	std::vector<std::string> &sortedLibFileNames)
+void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
+	OovStringRef const outPath,
+	OovStringVec &sortedLibFileNames)
     {
-    std::string depSymFileName = outPath;
+    OovString depSymFileName = outPath;
     ensureLastPathSep(depSymFileName);
     depSymFileName += "LibSym-";
     depSymFileName += clumpName;
     depSymFileName += "-Dep.txt";
 
-    FILE *fp = fopen(depSymFileName.c_str(), "r");
+    FILE *fp = fopen(depSymFileName.getStr(), "r");
     if(fp)
 	{
 	std::vector<std::string> filenames;
@@ -525,13 +525,13 @@ void ObjSymbols::appendOrderedLibFileNames(char const * const clumpName,
 	}
     }
 
-void ObjSymbols::appendOrderedLibs(char const * const clumpName,
-	char const * const outPath, std::vector<std::string> &libDirs,
-	std::vector<std::string> &orderedLibNames)
+void ObjSymbols::appendOrderedLibs(OovStringRef const clumpName,
+	OovStringRef const outPath, OovStringVec &libDirs,
+	OovStringVec &orderedLibNames)
     {
-    std::vector<std::string> orderedLibFileNames;
+    OovStringVec orderedLibFileNames;
     appendOrderedLibFileNames(clumpName, outPath, orderedLibFileNames);
-    std::set<std::string> dirs;
+    OovStringSet dirs;
 
     for(auto const &lib : orderedLibFileNames)
 	{

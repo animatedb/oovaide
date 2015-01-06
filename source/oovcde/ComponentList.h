@@ -16,8 +16,8 @@ struct ComponentListItem
     {
     ComponentListItem()
 	{}
-    ComponentListItem(char const * const compName, char const * const modName,
-	    char const * const path):
+    ComponentListItem(OovStringRef const compName, OovStringRef const modName,
+	    OovStringRef const path):
 	    mComponentName(compName), mModuleName(modName), mPathName(path)
 	{}
     std::string mComponentName;

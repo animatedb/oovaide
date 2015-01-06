@@ -21,7 +21,7 @@ Builder *Builder::getBuilder()
     return gBuilder;
     }
 
-bool Builder::addFromFile(char const * const fn)
+bool Builder::addFromFile(OovStringRef const fn)
     {
     GError *err = nullptr;
     init();

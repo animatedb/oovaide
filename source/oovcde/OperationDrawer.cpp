@@ -79,14 +79,14 @@ GraphSize OperationDrawer::drawClass(const OperationClass &node,
     {
     GraphPoint startpos = node.getPosition();
     const ModelType *type = node.getType();
-    char const * const typeName = type->getName().c_str();
+    OovStringRef const typeName = type->getName();
     int rectx = 0;
     int recty = 0;
     const ModelClassifier *classifier = type->getClass();
     if(classifier)
 	{
 	mDrawer.groupText(true);
-	std::vector<std::string> strs;
+	OovStringVec strs;
 	std::vector<GraphPoint> positions;
 	strs.push_back(typeName);
 	splitStrings(strs, 30);
@@ -95,7 +95,7 @@ GraphSize OperationDrawer::drawClass(const OperationClass &node,
 	    {
 	    recty += mCharHeight + mPad;
 	    positions.push_back(GraphPoint(startpos.x+mPad, startpos.y + recty - mPad));
-	    int curx = mDrawer.getTextExtentWidth(str.c_str()) + mPad*2;
+	    int curx = mDrawer.getTextExtentWidth(str) + mPad*2;
 	    if(curx > rectx)
 		rectx = curx;
 	    }
@@ -106,7 +106,7 @@ GraphSize OperationDrawer::drawClass(const OperationClass &node,
 
 	for(size_t i=0; i<strs.size(); i++)
 	    {
-	    mDrawer.drawText(positions[i], strs[i].c_str());
+	    mDrawer.drawText(positions[i], strs[i]);
 	    }
 	mDrawer.groupText(false);
 	}
@@ -349,7 +349,7 @@ GraphSize OperationDrawer::drawOperation(GraphPoint pos,
 
     mDrawer.groupText(true);
     for(size_t i=0; i<drawStrings.size(); i++)
-	mDrawer.drawText(drawStrings[i].pos, drawStrings[i].str.c_str());
+	mDrawer.drawText(drawStrings[i].pos, drawStrings[i].str);
     mDrawer.groupText(false);
     return size;
     }

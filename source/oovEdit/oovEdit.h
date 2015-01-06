@@ -20,7 +20,7 @@ class Editor:public DebuggerListener
 	void loadSettings();
 	void saveSettings();
 	static gboolean onIdle(gpointer data);
-	void openTextFile(char const * const fn);
+	void openTextFile(OovStringRef const fn);
 	void openTextFile();
 	bool saveTextFile();
 	bool saveAsTextFileWithDialog();
@@ -73,7 +73,7 @@ class Editor:public DebuggerListener
 		int offset;
 		if(mEditFiles.getEditView()->find(ft, fn, offset))
 		    {
-		    mEditFiles.viewFile(fn.c_str(), offset);
+		    mEditFiles.viewFile(fn, offset);
 		    }
 		}
 	    }
@@ -91,7 +91,7 @@ class Editor:public DebuggerListener
 	    { return mDebugger; }
 	EditFiles &getEditFiles()
 	    { return mEditFiles; }
-	void setProjectDir(char const * const projDir)
+	void setProjectDir(OovStringRef const projDir)
 	    { mProjectDir = projDir; }
 	void gotoLine(int lineNum)
 	    { mEditFiles.gotoLine(lineNum); }
@@ -119,28 +119,28 @@ class Editor:public DebuggerListener
 	void editPreferences();
 	void setPreferencesWorkingDir();
 	void idleDebugStatusChange(Debugger::eChangeStatus st);
-	virtual void DebugOutput(char const * const str)
+	virtual void DebugOutput(OovStringRef const str)
 	    {
 	    mDebugOut.append(str);
 	    }
 	virtual void DebugStatusChanged()
 	    {
 	    }
-	void debugSetStackFrame(char const * const frameLine);
+	void debugSetStackFrame(OovStringRef const frameLine);
 
     private:
 	Builder mBuilder;
 	EditFiles mEditFiles;
 	Debugger mDebugger;
-	std::string mLastSearch;
-	std::string mProjectDir;
+	OovString mLastSearch;
+	OovString mProjectDir;
 	bool mLastSearchCaseSensitive;
-	std::string mDebugOut;
+	OovString mDebugOut;
 	EditOptions mEditOptions;
 	GuiTree mVarView;
-	void find(char const * const findStr, bool forward, bool caseSensitive);
-	void findAndReplace(char const * const findStr, bool forward, bool caseSensitive,
-		char const * const replaceStr);
+	void find(OovStringRef const findStr, bool forward, bool caseSensitive);
+	void findAndReplace(OovStringRef const findStr, bool forward, bool caseSensitive,
+		OovStringRef const replaceStr);
 };
 
 

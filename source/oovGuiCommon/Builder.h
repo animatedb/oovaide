@@ -9,6 +9,7 @@
 #define BUILDER_H_
 
 #include <gtk/gtk.h>
+#include "OovString.h"
 
 class Builder
     {
@@ -21,20 +22,20 @@ class Builder
 	    g_object_unref(mGtkBuilder);
 	    }
 	void init();
-	bool addFromFile(char const * const fn);
+	bool addFromFile(OovStringRef const fn);
 	void connectSignals()
 	    {
 	    gtk_builder_connect_signals(mGtkBuilder, nullptr);
 	    }
-	GObject *getObject(char const * const widgetName)
+	GObject *getObject(OovStringRef const widgetName)
 	    {
 	    return gtk_builder_get_object(mGtkBuilder, widgetName);
 	    }
-	GtkWidget *getWidget(char const * const widgetName)
+	GtkWidget *getWidget(OovStringRef const widgetName)
 	    {
 	    return GTK_WIDGET(getObject(widgetName));
 	    }
-	GtkMenu *getMenu(char const * const menuName)
+	GtkMenu *getMenu(OovStringRef const menuName)
 	    {
 	    return GTK_MENU(gtk_builder_get_object(mGtkBuilder, menuName));
 	    }

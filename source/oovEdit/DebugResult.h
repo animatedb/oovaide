@@ -32,7 +32,7 @@ class cDebugResult
     public:
 	void setVarName(char const *str, int len)
 	    { mVarName.assign(str, len); }
-        char const *parseResult(char const *resultStr);
+        char const *parseResult(OovStringRef const resultStr);
 	std::string getAsString(int level=0) const;
 
     private:

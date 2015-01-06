@@ -11,8 +11,8 @@
 #include <algorithm>	// For find_if
 
 
-static bool addNames(char const * const compName, ComponentTypesFile &compFile,
-	char const * const compSrcTagName, std::vector<ComponentListItem> &names)
+static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
+	OovStringRef const compSrcTagName, std::vector<ComponentListItem> &names)
     {
     bool added = false;
     for(const auto &fn : compFile.getComponentSources(compName))
@@ -28,8 +28,7 @@ static bool addNames(char const * const compName, ComponentTypesFile &compFile,
 	if(iter == names.end())
 	    {
 	    added = true;
-	    names.push_back(ComponentListItem(compName, modName.c_str(),
-		    fn.c_str()));
+	    names.push_back(ComponentListItem(compName, modName, fn));
 	    }
 	}
     return added;
@@ -43,16 +42,16 @@ void ComponentList::updateComponentList()
     GuiTreeItem root;
     for(const auto &compName : compFile.getComponentNames())
 	{
-	bool addedSrc = addNames(compName.c_str(), compFile, "Comp-src-", mListMap);
-	bool addedInc = addNames(compName.c_str(), compFile, "Comp-inc-", mListMap);
+	bool addedSrc = addNames(compName, compFile, "Comp-src-", mListMap);
+	bool addedInc = addNames(compName, compFile, "Comp-inc-", mListMap);
 	if(addedSrc || addedInc)
 	    {
-	    GuiTreeItem compParent = appendText(root, compName.c_str());
+	    GuiTreeItem compParent = appendText(root, compName);
 	    for(const auto &item : mListMap)
 		{
 		if(item.mComponentName == compName)
 		    {
-		    appendText(compParent, item.mModuleName.c_str());
+		    appendText(compParent, item.mModuleName);
 		    }
 		}
 	    }

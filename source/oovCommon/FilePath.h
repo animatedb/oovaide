@@ -11,7 +11,7 @@
 #ifndef FILEPATH_H_
 #define FILEPATH_H_
 
-#include <string>
+#include "OovString.h"
 #include <sys/stat.h>
 #include <vector>
 
@@ -33,24 +33,24 @@
 
 
 // non-modifying path functions
-size_t rfindPathSep(char const * const path, size_t startPos = std::string::npos);
-size_t findPathSep(char const * const path, size_t startPos = std::string::npos);
+size_t rfindPathSep(OovStringRef const path, size_t startPos = std::string::npos);
+size_t findPathSep(OovStringRef const path, size_t startPos = std::string::npos);
 
 // modifying path functions
 void ensureLastPathSep(std::string &path);
 void removePathSep(std::string &path, int pos);
 void quoteCommandLinePath(std::string &libfilePath);
 
-std::string makeExeFilename(char const * const rootFn);
+OovString makeExeFilename(OovStringRef const rootFn);
 // For some reason, oovEdit requires this?
-std::string fixFilePath(char const *fullFn);
+std::string fixFilePath(OovStringRef const fullFn);
 
 // File operations
-bool ensurePathExists(char const * const path);
-bool fileExists(char const * const path);
-void deleteFile(char const * const path);
-void renameFile(char const * const oldPath, char const * const newPath);
-bool getFileTime(char const * const path, time_t &time);
+bool ensurePathExists(OovStringRef const path);
+bool fileExists(OovStringRef const path);
+void deleteFile(OovStringRef const path);
+void renameFile(OovStringRef const oldPath, OovStringRef const newPath);
+bool getFileTime(OovStringRef const path, time_t &time);
 
 
 /// Provides functions for accessing an immutable path.
@@ -60,34 +60,35 @@ class FilePathImmutable
     FilePathImmutable():
 	    mPos(0)
 	    {}
-	size_t moveToStartDir(char const * const path);
-	size_t moveToEndDir(char const * const path);
-	size_t moveToExtension(char const * const path);
+	size_t moveToStartDir(OovStringRef const path);
+	size_t moveToEndDir(OovStringRef const path);
+	size_t moveToExtension(OovStringRef const path);
 	// Currently stops at dir spec if it exists.
-	size_t moveLeftPathSep(char const * const path);
-	std::string getHead(char const * const path) const;
-	std::string getTail(char const * const path) const;
-	std::string getPathSegment(char const * const path) const;
-	size_t findPathSegment(char const * const path,
-		char const * const seg) const;
-	std::string getDrivePath(char const * const path) const;
-	std::string getName(char const * const path) const;	// Without extension
-	std::string getNameExt(char const * const path) const;
-	std::string getExtension(char const * const path) const;
-	std::string getWithoutEndPathSep(char const * const path) const;
-	bool matchExtension(char const * const path1, char const * const path2) const;
+	size_t moveLeftPathSep(OovStringRef const path);
+	size_t moveRightPathSep(OovStringRef const path);
+	OovString getHead(OovStringRef const path) const;
+	OovString getTail(OovStringRef const path) const;
+	OovString getPathSegment(OovStringRef const path) const;
+	size_t findPathSegment(OovStringRef const path,
+		OovStringRef const seg) const;
+	OovString getDrivePath(OovStringRef const path) const;
+	OovString getName(OovStringRef const path) const;	// Without extension
+	OovString getNameExt(OovStringRef const path) const;
+	OovString getExtension(OovStringRef const path) const;
+	OovString getWithoutEndPathSep(OovStringRef const path) const;
+	bool matchExtension(OovStringRef const path1, OovStringRef const path2) const;
 
-	static bool isAbsolutePath(char const * const path);
-	static bool isPathSep(char const * const path, int pos)
+	static bool isAbsolutePath(OovStringRef const path);
+	static bool isPathSep(OovStringRef const path, int pos)
 	    { return(path[pos] == '/' || path[pos] == '\\'); }
-	static bool isEndPathSep(char const * const path);
-	static bool isExtensionSep(char const * const path, int pos)
+	static bool isEndPathSep(OovStringRef const path);
+	static bool isExtensionSep(OovStringRef const path, int pos)
 	    { return(path[pos] == '.'); }
-	static size_t findExtension(char const * const path);
-	static bool hasExtension(char const * const path)
+	static size_t findExtension(OovStringRef const path);
+	static bool hasExtension(OovStringRef const path)
 	    { return(findExtension(path) != std::string::npos); }
-	static bool isDirOnDisk(char const * const path);
-	static int comparePaths(char const * const path1, char const * const path2);
+	static bool isDirOnDisk(OovStringRef const path);
+	static int comparePaths(OovStringRef const path1, OovStringRef const path2);
 
     protected:
 	size_t getPos() const
@@ -102,15 +103,15 @@ enum eFilePathTypes { FP_File, FP_Dir, FP_Ext };
 /// In this class, any path that ends with a path separator is a directory.
 /// The special case is when FilePathRef is initialized with an empty string,
 /// then a directory is not initialized to "/".
-class FilePath:public std::string, public FilePathImmutable
+class FilePath:public OovString, public FilePathImmutable
     {
     public:
 	FilePath()
 	    {}
-	FilePath(char const * const filePath, eFilePathTypes fpt)
+	FilePath(OovStringRef const filePath, eFilePathTypes fpt)
 	    { pathStdStr() = normalizePathType(filePath, fpt); }
-	FilePath(std::string const &filePath, eFilePathTypes fpt)
-	    { pathStdStr() = normalizePathType(filePath.c_str(), fpt); }
+//	FilePath(std::string const &filePath, eFilePathTypes fpt)
+//	    { pathStdStr() = normalizePathType(filePath, fpt); }
 /*
         // The default operator= works fine since the normalized path is copied.
         FilePath &operator=(FilePath const &filePath)
@@ -120,7 +121,7 @@ class FilePath:public std::string, public FilePathImmutable
             return *this;
             }
 */
-	void setPath(char const * const path, eFilePathTypes fpt)
+	void setPath(OovStringRef const path, eFilePathTypes fpt)
 	    { pathStdStr() = normalizePathType(path, fpt); }
 	eFilePathTypes getType() const;
 
@@ -133,36 +134,38 @@ class FilePath:public std::string, public FilePathImmutable
 	// Currently stops at dir spec if it exists.
 	size_t moveLeftPathSep()
 	    { return FilePathImmutable::moveLeftPathSep(c_str()); }
-	std::string getHead() const
+	size_t moveRightPathSep()
+	    { return FilePathImmutable::moveRightPathSep(c_str()); }
+	OovString getHead() const
 	    { return FilePathImmutable::getHead(c_str()); }
-	std::string getTail() const
+	OovString getTail() const
 	    { return FilePathImmutable::getTail(c_str()); }
-	std::string getPathSegment() const
+	OovString getPathSegment() const
 	    { return FilePathImmutable::getPathSegment(c_str()); }
-	size_t findPathSegment(char const * const seg) const
+	size_t findPathSegment(OovStringRef const seg) const
 	    { return FilePathImmutable::findPathSegment(c_str(), seg); }
-	std::string getDrivePath() const
+	OovString getDrivePath() const
 	    { return FilePathImmutable::getDrivePath(c_str()); }
-	std::string getName() const	// Without extension
+	OovString getName() const	// Without extension
 	    { return FilePathImmutable::getName(c_str()); }
-	std::string getNameExt() const
+	OovString getNameExt() const
 	    { return FilePathImmutable::getNameExt(c_str()); }
-	std::string getExtension() const
+	OovString getExtension() const
 	    { return FilePathImmutable::getExtension(c_str()); }
         FilePath getParent() const;
-	std::string getWithoutEndPathSep() const
+        OovString getWithoutEndPathSep() const
 	    { return FilePathImmutable::getWithoutEndPathSep(c_str()); }
-	bool matchExtension(char const * const path2) const
+	bool matchExtension(OovStringRef const path2) const
 	    { return FilePathImmutable::matchExtension(c_str(), path2); }
-	int comparePaths(char const * const path2) const
+	int comparePaths(OovStringRef const path2) const
 	    { return FilePathImmutable::comparePaths(c_str(), path2); }
 
-	void appendPathAtPos(char const * const pathPart);
-	void appendDirAtPos(char const * const pathPart);
-	void appendPart(char const * const pathPart, eFilePathTypes fpt);
-	void appendDir(char const * const pathPart);
-	void appendFile(char const * const fileName);
-	void appendExtension( char const * const fileName);
+	void appendPathAtPos(OovStringRef const pathPart);
+	void appendDirAtPos(OovStringRef const pathPart);
+	void appendPart(OovStringRef const pathPart, eFilePathTypes fpt);
+	void appendDir(OovStringRef const pathPart);
+	void appendFile(OovStringRef const fileName);
+	void appendExtension( OovStringRef const fileName);
 	void discardDirectory();
 	void discardFilename();
 	void discardExtension();
@@ -170,9 +173,9 @@ class FilePath:public std::string, public FilePathImmutable
 	void discardTail();
 	void discardHead();
 	int discardLeadingRelSegments();
-	void discardMatchingHead(char const * const pathPart);
+	void discardMatchingHead(OovStringRef const pathPart);
 	void getWorkingDirectory();
-	void getAbsolutePath(char const * const path, eFilePathTypes fpt);
+	void getAbsolutePath(OovStringRef const path, eFilePathTypes fpt);
 	static void normalizePathSeps(std::string &path);
 
 	std::string &pathStdStr()
@@ -181,12 +184,12 @@ class FilePath:public std::string, public FilePathImmutable
 	    { return *this; }
 
     protected:
-	static std::string normalizePathType(char const * const path, eFilePathTypes fpt);
+	static std::string normalizePathType(OovStringRef const path, eFilePathTypes fpt);
     };
 
 
 typedef std::vector<FilePath> FilePaths;
 
-bool anyExtensionMatch(FilePaths const &paths, char const * const file);
+bool anyExtensionMatch(FilePaths const &paths, OovStringRef const file);
 
 #endif /* FILEPATH_H_ */

@@ -460,6 +460,9 @@ High cyclomatic complexity on switch statements</a>
 <br />
 <a href="http://www.drdobbs.com/architecture-and-design/measuring-complexity-correctly/240007928">
 Measuring Complexity Correctly</a>
+<br />
+<a href="https://www.cqse.eu/en/blog/mccabe-cyclomatic-complexity/">
+McCabe's Cyclomatic Complexity and Why We Don't Use It</a>
 
 
 <h2>Types of Complexity</h2>

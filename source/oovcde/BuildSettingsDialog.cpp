@@ -47,10 +47,10 @@ void BuildSettingsDialog::enterScreen()
 		{
 		mLastCompName = name;
 		}
-	    mComponentTree.appendText(getParent(name), getChildName(name).c_str());
+	    mComponentTree.appendText(getParent(name), getChildName(name));
 	    }
 	}
-    mComponentTree.setSelected(mLastCompName.c_str(), '/');
+    mComponentTree.setSelected(mLastCompName, '/');
     }
 
 std::string BuildSettingsDialog::getChildName(std::string const &compName)
@@ -101,13 +101,13 @@ void BuildSettingsDialog::saveFromScreen(std::string const &compName)
 	{
 	if(boxValue)
 	    {
-            mComponentFile.setComponentType(compName.c_str(), boxValue);
+            mComponentFile.setComponentType(compName, boxValue);
 	    }
 	std::string str = Gui::getText(argsView);
 	CompoundValue buildArgs;
-	buildArgs.parseString(str.c_str(), '\n');
+	buildArgs.parseString(str, '\n');
 	std::string newBuildArgsStr = buildArgs.getAsString();
-	mComponentFile.setComponentBuildArgs(compName.c_str(), newBuildArgsStr.c_str());
+	mComponentFile.setComponentBuildArgs(compName, newBuildArgsStr);
 	}
     }
 
@@ -120,13 +120,13 @@ void BuildSettingsDialog::loadToScreen(std::string const &compName)
 	GtkTextView *argsView = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(
 		"ComponentBuildArgsTextview"));
 
-        int index = mComponentFile.getComponentType(compName.c_str());
+        int index = mComponentFile.getComponentType(compName);
 	Gui::setSelected(GTK_COMBO_BOX(typeBox), index);
 
 	CompoundValue cppArgs;
-	cppArgs.parseString(mComponentFile.getComponentBuildArgs(compName.c_str()).c_str());
+	cppArgs.parseString(mComponentFile.getComponentBuildArgs(compName));
 	std::string str = cppArgs.getAsString('\n');
-	Gui::setText(argsView, str.c_str());
+	Gui::setText(argsView, str);
 	}
     }
 

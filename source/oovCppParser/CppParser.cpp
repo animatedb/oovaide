@@ -30,7 +30,7 @@
 
 #define DEBUG_PARSE 0
 #if(DEBUG_PARSE)
-static DebugFile sLog("DebugCppParse.txt");
+static DebugFile sLog("DebugCppParse.txt", false);
 #endif
 
 #define SHARED_FILE 1
@@ -39,7 +39,7 @@ void IncDirDependencyMap::read(char const * const outDir, char const * const inc
     {
     FilePath outIncFileName(outDir, FP_Dir);
     outIncFileName.appendFile(incFn);
-    setFilename(outIncFileName.c_str());
+    setFilename(outIncFileName);
 #if(SHARED_FILE)
     if(!readFileShared())
 	{
@@ -74,12 +74,12 @@ void IncDirDependencyMap::write()
 	{
 	CompoundValue compVal;
 	// First check if the includer filename exists in the dependency file.
-	std::string val = getValue(mapItem.first.c_str());
+	OovString val = getValue(mapItem.first);
 	if(val.size() > 0)
 	    {
 	    // get the changed time, which is the first value and discard
 	    // everything else.
-	    compVal.parseString(val.c_str());
+	    compVal.parseString(val);
 	    bool changed = false;
 	    if(compVal.size()-2 != mapItem.second.size())
 		{
@@ -100,7 +100,7 @@ void IncDirDependencyMap::write()
 		changedTime = curTime;
 	    else
 		{
-		OovString timeStr(compVal[0].c_str());
+		OovString timeStr(compVal[0]);
 		unsigned int timeVal;
 		timeStr.getUnsignedInt(0, UINT_MAX, timeVal);
 		changedTime = timeVal;
@@ -110,21 +110,21 @@ void IncDirDependencyMap::write()
 
 	OovString changeStr;
 	changeStr.appendInt(changedTime);
-	compVal.addArg(changeStr.c_str());
+	compVal.addArg(changeStr);
 
 	OovString checkedStr;
 	checkedStr.appendInt(curTime);
-	compVal.addArg(checkedStr.c_str());
+	compVal.addArg(checkedStr);
 
 	for(const auto &str : mapItem.second)
 	    {
-	    size_t pos = compVal.find(str.c_str());
+	    size_t pos = compVal.find(str);
 	    if(pos == CompoundValue::npos)
 		{
-		compVal.addArg(str.c_str());
+		compVal.addArg(str);
 		}
 	    }
-	setNameValue(mapItem.first.c_str(), compVal.getAsString().c_str());
+	setNameValue(mapItem.first, compVal.getAsString());
 	}
     if(file.isOpen())
 	{
@@ -240,13 +240,6 @@ static CXChildVisitResult visitFunctionAddArgs(CXCursor cursor, CXCursor parent,
     return parser->visitFunctionAddArgs(cursor, parent);
     }
 
-static CXChildVisitResult visitFunctionAddVars(CXCursor cursor, CXCursor parent,
-	CXClientData client_data)
-    {
-    CppParser *parser = static_cast<CppParser*>(client_data);
-    return parser->visitFunctionAddVars(cursor, parent);
-    }
-
 static CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor parent,
 	CXClientData client_data)
     {
@@ -278,10 +271,10 @@ ModelType *CppParser::createOrGetBaseTypeRef(CXCursor cursor, RefType &rt)
     std::string typeName = getFullBaseTypeName(cursor);
 
 #if(DEBUG_PARSE)
-    if(sLog.mFp && !mModelData.getTypeRef(typeName.c_str()))
+    if(sLog.mFp && !mModelData.getTypeRef(typeName))
 	fprintf(sLog.mFp, "    Create Type Ref: %s\n", typeName.c_str());
 #endif
-    return mModelData.createOrGetTypeRef(typeName.c_str(), dType);
+    return mModelData.createOrGetTypeRef(typeName, dType);
     }
 
 ModelType *CppParser::createOrGetDataTypeRef(CXType cursType, RefType &rt)
@@ -303,22 +296,22 @@ ModelType *CppParser::createOrGetDataTypeRef(CXType cursType, RefType &rt)
     CXStringDisposer retTypeStr(clang_getTypeSpelling(cursType));
 //    if(retTypeDeclCursor.kind != CXCursor_NoDeclFound)
 //	{
-//	type = mModelData.createOrGetTypeRef(retTypeStr.c_str(), DT_Class);
+//	type = mModelData.createOrGetTypeRef(retTypeStr, DT_Class);
 //	}
 //    else
 	{
-	type = mModelData.createOrGetTypeRef(retTypeStr.c_str(), DT_DataType);
+	type = mModelData.createOrGetTypeRef(retTypeStr, DT_DataType);
 	}
     return type;
     }
 
 // This upgrades an otDatatype to an otClass in order to handle forward references
-ModelClassifier *CppParser::createOrGetClassRef(char const * const name)
+ModelClassifier *CppParser::createOrGetClassRef(OovStringRef const name)
     {
     ModelClassifier *classifier = nullptr;
 #if(DEBUG_PARSE)
     if(sLog.mFp && !mModelData.getTypeRef(name))
-	fprintf(sLog.mFp, "    Create Type Class: %s\n", name);
+	fprintf(sLog.mFp, "    Create Type Class: %s\n", name.getStr());
 #endif
     ModelType *type = mModelData.createOrGetTypeRef(name, DT_Class);
     if(type->getDataType() == DT_Class)
@@ -336,7 +329,7 @@ ModelClassifier *CppParser::createOrGetClassRef(char const * const name)
 ModelType *CppParser::createOrGetDataTypeRef(CXCursor cursor)
     {
     std::string typeName = getFullBaseTypeName(cursor);
-    return mModelData.createOrGetTypeRef(typeName.c_str(), DT_DataType);
+    return mModelData.createOrGetTypeRef(typeName, DT_DataType);
     }
 
 void CppParser::addOperationParts(CXCursor cursor, bool addParams)
@@ -353,7 +346,6 @@ void CppParser::addOperationParts(CXCursor cursor, bool addParams)
     mOperation->getReturnType().setConst(rt.isConst);
     mOperation->getReturnType().setRefer(rt.isRef);
 #endif
-    clang_visitChildren(cursor, ::visitFunctionAddVars, this);
     mStatements = &mOperation->getStatements();
     clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
     }
@@ -446,36 +438,6 @@ static std::string getFileLoc(CXCursor cursor, int *retLine = nullptr)
     if(retLine)
 	*retLine = line;
     return fn;
-    }
-
-// Finds variable declarations inside function bodies.
-CXChildVisitResult CppParser::visitFunctionAddVars(CXCursor cursor, CXCursor parent)
-    {
-    sCrashDiagnostics.saveMostRecentParseLocation("FV", cursor);
-    CXCursorKind cursKind = clang_getCursorKind(cursor);
-    switch(cursKind)
-	{
-	case CXCursor_VarDecl:
-	    {
-	    CXType cursType = clang_getCursorType(cursor);
-	    if(cursType.kind == CXType_Record)
-		{
-		CXStringDisposer name = clang_getCursorDisplayName(cursor);
-		RefType rt;
-		ModelType *type = createOrGetBaseTypeRef(cursor, rt);
-		if(type)
-		    {
-		    mOperation->addBodyVarDeclarator(name, type,
-			    rt.isConst, rt.isRef);
-		    }
-		}
-	    }
-	    break;
-
-	default:
-	    break;
-	}
-    return CXChildVisit_Recurse;
     }
 
 // This is to find part of conditional statements in a for loop.
@@ -588,9 +550,8 @@ void CppParser::addElseStatement(CXCursor condStmtCursor, int elseBodyIndex)
 CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCursor parent)
     {
 #if(DEBUG_PARSE)
-    static int level = 0;
-    level++;
-    for(int i=0; i<level; i++)
+    mStatementRecurseLevel++;
+    for(int i=0; i<mStatementRecurseLevel; i++)
 	fprintf(sLog.mFp, "  ");
 #endif
     static bool modifiedLhs = false;
@@ -626,8 +587,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    OovString fullop = buildCondExpr(cursor, 0);
 	    SwitchContext &context = mSwitchContexts.getCurrentContext();
 	    context.maybeStartCase(mStatements, fullop);
-	    CXCursor childCursor = getNthChildCursor(cursor, 1);
-	    visitFunctionAddStatements(childCursor, cursor);
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    }
 	    break;
 
@@ -636,8 +596,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    SwitchContext &context = mSwitchContexts.getCurrentContext();
 	    OovString defStr("[default]");
 	    context.maybeStartCase(mStatements, defStr);
-	    CXCursor childCursor = getNthChildCursor(cursor, 0);
-	    visitFunctionAddStatements(childCursor, cursor);
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    }
 	    break;
 
@@ -672,6 +631,9 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		cursorDef = clang_getCursorReferenced(cursor);
 	    if(functionName.length() != 0)
 		{
+		/// @todo - fix to support class1.class2.call(). This is tricky because
+		/// the sequence diagram needs to know the type of class2 for class2.call,
+		/// but complexity or class relations know the type of the class1 relation.
 		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
 		RefType rt;
 		CXCursor memberRefCursor = getCursorCallMemberRef(cursor);
@@ -719,6 +681,24 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    }
 	    break;
 
+	case CXCursor_VarDecl:
+	    {
+	    CXType cursType = clang_getCursorType(cursor);
+	    if(cursType.kind == CXType_Record)
+		{
+		CXStringDisposer name = clang_getCursorDisplayName(cursor);
+		RefType rt;
+		ModelType *type = createOrGetBaseTypeRef(cursor, rt);
+		if(type && mOperation)
+		    {
+		    mOperation->addBodyVarDeclarator(name, type,
+			    rt.isConst, rt.isRef);
+		    }
+		}
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+	    }
+	    break;
+
 	// An expression that refers to a member of a struct, union, class, etc.
 	// If first child of CXCursor_BinaryOperator, it is read only.
 	// If child of CXCursor_UnaryOperator, it may be write or read.
@@ -731,6 +711,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    CXCursor cursorDef = clang_getCursorDefinition(cursor);
 	    if(cursorDef.kind == CXCursor_FieldDecl)
 		{
+		/// @todo - fix to support class1.class2.member
 		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
 		if(classCursor.kind == CXCursor_ClassDecl || classCursor.kind == CXCursor_StructDecl)
 		    {
@@ -747,7 +728,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		    }
 		else
 		    {
-		    LogAssertFile(__FILE__, __LINE__);
+//		    LogAssertFile(__FILE__, __LINE__);
 		    }
 		}
 	    else if(cursorDef.kind != CXCursor_CXXMethod && cursorDef.kind != CXCursor_FirstInvalid &&
@@ -755,6 +736,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 		{
 		LogAssertFile(__FILE__, __LINE__);
 		}
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    }
 	    break;
 
@@ -769,7 +751,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    break;
 	}
 #if(DEBUG_PARSE)
-    level--;
+    mStatementRecurseLevel--;
 #endif
     return CXChildVisit_Continue;
     }
@@ -778,8 +760,8 @@ void CppParser::addRecord(CXCursor cursor, Visibility vis)
     {
     // Save all classes so that the access specifiers in the declared classes
     // from other TU's are saved. (Ex, the header for this source file)
-    std::string name = getFullBaseTypeName(cursor);
-    mClassifier = createOrGetClassRef(name.c_str());
+    OovString name = getFullBaseTypeName(cursor);
+    mClassifier = createOrGetClassRef(name);
     if(mClassifier)
 	{
 	int line;
@@ -911,7 +893,7 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 		{
 		className = getFullBaseTypeName(classCursor);
 		}
-	    mClassifier = createOrGetClassRef(className.c_str());
+	    mClassifier = createOrGetClassRef(className);
 	    if(mClassifier)
 		{
 		int line;
@@ -966,14 +948,14 @@ CXChildVisitResult CppParser::visitTranslationUnitForIncludes(CXCursor cursor, C
 		CXStringDisposer includedNameString(clang_getCursorSpelling(cursor));
 
 		FilePath absErFn;
-		absErFn.getAbsolutePath(includerFn.c_str(), FP_File);
+		absErFn.getAbsolutePath(includerFn, FP_File);
 		FilePath absEdFn;
-		absEdFn.getAbsolutePath(includedFn.c_str(), FP_File);
+		absEdFn.getAbsolutePath(includedFn, FP_File);
 
 		// Find the base path minus the included path. This is for
 		// includes like "include <gtk/gtk.h>"
-		FilePath edFullPath(absEdFn.c_str(), FP_File);
-		FilePath edName(includedNameString.c_str(), FP_File);
+		FilePath edFullPath(absEdFn, FP_File);
+		FilePath edName(includedNameString, FP_File);
 #ifndef __linux__
 		StringToLower(edFullPath);
 		StringToLower(edName);
@@ -1057,16 +1039,15 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
 	fflush(sLog.mFp);
 #endif
 
-	std::string outBaseFileName;
-	Project::makeOutBaseFileName(std::string(srcFn), std::string(srcRootDir),
-	    outDir, outBaseFileName);
+	std::string outBaseFileName = Project::makeOutBaseFileName(srcFn,
+		srcRootDir, outDir);
 
 	try
 	    {
-	    std::string outXmiFileName = outBaseFileName;
+	    OovString outXmiFileName = outBaseFileName;
 	    outXmiFileName += ".xmi";
 	    ModelWriter writer(mModelData);
-	    writer.writeFile(outXmiFileName.c_str());
+	    writer.writeFile(outXmiFileName);
 	    }
 	catch(...)
 	    {

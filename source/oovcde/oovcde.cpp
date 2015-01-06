@@ -41,7 +41,7 @@ bool WindowBuildListener::onBackgroundProcessIdle(bool &completed)
     Gui::appendText(mStatusTextView, tempStdStr);
     if(mProcessComplete)
 	{
-	char const * const str = "\nComplete\n";
+	OovStringRef const str = "\nComplete\n";
 	Gui::appendText(mStatusTextView, str);
 	mProcessComplete = false;
 	completed = true;
@@ -159,7 +159,7 @@ void oovGui::openProject()
     gOovGui.clear();
     BuildConfigReader buildConfig;
     std::vector<std::string> fileNames;
-    bool open = getDirListMatchExt(buildConfig.getAnalysisPath().c_str(),
+    bool open = getDirListMatchExt(buildConfig.getAnalysisPath(),
 	    FilePath(".xmi", FP_File), fileNames);
     if(open)
 	{
@@ -169,10 +169,10 @@ void oovGui::openProject()
 	backDlg.setProgressIterations(fileNames.size());
 	for(size_t i=0; i<fileNames.size() ; i++)
 	    {
-	    File file(fileNames[i].c_str(), "r");
+	    File file(fileNames[i], "r");
 	    if(file.isOpen())
 		{
-		loadXmiFile(file.getFp(), mModelData, fileNames[i].c_str(), typeIndex);
+		loadXmiFile(file.getFp(), mModelData, fileNames[i], typeIndex);
 		}
 	    if(!backDlg.updateProgressIteration(i))
 		{
@@ -186,7 +186,7 @@ void oovGui::openProject()
 	for(size_t i=0; i<mModelData.mTypes.size(); i++)
 	    {
 	    if(mModelData.mTypes[i]->getDataType() == DT_Class)
-		mClassList.appendText(mModelData.mTypes[i]->getName().c_str());
+		mClassList.appendText(mModelData.mTypes[i]->getName());
 	    }
 	mClassList.sort();
 #endif
@@ -197,7 +197,7 @@ void oovGui::openProject()
     setProjectOpen(open);
     }
 
-void oovGui::displayClass(char const * const className)
+void oovGui::displayClass(OovStringRef const className)
     {
     // While the graph is initialized, there is no name.
     if(std::string(className).length() > 0)
@@ -209,13 +209,13 @@ void oovGui::displayClass(char const * const className)
 	}
     }
 
-void oovGui::addClass(char const * const className)
+void oovGui::addClass(OovStringRef const className)
     {
     mJournal.addClass(className);
     }
 
-void oovGui::displayOperation(char const * const className,
-	char const * const operName, bool isConst)
+void oovGui::displayOperation(OovStringRef const className,
+	OovStringRef const operName, bool isConst)
     {
     // While the graph is initialized, there is no name.
     if(std::string(className).length() > 0)
@@ -241,18 +241,18 @@ static bool checkAnyComponents()
     return success;
     }
 
-bool oovGui::runSrcManager(char const * const buildConfigName, eSrcManagerOptions smo)
+bool oovGui::runSrcManager(OovStringRef const buildConfigName, eSrcManagerOptions smo)
     {
     bool success = true;
 #ifdef __linux__
-    char const * const procPath = "./oovBuilder";
+    OovStringRef const procPath = "./oovBuilder";
 #else
-    char const * const procPath = "./oovBuilder.exe";
+    OovStringRef const procPath = "./oovBuilder.exe";
 #endif
     clearListener(getBuilder());
     OovProcessChildArgs args;
     args.addArg(procPath);
-    args.addArg(Project::getProjectDirectory().c_str());
+    args.addArg(Project::getProjectDirectory());
 
     mMenu.updateMenuEnables();
     char const *str = NULL;
@@ -265,27 +265,27 @@ bool oovGui::runSrcManager(char const * const buildConfigName, eSrcManagerOption
 	{
 	str = "\nBuilding\n";
 	args.addArg("-mode-build");
-	args.addArg(makeBuildConfigArgName("-cfg", buildConfigName).c_str());
+	args.addArg(makeBuildConfigArgName("-cfg", buildConfigName));
 	success = checkAnyComponents();
 	}
     else if(smo == SM_CovInstr)
 	{
 	str = "\nInstrumenting\n";
 	args.addArg("-mode-cov-instr");
-	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigAnalysis).c_str());
+	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigAnalysis));
 	success = checkAnyComponents();
 	}
     else if(smo == SM_CovBuild)
 	{
 	str = "\nBuilding coverage\n";
 	args.addArg("-mode-cov-build");
-	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug).c_str());
+	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug));
 	}
     else if(smo == SM_CovStats)
 	{
 	str = "\nGenerating coverage statistics\n";
 	args.addArg("-mode-cov-stats");
-	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug).c_str());
+	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug));
 	}
     if(success)
 	{
@@ -331,17 +331,17 @@ void oovGui::updateJournalList()
     mJournalList.clear();
     for(const auto &rec : mJournal.getRecords())
 	{
-	mJournalList.appendText(rec->getFullName(true).c_str());
+	mJournalList.appendText(rec->getFullName(true));
 	}
     }
 
-void oovGui::updateClassList(char const * const className)
+void oovGui::updateClassList(OovStringRef const className)
     {
     mClassList.setSelected(className);
     }
 
 void oovGui::updateOperationList(const ModelData &modelData,
-	char const * const className)
+	OovStringRef const className)
     {
     mOperationList.clear();
     const ModelClassifier *cls = modelData.getTypeRef(className)->getClass();
@@ -350,13 +350,13 @@ void oovGui::updateOperationList(const ModelData &modelData,
 	for(size_t i=0; i<cls->getOperations().size(); i++)
 	    {
 	    const ModelOperation *oper = cls->getOperations()[i].get();
-	    std::string opStr = oper->getName().c_str();
+	    std::string opStr = oper->getName();
 	    if(oper->isConst())
 		{
 		opStr += ' ';
 		opStr += "const";
 		}
-	    mOperationList.appendText(opStr.c_str());
+	    mOperationList.appendText(opStr);
 	    }
 	mOperationList.sort();
 	}
@@ -389,7 +389,7 @@ int oovGui::getStatusSourceFile(std::string &fn)
 	size_t endPos = line.find(':', pos+1);
 	if(endPos != std::string::npos)
 	    {
-	    OovString numStr(line.substr(pos, endPos-pos).c_str());
+	    OovString numStr(line.substr(pos, endPos-pos));
 	    if(numStr.getInt(0, INT_MAX, lineNum))
 		fn = line.substr(0, pos-1);
 	    }
@@ -397,11 +397,12 @@ int oovGui::getStatusSourceFile(std::string &fn)
     return lineNum;
     }
 
-static void displayBrowserFile(char const *fn)
+static void displayBrowserFile(OovStringRef const fileName)
     {
+    char const *fn = fileName;
 #ifdef __linux__
     FilePath fpTest(fn, FP_File);
-    if(!fileExists(fpTest.c_str()))
+    if(!fileExists(fpTest))
 #else
     if(!fileExists(fn))
 #endif
@@ -431,7 +432,7 @@ void oovGui::makeComplexityFile()
     std::string fn;
     if(createComplexityFile(mModelData, fn))
 	{
-	displayBrowserFile(fn.c_str());
+	displayBrowserFile(fn);
 	}
     else
 	{
@@ -444,7 +445,7 @@ void oovGui::makeMemberUseFile()
     std::string fn;
     if(createStaticAnalysisFile(mModelData, fn))
 	{
-	displayBrowserFile(fn.c_str());
+	displayBrowserFile(fn);
 	}
     else
 	{
@@ -461,7 +462,7 @@ class OptionsDialogUpdate:public OptionsDialog
 	gOovGui.getJournal().cppArgOptionsChangedUpdateDrawings();
 	gOovGui.updateProject();
 	}
-    virtual void buildConfig(char const * const name)
+    virtual void buildConfig(OovStringRef const name)
 	{
 	gOovGui.runSrcManager(name, oovGui::SM_Build);
 	}
@@ -494,7 +495,7 @@ extern "C" G_MODULE_EXPORT void on_RootSourceDirButton_clicked(
 	GtkWidget *button, gpointer data)
     {
     PathChooser ch;
-    std::string srcRootDir;
+    OovString srcRootDir;
     if(ch.ChoosePath(gOovGui.getWindow(), "Open Root Source Directory",
 	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, srcRootDir))
 	{
@@ -508,7 +509,7 @@ extern "C" G_MODULE_EXPORT void on_OovcdeProjectDirButton_clicked(
 	GtkWidget *button, gpointer data)
     {
     PathChooser ch;
-    std::string projectDir;
+    OovString projectDir;
     if(ch.ChoosePath(gOovGui.getWindow(), "Create OOVCDE Project Directory",
 	    GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
 	projectDir))
@@ -526,13 +527,13 @@ extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
     gGuiOptions.setDefaultOptions();
     GtkEntry *dirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget("RootSourceDirEntry"));
     FilePath rootSrcText(gtk_entry_get_text(dirEntry), FP_Dir);
-    gBuildOptions.setNameValue(OptSourceRootDir, rootSrcText.c_str());
+    gBuildOptions.setNameValue(OptSourceRootDir, rootSrcText);
 
     GtkEntry *projDirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
 	    "OovcdeProjectDirEntry"));
 
     removePathSep(rootSrcText, rootSrcText.length()-1);
-    Project::setSourceRootDirectory(rootSrcText.c_str());
+    Project::setSourceRootDirectory(rootSrcText);
     rootSrcText.appendFile("-oovcde");
     gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
     }
@@ -541,7 +542,7 @@ extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
 	GtkWidget *button, gpointer data)
     {
     PathChooser ch;
-    std::string dir;
+    OovString dir;
     if(ch.ChoosePath(gOovGui.getWindow(), "Add Exclude Directory",
 	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
 	{
@@ -550,7 +551,7 @@ extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
 	std::string relDir;
 	relDir = Project::getSrcRootDirRelativeSrcFileDir(dir);
 	relDir += '\n';
-	Gui::appendText(dirTextView, relDir.c_str());
+	Gui::appendText(dirTextView, relDir);
 	}
     }
 
@@ -559,23 +560,23 @@ extern "C" G_MODULE_EXPORT void on_NewProjectOkButton_clicked(
     {
     GtkEntry *dirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
 	    "OovcdeProjectDirEntry"));
-    std::string projDir = gtk_entry_get_text(dirEntry);
+    OovString projDir = gtk_entry_get_text(dirEntry);
     if(projDir.length())
 	{
 	ensureLastPathSep(projDir);
-	if(ensurePathExists(projDir.c_str()))
+	if(ensurePathExists(projDir))
 	    {
-	    Project::setProjectDirectory(projDir.c_str());
+	    Project::setProjectDirectory(projDir);
 
-	    gBuildOptions.setFilename(Project::getProjectFilePath().c_str());
+	    gBuildOptions.setFilename(Project::getProjectFilePath());
 
 	    GtkTextView *excDirTextView = GTK_TEXT_VIEW(gOovGui.getBuilder().getWidget(
 		    "ExcludeDirsTextview"));
 	    CompoundValue val;
-	    val.parseString(Gui::getText(excDirTextView).c_str(), '\n');
-	    gBuildOptions.setNameValue(OptProjectExcludeDirs, val.getAsString(';').c_str());
+	    val.parseString(Gui::getText(excDirTextView), '\n');
+	    gBuildOptions.setNameValue(OptProjectExcludeDirs, val.getAsString(';'));
 
-	    gGuiOptions.setFilename(Project::getGuiOptionsFilePath().c_str());
+	    gGuiOptions.setFilename(Project::getGuiOptionsFilePath());
 	    if(gBuildOptions.writeFile())
 		{
 		gGuiOptions.writeFile();
@@ -614,13 +615,13 @@ extern "C" G_MODULE_EXPORT void on_NewProjectMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_NewModule_ModuleEntry_changed(
 	GtkWidget *widget, gpointer data)
     {
-    std::string module = Gui::getText(GTK_ENTRY(widget));
-    std::string interfaceName = module + ".h";
-    std::string implementationName = module + ".cpp";
+    OovString module = Gui::getText(GTK_ENTRY(widget));
+    OovString interfaceName = module + ".h";
+    OovString implementationName = module + ".cpp";
     Gui::setText(GTK_ENTRY(gOovGui.getBuilder().getWidget(
-	    "NewModule_InterfaceEntry")), interfaceName.c_str());
+	    "NewModule_InterfaceEntry")), interfaceName);
     Gui::setText(GTK_ENTRY(gOovGui.getBuilder().getWidget(
-	    "NewModule_ImplementationEntry")), implementationName.c_str());
+	    "NewModule_ImplementationEntry")), implementationName);
     }
 
 // In glade, set the callback for the dialog's GtkWidget "delete-event" to
@@ -635,38 +636,38 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
 	GtkWidget *widget, gpointer data)
     {
     gtk_widget_hide(gOovGui.getBuilder().getWidget("NewModuleDialog"));
-    std::string basePath = Project::getSrcRootDirectory();
-    std::string interfaceName = Gui::getText(GTK_ENTRY(gOovGui.getBuilder().getWidget(
+    OovString basePath = Project::getSrcRootDirectory();
+    OovString interfaceName = Gui::getText(GTK_ENTRY(gOovGui.getBuilder().getWidget(
 	    "NewModule_InterfaceEntry")));
-    std::string implementationName = Gui::getText(GTK_ENTRY(gOovGui.getBuilder().getWidget(
+    OovString implementationName = Gui::getText(GTK_ENTRY(gOovGui.getBuilder().getWidget(
 	    "NewModule_ImplementationEntry")));
-    std::string compName = Gui::getText(GTK_COMBO_BOX_TEXT(gOovGui.getBuilder().getWidget(
+    OovString compName = Gui::getText(GTK_COMBO_BOX_TEXT(gOovGui.getBuilder().getWidget(
 	    "NewModule_ComponentComboboxtext")));
 
     FilePath compDir(basePath, FP_Dir);
     if(compName != "<Root>")
-	compDir.appendDir(compName.c_str());
+	compDir.appendDir(compName);
     // Create the new component directory if it doesn't exist.
-    ensurePathExists(compDir.c_str());
+    ensurePathExists(compDir);
 
-    if(!fileExists(interfaceName.c_str()))
+    if(!fileExists(interfaceName))
 	{
 	FilePath tempInt(compDir, FP_Dir);
-	tempInt.appendFile(interfaceName.c_str());
-	File intFile(tempInt.c_str(), "w");
+	tempInt.appendFile(interfaceName);
+	File intFile(tempInt, "w");
 	fprintf(intFile.getFp(), "// %s", interfaceName.c_str());
 	}
     else
 	Gui::messageBox("Interface already exists", GTK_MESSAGE_INFO);
 
-    if(!fileExists(implementationName.c_str()))
+    if(!fileExists(implementationName))
 	{
 	FilePath tempImp(compDir, FP_Dir);
-	tempImp.appendFile(implementationName.c_str());
-	File impFile(tempImp.c_str(), "w");
+	tempImp.appendFile(implementationName);
+	File impFile(tempImp, "w");
 	fprintf(impFile.getFp(), "// %s", implementationName.c_str());
 	impFile.close();
-	viewSource(tempImp.c_str(), 1);
+	viewSource(tempImp, 1);
 	}
     else
 	Gui::messageBox("Implementation already exists", GTK_MESSAGE_INFO);
@@ -684,7 +685,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
 	    "NewModule_ComponentComboboxtext")));
     if(componentsFile.read())
 	{
-	std::vector<std::string> names = componentsFile.getComponentNames();
+	OovStringVec names = componentsFile.getComponentNames();
 	if(names.size() == 0)
 	    {
 	    Gui::appendText(GTK_COMBO_BOX_TEXT(gOovGui.getBuilder().getWidget(
@@ -693,7 +694,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
 	for(auto const &name : names)
 	    {
 	    Gui::appendText(GTK_COMBO_BOX_TEXT(gOovGui.getBuilder().getWidget(
-		    "NewModule_ComponentComboboxtext")), name.c_str());
+		    "NewModule_ComponentComboboxtext")), name);
 	    }
 	Gui::setSelected(GTK_COMBO_BOX(gOovGui.getBuilder().getWidget(
 		"NewModule_ComponentComboboxtext")), 0);
@@ -706,12 +707,12 @@ extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    std::string projectDir;
+    OovString projectDir;
     PathChooser ch;
     if(ch.ChoosePath(gOovGui.getWindow(), "Open OOVCDE Project Directory",
 	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, projectDir))
 	{
-	Project::setProjectDirectory(projectDir.c_str());
+	Project::setProjectDirectory(projectDir);
 	gOovGui.clear();
 	gOovGui.updateProject();
 	}
@@ -720,8 +721,8 @@ extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_SaveDrawingMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    std::string fn = gOovGui.getLastSavedPath();
-    SvgWriter svg(fn.c_str());
+    OovString fn = gOovGui.getLastSavedPath();
+    SvgWriter svg(fn);
     gOovGui.getJournal().saveFile(svg.getFile());
     }
 
@@ -729,13 +730,13 @@ extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
     PathChooser ch;
-    std::string fn = gOovGui.getLastSavedPath();
-    ch.setDefaultPath(fn.c_str());
+    OovString fn = gOovGui.getLastSavedPath();
+    ch.setDefaultPath(fn);
     if(ch.ChoosePath(gOovGui.getWindow(), "Save Drawing (.SVG)",
 	    GTK_FILE_CHOOSER_ACTION_SAVE, fn))
 	{
 	gOovGui.setLastSavedPath(fn);
-	SvgWriter svg(fn.c_str());
+	SvgWriter svg(fn);
 	gOovGui.getJournal().saveFile(svg.getFile());
 	}
     }
@@ -798,31 +799,31 @@ extern "C" G_MODULE_EXPORT void on_MakeCMakeMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
     OovProcessChildArgs args;
-    std::string proc = makeExeFilename("./oovCMaker");
+    OovString proc = makeExeFilename("./oovCMaker");
 
-    std::string projNameArg;
+    OovString projNameArg;
     Dialog cmakeDlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("CMakeDialog")));
     if(cmakeDlg.run(true))
 	{
 	GtkEntry *entry = GTK_ENTRY(gOovGui.getBuilder().getWidget("CMakeProjectNameEntry"));
-	projNameArg = std::string("-n") + Gui::getText(entry);
+	projNameArg = OovString("-n") + OovString(Gui::getText(entry));
 	}
 
     bool putInSource = Gui::messageBox("Put files in source directory?",
 	    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
-    args.addArg(proc.c_str());
-    args.addArg(Project::getProjectDirectory().c_str());
+    args.addArg(proc);
+    args.addArg(Project::getProjectDirectory());
     if(putInSource)
 	args.addArg("-w");
-    args.addArg(projNameArg.c_str());
-    spawnNoWait(proc.c_str(), args.getArgv());
+    args.addArg(projNameArg);
+    spawnNoWait(proc, args.getArgv());
     std::string stat = std::string("Building CMake files for ") +
 	    Project::getProjectDirectory() + ".";
     if(putInSource)
 	stat += "\nCheck the source directory for CMake files.";
     else
 	stat += "\nCheck the oovcde directory for CMake files.";
-    Gui::messageBox(stat.c_str(), GTK_MESSAGE_INFO);
+    Gui::messageBox(stat, GTK_MESSAGE_INFO);
     }
 
 static bool sDisplayClassViewRightClick = false;
@@ -833,12 +834,12 @@ extern "C" G_MODULE_EXPORT void on_ClassTreeview_cursor_changed(
     std::string className = gOovGui.getSelectedClass();
     if(sDisplayClassViewRightClick)
 	{
-	gOovGui.addClass(className.c_str());
+	gOovGui.addClass(className);
 	sDisplayClassViewRightClick = false;
 	}
     else
 	{
-	gOovGui.displayClass(className.c_str());
+	gOovGui.displayClass(className);
 	}
     }
 
@@ -866,7 +867,7 @@ extern "C" G_MODULE_EXPORT void on_OperationsTreeview_cursor_changed(
 	operName.resize(spacePos);
 	isConst = true;
 	}
-    gOovGui.displayOperation(className.c_str(), operName.c_str(), isConst);
+    gOovGui.displayOperation(className, operName, isConst);
     }
 
 extern "C" G_MODULE_EXPORT void on_JournalTreeview_cursor_changed(
@@ -887,7 +888,7 @@ extern "C" G_MODULE_EXPORT void on_ComponentTreeview_cursor_changed(
 	std::string fn = gOovGui.getSelectedComponent();
 	if(fn.length() > 0)
 	    {
-	    viewSource(fn.c_str(), 1);
+	    viewSource(fn, 1);
 	    }
 	}
     }
@@ -928,7 +929,7 @@ extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_press_event(
 	int line = gOovGui.getStatusSourceFile(fn);
 	if(fn.length() > 0)
 	    {
-	    viewSource(fn.c_str(), line);
+	    viewSource(fn, line);
 	    }
 	}
     return FALSE;
@@ -936,11 +937,11 @@ extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_press_event(
 
 extern "C" G_MODULE_EXPORT void on_HelpAboutmenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    char const * const comments =
+    OovStringRef const comments =
 	    "This program generates diagrams from C++ files, and allows"
 	    " graphical navigation between drawings and source code.";
     gtk_show_about_dialog(nullptr, "program-name", "Oovcde",
-	    "version", "Version " OOV_VERSION, "comments", comments, nullptr);
+	    "version", "Version " OOV_VERSION, "comments", comments.getStr(), nullptr);
     }
 
 extern "C" G_MODULE_EXPORT void on_HelpContentsMenuitem_activate(GtkWidget *widget, gpointer data)

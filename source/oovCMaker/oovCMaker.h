@@ -12,21 +12,21 @@
 class CMaker
     {
     public:
-        CMaker(char const * const projName, bool verbose):
+        CMaker(OovStringRef const projName, bool verbose):
             mProjectName(projName), mBuildPkgs(false), mVerbose(verbose)
             {}
         std::string getAnalysisPath() const
             {
             return mConfig.getAnalysisPath(BuildConfigAnalysis);
             }
-        std::vector<std::string> getCompSources(char const * const compName);
-        std::vector<std::string> getCompLibraries(char const * const compName);
-        void makeTopMakelistsFile(char const * const destName);
-        void makeTopLevelFiles(char const * const outDir);
-        void makeToolchainFiles(char const * const outDir);
-        void makeComponentFiles(bool writeToProject, char const * const outDir,
-        	std::vector<std::string> const &compNames);
-        void writeFile(char const * const destName, const std::string &str);
+        OovStringVec getCompSources(OovStringRef const compName);
+        OovStringVec getCompLibraries(OovStringRef const compName);
+        void makeTopMakelistsFile(OovStringRef const destName);
+        void makeTopLevelFiles(OovStringRef const outDir);
+        void makeToolchainFiles(OovStringRef const outDir);
+        void makeComponentFiles(bool writeToProject, OovStringRef const outDir,
+        	OovStringVec const &compNames);
+        void writeFile(OovStringRef const destName, OovStringRef const str);
 
     public:
         std::string mProjectName;
@@ -38,14 +38,14 @@ class CMaker
         IncDirDependencyMapReader mIncMap;
         bool mVerbose;
 
-        static void appendNames(std::vector<std::string> const &names, char delim,
+        static void appendNames(OovStringVec const &names, char delim,
             std::string &str);
-	void addPackageDefines(char const * const pkgName, std::string &str);
-	void makeDefineName(char const * const pkgName, OovString &defName);
-        void makeToolchainFile(const char * const compilePath, char const * const destName);
-        void makeTopInFile(char const * const destName);
-        void makeTopVerInFile(char const * const destName);
-        void makeComponentFile(char const * const compName,
+	void addPackageDefines(OovStringRef const pkgName, std::string &str);
+	void makeDefineName(OovStringRef const pkgName, OovString &defName);
+        void makeToolchainFile(OovStringRef const compilePath, OovStringRef const destName);
+        void makeTopInFile(OovStringRef const destName);
+        void makeTopVerInFile(OovStringRef const destName);
+        void makeComponentFile(OovStringRef const compName,
             ComponentTypesFile::eCompTypes compType,
-            std::vector<std::string> const &source, char const * const destName);
+            OovStringVec const &source, OovStringRef const destName);
     };

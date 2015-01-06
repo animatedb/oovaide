@@ -30,7 +30,7 @@ class OptionsDialog
 	void runPackagesDialog();
 	// This class calls this function after the options file is written.
 	virtual void updateOptions() = 0;
-	virtual void buildConfig(char const * const name) = 0;
+	virtual void buildConfig(OovStringRef const name) = 0;
 
     private:
 	GuiList mBuildConfigList;
@@ -38,7 +38,7 @@ class OptionsDialog
 	int mDialogRunning;
 	std::vector<GtkWidget *> mMenuItems;
 	void updateBuildConfig();
-	void updateBuildMenu(std::vector<std::string> &names);
+	void updateBuildMenu(OovStringVec &names);
     };
 
 class ClassPreferencesDialog

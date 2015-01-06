@@ -16,7 +16,6 @@ Explanations
 Missing Features
 ----------------
 - General
-	- Release with mingw-builds headers on Windows?
 	- fix sleepMs
 - Gui
 	- Add improved open recent files
@@ -103,7 +102,6 @@ Missing Features
 	- Save complete type info (explicit const, *, &, etc) in the XMI files?
 	- Change class def/decl description in XMI file to find correct source module
 		for empty classes.
-	- ClassDrawer::drawDiagram not showing calls inside loops. CLang 3.4.1 works
 	- Build sometimes must have objects specified before or after other libs/objects
 	- split source of libraries into separate file for each function for release mode
 	- Component specific build args not used to recalculate crc's for rebuild
@@ -167,9 +165,9 @@ Missing Features
 - Future
 	- Add design quality based on function inter-relations / call-tree?
 		http://www.graphviz.org/content/tips-usefully-visualizing-non-trivial-graphs
+		https://en.wikipedia.org/wiki/Design_structure_matrix
 	- Add timing diagram that can show state changes/variables over time from method calls
 	- Add find methods that use class variable
-	- Add display of unused methods?
 	- dup code http://scg.unibe.ch/archive/papers/Duca99bCodeDuplication.pdf
 		http://www.ics.heacademy.ac.uk/resources/assessment/plagiarism/detectiontools_sourcecode.html
 		https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm

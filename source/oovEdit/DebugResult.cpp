@@ -267,7 +267,7 @@ sDbgFile.printflush("parseValue\n");
 //  A varname can have less than, greater than chars in the name, but is
 //  terminated by space.
 //  After an equal sign, there can be a quote, open curly brace, or
-char const *cDebugResult::parseResult(char const *resultStr)
+char const *cDebugResult::parseResult(OovStringRef const resultStr)
     {
 #if(DBG_RESULT)
 sDbgFile.printflush("parseResult %s\n", resultStr);

@@ -37,13 +37,13 @@ FilePaths getLibExtensions()
     return strs;
     }
 
-bool isHeader(char const * const file)
+bool isHeader(OovStringRef const file)
     { return(anyExtensionMatch(getHeaderExtensions(), file)); }
 
-bool isSource(char const * const file)
+bool isSource(OovStringRef const file)
     { return(anyExtensionMatch(getSourceExtensions(), file)); }
 
-bool isLibrary(char const * const file)
+bool isLibrary(OovStringRef const file)
     { return(anyExtensionMatch(getLibExtensions(), file)); }
 
 bool ComponentTypesFile::read()
@@ -55,7 +55,7 @@ bool ComponentTypesFile::read()
     return mCompTypesFile.readFile();
     }
 
-bool ComponentTypesFile::readTypesOnly(char const * const fn)
+bool ComponentTypesFile::readTypesOnly(OovStringRef const fn)
     {
     mCompTypesFile.setFilename(fn);
     return mCompTypesFile.readFile();
@@ -66,20 +66,20 @@ bool ComponentTypesFile::anyComponentsDefined() const
     auto const &names = getComponentNames();
     return std::any_of(names.begin(), names.end(),
 	    [=](std::string const &name)
-            {return(getComponentType(name.c_str()) != CT_Unknown);} );
+            {return(getComponentType(name) != CT_Unknown);} );
     }
 
 enum ComponentTypesFile::eCompTypes ComponentTypesFile::getComponentType(
-	char const * const compName) const
+	OovStringRef const compName) const
     {
-    std::string tag = getCompTagName(compName, "type");
-    std::string typeStr = mCompTypesFile.getValue(tag.c_str());
-    return getComponentTypeFromTypeName(typeStr.c_str());
+    OovString tag = getCompTagName(compName, "type");
+    OovString typeStr = mCompTypesFile.getValue(tag);
+    return getComponentTypeFromTypeName(typeStr);
     }
 
-void ComponentTypesFile::coerceParentComponents(char const * const compName)
+void ComponentTypesFile::coerceParentComponents(OovStringRef const compName)
     {
-    std::string name = compName;
+    OovString name = compName;
     while(1)
 	{
 	size_t pos = name.rfind('/');
@@ -87,9 +87,9 @@ void ComponentTypesFile::coerceParentComponents(char const * const compName)
 	    {
 	    name.erase(pos);
 	    }
-	if(name != compName)
+	if(compName != name.getStr())
 	    {
-	    setComponentType(name.c_str(), CT_Unknown);
+	    setComponentType(name, CT_Unknown);
 	    }
 	if(pos == std::string::npos)
 	    {
@@ -113,31 +113,31 @@ static bool compareComponentNames(std::string const &parentName, std::string con
     return((parentName == childName) || child);
     }
 
-void ComponentTypesFile::coerceChildComponents(char const * const compName)
+void ComponentTypesFile::coerceChildComponents(OovStringRef const compName)
     {
-    std::vector<std::string> names = getComponentNames();
-    std::string parentName = compName;
+    OovStringVec names = getComponentNames();
+    OovString parentName = compName;
     for(auto const &name : names)
 	{
 	if(name != parentName)
 	    {
 	    if(compareComponentNames(parentName, name))
 		{
-		setComponentType(name.c_str(), CT_Unknown);
+		setComponentType(name, CT_Unknown);
 		}
 	    }
 	}
     }
 
-void ComponentTypesFile::setComponentType(char const * const compName, eCompTypes ct)
+void ComponentTypesFile::setComponentType(OovStringRef const compName, eCompTypes ct)
     {
-    std::string tag = getCompTagName(compName, "type");
-    char const *value = getComponentTypeAsFileValue(ct);
-    mCompTypesFile.setNameValue(tag.c_str(), value);
+    OovString tag = getCompTagName(compName, "type");
+    OovStringRef const value = getComponentTypeAsFileValue(ct);
+    mCompTypesFile.setNameValue(tag, value);
     }
 
-void ComponentTypesFile::setComponentType(char const * const compName,
-    char const * const typeName)
+void ComponentTypesFile::setComponentType(OovStringRef const compName,
+    OovStringRef const typeName)
     {
     eCompTypes newType = getComponentTypeFromTypeName(typeName);
     if(newType != CT_Unknown && newType != getComponentType(compName))
@@ -149,7 +149,7 @@ void ComponentTypesFile::setComponentType(char const * const compName,
     }
 
 enum ComponentTypesFile::eCompTypes ComponentTypesFile::getComponentTypeFromTypeName(
-	char const * const compTypeName)
+	OovStringRef const compTypeName)
     {
     eCompTypes ct = CT_Unknown;
     if(compTypeName[0] == 'P')
@@ -163,7 +163,7 @@ enum ComponentTypesFile::eCompTypes ComponentTypesFile::getComponentTypeFromType
     return ct;
     }
 
-char const * const ComponentTypesFile::getLongComponentTypeName(eCompTypes ct)
+OovStringRef const ComponentTypesFile::getLongComponentTypeName(eCompTypes ct)
     {
     char const *p = NULL;
     switch(ct)
@@ -176,7 +176,7 @@ char const * const ComponentTypesFile::getLongComponentTypeName(eCompTypes ct)
     return p;
     }
 
-char const * const ComponentTypesFile::getComponentTypeAsFileValue(eCompTypes ct)
+OovStringRef const ComponentTypesFile::getComponentTypeAsFileValue(eCompTypes ct)
     {
     char const *p = NULL;
     switch(ct)
@@ -189,86 +189,88 @@ char const * const ComponentTypesFile::getComponentTypeAsFileValue(eCompTypes ct
     return p;
     }
 
-std::string ComponentTypesFile::getCompTagName(std::string const &compName,
-    char const * const tag)
+OovString ComponentTypesFile::getCompTagName(OovStringRef const compName,
+    OovStringRef const tag)
     {
-    return(std::string("Comp-") + tag + "-" + compName);
+    OovString tagName = "Comp-";
+    tagName += tag;
+    tagName += "-";
+    tagName += compName;
+    return tagName;
     }
 
-void ComponentTypesFile::setComponentSources(char const * const compName,
-    std::set<std::string> const &srcs)
+void ComponentTypesFile::setComponentSources(OovStringRef const compName,
+    OovStringSet const &srcs)
     {
     CompoundValue objArgs;
     for(const auto &src : srcs)
 	{
-	objArgs.addArg(src.c_str());
+	objArgs.addArg(src);
 	}
-    std::string tag = getCompTagName(compName, "src");
-    mCompSourceListFile.setNameValue(tag.c_str(), objArgs.getAsString().c_str());
+    OovString tag = getCompTagName(compName, "src");
+    mCompSourceListFile.setNameValue(tag, objArgs.getAsString());
     }
 
-void ComponentTypesFile::setComponentIncludes(char const * const compName,
-    std::set<std::string> const &incs)
+void ComponentTypesFile::setComponentIncludes(OovStringRef const compName,
+    OovStringSet const &incs)
     {
     CompoundValue incArgs;
     for(const auto &src : incs)
 	{
-	incArgs.addArg(src.c_str());
+	incArgs.addArg(src);
 	}
     std::string tag = getCompTagName(compName, "inc");
-    mCompSourceListFile.setNameValue(tag.c_str(), incArgs.getAsString().c_str());
+    mCompSourceListFile.setNameValue(tag, incArgs.getAsString());
     }
 
-std::vector<std::string> ComponentTypesFile::getComponentSources(
-	char const * const compName) const
+OovStringVec ComponentTypesFile::getComponentSources(OovStringRef const compName) const
     {
     return getComponentFiles(compName, "src");
     }
 
-std::vector<std::string> ComponentTypesFile::getComponentIncludes(
-    char const * const compName) const
+OovStringVec ComponentTypesFile::getComponentIncludes(OovStringRef const compName) const
     {
     return getComponentFiles(compName, "inc");
     }
 
-std::vector<std::string> ComponentTypesFile::getComponentFiles(char const * const compName,
-	char const * const tagStr) const
+OovStringVec ComponentTypesFile::getComponentFiles(OovStringRef const compName,
+	OovStringRef const tagStr) const
     {
-    std::vector<std::string> files;
-    std::vector<std::string> names = getComponentNames();
-    std::string parentName = compName;
+    OovStringVec files;
+    OovStringVec names = getComponentNames();
+    OovString parentName = compName;
     for(auto const &name : names)
 	{
 	if(compareComponentNames(parentName, name))
 	    {
-	    std::string tag = ComponentTypesFile::getCompTagName(name, tagStr);
-	    std::string val = mCompSourceListFile.getValue(tag.c_str());
-	    std::vector<std::string> newFiles = CompoundValueRef::parseString(val.c_str());
+	    OovString tag = ComponentTypesFile::getCompTagName(name, tagStr);
+	    OovString val = mCompSourceListFile.getValue(tag);
+	    OovStringVec newFiles = CompoundValueRef::parseString(val);
 	    files.insert(files.end(), newFiles.begin(), newFiles.end());
 	    }
 	}
     return files;
     }
 
-std::string ComponentTypesFile::getComponentBuildArgs(
-	char const * const compName) const
+OovString ComponentTypesFile::getComponentBuildArgs(
+	OovStringRef const compName) const
     {
-    std::string tag = ComponentTypesFile::getCompTagName(compName, "args");
-    return mCompTypesFile.getValue(tag.c_str());
+    OovString tag = ComponentTypesFile::getCompTagName(compName, "args");
+    return mCompTypesFile.getValue(tag);
     }
 
-void ComponentTypesFile::setComponentBuildArgs(char const * const compName,
-	char const * const args)
+void ComponentTypesFile::setComponentBuildArgs(OovStringRef const compName,
+	OovStringRef const args)
     {
-    std::string tag = ComponentTypesFile::getCompTagName(compName, "args");
-    mCompTypesFile.setNameValue(tag.c_str(), args);
+    OovString tag = ComponentTypesFile::getCompTagName(compName, "args");
+    mCompTypesFile.setNameValue(tag, args);
     }
 
-std::string ComponentTypesFile::getComponentAbsolutePath(
-    char const * const compName) const
+OovString ComponentTypesFile::getComponentAbsolutePath(
+	OovStringRef const compName) const
     {
-    std::string path;
-    std::vector<std::string> src = getComponentSources(compName);
+    OovString path;
+    OovStringVec src = getComponentSources(compName);
     if(src.size() == 0)
 	{
 	src = getComponentIncludes(compName);
@@ -276,7 +278,7 @@ std::string ComponentTypesFile::getComponentAbsolutePath(
     if(src.size() > 0)
 	{
 	FilePath fp;
-	fp.getAbsolutePath(src[0].c_str(), FP_File);
+	fp.getAbsolutePath(src[0], FP_File);
 	fp.discardFilename();
 	path = fp;
 	}
@@ -286,35 +288,35 @@ std::string ComponentTypesFile::getComponentAbsolutePath(
 
 //////////////
 
-void ComponentsFile::read(char const * const fn)
+void ComponentsFile::read(OovStringRef const fn)
     {
     setFilename(fn);
     readFile();
     }
 
-void ComponentsFile::parseProjRefs(char const * const arg, std::string &rootDir,
-	std::vector<std::string> &excludes)
+void ComponentsFile::parseProjRefs(OovStringRef const arg, OovString &rootDir,
+	OovStringVec &excludes)
     {
     excludes.clear();
-    std::vector<OovString> tokens = StringSplit(arg, '!');
+    OovStringVec tokens = StringSplit(arg, '!');
     if(rootDir.size() == 0)
 	rootDir = tokens[0];
     std::copy(tokens.begin()+1, tokens.end(), excludes.begin());
     }
 
-std::string ComponentsFile::getProjectIncludeDirsStr() const
+OovString ComponentsFile::getProjectIncludeDirsStr() const
     {
     return getValue("Components-init-proj-incs");
     }
 
-std::vector<std::string> ComponentsFile::getAbsoluteIncludeDirs() const
+OovStringVec ComponentsFile::getAbsoluteIncludeDirs() const
     {
-    std::string val = getProjectIncludeDirsStr();
-    std::vector<std::string> incs = CompoundValueRef::parseString(val.c_str());
+    OovString val = getProjectIncludeDirsStr();
+    OovStringVec incs = CompoundValueRef::parseString(val);
     std::for_each(incs.begin(), incs.end(), [](std::string &fn)
 	{
 	FilePath fp;
-	fp.getAbsolutePath(fn.c_str(), FP_Dir);
+	fp.getAbsolutePath(fn, FP_Dir);
 	fn = fp;
 	});
     return incs;

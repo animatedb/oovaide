@@ -8,12 +8,12 @@
 
 DebugFile gDebugAssertFile("OovAsserts.txt", true);
 
-void LogAssertFile(char const *file, int line)
+void LogAssertFile(OovStringRef const file, int line)
     {
-    gDebugAssertFile.printflush("%s %d\n", file, line);
+    gDebugAssertFile.printflush("%s %d\n", file.getStr(), line);
     }
 
-DebugFile::DebugFile(char const * const fn, bool append):
+DebugFile::DebugFile(OovStringRef const fn, bool append):
     mOwnFile(true)
     {
     if(fn)
@@ -32,7 +32,7 @@ DebugFile::~DebugFile()
     mFp = nullptr;
     }
 
-void DebugFile::printflush(char const * const format, ...)
+void DebugFile::printflush(OovStringRef const format, ...)
     {
     if(mFp)
 	{

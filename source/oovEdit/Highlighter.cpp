@@ -318,8 +318,8 @@ void HighlightTags::initTags(GtkTextBuffer *textBuffer)
 	}
     }
 
-void Highlighter::highlight(GtkTextView *textView, char const * const filename,
-	char const * const buffer, int bufLen, char const * const clang_args[], int num_clang_args)
+void Highlighter::highlight(GtkTextView *textView, OovStringRef const filename,
+	OovStringRef const buffer, int bufLen, char const * const clang_args[], int num_clang_args)
     {
     GdkRectangle rect;
     gtk_text_view_get_visible_rect(textView, &rect);

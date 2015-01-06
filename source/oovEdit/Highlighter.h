@@ -76,8 +76,8 @@ class HighlightTags
 class Highlighter
     {
     public:
-	void highlight(GtkTextView *textView, char const * const filename,
-		char const * const buffer, int bufLen,
+	void highlight(GtkTextView *textView, OovStringRef const filename,
+		OovStringRef const buffer, int bufLen,
 		char const * const clang_args[], int num_clang_args);
 	Tokenizer &getTokenizer()
 	    { return mTokenizer; }

@@ -11,8 +11,8 @@
 #include "Project.h"
 #include <string.h>
 
-static bool makeCoverageProjectFile(char const * const srcFn, char const * const dstFn,
-	char const * const covSrcDir)
+static bool makeCoverageProjectFile(OovStringRef const srcFn, OovStringRef const dstFn,
+	OovStringRef const covSrcDir)
     {
     NameValueFile file(srcFn);
     bool success = file.readFile();
@@ -24,12 +24,12 @@ static bool makeCoverageProjectFile(char const * const srcFn, char const * const
 	}
     else
 	{
-	fprintf(stderr, "Unable to make project file %s\n", srcFn);
+	fprintf(stderr, "Unable to make project file %s\n", srcFn.getStr());
 	}
     return success;
     }
 
-static bool makeCoverageComponentTypesFile(char const * const srcFn, char const * const dstFn)
+static bool makeCoverageComponentTypesFile(OovStringRef const srcFn, OovStringRef const dstFn)
     {
     ComponentTypesFile file;
     bool success = file.readTypesOnly(srcFn);
@@ -37,12 +37,12 @@ static bool makeCoverageComponentTypesFile(char const * const srcFn, char const 
 	{
 	// Define a static library that contains the code that stores
 	// the coverage counts that is compiled into exectuables.
-	static char const * const covLibName = Project::getCovLibName();
+	static OovStringRef const covLibName = Project::getCovLibName();
 	CompoundValue names = file.getComponentNames();
 	if(names.find(covLibName) == CompoundValue::npos)
 	    {
 	    names.push_back(covLibName);
-	    file.setComponentNames(names.getAsString().c_str());
+	    file.setComponentNames(names.getAsString());
 	    file.setComponentType(covLibName,
 		    ComponentTypesFile::getShortComponentTypeName(
 			    ComponentTypesFile::CT_StaticLib));
@@ -51,12 +51,12 @@ static bool makeCoverageComponentTypesFile(char const * const srcFn, char const 
 	}
     else
 	{
-	fprintf(stderr, "Unable to make component types file %s\n", srcFn);
+	fprintf(stderr, "Unable to make component types file %s\n", srcFn.getStr());
 	}
     return success;
     }
 
-bool copyPackageFile(char const * const srcFn, char const * const dstFn)
+bool copyPackageFile(OovStringRef const srcFn, OovStringRef const dstFn)
     {
     bool success = false;
     File srcFile(srcFn, "r");
@@ -81,7 +81,7 @@ bool copyPackageFile(char const * const srcFn, char const * const dstFn)
 	success = true;
     if(!success)
 	{
-	fprintf(stderr, "Unable to copy package file %s\n", srcFn);
+	fprintf(stderr, "Unable to copy package file %s\n", srcFn.getStr());
 	}
     return success;
     }
@@ -93,23 +93,23 @@ bool makeCoverageBuildProject()
     std::string origPackagesFilePath = Project::getPackagesFilePath();
     std::string covSrcDir = Project::getCoverageSourceDirectory();
     std::string covProjDir = Project::getCoverageProjectDirectory();
-    bool success = ensurePathExists(covProjDir.c_str());
+    bool success = ensurePathExists(covProjDir);
     if(success)
 	{
-	Project::setProjectDirectory(covProjDir.c_str());
+	Project::setProjectDirectory(covProjDir);
 	std::string newProjFilePath = Project::getProjectFilePath();
-	success = makeCoverageProjectFile(origProjFilePath.c_str(),
-	    newProjFilePath.c_str(), covSrcDir.c_str());
+	success = makeCoverageProjectFile(origProjFilePath,
+	    newProjFilePath, covSrcDir);
 	}
     if(success)
 	{
-	success = makeCoverageComponentTypesFile(origCompTypesFilePath.c_str(),
-	    Project::getComponentTypesFilePath().c_str());
+	success = makeCoverageComponentTypesFile(origCompTypesFilePath,
+	    Project::getComponentTypesFilePath());
 	}
     if(success)
 	{
-	success = copyPackageFile(origPackagesFilePath.c_str(),
-	    Project::getPackagesFilePath().c_str());
+	success = copyPackageFile(origPackagesFilePath,
+	    Project::getPackagesFilePath());
 	}
     return success;
     }
@@ -120,7 +120,7 @@ class CoverageCountsReader
     CoverageCountsReader():
 	    mNumInstrumentedLines(0)
 	    {}
-	void read(char const * const fn);
+	void read(OovStringRef const fn);
 	int getNumInstrumentedLines() const
 	    { return mNumInstrumentedLines; }
 	std::vector<int> const &getCounts() const
@@ -131,7 +131,7 @@ class CoverageCountsReader
 	std::vector<int> mInstrCounts;
     };
 
-void CoverageCountsReader::read(char const * const fn)
+void CoverageCountsReader::read(OovStringRef const fn)
     {
     File file(fn, "r");
     mInstrCounts.clear();
@@ -159,7 +159,7 @@ void CoverageCountsReader::read(char const * const fn)
     }
 
 /// Use the filename to make an identifier.
-static std::string makeOrigCovFn(char const * const fn)
+static std::string makeOrigCovFn(OovStringRef const fn)
     {
     OovString covFn = fn;
     if(covFn.find("COV_") != std::string::npos)
@@ -180,9 +180,9 @@ static std::string makeOrigCovFn(char const * const fn)
 static void makeCoverageStats(CoverageHeaderReader const &covHeader,
 	CoverageCountsReader const &covCounts)
     {
-    FilePath statFn(Project::getCoverageProjectDirectory().c_str(), FP_Dir);
+    FilePath statFn(Project::getCoverageProjectDirectory(), FP_Dir);
     statFn.appendFile("oovCovStats.txt");
-    File statFile(statFn.c_str(), "w");
+    File statFile(statFn, "w");
     if(statFile.isOpen())
 	{
 	size_t countIndex = 0;
@@ -210,30 +210,30 @@ static void makeCoverageStats(CoverageHeaderReader const &covHeader,
 		{
 		percent = 100;
 		}
-	    std::string covFn = makeOrigCovFn(mapItem.first.c_str());
-	    fprintf(statFile.getFp(), "%s %d\n", covFn.c_str(), percent);
+	    OovString covFn = makeOrigCovFn(mapItem.first);
+	    fprintf(statFile.getFp(), "%s %d\n", covFn.getStr(), percent);
 	    }
 	}
     else
 	{
-	fprintf(stderr, "Unable to open file %s\n", statFn.c_str());
+	fprintf(stderr, "Unable to open file %s\n", statFn.getStr());
 	}
     }
 
 /// Copy a single source file and make a comment that contains the hit count
 /// for each instrumented line.
-static void updateCovSourceCounts(char const * const relSrcFn,
+static void updateCovSourceCounts(OovStringRef const relSrcFn,
 	std::vector<int> &counts)
     {
-    FilePath srcFn(Project::getCoverageSourceDirectory().c_str(), FP_Dir);
+    FilePath srcFn(Project::getCoverageSourceDirectory(), FP_Dir);
     srcFn.appendFile(relSrcFn);
-    File srcFile(srcFn.c_str(), "r");
+    File srcFile(srcFn, "r");
     if(srcFile.isOpen())
 	{
-	FilePath dstFn(Project::getCoverageProjectDirectory().c_str(), FP_Dir);
+	FilePath dstFn(Project::getCoverageProjectDirectory(), FP_Dir);
 	dstFn.appendFile(relSrcFn);
-	ensurePathExists(dstFn.c_str());
-	File dstFile(dstFn.c_str(), "w");
+	ensurePathExists(dstFn);
+	File dstFile(dstFn, "w");
 	if(dstFile.isOpen())
 	    {
 	    char buf[1000];
@@ -246,12 +246,12 @@ static void updateCovSourceCounts(char const * const relSrcFn,
 			{
 			OovString countStr = "    // ";
 			countStr.appendInt(counts[instrCount]);
-			std::string newStr = buf;
+			OovString newStr = buf;
 			size_t pos = newStr.find('\n');
 			newStr.insert(pos, countStr);
 			if(newStr.length() < sizeof(buf)-1)
 			    {
-			    strcpy(buf, newStr.c_str());
+			    strcpy(buf, newStr.getStr());
 			    }
 			}
 		    instrCount++;
@@ -261,12 +261,12 @@ static void updateCovSourceCounts(char const * const relSrcFn,
 	    }
 	else
 	    {
-	    fprintf(stderr, "Unable to write file %s\n", dstFn.c_str());
+	    fprintf(stderr, "Unable to write file %s\n", dstFn.getStr());
 	    }
 	}
     else
 	{
-	fprintf(stderr, "Unable to read file %s\n", srcFn.c_str());
+	fprintf(stderr, "Unable to read file %s\n", srcFn.getStr());
 	}
     }
 
@@ -288,8 +288,8 @@ static void updateCovSourceCounts(CoverageHeaderReader const &covHeader,
 		fileCounts.push_back(counts[countIndex++]);
 		}
 	    }
-	std::string covFn = makeOrigCovFn(mapItem.first.c_str());
-	updateCovSourceCounts(covFn.c_str(), fileCounts);
+	std::string covFn = makeOrigCovFn(mapItem.first);
+	updateCovSourceCounts(covFn, fileCounts);
 	}
     }
 
@@ -297,9 +297,9 @@ bool makeCoverageStats()
     {
     bool success = false;
     SharedFile covHeaderFile;
-    std::string covHeaderFn = CoverageHeaderReader::getFn(
-	    Project::getCoverageSourceDirectory().c_str());
-    eOpenStatus stat = covHeaderFile.open(covHeaderFn.c_str(), M_ReadShared, OE_Binary);
+    OovString covHeaderFn = CoverageHeaderReader::getFn(
+	    Project::getCoverageSourceDirectory());
+    eOpenStatus stat = covHeaderFile.open(covHeaderFn, M_ReadShared, OE_Binary);
     if(stat == OS_Opened)
 	{
 	CoverageHeaderReader covHeaderReader;
@@ -308,12 +308,12 @@ bool makeCoverageStats()
 	if(headerInstrLines > 0)
 	    {
 	    success = true;
-	    FilePath covCountsFn(Project::getCoverageProjectDirectory().c_str(), FP_Dir);
+	    FilePath covCountsFn(Project::getCoverageProjectDirectory(), FP_Dir);
 	    covCountsFn.appendDir("out-Debug");
 	    static char const covCountsFnStr[] = "OovCoverageCounts.txt";
 	    covCountsFn.appendFile(covCountsFnStr);
 	    CoverageCountsReader covCounts;
-	    covCounts.read(covCountsFn.c_str());
+	    covCounts.read(covCountsFn);
 	    int covInstrLines = covCounts.getNumInstrumentedLines();
 	    if(headerInstrLines == covInstrLines)
 		{
@@ -328,12 +328,12 @@ bool makeCoverageStats()
 	    }
 	else
 	    {
-	    fprintf(stderr, "No lines are instrumented in %s\n", covHeaderFn.c_str());
+	    fprintf(stderr, "No lines are instrumented in %s\n", covHeaderFn.getStr());
 	    }
 	}
     else
 	{
-	fprintf(stderr, "Unable to open file %s\n", covHeaderFn.c_str());
+	fprintf(stderr, "Unable to open file %s\n", covHeaderFn.getStr());
 	}
     return success;
     }

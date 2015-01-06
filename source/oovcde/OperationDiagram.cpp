@@ -22,8 +22,8 @@ void OperationDiagram::clearGraph()
     getOpGraph().clearGraph();
     }
 
-void OperationDiagram::clearGraphAndAddOperation(char const * const className,
-	char const * const opName, bool isConst)
+void OperationDiagram::clearGraphAndAddOperation(OovStringRef const className,
+	OovStringRef const opName, bool isConst)
     {
     getOpGraph().clearGraphAndAddOperation(getModelData(),
 	    getOptions(), className, opName, isConst, 2);
@@ -35,8 +35,8 @@ void OperationDiagram::clearGraphAndAddOperation(char const * const className,
 
 void OperationDiagram::restart()
     {
-    clearGraphAndAddOperation(mLastOperDiagramParams.mClassName.c_str(),
-	    mLastOperDiagramParams.mOpName.c_str(), mLastOperDiagramParams.mIsConst);
+    clearGraphAndAddOperation(mLastOperDiagramParams.mClassName,
+	    mLastOperDiagramParams.mOpName, mLastOperDiagramParams.mIsConst);
     }
 
 void OperationDiagram::drawSvgDiagram(FILE *fp)
@@ -104,7 +104,7 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(event->x, event->y);
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
 	    gStartPosInfo.x, gStartPosInfo.y);
-    char const * const nodeitems[] =
+    OovStringRef const nodeitems[] =
 	{
 	"OperGotoClassMenuitem",
 	"RemoveOperClassMenuitem",
@@ -114,7 +114,7 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
 	gtk_widget_set_sensitive(gOperationDiagram->getBuilder().getWidget(nodeitems[i]),
 		node != nullptr);
 	}
-    char const * const operitems[] =
+    OovStringRef const operitems[] =
 	{
 	"OperGotoOperationMenuitem",
 	"AddCallsMenuitem",
@@ -168,7 +168,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoOperationmenuitem_activate(
     if(opcall)
 	{
 	std::string className = gOperationDiagram->getOpGraph().getClassName(*opcall);
-	gOperationDiagram->clearGraphAndAddOperation(className.c_str(),
+	gOperationDiagram->clearGraphAndAddOperation(className,
 		opcall->getName(), opcall->isConst());
 	gOperationDiagram->updateDiagram();
 	}
@@ -181,7 +181,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoClassMenuitem_activate(
 	    gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
-	gOperationDiagram->gotoClass(node->getType()->getName().c_str());
+	gOperationDiagram->gotoClass(node->getType()->getName());
 	}
     }
 
@@ -243,7 +243,7 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
 	{
 	const ModelOperation &oper = opcall->getOperation();
 	if(oper.getModule())
-	    viewSource(oper.getModule()->getModulePath().c_str(), oper.getLineNum());
+	    viewSource(oper.getModule()->getModulePath(), oper.getLineNum());
 	}
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -251,7 +251,7 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
 	{
 	const ModelClassifier *cls = node->getType()->getClass();
 	if(cls->getModule())
-	    viewSource(cls->getModule()->getModulePath().c_str(), cls->getLineNum());
+	    viewSource(cls->getModule()->getModulePath(), cls->getLineNum());
 	}
     }
 

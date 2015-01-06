@@ -14,11 +14,10 @@
 class VerboseDumper
     {
     public:
-	void open(char const * const outPath);
-	void logOutputOld(char const * const fn);
-	void logProcess(char const * const srcFile, char const * const *argv, int argc);
-	void logProgress(char const * const progress);
-	void logProcessStatus(bool success);
+	void open(OovStringRef const outPath);
+	void logOutputOld(OovStringRef const fn);
+	void logProcess(OovStringRef const srcFile,  char const * const *argv, int argc);
+	void logProgress(OovStringRef const progress);
     private:
 	FILE *mFp;
     };
@@ -44,7 +43,7 @@ public:
 	{}
     virtual ~srcFileParser()
 	{}
-    bool analyzeSrcFiles(char const * const srcRootDir, char const * const analysisDir);
+    bool analyzeSrcFiles(OovStringRef const srcRootDir, OovStringRef const analysisDir);
 
     // Called by ThreadedWorkQueue
     bool processItem(CppChildArgs const &item);
@@ -53,10 +52,10 @@ private:
     InProcMutex mListenerStdMutex;
     char const * mSrcRootDir;
     char const * mAnalysisDir;
-    std::vector<std::string> mExcludeDirs;
-    std::vector<std::string> mIncDirArgs;
+    OovStringVec mExcludeDirs;
+    OovStringVec mIncDirArgs;
     const ComponentFinder &mComponentFinder;
 
-    virtual bool processFile(const std::string &filePath);
+    virtual bool processFile(OovStringRef const filePath);
 };
 

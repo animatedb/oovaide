@@ -16,21 +16,21 @@
 
 #define DEBUG_TYPES 0
 
-static void strReplace(const std::string &origPatt, const std::string &newPatt, std::string &str)
+static void strReplace(OovStringRef const origPatt, OovStringRef const newPatt, OovString &str)
     {
     std::string::size_type pos = 0;
     while ((pos = str.find(origPatt, pos)) != std::string::npos)
-	str.replace(pos, origPatt.length(), newPatt);
+	str.replace(pos, origPatt.numChars(), newPatt);
     }
 
-void strRemoveSpaceAround(char const * const c, std::string &str)
+void strRemoveSpaceAround(OovStringRef const c, OovString &str)
     {
-    strReplace(std::string(c) + " ", std::string(c), str);
-    strReplace(std::string(" ") + c, std::string(c), str);
+    strReplace(OovString(c) + " ", c, str);
+    strReplace(OovString(" ") + OovString(c), c, str);
     }
 
 /*
-char const * const Visibility::asStr() const
+OovStringRef const Visibility::asStr() const
 {
     char const *str = "";
     switch(vis)
@@ -44,7 +44,7 @@ char const * const Visibility::asStr() const
 }
 */
 
-char const * const Visibility::asUmlStr() const
+OovStringRef const Visibility::asUmlStr() const
     {
     char const *str = "";
     switch(vis)
@@ -57,9 +57,9 @@ char const * const Visibility::asUmlStr() const
     return str;
     }
 
-Visibility::Visibility(char const *umlStr)
+Visibility::Visibility(OovStringRef const umlStr)
     {
-    switch(umlStr[0])
+    switch(umlStr.getStr()[0])
         {
 	default:	// fall through
         case '+':	vis = Visibility::Public;      	break;
@@ -106,18 +106,18 @@ const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     return getDeclType() ? getDeclType()->getClass() : nullptr;
     }
 
-std::string ModelStatement::getFuncName() const
+OovString ModelStatement::getFuncName() const
     {
-    std::string opName = getName();
+    OovString opName = getName();
     size_t opPos = opName.find('.');
     if(opPos != std::string::npos)
 	opName.erase(0, opPos+1);
     return opName;
     }
 
-std::string ModelStatement::getAttrName() const
+OovString ModelStatement::getAttrName() const
     {
-    std::string opName = getName();
+    OovString opName = getName();
     size_t opPos = opName.find('.');
     if(opPos != std::string::npos)
 	opName.erase(opPos);
@@ -366,7 +366,7 @@ void ModelData::dumpTypes()
 	fprintf(fp, "-----\n");
 	for(auto &type : mTypes)
 	    {
-	    fprintf(fp, "%s %d\n", type->getName().c_str(), type->getModelId());
+	    fprintf(fp, "%s %d\n", type->getName().getStr(), type->getModelId());
 	    }
 	fclose(fp);
 	}
@@ -683,16 +683,16 @@ void ModelData::eraseType(ModelType *existingType)
 	}
     }
 
-const ModelType *ModelData::getTypeRef(char const * const typeName) const
+const ModelType *ModelData::getTypeRef(OovStringRef const typeName) const
     {
-    std::string baseTypeName = getBaseType(typeName);
-    return findType(baseTypeName.c_str());
+    OovString baseTypeName = getBaseType(typeName);
+    return findType(baseTypeName);
     }
 
-ModelType *ModelData::createOrGetTypeRef(char const * const typeName, eModelDataTypes dtype)
+ModelType *ModelData::createOrGetTypeRef(OovStringRef const typeName, eModelDataTypes dtype)
     {
     std::string baseTypeName = getBaseType(typeName);
-    ModelType *type = findType(baseTypeName.c_str());
+    ModelType *type = findType(baseTypeName);
     if(!type)
 	{
 	type = static_cast<ModelType*>(createDataType(dtype, baseTypeName));
@@ -700,7 +700,7 @@ ModelType *ModelData::createOrGetTypeRef(char const * const typeName, eModelData
     return type;
     }
 
-ModelType *ModelData::createTypeRef(char const * const typeName, eModelDataTypes dtype)
+ModelType *ModelData::createTypeRef(OovStringRef const typeName, eModelDataTypes dtype)
     {
     std::string baseTypeName = getBaseType(typeName);
     return static_cast<ModelType*>(createDataType(dtype, baseTypeName));
@@ -738,7 +738,7 @@ ModelObject *ModelData::createDataType(eModelDataTypes type, const std::string &
 #define BASESPEED 1
 #define BINARYSPEED 1
 #if(BASESPEED)
-static inline bool skipStr(char const * * const str, char const * const compareStr)
+static inline bool skipStr(char const * * const str, OovStringRef const compareStr)
     {
     char const *needle = compareStr;
     char const *haystack = *str;
@@ -761,8 +761,9 @@ static bool isIdentC(char c)
     return(isalnum(c) || c == '_');
     }
 
-static char const *skipWhite(char const *p)
+static char const *skipWhite(OovStringRef const s)
     {
+    char const *p = s;
     while(p)
 	{
 	if(!isspace(*p))
@@ -779,7 +780,7 @@ static char getTokenType(char c)
     return c;
     }
 
-std::string ModelData::getBaseType(char const * const fullStr) const
+std::string ModelData::getBaseType(OovStringRef const fullStr) const
 {
 #if(BASESPEED)
     std::string str;
@@ -844,7 +845,7 @@ std::string ModelData::getBaseType(char const * const fullStr) const
     return str;
 }
 
-static inline bool compareStrs(char const * const tstr1, char const * const tstr2)
+static inline bool compareStrs(OovStringRef const tstr1, OovStringRef const tstr2)
     {
     return (strcmp(tstr1, tstr2) < 0);
     }
@@ -852,26 +853,26 @@ static inline bool compareStrs(char const * const tstr1, char const * const tstr
 void ModelData::addType(std::unique_ptr<ModelType> &&type)
     {
 #if(BINARYSPEED)
-    std::string baseTypeName = getBaseType(type->getName().c_str());
-    type->setName(baseTypeName.c_str());
-    auto it = std::upper_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
-	[](char const * const mod1Name, std::unique_ptr<ModelType> &mod2) -> bool
-	{ return(compareStrs(mod1Name, mod2->getName().c_str())); } );
+    std::string baseTypeName = getBaseType(type->getName());
+    type->setName(baseTypeName);
+    auto it = std::upper_bound(mTypes.begin(), mTypes.end(), baseTypeName,
+	[](OovStringRef const mod1Name, std::unique_ptr<ModelType> &mod2) -> bool
+	{ return(compareStrs(mod1Name, mod2->getName())); } );
     mTypes.insert(it, std::move(type));
 #else
     mTypes.push_back(type);
 #endif
     }
 
-const ModelType *ModelData::findType(char const * const name) const
+const ModelType *ModelData::findType(OovStringRef const name) const
     {
     const ModelType *type = nullptr;
 #if(BINARYSPEED)
     // This comparison must produce the same sort order as addType.
     std::string baseTypeName = getBaseType(name);
-    auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseTypeName.c_str(),
-	[](std::unique_ptr<ModelType> const &mod1, char const * const mod2Name) -> bool
-	{ return(compareStrs(mod1->getName().c_str(), mod2Name)); } );
+    auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseTypeName,
+	[](std::unique_ptr<ModelType> const &mod1, OovStringRef const mod2Name) -> bool
+	{ return(compareStrs(mod1->getName(), mod2Name)); } );
     if(iter != mTypes.end())
 	{
 	if(baseTypeName.compare((*iter)->getName()) == 0)
@@ -891,7 +892,7 @@ const ModelType *ModelData::findType(char const * const name) const
     return type;
     }
 
-ModelType *ModelData::findType(char const * const name)
+ModelType *ModelData::findType(OovStringRef const name)
     {
     return const_cast<ModelType*>(static_cast<const ModelData*>(this)->findType(name));
     }
@@ -1000,7 +1001,7 @@ void ModelData::getRelatedTemplateClasses(const ModelType &type,
 	getIdents(name.substr(startPos, endPos-startPos), idents);
 	for(auto &id : idents)
 	    {
-	    const ModelClassifier *tempCl = findType(id.c_str())->getClass();
+	    const ModelClassifier *tempCl = findType(id)->getClass();
 	    if(tempCl)
 		classes.push_back(tempCl);
 	    }

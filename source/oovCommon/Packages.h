@@ -30,45 +30,46 @@ class RootDirPackage
     public:
 	RootDirPackage()
 	    {}
-	RootDirPackage(char const * const pkgName, char const * const rootDir):
+	RootDirPackage(OovStringRef const pkgName, OovStringRef const rootDir):
 		mName(pkgName), mRootDir(rootDir, FP_Dir)
 	    {}
 
-	bool addUndefinedPackage(char const * const pkgName, NameValueFile &file) const;
+	bool addUndefinedPackage(OovString const &pkgName,
+		NameValueFile &file) const;
 
 	/// This will save relative to mRootDir
-	void appendAbsoluteIncDir(char const * const dir);
+	void appendAbsoluteIncDir(OovStringRef const dir);
 	/// This will save relative to mRootDir
-	void appendAbsoluteLibName(char const * const fn);
+	void appendAbsoluteLibName(OovStringRef const fn);
 
 	/// This will fill lib names and lib dirs
-	void setOrderedLibs(std::vector<std::string> const &libDirs,
-		std::vector<std::string> const &libNames);
+	void setOrderedLibs(OovStringVec const &libDirs,
+		OovStringVec const &libNames);
 
 
-	void setRootDirPackage(char const *rootDir);
-	void setRootDir(char const *rootDir)
+	void setRootDirPackage(OovStringRef const rootDir);
+	void setRootDir(OovStringRef const rootDir)
 	    { mRootDir.setPath(rootDir, FP_Dir); }
-	void setExternalReferenceDir(std::string const &extRefDir)
+	void setExternalReferenceDir(OovString const &extRefDir)
 	    { mExternalReferenceDir = extRefDir; }
 
-	std::string getPkgName() const
+	OovString getPkgName() const
 	    { return mName; }
-	std::string getRootDir() const
+	OovString getRootDir() const
 	    { return mRootDir; }
-	std::vector<std::string> getExtRefDirs() const;
-	std::vector<std::string> getLibraryNames() const;
-	std::vector<std::string> getScannedLibraryFilePaths() const;
-	std::vector<std::string> getIncludeDirs() const;
+	OovStringVec getExtRefDirs() const;
+	OovStringVec getLibraryNames() const;
+	OovStringVec getScannedLibraryFilePaths() const;
+	OovStringVec getIncludeDirs() const;
 	/// Returns paths made from the mRootDir and potentially multiple mLibDir entries.
-	std::vector<std::string> getLibraryDirs() const;
-	std::string const &getIncludeDirsAsString() const
+	OovStringVec getLibraryDirs() const;
+	OovString const &getIncludeDirsAsString() const
 	    { return mIncludeDir; }
-	std::string const &getLibraryDirsAsString() const
+	OovString const &getLibraryDirsAsString() const
 	    { return mLibDir; }
-	std::string const &getLibraryNamesAsString() const
+	OovString const &getLibraryNamesAsString() const
 	    { return mLibNames; }
-	std::string const &getExtRefDirsAsString() const
+	OovString const &getExtRefDirsAsString() const
 	    { return mExternalReferenceDir; }
 
 //	bool anyIncDirsMatch(std::set<std::string> const &includes) const;
@@ -76,24 +77,24 @@ class RootDirPackage
 	    { return(mLibNames.size() == 0);}
 	bool areLibraryNamesOrdered() const
 	    { return(mScannedLibFilePaths.size() == 0); }
-	void loadFromMap(char const * const pkgName, NameValueFile const &file);
+	void loadFromMap(OovStringRef const pkgName, NameValueFile const &file);
 	/// Call RootDirPackages::savePackages to save.
 	void saveToMap(NameValueFile &file) const;
 
 
     protected:
-	std::string mName;
+	OovString mName;
 	FilePath mRootDir;
 
-	std::string mLibDir;			// Relative to root
-	std::string mLibNames;
+	OovString mLibDir;			// Relative to root
+	OovString mLibNames;
 
-	std::string mIncludeDir;		// Relative to root
-	std::string mExternalReferenceDir;	// Relative to root. "./" means same as root
+	OovString mIncludeDir;		// Relative to root
+	OovString mExternalReferenceDir;	// Relative to root. "./" means same as root
 
-	std::string mScannedLibFilePaths;
+	OovString mScannedLibFilePaths;
 
-	std::vector<std::string> getValAddRootToVector(std::string const &tagName,
+	OovStringVec getValAddRootToVector(OovStringRef const tagName,
 		eFilePathTypes fpt) const;
     };
 
@@ -104,35 +105,35 @@ class Package:public RootDirPackage
     public:
 	Package()
 	    {}
-	Package(char const * const pkgName, char const * const rootDir):
+	Package(OovStringRef const pkgName, OovStringRef const rootDir):
 	    RootDirPackage(pkgName, rootDir)
 	    {}
 	virtual ~Package()
 	    {}
-	void setCompileInfo(std::string const &incDir, std::string const &compileArgs)
+	void setCompileInfo(OovStringRef const incDir, OovStringRef const compileArgs)
 	    {
 	    mIncludeDir = incDir;
 	    mCompileArgs = compileArgs;
 	    }
-	void setLinkInfo(std::string const &libDir, std::string const &libNames,
-		std::string const &linkArgs)
+	void setLinkInfo(OovStringRef const libDir, OovStringRef const libNames,
+		OovStringRef const linkArgs)
 	    {
 	    mLibDir = libDir;
 	    mLibNames = libNames;
 	    mLinkArgs = linkArgs;
 	    }
-	virtual std::vector<std::string> getCompileArgs() const;
-	virtual std::vector<std::string> getLinkArgs() const;
-	std::string const &getCompileArgsAsStr() const
+	virtual OovStringVec getCompileArgs() const;
+	virtual OovStringVec getLinkArgs() const;
+	OovStringRef const getCompileArgsAsStr() const
 	    { return mCompileArgs; }
-	std::string const &getLinkArgsAsStr() const
+	OovStringRef const getLinkArgsAsStr() const
 	    { return mLinkArgs; }
-	void loadFromMap(char const * const name, NameValueFile const &file);
+	void loadFromMap(OovStringRef const name, NameValueFile const &file);
 	void saveToMap(NameValueFile &file) const;
 
     private:
-	std::string mCompileArgs;
-	std::string mLinkArgs;
+	OovString mCompileArgs;
+	OovString mLinkArgs;
     };
 
 class BuildPackages
@@ -140,7 +141,7 @@ class BuildPackages
     public:
 	BuildPackages(bool readNow);
 	bool read();
-	Package getPackage(char const * const name) const;
+	Package getPackage(OovStringRef const name) const;
 	std::vector<Package> getPackages() const;
 	void insertPackage(Package const &pkg)
 	    { pkg.saveToMap(mFile); }
@@ -154,20 +155,20 @@ class BuildPackages
 class Packages
     {
     public:
-	Package getPackage(char const * const name) const;
+	Package getPackage(OovStringRef const name) const;
 	void insertPackage(Package const &pkg)
 	    { pkg.saveToMap(mFile); }
-	void removePackage(char const * const name);
+	void removePackage(OovString const &name);
 	std::vector<Package> getPackages() const;
 #ifndef __linux__
-	void read(char const * const fn);
+	void read(OovStringRef const fn);
 #endif
 
     protected:
 	NameValueFile mFile;
 
     private:
-	bool addUndefinedPackage(char const * const name);
+	bool addUndefinedPackage(OovStringRef const name);
     };
 
 /// This is information about all packages available on the system.
@@ -182,8 +183,8 @@ class AvailablePackages
 #else
 	Packages mPackages;
 #endif
-	std::vector<std::string> getAvailablePackages();
-	Package getPackage(char const * const name) const;
+	OovStringVec getAvailablePackages();
+	Package getPackage(OovStringRef const name) const;
     };
 
 /// These are packages that are referred to by the project.

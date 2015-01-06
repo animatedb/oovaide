@@ -13,42 +13,42 @@
 
 BuildConfig::BuildConfig()
     {
-    mConfigFile.setFilename(getBuildConfigFilename().c_str());
+    mConfigFile.setFilename(getBuildConfigFilename());
     mConfigFile.readFile();
     }
 
-std::string BuildConfig::getAnalysisPath(char const * const buildType,
-	char const * const crcStr) const
+std::string BuildConfig::getAnalysisPath(OovStringRef const buildType,
+	OovStringRef const crcStr) const
     {
     FilePath analysisCrcStr(Project::getProjectDirectory(), FP_Dir);
-    std::string dirName = "analysis-";
+    OovString dirName = "analysis-";
     dirName += crcStr;
-    analysisCrcStr.appendDir(dirName.c_str());
+    analysisCrcStr.appendDir(dirName);
     return analysisCrcStr;
     }
 
-std::string BuildConfig::getAnalysisPath(char const * const buildType) const
+std::string BuildConfig::getAnalysisPath(OovStringRef const buildType) const
     {
-    return getAnalysisPath(buildType, getCrcAsStr(buildType, CT_AnalysisArgsCrc).c_str());
+    return getAnalysisPath(buildType, getCrcAsStr(buildType, CT_AnalysisArgsCrc));
     }
 
-std::string BuildConfig::getIncDepsFilePath(char const * const buildType) const
+std::string BuildConfig::getIncDepsFilePath(OovStringRef const buildType) const
     {
-    FilePath fp(getAnalysisPath(buildType).c_str(), FP_Dir);
+    FilePath fp(getAnalysisPath(buildType), FP_Dir);
     fp.appendFile(Project::getAnalysisIncDepsFilename());
     return fp;
     }
 
-std::string BuildConfig::getComponentsFilePath(char const * const buildType) const
+std::string BuildConfig::getComponentsFilePath(OovStringRef const buildType) const
     {
     FilePath fp(getAnalysisPath(buildType), FP_Dir);
     fp.appendFile(Project::getAnalysisComponentsFilename());
     return fp;
     }
 
-std::string BuildConfig::getCrcAsStr(char const * const buildType, CrcTypes crcType) const
+std::string BuildConfig::getCrcAsStr(OovStringRef const buildType, CrcTypes crcType) const
     {
-    OovStringRef const buildStr = mConfigFile.getValue(buildType).c_str();
+    OovStringRef const buildStr = mConfigFile.getValue(buildType);
     std::vector<OovString> crcStrs = buildStr.split(';');
     std::string crcStr;
     if(crcStrs.size() == CT_LastCrc+1)

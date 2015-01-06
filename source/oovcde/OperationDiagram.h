@@ -17,7 +17,7 @@ class OperationDiagramListener
     public:
 	virtual ~OperationDiagramListener()
 	    {}
-	virtual void gotoClass(char const * const className) = 0;
+	virtual void gotoClass(OovStringRef const className) = 0;
     };
 
 struct OperationDiagramParams
@@ -43,8 +43,8 @@ class OperationDiagram
 	void initialize(Builder &builder, const ModelData &modelData,
 		OperationDiagramListener *mListener);
 	void clearGraph();
-	void clearGraphAndAddOperation(char const * const className,
-		char const * const opName, bool isConst);
+	void clearGraphAndAddOperation(OovStringRef const className,
+		OovStringRef const opName, bool isConst);
 	void drawSvgDiagram(FILE *fp);
 	void restart();
 
@@ -63,7 +63,7 @@ class OperationDiagram
 	    { return *mModelData; }
 	const OperationDrawOptions &getOptions() const
 	    { return mOptions; }
-	void gotoClass(char const * const className)
+	void gotoClass(OovStringRef const className)
 	    {
 	    if(mListener)
 		{

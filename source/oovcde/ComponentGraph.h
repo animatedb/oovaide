@@ -31,7 +31,7 @@ class ComponentNode
 	    mComponentType(ComponentTypesFile::CT_Unknown),
 	    mComponentNodeType(CNT_Component)
 	    {}
-	ComponentNode(char const * const name, ComponentNodeTypes cnt,
+	ComponentNode(OovStringRef const name, ComponentNodeTypes cnt,
 		ComponentTypesFile::eCompTypes type=
 			ComponentTypesFile::CT_Unknown):
 	    mCompName(name), mComponentType(type), mComponentNodeType(cnt)
@@ -43,15 +43,15 @@ class ComponentNode
 	    { mRect.size = s; }
 	const GraphRect &getRect() const
 	    { return mRect; }
-	char const * const getName() const
-	    { return mCompName.c_str(); }
+	const OovString &getName() const
+	    { return mCompName; }
 	ComponentNodeTypes getComponentNodeType() const
 	    { return mComponentNodeType; }
 	ComponentTypesFile::eCompTypes getComponentType() const
 	    { return mComponentType; }
 
     private:
-	std::string mCompName;
+	OovString mCompName;
 	GraphRect mRect;
 	ComponentTypesFile::eCompTypes mComponentType;
 	ComponentNodeTypes mComponentNodeType;
@@ -112,8 +112,8 @@ class ComponentGraph
 	// This finds include paths for all source files of each component.
 	void updateConnections(const ComponentTypesFile &compFile,
 		const ComponentDrawOptions &options);
-	int getComponentIndex(std::vector<std::string> const &compPaths,
-		char const * const dir);
+	int getComponentIndex(OovStringVec const &compPaths,
+		OovStringRef const dir);
 	void pruneConnections();
 	void findNumPaths(int consumerIndex, int supplierIndex, int &numPaths);
     };

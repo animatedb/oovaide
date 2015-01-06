@@ -24,7 +24,7 @@ static OptionsDialog *gOptionsDlg;
 class Option
     {
     public:
-	Option(char const * const optionName, char const * const widgetName):
+	Option(OovStringRef const optionName, OovStringRef const widgetName):
 	    mOptionName(optionName), mWidgetName(widgetName)
 	    {}
 	virtual ~Option()
@@ -32,14 +32,14 @@ class Option
 	virtual void optionToScreen(NameValueFile const &file) const = 0;
 	virtual void screenToOption(NameValueFile &file) const = 0;
     protected:
-	std::string mOptionName;
-	std::string mWidgetName;
+	OovString mOptionName;
+	OovString mWidgetName;
     };
 
 class EntryOption:public Option
     {
     public:
-	EntryOption(char const * const optionName, char const * const widgetName):
+	EntryOption(OovStringRef const optionName, OovStringRef const widgetName):
 	    Option(optionName, widgetName)
 	    {}
 	virtual ~EntryOption()
@@ -50,14 +50,14 @@ class EntryOption:public Option
 
 void EntryOption::optionToScreen(NameValueFile const &file) const
     {
-    GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget(mWidgetName.c_str()));
-    Gui::setText(entry, file.getValue(mOptionName.c_str()).c_str());
+    GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget(mWidgetName));
+    Gui::setText(entry, file.getValue(mOptionName));
     }
 
 void EntryOption::screenToOption(NameValueFile &file) const
     {
-    GtkEntry *editPath = GTK_ENTRY(Builder::getBuilder()->getWidget(mWidgetName.c_str()));
-    file.setNameValue(mOptionName.c_str(), Gui::getText(editPath));
+    GtkEntry *editPath = GTK_ENTRY(Builder::getBuilder()->getWidget(mWidgetName));
+    file.setNameValue(mOptionName, Gui::getText(editPath));
     }
 
 class CheckOption:public Option
@@ -74,22 +74,22 @@ class CheckOption:public Option
 
 void CheckOption::optionToScreen(NameValueFile const &file) const
     {
-    bool active = file.getValueBool(mOptionName.c_str());
+    bool active = file.getValueBool(mOptionName);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
-	    Builder::getBuilder()->getWidget(mWidgetName.c_str())), active);
+	    Builder::getBuilder()->getWidget(mWidgetName)), active);
     }
 
 void CheckOption::screenToOption(NameValueFile &file) const
     {
     bool active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(
-	    Builder::getBuilder()->getWidget(mWidgetName.c_str())));
-    file.setNameValueBool(mOptionName.c_str(), active);
+	    Builder::getBuilder()->getWidget(mWidgetName)));
+    file.setNameValueBool(mOptionName, active);
     }
 
 class TextViewOption:public Option
     {
     public:
-	TextViewOption(char const * const optionName, char const * const widgetName):
+	TextViewOption(OovStringRef const optionName, OovStringRef const widgetName):
 	    Option(optionName, widgetName)
 	    {}
 	virtual ~TextViewOption()
@@ -101,8 +101,8 @@ class TextViewOption:public Option
 void TextViewOption::optionToScreen(NameValueFile const &file) const
     {
     CompoundValue cppArgs;
-    cppArgs.parseString(file.getValue(mOptionName.c_str()).c_str());
-    GtkTextView *view = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(mWidgetName.c_str()));
+    cppArgs.parseString(file.getValue(mOptionName));
+    GtkTextView *view = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(mWidgetName));
     Gui::clear(view);
     std::string str = cppArgs.getAsString('\n');
     Gui::appendText(view, str);
@@ -110,12 +110,12 @@ void TextViewOption::optionToScreen(NameValueFile const &file) const
 
 void TextViewOption::screenToOption(NameValueFile &file) const
     {
-    GtkTextView *view = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(mWidgetName.c_str()));
+    GtkTextView *view = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(mWidgetName));
     std::string str = Gui::getText(view);
     CompoundValue cppArgs;
-    cppArgs.parseString(str.c_str(), '\n');
+    cppArgs.parseString(str, '\n');
     std::string newCppArgsStr = cppArgs.getAsString();
-    file.setNameValue(mOptionName.c_str(), newCppArgsStr.c_str());
+    file.setNameValue(mOptionName, newCppArgsStr);
     }
 
 /////////////////////////
@@ -123,7 +123,7 @@ void TextViewOption::screenToOption(NameValueFile &file) const
 class ScreenOptions
     {
     public:
-	ScreenOptions(char const * const buildConfig);
+	ScreenOptions(OovStringRef const buildConfig);
 	void optionsToScreen() const;
 	void screenToOptions() const;
 
@@ -132,26 +132,26 @@ class ScreenOptions
 	std::vector<std::unique_ptr<Option>> mGuiOptions;
     };
 
-ScreenOptions::ScreenOptions(char const * const buildConfig)
+ScreenOptions::ScreenOptions(OovStringRef const buildConfig)
     {
     std::string optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
     mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    optStr.c_str(), "CompilerPathEntry")));
+	    optStr, "CompilerPathEntry")));
 
     optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
     mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    optStr.c_str(), "LibraryPathEntry")));
+	    optStr, "LibraryPathEntry")));
 
     optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
     mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    optStr.c_str(), "SymbolPathEntry")));
+	    optStr, "SymbolPathEntry")));
 
 
     mBuildOptions.push_back(std::unique_ptr<Option>(new TextViewOption(OptBaseArgs,
 	    "CppArgumentsTextview")));
 
     mBuildOptions.push_back(std::unique_ptr<Option>(new TextViewOption(
-	    makeBuildConfigArgName(OptExtraBuildArgs, buildConfig).c_str(),
+	    makeBuildConfigArgName(OptExtraBuildArgs, buildConfig),
 	    "ExtraBuildArgsTextview")));
 
     // Editor
@@ -233,12 +233,12 @@ void OptionsDialog::setBuildConfig()
     if(mDialogRunning && Builder::getBuilder())
 	{
 	    {
-	    ScreenOptions options(mCurrentBuildConfig.c_str());
+	    ScreenOptions options(mCurrentBuildConfig);
 	    options.screenToOptions();
 	    }
 	mCurrentBuildConfig = mBuildConfigList.getSelected();
 	    {
-	    ScreenOptions options(mCurrentBuildConfig.c_str());
+	    ScreenOptions options(mCurrentBuildConfig);
 	    options.optionsToScreen();
 	    }
 	enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
@@ -258,7 +258,7 @@ extern "C" G_MODULE_EXPORT void menuItemCallback(GtkWidget *button, gpointer dat
 	}
     }
 
-void OptionsDialog::updateBuildMenu(std::vector<std::string> &names)
+void OptionsDialog::updateBuildMenu(OovStringVec &names)
     {
     for(auto const &item : mMenuItems)
 	{
@@ -268,7 +268,7 @@ void OptionsDialog::updateBuildMenu(std::vector<std::string> &names)
     GtkMenu *buildMenu = GTK_MENU(Builder::getBuilder()->getWidget("BuildMenu"));
     for(auto const &name : names)
 	{
-	std::string menuName = std::string("Build ") + name;
+	OovString menuName = std::string("Build ") + name;
 	GtkWidget *newItem = gtk_menu_item_new_with_label(menuName.c_str());
 	mMenuItems.push_back(newItem);
 	gtk_menu_shell_append(GTK_MENU_SHELL(buildMenu), newItem);
@@ -292,10 +292,10 @@ void OptionsDialog::updateBuildConfig()
 
     std::string confStr = gBuildOptions.getValue(OptBuildConfigs);
     CompoundValue configVals;
-    configVals.parseString(confStr.c_str());
+    configVals.parseString(confStr);
     for(const auto &config:configVals)
 	{
-	mBuildConfigList.appendText(config.c_str());
+	mBuildConfigList.appendText(config);
 	}
     updateBuildMenu(configVals);
     }
@@ -305,8 +305,8 @@ void OptionsDialog::showScreen()
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")),
 	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     updateBuildConfig();
-    ScreenOptions options(mCurrentBuildConfig.c_str());
-    mBuildConfigList.setSelected(mCurrentBuildConfig.c_str());
+    ScreenOptions options(mCurrentBuildConfig);
+    mBuildConfigList.setSelected(mCurrentBuildConfig);
     options.optionsToScreen();
     enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
     mDialogRunning = true;
@@ -319,7 +319,7 @@ void OptionsDialog::newConfig()
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("NewBuildConfigDialog")),
 	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     GtkEntry *oldNameEntry = GTK_ENTRY(Builder::getBuilder()->getWidget("OldConfigNameEntry"));
-    Gui::setText(oldNameEntry, mBuildConfigList.getSelected().c_str());
+    Gui::setText(oldNameEntry, mBuildConfigList.getSelected());
     if(dlg.run())
 	{
 	}
@@ -332,23 +332,23 @@ void OptionsDialog::addConfig()
     // Update the build config option
     std::string compStr = gBuildOptions.getValue(OptBuildConfigs);
     CompoundValue compVal;
-    compVal.parseString(compStr.c_str());
-    std::string newName = Gui::getText(newNameEntry);
+    compVal.parseString(compStr);
+    OovString newName = Gui::getText(newNameEntry);
 
-    std::vector<std::string> cfgs = compVal;
+    OovStringVec cfgs = compVal;
     cfgs.push_back(BuildConfigAnalysis);
     cfgs.push_back(BuildConfigDebug);
     cfgs.push_back(BuildConfigRelease);
     bool found = std::find(cfgs.begin(), cfgs.end(), newName) != cfgs.end();
     if(!found)
 	{
-	compVal.addArg(newName.c_str());
-	gBuildOptions.setNameValue(OptBuildConfigs, compVal.getAsString().c_str());
+	compVal.addArg(newName);
+	gBuildOptions.setNameValue(OptBuildConfigs, compVal.getAsString());
 
 	// Leave what is on the screen, and change the config name.Save the
 	// screen data to the new config.
 	mCurrentBuildConfig = newName;
-    //    ScreenOptions options(mCurrentBuildConfig.c_str());
+    //    ScreenOptions options(mCurrentBuildConfig);
      //   options.screenToOptions();
 
 	updateBuildConfig();
@@ -359,7 +359,7 @@ void OptionsDialog::addConfig()
 
 void OptionsDialog::saveScreen()
     {
-    ScreenOptions options(mCurrentBuildConfig.c_str());
+    ScreenOptions options(mCurrentBuildConfig);
     options.screenToOptions();
 
     gBuildOptions.writeFile();
@@ -374,7 +374,7 @@ void OptionsDialog::runPackagesDialog()
     ProjectPackagesDialog dlg(str);
     if(dlg.run(true))
 	{
-	Gui::setText(view, str.c_str());
+	Gui::setText(view, str);
 	}
     }
 

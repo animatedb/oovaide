@@ -1,10 +1,14 @@
-PkgNames|gtk+-3.0;llvm;Qt;wxWidgets;Visual Studio
-Pkg-gtk+-3.0-Root|/Program Files/GTK+-Bundle-3.6.4
+PkgNames|gtk+-3.0;llvm;Qt;mingw-w64;wxWidgets;Visual Studio
+Pkg-gtk+-3.0-Root|/GTK*
 Pkg-llvm-Root|/Program Files/LLVM
 Pkg-llvm-I|include
 Pkg-llvm-l|libclang.lib
 Pkg-llvm-L|lib
-Pkg-Qt-Root|/Qt
+Pkg-mingw-w64-Root|/mingw-w64/*/mingw32/i686-w64-mingw32
+Pkg-mingw-w64-I|include;/include/c++;/include/c++/i686-w64-mingw32
+Pkg-Qt-Root|/Qt/*/*/mingw48_32
+Pkg-Qt-I|include
+Pkg-Qt-L|lib
 Pkg-wxWidgets-Root|/wxWidgets
 Pkg-Visual Studio-Root|
 Pkg-Visual Studio-I|VC/include

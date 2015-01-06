@@ -236,7 +236,7 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	{
 	if(stmt.getStatementType() == ST_OpenNest)
 	    {
-	    opDef.addNestStart(stmt.getName().c_str());
+	    opDef.addNestStart(stmt.getName());
 	    }
 	else if(stmt.getStatementType() == ST_CloseNest)
 	    {

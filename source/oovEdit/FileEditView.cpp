@@ -17,26 +17,26 @@
 #include "OovProcess.h"
 // This currently does not get the package command line arguments,
 // but usually these won't be needed for compilation.
-static void getCppArgs(char const * const srcName, OovProcessChildArgs &args)
+static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     {
     ProjectReader proj;
-    proj.readOovProject(Project::getProjectDirectory().c_str(), BuildConfigAnalysis);
-    StdStringVec cppArgs = proj.getCompileArgs();
+    proj.readOovProject(Project::getProjectDirectory(), BuildConfigAnalysis);
+    OovStringVec cppArgs = proj.getCompileArgs();
     for(auto const &arg : cppArgs)
 	{
-	args.addArg(arg.c_str());
+	args.addArg(arg);
 	}
 
     BuildConfigReader cfg;
     std::string incDepsPath = cfg.getIncDepsFilePath(BuildConfigAnalysis);
     IncDirDependencyMapReader incDirMap;
-    incDirMap.read(incDepsPath.c_str());
-    std::vector<std::string> incDirs = incDirMap.getNestedIncludeDirsUsedBySourceFile(srcName);
+    incDirMap.read(incDepsPath);
+    OovStringVec incDirs = incDirMap.getNestedIncludeDirsUsedBySourceFile(srcName);
     for(auto const &dir : incDirs)
 	{
 	std::string arg = "-I";
 	arg += dir;
-	args.addArg(arg.c_str());
+	args.addArg(arg);
 	}
     }
 
@@ -67,7 +67,7 @@ void FileEditView::init(GtkTextView *textView)
 //    g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), NULL);
     }
 
-bool FileEditView::openTextFile(char const * const fn)
+bool FileEditView::openTextFile(OovStringRef const fn)
     {
     setFileName(fn);
     File file(fn, "rb");
@@ -99,7 +99,7 @@ bool FileEditView::saveTextFile()
     else
 	success = true;
     if(success)
-	success = saveAsTextFile(mFileName.c_str());
+	success = saveAsTextFile(mFileName);
     return success;
     }
 
@@ -118,13 +118,13 @@ void FileEditView::highlight()
 //	int numArgs = 0;
 //	char const * cppArgv[40];
 	OovProcessChildArgs cppArgs;
-	getCppArgs(mFileName.c_str(), cppArgs);
+	getCppArgs(mFileName, cppArgs);
 
 	FilePath path;
-	path.getAbsolutePath(mFileName.c_str(), FP_File);
-//	mHighlighter.highlight(mTextView, path.c_str(), getBuffer().c_str(),
+	path.getAbsolutePath(mFileName, FP_File);
+//	mHighlighter.highlight(mTextView, path, getBuffer(),
 //		gtk_text_buffer_get_char_count(mTextBuffer), cppArgv, numArgs);
-	mHighlighter.highlight(mTextView, path.c_str(), getBuffer().c_str(),
+	mHighlighter.highlight(mTextView, path, getBuffer(),
 		gtk_text_buffer_get_char_count(mTextBuffer), cppArgs.getArgv(), cppArgs.getArgc());
 	}
     }
@@ -166,26 +166,26 @@ void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
 bool FileEditView::saveAsTextFileWithDialog()
     {
     PathChooser ch;
-    std::string filename = mFileName;
+    OovString filename = mFileName;
     bool saved = false;
     std::string prompt = "Save ";
     prompt += mFileName;
     prompt += " As";
-    if(ch.ChoosePath(GTK_WINDOW(mTextView), prompt.c_str(),
+    if(ch.ChoosePath(GTK_WINDOW(mTextView), prompt,
 	    GTK_FILE_CHOOSER_ACTION_SAVE, filename))
 	{
-	saved = saveAsTextFile(filename.c_str());
+	saved = saveAsTextFile(filename);
 	}
     return saved;
     }
 
-bool FileEditView::saveAsTextFile(char const * const fn)
+bool FileEditView::saveAsTextFile(OovStringRef const fn)
     {
     size_t writeSize = -1;
-    std::string tempFn = fn;
+    OovString tempFn = fn;
     setFileName(fn);
     tempFn += ".tmp";
-    File file(tempFn.c_str(), "wb");
+    File file(tempFn, "wb");
     if(file.isOpen())
 	{
 	int size = gtk_text_buffer_get_char_count(mTextBuffer);
@@ -193,7 +193,7 @@ bool FileEditView::saveAsTextFile(char const * const fn)
 	writeSize = fwrite(buf.c_str(), 1, size, file.getFp());
 	file.close();
 	deleteFile(fn);
-	renameFile(tempFn.c_str(), fn);
+	renameFile(tempFn, fn);
 	gtk_text_buffer_set_modified(mTextBuffer, FALSE);
 	}
     return(writeSize > 0);
@@ -321,7 +321,7 @@ void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *sta
 	{
 	int offset = HistoryItem::getOffset(start);
 	GuiText str(gtk_text_buffer_get_text(textbuffer, start, end, false));
-	addHistoryItem(HistoryItem(false, offset, str.c_str(), str.length()));
+	addHistoryItem(HistoryItem(false, offset, str, str.length()));
 	}
     setNeedHighlightUpdate(HS_NeedHighlight);
     }

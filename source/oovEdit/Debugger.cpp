@@ -38,7 +38,7 @@ Debugger::Debugger():
     // It seems like "-exec-run" must be used to start the debugger,
     // so this is needed to prevent it from running to the end when
     // single stepping is used to start the program.
-    toggleBreakpoint("main");
+    toggleBreakpoint(DebuggerBreakpoint("main"));
     }
 
 bool Debugger::runDebuggerProcess()
@@ -47,10 +47,10 @@ bool Debugger::runDebuggerProcess()
     if(started)
 	{
 	OovProcessChildArgs args;
-	args.addArg(mDebuggerFilePath.c_str());
-	args.addArg(mDebuggeeFilePath.c_str());
+	args.addArg(mDebuggerFilePath);
+	args.addArg(mDebuggeeFilePath);
 	args.addArg("--interpreter=mi");
-	mBkgPipeProc.startProcess(mDebuggerFilePath.c_str(), args.getArgv());
+	mBkgPipeProc.startProcess(mDebuggerFilePath, args.getArgv());
 #if(DEBUG_DBG)
 	sDbgFile.printflush("Starting process\n");
 #endif
@@ -97,14 +97,14 @@ void Debugger::sendAddBreakpoint(const DebuggerBreakpoint &br)
     {
     OovString command = "-break-insert -f ";
     command += br.getAsString();
-    sendMiCommand(command.c_str());
+    sendMiCommand(command);
     }
 
 void Debugger::sendDeleteBreakpoint(const DebuggerBreakpoint &br)
     {
     OovString command = "-break-delete ";
     command.appendInt(br.mBreakpointNumber);
-    sendMiCommand(command.c_str());
+    sendMiCommand(command);
     }
 
 void Debugger::stepInto()
@@ -152,19 +152,19 @@ void Debugger::ensureGdbChildRunning()
 	    {
 	    std::string dirCmd = "-environment-cd ";
 	    dirCmd += mWorkingDir;
-	    sendMiCommand(dirCmd.c_str());
+	    sendMiCommand(dirCmd);
 	    }
 	if(mDebuggeeArgs.length())
 	    {
 	    std::string argCmd = "-exec-arguments ";
 	    argCmd += mDebuggeeArgs;
-	    sendMiCommand(argCmd.c_str());
+	    sendMiCommand(argCmd);
 	    }
 	sendMiCommand("-exec-run");
 	}
     }
 
-void Debugger::startGetVariable(char const * const variable)
+void Debugger::startGetVariable(OovStringRef const variable)
     {
     OovString cmd = "-data-evaluate-expression ";
     cmd += "--thread ";
@@ -173,7 +173,7 @@ void Debugger::startGetVariable(char const * const variable)
     cmd.appendInt(mFrameNumber, 10);
     cmd += ' ';
     cmd += variable;
-    sendMiCommand(cmd.c_str());
+    sendMiCommand(cmd);
     }
 
 void Debugger::startGetStack()
@@ -181,24 +181,24 @@ void Debugger::startGetStack()
     sendMiCommand("-stack-list-frames");
     }
 
-void Debugger::startGetMemory(char const * const addr)
+void Debugger::startGetMemory(OovStringRef const addr)
     {
     OovString cmd = "-data-read-memory-bytes ";
     cmd += addr;
-    sendMiCommand(cmd.c_str());
+    sendMiCommand(cmd);
     }
 
-void Debugger::sendMiCommand(char const * const command)
+void Debugger::sendMiCommand(OovStringRef const command)
     {
     OovString cmd;
     cmd.appendInt(++mCommandIndex);
     cmd.append(command);
-    sendCommand(cmd.c_str());
+    sendCommand(cmd);
     }
 
-void Debugger::sendCommand(char const * const command)
+void Debugger::sendCommand(OovStringRef const command)
     {
-    std::string cmd = command;
+    OovString cmd = command;
     size_t pos = cmd.find('\n');
     if(pos != std::string::npos)
 	{
@@ -212,15 +212,15 @@ void Debugger::sendCommand(char const * const command)
 	cmd += "\r\n";
     if(mDebuggerListener)
 	{
-	mDebuggerListener->DebugOutput(cmd.c_str());
+	mDebuggerListener->DebugOutput(cmd);
 	}
-    mBkgPipeProc.childProcessSend(cmd.c_str());
+    mBkgPipeProc.childProcessSend(cmd);
 #if(DEBUG_DBG)
     sDbgFile.printflush("Sent Command %s\n", cmd.c_str());
 #endif
     }
 
-void Debugger::onStdOut(char const * const out, int len)\
+void Debugger::onStdOut(OovStringRef const out, int len)\
     {
     mGdbOutputBuffer.append(out, len);
     while(1)
@@ -265,17 +265,17 @@ GdbChildStates Debugger::getChildState()
     GdbChildStates cs = mGdbChildState;
     return cs;
     }
-std::string Debugger::getStack()
+OovString Debugger::getStack()
     {
     LockGuard lock(mStatusLock);
-    std::string str = mStack;
+    OovString str = mStack;
     return str;
     }
 
 // The docs say that -stack-select-frame is deprecated for the --frame option.
 // When --frame is used, --thread must also be specified.
 // The --frame option does work with many commands such as -data-evaluate-expression
-void Debugger::setStackFrame(char const * const frameLine)
+void Debugger::setStackFrame(OovStringRef const frameLine)
     {
     OovString line = frameLine;
     size_t pos = line.find(':');
@@ -291,7 +291,7 @@ void Debugger::setStackFrame(char const * const frameLine)
 	}
     }
 
-std::string Debugger::getVarValue()
+OovString Debugger::getVarValue()
     {
     LockGuard lock(mStatusLock);
     std::string str = mVarValue;
@@ -299,11 +299,11 @@ std::string Debugger::getVarValue()
     }
 
 
-void Debugger::onStdErr(char const * const out, int len)
+void Debugger::onStdErr(OovStringRef const out, int len)
     {
     std::string result(out, len);
     if(mDebuggerListener)
-	mDebuggerListener->DebugOutput(result.c_str());
+	mDebuggerListener->DebugOutput(result);
     }
 
 // gets value within quotes of
@@ -328,15 +328,15 @@ static std::string getTagValue(std::string const &wholeStr, char const * const t
 static DebuggerLocation getLocationFromResult(const std::string &resultStr)
     {
     DebuggerLocation loc;
-    OovString line = getTagValue(resultStr, "line").c_str();
+    OovString line = getTagValue(resultStr, "line");
     int lineNum = 0;
     line.getInt(0, INT_MAX, lineNum);
 // For some reason, "fullname" has doubled slashes on Windows, Sometimes "file"
 // contains a full good path, but not all the time.
-    FilePath fullFn(fixFilePath(getTagValue(resultStr, "fullname").c_str()).c_str(),
+    FilePath fullFn(fixFilePath(getTagValue(resultStr, "fullname")),
 	    FP_File);
-    loc.setFileLine(fullFn.c_str(), lineNum);
-//    loc.setFileLine(getTagValue(resultStr, "file").c_str(), lineNum);
+    loc.setFileLine(fullFn, lineNum);
+//    loc.setFileLine(getTagValue(resultStr, "file"), lineNum);
     return loc;
     }
 
@@ -397,11 +397,11 @@ void Debugger::handleBreakpoint(const std::string &resultStr)
 void Debugger::handleValue(const std::string &resultStr)
     {
     cDebugResult debRes;
-    debRes.parseResult(resultStr.c_str());
+    debRes.parseResult(resultStr);
     mVarValue = debRes.getAsString();
     updateChangeStatus(Debugger::CS_Value);
     if(mDebuggerListener)
-	mDebuggerListener->DebugOutput(mVarValue.c_str());
+	mDebuggerListener->DebugOutput(mVarValue);
     }
 
 // 99^done,stack=[
@@ -541,7 +541,7 @@ void Debugger::handleResult(const std::string &resultStr)
 	    }
 	}
     if(mDebuggerListener)
-	mDebuggerListener->DebugOutput(resultStr.c_str());
+	mDebuggerListener->DebugOutput(resultStr);
     }
 
 void Debugger::updateChangeStatus(Debugger::eChangeStatus status)

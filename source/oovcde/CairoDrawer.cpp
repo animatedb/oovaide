@@ -7,14 +7,14 @@
 
 #include "CairoDrawer.h"
 
-float NullDrawer::getTextExtentWidth(char const * const name) const
+float NullDrawer::getTextExtentWidth(OovStringRef const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);
     return extents.width;
     }
 
-float NullDrawer::getTextExtentHeight(char const * const name) const
+float NullDrawer::getTextExtentHeight(OovStringRef const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);
@@ -80,7 +80,7 @@ void CairoDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
 	}
     }
 
-void CairoDrawer::drawText(const GraphPoint &p, char const * const text)
+void CairoDrawer::drawText(const GraphPoint &p, OovStringRef const text)
     {
     cairo_move_to(cr, p.x, p.y);
     cairo_show_text(cr, text);

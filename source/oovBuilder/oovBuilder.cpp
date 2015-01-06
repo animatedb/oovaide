@@ -28,10 +28,10 @@
 #include "Coverage.h"
 #include <stdio.h>
 
-static bool readProject(ComponentFinder &compFinder, std::string const &buildConfigName,
-	char const *oovProjDir, bool verbose)
+static bool readProject(ComponentFinder &compFinder, OovStringRef const buildConfigName,
+	OovStringRef const oovProjDir, bool verbose)
     {
-    bool success = compFinder.readProject(oovProjDir, buildConfigName.c_str());
+    bool success = compFinder.readProject(oovProjDir, buildConfigName);
     if(success)
 	{
 	if(compFinder.getProject().getVerbose() || verbose)
@@ -42,20 +42,20 @@ static bool readProject(ComponentFinder &compFinder, std::string const &buildCon
     else
 	{
 	fprintf(stderr, "oovBuilder: Oov project file must exist in %s\n",
-		oovProjDir);
+		oovProjDir.getStr());
 	}
     return success;
     }
 
 static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
-	 std::string const &buildConfigName, std::string const &srcRootDir)
+	 OovStringRef const buildConfigName, OovStringRef const srcRootDir)
     {
-    cfg.setInitialConfig(buildConfigName.c_str(),
+    cfg.setInitialConfig(buildConfigName,
 	    compFinder.getProject().getExternalArgs(),
 	    compFinder.getProject().getAllCrcCompileArgs(),
 	    compFinder.getProject().getAllCrcLinkArgs());
 
-    if(cfg.isConfigDifferent(buildConfigName.c_str(),
+    if(cfg.isConfigDifferent(buildConfigName,
 	    BuildConfig::CT_ExtPathArgsCrc))
 	{
 	// This is for the -ER switch.
@@ -69,10 +69,10 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 	    {
 	    if(pkg.needDirScan())
 		{
-		printf("Scanning %s\n", pkg.getPkgName().c_str());
+		printf("Scanning %s\n", pkg.getPkgName().getStr());
 		/// @todo - only one ext root dir per package currently.
 		if(pkg.getExtRefDirs().size() > 0)
-		    compFinder.scanExternalProject(pkg.getExtRefDirs()[0].c_str(), &pkg);
+		    compFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
 		}
 	    else
 		{
@@ -81,56 +81,54 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 	    }
 	}
     srcFileParser sfp(compFinder);
-    printf("Scanning %s\n", srcRootDir.c_str());
+    printf("Scanning %s\n", srcRootDir.getStr());
     compFinder.scanProject();
     fflush(stdout);
 
     cfg.setProjectConfig(compFinder.getScannedInfo().getProjectIncludeDirs());
     // Is anything different in the current build configuration?
-    if(cfg.isAnyConfigDifferent(buildConfigName.c_str()))
+    if(cfg.isAnyConfigDifferent(buildConfigName))
 	{
 	// Find CRC's that are not used by any build configuration.
-	std::vector<std::string> unusedCrcs;
-	std::vector<std::string> deleteDirs;
+	OovStringVec unusedCrcs;
+	OovStringVec deleteDirs;
 	cfg.getUnusedCrcs(unusedCrcs);
 	for(auto const &crcStr : unusedCrcs)
 	    {
-	    deleteDirs.push_back(cfg.getAnalysisPath(buildConfigName.c_str(),
-		    crcStr.c_str()).c_str());
+	    deleteDirs.push_back(cfg.getAnalysisPath(buildConfigName, crcStr));
 	    }
-	if(cfg.isConfigDifferent(buildConfigName.c_str(),
+	if(cfg.isConfigDifferent(buildConfigName,
 		BuildConfig::CT_ExtPathArgsCrc) ||
-	    cfg.isConfigDifferent(buildConfigName.c_str(),
+	    cfg.isConfigDifferent(buildConfigName,
 		BuildConfig::CT_ProjPathArgsCrc) ||
-	    cfg.isConfigDifferent(buildConfigName.c_str(),
+	    cfg.isConfigDifferent(buildConfigName,
 		BuildConfig::CT_OtherArgsCrc))
 	    {
-	    deleteDirs.push_back(Project::getIntermediateDir(buildConfigName.c_str()
-		    ).c_str());
+	    deleteDirs.push_back(Project::getIntermediateDir(buildConfigName
+		    ));
 	    }
 	else	// Must be only link arguments.
 	    {
-	    deleteDirs.push_back(Project::getOutputDir(buildConfigName.c_str()
-		    ).c_str());
+	    deleteDirs.push_back(Project::getOutputDir(buildConfigName));
 	    }
 	for(auto const &dir : deleteDirs)
 	    {
-	    printf("Deleting %s\n", dir.c_str());
+	    printf("Deleting %s\n", dir.getStr());
 	    if(dir.length() > 5)	// Reduce chance of deleting root
-		recursiveDeleteDir(dir.c_str());
+		recursiveDeleteDir(dir);
 	    }
 	fflush(stdout);
-	cfg.saveConfig(buildConfigName.c_str());
+	cfg.saveConfig(buildConfigName);
 	}
 
-    std::string analysisPath = cfg.getAnalysisPath(buildConfigName.c_str());
-    ensurePathExists(analysisPath.c_str());
+    OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
+    ensurePathExists(analysisPath);
 
     FilePath compFn(analysisPath, FP_Dir);
     compFn.appendFile(Project::getAnalysisComponentsFilename());
-    compFinder.saveProject(compFn.c_str());
+    compFinder.saveProject(compFn);
 
-    sfp.analyzeSrcFiles(srcRootDir.c_str(), analysisPath.c_str());
+    sfp.analyzeSrcFiles(srcRootDir, analysisPath);
     }
 
 // Example test args:
@@ -156,7 +154,7 @@ int main(int argc, char const * const argv[])
 	    else if(testArg.find("-mode-", 0, 5) == 0)
 		{
 		OovString mode;
-		mode.setLowerCase(testArg.substr(6).c_str());
+		mode.setLowerCase(testArg.substr(6));
 		if(mode.find("analyze") == 0)
 		    {
 		    processMode = PM_Analyze;
@@ -208,7 +206,7 @@ int main(int argc, char const * const argv[])
     if(success)
 	{
 	success = readProject(compFinder, buildConfigName,
-		Project::getProjectDirectory().c_str(), verbose);
+		Project::getProjectDirectory(), verbose);
 	}
     if(success)
 	{
@@ -217,7 +215,7 @@ int main(int argc, char const * const argv[])
 	    if(makeCoverageStats())
 		{
 		printf("Coverage output: %s",
-			Project::getCoverageProjectDirectory().c_str());
+			Project::getCoverageProjectDirectory().getStr());
 		}
 	    }
 	else
@@ -227,7 +225,7 @@ int main(int argc, char const * const argv[])
 
 	    std::string configStr = "Configuration: ";
 	    configStr += buildConfigName;
-	    sVerboseDump.logProgress(configStr.c_str());
+	    sVerboseDump.logProgress(configStr);
 	    switch(processMode)
 		{
 		case PM_Analyze:
@@ -235,9 +233,9 @@ int main(int argc, char const * const argv[])
 
 		default:
 		    {
-		    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName.c_str());
+		    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName);
 		    ComponentBuilder builder(compFinder);
-		    builder.build(processMode, incDepsPath.c_str(), buildConfigName.c_str());
+		    builder.build(processMode, incDepsPath, buildConfigName);
 		    }
 		    break;
 		}

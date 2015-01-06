@@ -125,7 +125,7 @@ bool OovPipeProcessLinux::linuxCreatePipes()
     }
 
 
-bool OovPipeProcessLinux::linuxCreatePipeProcess(char const * const procPath,
+bool OovPipeProcessLinux::linuxCreatePipeProcess(OovStringRef const procPath,
 	char const * const *argv)
     {
     // from http://jineshkj.wordpress.com/2006/12/22/how-to-capture-stdin-stdout-and-stderr-of-child-program
@@ -151,7 +151,7 @@ bool OovPipeProcessLinux::linuxCreatePipeProcess(char const * const procPath,
 	    success = (execvp(procPath, const_cast<char**>(argv)) != -1);
 	    if(!success)
 		{
-		fprintf(stderr, "Unable to run process %s\n", procPath);
+		fprintf(stderr, "Unable to run process %s\n", procPath.getStr());
 		}
 //	    pause();
 	    _exit(0);
@@ -277,7 +277,7 @@ void OovPipeProcessLinux::linuxChildProcessListen(OovProcessListener &listener, 
 #endif
     }
 
-void OovPipeProcessLinux::linuxChildProcessSend(char const * const str)
+void OovPipeProcessLinux::linuxChildProcessSend(OovStringRef const str)
     {
     // Junk code:
     // Compile error for not checking write return, so instead, retry once
@@ -303,7 +303,7 @@ void OovPipeProcessLinux::linuxChildProcessKill()
 	}
     }
 
-static int linuxSpawnNoWait(char const * const procPath, char const * const *argv)
+static int linuxSpawnNoWait(OovStringRef const procPath, char const * const *argv)
     {
     pid_t pid;
     char const *env[2];
@@ -317,7 +317,7 @@ static int linuxSpawnNoWait(char const * const procPath, char const * const *arg
 #else
 
 // Create a child process that uses the previously created pipes for STDIN and STDOUT.
-static bool windowsChildProcessCreate(char const * const szCmdline,
+static bool windowsChildProcessCreate(OovStringRef const szCmdline,
 	HANDLE hChildStd_IN_Rd,
 	HANDLE hChildStd_OUT_Wr, HANDLE hChildStd_ERR_Wr,
 	PROCESS_INFORMATION &piProcInfo)
@@ -337,8 +337,8 @@ static bool windowsChildProcessCreate(char const * const szCmdline,
 #if(DEBUG_PROC)
     sDbgFile.printflush("windowsChildProcessCreate %s\n", szCmdline);
 #endif
-    BOOL bSuccess = CreateProcess(NULL, (char*)szCmdline, NULL, NULL, TRUE,
-	0, NULL, NULL, &siStartInfo, &piProcInfo);
+    BOOL bSuccess = CreateProcess(NULL, const_cast<char*>(szCmdline.getStr()),
+	NULL, NULL, TRUE, 0, NULL, NULL, &siStartInfo, &piProcInfo);
     return bSuccess;
     }
 
@@ -381,7 +381,7 @@ static bool windowsPeekAndReadFile(HANDLE readHandle, bool writeStdout, bool &go
 class CmdLine
     {
     public:
-	CmdLine(char const * const procPath, char const * const *argv)
+	CmdLine(OovStringRef const procPath, char const * const *argv)
 	    {
 	    for(int i=0; ; i++)
 		{
@@ -392,8 +392,8 @@ class CmdLine
 		cmdStr += argv[i];
 		}
 	    }
-	char const * const getCmdStr()
-	    { return cmdStr.c_str(); }
+	OovStringRef const getCmdStr()
+	    { return cmdStr; }
     private:
 	std::string cmdStr;
     };
@@ -432,7 +432,7 @@ bool OovPipeProcessWindows::windowsCreatePipes()
     return success;
     }
 
-bool OovPipeProcessWindows::windowsCreatePipeProcess(char const * const procPath,
+bool OovPipeProcessWindows::windowsCreatePipeProcess(OovStringRef const procPath,
 	char const * const *argv)
     {
     CmdLine cmdLine(procPath, argv);
@@ -500,7 +500,7 @@ void OovPipeProcessWindows::windowsClosePipes()
     windowsCloseHandle(mChildStd_IN_Wr);
     }
 
-bool OovPipeProcessWindows::windowsChildProcessSend(char const * const str)
+bool OovPipeProcessWindows::windowsChildProcessSend(OovStringRef const str)
     {
     DWORD written;
     BOOL success = WriteFile(mChildStd_IN_Wr, str, strlen(str), &written, NULL);
@@ -532,7 +532,7 @@ void OovPipeProcessWindows::windowsChildProcessKill()
 
 #endif
 
-bool OovPipeProcess::createProcess(char const * const procPath,
+bool OovPipeProcess::createProcess(OovStringRef const procPath,
 	char const * const *argv)
     {
 #ifdef __linux__
@@ -553,7 +553,7 @@ void OovPipeProcess::childProcessListen(OovProcessListener &listener, int &exitC
     listener.processComplete();
     }
 
-void OovPipeProcess::childProcessSend(char const * const str)
+void OovPipeProcess::childProcessSend(OovStringRef const str)
     {
 #ifdef __linux__
     mPipeProcLinux.linuxChildProcessSend(str);
@@ -580,7 +580,7 @@ void OovPipeProcess::childProcessKill()
 #endif
     }
 
-bool OovPipeProcess::spawn(char const * const procPath, char const * const *argv,
+bool OovPipeProcess::spawn(OovStringRef const procPath, char const * const * argv,
 	OovProcessListener &listener, int &exitCode)
     {
     exitCode = -1;
@@ -594,13 +594,13 @@ bool OovPipeProcess::spawn(char const * const procPath, char const * const *argv
     return success;
     }
 
-int spawnNoWait(char const * const procPath, char const * const *argv)
+int spawnNoWait(OovStringRef const procPath, char const * const *argv)
     {
     int ret = 0;
 #ifdef __linux__
-    ret = linuxSpawnNoWait(procPath, argv);
+    ret = linuxSpawnNoWait(procPath.getStr(), argv);
 #else
-    ret = _spawnv(_P_NOWAIT, procPath, argv);
+    ret = _spawnv(_P_NOWAIT, procPath.getStr(), argv);
 #endif
 /*
     switch(ret)
@@ -615,47 +615,47 @@ int spawnNoWait(char const * const procPath, char const * const *argv)
     return ret;
     }
 
-void OovProcessStdListener::onStdOut(char const * const out, int len)
+void OovProcessStdListener::onStdOut(OovStringRef const out, int len)
     {
     if(mStdOutPlace == OP_OutputStd || mStdOutPlace == OP_OutputStdAndFile)
-	fprintf(stdout, "%s", std::string(out, len).c_str());
+	fprintf(stdout, "%s", OovString(out, len).getStr());
     if(mStdOutPlace == OP_OutputFile || mStdOutPlace == OP_OutputStdAndFile)
-	fprintf(mStdoutFp, "%s", std::string(out, len).c_str());
+	fprintf(mStdoutFp, "%s", OovString(out, len).getStr());
     }
 
-void OovProcessStdListener::onStdErr(char const * const out, int len)
+void OovProcessStdListener::onStdErr(OovStringRef const out, int len)
     {
     if(mStdErrPlace == OP_OutputStd || mStdErrPlace == OP_OutputStdAndFile)
-	fprintf(stderr, "%s", std::string(out, len).c_str());
+	fprintf(stderr, "%s", OovString(out, len).getStr());
     if(mStdErrPlace == OP_OutputFile || mStdErrPlace == OP_OutputStdAndFile)
-	fprintf(mStderrFp, "%s", std::string(out, len).c_str());
+	fprintf(mStderrFp, "%s", OovString(out, len).getStr());
     }
 
-void OovProcessBufferedStdListener::onStdOut(char const * const out, int len)
+void OovProcessBufferedStdListener::onStdOut(OovStringRef const out, int len)
     {
 	{
 	LockGuard lock(mStdMutex);
 	if(mStdOutPlace == OP_OutputStd || mStdOutPlace == OP_OutputStdAndFile)
-	    mStdoutStr += std::string(out, len).c_str();
+	    mStdoutStr += OovString(out, len);
 	if(mStdOutPlace == OP_OutputFile || mStdOutPlace == OP_OutputStdAndFile)
-	    mStdoutStr += std::string(out, len).c_str();
+	    mStdoutStr += OovString(out, len);
 	}
     output(mStdoutFp, mStdoutStr, mStdoutTime);
     }
 
-void OovProcessBufferedStdListener::onStdErr(char const * const out, int len)
+void OovProcessBufferedStdListener::onStdErr(OovStringRef const out, int len)
     {
 	{
 	LockGuard lock(mStdMutex);
 	if(mStdErrPlace == OP_OutputStd || mStdErrPlace == OP_OutputStdAndFile)
-	    mStderrStr += std::string(out, len).c_str();
+	    mStderrStr += std::string(out, len);
 	if(mStdErrPlace == OP_OutputFile || mStdErrPlace == OP_OutputStdAndFile)
-	    mStderrStr += std::string(out, len).c_str();
+	    mStderrStr += std::string(out, len);
 	}
     output(mStderrFp, mStderrStr, mStderrTime);
     }
 
-void OovProcessBufferedStdListener::setProcessIdStr(char const * const str)
+void OovProcessBufferedStdListener::setProcessIdStr(OovStringRef const str)
     {
     LockGuard lock(mStdMutex);
     mProcessIdStr = str;
@@ -675,11 +675,11 @@ void OovProcessBufferedStdListener::output(FILE *fp, std::string &str, time_t &r
 	{
 	LockGuard lock(mStdMutex);
 	size_t lastCrPos = str.rfind('\n');
-	std::string tempStr = str.substr(0, lastCrPos);
+	OovString tempStr = str.substr(0, lastCrPos);
 	str.erase(0, lastCrPos);
 
-	fprintf(fp, "%s", mProcessIdStr.c_str());
-	fprintf(fp, "%s", tempStr.c_str());
+	fprintf(fp, "%s", mProcessIdStr.getStr());
+	fprintf(fp, "%s", tempStr.getStr());
 	refTime = curTime;
 	}
     }
@@ -687,14 +687,14 @@ void OovProcessBufferedStdListener::output(FILE *fp, std::string &str, time_t &r
 void OovProcessBufferedStdListener::processComplete()
     {
     LockGuard lock(mStdMutex);
-    fprintf(mStdoutFp, "%s", mProcessIdStr.c_str());
-    fprintf(mStdoutFp, "%s", mStdoutStr.c_str());
-    fprintf(mStderrFp, "%s", mStderrStr.c_str());
+    fprintf(mStdoutFp, "%s", mProcessIdStr.getStr());
+    fprintf(mStdoutFp, "%s", mStdoutStr.getStr());
+    fprintf(mStderrFp, "%s", mStderrStr.getStr());
     mStdoutStr.clear();
     mStderrStr.clear();
     }
 
-void OovProcessChildArgs::addArg(char const * const argStr)
+void OovProcessChildArgs::addArg(OovStringRef const argStr)
     {
     mArgStrings.push_back(argStr);
     }
@@ -704,15 +704,15 @@ char const * const *OovProcessChildArgs::getArgv() const
     mArgv.clear();
     for(size_t i=0; i<mArgStrings.size(); i++)
 	{
-	mArgv.push_back(mArgStrings[i].c_str());
+	mArgv.push_back(mArgStrings[i].getStr());
 	}
     mArgv.push_back(nullptr);	// Add one for end null
     return const_cast<char const * const *>(&mArgv[0]);
     }
 
-std::string OovProcessChildArgs::getArgsAsStr() const
+OovString OovProcessChildArgs::getArgsAsStr() const
     {
-    std::string argStr;
+    OovString argStr;
     for(auto const &arg : mArgStrings)
 	{
 	argStr += arg;
@@ -724,7 +724,7 @@ std::string OovProcessChildArgs::getArgsAsStr() const
 
 void OovProcessChildArgs::printArgs(FILE *fh) const
     {
-    fprintf(fh, "%s", getArgsAsStr().c_str());
+    fprintf(fh, "%s", getArgsAsStr().getStr());
     fflush(fh);
     }
 
@@ -765,7 +765,7 @@ OovBackgroundPipeProcess::~OovBackgroundPipeProcess()
 #endif
     }
 
-bool OovBackgroundPipeProcess::startProcess(char const * const procPath,
+bool OovBackgroundPipeProcess::startProcess(OovStringRef const procPath,
 	char const * const *argv)
     {
     bool success = false;

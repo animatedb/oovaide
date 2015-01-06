@@ -49,10 +49,10 @@ class NullDrawer:public DiagramDrawer
 	    {}
 	virtual void drawPoly(const OovPolygon &poly, Color fillColor)
 	    {}
-	virtual void drawText(const GraphPoint &p, char const * const text)
+	virtual void drawText(const GraphPoint &p, OovStringRef const text)
 	    {}
-	virtual float getTextExtentWidth(char const * const name) const;
-	virtual float getTextExtentHeight(char const * const name) const;
+	virtual float getTextExtentWidth(OovStringRef const name) const;
+	virtual float getTextExtentHeight(OovStringRef const name) const;
     protected:
 	cairo_t *cr;
     };
@@ -72,7 +72,7 @@ class CairoDrawer:public NullDrawer
 		bool dashed=false);
 	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor);
 	virtual void drawPoly(const OovPolygon &poly, Color fillColor);
-	virtual void drawText(const GraphPoint &p, char const * const text);
+	virtual void drawText(const GraphPoint &p, OovStringRef const text);
 	virtual void groupShapes(bool start, Color fillColor);
 	virtual void groupText(bool start);
 

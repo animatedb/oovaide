@@ -50,7 +50,9 @@ This example creates a single executable file. It only has two source files, and
   <li>Wait for the drawing analysis to complete.</li>
   <li>View the "Class" tab, and click on "Lamb". The class diagram will display.</li>
   <li>Select Build/Settings from the menu. Select the Component Type of Program/Executable.</li>
-  <li>Select Build/Build Debug to create a debug version of the program.<br>
+  <li>Select Build/Build Debug to create a debug version of the program. The 
+    program will build if the clang or mingw compiler is available on the system. See the user guide
+    if there are any build configuration problems.<br>
   </li>
   <li>The executable will be in trunk/examples/simple-oovcde/out-Debug.</li>
 </ol>

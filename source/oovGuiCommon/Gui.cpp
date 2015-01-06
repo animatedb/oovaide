@@ -17,8 +17,8 @@ PathChooser::~PathChooser()
 	}
     }
 
-bool PathChooser::ChoosePath(GtkWindow *parent, char const * const dlgName,
-	GtkFileChooserAction action, std::string &path)
+bool PathChooser::ChoosePath(GtkWindow *parent, OovStringRef const dlgName,
+	GtkFileChooserAction action, OovString &path)
     {
     if(mDialog)
 	{
@@ -71,10 +71,10 @@ void Gui::clear(GtkTextView *textview)
     gtk_text_buffer_set_text(textbuf, "", 0);
     }
 
-void Gui::appendText(GtkTextView *textview, const std::string &text)
+void Gui::appendText(GtkTextView *textview, OovStringRef const text)
     {
     GtkTextBuffer *textbuf = gtk_text_view_get_buffer(textview);
-    gtk_text_buffer_insert_at_cursor(textbuf, text.c_str(), text.length());
+    gtk_text_buffer_insert_at_cursor(textbuf, text, text.numChars());
     }
 
 void Gui::scrollToCursor(GtkTextView *textview)
@@ -107,7 +107,7 @@ GuiText Gui::getText(GtkTextView *textview)
     return GuiText(gtk_text_buffer_get_text(textbuf, &start, &end, FALSE));
     }
 
-char const * const Gui::getSelectedText(GtkTextView *textview)
+OovStringRef const Gui::getSelectedText(GtkTextView *textview)
     {
     GtkTextIter start;
     GtkTextIter end;
@@ -162,11 +162,11 @@ void Gui::reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent)
     g_object_unref(GTK_WIDGET(windowToMove));
     }
 
-bool Gui::messageBox(char const * const msg, GtkMessageType msgType,
+bool Gui::messageBox(OovStringRef const msg, GtkMessageType msgType,
 	GtkButtonsType buttons)
     {
     GtkWidget *widget = gtk_message_dialog_new(nullptr, GTK_DIALOG_MODAL,
-	msgType, buttons, "%s", msg);
+	msgType, buttons, "%s", msg.getStr());
     int resp = gtk_dialog_run(GTK_DIALOG(widget));
     gtk_widget_destroy(widget);
     return(resp == GTK_RESPONSE_OK || resp == GTK_RESPONSE_YES);
@@ -225,8 +225,8 @@ void GuiTreeView::removeSelected()
     }
 
 
-void GuiList::init(Builder &builder, char const * const widgetName,
-	char const * const title)
+void GuiList::init(Builder &builder, OovStringRef const widgetName,
+	OovStringRef const title)
     {
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
     if(!gtk_tree_view_get_column(mTreeView, 0))
@@ -242,12 +242,12 @@ void GuiList::init(Builder &builder, char const * const widgetName,
 	}
     }
 
-void GuiList::appendText(char const * const str)
+void GuiList::appendText(OovStringRef const str)
     {
     GtkListStore *store = GTK_LIST_STORE(gtk_tree_view_get_model(mTreeView));
     GtkTreeIter iter;
     gtk_list_store_append(store, &iter);
-    gtk_list_store_set(store, &iter, LIST_ITEM, str, -1);
+    gtk_list_store_set(store, &iter, LIST_ITEM, str.getStr(), -1);
     }
 
 void GuiList::sort()
@@ -256,9 +256,9 @@ void GuiList::sort()
     gtk_tree_sortable_set_sort_column_id(sort, 0, GTK_SORT_ASCENDING);
     }
 
-std::vector<std::string> GuiList::getText() const
+OovStringVec GuiList::getText() const
     {
-    std::vector<std::string> text;
+    OovStringVec text;
     GtkTreeIter iter;
     GtkTreeModel *model = GTK_TREE_MODEL(gtk_tree_view_get_model(mTreeView));
     if(gtk_tree_model_get_iter_first(model, &iter))
@@ -276,7 +276,7 @@ std::vector<std::string> GuiList::getText() const
     return text;
     }
 
-std::string GuiList::getSelected() const
+OovString GuiList::getSelected() const
     {
     GtkTreeIter iter;
     GtkTreeModel *model;
@@ -310,7 +310,7 @@ int GuiList::getSelectedIndex() const
     return index;
     }
 
-void GuiList::setSelected(char const * const str)
+void GuiList::setSelected(OovStringRef const str)
     {
     if(getSelected().compare(str) != 0)
 	{
@@ -339,8 +339,8 @@ void GuiList::setSelected(char const * const str)
 	}
     }
 
-void GuiTree::init(Builder &builder, char const * const widgetName,
-	char const * const title)
+void GuiTree::init(Builder &builder, OovStringRef const widgetName,
+	OovStringRef const title)
     {
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
 
@@ -354,7 +354,7 @@ void GuiTree::init(Builder &builder, char const * const widgetName,
     g_object_unref(store);
     }
 
-GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, char const * const str)
+GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, OovStringRef const str)
     {
     GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
     GuiTreeItem item(false);
@@ -362,13 +362,13 @@ GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, char const * const str)
 	{
 	GtkListStore *store = GTK_LIST_STORE(model);
 	gtk_list_store_append(store, &item.mIter);
-	gtk_list_store_set(store, &item.mIter, LIST_ITEM, str, -1);
+	gtk_list_store_set(store, &item.mIter, LIST_ITEM, str.getStr(), -1);
 	}
     else
 	{
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	gtk_tree_store_append(store, &item.mIter, parentItem.getPtr());
-	gtk_tree_store_set(store, &item.mIter, LIST_ITEM, str, -1);
+	gtk_tree_store_set(store, &item.mIter, LIST_ITEM, str.getStr(), -1);
 	}
     return item;
     }
@@ -564,7 +564,7 @@ bool BackgroundDialog::updateProgressIteration(int currentIter)
     return mKeepGoing;
     }
 
-int Gui::findTab(GtkNotebook *book, char const * const tabName)
+int Gui::findTab(GtkNotebook *book, OovStringRef const tabName)
     {
     int tabIndex = -1;
     for(int i=0; i<gtk_notebook_get_n_pages(book); i++)

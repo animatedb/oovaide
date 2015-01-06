@@ -54,12 +54,12 @@ class BuildConfig
 	    };
 
 	// Get the analysis path of the specified build type.
-	std::string getAnalysisPath(char const * const buildType=BuildConfigAnalysis) const;
-	std::string getAnalysisPath(char const * const buildType,
-		char const * const crcStr) const;
-	std::string getIncDepsFilePath(char const * const buildType) const;
-	std::string getComponentsFilePath(char const * const buildType) const;
-	std::string getCrcAsStr(char const * const buildType, CrcTypes crcType) const;
+	std::string getAnalysisPath(OovStringRef const buildType=BuildConfigAnalysis) const;
+	std::string getAnalysisPath(OovStringRef const buildType,
+		OovStringRef const crcStr) const;
+	std::string getIncDepsFilePath(OovStringRef const buildType) const;
+	std::string getComponentsFilePath(OovStringRef const buildType) const;
+	std::string getCrcAsStr(OovStringRef const buildType, CrcTypes crcType) const;
 
     protected:
 	NameValueFile mConfigFile;

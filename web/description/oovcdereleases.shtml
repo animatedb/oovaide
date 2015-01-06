@@ -25,6 +25,20 @@ Created: 6-8-2009
 The following lists releases in reverse chronological order.<br>
 <br>
 
+<h2>2015-1</h2>
+This version contains:
+<ul>
+  <li>Switched to mingw-w64 for Windows builds</li>
+  <li>Updated internal string handling</li>
+  <li>Improved Windows package directory searching</li>
+</ul>
+
+<h2>2014-12</h2>
+This version contains:
+<ul>
+  <li>Added libwinpthread-1.dll to Windows version</li>
+</ul>
+
 <h2>2014-11</h2>
 This version contains:
 <ul>

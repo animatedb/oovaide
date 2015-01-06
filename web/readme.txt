@@ -9,50 +9,55 @@ Eclipse or CMake is supported for building Oovcde.
 
 Windows versions:
 	Parts of GTK-3.0 and CLang are included in the oovcde-*-win
-	downloads so some drawing analysis does not require any additional
-	downloads. Using Oovcde for more complete analysis requires the
-	MinGW package so that CLang can find include files.
-	Using Oovcde to build requires MinGW or MinGW-builds because
-	they supply the nm and ld tools.
+	downloads so drawing analysis does not require any additional
+	downloads. Using Oovcde for more complete analysis usually
+	requires some MinGW package so that CLang can find standard
+	include files.
+	Using Oovcde to build requires MinGW, MinGW-builds or
+	MinGW-W64 because they supply the nm and ld tools.
 
-	Required for analysis if using standard include files:
-	MinGW or cygwin:
-		For Oovcde Analysis: CLang has hard coded paths,
-		typical path is \MinGW, use -v to see paths
+	MinGW-W64 or MinGW-builds 32 bit:
+		This is required to build Oovcde since it contains
+		threading.
+		Set the environment path to the bin directory.
 
+		On windows, CLang has hard coded paths, and is
+		typically for \MinGW.
+		To use the MinGW-W64 paths, use the External Project
+		Packages button	in the Analysis/Settings dialog.
+
+		From: http://mingw-w64.sourceforge.net/download.php
+		File: i686-4.9.2-release-posix-dwarf-rt_v3-rev0.7
+		Or:
+		From: http://sourceforge.net/projects/mingwbuilds/
+		File: mingw-builds-install.exe
+			Install to C:\Program Files\mingw-builds
+			Using x32-4.8.1-posix-dwarf-rev5
+
+	MinGW:
 		From: http://sourceforge.net/projects/mingw/files/
 		File: "mingw-get-setup.exe"
 			Add package mingw32-gcc-g++	4.8.1-4
 			Add package mingw32-base	2013072200
 			Install to \MinGW
 
-	Required for building Oovcde:
+	Also required for building Oovcde:
 	GTK-3.0:
 		From: http://www.tarnyko.net/dl/
 		File: "GTK+ 3.6.4 Bundle for Windows"
 			Extract to "C:\Program Files\GTK+-Bundle-3.6.4"
 
-	Clang 3.4 or 3.4.1:
+	Clang 3.4, 3.4.1 or 3.5:
 		From: http://llvm.org/releases/download.html
 		File: "Clang for Windows (.sig)"
 			Install to C:\Program Files\LLVM
-
-	MinGW-builds: has C++11 threading/atomics
-		Set path to the bin directory, and if present, rename
-		\MinGW to \MinGW-hide to eliminate compile errors.
-
-		From: http://sourceforge.net/projects/mingwbuilds/
-		File: mingw-builds-install.exe
-			Install to C:\Program Files\mingw-builds
-			Using x32-4.8.1-posix-dwarf-rev5
 
 Linux versions:
 	For the prebuilt binaries, GTK3 and a 64 bit OS is required.
 	A compiler is not required for drawing analysis since
 	libclang.so is included, but either the Gnu or CLang compiler
 	is required for building. On ubuntu, external packages gtk+-3.0 and
-	gmodule-2.0 should be linked.
-
+	gmodule-2.0 should be linked in order to build Oovcde.
 
 	To build oovcde on Linux using CMake (Debian/Ubuntu):
 		- Run "sudo apt-get install libgtk-3-dev clang libclang-dev"

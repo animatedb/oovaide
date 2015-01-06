@@ -27,7 +27,7 @@ static size_t findEarlierBreakPos(size_t pos, std::string const &str,
     return pos;
     }
 
-void splitStrings(std::vector<std::string> &strs, size_t desiredLength)
+void splitStrings(OovStringVec &strs, size_t desiredLength)
     {
     for(size_t i=0; i<strs.size(); i++)
 	{
@@ -56,18 +56,18 @@ int DiagramDrawer::getPad(int div)
     return pad;
     }
 
-void viewSource(char const * const module, int lineNum)
+void viewSource(OovStringRef const module, int lineNum)
     {
     std::string proc = gGuiOptions.getValue(OptGuiEditorPath);
     if(proc.length() > 0)
 	{
 	OovProcessChildArgs args;
-	args.addArg(proc.c_str());
+	args.addArg(proc);
 	OovString lineArg = gGuiOptions.getValue(OptGuiEditorLineArg);
 	if(lineArg.length() != 0)
 	    {
 	    lineArg.appendInt(lineNum);
-	    args.addArg(lineArg.c_str());
+	    args.addArg(lineArg);
 	    }
 	args.addArg(module);
 
@@ -76,9 +76,9 @@ void viewSource(char const * const module, int lineNum)
 	    {
 	    projArg += "-p";
 	    projArg += Project::getProjectDirectory();
-	    args.addArg(projArg.c_str());
+	    args.addArg(projArg);
 	    }
-	spawnNoWait(proc.c_str(), args.getArgv());
+	spawnNoWait(proc, args.getArgv());
 	}
     else
 	{

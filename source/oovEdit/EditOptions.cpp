@@ -15,7 +15,7 @@ void EditOptions::setProjectDir(std::string projDir)
 	{
 	FilePath projName(projDir, FP_Dir);
 	projName.appendFile("oovEditConfig.txt");
-	setFilename(projName.c_str());
+	setFilename(projName);
 	}
     }
 
@@ -23,7 +23,7 @@ void EditOptions::setScreenCoord(char const * const tag, int val)
     {
     OovString str;
     str.appendInt(val);
-    setNameValue(tag, str.c_str());
+    setNameValue(tag, str);
     }
 
 void EditOptions::saveScreenSize(int width, int height)

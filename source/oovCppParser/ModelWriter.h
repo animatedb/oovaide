@@ -36,14 +36,14 @@ public:
     ModelWriter(const ModelData &modelData):
         mFp(nullptr), mModelData(modelData)
         {}
-    bool writeFile(char const * const filename);
+    bool writeFile(OovStringRef const filename);
     ~ModelWriter();
 
 private:
     FILE *mFp;
     const ModelData &mModelData;
 
-    bool openFile(char const * const filename);
+    bool openFile(OovStringRef const filename);
     int getObjectModelId(const std::string &name);
     void writeType(const ModelType &type);
     void writeClassDefinition(const ModelClassifier &classifier, bool isClassDef);

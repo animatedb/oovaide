@@ -80,12 +80,12 @@ class CppFileContents
     {
     public:
 	bool read(char const *fn);
-	bool write(char const *fn);
+	bool write(OovStringRef const fn);
 	// The origFileOffset is the offset into the original file.
-	void insert(char const *str, int origFileOffset);
+	void insert(OovStringRef const str, int origFileOffset);
 
     private:
-	std::multimap<int, std::string> mInsertMap;
+	std::multimap<int, OovString> mInsertMap;
 	std::vector<char> mFileContents;
 
 	/// Reads the mInsertMap and writes the mFileContents.
@@ -102,8 +102,8 @@ class CppInstr
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
 	    ET_CLangError, ET_ParseError };
         /// Parses a C++ source file.
-	eErrorTypes parse(char const * const srcFn, char const * const srcRootDir,
-		char const * const outDir,
+	eErrorTypes parse(OovStringRef const srcFn, OovStringRef const srcRootDir,
+		OovStringRef const outDir,
 		char const * const clang_args[], int num_clang_args);
 	/// These are public for access by global functions callbacks.
 	CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent);
@@ -119,16 +119,16 @@ class CppInstr
 
 	void makeCovInstr(OovString &covStr);
 	void insertOutputText(OovString &covStr, int offset)
-	    { mOutputFileContents.insert(covStr.c_str(), offset); }
+	    { mOutputFileContents.insert(covStr, offset); }
 	void insertOutputText(char const *covStr, int offset)
 	    { mOutputFileContents.insert(covStr, offset); }
 	void insertCovInstr(int offset);
 	void insertNonCompoundInstr(CXCursor cursor);
 //	void instrChildNonCompoundStatements(CXCursor cursor);
 
-	static void updateCoverageHeader(std::string const &fn, char const * const covDir,
+	static void updateCoverageHeader(OovStringRef const fn, OovStringRef const covDir,
 		int numInstrLines);
-	static void updateCoverageSource(std::string const &fn, char const * const covDir);
+	static void updateCoverageSource(OovStringRef const fn, OovStringRef const covDir);
     };
 
 

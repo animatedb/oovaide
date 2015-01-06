@@ -24,7 +24,7 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
 	std::string stereotype = "<<";
 	stereotype += ComponentTypesFile::getShortComponentTypeName(ct);
 	stereotype += ">>";
-	drawStrings.push_back(stereotype.c_str());
+	drawStrings.push_back(stereotype);
 	}
 
     int rectHeight = mDrawer.getTextExtentHeight("W") * 4;
@@ -33,7 +33,7 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
     int maxWidth = 0;
     for(const auto &str : drawStrings)
 	{
-	int width = mDrawer.getTextExtentWidth(str.c_str()) + (symbolSize * 3);
+	int width = mDrawer.getTextExtentWidth(str) + (symbolSize * 3);
 	if(width > maxWidth)
 	    maxWidth = width;
 	}
@@ -50,7 +50,7 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
 	{
 	y += mDrawer.getTextExtentHeight("W") + symbolSize;
 	// Drawing text is started from the bottom left corner
-	mDrawer.drawText(GraphPoint(startpos.x+symbolSize*2+pad*2, y), str.c_str());
+	mDrawer.drawText(GraphPoint(startpos.x+symbolSize*2+pad*2, y), str);
 	}
     mDrawer.groupText(false);
 

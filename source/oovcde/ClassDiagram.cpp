@@ -58,12 +58,12 @@ void ClassDiagram::restart()
     {
     if(mClassGraph.getNodes().size() == 0)
 	{
-	clearGraphAndAddClass(getLastSelectedClassName().c_str());
+	clearGraphAndAddClass(getLastSelectedClassName());
 	}
     updateGraph();
     }
 
-void ClassDiagram::clearGraphAndAddClass(char const * const className)
+void ClassDiagram::clearGraphAndAddClass(OovStringRef const className)
     {
     mClassGraph.clearGraphAndAddNode(getModelData(),
 	    getDrawOptions(), className, NODE_DEPTH);
@@ -71,7 +71,7 @@ void ClassDiagram::clearGraphAndAddClass(char const * const className)
     updateGraphSize();
     }
 
-void ClassDiagram::addClass(char const * const className)
+void ClassDiagram::addClass(OovStringRef const className)
     {
     mClassGraph.addNode(getModelData(), getDrawOptions(), className, NODE_DEPTH);
     setLastSelectedClassName(className);
@@ -110,7 +110,7 @@ void ClassDiagram::displayContextMenu(guint button, guint32 acttime, gpointer da
     {
     GdkEventButton *event = static_cast<GdkEventButton*>(data);
     ClassNode *node = getNode(event->x, event->y);
-    char const * const nodeMenus[] =
+    OovStringRef const nodeMenus[] =
 	{
 	"GotoClassMenuitem",
 	"AddStandardMenuitem", "AddAllMenuitem",
@@ -204,7 +204,7 @@ extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(GtkWidget *widget,
     ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
-	gClassDiagram->gotoClass(node->getType()->getName().c_str());
+	gClassDiagram->gotoClass(node->getType()->getName());
 	}
     }
 
@@ -307,7 +307,7 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget
 	const ModelClassifier *classifier = node->getType()->getClass();
 	if(classifier && classifier->getModule())
 	    {
-	    viewSource(classifier->getModule()->getModulePath().c_str(), classifier->getLineNum());
+	    viewSource(classifier->getModule()->getModulePath(), classifier->getLineNum());
 	    }
 	}
     }

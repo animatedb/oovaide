@@ -15,23 +15,23 @@
 #include <algorithm>
 
 
-void ComponentBuilder::build(eProcessModes mode, char const * const incDepsFilePath,
-	char const * const buildDirClass)
+void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFilePath,
+	OovStringRef const buildDirClass)
     {
-    mSrcRootDir.setPath(Project::getSrcRootDirectory().c_str(), FP_Dir);
+    mSrcRootDir.setPath(Project::getSrcRootDirectory(), FP_Dir);
     if(mode == PM_CovInstr)
 	{
-	mOutputPath.setPath(Project::getCoverageSourceDirectory().c_str(), FP_Dir);
+	mOutputPath.setPath(Project::getCoverageSourceDirectory(), FP_Dir);
 	}
     else
 	{
-	mOutputPath.setPath(Project::getOutputDir(buildDirClass).c_str(), FP_Dir);
+	mOutputPath.setPath(Project::getOutputDir(buildDirClass), FP_Dir);
 	}
-    mIntermediatePath.setPath(Project::getIntermediateDir(buildDirClass).c_str(), FP_Dir);
+    mIntermediatePath.setPath(Project::getIntermediateDir(buildDirClass), FP_Dir);
 
     mToolPathFile.setConfig(buildDirClass);
 
-    deleteFile(getDiagFileName().c_str());
+    deleteFile(getDiagFileName());
     mIncDirMap.read(incDepsFilePath);
     if(mode == PM_CovInstr)
 	{
@@ -44,8 +44,8 @@ void ComponentBuilder::build(eProcessModes mode, char const * const incDepsFileP
 	}
     }
 
-bool const ComponentPkgDeps::isDependent(char const * const compName,
-	char const * const pkgName) const
+bool const ComponentPkgDeps::isDependent(OovStringRef const compName,
+	OovStringRef const pkgName) const
     {
     bool dependent = false;
     auto const &mapIt = mCompPkgMap.find(compName);
@@ -59,33 +59,33 @@ bool const ComponentPkgDeps::isDependent(char const * const compName,
 
 
 // libNames = all libs from -EP, -ER and -l
-bool ComponentBuilder::anyIncDirsMatch(char const * const compName,
+bool ComponentBuilder::anyIncDirsMatch(OovStringRef const compName,
 	RootDirPackage const &pkg)
     {
     std::string compDir = mComponentFinder.getComponentTypesFile().
 	    getComponentAbsolutePath(compName);
 
-    std::vector<std::string> incRoots = pkg.getIncludeDirs();
-    return mIncDirMap.anyRootDirsMatch(incRoots, compDir.c_str());
+    OovStringVec incRoots = pkg.getIncludeDirs();
+    return mIncDirMap.anyRootDirsMatch(incRoots, compDir);
     }
 
-void ComponentBuilder::makeOrderedPackageLibs(char const * const compName,
-	std::vector<std::string> &libDirs, std::vector<std::string> &sortedLibNames)
+void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName,
+	OovStringVec &libDirs, OovStringVec &sortedLibNames)
     {
     bool didAnything = false;
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
     std::vector<Package> packages = buildPackages.getPackages();
     for(auto &pkg : packages)
 	{
-	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName().c_str()))
+	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
 	    {
 	    if(!pkg.areLibraryNamesOrdered())
 		{
 		didAnything = true;
-		std::vector<std::string> libNames = pkg.getScannedLibraryFilePaths();
-		makeLibSymbols(pkg.getPkgName().c_str(), libNames);
-		mObjSymbols.appendOrderedLibs(pkg.getPkgName().c_str(),
-			getSymbolBasePath().c_str(), libDirs, sortedLibNames);
+		OovStringVec libNames = pkg.getScannedLibraryFilePaths();
+		makeLibSymbols(pkg.getPkgName(), libNames);
+		mObjSymbols.appendOrderedLibs(pkg.getPkgName(),
+			getSymbolBasePath(), libDirs, sortedLibNames);
 
 		pkg.setOrderedLibs(libDirs, sortedLibNames);
 		buildPackages.insertPackage(pkg);
@@ -96,8 +96,8 @@ void ComponentBuilder::makeOrderedPackageLibs(char const * const compName,
 	buildPackages.savePackages();
     }
 
-void ComponentBuilder::appendOrderedPackageLibs(char const * const compName,
-	std::vector<std::string> &libDirs, IndexedStringVec &sortedLibNames)
+void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
+	OovStringVec &libDirs, IndexedStringVec &sortedLibNames)
     {
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
     std::vector<Package> packages = buildPackages.getPackages();
@@ -109,34 +109,34 @@ void ComponentBuilder::appendOrderedPackageLibs(char const * const compName,
     for(auto &pkg : packages)
 	{
 	int linkOrderIndex = mComponentFinder.getProject().
-		getExternalPackageLinkOrder(pkg.getPkgName().c_str());
-	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName().c_str()))
+		getExternalPackageLinkOrder(pkg.getPkgName());
+	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
 	    {
 	    if(!pkg.areLibraryNamesOrdered())
 		{
 		}
 	    else
 		{
-		std::vector<std::string> pkgLibs = pkg.getLibraryNames();
+		OovStringVec pkgLibs = pkg.getLibraryNames();
 		for(auto &lib : pkgLibs)
 		    sortedLibNames.push_back(IndexedString(linkOrderIndex++, lib));
 //		std::copy(pkgLibs.begin(), pkgLibs.end(), std::back_inserter(sortedLibNames));
 
-		std::vector<std::string> pkgLibDirs = pkg.getLibraryDirs();
+		OovStringVec pkgLibDirs = pkg.getLibraryDirs();
 		std::copy(pkgLibDirs.begin(), pkgLibDirs.end(), std::back_inserter(libDirs));
 		}
 	    }
 	}
     }
 
-std::set<std::string> ComponentBuilder::getComponentCompileArgs(char const * const compName,
+OovStringSet ComponentBuilder::getComponentCompileArgs(OovStringRef const compName,
 	ComponentTypesFile const &file)
     {
-    std::set<std::string> compileArgs;
+    OovStringSet compileArgs;
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
     for(auto const &pkg : buildPackages.getPackages())
 	{
-	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName().c_str()))
+	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
 	    {
 	    for(auto const &arg : pkg.getCompileArgs())
 		{
@@ -144,28 +144,31 @@ std::set<std::string> ComponentBuilder::getComponentCompileArgs(char const * con
 		}
 	    }
 	}
-    std::string argStr = file.getComponentBuildArgs(compName);
-    for(auto const &arg : CompoundValueRef::parseString(argStr.c_str()))
+// lnk args cannot be sent to clang.
+/*
+    OovString argStr = file.getComponentBuildArgs(compName);
+    for(auto const &arg : CompoundValueRef::parseString(argStr))
 	{
 	if(arg.find("-lnk", 0, 4) == std::string::npos)
 	    {
 	    compileArgs.insert(arg);
 	    }
 	}
+*/
     return compileArgs;
     }
 
-IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(char const * const compName,
+IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(OovStringRef const compName,
 	ComponentTypesFile const &file)
     {
     IndexedStringSet linkArgs;
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
     for(auto const &pkg : buildPackages.getPackages())
 	{
-	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName().c_str()))
+	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
 	    {
 	    int linkOrderIndex = mComponentFinder.getProject().getExternalPackageLinkOrder(
-		    pkg.getPkgName().c_str());
+		    pkg.getPkgName());
 	    for(auto const &arg : pkg.getLinkArgs())
 		{
 		linkArgs.insert(IndexedString(linkOrderIndex, arg));
@@ -173,7 +176,7 @@ IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(char const * cons
 	    }
 	}
     std::string argStr = file.getComponentBuildArgs(compName);
-    for(auto const &arg : CompoundValueRef::parseString(argStr.c_str()))
+    for(auto const &arg : CompoundValueRef::parseString(argStr))
 	{
 	if(arg.find("-lnk", 0, 4) != std::string::npos)
 	    {
@@ -183,27 +186,29 @@ IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(char const * cons
     return linkArgs;
     }
 
-std::string makeLibFn(std::string const &outputPath, std::string const &packageName)
+OovString makeLibFn(OovStringRef const outputPath, OovStringRef const packageName)
     {
-    std::string libName = packageName;
-    size_t libNamePos = rfindPathSep(libName.c_str());
+    OovString libName = packageName;
+    size_t libNamePos = rfindPathSep(libName);
     if(libNamePos != std::string::npos)
     	libNamePos++;
     else
     	libNamePos = 0;
     libName.insert(libNamePos, "lib");
-    return(outputPath + libName + ".a");
+    OovString outFn = outputPath;
+    outFn += libName + ".a";
+    return(outFn);
     }
 
 class LibTaskListener:public TaskQueueListener
     {
     public:
-	std::vector<std::string> const &getBuiltLibs() const
+	OovStringVec const &getBuiltLibs() const
 	    { return mBuiltLibs; }
     private:
-	std::vector<std::string> mBuiltLibs;
-	virtual void extraProcessing(bool success, char const * const outFile,
-		char const * const stdOutFn, ProcessArgs const &item) override
+	OovStringVec mBuiltLibs;
+	virtual void extraProcessing(bool success, OovStringRef const outFile,
+		OovStringRef const stdOutFn, ProcessArgs const &item) override
 	    {
 	    if(success)
 		mBuiltLibs.push_back(outFile);
@@ -214,40 +219,38 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
     {
     ComponentTypesFile const &compTypesFile =
 	    mComponentFinder.getComponentTypesFile();
-    std::vector<std::string> compNames = compTypesFile.getComponentNames();
+    OovStringVec compNames = compTypesFile.getComponentNames();
     if(compNames.size() > 0)
         {
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
             {
-            std::set<std::string> compileArgs = getComponentCompileArgs(name.c_str(),
+            OovStringSet compileArgs = getComponentCompileArgs(name,
                 compTypesFile);
-            if(compTypesFile.getComponentType(name.c_str()) != ComponentTypesFile::CT_Unknown)
+            if(compTypesFile.getComponentType(name) != ComponentTypesFile::CT_Unknown)
                 {
-                std::vector<std::string> sources =
-                    compTypesFile.getComponentSources(name.c_str());
+        	OovStringVec sources = compTypesFile.getComponentSources(name);
                 if(pm == PM_CovInstr)
                     {
-                    std::vector<std::string> includes =
-                        compTypesFile.getComponentIncludes(name.c_str());
+                    OovStringVec includes =
+                        compTypesFile.getComponentIncludes(name);
                     sources.insert(sources.end(), includes.begin(), includes.end());
                     }
 
-                std::vector<std::string> orderedIncRoots =
-                    mComponentFinder.getAllIncludeDirs();
+                OovStringVec orderedIncRoots = mComponentFinder.getAllIncludeDirs();
                 for(const auto &src : sources)
                     {
                     FilePath absSrc;
-                    absSrc.getAbsolutePath(src.c_str(), FP_File);
-                    std::vector<std::string> incDirs =
-                        mIncDirMap.getOrderedIncludeDirsForSourceFile(absSrc.c_str(),
+                    absSrc.getAbsolutePath(src, FP_File);
+                    OovStringVec incDirs =
+                        mIncDirMap.getOrderedIncludeDirsForSourceFile(absSrc,
                         orderedIncRoots);
                     /// @todo - this could be optimized to not check file times of external files.
                     /// @todo - more optimization could use the times in the incdeps file.
                     std::set<IncludedPath> incFilesSet;
-                    mIncDirMap.getNestedIncludeFilesUsedBySourceFile(absSrc.c_str(),
+                    mIncDirMap.getNestedIncludeFilesUsedBySourceFile(absSrc,
                         incFilesSet);
-                    std::vector<std::string> incFiles;
+                    OovStringVec incFiles;
                     for(auto const &file : incFilesSet)
                         {
                         incFiles.push_back(file.getFullPath());
@@ -264,7 +267,7 @@ void ComponentBuilder::generateDependencies()
     {
     ComponentTypesFile const &compTypesFile =
 	    mComponentFinder.getComponentTypesFile();
-    std::vector<std::string> compNames = compTypesFile.getComponentNames();
+    OovStringVec compNames = compTypesFile.getComponentNames();
     BuildPackages const &buildPackages =
 	    mComponentFinder.getProject().getBuildPackages();
 
@@ -275,13 +278,13 @@ void ComponentBuilder::generateDependencies()
 	/// @todo - this should be optimized so that only components with source files
 	/// that have changed include dependencies are processed.
 	// This is done for libraries too because they may need compile switches.
-	if(compTypesFile.getComponentType(compName.c_str()) != ComponentTypesFile::CT_Unknown)
+	if(compTypesFile.getComponentType(compName) != ComponentTypesFile::CT_Unknown)
 	    {
 	    for(auto const &pkg : buildPackages.getPackages())
 		{
-		if(anyIncDirsMatch(compName.c_str(), pkg))
+		if(anyIncDirsMatch(compName, pkg))
 		    {
-		    mComponentPkgDeps.addPkgDep(compName.c_str(), pkg.getPkgName().c_str());
+		    mComponentPkgDeps.addPkgDep(compName, pkg.getPkgName());
 		    }
 		}
 	    }
@@ -323,7 +326,7 @@ void ComponentBuilder::buildComponents()
     {
     ComponentTypesFile const &compTypesFile =
 	    mComponentFinder.getComponentTypesFile();
-    std::vector<std::string> compNames = compTypesFile.getComponentNames();
+    OovStringVec compNames = compTypesFile.getComponentNames();
 
     generateDependencies();
     sVerboseDump.logProgress("Compile objects");
@@ -332,8 +335,8 @@ void ComponentBuilder::buildComponents()
     sVerboseDump.logProgress("Build libraries");
 
     // Build all project libraries
-    std::vector<std::string> builtLibFileNames;
-    std::vector<std::string> allLibFileNames;
+    OovStringVec builtLibFileNames;
+    OovStringVec allLibFileNames;
     if(compNames.size() > 0)
         {
         LibTaskListener libListener;
@@ -341,13 +344,12 @@ void ComponentBuilder::buildComponents()
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
 	    {
-	    if(compTypesFile.getComponentType(name.c_str()) == ComponentTypesFile::CT_StaticLib)
+	    if(compTypesFile.getComponentType(name) == ComponentTypesFile::CT_StaticLib)
 		{
-		std::vector<std::string> sources =
-		    compTypesFile.getComponentSources(name.c_str());
+		OovStringVec sources = compTypesFile.getComponentSources(name);
 		for(size_t i=0; i<sources.size(); i++)
 		    {
-		    sources[i] = makeOutputObjectFileName(sources[i].c_str());
+		    sources[i] = makeOutputObjectFileName(sources[i]);
 		    }
 		if(sources.size() > 0)
 		    {
@@ -369,35 +371,34 @@ void ComponentBuilder::buildComponents()
     sVerboseDump.logProgress("Build programs");
 
     // Build programs
-    std::vector<std::string> projectLibFileNames;
-    mObjSymbols.appendOrderedLibFileNames("ProjLibs", getSymbolBasePath().c_str(),
+    OovStringVec projectLibFileNames;
+    mObjSymbols.appendOrderedLibFileNames("ProjLibs", getSymbolBasePath(),
 	    projectLibFileNames);
     if(compNames.size() > 0)
         {
         for(const auto &name : compNames)
             {
-            std::vector<std::string> externalLibDirs; 	// not in library search order, eliminate dups.
-            std::vector<std::string> externalOrderedLibNames;
-            makeOrderedPackageLibs(name.c_str(), externalLibDirs, externalOrderedLibNames);
+            OovStringVec externalLibDirs; 	// not in library search order, eliminate dups.
+            OovStringVec externalOrderedLibNames;
+            makeOrderedPackageLibs(name, externalLibDirs, externalOrderedLibNames);
             }
 
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
             {
-            StdStringVec externalLibDirs; 	// not in library search order, eliminate dups.
+            OovStringVec externalLibDirs; 	// not in library search order, eliminate dups.
             IndexedStringVec externalOrderedPackageLibNames;
-            auto type = compTypesFile.getComponentType(name.c_str());
+            auto type = compTypesFile.getComponentType(name);
             if(type == ComponentTypesFile::CT_Program ||
         	    type == ComponentTypesFile::CT_SharedLib)
         	{
-        	appendOrderedPackageLibs(name.c_str(), externalLibDirs,
+        	appendOrderedPackageLibs(name, externalLibDirs,
         		externalOrderedPackageLibNames);
-        	IndexedStringSet compPkgLinkArgs = getComponentPackageLinkArgs(name.c_str(),
+        	IndexedStringSet compPkgLinkArgs = getComponentPackageLinkArgs(name,
         		compTypesFile);
 
-        	std::vector<std::string> sources =
-        		compTypesFile.getComponentSources(name.c_str());
-        	makeExe(name.c_str(), sources, projectLibFileNames,
+        	OovStringVec sources = compTypesFile.getComponentSources(name);
+        	makeExe(name, sources, projectLibFileNames,
         		externalLibDirs, externalOrderedPackageLibNames,
         		compPkgLinkArgs, type == ComponentTypesFile::CT_SharedLib);
         	}
@@ -408,21 +409,21 @@ void ComponentBuilder::buildComponents()
     }
 
 
-bool ComponentTaskQueue::runProcess(char const * const procPath,
-	char const * const outFile, const OovProcessChildArgs &args,
-	InProcMutex &listenerMutex, char const * const stdOutFn)
+bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
+	OovStringRef const outFile, const OovProcessChildArgs &args,
+	InProcMutex &listenerMutex, OovStringRef const stdOutFn)
     {
     FilePath outDir(outFile, FP_File);
     outDir.discardFilename();
-    bool success = ensurePathExists(outDir.c_str());
+    bool success = ensurePathExists(outDir);
     if(success)
 	{
-        std::string processStr = "oovBuilder Building ";
+        OovString processStr = "oovBuilder Building ";
         processStr += outFile;
         processStr += '\n';
 	File stdoutFile;
         OovProcessBufferedStdListener listener(listenerMutex);
-        listener.setProcessIdStr(processStr.c_str());
+        listener.setProcessIdStr(processStr);
 	if(stdOutFn)
 	    {
 	    // The ar tool must send its output to a file.
@@ -439,68 +440,68 @@ bool ComponentTaskQueue::runProcess(char const * const procPath,
 	int exitCode;
 	OovPipeProcess pipeProc;
 	success = pipeProc.spawn(procPath, args.getArgv(), listener, exitCode);
+	if(!success)
+	    fprintf(stderr, "OovBuilder: Unable to execute process %s\n", procPath.getStr());
 	if(!success || exitCode != 0)
 	    {
-	    fprintf(stderr, "oovBuilder: Unable to build %s\nArguments were: ", outFile);
+	    fprintf(stderr, "oovBuilder: Unable to build %s\nArguments were: ", outFile.getStr());
 	    args.printArgs(stderr);
 	    }
 	}
     else
 	{
 	fprintf(stderr, "oovBuilder: Unable to create directory %s\n",
-	    outDir.c_str());
+	    outDir.getStr());
 	}
     fflush(stdout);
     fflush(stderr);
-    sVerboseDump.logProcessStatus(success);
     return success;
     }
 
 bool ComponentTaskQueue::processItem(ProcessArgs const &item)
     {
-    char const *stdOutFn = item.mStdOutFn.length() ? item.mStdOutFn.c_str() : nullptr;
-    bool success = runProcess(item.mProcess.c_str(), item.mOutputFile.c_str(),
+    char const *stdOutFn = item.mStdOutFn.length() ? item.mStdOutFn.getStr() : nullptr;
+    bool success = runProcess(item.mProcess, item.mOutputFile,
 	        item.mChildArgs, mListenerStdMutex, stdOutFn);
     if(mListener)
-	mListener->extraProcessing(success, item.mOutputFile.c_str(), stdOutFn, item);
+	mListener->extraProcessing(success, item.mOutputFile, stdOutFn, item);
     return success;
     }
 
-std::string ComponentBuilder::makeOutputObjectFileName(char const * const srcFile)
+OovString ComponentBuilder::makeOutputObjectFileName(OovStringRef const srcFile)
     {
-    std::string outFileName;
-    Project::makeTreeOutBaseFileName(srcFile, mSrcRootDir, mIntermediatePath,
-	    outFileName);
+    OovString outFileName = Project::makeTreeOutBaseFileName(srcFile,
+	mSrcRootDir, mIntermediatePath);
     outFileName += ".o";
     return outFileName;
     }
 
-void ComponentBuilder::processSourceFile(eProcessModes pm, const std::string &srcFile,
-	const std::vector<std::string> &incDirs, const std::vector<std::string> &incFiles,
-	const std::set<std::string> &externPkgCompileArgs)
+void ComponentBuilder::processSourceFile(eProcessModes pm, OovStringRef const srcFile,
+	OovStringVec const &incDirs, OovStringVec const &incFiles,
+	OovStringSet const &externPkgCompileArgs)
     {
-    bool processFile = isSource(srcFile.c_str());
+    bool processFile = isSource(srcFile);
     if(pm == PM_CovInstr && !processFile)
 	{
-	processFile = isHeader(srcFile.c_str());
+	processFile = isHeader(srcFile);
 	}
     if(processFile)
 	{
 	int incFileOlderIndex = -1;
-	std::string outFileName;
+	OovString outFileName;
 	if(pm == PM_CovInstr)
 	    {
-	    outFileName = Project::makeCoverageSourceFileName(srcFile.c_str(), mSrcRootDir);
+	    outFileName = Project::makeCoverageSourceFileName(srcFile, mSrcRootDir);
 	    }
 	else
 	    {
-	    outFileName = makeOutputObjectFileName(srcFile.c_str());
+	    outFileName = makeOutputObjectFileName(srcFile);
 	    }
-	if(FileStat::isOutputOld(outFileName.c_str(), srcFile.c_str()) ||
-		FileStat::isOutputOld(outFileName.c_str(), incFiles, &incFileOlderIndex))
+	if(FileStat::isOutputOld(outFileName, srcFile) ||
+		FileStat::isOutputOld(outFileName, incFiles, &incFileOlderIndex))
 	    {
 	    CppChildArgs ca;
-	    std::string procPath;
+	    OovString procPath;
 	    if(pm == PM_CovInstr)
 		{
 		procPath = mToolPathFile.getCovInstrToolPath();
@@ -509,31 +510,31 @@ void ComponentBuilder::processSourceFile(eProcessModes pm, const std::string &sr
 		{
 		procPath = mToolPathFile.getCompilerPath();
 		}
-	    ca.addArg(procPath.c_str());
-	    ca.addArg(srcFile.c_str());
+	    ca.addArg(procPath);
+	    ca.addArg(srcFile);
 	    if(pm == PM_CovInstr)
 		{
-		ca.addArg(mSrcRootDir.c_str());
-		ca.addArg(mOutputPath.c_str());
+		ca.addArg(mSrcRootDir);
+		ca.addArg(mOutputPath);
 		}
 	    ca.addCompileArgList(mComponentFinder, incDirs);
 	    for(auto const &arg : externPkgCompileArgs)
 		{
-		ca.addArg(arg.c_str());
+		ca.addArg(arg);
 		}
 	    ca.addArg("-o");
-	    ca.addArg(outFileName.c_str());
+	    ca.addArg(outFileName);
 
-	    sVerboseDump.logProcess(srcFile.c_str(), ca.getArgv(), ca.getArgc());
-            addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
+	    sVerboseDump.logProcess(srcFile, ca.getArgv(), ca.getArgc());
+            addTask(ProcessArgs(procPath, outFileName, ca));
 	    if(incFileOlderIndex != -1)
-		sVerboseDump.logOutputOld(incFiles[incFileOlderIndex].c_str());
+		sVerboseDump.logOutputOld(incFiles[incFileOlderIndex]);
             }
 	}
     }
 
-bool ComponentsFile::excludesMatch(const std::string &filePath,
-	const std::vector<std::string> &excludes)
+bool ComponentsFile::excludesMatch(OovStringRef const filePath,
+	OovStringVec const &excludes)
     {
     bool exclude = false;
     for(const auto &str : excludes)
@@ -549,39 +550,39 @@ bool ComponentsFile::excludesMatch(const std::string &filePath,
     return exclude;
     }
 
-std::string ComponentBuilder::getSymbolBasePath()
+OovString ComponentBuilder::getSymbolBasePath()
     {
     FilePath outPath = mIntermediatePath;
     outPath.appendDir("sym");
     return outPath;
     }
 
-void ComponentBuilder::makeLibSymbols(char const * const clumpName,
-	const std::vector<std::string> &files)
+void ComponentBuilder::makeLibSymbols(OovStringRef const clumpName,
+	OovStringVec const &files)
     {
     std::string objSymbolTool = mToolPathFile.getObjSymbolPath();
 
     mObjSymbols.makeClumpSymbols(clumpName, files,
-	    getSymbolBasePath().c_str(), objSymbolTool.c_str(), *this);
+	    getSymbolBasePath(), objSymbolTool, *this);
     }
 
-void ComponentBuilder::makeLib(const std::string &libPath,
-	const std::vector<std::string> &objectFileNames)
+void ComponentBuilder::makeLib(OovStringRef const libPath,
+	OovStringVec const &objectFileNames)
     {
-    std::string outFileName = makeLibFn(mOutputPath, libPath);
-    if(FileStat::isOutputOld(outFileName.c_str(), objectFileNames))
+    OovString outFileName = makeLibFn(mOutputPath, libPath);
+    if(FileStat::isOutputOld(outFileName, objectFileNames))
 	{
-	std::string procPath = mToolPathFile.getLibberPath();
+	OovString procPath = mToolPathFile.getLibberPath();
 	OovProcessChildArgs ca;
-	ca.addArg(procPath.c_str());
+	ca.addArg(procPath);
 	ca.addArg("r");
-	ca.addArg(outFileName.c_str());
+	ca.addArg(outFileName);
 	for(const auto &objName : objectFileNames)
 	    {
-	    ca.addArg(objName.c_str());
+	    ca.addArg(objName);
 	    }
-        sVerboseDump.logProcess(outFileName.c_str(), ca.getArgv(), ca.getArgc());
-        addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
+        sVerboseDump.logProcess(outFileName, ca.getArgv(), ca.getArgc());
+        addTask(ProcessArgs(procPath, outFileName, ca));
 	}
     }
 
@@ -591,48 +592,48 @@ void ComponentBuilder::makeLib(const std::string &libPath,
 /// @param externPkgLinkArgs Link args from external packages
 //
 // getLinkArgs() contains -l from command line
-void ComponentBuilder::makeExe(char const * const compName,
-	const std::vector<std::string> &sources,
-	const std::vector<std::string> &projectLibFilePaths,
-	const StdStringVec &externLibsDirs,
+void ComponentBuilder::makeExe(OovStringRef const compName,
+	OovStringVec const &sources,
+	OovStringVec const &projectLibFilePaths,
+	OovStringVec const &externLibsDirs,
 	const IndexedStringVec &externPkgOrderedLibNames,
 	const IndexedStringSet &externPkgLinkArgs,
 	bool shared)
     {
-    std::string exeName = mComponentFinder.makeFileName(compName);
-    std::string outFileName = mOutputPath + exeName;
+    OovString exeName = mComponentFinder.makeFileName(compName);
+    OovString outFileName = mOutputPath + exeName;
     if(shared)
 	outFileName += ".so";
     else
-	outFileName = makeExeFilename(outFileName.c_str());
+	outFileName = makeExeFilename(outFileName);
 
-    std::vector<std::string> objects;
+    OovStringVec objects;
     for(const auto &src : sources)
 	{
-	std::string objName = makeOutputObjectFileName(src.c_str());
-	objects.push_back(objName.c_str());
+	OovString objName = makeOutputObjectFileName(src);
+	objects.push_back(objName);
 	}
 
-    if(FileStat::isOutputOld(outFileName.c_str(), projectLibFilePaths) ||
-	    FileStat::isOutputOld(outFileName.c_str(), objects))
+    if(FileStat::isOutputOld(outFileName, projectLibFilePaths) ||
+	    FileStat::isOutputOld(outFileName, objects))
 	{
-	std::string procPath = mToolPathFile.getCompilerPath();
+	OovString procPath = mToolPathFile.getCompilerPath();
 	OovProcessChildArgs ca;
-	ca.addArg(procPath.c_str());
+	ca.addArg(procPath);
 	ca.addArg("-o");
-	ca.addArg(outFileName.c_str());
+	ca.addArg(outFileName);
 	if(shared)
 	    ca.addArg("-shared");
 
 	for(const auto &obj : objects)
-	    ca.addArg(obj.c_str());
+	    ca.addArg(obj);
 
 	IndexedStringVec libNames;	// must be vector for no sorting
 	std::set<std::string> libDirs;
 
 	for(size_t li=0; li<projectLibFilePaths.size(); li++)
 	    {
-	    FilePath libPath(projectLibFilePaths[li].c_str(), FP_File);
+	    FilePath libPath(projectLibFilePaths[li], FP_File);
 	    libDirs.insert(libPath.getDrivePath());
 	    libNames.push_back(IndexedString(LOI_InternalProject+li,
 		    libPath.getNameExt()));
@@ -647,7 +648,7 @@ void ComponentBuilder::makeExe(char const * const compName,
 	    if(temp.compare(0, 2, "-l") == 0)
 		libNames.push_back(IndexedString(arg.mLinkOrderIndex, temp.substr(2)));
 	    else
-		ca.addArg(temp.c_str());
+		ca.addArg(temp);
 	    }
 	for(const auto &arg : externPkgLinkArgs)
 	    {
@@ -656,7 +657,7 @@ void ComponentBuilder::makeExe(char const * const compName,
 	    if(temp.compare(0, 2, "-l") == 0)
 		libNames.push_back(IndexedString(arg.mLinkOrderIndex, temp.substr(2)));
 	    else
-		ca.addArg(temp.c_str());
+		ca.addArg(temp);
 	    }
 
 	for(auto const &dir : externLibsDirs)
@@ -671,7 +672,7 @@ void ComponentBuilder::makeExe(char const * const compName,
 	    std::string quotedPath = path;
 	    quoteCommandLinePath(quotedPath);
 	    std::string arg = std::string("-L") + quotedPath;
-	    ca.addArg(arg.c_str());
+	    ca.addArg(arg);
 	    }
 
 	std::sort(libNames.begin(), libNames.end(),
@@ -684,7 +685,7 @@ void ComponentBuilder::makeExe(char const * const compName,
 	    // Removing .a or .lib works in Windows.
 	    // On Windows, clang is libclang.lib, and the link arg must be -llibclang
 	    //		pango-1.0.lib must be -lpango-1.0
-	    FilePath libFn(lib.mString.c_str(), FP_File);
+	    FilePath libFn(lib.mString, FP_File);
 	    if(libFn.getExtension().compare(".a") == 0)
 		{
 		libFn.discardMatchingHead("lib");
@@ -699,9 +700,9 @@ void ComponentBuilder::makeExe(char const * const compName,
 		// cannot discard extension or it will change "atk-1.0" to "atk-1"
 		arg += libFn;
 		}
-	    ca.addArg(arg.c_str());
+	    ca.addArg(arg);
 	    }
-	sVerboseDump.logProcess(outFileName.c_str(), ca.getArgv(), ca.getArgc());
-        addTask(ProcessArgs(procPath.c_str(), outFileName.c_str(), ca));
+	sVerboseDump.logProcess(outFileName, ca.getArgv(), ca.getArgc());
+        addTask(ProcessArgs(procPath, outFileName, ca));
 	}
     }

@@ -17,7 +17,7 @@ class BuildOptions:public NameValueFile
 	// Warning: project must be set up before calling this.
 	bool read()
 	    {
-	    setFilename(Project::getProjectFilePath().c_str());
+	    setFilename(Project::getProjectFilePath());
 	    return NameValueFile::readFile();
 	    }
 	void setDefaultOptions();

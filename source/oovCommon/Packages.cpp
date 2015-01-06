@@ -20,30 +20,30 @@
 #define TagPkgScannedLibPathsSuffix "ScannedLib"
 
 
-static std::string makeTagName(char const * const pkgName, char const * const suffix)
+static OovString makeTagName(OovStringRef const pkgName, OovStringRef const suffix)
     {
-    std::string tag = "Pkg-";
+    OovString tag = "Pkg-";
     tag += pkgName;
     tag += "-";
     tag += suffix;
     return tag;
     }
 
-static void setTagVal(NameValueFile &valFile, char const * const name,
-	char const * const suffix, char const * const val)
+static void setTagVal(NameValueFile &valFile, OovStringRef const name,
+	OovStringRef const suffix, OovStringRef const val)
     {
     std::string tag = makeTagName(name, suffix);
-    valFile.setNameValue(tag.c_str(), val);
+    valFile.setNameValue(tag, val);
     }
 
-static std::string getTagVal(NameValueFile const &valFile, char const * const name,
-	char const * const suffix)
+static OovString getTagVal(NameValueFile const &valFile, OovStringRef const name,
+	OovStringRef const suffix)
     {
-    std::string tag = makeTagName(name, suffix);
-    return valFile.getValue(tag.c_str());
+    OovString tag = makeTagName(name, suffix);
+    return valFile.getValue(tag);
     }
 
-static std::string makeRelative(std::string const &rootDir, char const * const absPath,
+static std::string makeRelative(std::string const &rootDir, OovStringRef const absPath,
 	eFilePathTypes fpt)
     {
     FilePath fp(absPath, fpt);
@@ -59,9 +59,9 @@ static std::string makeRelative(std::string const &rootDir, char const * const a
     return fp;
     }
 
-static void appendStr(std::string &val, char const * const str)
+static void appendStr(std::string &val, OovString const &str)
     {
-    std::vector<std::string> vec = CompoundValueRef::parseString(val.c_str());
+    OovStringVec vec = CompoundValueRef::parseString(val);
     if(std::find(vec.begin(), vec.end(), str) == vec.end())
 	{
 	val += str;
@@ -69,13 +69,13 @@ static void appendStr(std::string &val, char const * const str)
 	}
     }
 
-static std::string getPackageNameFromDir(char const * const path)
+static OovString getPackageNameFromDir(OovStringRef const path)
     {
     FilePath clumpDir(path, FP_Dir);
     clumpDir.moveToEndDir();
     clumpDir.moveLeftPathSep();
     std::string part = clumpDir.getPathSegment();
-    std::string clumpName;
+    OovString clumpName;
 
     if(part.compare("lib") == 0)
 	{
@@ -83,35 +83,37 @@ static std::string getPackageNameFromDir(char const * const path)
 	clumpName = clumpDir.getPathSegment();
 	}
     else
-	clumpName = part.c_str();
+	clumpName = part;
     return clumpName;
     }
 
 
 /////////////
 
-void RootDirPackage::setRootDirPackage(char const *rootDir)
+void RootDirPackage::setRootDirPackage(OovStringRef const rootDir)
     {
     if(mName.length() == 0)
+	{
 	mName = getPackageNameFromDir(rootDir);
+	}
     mRootDir.setPath(rootDir, FP_Dir);
     }
 
-bool RootDirPackage::addUndefinedPackage(char const * const pkgName, NameValueFile &file) const
+bool RootDirPackage::addUndefinedPackage(OovString const &pkgName, NameValueFile &file) const
     {
     CompoundValue pkgNames;
-    pkgNames.parseString(file.getValue(TagPkgNames).c_str());
+    pkgNames.parseString(file.getValue(TagPkgNames));
     bool add = std::find(pkgNames.begin(), pkgNames.end(), pkgName) ==
 	    pkgNames.end();
     if(add)
 	{
 	pkgNames.push_back(pkgName);
-	file.setNameValue(TagPkgNames, pkgNames.getAsString().c_str());
+	file.setNameValue(TagPkgNames, pkgNames.getAsString());
 	}
     return add;
     }
 
-void RootDirPackage::loadFromMap(char const * const name, NameValueFile const &file)
+void RootDirPackage::loadFromMap(OovStringRef const name, NameValueFile const &file)
     {
     mName = name;
 
@@ -119,75 +121,75 @@ void RootDirPackage::loadFromMap(char const * const name, NameValueFile const &f
     mLibDir = getTagVal(file, name, TagPkgLibDirSuffix);
     mLibNames = getTagVal(file, name, TagPkgLibNamesSuffix);
     mExternalReferenceDir = getTagVal(file, name, TagPkgExtRefSuffix);
-    mRootDir.setPath(getTagVal(file, name, TagPkgRootDirSuffix).c_str(), FP_Dir);
+    mRootDir.setPath(getTagVal(file, name, TagPkgRootDirSuffix), FP_Dir);
     mScannedLibFilePaths = getTagVal(file, name, TagPkgScannedLibPathsSuffix);;
     }
 
 void RootDirPackage::saveToMap(NameValueFile &file) const
     {
-    addUndefinedPackage(mName.c_str(), file);
+    addUndefinedPackage(mName, file);
 
     // Set the data even if the package already exists.
-    setTagVal(file, mName.c_str(), TagPkgIncDirSuffix, mIncludeDir.c_str());
-    setTagVal(file, mName.c_str(), TagPkgLibDirSuffix, mLibDir.c_str());
-    setTagVal(file, mName.c_str(), TagPkgLibNamesSuffix, mLibNames.c_str());
-    setTagVal(file, mName.c_str(), TagPkgExtRefSuffix, mExternalReferenceDir.c_str());
-    setTagVal(file, mName.c_str(), TagPkgRootDirSuffix, mRootDir.c_str());
-    setTagVal(file, mName.c_str(), TagPkgScannedLibPathsSuffix, mScannedLibFilePaths.c_str());
+    setTagVal(file, mName, TagPkgIncDirSuffix, mIncludeDir);
+    setTagVal(file, mName, TagPkgLibDirSuffix, mLibDir);
+    setTagVal(file, mName, TagPkgLibNamesSuffix, mLibNames);
+    setTagVal(file, mName, TagPkgExtRefSuffix, mExternalReferenceDir);
+    setTagVal(file, mName, TagPkgRootDirSuffix, mRootDir);
+    setTagVal(file, mName, TagPkgScannedLibPathsSuffix, mScannedLibFilePaths);
     }
 
-void RootDirPackage::appendAbsoluteIncDir(char const * const absDir)
+void RootDirPackage::appendAbsoluteIncDir(OovStringRef const absDir)
     {
     std::string dir = makeRelative(mRootDir, absDir, FP_Dir);
-    appendStr(mIncludeDir, dir.c_str());
+    appendStr(mIncludeDir, dir);
     }
 
-void RootDirPackage::appendAbsoluteLibName(char const * const fn)
+void RootDirPackage::appendAbsoluteLibName(OovStringRef const fn)
     {
     std::string fp = makeRelative(mRootDir, fn, FP_File);
-    appendStr(mScannedLibFilePaths, fp.c_str());
+    appendStr(mScannedLibFilePaths, fp);
     }
 
-void RootDirPackage::setOrderedLibs(std::vector<std::string> const &libDirs,
-	std::vector<std::string> const &libNames)
+void RootDirPackage::setOrderedLibs(OovStringVec const &libDirs,
+	OovStringVec const &libNames)
     {
     mScannedLibFilePaths.clear();
     mLibDir.clear();
     for(auto const &dir : libDirs)
 	{
-	std::string fp = makeRelative(mRootDir, dir.c_str(), FP_Dir);
-	appendStr(mLibDir, fp.c_str());
+	std::string fp = makeRelative(mRootDir, dir, FP_Dir);
+	appendStr(mLibDir, fp);
 	}
     mLibNames = CompoundValueRef::getAsString(libNames);
     }
 
-std::vector<std::string> RootDirPackage::getValAddRootToVector(std::string const &val,
+OovStringVec RootDirPackage::getValAddRootToVector(OovStringRef const val,
 	eFilePathTypes fpt) const
     {
-    std::vector<std::string> items;
+    OovStringVec items;
     CompoundValue compVal;
-    compVal.parseString(val.c_str());
+    compVal.parseString(val);
     for(auto const &item : compVal)
 	{
 	FilePath fp(mRootDir, FP_Dir);
-	fp.appendPart(item.c_str(), fpt);
+	fp.appendPart(item, fpt);
 	FilePath::normalizePathSeps(fp);
-	items.push_back(fp.c_str());
+	items.push_back(fp);
 	}
     return items;
     }
 
-std::vector<std::string> RootDirPackage::getIncludeDirs() const
+OovStringVec RootDirPackage::getIncludeDirs() const
     {
     return(getValAddRootToVector(mIncludeDir, FP_Dir));
     }
 
-std::vector<std::string> RootDirPackage::getLibraryDirs() const
+OovStringVec RootDirPackage::getLibraryDirs() const
     {
     return(getValAddRootToVector(mLibDir, FP_Dir));
     }
 
-std::vector<std::string> RootDirPackage::getExtRefDirs() const
+OovStringVec RootDirPackage::getExtRefDirs() const
     {
     std::string extDir = mExternalReferenceDir;
     if(extDir.length() == 0 && needDirScan())
@@ -197,12 +199,12 @@ std::vector<std::string> RootDirPackage::getExtRefDirs() const
     return(getValAddRootToVector(extDir, FP_Dir));
     }
 
-std::vector<std::string> RootDirPackage::getLibraryNames() const
+OovStringVec RootDirPackage::getLibraryNames() const
     {
-    return CompoundValueRef::parseString(mLibNames.c_str());
+    return CompoundValueRef::parseString(mLibNames);
     }
 
-std::vector<std::string> RootDirPackage::getScannedLibraryFilePaths() const
+OovStringVec RootDirPackage::getScannedLibraryFilePaths() const
     {
     return(getValAddRootToVector(mScannedLibFilePaths, FP_File));
     }
@@ -230,55 +232,55 @@ bool RootDirPackage::anyIncDirsMatch(std::set<std::string> const &incDirs) const
 
 ///////////////
 
-void Package::loadFromMap(char const * const name, NameValueFile const &file)
+void Package::loadFromMap(OovStringRef const name, NameValueFile const &file)
     {
     RootDirPackage::loadFromMap(name, file);
     std::string tag = makeTagName(name, TagPkgCppArgsSuffix);
-    mCompileArgs = file.getValue(tag.c_str());
+    mCompileArgs = file.getValue(tag);
 
     tag = makeTagName(name, TagPkgLinkArgsSuffix);
-    mLinkArgs = file.getValue(tag.c_str());
+    mLinkArgs = file.getValue(tag);
     }
 
 void Package::saveToMap(NameValueFile &file) const
     {
     RootDirPackage::saveToMap(file);
-    std::string tag = makeTagName(getPkgName().c_str(), TagPkgCppArgsSuffix);
-    file.setNameValue(tag.c_str(), mCompileArgs.c_str());
+    std::string tag = makeTagName(getPkgName(), TagPkgCppArgsSuffix);
+    file.setNameValue(tag, mCompileArgs);
 
-    tag = makeTagName(getPkgName().c_str(), TagPkgLinkArgsSuffix);
-    file.setNameValue(tag.c_str(), mLinkArgs.c_str());
+    tag = makeTagName(getPkgName(), TagPkgLinkArgsSuffix);
+    file.setNameValue(tag, mLinkArgs);
     }
 
-std::vector<std::string> Package::getCompileArgs() const
+OovStringVec Package::getCompileArgs() const
     {
-    return CompoundValueRef::parseString(mCompileArgs.c_str());
+    return CompoundValueRef::parseString(mCompileArgs);
     }
 
-std::vector<std::string> Package::getLinkArgs() const
+OovStringVec Package::getLinkArgs() const
     {
-    return CompoundValueRef::parseString(mLinkArgs.c_str());
+    return CompoundValueRef::parseString(mLinkArgs);
     }
 
 ////////////////
 
-Package Packages::getPackage(char const * const name) const
+Package Packages::getPackage(OovStringRef const name) const
     {
     Package pkg;
     pkg.loadFromMap(name, mFile);
     return pkg;
     }
 
-void Packages::removePackage(char const * const pkgName)
+void Packages::removePackage(OovString const &pkgName)
     {
     CompoundValue pkgNames;
-    pkgNames.parseString(mFile.getValue(TagPkgNames).c_str());
+    pkgNames.parseString(mFile.getValue(TagPkgNames));
 
     auto const &pos = std::find(pkgNames.begin(), pkgNames.end(), pkgName);
     if(pos != pkgNames.end())
 	{
 	pkgNames.erase(pos);
-	mFile.setNameValue(TagPkgNames, pkgNames.getAsString().c_str());
+	mFile.setNameValue(TagPkgNames, pkgNames.getAsString());
 	}
     /// @todo - this doesn't remove other junk related to the package.
     }
@@ -286,17 +288,17 @@ void Packages::removePackage(char const * const pkgName)
 std::vector<Package> Packages::getPackages() const
     {
     CompoundValue pkgNames;
-    pkgNames.parseString(mFile.getValue(TagPkgNames).c_str());
+    pkgNames.parseString(mFile.getValue(TagPkgNames));
     std::vector<Package> packages;
     for(std::string const &name : pkgNames)
 	{
-	packages.push_back(getPackage(name.c_str()));
+	packages.push_back(getPackage(name));
 	}
     return packages;
     }
 
 #ifndef __linux__
-void Packages::read(char const * const fn)
+void Packages::read(OovStringRef const fn)
     {
     mFile.setFilename("oovcde-allpkgs-win.txt");
     mFile.readFile();
@@ -316,7 +318,7 @@ bool ProjectPackages::read()
     {
     FilePath fn(Project::getProjectDirectory(), FP_Dir);
     fn.appendFile("oovcde-pkg.txt");
-    mFile.setFilename(fn.c_str());
+    mFile.setFilename(fn);
     return mFile.readFile();
     }
 
@@ -331,11 +333,11 @@ BuildPackages::BuildPackages(bool readNow)
 bool BuildPackages::read()
     {
     FilePath fn(Project::getBuildPackagesFilePath(), FP_File);
-    mFile.setFilename(fn.c_str());
+    mFile.setFilename(fn);
     return mFile.readFile();
     }
 
-Package BuildPackages::getPackage(char const * const name) const
+Package BuildPackages::getPackage(OovStringRef const name) const
     {
     Package pkg;
     pkg.loadFromMap(name, mFile);
@@ -345,11 +347,11 @@ Package BuildPackages::getPackage(char const * const name) const
 std::vector<Package> BuildPackages::getPackages() const
     {
     CompoundValue pkgNames;
-    pkgNames.parseString(mFile.getValue(TagPkgNames).c_str());
+    pkgNames.parseString(mFile.getValue(TagPkgNames));
     std::vector<Package> packages;
     for(std::string const &name : pkgNames)
 	{
-	packages.push_back(getPackage(name.c_str()));
+	packages.push_back(getPackage(name));
 	}
     return packages;
     }
@@ -365,15 +367,15 @@ AvailablePackages::AvailablePackages()
     }
 
 #ifndef __linux__
-std::vector<std::string> AvailablePackages::getAvailablePackages()
+OovStringVec AvailablePackages::getAvailablePackages()
     {
-    std::vector<std::string> strs;
+    OovStringVec strs;
     for(auto const &pkg : mPackages.getPackages())
-	strs.push_back(pkg.getPkgName().c_str());
+	strs.push_back(pkg.getPkgName());
     return strs;
     }
 
-Package AvailablePackages::getPackage(char const * const name) const
+Package AvailablePackages::getPackage(OovStringRef const name) const
     {
     return mPackages.getPackage(name);
     }

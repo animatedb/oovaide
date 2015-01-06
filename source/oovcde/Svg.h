@@ -26,9 +26,9 @@ class SvgDrawer:public DiagramDrawer
 	virtual void drawPoly(const OovPolygon &poly, Color fillColor);
 	virtual void groupShapes(bool start, Color fillColor);
 	virtual void groupText(bool start);
-	virtual void drawText(const GraphPoint &p, char const * const text);
-	virtual float getTextExtentWidth(char const * const name) const;
-	virtual float getTextExtentHeight(char const * const name) const;
+	virtual void drawText(const GraphPoint &p, OovStringRef const text);
+	virtual float getTextExtentWidth(OovStringRef const name) const;
+	virtual float getTextExtentHeight(OovStringRef const name) const;
     private:
 	FILE *mFp;
 	double mFontSize;
@@ -39,7 +39,7 @@ class SvgDrawer:public DiagramDrawer
 class SvgWriter
     {
     public:
-	SvgWriter(char const * const fn);
+	SvgWriter(OovStringRef const fn);
 	~SvgWriter();
 	FILE *getFile()
 	    { return mFile.getFp(); }

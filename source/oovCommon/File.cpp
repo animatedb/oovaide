@@ -43,7 +43,7 @@ void File::truncate(int size)
     }
 
 
-eOpenStatus BaseSimpleFile::open(char const * const fn, eOpenModes mode, eOpenEndings oe)
+eOpenStatus BaseSimpleFile::open(OovStringRef const fn, eOpenModes mode, eOpenEndings oe)
     {
     eOpenStatus status = OS_SharingProblem;
 #ifdef __linux__
@@ -173,7 +173,7 @@ void BaseSimpleFile::truncate(int size)
 #endif
     }
 
-eOpenStatus SharedFile::open(char const * const fn, eOpenModes mode,
+eOpenStatus SharedFile::open(OovStringRef const fn, eOpenModes mode,
 	eOpenEndings oe)
     {
     eOpenStatus status = OS_SharingProblem;

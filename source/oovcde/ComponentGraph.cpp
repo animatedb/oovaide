@@ -18,10 +18,10 @@ void ComponentGraph::updateGraph(const ComponentDrawOptions &options)
     mNodes.clear();
     for(auto const &name : compFile.getComponentNames())
 	{
-	ComponentTypesFile::eCompTypes ct = compFile.getComponentType(name.c_str());
+	ComponentTypesFile::eCompTypes ct = compFile.getComponentType(name);
 	if(ct != ComponentTypesFile::CT_Unknown)
 	    {
-	    mNodes.push_back(ComponentNode(name.c_str(),
+	    mNodes.push_back(ComponentNode(name,
 		    ComponentNode::CNT_Component, ct));
 	    }
 	}
@@ -29,7 +29,7 @@ void ComponentGraph::updateGraph(const ComponentDrawOptions &options)
     std::vector<Package> packages = buildPkgs.getPackages();
     for(auto const &pkg : packages)
 	{
-	mNodes.push_back(ComponentNode(pkg.getPkgName().c_str(),
+	mNodes.push_back(ComponentNode(pkg.getPkgName(),
 		ComponentNode::CNT_ExternalPackage));
 	}
     updateConnections(compFile, options);
@@ -41,12 +41,12 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
     IncDirDependencyMapReader incMap;
     BuildConfigReader buildConfig;
     std::string incDepsFilePath = buildConfig.getIncDepsFilePath(BuildConfigAnalysis);
-    incMap.read(incDepsFilePath.c_str());
+    incMap.read(incDepsFilePath);
     BuildPackages buildPkgs(true);
     std::vector<Package> packages = buildPkgs.getPackages();
     mConnections.clear();
 
-    std::vector<std::string> compPaths;
+    OovStringVec compPaths;
     for(size_t i=0; i<mNodes.size(); i++)
 	{
 	if(mNodes[i].getComponentNodeType() == ComponentNode::CNT_Component)
@@ -61,17 +61,17 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 	{
 	if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
 	    {
-	    std::vector <std::string> srcFiles =
+	    OovStringVec srcFiles =
 		    compFile.getComponentSources(mNodes[consumerIndex].getName());
 	    for(auto const &srcFile : srcFiles)
 		{
 		FilePath fp;
-		fp.getAbsolutePath(srcFile.c_str(), FP_File);
-		std::vector<std::string> incDirs =
-			incMap.getNestedIncludeDirsUsedBySourceFile(fp.c_str());
+		fp.getAbsolutePath(srcFile, FP_File);
+		OovStringVec incDirs =
+			incMap.getNestedIncludeDirsUsedBySourceFile(fp);
 		for(auto const &incDir : incDirs)
 		    {
-		    int supplierIndex = getComponentIndex(compPaths, incDir.c_str());
+		    int supplierIndex = getComponentIndex(compPaths, incDir);
 		    if(supplierIndex != -1 && consumerIndex != (size_t)supplierIndex)
 			mConnections.insert(ComponentConnection(consumerIndex, supplierIndex));
 		    }
@@ -82,7 +82,7 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 	{
 	if(mNodes[supplierIndex].getComponentNodeType() == ComponentNode::CNT_ExternalPackage)
 	    {
-	    std::string const &nodeName = mNodes[supplierIndex].getName();
+	    OovString const &nodeName = mNodes[supplierIndex].getName();
 	    auto const &supplierIt = std::find_if(packages.begin(), packages.end(),
 		    [nodeName](Package const &pkg) -> bool
 		    { return(pkg.getPkgName().compare(nodeName) == 0); });
@@ -92,8 +92,8 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 		    {
 		    if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
 			{
-			std::vector<std::string> incRoots = (*supplierIt).getIncludeDirs();
-			if(incMap.anyRootDirsMatch(incRoots, compPaths[consumerIndex].c_str()))
+			OovStringVec incRoots = (*supplierIt).getIncludeDirs();
+			if(incMap.anyRootDirsMatch(incRoots, compPaths[consumerIndex]))
 			    {
 			    mConnections.insert(ComponentConnection(consumerIndex, supplierIndex));
 			    }
@@ -155,8 +155,8 @@ void ComponentGraph::pruneConnections()
 */
     }
 
-int ComponentGraph::getComponentIndex(std::vector<std::string> const &compPaths,
-	char const * const dir)
+int ComponentGraph::getComponentIndex(OovStringVec const &compPaths,
+	OovStringRef const dir)
     {
     int compIndex = -1;
     for(size_t i=0; i<compPaths.size(); i++)

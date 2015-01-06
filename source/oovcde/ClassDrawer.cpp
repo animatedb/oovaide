@@ -13,20 +13,20 @@ struct DrawString
     {
     DrawString()
 	{}
-    DrawString(GraphPoint p, const  char *s):
+    DrawString(GraphPoint p, OovStringRef const s):
 	pos(p), str(s)
 	{}
     GraphPoint pos;
-    std::string str;
+    OovString str;
     };
 
 static void getLeafPath(std::string &moduleStr)
     {
-    size_t pos = rfindPathSep(moduleStr.c_str());
+    size_t pos = rfindPathSep(moduleStr);
     if(pos != std::string::npos)
 	{
 	moduleStr.resize(pos+1);
-	pos = rfindPathSep(moduleStr.c_str(), pos-1);
+	pos = rfindPathSep(moduleStr, pos-1);
 	if(pos != std::string::npos)
 	    {
 	    moduleStr.erase(0, pos);
@@ -35,11 +35,11 @@ static void getLeafPath(std::string &moduleStr)
     }
 
 static void getStrings(const ClassNode &node,
-	std::vector<std::string> &nodeStrs, std::vector<std::string> &attrStrs,
-	std::vector<std::string> &operStrs)
+	OovStringVec &nodeStrs, OovStringVec &attrStrs,
+	OovStringVec &operStrs)
     {
     const ModelType *type = node.getType();
-    char const * const typeName = type->getName().c_str();
+    OovStringRef const typeName = type->getName();
     nodeStrs.push_back(typeName);
     if(node.getDrawOptions().drawPackageName)
 	{
@@ -62,7 +62,7 @@ static void getStrings(const ClassNode &node,
 	    {
 	    for(const auto &attr : classifier->getAttributes())
 		{
-		std::string name = attr->getAccess().asUmlStr();
+		OovString name = attr->getAccess().asUmlStr();
 		if(node.getDrawOptions().drawAttrTypes)
 		    {
 		    const ModelType *attp = attr->getDeclType();
@@ -81,7 +81,7 @@ static void getStrings(const ClassNode &node,
 	    {
 	    for(const auto &oper : classifier->getOperations())
 		{
-		std::string operStr = oper->getAccess().asUmlStr();
+		OovString operStr = oper->getAccess().asUmlStr();
 		if(node.getDrawOptions().drawOperReturn)
 		    {
 		    operStr += oper->getReturnType().getDeclType()->getName();
@@ -117,8 +117,8 @@ static void getStrings(const ClassNode &node,
 	}
     }
 
-void splitClassStrings(std::vector<std::string> &nodeStrs,
-	std::vector<std::string> &attrStrs, std::vector<std::string> &operStrs,
+void splitClassStrings(OovStringVec &nodeStrs,
+	OovStringVec &attrStrs, OovStringVec &operStrs,
 	float fontWidth, float fontHeight)
     {
     std::vector<size_t> lengths;
@@ -193,9 +193,9 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node, const ClassDrawOptions &o
 	int line1 = startpos.y;
 	int line2 = startpos.y;
 	std::vector<DrawString> drawStrings;
-	std::vector<std::string> nodeStrs;
-	std::vector<std::string> attrStrs;
-	std::vector<std::string> operStrs;
+	OovStringVec nodeStrs;
+	OovStringVec attrStrs;
+	OovStringVec operStrs;
 
 	getStrings(node, nodeStrs, attrStrs, operStrs);
 	splitClassStrings(nodeStrs, attrStrs, operStrs, fontWidth, fontHeight);
@@ -203,27 +203,27 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node, const ClassDrawOptions &o
 	for(auto const &str : nodeStrs)
 	    {
 	    y += fontHeight + pad2;
-	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
+	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str));
 	    }
 	y += padLine;	// Space for line.
 	line1 = y;
 	for(auto const &str : attrStrs)
 	    {
 	    y += fontHeight + pad2;
-	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
+	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str));
 	    }
 	y += padLine;	// Space for line.
 	line2 = y;
 	for(auto const &str : operStrs)
 	    {
 	    y += fontHeight + pad2;
-	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str.c_str()));
+	    drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str));
 	    }
 
 	int maxWidth = 0;
 	for(const auto &dstr : drawStrings)
 	    {
-	    int width = mDrawer.getTextExtentWidth(dstr.str.c_str());
+	    int width = mDrawer.getTextExtentWidth(dstr.str);
 	    if(width > maxWidth)
 		maxWidth = width;
 	    }
@@ -236,7 +236,7 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node, const ClassDrawOptions &o
 	mDrawer.groupShapes(false, Color(245,245,255));
 	mDrawer.groupText(true);
 	for(const auto &dstr : drawStrings)
-	    mDrawer.drawText(dstr.pos, dstr.str.c_str());
+	    mDrawer.drawText(dstr.pos, dstr.str);
 	mDrawer.groupText(false);
 	return GraphSize(maxWidth, y - startpos.y);
 	}
@@ -543,7 +543,7 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node,
     int strLenPixels = 0;
     for(auto const &str : strs)
 	{
-	float len = mDrawer.getTextExtentWidth(str.c_str());
+	float len = mDrawer.getTextExtentWidth(str);
 	if(len > strLenPixels)
 	    strLenPixels = len;
 	}
@@ -606,7 +606,7 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node,
     p1.y += fontHeight + pad*2;
     for(auto const &str : strs)
 	{
-	mDrawer.drawText(p1, str.c_str());
+	mDrawer.drawText(p1, str);
 	p1.y += shapeHeight;
 	}
     mDrawer.groupText(false);

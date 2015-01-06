@@ -3,4 +3,6 @@ Pkg-llvm-I|include
 Pkg-llvm-L|lib
 Pkg-llvm-Root|/Program Files/LLVM/
 Pkg-llvm-l|libclang.lib
-PkgNames|gtk+-3.0;llvm;
+Pkg-mingw-w64-I|include;/include/c++;/include/c++/i686-w64-mingw32
+Pkg-mingw-w64-Root|/Program Files/mingw-w64/i686-4.9.2-posix-dwarf-rt_v3-rev1/mingw32/i686-w64-mingw32/
+PkgNames|gtk+-3.0;llvm;mingw-w64;

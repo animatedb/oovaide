@@ -190,7 +190,7 @@ void EditFiles::drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &
 		{ return(fv->getTextView() == textView); });
     if(fvIter != mFileViews.end())
 	{
-	DebuggerLocation thisFileLoc((*fvIter)->getFilename().c_str());
+	DebuggerLocation thisFileLoc((*fvIter)->getFilename());
 	int full = lineHeight*.8;
 	int half = full/2;
 	for(auto const & lineInfo : linesInfo)
@@ -333,7 +333,7 @@ extern "C" G_MODULE_EXPORT gboolean onTabLabelCloseClicked(GtkButton *button,
     return true;
     }
 
-static GtkWidget *newTabLabel(char const * const tabText, GtkWidget *viewTopParent)
+static GtkWidget *newTabLabel(OovStringRef const tabText, GtkWidget *viewTopParent)
     {
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_container_add(GTK_CONTAINER(box), gtk_label_new(tabText));
@@ -370,18 +370,18 @@ static bool putInMainWindow(char const * const fn)
     {
     FilePath hExt("h", FP_Ext);
     FilePath fileName(fn, FP_File);
-    bool header = fileName.matchExtension(hExt.c_str());
+    bool header = fileName.matchExtension(hExt);
     return(!header);
     }
 
-void EditFiles::viewFile(char const * const fn, int lineNum)
+void EditFiles::viewFile(OovStringRef const fn, int lineNum)
     {
     FilePath fp;
 
     fp.getAbsolutePath(fn, FP_File);
     auto iter = std::find_if(mFileViews.begin(), mFileViews.end(),
 	[fp](std::unique_ptr<ScrolledFileView> const &fv) -> bool
-	{ return fv->mFilename.comparePaths(fp.c_str()) == 0; });
+	{ return fv->mFilename.comparePaths(fp) == 0; });
     if(iter == mFileViews.end())
 	{
 	GtkNotebook *book = nullptr;
@@ -397,13 +397,13 @@ void EditFiles::viewFile(char const * const fn, int lineNum)
 	    /// @todo - use make_unique when supported.
 	    ScrolledFileView *scrolledView = new ScrolledFileView();
 	    scrolledView->mFileView.init(GTK_TEXT_VIEW(editView));
-	    scrolledView->mFileView.openTextFile(fp.c_str());
+	    scrolledView->mFileView.openTextFile(fp);
 	    scrolledView->mScrolled = GTK_SCROLLED_WINDOW(scrolled);
 	    scrolledView->mFilename = fp;
 
 	    gtk_container_add(GTK_CONTAINER(scrolled), editView);
 	    Gui::appendPage(book, scrolled,
-		    newTabLabel(fp.getName().c_str(), scrolledView->getViewTopParent()));
+		    newTabLabel(fp.getName(), scrolledView->getViewTopParent()));
 	    gtk_widget_show_all(scrolled);
 	    gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(editView),
 		    GTK_TEXT_WINDOW_LEFT, 10);	// need to get text size
@@ -463,27 +463,27 @@ void EditFiles::idleHighlight()
 	}
     }
 
-void EditFiles::viewModule(char const * const fn, int lineNum)
+void EditFiles::viewModule(OovStringRef const fn, int lineNum)
     {
     FilePath moduleName(fn, FP_File);
     FilePath cppExt("cpp", FP_Ext);
     FilePath hExt("h", FP_Ext);
-    bool header = moduleName.matchExtension(hExt.c_str());
-    bool source = moduleName.matchExtension(cppExt.c_str());
+    bool header = moduleName.matchExtension(hExt);
+    bool source = moduleName.matchExtension(cppExt);
 
     if(header || source)
 	{
 	moduleName.appendExtension("h");
 	if(header)
-	    viewFile(moduleName.c_str(), lineNum);
+	    viewFile(moduleName, lineNum);
 	else
-	    viewFile(moduleName.c_str(), 1);
+	    viewFile(moduleName, 1);
 
 	moduleName.appendExtension("cpp");
 	if(source)
-	    viewFile(moduleName.c_str(), lineNum);
+	    viewFile(moduleName, lineNum);
 	else
-	    viewFile(moduleName.c_str(), 1);
+	    viewFile(moduleName, 1);
 	}
     else
 	{
@@ -528,12 +528,12 @@ bool EditFiles::checkDebugger()
     {
     bool ok = false;
 
-    NameValueFile projFile(Project::getProjectFilePath().c_str());
+    NameValueFile projFile(Project::getProjectFilePath());
     projFile.readFile();
-    getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath).c_str());
-    getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee).c_str());
-    getDebugger().setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs).c_str());
-    getDebugger().setWorkingDir(mEditOptions.getValue(OptEditDebuggerWorkingDir).c_str());
+    getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath));
+    getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee));
+    getDebugger().setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs));
+    getDebugger().setWorkingDir(mEditOptions.getValue(OptEditDebuggerWorkingDir));
 //Gui::messageBox("Debugging is not recommended. It is very unstable.");
     std::string debugger = getDebugger().getDebuggerFilePath();
     std::string debuggee = getDebugger().getDebuggeeFilePath();
@@ -542,9 +542,9 @@ bool EditFiles::checkDebugger()
 	if(debuggee.length() > 0)
 	    {
 // The debugger could be on the path.
-//	    if(fileExists(debugger.c_str()))
+//	    if(fileExists(debugger))
 		{
-		if(fileExists(debuggee.c_str()))
+		if(fileExists(debuggee))
 		    {
 		    ok = true;
 		    }
@@ -618,7 +618,7 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugToggleBreakpoint_activate(GtkWidget 
 	if(view)
 	    {
 	    int line = Gui::getCurrentLineNumber(view->getTextView());
-	    DebuggerBreakpoint bp(view->getFilename().c_str(), line);
+	    DebuggerBreakpoint bp(view->getFilename(), line);
 	    sEditFiles->getDebugger().toggleBreakpoint(bp);
 	    Gui::redraw(GTK_WIDGET(view->getTextView()));
 	    }

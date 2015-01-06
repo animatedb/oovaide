@@ -129,13 +129,13 @@ bool CppFileContents::read(char const *fn)
     return success;
     }
 
-bool CppFileContents::write(char const *fn)
+bool CppFileContents::write(OovStringRef const fn)
     {
     SimpleFile file(fn, M_WriteExclusiveTrunc, OE_Binary);
     bool success = false;
     if(file.isOpen())
 	{
-	std::string includeCov = "#include \"OovCoverage.h\"";
+	OovString includeCov = "#include \"OovCoverage.h\"";
 	appendLineEnding(includeCov);
 	updateMemory();
 	file.write(includeCov.c_str(), includeCov.length());
@@ -143,7 +143,8 @@ bool CppFileContents::write(char const *fn)
 	}
     if(!success)
 	{
-	fprintf(stderr, "Unable to write %s\n", fn);
+	char const * const fnp = fn;
+	fprintf(stderr, "Unable to write %s\n", fnp);
 	}
     return success;
     }
@@ -169,9 +170,9 @@ void CppFileContents::updateMemory()
 	}
     }
 
-void CppFileContents::insert(char const *str, int origFileOffset)
+void CppFileContents::insert(OovStringRef const str, int origFileOffset)
     {
-    mInsertMap.insert(std::pair<int, std::string>(origFileOffset, str));
+    mInsertMap.insert(std::pair<int, OovString>(origFileOffset, str));
     }
 
 
@@ -233,12 +234,11 @@ static CXChildVisitResult visitFunctionAddInstr(CXCursor cursor, CXCursor parent
 
 /////////////////////////
 
-std::string sFileDefine;
+OovString sFileDefine;
 
-static void setFileDefine(std::string const &fn, char const * const srcRootDir)
+static void setFileDefine(OovStringRef const fn, OovStringRef const srcRootDir)
     {
-    std::string relFn;
-    Project::getSrcRootDirRelativeSrcFileName(fn, srcRootDir, relFn);
+    OovString relFn = Project::getSrcRootDirRelativeSrcFileName(fn, srcRootDir);
     OovString fileDef = "COV_";
     fileDef += relFn;
     fileDef.replaceStrs("//", "_");
@@ -548,16 +548,16 @@ class CoverageHeader:public CoverageHeaderReader
 	/// a base define for each file that is used to index into the
 	/// coverage array that is used for the hit counts for each instrumented
 	/// line.
-	void update(char const * const outMapFn, std::string const &srcFn,
+	void update(OovStringRef const outMapFn, OovStringRef const srcFn,
 		int numInstrLines);
 
     private:
 	// Writes the instr def map to the file
-	void write(SharedFile &outDefFile, std::string const &srcFn,
+	void write(SharedFile &outDefFile, OovStringRef const srcFn,
 		int numInstrLines);
     };
 
-void CoverageHeader::update(char const * const outDefFn, std::string const &srcFn,
+void CoverageHeader::update(OovStringRef const outDefFn, OovStringRef const srcFn,
 	int numInstrLines)
     {
     SharedFile outDefFile;
@@ -569,7 +569,7 @@ void CoverageHeader::update(char const * const outDefFn, std::string const &srcF
 	}
     }
 
-void CoverageHeader::write(SharedFile &outDefFile, std::string const &srcFn,
+void CoverageHeader::write(SharedFile &outDefFile, OovStringRef const srcFn,
 	int numInstrLines)
     {
     std::string fnDef = getFileDefine();
@@ -618,23 +618,23 @@ void CoverageHeader::write(SharedFile &outDefFile, std::string const &srcFn,
 	}
     }
 
-void CppInstr::updateCoverageHeader(std::string const &fn, char const * const covDir,
+void CppInstr::updateCoverageHeader(OovStringRef const fn, OovStringRef const covDir,
 	int numInstrLines)
     {
     CoverageHeader header;
-    header.update(header.getFn(covDir).c_str(), fn, numInstrLines);
+    header.update(header.getFn(covDir), fn, numInstrLines);
     }
 
-void CppInstr::updateCoverageSource(std::string const &fn, char const * const covDir)
+void CppInstr::updateCoverageSource(OovStringRef const fn, OovStringRef const covDir)
     {
     FilePath outFn(covDir, FP_Dir);
     outFn.appendDir("covLib");
-    ensurePathExists(outFn.c_str());
+    ensurePathExists(outFn);
     outFn.appendFile("OovCoverage.cpp");
 
-    if(!fileExists(outFn.c_str()))
+    if(!fileExists(outFn))
 	{
-	File file(outFn.c_str(), "w");
+	File file(outFn, "w");
 
 	static char const *lines[] = {
 	    "// Automatically generated file by OovCovInstr\n",
@@ -720,8 +720,8 @@ void CppInstr::updateCoverageSource(std::string const &fn, char const * const co
 	}
     }
 
-CppInstr::eErrorTypes CppInstr::parse(char const * const srcFn, char const * const srcRootDir,
-	char const * const outDir,
+CppInstr::eErrorTypes CppInstr::parse(OovStringRef const srcFn, OovStringRef const srcRootDir,
+	OovStringRef const outDir,
 	char const * const clang_args[], int num_clang_args)
     {
     eErrorTypes errType = ET_None;
@@ -729,7 +729,7 @@ CppInstr::eErrorTypes CppInstr::parse(char const * const srcFn, char const * con
     mOutputFileContents.read(srcFn);
     mTopParseFn.setPath(srcFn, FP_File);
     FilePath rootDir(srcRootDir, FP_Dir);
-    setFileDefine(mTopParseFn, rootDir.c_str());
+    setFileDefine(mTopParseFn, rootDir);
 
     CXIndex index = clang_createIndex(1, 1);
 
@@ -765,7 +765,7 @@ CppInstr::eErrorTypes CppInstr::parse(char const * const srcFn, char const * con
 	    }
 	try
 	    {
-	    mOutputFileContents.write(outFileName.c_str());
+	    mOutputFileContents.write(outFileName);
 	    }
 	catch(...)
 	    {
@@ -796,7 +796,9 @@ CppInstr::eErrorTypes CppInstr::parse(char const * const srcFn, char const * con
 			fprintf(fp, "%s\n", diagStr.c_str());
 		    }
 
-		fprintf(fp, "Arguments: %s %s %s ", srcFn, srcRootDir, outDir);
+		fprintf(fp, "Arguments: %s %s %s ", static_cast<char const *>(srcFn),
+			static_cast<char const *>(srcRootDir),
+			static_cast<char const *>(outDir));
 		for(int i=0 ; i<num_clang_args; i++)
 		    fprintf(fp, "%s ", clang_args[i]);
 		fprintf(fp, "\n");
@@ -809,8 +811,8 @@ CppInstr::eErrorTypes CppInstr::parse(char const * const srcFn, char const * con
 	    unlink(outErrFileName.c_str());
 	    }
 	FilePath covDir(outDir, FP_Dir);
-	updateCoverageHeader(mTopParseFn, covDir.c_str(), mInstrCount);
-	updateCoverageSource(mTopParseFn, covDir.c_str());
+	updateCoverageHeader(mTopParseFn, covDir, mInstrCount);
+	updateCoverageSource(mTopParseFn, covDir);
 	}
     else
 	{

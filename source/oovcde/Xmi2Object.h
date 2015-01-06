@@ -115,7 +115,7 @@ class XmiParser:private XmlParser
         	OovStringRef const &attrVal, ModelOperation &oper);
     };
 
-bool loadXmiFile(FILE *fp, ModelData &model, char const * const fn, int &typeIndex);
+bool loadXmiFile(FILE *fp, ModelData &model, OovStringRef const fn, int &typeIndex);
 
 #endif
 

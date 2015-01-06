@@ -9,7 +9,6 @@
 #define OOVPROCESS_H_
 
 #include <vector>
-#include <string>
 #include <stdio.h>
 #define USE_STD_THREAD 1
 #if(USE_STD_THREAD)
@@ -22,13 +21,14 @@
 #else
 #include <windows.h>	// for HANDLE
 #endif
+#include "OovString.h"
 
 
 void sleepMs(int ms);
 
 /// @param procPath Path to executable
 /// @param argv List of arguments, last one must be nullptr.
-int spawnNoWait(char const * const procPath, char const * const *argv);
+int spawnNoWait(OovStringRef const procPath, char const * const *argv);
 
 
 /// Note that on Linux, this is not recursive.
@@ -79,8 +79,8 @@ class OovProcessListener
     public:
 	virtual ~OovProcessListener()
 	    {}
-	virtual void onStdOut(char const * const out, int len) = 0;
-	virtual void onStdErr(char const * const out, int len) = 0;
+	virtual void onStdOut(OovStringRef const out, int len) = 0;
+	virtual void onStdErr(OovStringRef const out, int len) = 0;
 	virtual void processComplete()
 	    {}
     };
@@ -108,8 +108,8 @@ class OovProcessStdListener:public OovProcessListener
 	    }
 	virtual ~OovProcessStdListener()
 	    {}
-	virtual void onStdOut(char const * const out, int len);
-	virtual void onStdErr(char const * const out, int len);
+	virtual void onStdOut(OovStringRef const out, int len);
+	virtual void onStdErr(OovStringRef const out, int len);
 
     protected:
 	OutputPlaces mStdOutPlace;
@@ -126,18 +126,18 @@ class OovProcessBufferedStdListener:public OovProcessStdListener
 	    {}
 	virtual ~OovProcessBufferedStdListener()
 	    {}
-	void setProcessIdStr(char const * const str);
+	void setProcessIdStr(OovStringRef const str);
 	virtual void processComplete();
-	virtual void onStdOut(char const * const out, int len);
-	virtual void onStdErr(char const * const out, int len);
+	virtual void onStdOut(OovStringRef const out, int len);
+	virtual void onStdErr(OovStringRef const out, int len);
 
     private:
 // This isn't available yet.
 //	typedef std::chrono::high_resolution_clock clock;
 	InProcMutex &mStdMutex;
-	std::string mStdoutStr;
-	std::string mStderrStr;
-	std::string mProcessIdStr;
+	OovString mStdoutStr;
+	OovString mStderrStr;
+	OovString mProcessIdStr;
 	time_t mStdoutTime;
 	time_t mStderrTime;
 
@@ -155,11 +155,11 @@ class OovPipeProcessLinux
 	    }
 	void linuxClosePipes();
 	bool linuxCreatePipes();
-	bool linuxCreatePipeProcess(char const * const procPath,
+	bool linuxCreatePipeProcess(OovStringRef const procPath,
 		char const * const *argv);
 	void linuxChildProcessListen(OovProcessListener &listener, int &exitCode);
 	void linuxChildProcessKill();
-	void linuxChildProcessSend(char const * const str);
+	void linuxChildProcessSend(OovStringRef const str);
     private:
 	int mChildProcessId;
 	enum PipeIndices { P_Read=0, P_Write=1, P_NumIndices=2 };
@@ -179,11 +179,11 @@ class OovPipeProcessWindows
 	    {
 	    setStatusProcNotRunning();
 	    }
-	bool windowsCreatePipeProcess(char const * const procPath,
+	bool windowsCreatePipeProcess(OovStringRef const procPath,
 		char const * const *argv);
 	void windowsChildProcessListen(OovProcessListener &listener, int &exitCode);
 	void windowsChildProcessClose();
-	bool windowsChildProcessSend(char const * const str);
+	bool windowsChildProcessSend(OovStringRef const str);
 	void windowsChildProcessKill();
 
     private:
@@ -210,16 +210,16 @@ class OovPipeProcess
     public:
 	~OovPipeProcess()
 	    { childProcessClose(); }
-	bool createProcess(char const * const procPath, char const * const *argv);
+	bool createProcess(OovStringRef const procPath, char const * const *argv);
 	/// This hangs waiting for the process to finish. It reads the output
 	/// pipes from the child process, and sends the output to the listener.
 	void childProcessListen(OovProcessListener &listener, int &exitCode);
-	void childProcessSend(char const * const str);
+	void childProcessSend(OovStringRef const str);
 	// Close should be cleaner shutdown than kill?
 	void childProcessClose();
 	void childProcessKill();
 
-	bool spawn(char const * const procPath, char const * const *argv,
+	bool spawn(OovStringRef const procPath, char const * const * argv,
 		OovProcessListener &listener, int &exitCode);
 
     private:
@@ -238,17 +238,17 @@ class OovProcessChildArgs
 	    { clearArgs(); }
 
 	// WARNING: The arg[0] must be added.
-	void addArg(char const * const argStr);
+	void addArg(OovStringRef const argStr);
 	void clearArgs()
 	    { mArgStrings.clear(); }
 	char const * const *getArgv() const;
 	const int getArgc() const
 	    { return mArgStrings.size(); }
-	std::string getArgsAsStr() const;
+	OovString getArgsAsStr() const;
 	void printArgs(FILE *fh) const;
 
     private:
-	std::vector<std::string> mArgStrings;
+	OovStringVec mArgStrings;
 	mutable std::vector<char const*> mArgv;	// These are created temporarily during getArgv
     };
 
@@ -260,7 +260,7 @@ class OovBackgroundPipeProcess:public OovPipeProcess
 	enum ThreadStates { TS_Idle, TS_Running, TS_Stopping };
 	OovBackgroundPipeProcess(OovProcessListener &listener);
 	~OovBackgroundPipeProcess();
-	bool startProcess(char const * const procPath, char const * const *argv);
+	bool startProcess(OovStringRef const procPath, char const * const *argv);
 	bool isIdle()
 	    { return(mThreadState == TS_Idle || mThreadState == TS_Stopping); }
 	void stopProcess();

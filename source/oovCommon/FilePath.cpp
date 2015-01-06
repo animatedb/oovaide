@@ -18,11 +18,11 @@
 
 void ensureLastPathSep(std::string &path)
     {
-    if(!FilePath::isEndPathSep(path.c_str()))
+    if(!FilePath::isEndPathSep(path))
 	path += '/';
     }
 
-bool ensurePathExists(char const * const path)
+bool ensurePathExists(OovStringRef const path)
     {
     bool success = true;
 
@@ -32,7 +32,7 @@ bool ensurePathExists(char const * const path)
     while(pos != std::string::npos && pos != 0)
 	{
 	fp.discardTail();
-	if(fileExists(fp.c_str()))
+	if(fileExists(fp))
 	    break;
 	else
 	    pos = fp.moveLeftPathSep();
@@ -42,14 +42,14 @@ bool ensurePathExists(char const * const path)
 	pos = findPathSep(path, pos);
 	if(pos != std::string::npos)
 	    {
-	    std::string partPath = path;
+	    OovString partPath = path;
 	    partPath.resize(pos);
-	    if(!fileExists(partPath.c_str()))
+	    if(!fileExists(partPath))
 		{
 #ifdef __linux__
-		success = (mkdir(partPath.c_str(), 0x1FF) == 0);	// 0777
+		success = (mkdir(partPath.getStr(), 0x1FF) == 0);	// 0777
 #else
-		success = (_mkdir(partPath.c_str()) == 0);
+		success = (_mkdir(partPath.getStr()) == 0);
 #endif
 		}
 	    pos++;
@@ -79,9 +79,9 @@ void quoteCommandLinePath(std::string &str)
 	}
     }
 
-size_t findPathSep(char const * const path, size_t startPos)
+size_t findPathSep(OovStringRef const path, size_t startPos)
     {
-    const std::string str = path;
+    const OovString str = path;
     size_t bpos = str.find('\\', startPos);
     size_t fpos = str.find('/', startPos);
     size_t pos = std::string::npos;
@@ -96,9 +96,9 @@ size_t findPathSep(char const * const path, size_t startPos)
     return pos;
     }
 
-size_t rfindPathSep(char const * const path, size_t startPos)
+size_t rfindPathSep(OovStringRef const path, size_t startPos)
     {
-    const std::string str = path;
+    const OovString str = path;
     size_t bpos = str.rfind('\\', startPos);
     size_t fpos = str.rfind('/', startPos);
     size_t pos = std::string::npos;
@@ -114,21 +114,21 @@ size_t rfindPathSep(char const * const path, size_t startPos)
     }
 
 #ifdef __linux__
-std::string makeExeFilename(char const * const rootFn)
-    { return rootFn; }
+OovString makeExeFilename(OovStringRef const  rootFn)
+    { return rootFn.getStr(); }
 #else
-std::string makeExeFilename(char const * const rootFn)
+OovString makeExeFilename(OovStringRef const  rootFn)
     { return (std::string(rootFn) + ".exe"); }
 #endif
 
 // Under Windows, for some reason there are doubled slashes in some cases.
 #ifdef __linux__
-std::string fixFilePath(char const *fullFn)
+std::string fixFilePath(OovStringRef const fullFn)
     {
-    return fullFn;
+    return fullFn.getStr();
     }
 #else
-std::string fixFilePath(char const *fullFn)
+std::string fixFilePath(OovStringRef const fullFn)
     {
     std::string temp;
     for(size_t i=0; i<strlen(fullFn); i++)
@@ -141,34 +141,34 @@ std::string fixFilePath(char const *fullFn)
 #endif
 
 
-bool fileExists(char const * const path)
+bool fileExists(OovStringRef const path)
     {
-    std::string tempPath = path;
+    OovString tempPath = path;
     removePathSep(tempPath, tempPath.size()-1);
     struct OovStat32 statval;
-    return(OovStat32(tempPath.c_str(), &statval) == 0);
+    return(OovStat32(tempPath.getStr(), &statval) == 0);
     }
 
-void deleteFile(char const * const path)
+void deleteFile(OovStringRef const path)
     {
-    unlink(path);
+    unlink(path.getStr());
     }
 
-void renameFile(char const * const oldPath, char const * const newPath)
+void renameFile(OovStringRef const  oldPath, OovStringRef const  newPath)
     {
-    rename(oldPath, newPath);
+    rename(oldPath.getStr(), newPath.getStr());
     }
 
-bool getFileTime(char const * const path, time_t &time)
+bool getFileTime(OovStringRef const path, time_t &time)
     {
     struct OovStat32 srcFileStat;
-    bool success = (OovStat32(path, &srcFileStat) == 0);
+    bool success = (OovStat32(path.getStr(), &srcFileStat) == 0);
     if(success)
 	time = srcFileStat.st_mtime;
     return success;
     }
 
-bool anyExtensionMatch(FilePaths const &paths, char const * const file)
+bool anyExtensionMatch(FilePaths const &paths, OovStringRef const file)
     {
     bool match = false;
     for(auto const &path : paths)
@@ -186,34 +186,34 @@ bool anyExtensionMatch(FilePaths const &paths, char const * const file)
 
 ///////////
 
-size_t FilePathImmutable::moveToStartDir(char const * const path)
+size_t FilePathImmutable::moveToStartDir(OovStringRef const path)
     {
-    mPos = std::string(path).rfind(':');
+    mPos = std::string(path.getStr()).rfind(':');
     if(mPos == std::string::npos)
 	mPos = 0;
     return mPos;
     }
 
-size_t FilePathImmutable::moveToEndDir(char const * const path)
+size_t FilePathImmutable::moveToEndDir(OovStringRef const path)
     {
     size_t pos;
     if(isEndPathSep(path))
 	{
-	pos = strlen(path) - 1;
+	pos = path.numChars() - 1;
 	mPos = pos;
 	}
     else
 	{
 	pos = rfindPathSep(path);
 	if(pos == std::string::npos)
-	    mPos = strlen(path) - 1;
+	    mPos = path.numChars() - 1;
 	else
 	    mPos = pos;
 	}
     return pos;
     }
 
-size_t FilePathImmutable::moveToExtension(char const * const path)
+size_t FilePathImmutable::moveToExtension(OovStringRef const path)
     {
     size_t pos = findExtension(path);
     if(pos == std::string::npos)
@@ -223,7 +223,7 @@ size_t FilePathImmutable::moveToExtension(char const * const path)
     return pos;
     }
 
-size_t FilePathImmutable::moveLeftPathSep(char const * const path)
+size_t FilePathImmutable::moveLeftPathSep(OovStringRef const path)
     {
     if(isPathSep(path, mPos) && mPos > 0)
 	mPos--;
@@ -233,21 +233,29 @@ size_t FilePathImmutable::moveLeftPathSep(char const * const path)
     return mPos;
     }
 
-std::string FilePathImmutable::getHead(char const * const path) const
+size_t FilePathImmutable::moveRightPathSep(OovStringRef const path)
     {
-    std::string str = std::string(path).substr(0, mPos+1);
-    return str;
+    if(isPathSep(path, mPos) && mPos < path.numChars())
+	mPos++;
+    mPos = findPathSep(path, mPos);
+    if(mPos == std::string::npos)
+	mPos = moveToEndDir(path);
+    return mPos;
     }
 
-std::string FilePathImmutable::getTail(char const * const path) const
+OovString FilePathImmutable::getHead(OovStringRef const path) const
     {
-    std::string str = std::string(path).substr(mPos);
-    return str;
+    return std::string(path).substr(0, mPos+1);
     }
 
-std::string FilePathImmutable::getPathSegment(char const * const path) const
+OovString FilePathImmutable::getTail(OovStringRef const path) const
     {
-    std::string part;
+    return std::string(path).substr(mPos);
+    }
+
+OovString FilePathImmutable::getPathSegment(OovStringRef const path) const
+    {
+    OovString part;
     size_t startPos = 0;
     if(isPathSep(path, mPos))
 	startPos = mPos+1;
@@ -267,8 +275,8 @@ std::string FilePathImmutable::getPathSegment(char const * const path) const
     return part;
     }
 
-size_t FilePathImmutable::findPathSegment(char const * const path,
-	char const * const seg) const
+size_t FilePathImmutable::findPathSegment(OovStringRef const path,
+	OovStringRef const seg) const
     {
     OovString lowerPath;
     // Only do case insensitive compares for Windows.
@@ -283,7 +291,7 @@ size_t FilePathImmutable::findPathSegment(char const * const path,
 #else
     lowerSeg.setLowerCase(seg);
 #endif
-    size_t pos = lowerPath.find(lowerSeg.c_str());
+    size_t pos = lowerPath.find(lowerSeg);
     size_t foundPos = std::string::npos;
     if(pos != std::string::npos)
 	{
@@ -300,21 +308,21 @@ size_t FilePathImmutable::findPathSegment(char const * const path,
     return foundPos;
     }
 
-std::string FilePathImmutable::getWithoutEndPathSep(char const * const path) const
+OovString FilePathImmutable::getWithoutEndPathSep(OovStringRef const path) const
     {
-    std::string str = path;
+    OovString str = path;
     removePathSep(str, str.length()-1);
     return str;
     }
 
-std::string FilePathImmutable::getDrivePath(char const * const path) const
+OovString FilePathImmutable::getDrivePath(OovStringRef const path) const
     {
     FilePath fp(path, FP_File);
     fp.moveToEndDir();
     return fp.getHead();
     }
 
-std::string FilePathImmutable::getName(char const * const path) const
+OovString FilePathImmutable::getName(OovStringRef const path) const
     {
     FilePath fp(path, FP_File);
     if(fp.moveToEndDir() != std::string::npos)
@@ -324,7 +332,7 @@ std::string FilePathImmutable::getName(char const * const path) const
     return fp;
     }
 
-std::string FilePathImmutable::getNameExt(char const * const path) const
+OovString FilePathImmutable::getNameExt(OovStringRef const path) const
     {
     FilePath fp(path, FP_File);
     if(fp.moveToEndDir() != std::string::npos)
@@ -332,29 +340,29 @@ std::string FilePathImmutable::getNameExt(char const * const path) const
     return fp;
     }
 
-std::string FilePathImmutable::getExtension(char const * const path) const
+OovString FilePathImmutable::getExtension(OovStringRef const path) const
     {
-    std::string ext;
+    OovString ext;
     size_t extPos = findExtension(path);
     if(extPos != std::string::npos)
 	ext = std::string(path).substr(extPos, strlen(path) - extPos);
     return ext;
     }
 
-bool FilePathImmutable::matchExtension(char const * const path1, char const * const path2) const
+bool FilePathImmutable::matchExtension(OovStringRef const path1, OovStringRef const path2) const
     {
     std::string ext1 = getExtension(path1);
     std::string ext2 = getExtension(path2);
     return(ext1.length() > 0 && ext1.compare(ext2) == 0);
     }
 
-bool FilePathImmutable::isEndPathSep(char const * const path)
+bool FilePathImmutable::isEndPathSep(OovStringRef const path)
     {
     int len = std::string(path).length();
     return(isPathSep(path, len-1));
     }
 
-size_t FilePathImmutable::findExtension(char const * const path)
+size_t FilePathImmutable::findExtension(OovStringRef const path)
     {
     size_t pathPos = rfindPathSep(path);
     size_t extPos = std::string(path).rfind('.');
@@ -363,13 +371,13 @@ size_t FilePathImmutable::findExtension(char const * const path)
     return extPos;
     }
 
-bool FilePathImmutable::isDirOnDisk(char const * const path)
+bool FilePathImmutable::isDirOnDisk(OovStringRef const path)
     {
     struct OovStat32 statval;
     return((OovStat32(path, &statval) == 0 && S_ISDIR(statval.st_mode)));
     }
 
-bool FilePathImmutable::isAbsolutePath(char const * const path)
+bool FilePathImmutable::isAbsolutePath(OovStringRef const path)
     {
     bool absDrv = false;
     size_t drvPos = std::string(path).find(':');
@@ -380,8 +388,8 @@ bool FilePathImmutable::isAbsolutePath(char const * const path)
     return(isPathSep(path, 0) || absDrv);
     }
 
-int FilePathImmutable::comparePaths(char const * const path1,
-	char const * const path2)
+int FilePathImmutable::comparePaths(OovStringRef const path1,
+	OovStringRef const path2)
     {
 #ifdef __linux__
     return strcmp(path1, path2);
@@ -393,7 +401,7 @@ int FilePathImmutable::comparePaths(char const * const path1,
 
 ///////////
 
-std::string FilePath::normalizePathType(char const * const path, eFilePathTypes fpt)
+std::string FilePath::normalizePathType(OovStringRef const path, eFilePathTypes fpt)
     {
     std::string dst;
     if(path)
@@ -427,21 +435,21 @@ eFilePathTypes FilePath::getType() const
     eFilePathTypes fpt;
     if(pathStdStr()[0] == '.')
 	fpt = FP_Ext;
-    else if(isEndPathSep(pathStdStr().c_str()))
+    else if(isEndPathSep(pathStdStr()))
 	fpt = FP_Dir;
     else
 	fpt = FP_File;
     return fpt;
     }
 
-void FilePath::appendPathAtPos(char const * const pathPart)
+void FilePath::appendPathAtPos(OovStringRef const pathPart)
     {
     char const *pp = pathPart;
     if(getPos() != std::string::npos)
 	{
 	if(isPathSep(pp, 0))
 	    pp++;
-	if(isPathSep(pathStdStr().c_str(), getPos()))
+	if(isPathSep(pathStdStr(), getPos()))
 	    pathStdStr().erase(getPos()+1);
 	else
 	    {
@@ -451,14 +459,14 @@ void FilePath::appendPathAtPos(char const * const pathPart)
     pathStdStr().append(pp);
     }
 
-void FilePath::appendDirAtPos(char const * const pathPart)
+void FilePath::appendDirAtPos(OovStringRef const pathPart)
     {
     appendPathAtPos(pathPart);
-    if(!isEndPathSep(pathStdStr().c_str()))
+    if(!isEndPathSep(pathStdStr()))
 	pathStdStr().append("/");
     }
 
-void FilePath::appendPart(char const * const pathPart, eFilePathTypes fpt)
+void FilePath::appendPart(OovStringRef const pathPart, eFilePathTypes fpt)
     {
     if(fpt == FP_Dir)
 	appendDir(pathPart);
@@ -466,7 +474,7 @@ void FilePath::appendPart(char const * const pathPart, eFilePathTypes fpt)
 	appendFile(pathPart);
     }
 
-void FilePath::appendDir(char const * const pathPart)
+void FilePath::appendDir(OovStringRef const pathPart)
     {
     moveToEndDir();
     appendDirAtPos(pathPart);
@@ -475,24 +483,24 @@ void FilePath::appendDir(char const * const pathPart)
 void FilePath::discardTail()
     {
     // Keep the end sep so that this is still indicated as a directory.
-    if(isPathSep(pathStdStr().c_str(), getPos()))
+    if(isPathSep(pathStdStr(), getPos()))
 	pathStdStr().erase(getPos()+1);
     else
 	pathStdStr().erase(getPos());
     }
 
-void FilePath::appendFile(char const * const fileName)
+void FilePath::appendFile(OovStringRef const fileName)
     {
     moveToEndDir();
-    std::string fn = fileName;
-    if(isEndPathSep(pathStdStr().c_str()))
+    OovString fn = fileName;
+    if(isEndPathSep(pathStdStr()))
 	{
 	removePathSep(fn, 0);
 	}
     pathStdStr().append(fn);
     }
 
-void FilePath::appendExtension(char const * const fileName)
+void FilePath::appendExtension(OovStringRef const fileName)
     {
     discardExtension();
     if(findExtension(fileName) == std::string::npos)
@@ -565,7 +573,7 @@ int FilePath::discardLeadingRelSegments()
     return count;
     }
 
-void FilePath::discardMatchingHead(char const * const pathPart)
+void FilePath::discardMatchingHead(OovStringRef const pathPart)
     {
     std::string part(pathPart);
     if(pathStdStr().compare(0, part.length(), part) == 0)
@@ -574,7 +582,7 @@ void FilePath::discardMatchingHead(char const * const pathPart)
 	}
     }
 
-void FilePath::getAbsolutePath(char const * const path, eFilePathTypes fpt)
+void FilePath::getAbsolutePath(OovStringRef const path, eFilePathTypes fpt)
     {
     if(isAbsolutePath(path))
 	{
@@ -593,12 +601,12 @@ void FilePath::getAbsolutePath(char const * const path, eFilePathTypes fpt)
 	    {
 	    moveLeftPathSep();
 	    }
-	appendPathAtPos(newPath.c_str());
+	appendPathAtPos(newPath);
 	}
     normalizePathSeps(pathStdStr());
     if(fpt == FP_Dir)
 	{
-	if(!isEndPathSep(pathStdStr().c_str()))
+	if(!isEndPathSep(pathStdStr()))
 	    pathStdStr().append("/");
 	}
     }

@@ -10,6 +10,7 @@
 
 #include <stdio.h>
 #include <stdarg.h>
+#include "OovString.h"
 
 /// This class is just used to aid debugging.
 class DebugFile
@@ -18,10 +19,10 @@ class DebugFile
 	DebugFile(FILE *fp):
             mOwnFile(false)
             { mFp = fp; }
-	DebugFile(char const * const fn=nullptr, bool append=false);
+	DebugFile(OovStringRef const fn, bool append);
 	~DebugFile();
-	void printflush(char const * const format, ...);
-	void open(char const * const fn, char const * const mode = "w")
+	void printflush(OovStringRef const format, ...);
+	void open(OovStringRef const fn, OovStringRef const mode = "w")
 	    {
 	    if(!mFp)
 		mFp = fopen(fn, mode);
@@ -35,7 +36,7 @@ class DebugFile
         bool mOwnFile;
     };
 
-void LogAssertFile(char const *file, int line);
+void LogAssertFile(OovStringRef const file, int line);
 
 #define DebugAssert(file, line)		LogAssertFile(file, line);
 

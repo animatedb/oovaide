@@ -10,59 +10,59 @@
 #include <algorithm>
 #include "Debug.h"
 
-void IncDirDependencyMapReader::read(char const * const fn)
+void IncDirDependencyMapReader::read(OovStringRef const fn)
     {
     setFilename(fn);
     readFile();
     }
 
-void discardDirs(std::vector<std::string> &paths)
+void discardDirs(OovStringVec &paths)
     {
     for(auto &fn : paths)
 	{
-	FilePath fp(fn.c_str(), FP_File);
+	FilePath fp(fn, FP_File);
 	fn = fp.getNameExt();
 	}
     }
 
-std::vector<std::string> IncDirDependencyMapReader::getIncludeFilesDefinedInDirectory(
-	char const * const dirName) const
+OovStringVec IncDirDependencyMapReader::getIncludeFilesDefinedInDirectory(
+	OovStringRef const dirName) const
     {
-    std::vector<std::string> possibleHeaders = getFilesDefinedInDirectory(dirName);
-    std::vector<std::string> headers;
+    OovStringVec possibleHeaders = getFilesDefinedInDirectory(dirName);
+    OovStringVec headers;
     std::copy_if(possibleHeaders.begin(), possibleHeaders.end(),
 	    std::back_inserter(headers),
-	    [](std::string const &header) { return isHeader(header.c_str()); });
+	    [](std::string const &header) { return isHeader(header); });
     return headers;
     }
 
-std::vector<std::string> IncDirDependencyMapReader::getFilesDefinedInDirectory(
-	char const * const dirName) const
+OovStringVec IncDirDependencyMapReader::getFilesDefinedInDirectory(
+	OovStringRef const dirName) const
     {
-    std::vector<std::string> incFiles;
+    OovStringVec incFiles;
     FilePath matchDir(dirName, FP_Dir);
     for(auto const &incDep : getNameValues())
 	{
-	FilePath incDir(incDep.first.c_str(), FP_File);
+	FilePath incDir(incDep.first, FP_File);
 	incDir.discardFilename();
 	if(matchDir.compare(incDir) == 0)
 	    {
-	    incFiles.push_back(incDep.first.c_str());
+	    incFiles.push_back(incDep.first);
 	    }
 	}
     return incFiles;
     }
 
 void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
-	char const * const srcName, std::set<IncludedPath> &incFiles) const
+	OovStringRef const srcName, std::set<IncludedPath> &incFiles) const
     {
     // First check if the includer filename exists in the dependency file.
     FilePath fp(srcName, FP_File);
-    std::string val = getValue(fp.c_str());
+    OovString val = getValue(fp);
     if(val.size() > 0)
 	{
 	CompoundValue compVal;
-	compVal.parseString(val.c_str());
+	compVal.parseString(val);
 	// There are two time values followed by directory/filename pairs.
 	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
 	    {
@@ -75,7 +75,7 @@ void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
 	    }
 	else
 	    {
-	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.c_str());
+	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.getStr());
 	    DebugAssert(__FILE__, __LINE__);
 	    }
 	}
@@ -83,15 +83,15 @@ void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
 
 /// This is recursive.
 void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
-	char const * const srcName, std::set<IncludedPath> &incFiles) const
+	OovStringRef const srcName, std::set<IncludedPath> &incFiles) const
     {
     // First check if the includer filename exists in the dependency file.
     FilePath fp(srcName, FP_File);
-    std::string val = getValue(fp.c_str());
+    OovString val = getValue(fp);
     if(val.size() > 0)
 	{
 	CompoundValue compVal;
-	compVal.parseString(val.c_str());
+	compVal.parseString(val);
 	// There are two time values followed by directory/filename pairs.
 	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
 	    {
@@ -104,44 +104,44 @@ void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
 		// Prevents infinite recursion and duplicates.
 		if(ret.second == true)
 		    {
-		    getNestedIncludeFilesUsedBySourceFile(incPath.getFullPath().c_str(), incFiles);
+		    getNestedIncludeFilesUsedBySourceFile(incPath.getFullPath(), incFiles);
 		    }
 		}
 	    }
 	else
 	    {
-	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.c_str());
+	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.getStr());
 	    DebugAssert(__FILE__, __LINE__);
 	    }
 	}
     }
 
 /// This is recursive
-std::vector<std::string> IncDirDependencyMapReader::getNestedIncludeDirsUsedBySourceFile(
-	char const * const srcName) const
+OovStringVec IncDirDependencyMapReader::getNestedIncludeDirsUsedBySourceFile(
+	OovStringRef const srcName) const
     {
     std::set<IncludedPath> incFiles;
     getNestedIncludeFilesUsedBySourceFile(srcName, incFiles);
-    std::set<std::string> tempDirs;
+    OovStringSet tempDirs;
     for(const auto &incFile : incFiles)
 	{
 	tempDirs.insert(incFile.getIncDir());
 	}
-    std::vector<std::string> incDirs(tempDirs.size());
+    OovStringVec incDirs(tempDirs.size());
     std::copy(tempDirs.begin(), tempDirs.end(), incDirs.begin());
     return incDirs;
     }
 
 /*
 std::set<std::string> IncDirDependencyMapReader::getIncludeDirsUsedByDirectory(
-	char const * const compDir)
+	OovStringRef const compDir)
     {
     std::vector<std::string> sources = getFilesDefinedInDirectory(compDir);
     std::set<std::string> includes;
     for(auto const &src : sources)
 	{
 	std::vector<std::string> srcIncs =
-		getIncludeDirsUsedBySourceFile(src.c_str());
+		getIncludeDirsUsedBySourceFile(src);
 	for(auto const &srcInc : srcIncs)
 	    {
 	    includes.insert(srcInc);
@@ -155,9 +155,9 @@ std::set<std::string> IncDirDependencyMapReader::getIncludeDirsUsedByDirectory(
 #if(FAST_MATCH)
 /// This is recursive
 bool IncDirDependencyMapReader::anyRootDirsUsedBySourceFile(
-	std::vector<std::string> const &incRoots,
-	std::set<std::string> &includesUsedSoFar,
-	char const * const srcName
+	OovStringVec const &incRoots,
+	OovStringSet &includesUsedSoFar,
+	OovStringRef const srcName
 	) const
     {
     bool match = false;
@@ -179,7 +179,7 @@ bool IncDirDependencyMapReader::anyRootDirsUsedBySourceFile(
 	    if(match)
 		break;
 	    match = anyRootDirsUsedBySourceFile(incRoots, includesUsedSoFar,
-		    incFile.getFullPath().c_str());
+		    incFile.getFullPath());
 	    if(match)
 		break;
 	    }
@@ -188,19 +188,19 @@ bool IncDirDependencyMapReader::anyRootDirsUsedBySourceFile(
     }
 #endif
 
-bool IncDirDependencyMapReader::anyRootDirsMatch(std::vector<std::string> const &incRoots,
-	char const * const dirName) const
+bool IncDirDependencyMapReader::anyRootDirsMatch(OovStringVec const &incRoots,
+	OovStringRef const dirName) const
     {
     bool match = false;
-    std::set<std::string> includesUsedSoFar;
-    std::vector<std::string> sources = getFilesDefinedInDirectory(dirName);
+    OovStringSet includesUsedSoFar;
+    OovStringVec sources = getFilesDefinedInDirectory(dirName);
     for(auto const &src : sources)
 	{
 #if(FAST_MATCH)
-	match = anyRootDirsUsedBySourceFile(incRoots, includesUsedSoFar, src.c_str());
+	match = anyRootDirsUsedBySourceFile(incRoots, includesUsedSoFar, src);
 #else
 	std::vector<std::string> srcIncDirs =
-		getNestedIncludeDirsUsedBySourceFile(src.c_str());
+		getNestedIncludeDirsUsedBySourceFile(src);
 	for(auto const &srcIncDir : srcIncDirs)
 	    {
 	    auto const insertRet = includesUsedSoFar.insert(srcIncDir);
@@ -219,10 +219,10 @@ bool IncDirDependencyMapReader::anyRootDirsMatch(std::vector<std::string> const 
     return match;
     }
 
-std::vector<std::string> IncDirDependencyMapReader::getOrderedIncludeDirsForSourceFile(char const * const absSrcName,
-	const std::vector<std::string> &orderedIncRoots) const
+OovStringVec IncDirDependencyMapReader::getOrderedIncludeDirsForSourceFile(OovStringRef const absSrcName,
+	OovStringVec const &orderedIncRoots) const
     {
-    std::vector<std::string> incDirs;
+    OovStringVec incDirs;
     // put directories in search path order.
     struct DirInfo
     {
@@ -233,7 +233,7 @@ std::vector<std::string> IncDirDependencyMapReader::getOrderedIncludeDirsForSour
 	size_t mMatchIndex;
     };
     std::vector<DirInfo> unorderedDirInfo;
-    std::vector<std::string> unorderedIncDirs =
+    std::vector<OovString> unorderedIncDirs =
 	    getNestedIncludeDirsUsedBySourceFile(absSrcName);
     unorderedDirInfo.resize(unorderedIncDirs.size());
     // Go through all directories and for each, find the longest root directory that matches.
@@ -256,9 +256,9 @@ std::vector<std::string> IncDirDependencyMapReader::getOrderedIncludeDirsForSour
 	if(incInfo.mMatchLen == 0)
 	    {
 	    for(auto const incRoot : orderedIncRoots)
-		fprintf(sLog.mFp, "incRoot = %s\n", incRoot.c_str());
+		fprintf(sLog.mFp, "incRoot = %s\n", incRoot.getStr());
 	    for(auto const incDir : unorderedIncDirs)
-		fprintf(sLog.mFp, "unord = %s\n", incDir.c_str());
+		fprintf(sLog.mFp, "unord = %s\n", incDir.getStr());
 	    }
 #endif
 	}

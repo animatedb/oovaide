@@ -9,12 +9,12 @@
 #define DIAGRAMDRAWER_H_
 
 #include <vector>
-#include <string>
+#include "OovString.h"
 #include "Graph.h"
 
 
 typedef std::vector<GraphPoint> OovPolygon;
-void splitStrings(std::vector<std::string> &strs, size_t desiredLength);
+void splitStrings(OovStringVec &strs, size_t desiredLength);
 
 /// Provides an abstract interface for drawing. This interface can be used for
 /// drawing to screen, files (svg) or to a null device.
@@ -37,9 +37,9 @@ class DiagramDrawer
 		bool dashed=false)=0;
 	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor) = 0;
 	virtual void drawPoly(const OovPolygon &poly, Color fillColor)=0;
-	virtual void drawText(const GraphPoint &p, char const * const text)=0;
-	virtual float getTextExtentWidth(char const * const name) const =0;
-	virtual float getTextExtentHeight(char const * const name) const =0;
+	virtual void drawText(const GraphPoint &p, OovStringRef const text)=0;
+	virtual float getTextExtentWidth(OovStringRef const name) const =0;
+	virtual float getTextExtentHeight(OovStringRef const name) const =0;
 	/// These functions indicate when the start/end of some grouping
 	/// of shapes is performed so similar attributes can be used.
 	virtual void groupShapes(bool start, Color fillColor)
@@ -54,6 +54,6 @@ class DiagramDrawer
 
 // This launches an editor to view source code at a certain line number in
 // the source code.
-void viewSource(char const * const module, int lineNum);
+void viewSource(OovStringRef const module, int lineNum);
 
 #endif /* DIAGRAMDRAWER_H_ */

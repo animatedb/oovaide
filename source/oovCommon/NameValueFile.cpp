@@ -13,10 +13,10 @@
 
 
 
-std::string CompoundValueRef::getAsString(const std::vector<std::string> &vec,
+OovString CompoundValueRef::getAsString(const OovStringVec &vec,
 	char delimiter)
     {
-    std::string str;
+    OovString str;
     for(size_t i=0; i<vec.size(); i++)
 	{
 	str += vec[i];
@@ -25,10 +25,10 @@ std::string CompoundValueRef::getAsString(const std::vector<std::string> &vec,
     return str;
     }
 
-std::string CompoundValueRef::getAsString(const std::set<std::string> &stdset,
+OovString CompoundValueRef::getAsString(const OovStringSet &stdset,
 	char delimiter)
     {
-    std::string str;
+    OovString str;
     for(auto const &item : stdset)
 	{
 	str += item;
@@ -38,10 +38,10 @@ std::string CompoundValueRef::getAsString(const std::set<std::string> &stdset,
     }
 
 
-void CompoundValueRef::parseStringRef(char const * const strIn,
-	std::vector<std::string> &vec, char delimiter)
+void CompoundValueRef::parseStringRef(OovStringRef const strIn,
+	OovStringVec &vec, char delimiter)
     {
-    std::string str = strIn;
+    OovString str = strIn;
     size_t startArgPos = 0;
     while(startArgPos != std::string::npos)
 	{
@@ -60,10 +60,10 @@ void CompoundValueRef::parseStringRef(char const * const strIn,
 	}
     }
 
-std::vector<std::string> CompoundValueRef::parseString(char const * const str,
+OovStringVec CompoundValueRef::parseString(OovStringRef const str,
 	char delimiter)
     {
-    std::vector<std::string> vec;
+    OovStringVec vec;
     parseStringRef(str, vec, delimiter);
     return vec;
     }
@@ -82,7 +82,7 @@ void CompoundValue::quoteAllArgs()
 	}
     }
 
-size_t CompoundValue::find(char const * const str)
+size_t CompoundValue::find(OovStringRef const str)
     {
     size_t pos = npos;
     for(size_t i=0; i<size(); i++)
@@ -98,27 +98,27 @@ size_t CompoundValue::find(char const * const str)
 
 ////////
 
-std::string NameValueRecord::getValue(char const * const optionName) const
+OovString NameValueRecord::getValue(OovStringRef const optionName) const
     {
-    std::string val;
+    OovString val;
     auto const pos = mNameValues.find(optionName);
     if(pos != mNameValues.end())
 	val = (*pos).second;
     return val;
     }
 
-void NameValueRecord::setNameValue(char const * const optionName,
-	char const * const value)
+void NameValueRecord::setNameValue(OovStringRef const optionName,
+	OovStringRef const value)
     {
     mNameValues[optionName] = value;
     }
 
-void NameValueRecord::setNameValueBool(char const * const optionName, bool val)
+void NameValueRecord::setNameValueBool(OovStringRef const optionName, bool val)
     {
     setNameValue(optionName, val ? "Yes" : "No");
     }
 
-bool NameValueRecord::getValueBool(char const * const optionName) const
+bool NameValueRecord::getValueBool(OovStringRef const optionName) const
     {
     return(getValue(optionName) == "Yes");
     }
@@ -129,12 +129,12 @@ void NameValueRecord::write(FILE *fp)
 	{
 	if(pair.second.length() > 0 || mSaveNullValues)
 	    {
-	    fprintf(fp, "%s%c%s\n", pair.first.c_str(), mapDelimiter, pair.second.c_str());
+	    fprintf(fp, "%s%c%s\n", pair.first.getStr(), mapDelimiter, pair.second.getStr());
 	    }
 	}
     }
 
-bool NameValueRecord::getLine(FILE *fp, std::string &str)
+bool NameValueRecord::getLine(FILE *fp, OovString &str)
     {
     char lineBuf[1000];
     str.resize(0);
@@ -158,14 +158,14 @@ bool NameValueRecord::getLine(FILE *fp, std::string &str)
 
 void NameValueRecord::read(FILE *fp)
     {
-    std::string lineBuf;
+    OovString lineBuf;
     while(getLine(fp, lineBuf))
 	{
 	insertLine(lineBuf);
 	}
     }
 
-void NameValueRecord::insertLine(std::string lineBuf)
+void NameValueRecord::insertLine(OovString lineBuf)
     {
     size_t colonPos = lineBuf.find(mapDelimiter);
     if(colonPos != std::string::npos)
@@ -173,11 +173,11 @@ void NameValueRecord::insertLine(std::string lineBuf)
 	std::string key = lineBuf.substr(0, colonPos);
 	size_t termPos = lineBuf.find('\n');
 	std::string value = lineBuf.substr(colonPos+1, termPos-(colonPos+1));
-	setNameValue(key.c_str(), value.c_str());
+	setNameValue(key, value);
 	}
     }
 
-void NameValueRecord::insertBufToMap(std::string const &buf)
+void NameValueRecord::insertBufToMap(OovString const buf)
     {
     size_t pos = 0;
     mNameValues.clear();
@@ -192,7 +192,7 @@ void NameValueRecord::insertBufToMap(std::string const &buf)
 	}
     }
 
-void NameValueRecord::readMapToBuf(std::string &buf)
+void NameValueRecord::readMapToBuf(OovString &buf)
     {
     buf.clear();
     for(const auto &pair : mNameValues)
@@ -211,7 +211,7 @@ void NameValueRecord::readMapToBuf(std::string &buf)
 
 bool NameValueFile::writeFile()
 	{
-	FILE *fp = fopen(mFilename.c_str(), "w");
+	FILE *fp = fopen(mFilename.getStr(), "w");
 	if(fp)
 	    {
 	    write(fp);
@@ -222,7 +222,7 @@ bool NameValueFile::writeFile()
 
 bool NameValueFile::readFile()
 	{
-	FILE *fp = fopen(mFilename.c_str(), "r");
+	FILE *fp = fopen(mFilename.getStr(), "r");
 	if(fp)
 	    {
 	    clear();
@@ -250,7 +250,7 @@ bool NameValueFile::readFileShared()
     {
     SharedFile file;
     bool success = false;
-    eOpenStatus status = file.open(mFilename.c_str(), M_ReadShared);
+    eOpenStatus status = file.open(mFilename.getStr(), M_ReadShared);
     if(status == OS_Opened)
 	{
 	success = readOpenedFile(file);
@@ -265,7 +265,7 @@ bool NameValueFile::readFileShared()
 bool NameValueFile::writeFileExclusiveReadUpdate(class SharedFile &file)
     {
     bool success = false;
-    eOpenStatus status = file.open(mFilename.c_str(), M_ReadWriteExclusive);
+    eOpenStatus status = file.open(mFilename.getStr(), M_ReadWriteExclusive);
     if(status == OS_Opened)
 	{
 	success = readOpenedFile(file);
@@ -278,7 +278,7 @@ bool NameValueFile::writeFileExclusive(class SharedFile &file)
     bool success = file.isOpen();
     if(success)
 	{
-	std::string buf;
+	OovString buf;
 	readMapToBuf(buf);
 	file.truncate();
 	file.seekBegin();

@@ -74,7 +74,7 @@ static void writeDebugStr(std::string const &str)
 //
 // - Inheritance relations are also only defined if they are defined in this TU.
 
-bool ModelWriter::openFile(char const * const filename)
+bool ModelWriter::openFile(OovStringRef const filename)
     {
 #if(DEBUG_WRITE)
     writeDebugStr(std::string("**** File ****") + filename);
@@ -233,7 +233,7 @@ void ModelWriter::writeOperation(ModelOperation const &oper)
 #else
     fprintf(mFp, "  <Oper name=\"%s\" access=\"%s\" const=\"%s\" %s>\n",
 #endif
-	oper.getName().c_str(), oper.getAccess().asUmlStr(),
+	oper.getName().getStr(), oper.getAccess().asUmlStr().getStr(),
 	boolStr(oper.isConst()), locStr
 #if(OPER_RET_TYPE)
 	,
@@ -258,7 +258,7 @@ void ModelWriter::writeOperation(ModelOperation const &oper)
 		{
 		parmStr += '#';
 		}
-	    parmStr += param->getName().c_str();
+	    parmStr += param->getName();
 	    parmStr += '@';
 	    parmStr.appendInt(getObjectModelId(param->getDeclType()->getName()));
 	    parmStr += '@';
@@ -291,7 +291,8 @@ void ModelWriter::writeClassDefinition(const ModelClassifier &classifier, bool i
 		"const=\"%s\" ref=\"%s\" access=\"%s\" />\n",
 		attr->getName().c_str(),
 		getObjectModelId(attr->getDeclType()->getName()),
-		boolStr(attr->isConst()), boolStr(attr->isRefer()), attr->getAccess().asUmlStr());
+		boolStr(attr->isConst()), boolStr(attr->isRefer()),
+		attr->getAccess().asUmlStr().getStr());
 	    }
 	}
 
@@ -382,11 +383,12 @@ void ModelWriter::writeAssociation(const ModelAssociation &assoc)
         fprintf(mFp, "  <Genrl id=\"%d\" child=\"%d\" parent=\"%d\" "
             "access=\"%s\" />\n",
             newModelId(), getObjectModelId(assoc.getChild()->getName()),
-            getObjectModelId(assoc.getParent()->getName()), assoc.getAccess().asUmlStr());
+            getObjectModelId(assoc.getParent()->getName()),
+            assoc.getAccess().asUmlStr().getStr());
         }
     }
 
-bool ModelWriter::writeFile(char const * const filename)
+bool ModelWriter::writeFile(OovStringRef const filename)
 {
     bool success = openFile(filename);
     if(success)

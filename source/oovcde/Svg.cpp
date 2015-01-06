@@ -21,7 +21,7 @@ Simple SVG example.
 </svg>
 */
 
-static void addArg(std::string &str, char const * const argName, char const * const value)
+static void addArg(std::string &str, OovStringRef const argName, OovStringRef const value)
     {
     str += " ";
     str += argName;
@@ -30,9 +30,9 @@ static void addArg(std::string &str, char const * const argName, char const * co
     str += "\"";
     }
 
-static void translateText(char const * const text, std::string &str)
+static void translateText(OovStringRef const text, std::string &str)
     {
-    str = StringMakeXml(std::string(text));
+    str = StringMakeXml(text);
     }
 
 void SvgDrawer::setDiagramSize(GraphSize size)
@@ -111,7 +111,7 @@ void SvgDrawer::groupText(bool start)
 	fprintf(mFp, "</g>\n");
     }
 
-void SvgDrawer::drawText(const GraphPoint &p, char const * const text)
+void SvgDrawer::drawText(const GraphPoint &p, OovStringRef const text)
     {
     std::string str;
     translateText(text, str);
@@ -119,14 +119,14 @@ void SvgDrawer::drawText(const GraphPoint &p, char const * const text)
 	    p.x, p.y, str.c_str());
     }
 
-float SvgDrawer::getTextExtentWidth(char const * const name) const
+float SvgDrawer::getTextExtentWidth(OovStringRef const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);
     return extents.width;
     }
 
-float SvgDrawer::getTextExtentHeight(char const * const name) const
+float SvgDrawer::getTextExtentHeight(OovStringRef const name) const
     {
     cairo_text_extents_t extents;
     cairo_text_extents(cr, name, &extents);
@@ -136,7 +136,7 @@ float SvgDrawer::getTextExtentHeight(char const * const name) const
 /// @todo - refactor so that class specific drawing this is not in this file.
 #include "ClassDrawer.h"
 
-SvgWriter::SvgWriter(char const * const fn):
+SvgWriter::SvgWriter(OovStringRef const fn):
     mFile(fn, "w")
     {
     }

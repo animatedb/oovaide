@@ -8,16 +8,16 @@
 #include "CoverageHeaderReader.h"
 #include "FilePath.h"
 
-std::string CoverageHeaderReader::getFn(char const * const outDir)
+OovString CoverageHeaderReader::getFn(OovStringRef const outDir)
     {
     FilePath outFn(outDir, FP_Dir);
     outFn.appendDir("covLib");
-    ensurePathExists(outFn.c_str());
+    ensurePathExists(outFn);
     outFn.appendFile("OovCoverage.h");
     return outFn;
     }
 
-void CoverageHeaderReader::insertBufToMap(std::string const &buf)
+void CoverageHeaderReader::insertBufToMap(OovString const &buf)
     {
     size_t pos = 0;
     mInstrDefineMap.clear();
@@ -26,7 +26,7 @@ void CoverageHeaderReader::insertBufToMap(std::string const &buf)
 	{
 	lineCounter++;
 	size_t endPos = buf.find('\n', pos);
-	std::string line(buf, pos, endPos-pos);
+	OovString line(buf, pos, endPos-pos);
 
 	if(lineCounter > 5)
 	    {
@@ -36,7 +36,7 @@ void CoverageHeaderReader::insertBufToMap(std::string const &buf)
 	    char commentChars[10];
 	    int count;
 	    int offset;
-	    int numItems = sscanf(line.c_str(), "%10s %250s %d %10s %d", keyword, fnDef,
+	    int numItems = sscanf(line.getStr(), "%10s %250s %d %10s %d", keyword, fnDef,
 		    &offset, commentChars, &count);
 	    if(numItems >= 5)
 		{
@@ -48,7 +48,7 @@ void CoverageHeaderReader::insertBufToMap(std::string const &buf)
 	    char keyword[10];
 	    char def[100];
 	    mNumInstrumentedLines = 0;
-	    sscanf(line.c_str(), "%10s %100s %d", keyword, def, &mNumInstrumentedLines);
+	    sscanf(line.getStr(), "%10s %100s %d", keyword, def, &mNumInstrumentedLines);
 	    }
 
 	pos = endPos;

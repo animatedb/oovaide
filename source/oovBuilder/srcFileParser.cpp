@@ -11,8 +11,8 @@
 #include "ComponentFinder.h"
 
 
-bool srcFileParser::analyzeSrcFiles(char const * const srcRootDir,
-	char const * const analysisDir)
+bool srcFileParser::analyzeSrcFiles(OovStringRef const srcRootDir,
+	OovStringRef const analysisDir)
     {
     mSrcRootDir = srcRootDir;
     mAnalysisDir = analysisDir;
@@ -34,22 +34,22 @@ bool srcFileParser::analyzeSrcFiles(char const * const srcRootDir,
 
 VerboseDumper sVerboseDump;
 
-void VerboseDumper::open(char const * const outPath)
+void VerboseDumper::open(OovStringRef const outPath)
     {
     mFp = stdout;
     /*
     std::string path = outPath;
     ensureLastPathSep(path);
     path += "OovBuilder.txt";
-    DebugFile::open(path.c_str());
+    DebugFile::open(path);
     */
     }
 
-void VerboseDumper::logProcess(char const * const srcFile, char const * const *argv, int argc)
+void VerboseDumper::logProcess(OovStringRef const srcFile,  char const * const *argv, int argc)
     {
     if(mFp)
 	{
-	fprintf(mFp, "\nOovBuilder: %s", srcFile);
+	fprintf(mFp, "\nOovBuilder: %s", srcFile.getStr());
 	if(argc > 0)
 	    {
 	    for(int i=0; i<argc; i++)
@@ -59,69 +59,64 @@ void VerboseDumper::logProcess(char const * const srcFile, char const * const *a
 	}
     }
 
-void VerboseDumper::logProgress(char const * const progress)
+void VerboseDumper::logProgress(OovStringRef const progress)
     {
     if(mFp)
 	{
-	fprintf(mFp, "\nOovBuilder: %s", progress);
+	fprintf(mFp, "\nOovBuilder: %s", progress.getStr());
 	}
     }
 
-void VerboseDumper::logOutputOld(char const * const fn)
+void VerboseDumper::logOutputOld(OovStringRef const fn)
     {
     if(mFp)
 	{
-	fprintf(mFp, "OovBuilder: Output older than %s\n", fn);
+	fprintf(mFp, "OovBuilder: Output older than %s\n", fn.getStr());
 	}
     }
 
-void VerboseDumper::logProcessStatus(bool success)
-    {
-    if(!success)
-	fprintf(mFp, "OovBuilder: Unable to execute process\n");
-    }
 
-
-bool srcFileParser::processFile(const std::string &srcFile)
+bool srcFileParser::processFile(OovStringRef const srcFile)
     {
     bool success = true;
     if(!ComponentsFile::excludesMatch(srcFile, mExcludeDirs))
 	{
 	FilePath ext(srcFile, FP_File);
-	if(isHeader(ext.c_str()) || isSource(ext.c_str()))
+	if(isHeader(ext) || isSource(ext))
 	    {
 	    struct OovStat32 srcFileStat;
-	    bool success = (OovStatFunc(srcFile.c_str(), &srcFileStat) == 0);
+	    bool success = (OovStatFunc(srcFile, &srcFileStat) == 0);
 	    if(success)
 		{
-		std::string outFileName;
-		std::string srcRoot = mSrcRootDir;
+		OovString srcRoot = mSrcRootDir;
 		ensureLastPathSep(srcRoot);
-		Project::makeAnalysisFileName(srcFile, srcRoot, mAnalysisDir, outFileName);
-		if(FileStat::isOutputOld(outFileName.c_str(), srcFile.c_str()))
+		OovString outFileName = Project::makeAnalysisFileName(srcFile,
+			srcRoot, mAnalysisDir);
+		if(FileStat::isOutputOld(outFileName, srcFile))
 		    {
 		    std::string procPath = ToolPathFile::getAnalysisToolPath();
-		    procPath = makeExeFilename(procPath.c_str());
+		    procPath = makeExeFilename(procPath);
 		    CppChildArgs ca;
-		    ca.addArg(procPath.c_str());
-		    ca.addArg(srcFile.c_str());
+		    ca.addArg(procPath);
+		    ca.addArg(srcFile);
 		    ca.addArg(mSrcRootDir);
 		    ca.addArg(mAnalysisDir);
 
 		    ca.addCompileArgList(mComponentFinder, mIncDirArgs);
 		    addTask(ca);
     /*
-		    sLog.logProcess(srcFile.c_str(), ca.getArgv(), ca.getArgc());
-		    printf("\noovBuilder Analyzing: %s\n", srcFile.c_str());
+		    sLog.logProcess(srcFile, ca.getArgv(), ca.getArgc());
+		    printf("\noovBuilder Analyzing: %s\n", srcFile);
 		    fflush(stdout);
 		    OovProcessStdListener listener;
 		    int exitCode;
 		    OovPipeProcess pipeProc;
 		    success = pipeProc.spawn(procPath, ca.getArgv(), listener, exitCode);
-		    sLog.logProcessStatus(success);
+		    if(!success)
+			fprintf(stderr, "OovBuilder: Unable to execute process %s\n", procPath.getStr());
 		    if(!success || exitCode != 0)
 			{
-			fprintf(stderr, "oovBuilder: Errors from %s\nArguments were: ", procPath);
+			fprintf(stderr, "oovBuilder: Errors from %s\nArguments were: ", procPath.getStr());
 			ca.printArgs(stderr);
 			}
 		    fflush(stdout);
@@ -144,17 +139,18 @@ bool srcFileParser::processItem(CppChildArgs const &item)
     std::string processStr = "\noovBuilder Analyzing: ";
     processStr += item.getArgv()[1];
     processStr += "\n";
-    listener.setProcessIdStr(processStr.c_str());
+    listener.setProcessIdStr(processStr);
     bool success = pipeProc.spawn(item.getArgv()[0], item.getArgv(),
 	    listener, exitCode);
-    sVerboseDump.logProcessStatus(success);
+    if(!success)
+	fprintf(stderr, "OovBuilder: Unable to execute process %s\n", item.getArgv()[0]);
     if(!success || exitCode != 0)
 	{
 	std::string tempStr = "oovBuilder: Errors from ";
 	tempStr += item.getArgv()[0];
 	tempStr += "\nArguments were: ";
 	tempStr += item.getArgsAsStr();
-	listener.onStdErr(tempStr.c_str(), tempStr.length());
+	listener.onStdErr(tempStr, tempStr.length());
 	}
     return true;
     }

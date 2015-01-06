@@ -16,11 +16,11 @@ struct DrawString
     {
     DrawString()
 	{}
-    DrawString(GraphPoint p, const  char *s):
+    DrawString(GraphPoint p, OovStringRef const s):
 	pos(p), str(s)
 	{}
     GraphPoint pos;
-    std::string str;
+    OovString str;
     };
 
 /// Used to draw an operation graph.

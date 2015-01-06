@@ -74,10 +74,10 @@ class OperationNestStart:public OperationStatement
 	OperationNestStart(char const * const expr):
 	    OperationStatement(ST_OpenNest), mExpression(expr)
 	    {}
-	char const * const getExpr() const
-	    { return mExpression.c_str(); }
+	OovString const &getExpr() const
+	    { return mExpression; }
     private:
-	std::string mExpression;
+	OovString mExpression;
     };
 
 class OperationNestEnd:public OperationStatement
@@ -99,8 +99,8 @@ class OperationCall:public OperationStatement
 	    {}
 	int getOperClassIndex() const
 	    { return mOperClassIndex; }
-	char const * const getName() const
-	    { return mOperation.getName().c_str(); }
+	OovString const &getName() const
+	    { return mOperation.getName(); }
 	bool isConst() const
 	    { return mOperation.isConst(); }
 	void setRect(const GraphPoint &pos, const GraphSize &size)
@@ -132,8 +132,8 @@ class OperationVarRef:public OperationStatement
 	    {}
 	int getOperClassIndex() const
 	    { return mOperClassIndex; }
-	char const * const getName() const
-	    { return mAttribute.getName().c_str(); }
+	OovString const &getName() const
+	    { return mAttribute.getName(); }
 	bool isConst() const
 	    { return false; }
 	void setRect(const GraphPoint &pos, const GraphSize &size)
@@ -175,7 +175,7 @@ class OperationDefinition:public OperationCall
 	    {
 	    mStatements.push_back(std::move(stmt));
 	    }
-	void addNestStart(char const * const exprName)
+	void addNestStart(OovStringRef const exprName)
 	    {
 	    /// @todo - use make_unique when supported.
 	    mStatements.push_back(std::unique_ptr<OperationStatement>(

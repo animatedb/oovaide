@@ -9,21 +9,23 @@
 #define FILE_H_
 
 #include <stdio.h>
+#include "OovString.h"
 #define __NO_MINGW_LFS 1
 
 /// This is a simple file interface.
 class File
     {
     public:
-	File(char const * const fn=nullptr, char const * const mode=nullptr):
-	    mFp(NULL)
+	File():
+	    mFp(nullptr)
+	    {}
+	File(OovStringRef const fn, OovStringRef const mode)
 	    {
-	    if(fn)
-		mFp = fopen(fn, mode);
+	    mFp = fopen(fn, mode);
 	    }
 	~File()
 	    { close(); }
-	void open(char const * const fn, char const * const mode)
+	void open(OovStringRef const fn, OovStringRef const mode)
 	    {
 	    if(!mFp)
 		mFp = fopen(fn, mode);
@@ -56,7 +58,7 @@ class BaseSimpleFile
 	    {}
 	~BaseSimpleFile()
 	    { close(); }
-	eOpenStatus open(char const * const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
+	eOpenStatus open(OovStringRef const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
 		eOpenEndings oe=OE_Text);
 	void close();
 	bool isOpen() const
@@ -80,7 +82,7 @@ class BaseSimpleFile
 class SimpleFile:public BaseSimpleFile
     {
     public:
-	SimpleFile(char const * const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
+	SimpleFile(OovStringRef const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
 		eOpenEndings oe=OE_Text)
 	    {
 	    if(fn)
@@ -95,7 +97,7 @@ class SimpleFile:public BaseSimpleFile
 class SharedFile: public BaseSimpleFile
     {
     public:
-	eOpenStatus open(char const * const fn, eOpenModes mode,
+	eOpenStatus open(OovStringRef const fn, eOpenModes mode,
 		eOpenEndings oe=OE_Text);
     };
 

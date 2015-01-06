@@ -34,7 +34,7 @@ void Journal::clear()
     mRecords.clear();
     }
 
-void Journal::displayClass(char const * const className)
+void Journal::displayClass(OovStringRef const className)
     {
     JournalRecordClassDiagram *rec;
     int recordIndex = findRecord(className);
@@ -53,7 +53,7 @@ void Journal::displayClass(char const * const className)
 	}
     }
 
-void Journal::addClass(char const * const className)
+void Journal::addClass(OovStringRef const className)
     {
     JournalRecord *rec = getCurrentRecord();
     if(rec && rec->getRecordType() == RT_Class)
@@ -63,18 +63,18 @@ void Journal::addClass(char const * const className)
 	}
     }
 
-void Journal::displayOperation(char const * const className,
-	char const * const operName, bool isConst)
+void Journal::displayOperation(OovStringRef const className,
+	OovStringRef const operName, bool isConst)
     {
     JournalRecordOperationDiagram *rec;
-    std::string fullOperName = operName;
+    OovString fullOperName = operName;
     fullOperName += ' ';
     fullOperName += className;
-    int recordIndex = findRecord(fullOperName.c_str());
+    int recordIndex = findRecord(fullOperName);
     if(recordIndex == -1)
 	{
 	rec = new JournalRecordOperationDiagram(*mBuilder, *mModel, *mListener);
-	addRecord(rec, fullOperName.c_str());
+	addRecord(rec, fullOperName);
 	rec->mOperationDiagram.clearGraphAndAddOperation(className, operName, isConst);
 	}
     else
@@ -89,7 +89,7 @@ void Journal::displayComponents()
     {
     if(mBuilder)
 	{
-	char const * const componentName = "<Components>";
+	OovStringRef const componentName = "<Components>";
 	int recordIndex = findRecord(componentName);
 	JournalRecordComponentDiagram *rec;
 	if(recordIndex == -1)
@@ -107,7 +107,7 @@ void Journal::displayComponents()
 	}
     }
 
-void Journal::addRecord(JournalRecord *record, char const * const name)
+void Journal::addRecord(JournalRecord *record, OovStringRef const name)
     {
     record->setName(name);
     removeUnmodifiedRecords();
@@ -115,7 +115,7 @@ void Journal::addRecord(JournalRecord *record, char const * const name)
     setCurrentRecord(mRecords.size()-1);
     }
 
-int Journal::findRecord(char const * const name)
+int Journal::findRecord(OovStringRef const name)
     {
     int index = -1;
     for(size_t i=0; i<mRecords.size(); i++)

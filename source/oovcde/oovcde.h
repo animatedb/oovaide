@@ -35,13 +35,13 @@ class WindowBuildListener:public OovProcessListener
 	    { initListener(builder); }
 	virtual ~WindowBuildListener()
 	    {}
-	virtual void onStdOut(char const * const out, int len)
+	virtual void onStdOut(OovStringRef const out, int len)
 	    {
 // Adding this guard causes a hang in linux when children have tons of errors.
 	    LockGuard guard(mMutex);
 	    mStdOutAndErr.append(out, len);
 	    }
-	virtual void onStdErr(char const * const out, int len)
+	virtual void onStdErr(OovStringRef const out, int len)
 	    {
 	    LockGuard guard(mMutex);
 	    mStdOutAndErr.append(out, len);
@@ -94,18 +94,18 @@ class oovGui:public JournalListener, public WindowBuildListener
 	static gboolean onIdle(gpointer data);
 	void openProject();
 	enum eSrcManagerOptions { SM_Analyze, SM_Build, SM_CovInstr, SM_CovBuild, SM_CovStats };
-	bool runSrcManager(char const * const buildConfigName, eSrcManagerOptions smo);
+	bool runSrcManager(OovStringRef const buildConfigName, eSrcManagerOptions smo);
 	void stopSrcManager();
 	void updateProject();
-	virtual void displayClass(char const * const className);
-	virtual void addClass(char const * const className);
-	virtual void displayOperation(char const * const className,
-		char const * const operName, bool isConst);
+	virtual void displayClass(OovStringRef const className);
+	virtual void addClass(OovStringRef const className);
+	virtual void displayOperation(OovStringRef const className,
+		OovStringRef const operName, bool isConst);
 	void updateJournalList();
 	void updateComponentList()
 	    { mComponentList.updateComponentList(); }
-	void updateOperationList(const ModelData &modelData, char const * const className);
-	void updateClassList(char const * const className);
+	void updateOperationList(const ModelData &modelData, OovStringRef const className);
+	void updateClassList(OovStringRef const className);
 	void makeComplexityFile();
 	void makeMemberUseFile();
 	void setLastSavedPath(const std::string &fn)
@@ -164,7 +164,7 @@ class oovGui:public JournalListener, public WindowBuildListener
 	    if(didSomething)
 		{
 		if(mModelData.mTypes[mLazyClassListCurrentIndex]->getObjectType() == otClass)
-		    mClassList.appendText(mModelData.mTypes[mLazyClassListCurrentIndex]->getName().c_str());
+		    mClassList.appendText(mModelData.mTypes[mLazyClassListCurrentIndex]->getName());
 		mLazyClassListCurrentIndex++;
 		}
 	    return didSomething;

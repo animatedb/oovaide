@@ -31,6 +31,10 @@ class ComplexityDataChild
         void funcVal(int x){}
         void funcRef(int &x){}
         int funcRet(){ return 1; }
+
+    public:
+        int mMember1;
+        int mMember2;
     };
 
 class ComplexityDataTest
@@ -47,6 +51,7 @@ class ComplexityDataTest
         void testMemberFuncVal();
         int testMemberFuncRef();
         int testMemberFuncRet();
+        int testMemberVar();
 
     private:
         int mMember1;
@@ -242,4 +247,20 @@ int ComplexityDataTest::testMemberFuncRef()
 int ComplexityDataTest::testMemberFuncRet()
     {
     return mChild.funcRet();
+    }
+
+int ComplexityDataTest::testMemberVar()
+    {
+    int val = 0;
+        {
+        val += mChild.mMember1;
+        }
+        {
+        val += mChild.mMember2;
+        }
+        {
+        ComplexityDataTest test;
+        val += test.mChild.mMember1;
+        }
+    return val;
     }

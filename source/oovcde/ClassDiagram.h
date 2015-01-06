@@ -16,7 +16,7 @@ class ClassDiagramListener
     public:
 	virtual ~ClassDiagramListener()
 	    {}
-	virtual void gotoClass(char const * const className) = 0;
+	virtual void gotoClass(OovStringRef const className) = 0;
     };
 
 
@@ -38,9 +38,9 @@ class ClassDiagram
 	/// Redraw the graph. Does not change the graph or change or access the model.
 	void drawDiagram(const ClassDrawOptions &options);
 	// Create a new graph and add a class node.
-	void clearGraphAndAddClass(char const * const className);
+	void clearGraphAndAddClass(OovStringRef const className);
 	// Add a class node to an existing graph.
-	void addClass(char const * const className);
+	void addClass(OovStringRef const className);
 	void drawSvgDiagram(FILE *fp);
 	GtkWidget *getDiagramWidget()
 	    { return getBuilder().getWidget("DiagramDrawingarea"); }
@@ -58,7 +58,7 @@ class ClassDiagram
 	    { return *mBuilder; }
 	const ModelData &getModelData() const
 	    { return *mModelData; }
-	void gotoClass(char const * const className)
+	void gotoClass(OovStringRef const className)
 	    {
 	    if(mListener)
 		{
@@ -76,11 +76,11 @@ class ClassDiagram
 	const ModelData *mModelData;
 	ClassGraph mClassGraph;
 	Builder *mBuilder;
-	std::string mLastSelectedClassName;
+	OovString mLastSelectedClassName;
 	ClassDiagramListener *mListener;
 	double mDesiredZoom;
 	void displayContextMenu(guint button, guint32 acttime, gpointer data);
-	void setLastSelectedClassName(const std::string &name)
+	void setLastSelectedClassName(OovStringRef const name)
 	    { mLastSelectedClassName = name; }
     };
 

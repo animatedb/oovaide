@@ -19,15 +19,15 @@ void ToolPathFile::getPaths()
     if(mPathCompiler.length() == 0)
 	{
 	std::string projFileName = Project::getProjectFilePath();
-	setFilename(projFileName.c_str());
+	setFilename(projFileName);
 	readFile();
 
-	std::string optStr = makeBuildConfigArgName(OptToolLibPath, mBuildConfig.c_str());
-	mPathLibber = getValue(optStr.c_str());
-	optStr = makeBuildConfigArgName(OptToolCompilePath, mBuildConfig.c_str());
-	mPathCompiler = getValue(optStr.c_str());
-	optStr = makeBuildConfigArgName(OptToolObjSymbolPath, mBuildConfig.c_str());
-	mPathObjSymbol = getValue(optStr.c_str());
+	std::string optStr = makeBuildConfigArgName(OptToolLibPath, mBuildConfig);
+	mPathLibber = getValue(optStr);
+	optStr = makeBuildConfigArgName(OptToolCompilePath, mBuildConfig);
+	mPathCompiler = getValue(optStr);
+	optStr = makeBuildConfigArgName(OptToolObjSymbolPath, mBuildConfig);
+	mPathObjSymbol = getValue(optStr);
 	}
     }
 
@@ -61,8 +61,8 @@ std::string ToolPathFile::getCovInstrToolPath()
     return("./oovCovInstr");
     }
 
-bool FileStat::isOutputOld(char const * const outputFn,
-	char const * const inputFn)
+bool FileStat::isOutputOld(OovStringRef const outputFn,
+	OovStringRef const inputFn)
     {
     time_t outTime;
     time_t inTime;
@@ -79,13 +79,13 @@ bool FileStat::isOutputOld(char const * const outputFn,
     return old;
     }
 
-bool FileStat::isOutputOld(char const * const outputFn,
-	const std::vector<std::string> &inputs, int *oldIndex)
+bool FileStat::isOutputOld(OovStringRef const outputFn,
+	OovStringVec const &inputs, int *oldIndex)
     {
     bool old = false;
     for(size_t i=0; i<inputs.size(); i++)
 	{
-	if(isOutputOld(outputFn, inputs[i].c_str()))
+	if(isOutputOld(outputFn, inputs[i]))
 	    {
 	    old = true;
 	    if(oldIndex)
@@ -96,7 +96,7 @@ bool FileStat::isOutputOld(char const * const outputFn,
     return old;
     }
 
-void ScannedComponent::saveComponentSourcesToFile(char const * const compName,
+void ScannedComponent::saveComponentSourcesToFile(OovStringRef const compName,
     ComponentTypesFile &compFile) const
     {
     compFile.setComponentSources(compName, mSourceFiles);
@@ -106,13 +106,13 @@ void ScannedComponent::saveComponentSourcesToFile(char const * const compName,
 //////////////
 
 ScannedComponentsInfo::MapIter ScannedComponentsInfo::addComponents(
-    char const * const compName)
+    OovStringRef const compName)
     {
     FilePath parent = FilePath(compName, FP_Dir).getParent();
     if(parent.length() > 0)
 	{
 	removePathSep(parent, parent.length()-1);
-        addComponents(parent.c_str());
+        addComponents(parent);
 	}
     MapIter it = mComponents.find(compName);
     if(it == mComponents.end())
@@ -122,29 +122,29 @@ ScannedComponentsInfo::MapIter ScannedComponentsInfo::addComponents(
     return it;
     }
 
-void ScannedComponentsInfo::addSourceFile(char const * const compName,
-    char const * const srcFileName)
+void ScannedComponentsInfo::addSourceFile(OovStringRef const compName,
+    OovStringRef const srcFileName)
     {
     MapIter it = addComponents(compName);
     (*it).second.addSourceFileName(srcFileName);
     }
 
-void ScannedComponentsInfo::addIncludeFile(char const * const compName,
-    char const * const srcFileName)
+void ScannedComponentsInfo::addIncludeFile(OovStringRef const compName,
+    OovStringRef const srcFileName)
     {
     MapIter it = addComponents(compName);
     (*it).second.addIncludeFileName(srcFileName);
     }
 
-static void setFileValues(char const * const tagName,
-    const std::vector<std::string> &vals, ComponentsFile &compFile)
+static void setFileValues(OovStringRef const tagName,
+    OovStringVec const &vals, ComponentsFile &compFile)
     {
     CompoundValue incArgs;
     for(const auto &inc : vals)
 	{
-	incArgs.addArg(inc.c_str());
+	incArgs.addArg(inc);
 	}
-    compFile.setNameValue(tagName, incArgs.getAsString().c_str());
+    compFile.setNameValue(tagName, incArgs.getAsString());
     }
 
 void ScannedComponentsInfo::setProjectComponentsFileValues(ComponentsFile &compFile)
@@ -158,16 +158,16 @@ void ScannedComponentsInfo::initializeComponentTypesFileValues(
     CompoundValue comps;
     for(const auto &comp : mComponents)
 	{
-	comps.addArg(comp.first.c_str());
-	comp.second.saveComponentSourcesToFile(comp.first.c_str(), compFile);
+	comps.addArg(comp.first);
+	comp.second.saveComponentSourcesToFile(comp.first, compFile);
 	}
-    compFile.setComponentNames(comps.getAsString().c_str());
+    compFile.setComponentNames(comps.getAsString());
     }
 
 //////////////
 
-bool ComponentFinder::readProject(char const * const oovProjectDir,
-	char const * const buildConfigName)
+bool ComponentFinder::readProject(OovStringRef const oovProjectDir,
+	OovStringRef const buildConfigName)
     {
     bool success = mProject.readOovProject(oovProjectDir, buildConfigName);
     if(success)
@@ -181,13 +181,13 @@ void ComponentFinder::scanProject()
     {
     mScanningPackage = nullptr;
     mExcludeDirs = mProject.getProjectExcludeDirs();
-    recurseDirs(mProject.getSrcRootDirectory().c_str());
+    recurseDirs(mProject.getSrcRootDirectory().getStr());
     }
 
-void ComponentFinder::scanExternalProject(char const * const externalRootSrch,
+void ComponentFinder::scanExternalProject(OovStringRef const externalRootSrch,
 	Package const *pkg)
     {
-    std::string externalRootDir;
+    OovString externalRootDir;
     ComponentsFile::parseProjRefs(externalRootSrch, externalRootDir, mExcludeDirs);
 
     Package rootPkg;
@@ -196,7 +196,7 @@ void ComponentFinder::scanExternalProject(char const * const externalRootSrch,
     rootPkg.setRootDirPackage(externalRootSrch);
     mScanningPackage = &rootPkg;
 
-    recurseDirs(externalRootDir.c_str());
+    recurseDirs(externalRootDir.getStr());
 
     addBuildPackage(rootPkg);
     }
@@ -207,7 +207,7 @@ void ComponentFinder::addBuildPackage(Package const &pkg)
     getProject().getBuildPackages().savePackages();
     }
 
-void ComponentFinder::saveProject(char const * const compFn)
+void ComponentFinder::saveProject(OovStringRef const compFn)
     {
     mComponentsFile.read(compFn);
     mScannedInfo.setProjectComponentsFileValues(mComponentsFile);
@@ -216,13 +216,12 @@ void ComponentFinder::saveProject(char const * const compFn)
     mComponentsFile.writeFile();
     }
 
-std::string ComponentFinder::getComponentName(char const * const filePath) const
+OovString ComponentFinder::getComponentName(OovStringRef const filePath) const
     {
-    std::string compName;
     FilePath path(filePath, FP_File);
     path.discardFilename();
-    Project::getSrcRootDirRelativeSrcFileName(path,
-	    mProject.getSrcRootDirectory().c_str(), compName);
+    OovString compName = Project::getSrcRootDirRelativeSrcFileName(path,
+	    mProject.getSrcRootDirectory());
     if(compName.length() == 0)
     	{
 	path.moveLeftPathSep();
@@ -236,14 +235,14 @@ std::string ComponentFinder::getComponentName(char const * const filePath) const
     return compName;
     }
 
-bool ComponentFinder::processFile(const std::string &filePath)
+bool ComponentFinder::processFile(OovStringRef const filePath)
     {
     /// @todo - find files with no extension? to match things like std::vector include
     if(!ComponentsFile::excludesMatch(filePath, mExcludeDirs))
 	{
-	bool inc = isHeader(filePath.c_str());
-	bool src = isSource(filePath.c_str());
-	bool lib = isLibrary(filePath.c_str());
+	bool inc = isHeader(filePath);
+	bool src = isSource(filePath);
+	bool lib = isLibrary(filePath);
 	if(mScanningPackage)
 	    {
 	    if(inc)
@@ -251,52 +250,52 @@ bool ComponentFinder::processFile(const std::string &filePath)
 		FilePath path(filePath, FP_File);
 		path.discardFilename();
 
-		mScanningPackage->appendAbsoluteIncDir(path.getDrivePath().c_str());
+		mScanningPackage->appendAbsoluteIncDir(path.getDrivePath());
 
 		// Insert parent for things like #include "gtk/gtk.h" or "sys/stat.h"
 		FilePath parent(path.getParent());
 		if(parent.length() > 0)
-		    mScanningPackage->appendAbsoluteIncDir(parent.getDrivePath().c_str());
+		    mScanningPackage->appendAbsoluteIncDir(parent.getDrivePath());
 
 		// Insert grandparent for things like "llvm/ADT/APInt.h"
 		FilePath grandparent(parent.getParent());
 		if(grandparent.length() > 0)
-		    mScanningPackage->appendAbsoluteIncDir(grandparent.getDrivePath().c_str());
+		    mScanningPackage->appendAbsoluteIncDir(grandparent.getDrivePath());
 		}
 	    else if(lib)
 		{
 		FilePath path(filePath, FP_File);
-		mScanningPackage->appendAbsoluteLibName(filePath.c_str());
+		mScanningPackage->appendAbsoluteLibName(filePath);
 		}
 	    }
 	else
 	    {
 	    if(src)
 		{
-		std::string name = getComponentName(filePath.c_str());
-		mScannedInfo.addSourceFile(name.c_str(), filePath.c_str());
+		std::string name = getComponentName(filePath);
+		mScannedInfo.addSourceFile(name, filePath);
 		}
 	    else if(inc)
 		{
 		FilePath path(filePath, FP_File);
 		path.discardFilename();
-		mScannedInfo.addProjectIncludePath(path.c_str());
-		std::string name = getComponentName(filePath.c_str());
-		mScannedInfo.addIncludeFile(name.c_str(), filePath.c_str());
+		mScannedInfo.addProjectIncludePath(path);
+		std::string name = getComponentName(filePath);
+		mScannedInfo.addIncludeFile(name, filePath);
 		}
 	    }
 	}
     return true;
     }
 
-std::vector<std::string> ComponentFinder::getAllIncludeDirs() const
+OovStringVec ComponentFinder::getAllIncludeDirs() const
     {
     InsertOrderedSet projIncs = getScannedInfo().getProjectIncludeDirs();
-    std::vector<std::string> incs;
+    OovStringVec incs;
     std::copy(projIncs.begin(), projIncs.end(), std::back_inserter(incs));
     for(auto const &pkg : getProject().getBuildPackages().getPackages())
 	{
-	std::vector<std::string> pkgIncs = pkg.getIncludeDirs();
+	OovStringVec pkgIncs = pkg.getIncludeDirs();
 	std::copy(pkgIncs.begin(), pkgIncs.end(), std::back_inserter(incs));
 	}
     return incs;
@@ -304,21 +303,21 @@ std::vector<std::string> ComponentFinder::getAllIncludeDirs() const
 
 
 void CppChildArgs::addCompileArgList(const ComponentFinder &finder,
-	const std::vector<std::string> &incDirs)
+	const OovStringVec &incDirs)
     {
     // add cpp args
     for(const auto &arg : finder.getProject().getCompileArgs())
 	{
 	std::string tempArg = arg;
 	CompoundValue::quoteCommandLineArg(tempArg);
-	addArg(tempArg.c_str());
+	addArg(tempArg);
 	}
 
     for(int i=0; static_cast<size_t>(i)<incDirs.size(); i++)
 	{
 	std::string incStr = std::string("-I") + incDirs[i];
 	CompoundValue::quoteCommandLineArg(incStr);
-	addArg(incStr.c_str());
+	addArg(incStr);
 	}
     }
 

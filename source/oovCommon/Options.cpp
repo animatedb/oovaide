@@ -18,10 +18,10 @@ GuiOptions gGuiOptions;
 #ifndef __linux__
 /*
 // Return is empty if search string not found
-static std::string getPathSegment(const std::string &path, char const * const srch)
+static std::string getPathSegment(const std::string &path, OovStringRef const srch)
     {
     OovString lowerPath;
-    lowerPath.setLowerCase(path.c_str());
+    lowerPath.setLowerCase(path);
     std::string seg;
     size_t pos = lowerPath.find(srch);
     if(pos != std::string::npos)
@@ -40,7 +40,7 @@ static std::string getPathSegment(const std::string &path, char const * const sr
     return seg;
     }
 
-static bool addExternalReference(const std::string &path, char const * const srch,
+static bool addExternalReference(const std::string &path, OovStringRef const srch,
 	CompoundValue &args)
     {
     std::string seg = getPathSegment(path, srch);
@@ -54,7 +54,7 @@ static bool addExternalReference(const std::string &path, char const * const src
 	{
 	std::string arg = "-ER";
 	arg += seg;
-	args.addArg(arg.c_str());
+	args.addArg(arg);
 	}
     return seg.size() > 0;
     }
@@ -69,10 +69,10 @@ static void addCLangArgs(CompoundValue &cv)
     }
 
 static void setBuildConfigurationPaths(NameValueFile &file,
-	char const * const buildConfig, char const * const extraArgs, bool useclang)
+	OovStringRef const buildConfig, OovStringRef const extraArgs, bool useclang)
     {
     std::string optStr = makeBuildConfigArgName(OptExtraBuildArgs, buildConfig);
-    file.setNameValue(optStr.c_str(), extraArgs);
+    file.setNameValue(optStr, extraArgs);
 
     if(std::string(buildConfig).compare(BuildConfigAnalysis) == 0)
 	{
@@ -82,12 +82,12 @@ static void setBuildConfigurationPaths(NameValueFile &file,
     // llvm-ar gives link error.
     // setNameValue(makeExeFilename("llvm-ar"));
     optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
-    file.setNameValue(optStr.c_str(), makeExeFilename("ar").c_str());
+    file.setNameValue(optStr, makeExeFilename("ar"));
 
     // llvm-nm gives bad file error on Windows, and has no output on Linux.
     // mPathObjSymbol = "makeExeFilename(llvm-nm)";
     optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
-    file.setNameValue(optStr.c_str(), makeExeFilename("nm").c_str());
+    file.setNameValue(optStr, makeExeFilename("nm"));
 
     std::string compiler;
     if(useclang)
@@ -95,7 +95,7 @@ static void setBuildConfigurationPaths(NameValueFile &file,
     else
 	compiler = makeExeFilename("g++");
     optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
-    file.setNameValue(optStr.c_str(), compiler.c_str());
+    file.setNameValue(optStr, compiler);
     }
 
 void BuildOptions::setDefaultOptions()
@@ -114,7 +114,7 @@ void BuildOptions::setDefaultOptions()
 	useCLangBuild = true;
 #else
     std::string path = getenv("PATH");
-    if(path.find("clang") != std::string::npos)
+    if(path.find("LLVM") != std::string::npos)
 	{
 	useCLangBuild = true;
 	}
@@ -156,13 +156,13 @@ void BuildOptions::setDefaultOptions()
 #endif
 
     setBuildConfigurationPaths(*this, BuildConfigAnalysis,
-	    extraCppDocArgs.getAsString().c_str(), useCLangBuild);
+	    extraCppDocArgs.getAsString(), useCLangBuild);
     setBuildConfigurationPaths(*this, BuildConfigDebug,
-	    extraCppDbgArgs.getAsString().c_str(), useCLangBuild);
+	    extraCppDbgArgs.getAsString(), useCLangBuild);
     setBuildConfigurationPaths(*this, BuildConfigRelease,
-	    extraCppRlsArgs.getAsString().c_str(), useCLangBuild);
+	    extraCppRlsArgs.getAsString(), useCLangBuild);
 
-    setNameValue(OptBaseArgs, baseArgs.getAsString().c_str());
+    setNameValue(OptBaseArgs, baseArgs.getAsString());
 
     }
 
@@ -197,7 +197,7 @@ void GuiOptions::setDefaultOptions()
 
 void GuiOptions::read()
     {
-    setFilename(Project::getGuiOptionsFilePath().c_str());
+    setFilename(Project::getGuiOptionsFilePath());
     if(!NameValueFile::readFile())
 	{
 	setDefaultOptions();

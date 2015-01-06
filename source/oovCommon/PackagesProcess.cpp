@@ -19,8 +19,8 @@ class TextProcessor:public OovProcessListener
     public:
 	virtual ~TextProcessor()
 	    {}
-	virtual void onStdOut(char const * const out, int len);
-	virtual void onStdErr(char const * const out, int len);
+	virtual void onStdOut(OovStringRef const out, int len);
+	virtual void onStdErr(OovStringRef const out, int len);
 	virtual void processComplete()
 	    {}
 	bool spawn(char const * const procPath, char const * const *argv);
@@ -37,17 +37,17 @@ bool TextProcessor::spawn(char const * const procPath, char const * const *argv)
     return(proc.spawn(procPath, argv, *this, exitCode));
     }
 
-void TextProcessor::onStdErr(char const * const out, int len)
+void TextProcessor::onStdErr(OovStringRef const out, int len)
     {
     mText += std::string(out, len);
     }
 
-void TextProcessor::onStdOut(char const * const out, int len)
+void TextProcessor::onStdOut(OovStringRef const out, int len)
     {
     mText += std::string(out, len);
     }
 
-std::vector<std::string> AvailablePackages::getAvailablePackages()
+OovStringVec AvailablePackages::getAvailablePackages()
     {
     if(mPackageNames.size() == 0)
 	{
@@ -57,7 +57,7 @@ std::vector<std::string> AvailablePackages::getAvailablePackages()
 	args.addArg("--list-all");
 	if(proc.spawn("pkg-config", args.getArgv()))
 	    {
-	    mPackageNames.parseString(proc.mText.c_str(), '\n');
+	    mPackageNames.parseString(proc.mText, '\n');
 	    for(auto &pkgName : mPackageNames)
 		{
 		size_t pos = pkgName.find_first_of(" \t");
@@ -70,7 +70,7 @@ std::vector<std::string> AvailablePackages::getAvailablePackages()
     return mPackageNames;
     }
 
-Package AvailablePackages::getPackage(char const * const pkgName) const
+Package AvailablePackages::getPackage(OovStringRef const pkgName) const
     {
     /// @todo - should check if all paths are ok with this.
     Package pkg(pkgName, "/usr");
@@ -85,7 +85,7 @@ Package AvailablePackages::getPackage(char const * const pkgName) const
 	CompoundValue pkgflags;
 	CompoundValue incFlags;
 	CompoundValue cppFlags;
-	pkgflags.parseString(proc.mText.c_str(), ' ');
+	pkgflags.parseString(proc.mText, ' ');
 	for(auto &flag : pkgflags)
 	    {
 	    if(flag[0] == '-' && flag[1] == 'I')
@@ -109,7 +109,7 @@ Package AvailablePackages::getPackage(char const * const pkgName) const
 	CompoundValue pkgFlags;
 	CompoundValue libFlags;
 	CompoundValue linkFlags;
-	pkgFlags.parseString(proc.mText.c_str(), ' ');
+	pkgFlags.parseString(proc.mText, ' ');
 	for(auto &flag : pkgFlags)
 	    {
 	    if(flag[0] == '-' && flag[1] == 'l')

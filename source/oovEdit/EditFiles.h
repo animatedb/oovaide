@@ -57,10 +57,10 @@ class EditFiles
 	/// source file is specified, then the header is also opened.
 	/// @param fn Full filename.
 	/// @param lineNum Line number of specified file.
-	void viewModule(char const * const fn, int lineNum);
+	void viewModule(OovStringRef const fn, int lineNum);
 	/// @param fn Full filename.
 	/// @param lineNum Line number of specified file.
-	void viewFile(char const * const fn, int lineNum);
+	void viewFile(OovStringRef const fn, int lineNum);
 	/// Go to the line number in the current view.
 	/// @param lineNum The line number to put the cursor on.
 	void gotoLine(int lineNum);

@@ -23,10 +23,10 @@
 
 #ifndef MODEL_OBJECTS_H
 #define MODEL_OBJECTS_H
-#include <string>
 #include <list>
 #include <vector>
 #include <memory>
+#include "OovString.h"
 
 #define UNDEFINED_ID -1
 
@@ -47,13 +47,13 @@ class Visibility
     };
     Visibility(VisType v=Private)
         { vis = v; }
-    Visibility(char const *umlStr);
+    Visibility(OovStringRef const umlStr);
     void setVis(VisType v)
 	{ vis = v; }
     VisType getVis() const
 	{ return vis; }
-//    char const * const asStr() const;
-    char const * const asUmlStr() const;
+//    OovStringRef const asStr() const;
+    OovStringRef const asUmlStr() const;
   private:
     VisType vis;
 };
@@ -61,19 +61,19 @@ class Visibility
 class ModelObject
 {
 public:
-    ModelObject(const std::string &name):
+    ModelObject(OovStringRef const name):
         mName(name), mModelId(UNDEFINED_ID)
         {}
-    const std::string &getName() const
+    const OovString &getName() const
         { return mName; }
-    void setName(char const * const name)
+    void setName(OovStringRef const name)
 	{ mName = name; }
     void setModelId(int id)
 	{ mModelId = id; }
     int getModelId() const
 	{ return mModelId; }
 private:
-    std::string mName;
+    OovString mName;
     int mModelId;
 };
 
@@ -118,7 +118,7 @@ class ModelTypeRef
 class ModelDeclarator:public ModelObject, public ModelTypeRef
     {
     public:
-	explicit ModelDeclarator(const std::string &name,
+	explicit ModelDeclarator(OovStringRef const name,
 		ModelType const *declType):
 	    ModelObject(name), ModelTypeRef(declType)
 	    {}
@@ -137,7 +137,7 @@ typedef ModelDeclarator ModelBodyVarDecl;
 class ModelAttribute:public ModelDeclarator
 {
 public:
-    explicit ModelAttribute(const std::string &name, ModelType const *attrType,
+    explicit ModelAttribute(OovStringRef const name, ModelType const *attrType,
 	    Visibility access):
         ModelDeclarator(name, attrType), mAccess(access)
         {}
@@ -170,12 +170,12 @@ class ModelStatement:public ModelObject
 	//	The name is the class's attribute name
 	//	The class decl points to the class type.
 	//	The var decl points to the variable type.
-	ModelStatement(const std::string &name, eModelStatementTypes type):
+	ModelStatement(OovStringRef const name, eModelStatementTypes type):
 	    ModelObject(name), mStatementType(type), mClassDecl(nullptr),
 	    mVarDecl(nullptr), mVarAccessWrite(false)
 	    {}
-	std::string getFuncName() const;	// Only valid for call statement
-	std::string getAttrName() const;	// Only valid for call statement
+	OovString getFuncName() const;	// Only valid for call statement
+	OovString getAttrName() const;	// Only valid for call statement
 	eModelStatementTypes getStatementType() const
 	    { return mStatementType; }
 	// These are only valid for call statement.
@@ -219,7 +219,7 @@ class ModelStatements:public std::vector<ModelStatement>
 class ModelOperation:public ModelObject
 {
 public:
-    ModelOperation(const std::string &name, Visibility access,
+    ModelOperation(OovStringRef const name, Visibility access,
 	    bool isConst):
         ModelObject(name), mAccess(access),
         mIsConst(isConst), mModule(nullptr), mLineNum(0)
@@ -302,7 +302,7 @@ enum eModelDataTypes { DT_DataType, DT_Class };
 class ModelType:public ModelObject
     {
     public:
-	explicit ModelType(const std::string &name, eModelDataTypes type=DT_DataType):
+	explicit ModelType(OovStringRef const name, eModelDataTypes type=DT_DataType):
 	    ModelObject(name), mDataType(type)
 	    {}
 	bool isTemplateType() const;
@@ -320,7 +320,7 @@ class ModelType:public ModelObject
 class ModelClassifier:public ModelType
 {
 public:
-    explicit ModelClassifier(const std::string &name):
+    explicit ModelClassifier(OovStringRef const name):
         ModelType(name, DT_Class), mModule(nullptr), mLineNum(0)
         {}
     void clearOperations();
@@ -432,8 +432,8 @@ class ModelModule:public ModelObject
 	ModelModule():
 	    ModelObject("")
 	    {}
-	void setModulePath(const std::string &str)
-	    { setName(str.c_str()); }
+	void setModulePath(OovStringRef const str)
+	    { setName(str); }
 	const std::string &getModulePath() const
 	    { return getName(); }
     };
@@ -474,11 +474,11 @@ class ModelData
         ModelModule const * const findModuleById(int id);
 
         // otype is only used if a type is created.
-	ModelType *createOrGetTypeRef(char const * const typeName, eModelDataTypes otype);
-	ModelType *createTypeRef(char const * const typeName, eModelDataTypes otype);
-	const ModelType *getTypeRef(char const * const typeName) const;
-	ModelType *findType(char const * const name);
-	const ModelType *findType(char const * const name) const;
+	ModelType *createOrGetTypeRef(OovStringRef const typeName, eModelDataTypes otype);
+	ModelType *createTypeRef(OovStringRef const typeName, eModelDataTypes otype);
+	const ModelType *getTypeRef(OovStringRef const typeName) const;
+	ModelType *findType(OovStringRef const name);
+	const ModelType *findType(OovStringRef const name) const;
 	/// For all pointers to the old type, sets to the new type, then
 	/// deletes the old type.
 	void replaceType(ModelType *existingType, ModelClassifier *newType);
@@ -498,7 +498,7 @@ class ModelData
 
     private:
 	ModelObject *createDataType(eModelDataTypes type, const std::string &id);
-	std::string getBaseType(char const * const fullStr) const;
+	std::string getBaseType(OovStringRef const fullStr) const;
 	const ModelClassifier *findClassByModelId(int id) const;
 	const ModelType *findTypeByModelId(int id) const;
         void resolveStatements(ModelStatements &stmt);

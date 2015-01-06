@@ -83,22 +83,22 @@ static void createStyleTransform(const std::string &fullPath)
 	    "    </tr>\n"
 	    "  </xsl:template>\n"
 	    "</xsl:stylesheet>\n";
-    File transformFile(fullPath.c_str(), "w");
+    File transformFile(fullPath, "w");
     fprintf(transformFile.getFp(), "%s", text);
     }
 
 bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
     {
-    FilePath fp(Project::getProjectDirectory().c_str(), FP_Dir);
+    FilePath fp(Project::getProjectDirectory(), FP_Dir);
     fp.appendDir("output");
     fp.appendFile("StaticAnalysis");
 
-    ensurePathExists(fp.c_str());
+    ensurePathExists(fp);
     createStyleTransform(fp + ".xslt");
 
     fp.appendFile(".xml");
     fn = fp;
-    File useFile(fp.c_str(), "w");
+    File useFile(fp, "w");
     if(useFile.isOpen())
 	{
 	static const char *header =
@@ -116,7 +116,7 @@ bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
 		    int usageCount = 0;
 		    for(auto const &oper : classifier->getOperations())
 			{
-			if(checkAttrUsed(attr->getName().c_str(), oper->getStatements()))
+			if(checkAttrUsed(attr->getName(), oper->getStatements()))
 			    usageCount++;
 			}
 		    static const char *item =

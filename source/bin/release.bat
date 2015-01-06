@@ -2,7 +2,8 @@
 
 set gtk=C:\Program Files\GTK+-Bundle-3.6.4
 set clang=C:\Program Files\LLVM
-set mingw=C:\Program files\mingw-builds\x32-4.8.1-posix-dwarf-rev5\mingw32
+; rem set mingw=C:\Program files\mingw-builds\x32-4.8.1-posix-dwarf-rev5\mingw32
+set mingw=C:\Program Files\mingw-w64\i686-4.9.2-posix-dwarf-rt_v3-rev1\mingw32
 set trnk=..
 set dst=..\..\..\backup\oovcde
 rd /s /q %dst%
@@ -25,7 +26,7 @@ xcopy /s "%gtk%\share\glib-2.0\schemas" %dst%\share\glib-2.0\schemas\
 xcopy /s "%clang%\bin\libclang.dll" %dst%\bin\
 xcopy /s "%clang%\lib\*.*" %dst%\bin\
 
-; also copy to non-release build directory
+; rem also copy to non-release build directory
 rd /s /q .\clang
 xcopy /s "%clang%\bin\libclang.dll" .\
 xcopy /s /i "%clang%\lib\*.*" .\
@@ -55,4 +56,5 @@ copy "%gtk%\bin\libpixman-1-0.dll" %dst%\bin
 copy "%gtk%\bin\libpng15-15.dll" %dst%\bin
 copy "%gtk%\bin\zlib1.dll" %dst%\bin
 copy "%mingw%\bin\libstdc++-6.dll" %dst%\bin
+copy "%mingw%\bin\libwinpthread-1.dll" %dst%\bin
 pause

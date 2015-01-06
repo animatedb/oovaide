@@ -8,8 +8,8 @@
 #ifndef JOURNAL_H_
 #define JOURNAL_H_
 
-#include <string>
 #include <vector>
+#include "OovString.h"
 #include "ClassDiagram.h"
 #include "OperationDiagram.h"
 #include "ComponentDiagram.h"
@@ -21,9 +21,9 @@ class JournalListener
     public:
 	virtual ~JournalListener()
 	    {}
-	virtual void displayClass(char const * const className) = 0;
-	virtual void displayOperation(char const * const className,
-		char const * const operName, bool isConst) = 0;
+	virtual void displayClass(OovStringRef const className) = 0;
+	virtual void displayOperation(OovStringRef const className,
+		OovStringRef const operName, bool isConst) = 0;
     };
 
 class JournalRecord
@@ -40,18 +40,18 @@ class JournalRecord
 	virtual void cppArgOptionsChangedUpdateDrawings() = 0;
 	virtual void saveFile(FILE *fp) = 0;
 	virtual bool isModified() const = 0;
-	char const * const getName() const
-	    { return mName.c_str(); }
+	OovStringRef const getName() const
+	    { return mName; }
 	std::string getFullName(bool addSpace) const;
-	void setName(char const * const str)
+	void setName(OovStringRef const str)
 	    { mName = str; }
 	eRecordTypes getRecordType() const
 	    { return mRecordType; }
-	void displayClass(char const * const className)
+	void displayClass(OovStringRef const className)
 	    { mListener.displayClass(className); }
 
     private:
-	std::string mName;
+	OovString mName;
 	eRecordTypes mRecordType;
 	JournalListener &mListener;
     };
@@ -68,7 +68,7 @@ class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListene
 	ClassDiagram mClassDiagram;
 
     private:
-	virtual void gotoClass(char const * const className)
+	virtual void gotoClass(OovStringRef const className)
 	    { displayClass(className); }
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
 	    { mClassDiagram.buttonPressEvent(event); }
@@ -96,7 +96,7 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
 	OperationDiagram mOperationDiagram;
 
     private:
-	virtual void gotoClass(char const * const className)
+	virtual void gotoClass(OovStringRef const className)
 	    { displayClass(className); }
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
 	    { mOperationDiagram.buttonPressEvent(event); }
@@ -123,7 +123,7 @@ class JournalRecordComponentDiagram:public JournalRecord
 	ComponentDiagram mComponentDiagram;
 
     private:
-	virtual void gotoClass(char const * const className)
+	virtual void gotoClass(OovStringRef const className)
 	    { displayClass(className); }
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
 	    { mComponentDiagram.buttonPressEvent(event); }
@@ -149,9 +149,9 @@ class Journal
 	void init(Builder &builder, const ModelData &model, JournalListener &listener)
 	    { mBuilder = &builder; mModel = &model; mListener = &listener; }
 	void clear();
-	void displayClass(char const * const className);
-	void addClass(char const * const className);
-	void displayOperation(char const * const className, char const * const operName,
+	void displayClass(OovStringRef const className);
+	void addClass(OovStringRef const className);
+	void displayOperation(OovStringRef const className, OovStringRef const operName,
 		bool isConst);
 	void displayComponents();
 	void saveFile(FILE *fp);
@@ -176,9 +176,9 @@ class Journal
 	JournalListener *mListener;
 	const JournalRecord *getCurrentRecord() const
 	    { return (mRecords.size() > 0) ? mRecords[mRecords.size()-1] : NULL; }
-	void addRecord(JournalRecord *record,	char const * const name);
+	void addRecord(JournalRecord *record,	OovStringRef const name);
 	void removeRecord(int index);
-	int findRecord(char const * const name);
+	int findRecord(OovStringRef const name);
     };
 
 #endif /* JOURNAL_H_ */

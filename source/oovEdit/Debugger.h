@@ -22,7 +22,7 @@ enum GdbChildStates { GCS_GdbChildNotRunning, GCS_GdbChildRunning, GCS_GdbChildP
 class DebuggerLocation
     {
     public:
-	DebuggerLocation(char const * const fn="", int line=-1):
+	DebuggerLocation(OovStringRef const fn="", int line=-1):
 	    mFileName(fn), mLineNum(line)
 	    {
 	    }
@@ -35,7 +35,7 @@ class DebuggerLocation
 	    return(mLineNum == rhs.mLineNum &&
 		    StringCompareNoCase(mFileName.c_str(), rhs.mFileName.c_str()) == 0);
 	    }
-	void setFileLine(char const * const fn, int line)
+	void setFileLine(OovStringRef const fn, int line)
 	    {
 	    mFileName = fn;
 	    mLineNum = line;
@@ -65,7 +65,7 @@ class DebuggerLocation
 class DebuggerBreakpoint:public DebuggerLocation
     {
     public:
-	DebuggerBreakpoint(char const * const fn="", int line=-1):
+	DebuggerBreakpoint(OovStringRef const fn="", int line=-1):
 	    DebuggerLocation(fn, line), mBreakpointNumber(-1)
 	    {}
 	int mBreakpointNumber;
@@ -91,7 +91,7 @@ class DebuggerListener
 	    {}
 	/// All output from the debugger process is sent to this listener.
 	/// Set this up by calling Debugger::setListener.
-	virtual void DebugOutput(char const * const str) = 0;
+	virtual void DebugOutput(OovStringRef const str) = 0;
 	/// This is called after the state has changed. Use
 	/// Debugger::getChangeStatus to get the status.
 	virtual void DebugStatusChanged() = 0;
@@ -104,19 +104,19 @@ class Debugger:public OovProcessListener
 	Debugger();
 	void setListener(DebuggerListener &listener)
 	    { mDebuggerListener = &listener; }
-	void setDebuggerFilePath(char const * const dbgPath)
+	void setDebuggerFilePath(OovStringRef const dbgPath)
 	    { mDebuggerFilePath = dbgPath; }
 	/// The debuggee is the program being debugged.
-	void setDebuggee(char const * const debuggee)
+	void setDebuggee(OovStringRef const debuggee)
 	    { mDebuggeeFilePath = debuggee; }
-	void setDebuggeeArgs(char const * const args)
+	void setDebuggeeArgs(OovStringRef const args)
 	    { mDebuggeeArgs = args; }
 	/// This is the working directory of the debuggee.
-	void setWorkingDir(char const * const dir)
+	void setWorkingDir(OovStringRef const dir)
 	    { mWorkingDir = dir; }
 	/// @param frameLine One line of text returned from getStack
 	///	Lines are separated with \n.
-	void setStackFrame(char const * const frameLine);
+	void setStackFrame(OovStringRef const frameLine);
 	void toggleBreakpoint(const DebuggerBreakpoint &br);
 	void stepInto();
 	void stepOver();
@@ -124,10 +124,10 @@ class Debugger:public OovProcessListener
 	void interrupt();	// pause
 	void stop();
 	/// This allows the user to send a typed in debugger command.
-	void sendCommand(char const * const command);
-	void startGetVariable(char const * const variable);
+	void sendCommand(OovStringRef const command);
+	void startGetVariable(OovStringRef const variable);
 	void startGetStack();
-	void startGetMemory(char const * const addr);
+	void startGetMemory(OovStringRef const addr);
 
 	std::string const &getDebuggerFilePath() const
 	    { return mDebuggerFilePath; }
@@ -139,16 +139,16 @@ class Debugger:public OovProcessListener
 	// The following info must be thread protected
 	Debugger::eChangeStatus getChangeStatus();
 	GdbChildStates getChildState();
-	std::string getStack();
-	std::string getVarValue();
+	OovString getStack();
+	OovString getVarValue();
 	// Returns empty filename if not stopped.
 	DebuggerLocation getStoppedLocation();
 
     private:
-	std::string mDebuggerFilePath;
-	std::string mDebuggeeFilePath;
-	std::string mDebuggeeArgs;
-	std::string mWorkingDir;
+	OovString mDebuggerFilePath;
+	OovString mDebuggeeFilePath;
+	OovString mDebuggeeArgs;
+	OovString mWorkingDir;
 
 	DebuggerBreakpoints mBreakpoints;
 	OovBackgroundPipeProcess mBkgPipeProc;
@@ -174,15 +174,15 @@ class Debugger:public OovProcessListener
 	void ensureGdbChildRunning();
 	void sendAddBreakpoint(const DebuggerBreakpoint &br);
 	void sendDeleteBreakpoint(const DebuggerBreakpoint &br);
-	void sendMiCommand(char const * const command);
+	void sendMiCommand(OovStringRef const command);
 	void changeChildState(GdbChildStates state);
 	void updateChangeStatus(Debugger::eChangeStatus);
 	void handleResult(const std::string &resultStr);
 	void handleBreakpoint(const std::string &resultStr);
 	void handleStack(const std::string &resultStr);
 	void handleValue(const std::string &resultStr);
-	virtual void onStdOut(char const * const out, int len);
-	virtual void onStdErr(char const * const out, int len);
+	virtual void onStdOut(OovStringRef const out, int len);
+	virtual void onStdErr(OovStringRef const out, int len);
     };
 
 #endif /* DEBUGGER_H_ */

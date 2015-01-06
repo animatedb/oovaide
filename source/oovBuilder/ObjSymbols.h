@@ -10,7 +10,7 @@
 
 #include "OovProcess.h"
 #include <vector>
-#include <string>
+#include "OovString.h"
 
 class ObjSymbols
     {
@@ -22,22 +22,22 @@ class ObjSymbols
 	/// @param outPath Location of where to put symbol information.
 	/// @param objSymbolTool The executable name.
 	/// @param sortedLibFileNames Sorted names
-	bool makeClumpSymbols(char const * const clumpName,
-		const std::vector<std::string> &libFileNames, char const * const outSymPath,
-		char const * const objSymbolTool, class ComponentTaskQueue &queue);
+	bool makeClumpSymbols(OovStringRef const clumpName,
+		OovStringVec const &libFileNames, OovStringRef const outSymPath,
+		OovStringRef const objSymbolTool, class ComponentTaskQueue &queue);
 
 	// From the clump, append the ordered libraries with their directories.
-	static void appendOrderedLibs(char const * const clumpName,
-		char const * const outPath, std::vector<std::string> &libDirs,
-		std::vector<std::string> &sortedLibNames);
-	static void appendOrderedLibFileNames(char const * const clumpName,
-		char const * const outPath,
-		std::vector<std::string> &sortedLibFileNames);
+	static void appendOrderedLibs(OovStringRef const clumpName,
+		OovStringRef const outPath, OovStringVec &libDirs,
+		OovStringVec &sortedLibNames);
+	static void appendOrderedLibFileNames(OovStringRef const clumpName,
+		OovStringRef const outPath,
+		OovStringVec &sortedLibFileNames);
 
     private:
         InProcMutex mListenerStdMutex;
-        bool makeObjectSymbols(const std::vector<std::string> &libFiles,
-        	char const * const outSymPath, char const * const objSymbolTool,
+        bool makeObjectSymbols(OovStringVec const &libFiles,
+        	OovStringRef const outSymPath, OovStringRef const objSymbolTool,
         	ComponentTaskQueue &queue, class ClumpSymbols &clumpSymbols);
     };
 

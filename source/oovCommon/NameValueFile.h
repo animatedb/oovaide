@@ -8,6 +8,8 @@
 #ifndef NAMEVALUEFILE_H_
 #define NAMEVALUEFILE_H_
 
+#include "OovString.h"
+
 // This file format borrows slightly from json.
 //
 // The reserved characters are :{} and end of line
@@ -28,48 +30,48 @@
 class CompoundValueRef
     {
     public:
-	static void addArg(char const * const arg, std::vector<std::string> &vec)
+	static void addArg(OovStringRef const arg, OovStringVec &vec)
 	    { vec.push_back(arg); }
 	/// The delimiter is \n for editing in an editor, and a semicolon
 	/// for passing on the command line or saved in the file.
-	static std::string getAsString(const std::vector<std::string> &vec,
+	static OovString getAsString(const OovStringVec &vec,
 		char delimiter=';');
-	static std::string getAsString(const std::set<std::string> &stdset,
+	static OovString getAsString(const OovStringSet &stdset,
 		char delimiter=';');
-	static std::vector<std::string> parseString(char const * const str,
+	static OovStringVec parseString(OovStringRef const str,
 		char delimiter=';');
-	static void parseStringRef(char const * const str, std::vector<std::string> &vec,
+	static void parseStringRef(OovStringRef const str, OovStringVec &vec,
 		char delimiter=';');
     };
 
 /// This builds compound string arguments delimited with a semicolon.
 /// This can help build options such as:
 /// CppArgs|-I/mingw/include;-IC:/Program Files/GTK+-Bundle-3.6.1/include
-class CompoundValue:public std::vector<std::string>
+class CompoundValue:public OovStringVec
     {
     public:
 	CompoundValue()
 	    {}
-	CompoundValue(char const * const str, char delimiter=';')
+	CompoundValue(OovStringRef const str, char delimiter=';')
 	    { parseString(str, delimiter); }
-	CompoundValue(std::vector<std::string> const &strs)
+	CompoundValue(OovStringVec const &strs)
 	    {
 	    for(auto const &str : strs)
 		{
-		addArg(str.c_str());
+		addArg(str);
 		}
 	    }
 	static const size_t npos = -1;
-	void addArg(char const * const arg)
+	void addArg(OovStringRef const arg)
 	    { push_back(arg); }
 	/// The delimiter is \n for editing in an editor, and a semicolon
 	/// for passing on the command line or saved in the file.
-	std::string getAsString(char delimiter=';') const
+	OovString getAsString(char delimiter=';') const
 	    { return CompoundValueRef::getAsString(*this, delimiter); }
-	void parseString(char const * const str, char delimiter=';')
+	void parseString(OovStringRef const str, char delimiter=';')
 	    { CompoundValueRef::parseStringRef(str, *this, delimiter); }
 	// Returns index to found string, else npos.
-	size_t find(char const * const str);
+	size_t find(OovStringRef const str);
 	/// WARNING - This should not be saved to the options file.
 	/// This is for passing command line arguments in Windows/DOS.
 	/// This can only be used if the switch (ex: -I) is already stored in the argument.
@@ -86,24 +88,24 @@ class NameValueRecord
 	static char const mapDelimiter = '|';
 	void clear()
 	    { mNameValues.clear(); }
-	void setNameValue(char const * const optionName, char const * const value);
-	std::string getValue(char const * const optionName) const;
-	void setNameValueBool(char const * const optionName, bool val);
-	bool getValueBool(char const * const optionName) const;
-	const std::map<std::string, std::string> &getNameValues() const
+	void setNameValue(OovStringRef const optionName, OovStringRef const value);
+	OovString getValue(OovStringRef const optionName) const;
+	void setNameValueBool(OovStringRef const optionName, bool val);
+	bool getValueBool(OovStringRef const optionName) const;
+	const std::map<OovString, OovString> &getNameValues() const
 	    { return mNameValues; }
 	void write(FILE *fp);
 	void read(FILE *fp);
-	void insertBufToMap(std::string const &buf);
-	void readMapToBuf(std::string &buf);
+	void insertBufToMap(OovString const buf);
+	void readMapToBuf(OovString &buf);
 	void saveNullValues(bool save)
 	    { mSaveNullValues = save; }
 
     private:
 	bool mSaveNullValues;
-	std::map<std::string, std::string> mNameValues;
-	bool getLine(FILE *fp, std::string &str);
-	void insertLine(std::string line);
+	std::map<OovString, OovString> mNameValues;
+	bool getLine(FILE *fp, OovString &str);
+	void insertLine(OovString line);
     };
 
 /// This can store a bunch of options in a file. Each option is on a separate line
@@ -112,17 +114,16 @@ class NameValueRecord
 class NameValueFile:public NameValueRecord
     {
     public:
-	NameValueFile(char const * const fn = nullptr)
+	NameValueFile()
+	    {}
+	NameValueFile(OovStringRef const fn)
 	    {
-	    if(fn)
-		setFilename(fn);
+	    setFilename(fn);
 	    }
 	const std::string &getFilename() const
 	    { return mFilename; }
-	void setFilename(char const * const fn)
+	void setFilename(OovStringRef const fn)
 	    { mFilename = fn; }
-	void setFilename(std::string const &fn)
-	    { mFilename = fn.c_str(); }
 	bool readFile();
 	bool writeFile();
 
@@ -137,7 +138,7 @@ class NameValueFile:public NameValueRecord
 	bool writeFileExclusive(SharedFile &file);
 
     private:
-	std::string mFilename;
+	OovString mFilename;
 	bool readOpenedFile(SharedFile &file);
     };
 

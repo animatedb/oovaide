@@ -34,8 +34,8 @@
 #define BuildConfigDebug "Debug"
 #define BuildConfigRelease "Release"
 
-std::string makeBuildConfigArgName(char const * const baseName,
-	char const * const buildConfig);
+OovString makeBuildConfigArgName(OovStringRef const baseName,
+	OovStringRef const buildConfig);
 
 /// A project file contains compile flags and drawing parameters.
 /// There is also a matching .XMI file for every source file, that only
@@ -43,67 +43,66 @@ std::string makeBuildConfigArgName(char const * const baseName,
 class Project
     {
     public:
-	static void setProjectDirectory(char const * const projDir)
+	static void setProjectDirectory(OovStringRef const projDir)
 	    { sProjectDirectory = projDir; }
-	static std::string const &getProjectDirectory()
+	static OovString const &getProjectDirectory()
 	    { return sProjectDirectory; }
-	static std::string getProjectFilePath();
+	static OovString getProjectFilePath();
 
-	static std::string getGuiOptionsFilePath();
+	static OovString getGuiOptionsFilePath();
 
-	static void setSourceRootDirectory(char const * const projDir)
+	static void setSourceRootDirectory(OovStringRef const projDir)
 	    { sSourceRootDirectory = projDir; }
 
-	static std::string getComponentTypesFilePath();
-	static std::string getComponentSourceListFilePath();
+	static OovString getComponentTypesFilePath();
+	static OovString getComponentSourceListFilePath();
 
-	static std::string getPackagesFilePath();
-	static std::string getBuildPackagesFilePath();
+	static OovString getPackagesFilePath();
+	static OovString getBuildPackagesFilePath();
 
-	static FilePath getOutputDir(char const * const buildDirClass);
-	static FilePath getIntermediateDir(char const * const buildDirClass);
+	static FilePath getOutputDir(OovStringRef const buildDirClass);
+	static FilePath getIntermediateDir(OovStringRef const buildDirClass);
 
-	static std::string const &getSrcRootDirectory();
+	static OovStringRef const getSrcRootDirectory();
 	/// Returns a filename relative to the root source directory.
-	static void getSrcRootDirRelativeSrcFileName(const std::string &srcFileName,
-		const std::string &srcRootDir, std::string &relSrcFileName);
-	static std::string getSrcRootDirRelativeSrcFileDir(const std::string &absSrcFileDir);
-	static std::string getAbsoluteDirFromSrcRootDirRelativeDir(const std::string &relSrcFileDir);
+	static OovString getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileName,
+		OovStringRef const srcRootDir);
+	static OovString getSrcRootDirRelativeSrcFileDir(OovStringRef const absSrcFileDir);
+	static OovString getAbsoluteDirFromSrcRootDirRelativeDir(OovStringRef const relSrcFileDir);
 
-	static char const * const getAnalysisIncDepsFilename()
+	static OovStringRef getAnalysisIncDepsFilename()
 	    { return "oovcde-incdeps.txt"; }
-	static char const * const getAnalysisComponentsFilename()
+	static OovStringRef getAnalysisComponentsFilename()
 	    { return "oovcde-extdirs.txt"; }
 	/// Make a filename for the compressed content file for each source file.
 	/// The analysisDir is retreived from the build configuration.
-	static void makeAnalysisFileName(const std::string &srcFileName,
-		const std::string &srcRootDir,
-		const std::string &analysisDir, std::string &outFileName)
+	static OovString makeAnalysisFileName(OovStringRef const srcFileName,
+		OovStringRef const srcRootDir, OovStringRef const analysisDir)
 	    {
-	    makeOutBaseFileName(srcFileName, srcRootDir, analysisDir, outFileName);
+	    OovString outFileName = makeOutBaseFileName(srcFileName,
+		    srcRootDir, analysisDir);
 	    outFileName += ".xmi";
+	    return outFileName;
 	    }
 
 	// Location for coverage source files
-	static std::string getCoverageSourceDirectory();
-	static std::string makeCoverageSourceFileName(const std::string &srcFileName,
-		const std::string &srcRootDir);
-	static std::string getCoverageProjectDirectory();
-	static char const * const getCovLibName()
+	static OovString getCoverageSourceDirectory();
+	static OovString makeCoverageSourceFileName(OovStringRef const srcFileName,
+		OovStringRef const srcRootDir);
+	static OovString getCoverageProjectDirectory();
+	static OovStringRef const getCovLibName()
 	    { return "covLib"; }
 
 	// This does not have an extension.
-	static void makeOutBaseFileName(const std::string &srcFileName,
-		const std::string &srcRootDir,
-		const std::string &outFilePath, std::string &outFileName);
+	static OovString makeOutBaseFileName(OovStringRef const srcFileName,
+		OovStringRef const srcRootDir, OovStringRef const outFilePath);
 	// This does not have an extension.
-	static void makeTreeOutBaseFileName(const std::string &srcFileName,
-		const std::string &srcRootDir,
-		const std::string &outFilePath, std::string &outFileName);
+	static OovString makeTreeOutBaseFileName(OovStringRef const srcFileName,
+		OovStringRef const srcRootDir, OovStringRef const outFilePath);
 	static void replaceChars(std::string &str, char oldC, char newC);
     private:
-	static std::string sProjectDirectory;
-	static std::string sSourceRootDirectory;
+	static OovString sProjectDirectory;
+	static OovString sSourceRootDirectory;
     };
 
 enum eLinkOrderIndices { LOI_InternalProject=0, LOI_AfterInternalProject=1000,
@@ -112,7 +111,7 @@ struct IndexedString
     {
     int mLinkOrderIndex;
     std::string mString;
-    IndexedString(int index, char const * const str):
+    IndexedString(int index, OovStringRef const str):
 	mLinkOrderIndex(index), mString(str)
 	{}
     IndexedString(int index, const std::string &str):
@@ -131,8 +130,8 @@ class ProjectReader:public NameValueFile
 	ProjectReader():
 	    mProjectPackages(false), mBuildPackages(false), mVerbose(false)
 	    {}
-	bool readOovProject(char const * const oovProjectDir,
-		char const * const buildConfigName);
+	bool readOovProject(OovStringRef const oovProjectDir,
+		OovStringRef const buildConfigName);
 
 	const ProjectPackages &getProjectPackages() const
 	    { return mProjectPackages; }
@@ -140,19 +139,19 @@ class ProjectReader:public NameValueFile
 	    { return mBuildPackages; }
 	BuildPackages &getBuildPackages()
 	    { return mBuildPackages; }
-	const StdStringVec &getCompileArgs() const
+	const OovStringVec &getCompileArgs() const
 	    { return mCompileArgs; }
 	const IndexedStringVec &getLinkArgs() const
 	    { return mLinkArgs; }
-	const StdStringVec &getExternalArgs() const
+	const OovStringVec &getExternalArgs() const
 	    { return mExternalRootArgs; }
-	int getExternalPackageLinkOrder(char const * const pkgName) const;
+	int getExternalPackageLinkOrder(OovStringRef const pkgName) const;
 	// These are only used for computing CRC's. The builder will later get
 	// the arguments from the packages because not all packages are used by
 	// all components.
-	const StdStringVec getAllCrcCompileArgs() const;
-	const StdStringVec getAllCrcLinkArgs() const;
-	static std::string const &getSrcRootDirectory()
+	const OovStringVec getAllCrcCompileArgs() const;
+	const OovStringVec getAllCrcLinkArgs() const;
+	static OovStringRef const getSrcRootDirectory()
 	    { return Project::getSrcRootDirectory(); }
 	/// These are absolute directories
 	CompoundValue getProjectExcludeDirs() const;
@@ -160,15 +159,15 @@ class ProjectReader:public NameValueFile
 	    { return mVerbose; }
 
     private:
-	StdStringVec mCompileArgs;
+	OovStringVec mCompileArgs;
 	IndexedStringVec mLinkArgs;
-	StdStringVec mExternalRootArgs;
+	OovStringVec mExternalRootArgs;
 	IndexedStringVec mExternalPackageNames;
 
 	// The Crc vectors are only for computing CRC and are not used for building.
-	StdStringVec mPackageCrcCompileArgs;
-	StdStringVec mPackageCrcLinkArgs;
-	StdStringVec mPackageCrcNames;
+	OovStringVec mPackageCrcCompileArgs;
+	OovStringVec mPackageCrcLinkArgs;
+	OovStringVec mPackageCrcNames;
 
 	/// These are chosen by the user and saved for the project.
 	ProjectPackages mProjectPackages;
@@ -178,24 +177,24 @@ class ProjectReader:public NameValueFile
 	BuildPackages mBuildPackages;
 	bool mVerbose;
 
-	void addCompileArg(char const * const str)
+	void addCompileArg(OovStringRef const str)
 	    { mCompileArgs.push_back(str); }
-	void addLinkArg(int linkOrderIndex, char const * const str)
+	void addLinkArg(int linkOrderIndex, OovStringRef const str)
 	    { mLinkArgs.push_back(IndexedString(linkOrderIndex, str)); }
-	void addExternalArg(char const * const str)
+	void addExternalArg(OovStringRef const str)
 	    { mExternalRootArgs.push_back(str); }
-	void addExternalPackageName(int linkOrderIndex, char const * const str)
+	void addExternalPackageName(int linkOrderIndex, OovStringRef const str)
 	    { mExternalPackageNames.push_back(IndexedString(linkOrderIndex, str)); }
 
-	void addPackageCrcName(char const * const pkgName)
-	    { mPackageCrcNames.push_back(std::string("-EP") + pkgName); }
-	void addPackageCrcCompileArg(char const * const str)
+	void addPackageCrcName(OovStringRef const pkgName)
+	    { mPackageCrcNames.push_back(OovString("-EP") + OovString(pkgName)); }
+	void addPackageCrcCompileArg(OovStringRef const str)
 	    { mPackageCrcCompileArgs.push_back(str); }
-	void addPackageCrcLinkArg(char const * const str)
+	void addPackageCrcLinkArg(OovStringRef const str)
 	    { mPackageCrcLinkArgs.push_back(str); }
 
-	void parseArgs(StdStringVec const &strs);
-	void handleExternalPackage(char const * const pkgName);
+	void parseArgs(OovStringVec const &strs);
+	void handleExternalPackage(OovStringRef const pkgName);
     };
 
 #endif /* PROJECT_H_ */

@@ -67,14 +67,14 @@ static unsigned short computeCRC(unsigned char const * const dataPtr, int numByt
     return crc;
     }
 
-static unsigned short computeCRC(std::string const &str)
+static unsigned short computeCRC(OovString const &str)
     {
-    return computeCRC(reinterpret_cast<unsigned char const * const>(str.c_str()), str.length());
+    return computeCRC(reinterpret_cast<unsigned char const * const>(str.getStr()), str.length());
     }
 
 //////////////////
 
-std::string BuildConfigStrings::getCrcAsStr(BuildConfig::CrcTypes crcType) const
+OovString BuildConfigStrings::getCrcAsStr(BuildConfig::CrcTypes crcType) const
     {
     std::string str;
     switch(crcType)
@@ -148,12 +148,12 @@ static std::string normalizeArgPath(std::string argpath)
 
 // The BuildConfig constructor reads the file, so this info will be
 // eventually added to the file.
-void BuildConfigWriter::setInitialConfig(char const * const buildConfigType,
-	std::vector<std::string> const &extArgs, std::vector<std::string> const &cppArgs,
-	std::vector<std::string> const &linkArgs)
+void BuildConfigWriter::setInitialConfig(OovStringRef const buildConfigType,
+	OovStringVec const &extArgs, OovStringVec const &cppArgs,
+	OovStringVec const &linkArgs)
     {
     mBuildConfigType = buildConfigType;
-    static char const * const extPathArgs[] =
+    static OovStringRef const extPathArgs[] =
 	{
 	"-I", "-D", "-L", "-EP"
 	};
@@ -167,7 +167,7 @@ void BuildConfigWriter::setInitialConfig(char const * const buildConfigType,
 	bool linkArg = false;
 	for(auto &extArg : extPathArgs)
 	    {
-	    std::string extArgStr = extArg;
+	    OovString extArgStr = extArg;
 	    if(str.compare(0, extArgStr.length(), extArgStr) == 0)
 		{
 		found = true;
@@ -192,7 +192,7 @@ void BuildConfigWriter::setInitialConfig(char const * const buildConfigType,
 	}
     }
 
-void BuildConfigWriter::setProjectConfig(std::vector<std::string> const &projIncs)
+void BuildConfigWriter::setProjectConfig(OovStringVec const &projIncs)
     {
     for(auto const &str : projIncs)
 	{
@@ -200,14 +200,14 @@ void BuildConfigWriter::setProjectConfig(std::vector<std::string> const &projInc
 	}
     }
 
-bool BuildConfigWriter::isConfigDifferent(char const * const buildType,
+bool BuildConfigWriter::isConfigDifferent(OovStringRef const buildType,
 	BuildConfig::CrcTypes crcType) const
     {
     return(mNewBuildConfigStrings.getCrcAsStr(crcType).compare(
 	    getCrcAsStr(buildType, crcType)) != 0);
     }
 
-bool BuildConfigWriter::isAnyConfigDifferent(char const * const buildType) const
+bool BuildConfigWriter::isAnyConfigDifferent(OovStringRef const buildType) const
     {
     bool diff = false;
     for(int i=BuildConfig::CT_FirstCrc; i<=BuildConfig::CT_LastCrc; i++)
@@ -220,13 +220,13 @@ bool BuildConfigWriter::isAnyConfigDifferent(char const * const buildType) const
     return diff;
     }
 
-void BuildConfigWriter::getUnusedCrcs(std::vector<std::string> &unusedCrcs) const
+void BuildConfigWriter::getUnusedCrcs(OovStringVec &unusedCrcs) const
     {
     unusedCrcs.clear();
     /// @todo - this needs to find unused CRC's in order to allow cleanup.
     }
 
-void BuildConfigWriter::saveConfig(char const * const buildType)
+void BuildConfigWriter::saveConfig(OovStringRef const buildType)
     {
     if(isAnyConfigDifferent(buildType))
 	{
@@ -241,18 +241,18 @@ void BuildConfigWriter::saveConfig(char const * const buildType)
 	char tempStr[40];
 	snprintf(tempStr, sizeof(tempStr), "%u;%u;%u;%u;%u", analysisCrc,
 		extCrc, projCrc, linkCrc, otherCrc);
-	mConfigFile.setNameValue(mBuildConfigType.c_str(), tempStr);
+	mConfigFile.setNameValue(mBuildConfigType, tempStr);
 
 	snprintf(tempStr, sizeof(tempStr), "%u", analysisCrc);
-	mConfigFile.setNameValue(tempStr, analysisStr.c_str());
+	mConfigFile.setNameValue(tempStr, analysisStr);
 	snprintf(tempStr, sizeof(tempStr), "%u", extCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mExternalConfig.c_str());
+	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mExternalConfig);
 	snprintf(tempStr, sizeof(tempStr), "%u", projCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mProjectConfig.c_str());
+	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mProjectConfig);
 	snprintf(tempStr, sizeof(tempStr), "%u", linkCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mLinkArgsConfig.c_str());
+	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mLinkArgsConfig);
 	snprintf(tempStr, sizeof(tempStr), "%u", otherCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mOtherArgsConfig.c_str());
+	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mOtherArgsConfig);
 
 	mConfigFile.writeFile();
 	}

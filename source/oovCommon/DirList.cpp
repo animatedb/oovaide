@@ -17,7 +17,7 @@
 #include <stdio.h>
 
 
-void deleteDir(char const * const path)
+void deleteDir(OovStringRef const path)
     {
     DIR *dp = opendir(path);
     if(dp)
@@ -25,24 +25,24 @@ void deleteDir(char const * const path)
 	struct dirent *dirp;
 	while(((dirp = readdir(dp)) != nullptr))
 	    {
-	    std::string fullName = path;
+	    OovString fullName = path;
 	    ensureLastPathSep(fullName);
 	    fullName += dirp->d_name;
-	    deleteFile(fullName.c_str());
+	    deleteFile(fullName);
 	    }
 	closedir(dp);
 	}
     rmdir(path);
     }
 
-static bool isDir(char const * const path)
+static bool isDir(OovStringRef const path)
     {
     struct OovStat32 statval;
-    bool success = (OovStat32(path, &statval) == 0);
+    bool success = (OovStat32(path.getStr(), &statval) == 0);
     return(success && S_ISDIR(statval.st_mode));
     }
 
-void recursiveDeleteDir(char const * const path)
+void recursiveDeleteDir(OovStringRef const path)
     {
     DIR *dp = opendir(path);
     if(dp)
@@ -50,18 +50,18 @@ void recursiveDeleteDir(char const * const path)
 	struct dirent *dirp;
 	while(((dirp = readdir(dp)) != nullptr))
 	    {
-	    std::string fullName = path;
+	    OovString fullName = path;
 	    ensureLastPathSep(fullName);
 	    fullName += dirp->d_name;
 
-            if(isDir(fullName.c_str()))
+            if(isDir(fullName))
 //	    if(dirp->d_type == DT_DIR)
 		{
 		if(strcmp(dirp->d_name, ".") != 0 && strcmp(dirp->d_name, "..") != 0)
-		    recursiveDeleteDir(fullName.c_str());
+		    recursiveDeleteDir(fullName);
 		}
 	    else
-		deleteFile(fullName.c_str());
+		deleteFile(fullName);
 	    }
 	closedir(dp);
 	}
@@ -69,7 +69,7 @@ void recursiveDeleteDir(char const * const path)
     }
 
 /*
-bool recursivegetDirListMatchFileName(char const * const path, const FilePath &fn,
+bool recursivegetDirListMatchFileName(OovStringRef const path, const FilePath &fn,
 	std::vector<std::string> &foundFiles)
     {
     bool success = false;
@@ -102,7 +102,7 @@ bool recursivegetDirListMatchFileName(char const * const path, const FilePath &f
     }
 */
 
-bool getDirListMatchExt(char const * const path, const FilePaths &extensions,
+bool getDirListMatchExt(OovStringRef const path, const FilePaths &extensions,
 	std::vector<std::string> &fn)
     {
     bool success = false;
@@ -115,7 +115,7 @@ bool getDirListMatchExt(char const * const path, const FilePaths &extensions,
 	    {
 	    if(anyExtensionMatch(extensions, dirp->d_name))
 		{
-		std::string fullName = path;
+		OovString fullName = path;
 		ensureLastPathSep(fullName);
 		fullName += dirp->d_name;
 		fn.push_back(fullName);
@@ -126,7 +126,7 @@ bool getDirListMatchExt(char const * const path, const FilePaths &extensions,
     return success;
     }
 
-bool getDirListMatchExt(char const * const path, const FilePath &ext,
+bool getDirListMatchExt(OovStringRef const path, const FilePath &ext,
 	std::vector<std::string> &fn)
     {
     FilePaths extensions;
@@ -140,14 +140,14 @@ bool getDirListMatchExt(const std::vector<std::string> &paths,
     bool success = true;
     for(const auto &path : paths)
 	{
-	success = getDirListMatchExt(path.c_str(), extensions, fn);
+	success = getDirListMatchExt(path, extensions, fn);
 	if(!success)
 	    break;
 	}
     return success;
     }
 
-bool getDirList(char const * const path, eDirListTypes, std::vector<std::string> &fn)
+bool getDirList(OovStringRef const path, eDirListTypes types, std::vector<std::string> &fn)
     {
     bool success = false;
     DIR *dp = opendir(path);
@@ -158,19 +158,116 @@ bool getDirList(char const * const path, eDirListTypes, std::vector<std::string>
 	while(((dirp = readdir(dp)) != nullptr) && success)
 	    {
 	    FilePath fullName(path, FP_Dir);
-            if(isDir(fullName.c_str()))
-//	    if(dirp->d_type == DT_DIR)
-		fullName.appendDir(dirp->d_name);
+	    fullName.appendDir(dirp->d_name);
+//	    if(dirp->d_type == DT_DIR)		// Some OS's don't have this.
+            if(isDir(fullName))
+        	{
+        	if(types & DL_Dirs)
+        	    {
+        	    if(dirp->d_name[0] != '.')
+        		{
+			fn.push_back(fullName);
+        		}
+        	    }
+        	}
 	    else
-		fullName.appendFile(dirp->d_name);
-	    fn.push_back(fullName);
+		{
+        	if(types & DL_Files)
+        	    {
+        	    FilePath fileName(path, FP_Dir);
+        	    fileName.appendFile(dirp->d_name);
+        	    fn.push_back(fileName);
+        	    }
+		}
 	    }
 	closedir(dp);
 	}
     return success;
     }
 
-bool dirRecurser::recurseDirs(char const * const srcDir)
+// The wildcardStr can have an asterisk, but must be at the end of
+// a subdirectory. For example: "\Qt*\mingw*\"
+bool subDirMatch(OovStringRef const wildCardStr, OovStringRef const pathStr)
+    {
+    const char *wcStr = wildCardStr;
+    const char *pStr = pathStr;
+    bool match = true;
+    while(*wcStr)
+	{
+	switch(*wcStr)
+	    {
+	    case '*':
+		while(*pStr != '/' && *pStr)
+		    {
+		    pStr++;
+		    }
+		break;
+
+	    default:
+		if(toupper(*wcStr) == toupper(*pStr))
+		    {
+		    pStr++;
+		    }
+		else
+		    {
+		    match = false;
+		    }
+	    }
+	wcStr++;
+	}
+    return(match && *wcStr == *pStr);
+    }
+
+// Returns matching subdirectories.
+std::vector<std::string> matchDirs(FilePaths const &wildCardDirs)
+    {
+    std::vector<std::string> subDirs;
+    for(auto const &wcStr : wildCardDirs)
+	{
+	getDirList(wcStr, DL_Dirs, subDirs);
+	}
+    return subDirs;
+    }
+
+OovString const findMatchingDir(FilePaths const &startingDirs, OovStringRef const wildCardStr)
+    {
+    OovString matchedDir;
+    FilePath wildCardPattern(wildCardStr, FP_Dir);
+    FilePaths searchDirs = startingDirs;
+    wildCardPattern.moveToStartDir();
+    while(1)
+	{
+	std::vector<std::string> foundSubDirs = matchDirs(searchDirs);
+
+	// Filter and copy matching found directories to new search directories.
+	searchDirs.clear();
+	size_t pos = wildCardPattern.moveRightPathSep();
+	for(auto const &foundDir : foundSubDirs)
+	    {
+	    FilePaths patterns;
+	    for(auto const &startDir : startingDirs)
+		{
+		FilePath pattern(startDir, FP_Dir);
+		pattern.appendDir(wildCardPattern.getHead());
+		if(subDirMatch(pattern, foundDir))
+		    {
+		    searchDirs.push_back(FilePath(foundDir, FP_Dir));
+		    }
+		}
+	    }
+	if(pos == wildCardPattern.numChars()-1)
+	    {
+	    break;
+	    }
+	}
+    if(searchDirs.size() > 0)
+	{
+	matchedDir = searchDirs[0];
+	}
+    return matchedDir;
+    }
+
+bool dirRecurser::recurseDirs(OovStringRef const srcDir)
     {
     bool success = true;
     DIR *dp = opendir(srcDir);
@@ -181,11 +278,11 @@ bool dirRecurser::recurseDirs(char const * const srcDir)
 	    {
 	    if ((strcmp(dirp->d_name, ".") != 0) && (strcmp(dirp->d_name, "..") != 0))
 		{
-		std::string fullName = srcDir;
+		OovString fullName = srcDir;
 		ensureLastPathSep(fullName);
 		fullName += dirp->d_name;
-                if(isDir(fullName.c_str()))
-		    recurseDirs(fullName.c_str());
+                if(isDir(fullName))
+		    recurseDirs(fullName);
 		else
 		    success = processFile(fullName);
 		}
@@ -194,3 +291,4 @@ bool dirRecurser::recurseDirs(char const * const srcDir)
 	}
     return success;
     }
+

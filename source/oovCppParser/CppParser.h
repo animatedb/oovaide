@@ -80,7 +80,7 @@ class SwitchContext
 		    expr += " || ";
 		    expr += opStr.substr(1);
 		    statements->addStatement(ModelStatement("", ST_CloseNest));
-//		    (*statements)[mOpenStatementIndex].setName(expr.c_str());
+//		    (*statements)[mOpenStatementIndex].setName(expr);
 		    statements->addStatement(ModelStatement(expr, ST_OpenNest));
 		    mOpenStatementIndex = statements->size()-1;
 		    }
@@ -122,7 +122,8 @@ class CppParser
     {
     public:
 	CppParser():
-	    mClassifier(nullptr), mOperation(nullptr), mStatements(nullptr)
+	    mClassifier(nullptr), mOperation(nullptr), mStatements(nullptr),
+	    mStatementRecurseLevel(0)
 	    {}
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
 	    ET_CLangError, ET_ParseError };
@@ -135,7 +136,6 @@ class CppParser
 	CXChildVisitResult visitTranslationUnitForIncludes(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitRecord(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddArgs(CXCursor cursor, CXCursor parent);
-	CXChildVisitResult visitFunctionAddVars(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor parent);
 
     private:
@@ -148,9 +148,10 @@ class CppParser
 	FilePath mTopParseFn;   /// The top level file that is being parsed.
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;
+	int mStatementRecurseLevel;
 	ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);
 	ModelType *createOrGetDataTypeRef(CXType type, RefType &rt);
-	ModelClassifier *createOrGetClassRef(char const * const name);
+	ModelClassifier *createOrGetClassRef(OovStringRef const name);
 	ModelType *createOrGetDataTypeRef(CXCursor cursor);
 	void addOperationParts(CXCursor cursor, bool addParams);
 	void addRecord(CXCursor cursor, Visibility vis);

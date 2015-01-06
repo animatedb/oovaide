@@ -8,178 +8,176 @@
 #include "Project.h"
 #include "Packages.h"
 
-std::string Project::sProjectDirectory;
-std::string Project::sSourceRootDirectory;
+OovString Project::sProjectDirectory;
+OovString Project::sSourceRootDirectory;
 
 static char sCoverageSourceDir[] = "oov-cov";
 static char sCoverageProjectDir[] = "oov-cov-oovcde";
 
 
-std::string makeBuildConfigArgName(char const * const baseName,
-	char const * const buildConfig)
+OovString makeBuildConfigArgName(OovStringRef const baseName,
+	OovStringRef const buildConfig)
     {
-    std::string name = baseName;
+    OovString name = baseName;
     name += '-';
     name += buildConfig;
     return name;
     }
 
-std::string Project::getComponentTypesFilePath()
+OovString Project::getComponentTypesFilePath()
     {
-    std::string fn = sProjectDirectory;
+    OovString fn = sProjectDirectory;
     ensureLastPathSep(fn);
     fn += "oovcde-comptypes.txt";
     return fn;
     }
 
-std::string Project::getComponentSourceListFilePath()
+OovString Project::getComponentSourceListFilePath()
     {
-    std::string fn = sProjectDirectory;
+    OovString fn = sProjectDirectory;
     ensureLastPathSep(fn);
     fn += "oovcde-tmp-compsources.txt";
     return fn;
     }
 
-std::string Project::getPackagesFilePath()
+OovString Project::getPackagesFilePath()
     {
     FilePath fn(Project::getProjectDirectory(), FP_Dir);
     fn.appendFile("oovcde-pkg.txt");
     return fn;
     }
 
-std::string Project::getBuildPackagesFilePath()
+OovString Project::getBuildPackagesFilePath()
     {
     FilePath fn(Project::getProjectDirectory(), FP_Dir);
     fn.appendFile("oovcde-tmp-buildpkg.txt");
     return fn;
     }
 
-std::string const &Project::getSrcRootDirectory()
+OovStringRef const Project::getSrcRootDirectory()
     {
     if(sSourceRootDirectory.length() == 0)
 	{
-	NameValueFile file(getProjectFilePath().c_str());
+	NameValueFile file(getProjectFilePath());
 	file.readFile();
 	sSourceRootDirectory = file.getValue(OptSourceRootDir);
 	}
     return sSourceRootDirectory;
     }
 
-std::string Project::getProjectFilePath()
+OovString Project::getProjectFilePath()
     {
-    std::string fn = sProjectDirectory;
+    OovString fn = sProjectDirectory;
     ensureLastPathSep(fn);
     fn += "oovcde.txt";
     return fn;
     }
 
-std::string Project::getGuiOptionsFilePath()
+OovString Project::getGuiOptionsFilePath()
     {
-    std::string fn = sProjectDirectory;
+    OovString fn = sProjectDirectory;
     ensureLastPathSep(fn);
     fn += "oovcde-gui.txt";
     return fn;
     }
 
-FilePath Project::getOutputDir(char const * const buildDirClass)
+FilePath Project::getOutputDir(OovStringRef const buildDirClass)
     {
     std::string outClass("out-");
     outClass += buildDirClass;
     FilePath dir(getProjectDirectory(), FP_Dir);
-    dir.appendDir(outClass.c_str());
+    dir.appendDir(outClass);
     return dir;
     }
 
-FilePath Project::getIntermediateDir(char const * const buildDirClass)
+FilePath Project::getIntermediateDir(OovStringRef const buildDirClass)
     {
     std::string outClass("bld-");
     outClass += buildDirClass;
     FilePath dir(getProjectDirectory(), FP_Dir);
-    dir.appendDir(outClass.c_str());
+    dir.appendDir(outClass);
     return dir;
     }
 
-void Project::getSrcRootDirRelativeSrcFileName(const std::string &srcFileName,
-	const std::string &srcRootDir, std::string &relSrcFileName)
+OovString Project::getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileName,
+	OovStringRef const srcRootDir)
     {
-    relSrcFileName = srcFileName;
-    size_t pos = relSrcFileName.find(srcRootDir);
+    OovString relSrcFileName = srcFileName;
+    size_t pos = relSrcFileName.find(srcRootDir.getStr());
     if(pos != std::string::npos)
 	{
-	relSrcFileName.erase(pos, srcRootDir.length());
+	relSrcFileName.erase(pos, srcRootDir.numChars());
 	removePathSep(relSrcFileName, 0);
 	}
+    return relSrcFileName;
     }
 
-std::string Project::getSrcRootDirRelativeSrcFileDir(const std::string &srcFileName)
+OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcFileName)
     {
     FilePath relSrcFileDir(srcFileName, FP_Dir);
-    std::string srcRootDir = Project::getSrcRootDirectory();
+    OovStringRef srcRootDir = Project::getSrcRootDirectory();
     size_t pos = relSrcFileDir.find(srcRootDir);
     if(pos != std::string::npos)
 	{
-	relSrcFileDir.erase(pos, srcRootDir.length());
+	relSrcFileDir.erase(pos, srcRootDir.numChars());
 	removePathSep(relSrcFileDir, 0);
 	}
     return relSrcFileDir;
     }
 
-std::string getAbsoluteDirFromSrcRootDirRelativeDir(const std::string &relSrcFileDir)
+OovString getAbsoluteDirFromSrcRootDirRelativeDir(OovStringRef const relSrcFileDir)
     {
     FilePath absSrcFileDir(Project::getSrcRootDirectory(), FP_Dir);
-    absSrcFileDir.appendDir(relSrcFileDir.c_str());
+    absSrcFileDir.appendDir(relSrcFileDir);
     return absSrcFileDir;
     }
 
-void Project::makeOutBaseFileName(const std::string &srcFileName,
-	const std::string &srcRootDir,
-	const std::string &outFilePath, std::string &outFileName)
+OovString Project::makeOutBaseFileName(OovStringRef const srcFileName,
+	OovStringRef const srcRootDir, OovStringRef const outFilePath)
     {
-    std::string file;
-    getSrcRootDirRelativeSrcFileName(srcFileName, srcRootDir, file);
+    OovString file = getSrcRootDirRelativeSrcFileName(srcFileName, srcRootDir);
     if(file[0] == '/')
 	file.erase(0, 1);
     replaceChars(file, '/', '_');
     replaceChars(file, '.', '_');
-    outFileName = outFilePath;
+    OovString outFileName = outFilePath;
     ensureLastPathSep(outFileName);
     outFileName += file;
+    return outFileName;
     }
 
-void Project::makeTreeOutBaseFileName(const std::string &srcFileName,
-	const std::string &srcRootDir,
-	const std::string &outFilePath, std::string &outFileName)
+OovString Project::makeTreeOutBaseFileName(OovStringRef const srcFileName,
+	OovStringRef const srcRootDir, OovStringRef const outFilePath)
     {
-    std::string file;
-    getSrcRootDirRelativeSrcFileName(srcFileName, srcRootDir, file);
+    OovString file = getSrcRootDirRelativeSrcFileName(srcFileName, srcRootDir);
     if(file[0] == '/')
 	file.erase(0, 1);
 
     FilePath tmpOutFileName(outFilePath, FP_Dir);
-    tmpOutFileName.appendFile(file.c_str());
+    tmpOutFileName.appendFile(file);
     tmpOutFileName.discardExtension();
-    outFileName = tmpOutFileName;
+    return tmpOutFileName;
     }
 
-std::string Project::getCoverageSourceDirectory()
+OovString Project::getCoverageSourceDirectory()
     {
     FilePath coverageDir(getProjectDirectory(), FP_Dir);
     coverageDir.appendDir(sCoverageSourceDir);
     return coverageDir;
     }
 
-std::string Project::makeCoverageSourceFileName(const std::string &srcFileName,
-	const std::string &srcRootDir)
+OovString Project::makeCoverageSourceFileName(OovStringRef const srcFileName,
+	OovStringRef const srcRootDir)
     {
-    std::string coverageDir = getCoverageSourceDirectory();
-    std::string outFileName;
+    OovString coverageDir = getCoverageSourceDirectory();
+    OovString outFileName = makeTreeOutBaseFileName(srcFileName, srcRootDir,
+	    coverageDir);
     FilePath srcFn(srcFileName, FP_File);
-    makeTreeOutBaseFileName(srcFileName, srcRootDir, coverageDir, outFileName);
     outFileName += srcFn.getExtension();
     return outFileName;
     }
 
-std::string Project::getCoverageProjectDirectory()
+OovString Project::getCoverageProjectDirectory()
     {
     FilePath coverageDir(getProjectDirectory(), FP_Dir);
     coverageDir.appendDir(sCoverageProjectDir);
@@ -194,52 +192,52 @@ void Project::replaceChars(std::string &str, char oldC, char newC)
 	str.replace(pos, 1, 1, newC);
     }
 
-bool ProjectReader::readOovProject(char const * const oovProjectDir,
-	char const * const buildConfigName)
+bool ProjectReader::readOovProject(OovStringRef const oovProjectDir,
+	OovStringRef const buildConfigName)
     {
     Project::setProjectDirectory(oovProjectDir);
-    setFilename(Project::getProjectFilePath().c_str());
+    setFilename(Project::getProjectFilePath());
     bool success = readFile();
     if(success)
 	{
 	mProjectPackages.read();
 	mBuildPackages.read();
-	Project::setSourceRootDirectory(getValue(OptSourceRootDir).c_str());
+	Project::setSourceRootDirectory(getValue(OptSourceRootDir));
 
-	StdStringVec args;
+	OovStringVec args;
 	CompoundValue baseArgs;
-	baseArgs.parseString(getValue(OptBaseArgs).c_str());
+	baseArgs.parseString(getValue(OptBaseArgs));
 	for(auto const &arg : baseArgs)
 	    {
-	    args.push_back(arg.c_str());
+	    args.push_back(arg);
 	    }
 
 	std::string optionExtraArgs = makeBuildConfigArgName(OptExtraBuildArgs,
 		buildConfigName);
 	CompoundValue extraArgs;
-	extraArgs.parseString(getValue(optionExtraArgs.c_str()).c_str());
+	extraArgs.parseString(getValue(optionExtraArgs));
 	extraArgs.quoteAllArgs();
 	for(auto const &arg : extraArgs)
 	    {
-	    args.push_back(arg.c_str());
+	    args.push_back(arg);
 	    }
 	parseArgs(args);
 	}
     return success;
     }
 
-void ProjectReader::parseArgs(StdStringVec const &args)
+void ProjectReader::parseArgs(OovStringVec const &args)
     {
     int linkOrderIndex = LOI_AfterInternalProject;
     for(auto const &arg : args)
 	{
 	if(arg.find("-ER", 0, 3) == 0)
 	    {
-	    addExternalArg(arg.c_str());
+	    addExternalArg(arg);
 	    }
 	else if(arg.find("-EP", 0, 3) == 0)
 	    {
-	    addExternalPackageName(linkOrderIndex, arg.substr(3).c_str());
+	    addExternalPackageName(linkOrderIndex, arg.substr(3));
 	    linkOrderIndex += LOI_PackageIncrement;
 	    }
 	else if(arg.find("-bv", 0, 3) == 0)
@@ -248,24 +246,24 @@ void ProjectReader::parseArgs(StdStringVec const &args)
 	    }
 	else if(arg.find("-lnk", 0, 4) == 0)
 	    {
-	    addLinkArg(linkOrderIndex++, arg.substr(4).c_str());
+	    addLinkArg(linkOrderIndex++, arg.substr(4));
 	    }
 	else
 	    {
-	    addCompileArg(arg.c_str());
+	    addCompileArg(arg);
 	    }
 	}
     for(auto const &arg : args)
 	{
 	if(arg.find("-EP", 0, 3) == 0)
-	    handleExternalPackage(arg.substr(3).c_str());
+	    handleExternalPackage(arg.substr(3));
 	}
     }
 
 CompoundValue ProjectReader::getProjectExcludeDirs() const
     {
     CompoundValue val;
-    val.parseString(getValue(OptProjectExcludeDirs).c_str());
+    val.parseString(getValue(OptProjectExcludeDirs));
 // This doesn't work.
 //    val.push_back(sCoverageSourceDir);
 //    val.push_back(sCoverageProjectDir);
@@ -276,46 +274,46 @@ CompoundValue ProjectReader::getProjectExcludeDirs() const
     return val;
     }
 
-void ProjectReader::handleExternalPackage(char const * const pkgName)
+void ProjectReader::handleExternalPackage(OovStringRef const pkgName)
     {
     addPackageCrcName(pkgName);
     Package pkg = mProjectPackages.getPackage(pkgName);
-    std::vector<std::string> cppArgs = pkg.getCompileArgs();
+    OovStringVec cppArgs = pkg.getCompileArgs();
     for(auto const &arg : cppArgs)
 	{
-	addPackageCrcCompileArg(arg.c_str());
+	addPackageCrcCompileArg(arg);
 	}
-    std::vector<std::string> incDirs = pkg.getIncludeDirs();
+    OovStringVec incDirs = pkg.getIncludeDirs();
     for(auto const &dir : incDirs)
 	{
 	std::string arg = "-I";
 	arg += dir;
-	addPackageCrcCompileArg(arg.c_str());
+	addPackageCrcCompileArg(arg);
 	}
-    std::vector<std::string> linkArgs = pkg.getLinkArgs();
+    OovStringVec linkArgs = pkg.getLinkArgs();
     for(auto const &arg : linkArgs)
 	{
-	addPackageCrcLinkArg(arg.c_str());
+	addPackageCrcLinkArg(arg);
 	}
-    std::vector<std::string> libDirs = pkg.getLibraryDirs();
+    OovStringVec libDirs = pkg.getLibraryDirs();
     for(auto const &dir : libDirs)
 	{
 	std::string arg = "-L";
 	arg += dir;
-	addPackageCrcLinkArg(arg.c_str());
+	addPackageCrcLinkArg(arg);
 	}
-    std::vector<std::string> libNames = pkg.getLibraryNames();
+    OovStringVec libNames = pkg.getLibraryNames();
     for(auto const &dir : libNames)
 	{
 	std::string arg = "-l";
 	arg += dir;
-	addPackageCrcLinkArg(arg.c_str());
+	addPackageCrcLinkArg(arg);
 	}
     }
 
-const StdStringVec ProjectReader::getAllCrcCompileArgs() const
+const OovStringVec ProjectReader::getAllCrcCompileArgs() const
     {
-    StdStringVec vec;
+    OovStringVec vec;
     vec = mCompileArgs;
     std::copy(mPackageCrcCompileArgs.begin(), mPackageCrcCompileArgs.end(),
 	    std::back_inserter(vec));
@@ -324,9 +322,9 @@ const StdStringVec ProjectReader::getAllCrcCompileArgs() const
     return vec;
     }
 
-const StdStringVec ProjectReader::getAllCrcLinkArgs() const
+const OovStringVec ProjectReader::getAllCrcLinkArgs() const
     {
-    StdStringVec vec;
+    OovStringVec vec;
     for(auto item : mLinkArgs)
     	vec.push_back(item.mString);
     std::copy(mPackageCrcLinkArgs.begin(), mPackageCrcLinkArgs.end(),
@@ -334,7 +332,7 @@ const StdStringVec ProjectReader::getAllCrcLinkArgs() const
     return vec;
     }
 
-int ProjectReader::getExternalPackageLinkOrder(char const * const pkgName) const
+int ProjectReader::getExternalPackageLinkOrder(OovStringRef const pkgName) const
     {
     int index = LOI_AfterInternalProject;
     for(auto &item : mExternalPackageNames)
