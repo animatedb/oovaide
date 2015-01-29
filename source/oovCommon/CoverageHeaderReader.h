@@ -9,6 +9,7 @@
 #define COVERAGEHEADERREADER_H_
 
 #include "File.h"
+#include "FilePath.h"
 #include <map>
 
 class CoverageHeaderReader
@@ -19,7 +20,7 @@ class CoverageHeaderReader
 	    {}
 	int getNumInstrumentedLines() const
 	    { return mNumInstrumentedLines; }
-	static OovString getFn(OovStringRef const outDir);
+	static FilePath getFn(OovStringRef const outDir);
 	// Reads the instr def file into the map
 	void read(SharedFile &outDefFile);
 	std::map<OovString, int> const &getMap() const

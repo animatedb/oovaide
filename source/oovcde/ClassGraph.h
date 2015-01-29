@@ -152,6 +152,7 @@ class ClassGraph
 	    AN_FuncBodyUsing=0x40, AN_FuncBodyUsers=0x80,
 	    AN_All=0xFF,
 	    AN_AllStandard=AN_Superclass | AN_Subclass | AN_MemberChildren | AN_MemberUsers,
+	    AN_ClassesAndChildren=AN_Superclass | AN_Subclass | AN_MemberChildren,
 	};
 	void clearGraph()
 	    {
@@ -161,19 +162,21 @@ class ClassGraph
 	/// Clears the graph and adds nodes. See the addRelatedNodes function for more
 	/// description.
 	void clearGraphAndAddNode(const ModelData &model, const ClassDrawOptions &options,
-		char const * const className, int nodeDepth)
+		char const * const className, eAddNodeTypes addType, int nodeDepth)
 	    {
-	    addNode(model, options, className, nodeDepth, true);
+	    addNode(model, options, className, addType, nodeDepth,  true);
 	    }
 	void addNode(const ModelData &model, const ClassDrawOptions &options,
-		char const * const className, int nodeDepth, bool clear=false);
+		char const * const className, eAddNodeTypes addType, int nodeDepth,
+		bool clear=false);
 	/// Adds nodes/classes/types to a graph.
 	/// @param model Used to look up related classes.
 	/// @param type The type/class to be added to the graph.
 	/// @param addType Defines the relationship types to look for.
 	/// @param maxDepth Recurses to the specified depth.
 	void addRelatedNodesRecurse(const ModelData &model, const ModelType *type,
-		const ClassNodeDrawOptions &options, eAddNodeTypes addType, int maxDepth);
+		const ClassNodeDrawOptions &options, eAddNodeTypes addType=AN_All,
+		int maxDepth=2);
 
 	/// Initializes genes from the model.
 	/// Updates node sizes and node connections in the graph.

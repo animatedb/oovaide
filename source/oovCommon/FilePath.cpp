@@ -16,70 +16,9 @@
 #include <direct.h>
 #endif
 
-void ensureLastPathSep(std::string &path)
-    {
-    if(!FilePath::isEndPathSep(path))
-	path += '/';
-    }
 
-bool ensurePathExists(OovStringRef const path)
-    {
-    bool success = true;
-
-    // Walk up the tree to find a base that exists.
-    FilePath fp(path, FP_File);
-    size_t pos = fp.moveToEndDir();
-    while(pos != std::string::npos && pos != 0)
-	{
-	fp.discardTail();
-	if(fileExists(fp))
-	    break;
-	else
-	    pos = fp.moveLeftPathSep();
-	}
-    while(pos != std::string::npos && pos != 0 && success)
-	{
-	pos = findPathSep(path, pos);
-	if(pos != std::string::npos)
-	    {
-	    OovString partPath = path;
-	    partPath.resize(pos);
-	    if(!fileExists(partPath))
-		{
-#ifdef __linux__
-		success = (mkdir(partPath.getStr(), 0x1FF) == 0);	// 0777
-#else
-		success = (_mkdir(partPath.getStr()) == 0);
-#endif
-		}
-	    pos++;
-	    }
-	}
-    return success;
-    }
-
-void removePathSep(std::string &path, int pos)
-    {
-    if(path[pos] == '/' || path[pos] == '\\' )
-	path.erase(path.begin() + pos);
-    }
-
-void quoteCommandLinePath(std::string &str)
-    {
-    if(str.length() > 0)
-	{
-	if(str[0] != '\"')
-	    {
-	    if(str.find(' ') != std::string::npos)
-		{
-		str.insert(0, 1, '\"');
-		str.append(1, '\"');
-		}
-	    }
-	}
-    }
-
-size_t findPathSep(OovStringRef const path, size_t startPos)
+// returns std::string::npos if not found.
+static size_t findPathSep(OovStringRef const path, size_t startPos = 0)
     {
     const OovString str = path;
     size_t bpos = str.find('\\', startPos);
@@ -96,7 +35,8 @@ size_t findPathSep(OovStringRef const path, size_t startPos)
     return pos;
     }
 
-size_t rfindPathSep(OovStringRef const path, size_t startPos)
+// returns std::string::npos if not found.
+static size_t rfindPathSep(OovStringRef const path, size_t startPos = std::string::npos)
     {
     const OovString str = path;
     size_t bpos = str.rfind('\\', startPos);
@@ -113,170 +53,85 @@ size_t rfindPathSep(OovStringRef const path, size_t startPos)
     return pos;
     }
 
-#ifdef __linux__
-OovString makeExeFilename(OovStringRef const  rootFn)
-    { return rootFn.getStr(); }
-#else
-OovString makeExeFilename(OovStringRef const  rootFn)
-    { return (std::string(rootFn) + ".exe"); }
-#endif
 
-// Under Windows, for some reason there are doubled slashes in some cases.
-#ifdef __linux__
-std::string fixFilePath(OovStringRef const fullFn)
-    {
-    return fullFn.getStr();
-    }
-#else
-std::string fixFilePath(OovStringRef const fullFn)
-    {
-    std::string temp;
-    for(size_t i=0; i<strlen(fullFn); i++)
-	    {
-	    if(fullFn[i] != '\\' || fullFn[i+1] != '\\')
-		temp += fullFn[i];
-	    }
-    return temp;
-    }
-#endif
+///////////////
 
 
-bool fileExists(OovStringRef const path)
+size_t FilePathGetPosStartDir(OovStringRef const path)
     {
-    OovString tempPath = path;
-    removePathSep(tempPath, tempPath.size()-1);
-    struct OovStat32 statval;
-    return(OovStat32(tempPath.getStr(), &statval) == 0);
-    }
-
-void deleteFile(OovStringRef const path)
-    {
-    unlink(path.getStr());
-    }
-
-void renameFile(OovStringRef const  oldPath, OovStringRef const  newPath)
-    {
-    rename(oldPath.getStr(), newPath.getStr());
-    }
-
-bool getFileTime(OovStringRef const path, time_t &time)
-    {
-    struct OovStat32 srcFileStat;
-    bool success = (OovStat32(path.getStr(), &srcFileStat) == 0);
-    if(success)
-	time = srcFileStat.st_mtime;
-    return success;
-    }
-
-bool anyExtensionMatch(FilePaths const &paths, OovStringRef const file)
-    {
-    bool match = false;
-    for(auto const &path : paths)
+    size_t pos = std::string(path.getStr()).rfind(':');
+    if(pos == std::string::npos)
 	{
-	if(path.matchExtension(file))
-	    {
-	    match = true;
-	    break;
-	    }
+	pos = 0;
 	}
-    return match;
+    else
+	{
+	pos++;
+	}
+    return pos;
     }
 
-
-
-///////////
-
-size_t FilePathImmutable::moveToStartDir(OovStringRef const path)
-    {
-    mPos = std::string(path.getStr()).rfind(':');
-    if(mPos == std::string::npos)
-	mPos = 0;
-    return mPos;
-    }
-
-size_t FilePathImmutable::moveToEndDir(OovStringRef const path)
+size_t FilePathGetPosEndDir(OovStringRef const path)
     {
     size_t pos;
-    if(isEndPathSep(path))
+    if(FilePathIsEndPathSep(path))
 	{
 	pos = path.numChars() - 1;
-	mPos = pos;
 	}
     else
 	{
 	pos = rfindPathSep(path);
 	if(pos == std::string::npos)
-	    mPos = path.numChars() - 1;
+	    pos = FilePathGetPosStartDir(path);
+	}
+    return pos;
+    }
+
+size_t FilePathGetPosExtension(OovStringRef const path, eReturnPosition rp)
+    {
+    size_t pathPos = rfindPathSep(path);
+    size_t extPos = std::string(path).rfind('.');
+    if((pathPos != std::string::npos) && (extPos != std::string::npos) && (extPos < pathPos))
+	{
+	if(rp == RP_RetPosNatural)
+	    extPos = std::string(path).length();
 	else
-	    mPos = pos;
+	    extPos = std::string::npos;
 	}
-    return pos;
+    return extPos;
     }
 
-size_t FilePathImmutable::moveToExtension(OovStringRef const path)
+size_t FilePathGetPosLeftPathSep(OovStringRef const path, size_t pos, eReturnPosition rp)
     {
-    size_t pos = findExtension(path);
+    if(FilePathIsPathSep(path, pos) && pos > 0)
+	pos--;
+    pos = rfindPathSep(path, pos);
     if(pos == std::string::npos)
-	mPos = 0;
-    else
-	mPos = pos;
+	{
+	if(rp == RP_RetPosNatural)
+	    {
+	    pos = FilePathGetPosStartDir(path);
+	    }
+	}
     return pos;
     }
 
-size_t FilePathImmutable::moveLeftPathSep(OovStringRef const path)
+size_t FilePathGetPosRightPathSep(OovStringRef const path, size_t pos, eReturnPosition rp)
     {
-    if(isPathSep(path, mPos) && mPos > 0)
-	mPos--;
-    mPos = rfindPathSep(path, mPos);
-    if(mPos == std::string::npos)
-	mPos = moveToStartDir(path);
-    return mPos;
-    }
-
-size_t FilePathImmutable::moveRightPathSep(OovStringRef const path)
-    {
-    if(isPathSep(path, mPos) && mPos < path.numChars())
-	mPos++;
-    mPos = findPathSep(path, mPos);
-    if(mPos == std::string::npos)
-	mPos = moveToEndDir(path);
-    return mPos;
-    }
-
-OovString FilePathImmutable::getHead(OovStringRef const path) const
-    {
-    return std::string(path).substr(0, mPos+1);
-    }
-
-OovString FilePathImmutable::getTail(OovStringRef const path) const
-    {
-    return std::string(path).substr(mPos);
-    }
-
-OovString FilePathImmutable::getPathSegment(OovStringRef const path) const
-    {
-    OovString part;
-    size_t startPos = 0;
-    if(isPathSep(path, mPos))
-	startPos = mPos+1;
-    else
+    if(FilePathIsPathSep(path, pos) && pos < path.numChars())
+	pos++;
+    pos = findPathSep(path, pos);
+    if(pos == std::string::npos)
 	{
-	/// @todo - this should go back to find drives
-	startPos = rfindPathSep(path, mPos);
-	if(startPos == std::string::npos)
-	    startPos=0;
+	if(rp == RP_RetPosNatural)
+	    {
+	    pos = FilePathGetPosEndDir(path);
+	    }
 	}
-    size_t endPos = findPathSep(path, startPos);
-    if(endPos != std::string::npos)
-	{
-	--endPos;
-	part = std::string(path).substr(startPos, endPos-startPos+1);
-	}
-    return part;
+    return pos;
     }
 
-size_t FilePathImmutable::findPathSegment(OovStringRef const path,
-	OovStringRef const seg) const
+size_t FilePathGetPosSegment(OovStringRef const path, OovStringRef const seg)
     {
     OovString lowerPath;
     // Only do case insensitive compares for Windows.
@@ -298,8 +153,8 @@ size_t FilePathImmutable::findPathSegment(OovStringRef const path,
 	if(pos > 0)
 	    {
 	    size_t endPos = pos + lowerSeg.length();
-	    if(isPathSep(path, pos-1) &&
-		    isPathSep(path, endPos))
+	    if(FilePathIsPathSep(path, pos-1) &&
+		    FilePathIsPathSep(path, endPos))
 		{
 		foundPos = pos-1;
 		}
@@ -308,87 +163,221 @@ size_t FilePathImmutable::findPathSegment(OovStringRef const path,
     return foundPos;
     }
 
-OovString FilePathImmutable::getWithoutEndPathSep(OovStringRef const path) const
+
+//////////////
+
+
+OovString FilePathGetHead(OovStringRef const path, size_t pos)
+    {
+    return std::string(path).substr(0, pos+1);
+    }
+
+OovString FilePathGetTail(OovStringRef const path, size_t pos)
+    {
+    return std::string(path).substr(pos);
+    }
+
+OovString FilePathGetSegment(OovStringRef const path, size_t pos)
+    {
+    OovString part;
+    size_t startPos = 0;
+    if(FilePathIsPathSep(path, pos))
+	startPos = pos+1;
+    else
+	{
+	startPos = rfindPathSep(path, pos);
+	if(startPos != std::string::npos)
+	    startPos++;
+	else
+	    startPos=0;
+	}
+    size_t endPos = findPathSep(path, startPos);
+    if(endPos != std::string::npos)
+	{
+	--endPos;
+	part = std::string(path).substr(startPos, endPos-startPos+1);
+	}
+    return part;
+    }
+
+OovString FilePathGetWithoutEndPathSep(
+	OovStringRef const path)
     {
     OovString str = path;
-    removePathSep(str, str.length()-1);
+    FilePathRemovePathSep(str, str.length()-1);
     return str;
     }
 
-OovString FilePathImmutable::getDrivePath(OovStringRef const path) const
+OovString FilePathGetDrivePath(OovStringRef const path)
     {
     FilePath fp(path, FP_File);
-    fp.moveToEndDir();
-    return fp.getHead();
+    return fp.getHead(fp.getPosEndDir());
     }
 
-OovString FilePathImmutable::getName(OovStringRef const path) const
+OovString FilePathGetFileName(OovStringRef const path)
     {
     FilePath fp(path, FP_File);
-    if(fp.moveToEndDir() != std::string::npos)
-	fp.discardHead();
-    if(fp.moveToExtension() != std::string::npos)
-	fp.discardExtension();
+    size_t pos = fp.getPosEndDir();
+    if(pos != 0)
+	{
+	fp.discardHead(pos);
+	}
+    fp.discardExtension();
     return fp;
     }
 
-OovString FilePathImmutable::getNameExt(OovStringRef const path) const
+OovString FilePathGetFileNameExt(OovStringRef const path)
     {
     FilePath fp(path, FP_File);
-    if(fp.moveToEndDir() != std::string::npos)
-	fp.discardHead();
+    fp.discardHead(fp.getPosEndDir());
     return fp;
     }
 
-OovString FilePathImmutable::getExtension(OovStringRef const path) const
+OovString FilePathGetFileExt(OovStringRef const path)
     {
     OovString ext;
-    size_t extPos = findExtension(path);
+    size_t extPos = FilePathGetPosExtension(path, RP_RetPosFailure);
     if(extPos != std::string::npos)
+	{
 	ext = std::string(path).substr(extPos, strlen(path) - extPos);
+	}
     return ext;
     }
 
-bool FilePathImmutable::matchExtension(OovStringRef const path1, OovStringRef const path2) const
+//////////////
+
+
+void FilePathEnsureLastPathSep(std::string &path)
     {
-    std::string ext1 = getExtension(path1);
-    std::string ext2 = getExtension(path2);
+    if(!FilePathIsEndPathSep(path))
+	path += '/';
+    }
+
+bool FileEnsurePathExists(OovStringRef const path)
+    {
+    bool success = true;
+
+    // Walk up the tree to find a base that exists.
+    FilePath fp(path, FP_File);
+    size_t pos = fp.getPosEndDir();
+    while(pos != 0)
+	{
+	fp.discardTail(pos);
+	if(fp.isFileOnDisk())
+	    break;
+	else
+	    pos = fp.getPosLeftPathSep(pos, RP_RetPosFailure);
+	}
+    while(pos != std::string::npos && pos != 0 && success)
+	{
+	pos = findPathSep(path, pos);
+	if(pos != std::string::npos)
+	    {
+	    OovString partPath = path;
+	    partPath.resize(pos);
+	    if(!FileIsFileOnDisk(partPath))
+		{
+#ifdef __linux__
+		success = (mkdir(partPath.getStr(), 0x1FF) == 0);	// 0777
+#else
+		success = (_mkdir(partPath.getStr()) == 0);
+#endif
+		}
+	    pos++;
+	    }
+	}
+    return success;
+    }
+
+void FilePathRemovePathSep(std::string &path, int pos)
+    {
+    if(path[pos] == '/' || path[pos] == '\\' )
+	path.erase(path.begin() + pos);
+    }
+
+void FilePathQuoteCommandLinePath(std::string &str)
+    {
+    if(str.length() > 0)
+	{
+	if(str[0] != '\"')
+	    {
+	    if(str.find(' ') != std::string::npos)
+		{
+		str.insert(0, 1, '\"');
+		str.append(1, '\"');
+		}
+	    }
+	}
+    }
+
+#ifdef __linux__
+OovString FilePathMakeExeFilename(OovStringRef const  rootFn)
+    { return rootFn.getStr(); }
+#else
+OovString FilePathMakeExeFilename(OovStringRef const  rootFn)
+    { return (std::string(rootFn) + ".exe"); }
+#endif
+
+// Under Windows, for some reason there are doubled slashes in some cases.
+#ifdef __linux__
+std::string FilePathFixFilePath(OovStringRef const fullFn)
+    {
+    return fullFn.getStr();
+    }
+#else
+std::string FilePathFixFilePath(OovStringRef const fullFn)
+    {
+    std::string temp;
+    for(size_t i=0; i<strlen(fullFn); i++)
+	    {
+	    if(fullFn[i] != '\\' || fullFn[i+1] != '\\')
+		temp += fullFn[i];
+	    }
+    return temp;
+    }
+#endif
+
+
+bool FilePathMatchExtension(OovStringRef const path1, OovStringRef const path2)
+    {
+    std::string ext1 = FilePathGetFileExt(path1);
+    std::string ext2 = FilePathGetFileExt(path2);
     return(ext1.length() > 0 && ext1.compare(ext2) == 0);
     }
 
-bool FilePathImmutable::isEndPathSep(OovStringRef const path)
+bool FilePathIsEndPathSep(OovStringRef const path)
     {
     int len = std::string(path).length();
-    return(isPathSep(path, len-1));
+    return(FilePathIsPathSep(path, len-1));
     }
 
-size_t FilePathImmutable::findExtension(OovStringRef const path)
-    {
-    size_t pathPos = rfindPathSep(path);
-    size_t extPos = std::string(path).rfind('.');
-    if((pathPos != std::string::npos) && (extPos != std::string::npos) && (extPos < pathPos))
-	extPos = std::string::npos;
-    return extPos;
-    }
-
-bool FilePathImmutable::isDirOnDisk(OovStringRef const path)
-    {
-    struct OovStat32 statval;
-    return((OovStat32(path, &statval) == 0 && S_ISDIR(statval.st_mode)));
-    }
-
-bool FilePathImmutable::isAbsolutePath(OovStringRef const path)
+bool FilePathIsAbsolutePath(OovStringRef const path)
     {
     bool absDrv = false;
     size_t drvPos = std::string(path).find(':');
     if(drvPos != std::string::npos)
 	{
-	absDrv = isPathSep(path, drvPos+1);
+	absDrv = FilePathIsPathSep(path, drvPos+1);
 	}
-    return(isPathSep(path, 0) || absDrv);
+    return(FilePathIsPathSep(path, 0) || absDrv);
     }
 
-int FilePathImmutable::comparePaths(OovStringRef const path1,
+bool FilePathIsPathSep(OovStringRef const path, size_t pos)
+    {
+    return(pos != std::string::npos && (path[pos] == '/' || path[pos] == '\\'));
+    }
+
+bool FilePathIsExtensionSep(OovStringRef const path, size_t pos)
+    {
+    return(pos != std::string::npos && path[pos] == '.');
+    }
+
+bool FilePathHasExtension(OovStringRef const path)
+    {
+    return(FilePathGetPosExtension(path, RP_RetPosFailure) != std::string::npos);
+    }
+
+int FilePathComparePaths(OovStringRef const path1,
 	OovStringRef const path2)
     {
 #ifdef __linux__
@@ -396,6 +385,56 @@ int FilePathImmutable::comparePaths(OovStringRef const path1,
 #else
     return StringCompareNoCase(path1, path2);
 #endif
+    }
+
+bool FilePathAnyExtensionMatch(FilePaths const &paths, OovStringRef const file)
+    {
+    bool match = false;
+    for(auto const &path : paths)
+	{
+	if(path.matchExtension(file))
+	    {
+	    match = true;
+	    break;
+	    }
+	}
+    return match;
+    }
+
+
+//////////////
+
+bool FileIsFileOnDisk(OovStringRef const path)
+    {
+    OovString tempPath = path;
+    FilePathRemovePathSep(tempPath, tempPath.size()-1);
+    struct OovStat32 statval;
+    return(OovStat32(tempPath.getStr(), &statval) == 0);
+    }
+
+bool FileIsDirOnDisk(OovStringRef const path)
+    {
+    struct OovStat32 statval;
+    return((OovStat32(path, &statval) == 0 && S_ISDIR(statval.st_mode)));
+    }
+
+void FileDelete(OovStringRef const path)
+    {
+    unlink(path.getStr());
+    }
+
+void FileRename(OovStringRef const  oldPath, OovStringRef const  newPath)
+    {
+    rename(oldPath.getStr(), newPath.getStr());
+    }
+
+bool FileGetFileTime(OovStringRef const path, time_t &time)
+    {
+    struct OovStat32 srcFileStat;
+    bool success = (OovStat32(path.getStr(), &srcFileStat) == 0);
+    if(success)
+	time = srcFileStat.st_mtime;
+    return success;
     }
 
 
@@ -411,7 +450,7 @@ std::string FilePath::normalizePathType(OovStringRef const path, eFilePathTypes 
 	    dst = path;
 	    if(dst.length() != 0)
 		{
-		if(!isEndPathSep(path))
+		if(!FilePathIsEndPathSep(path))
 		    dst.append("/");
 		}
 	    }
@@ -421,7 +460,7 @@ std::string FilePath::normalizePathType(OovStringRef const path, eFilePathTypes 
 	    }
 	else if(fpt == FP_Ext)
 	    {
-	    if(!isExtensionSep(path, 0))
+	    if(!FilePathIsExtensionSep(path, 0))
 		dst.append(".");
 	    dst.append(path);
 	    }
@@ -435,34 +474,34 @@ eFilePathTypes FilePath::getType() const
     eFilePathTypes fpt;
     if(pathStdStr()[0] == '.')
 	fpt = FP_Ext;
-    else if(isEndPathSep(pathStdStr()))
+    else if(FilePathIsEndPathSep(pathStdStr()))
 	fpt = FP_Dir;
     else
 	fpt = FP_File;
     return fpt;
     }
 
-void FilePath::appendPathAtPos(OovStringRef const pathPart)
+void FilePath::appendPathAtPos(OovStringRef const pathPart, size_t pos)
     {
     char const *pp = pathPart;
-    if(getPos() != std::string::npos)
+    if(pos != std::string::npos)
 	{
-	if(isPathSep(pp, 0))
+	if(FilePathIsPathSep(pp, 0))
 	    pp++;
-	if(isPathSep(pathStdStr(), getPos()))
-	    pathStdStr().erase(getPos()+1);
+	if(FilePathIsPathSep(pathStdStr(), pos))
+	    pathStdStr().erase(pos+1);
 	else
 	    {
-	    pathStdStr().erase(getPos());
+	    pathStdStr().erase(pos);
 	    }
 	}
     pathStdStr().append(pp);
     }
 
-void FilePath::appendDirAtPos(OovStringRef const pathPart)
+void FilePath::appendDirAtPos(OovStringRef const pathPart, size_t pos)
     {
-    appendPathAtPos(pathPart);
-    if(!isEndPathSep(pathStdStr()))
+    appendPathAtPos(pathPart, pos);
+    if(!FilePathIsEndPathSep(pathStdStr()))
 	pathStdStr().append("/");
     }
 
@@ -476,26 +515,24 @@ void FilePath::appendPart(OovStringRef const pathPart, eFilePathTypes fpt)
 
 void FilePath::appendDir(OovStringRef const pathPart)
     {
-    moveToEndDir();
-    appendDirAtPos(pathPart);
+    appendDirAtPos(pathPart, getPosEndDir());
     }
 
-void FilePath::discardTail()
+void FilePath::discardTail(size_t pos)
     {
     // Keep the end sep so that this is still indicated as a directory.
-    if(isPathSep(pathStdStr(), getPos()))
-	pathStdStr().erase(getPos()+1);
+    if(FilePathIsPathSep(pathStdStr(), pos))
+	pathStdStr().erase(pos+1);
     else
-	pathStdStr().erase(getPos());
+	pathStdStr().erase(pos);
     }
 
 void FilePath::appendFile(OovStringRef const fileName)
     {
-    moveToEndDir();
     OovString fn = fileName;
-    if(isEndPathSep(pathStdStr()))
+    if(FilePathIsEndPathSep(pathStdStr()))
 	{
-	removePathSep(fn, 0);
+	FilePathRemovePathSep(fn, 0);
 	}
     pathStdStr().append(fn);
     }
@@ -503,7 +540,8 @@ void FilePath::appendFile(OovStringRef const fileName)
 void FilePath::appendExtension(OovStringRef const fileName)
     {
     discardExtension();
-    if(findExtension(fileName) == std::string::npos)
+    /// @todo - ??
+    if(FilePathGetPosExtension(fileName, RP_RetPosFailure) == std::string::npos)
 	pathStdStr().append(".");
     pathStdStr().append(fileName);
     }
@@ -516,38 +554,38 @@ void FilePath::getWorkingDirectory()
 	{
 	pathStdStr().append(buf);
 	}
-    ensureLastPathSep(pathStdStr());
+    FilePathEnsureLastPathSep(pathStdStr());
     }
 
 FilePath FilePath::getParent() const
     {
     FilePath parent(*this);
-    parent.moveToEndDir();
-    parent.moveLeftPathSep();
-    parent.discardTail();
+    size_t pos = parent.getPosLeftPathSep(parent.getPosEndDir(), RP_RetPosNatural);
+    parent.discardTail(pos);
     return parent;
     }
 
 void FilePath::discardDirectory()
     {
-    moveToEndDir();
-    discardHead();
+    discardHead(getPosEndDir());
     }
 
 void FilePath::discardFilename()
     {
-    moveToEndDir();
-    discardTail();
+    discardTail(getPosEndDir());
     }
 
 void FilePath::discardExtension()
     {
-    if(moveToExtension() != std::string::npos)
-	discardTail();
+    size_t pos = getPosExtension(RP_RetPosFailure);
+    if(pos != std::string::npos)
+	discardTail(pos);
     }
 
-void FilePath::discardHead()
-    { pathStdStr().erase(0, getPos()+1); }
+void FilePath::discardHead(size_t pos)
+    {
+    pathStdStr().erase(0, pos+1);
+    }
 
 int FilePath::discardLeadingRelSegments()
     {
@@ -555,7 +593,7 @@ int FilePath::discardLeadingRelSegments()
     bool didSeg = true;
     do
 	{
-	std::string seg = getPathSegment();
+	OovString seg = getPathSegment(0);
 	if(seg.compare("..") == 0)
 	    {
 	    pathStdStr().erase(0, 3);
@@ -584,7 +622,7 @@ void FilePath::discardMatchingHead(OovStringRef const pathPart)
 
 void FilePath::getAbsolutePath(OovStringRef const path, eFilePathTypes fpt)
     {
-    if(isAbsolutePath(path))
+    if(FilePathIsAbsolutePath(path))
 	{
 	if(fpt == FP_Dir)
 	    appendDir(path);
@@ -596,17 +634,17 @@ void FilePath::getAbsolutePath(OovStringRef const path, eFilePathTypes fpt)
 	getWorkingDirectory();
 	FilePath newPath(path, fpt);
 	int count = newPath.discardLeadingRelSegments();
-	moveToEndDir();
+	size_t pos = getPosEndDir();
 	for(int i=0; i<count; i++)
 	    {
-	    moveLeftPathSep();
+	    pos = getPosLeftPathSep(pos, RP_RetPosNatural);
 	    }
-	appendPathAtPos(newPath);
+	appendPathAtPos(newPath, pos);
 	}
     normalizePathSeps(pathStdStr());
     if(fpt == FP_Dir)
 	{
-	if(!isEndPathSep(pathStdStr()))
+	if(!FilePathIsEndPathSep(pathStdStr()))
 	    pathStdStr().append("/");
 	}
     }

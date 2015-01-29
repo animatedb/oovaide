@@ -82,18 +82,18 @@ static void setBuildConfigurationPaths(NameValueFile &file,
     // llvm-ar gives link error.
     // setNameValue(makeExeFilename("llvm-ar"));
     optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
-    file.setNameValue(optStr, makeExeFilename("ar"));
+    file.setNameValue(optStr, FilePathMakeExeFilename("ar"));
 
     // llvm-nm gives bad file error on Windows, and has no output on Linux.
     // mPathObjSymbol = "makeExeFilename(llvm-nm)";
     optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
-    file.setNameValue(optStr, makeExeFilename("nm"));
+    file.setNameValue(optStr, FilePathMakeExeFilename("nm"));
 
     std::string compiler;
     if(useclang)
-	compiler = makeExeFilename("clang++");
+	compiler = FilePathMakeExeFilename("clang++");
     else
-	compiler = makeExeFilename("g++");
+	compiler = FilePathMakeExeFilename("g++");
     optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
     file.setNameValue(optStr, compiler);
     }
@@ -110,7 +110,7 @@ void BuildOptions::setDefaultOptions()
 #ifdef __linux__
 //    baseArgs.addArg("-ER/usr/include/gtk-3.0");
 //    baseArgs.addArg("-ER/usr/lib/x86_64-linux-gnu/glib-2.0/include");
-    if(fileExists("/usr/bin/clang++"))
+    if(FileIsFileOnDisk("/usr/bin/clang++"))
 	useCLangBuild = true;
 #else
     std::string path = getenv("PATH");

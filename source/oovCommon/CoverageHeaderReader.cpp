@@ -6,13 +6,12 @@
  */
 
 #include "CoverageHeaderReader.h"
-#include "FilePath.h"
 
-OovString CoverageHeaderReader::getFn(OovStringRef const outDir)
+FilePath CoverageHeaderReader::getFn(OovStringRef const outDir)
     {
     FilePath outFn(outDir, FP_Dir);
     outFn.appendDir("covLib");
-    ensurePathExists(outFn);
+    outFn.ensurePathExists();
     outFn.appendFile("OovCoverage.h");
     return outFn;
     }

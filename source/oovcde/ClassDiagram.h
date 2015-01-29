@@ -38,9 +38,11 @@ class ClassDiagram
 	/// Redraw the graph. Does not change the graph or change or access the model.
 	void drawDiagram(const ClassDrawOptions &options);
 	// Create a new graph and add a class node.
-	void clearGraphAndAddClass(OovStringRef const className);
+	void clearGraphAndAddClass(OovStringRef const className,
+		ClassGraph::eAddNodeTypes addType=ClassGraph::AN_All);
 	// Add a class node to an existing graph.
-	void addClass(OovStringRef const className);
+	void addClass(OovStringRef const className,
+		ClassGraph::eAddNodeTypes addType=ClassGraph::AN_All);
 	void drawSvgDiagram(FILE *fp);
 	GtkWidget *getDiagramWidget()
 	    { return getBuilder().getWidget("DiagramDrawingarea"); }

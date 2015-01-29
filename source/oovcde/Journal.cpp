@@ -43,7 +43,8 @@ void Journal::displayClass(OovStringRef const className)
 	rec = new JournalRecordClassDiagram(*mBuilder,
 		*mModel, *mListener);
 	addRecord(rec, className);
-	rec->mClassDiagram.clearGraphAndAddClass(className);
+	rec->mClassDiagram.clearGraphAndAddClass(className,
+		ClassGraph::AN_ClassesAndChildren);
 	}
     else
 	{

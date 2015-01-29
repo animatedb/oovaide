@@ -38,13 +38,13 @@ FilePaths getLibExtensions()
     }
 
 bool isHeader(OovStringRef const file)
-    { return(anyExtensionMatch(getHeaderExtensions(), file)); }
+    { return(FilePathAnyExtensionMatch(getHeaderExtensions(), file)); }
 
 bool isSource(OovStringRef const file)
-    { return(anyExtensionMatch(getSourceExtensions(), file)); }
+    { return(FilePathAnyExtensionMatch(getSourceExtensions(), file)); }
 
 bool isLibrary(OovStringRef const file)
-    { return(anyExtensionMatch(getLibExtensions(), file)); }
+    { return(FilePathAnyExtensionMatch(getLibExtensions(), file)); }
 
 bool ComponentTypesFile::read()
     {

@@ -93,7 +93,7 @@ bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
     fp.appendDir("output");
     fp.appendFile("StaticAnalysis");
 
-    ensurePathExists(fp);
+    FileEnsurePathExists(fp);
     createStyleTransform(fp + ".xslt");
 
     fp.appendFile(".xml");

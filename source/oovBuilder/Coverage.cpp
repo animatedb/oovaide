@@ -60,11 +60,11 @@ bool copyPackageFile(OovStringRef const srcFn, OovStringRef const dstFn)
     {
     bool success = false;
     File srcFile(srcFn, "r");
-    if(fileExists(srcFn))
+    if(FileIsFileOnDisk(srcFn))
 	{
 	if(srcFile.isOpen())
 	    {
-	    ensurePathExists(dstFn);
+	    FileEnsurePathExists(dstFn);
 	    File dstFile(dstFn, "w");
 	    if(dstFile.isOpen())
 		{
@@ -93,7 +93,7 @@ bool makeCoverageBuildProject()
     std::string origPackagesFilePath = Project::getPackagesFilePath();
     std::string covSrcDir = Project::getCoverageSourceDirectory();
     std::string covProjDir = Project::getCoverageProjectDirectory();
-    bool success = ensurePathExists(covProjDir);
+    bool success = FileEnsurePathExists(covProjDir);
     if(success)
 	{
 	Project::setProjectDirectory(covProjDir);
@@ -232,7 +232,7 @@ static void updateCovSourceCounts(OovStringRef const relSrcFn,
 	{
 	FilePath dstFn(Project::getCoverageProjectDirectory(), FP_Dir);
 	dstFn.appendFile(relSrcFn);
-	ensurePathExists(dstFn);
+	FileEnsurePathExists(dstFn);
 	File dstFile(dstFn, "w");
 	if(dstFile.isOpen())
 	    {

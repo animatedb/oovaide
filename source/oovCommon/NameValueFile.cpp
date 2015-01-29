@@ -70,7 +70,7 @@ OovStringVec CompoundValueRef::parseString(OovStringRef const str,
 
 void CompoundValue::quoteCommandLineArg(std::string &str)
     {
-    quoteCommandLinePath(str);
+    FilePathQuoteCommandLinePath(str);
     }
 
 void CompoundValue::quoteAllArgs()

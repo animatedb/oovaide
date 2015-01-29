@@ -58,22 +58,24 @@ void ClassDiagram::restart()
     {
     if(mClassGraph.getNodes().size() == 0)
 	{
-	clearGraphAndAddClass(getLastSelectedClassName());
+	clearGraphAndAddClass(getLastSelectedClassName(),
+		ClassGraph::AN_ClassesAndChildren);
 	}
     updateGraph();
     }
 
-void ClassDiagram::clearGraphAndAddClass(OovStringRef const className)
+void ClassDiagram::clearGraphAndAddClass(OovStringRef const className,
+	ClassGraph::eAddNodeTypes addType)
     {
     mClassGraph.clearGraphAndAddNode(getModelData(),
-	    getDrawOptions(), className, NODE_DEPTH);
+	    getDrawOptions(), className, addType, NODE_DEPTH);
     setLastSelectedClassName(className);
     updateGraphSize();
     }
 
-void ClassDiagram::addClass(OovStringRef const className)
+void ClassDiagram::addClass(OovStringRef const className, ClassGraph::eAddNodeTypes addType)
     {
-    mClassGraph.addNode(getModelData(), getDrawOptions(), className, NODE_DEPTH);
+    mClassGraph.addNode(getModelData(), getDrawOptions(), className, addType, NODE_DEPTH);
     setLastSelectedClassName(className);
     }
 
@@ -223,7 +225,7 @@ void handlePopup(ClassGraph::eAddNodeTypes addType)
 	if(depth == 1)
 	    {
 	    gClassDiagram->getClassGraph().addRelatedNodesRecurse(gClassDiagram->getModelData(),
-		    node->getType(), getDrawOptions(), addType, 2);
+		    node->getType(), getDrawOptions(), addType);
 	    gClassDiagram->updateGraph();
 	    }
 	depth--;

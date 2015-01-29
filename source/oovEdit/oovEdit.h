@@ -69,12 +69,7 @@ class Editor:public DebuggerListener
 	    {
 	    if(mEditFiles.getEditView())
 		{
-		std::string fn;
-		int offset;
-		if(mEditFiles.getEditView()->find(ft, fn, offset))
-		    {
-		    mEditFiles.viewFile(fn, offset);
-		    }
+                mEditFiles.getEditView()->findToken(ft);
 		}
 	    }
 	void gotoDeclaration()

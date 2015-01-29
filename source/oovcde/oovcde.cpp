@@ -402,9 +402,9 @@ static void displayBrowserFile(OovStringRef const fileName)
     char const *fn = fileName;
 #ifdef __linux__
     FilePath fpTest(fn, FP_File);
-    if(!fileExists(fpTest))
+    if(!FileIsFileOnDisk(fpTest))
 #else
-    if(!fileExists(fn))
+    if(!FileIsFileOnDisk(fn))
 #endif
 	{
 	fn = "..\\web\\userguide\\oovcdeuserguide.shtml";
@@ -532,7 +532,7 @@ extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
     GtkEntry *projDirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
 	    "OovcdeProjectDirEntry"));
 
-    removePathSep(rootSrcText, rootSrcText.length()-1);
+    FilePathRemovePathSep(rootSrcText, rootSrcText.length()-1);
     Project::setSourceRootDirectory(rootSrcText);
     rootSrcText.appendFile("-oovcde");
     gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
@@ -563,8 +563,8 @@ extern "C" G_MODULE_EXPORT void on_NewProjectOkButton_clicked(
     OovString projDir = gtk_entry_get_text(dirEntry);
     if(projDir.length())
 	{
-	ensureLastPathSep(projDir);
-	if(ensurePathExists(projDir))
+	FilePathEnsureLastPathSep(projDir);
+	if(FileEnsurePathExists(projDir))
 	    {
 	    Project::setProjectDirectory(projDir);
 
@@ -648,9 +648,9 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
     if(compName != "<Root>")
 	compDir.appendDir(compName);
     // Create the new component directory if it doesn't exist.
-    ensurePathExists(compDir);
+    FileEnsurePathExists(compDir);
 
-    if(!fileExists(interfaceName))
+    if(!FileIsFileOnDisk(interfaceName))
 	{
 	FilePath tempInt(compDir, FP_Dir);
 	tempInt.appendFile(interfaceName);
@@ -660,7 +660,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
     else
 	Gui::messageBox("Interface already exists", GTK_MESSAGE_INFO);
 
-    if(!fileExists(implementationName))
+    if(!FileIsFileOnDisk(implementationName))
 	{
 	FilePath tempImp(compDir, FP_Dir);
 	tempImp.appendFile(implementationName);
@@ -799,7 +799,7 @@ extern "C" G_MODULE_EXPORT void on_MakeCMakeMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
     OovProcessChildArgs args;
-    OovString proc = makeExeFilename("./oovCMaker");
+    OovString proc = FilePathMakeExeFilename("./oovCMaker");
 
     OovString projNameArg;
     Dialog cmakeDlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("CMakeDialog")));

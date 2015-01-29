@@ -72,15 +72,15 @@ static void appendStr(std::string &val, OovString const &str)
 static OovString getPackageNameFromDir(OovStringRef const path)
     {
     FilePath clumpDir(path, FP_Dir);
-    clumpDir.moveToEndDir();
-    clumpDir.moveLeftPathSep();
-    std::string part = clumpDir.getPathSegment();
+    size_t pos = clumpDir.getPosLeftPathSep(clumpDir.getPosEndDir(),
+	    RP_RetPosNatural);
+    std::string part = clumpDir.getPathSegment(pos);
     OovString clumpName;
 
     if(part.compare("lib") == 0)
 	{
-	clumpDir.moveLeftPathSep();
-	clumpName = clumpDir.getPathSegment();
+	pos = clumpDir.getPosLeftPathSep(pos, RP_RetPosNatural);
+	clumpName = clumpDir.getPathSegment(pos);
 	}
     else
 	clumpName = part;

@@ -629,10 +629,10 @@ void CppInstr::updateCoverageSource(OovStringRef const fn, OovStringRef const co
     {
     FilePath outFn(covDir, FP_Dir);
     outFn.appendDir("covLib");
-    ensurePathExists(outFn);
+    FileEnsurePathExists(outFn);
     outFn.appendFile("OovCoverage.cpp");
 
-    if(!fileExists(outFn))
+    if(!FileIsFileOnDisk(outFn))
 	{
 	File file(outFn, "w");
 

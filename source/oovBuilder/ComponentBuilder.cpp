@@ -31,7 +31,7 @@ void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFileP
 
     mToolPathFile.setConfig(buildDirClass);
 
-    deleteFile(getDiagFileName());
+    FileDelete(getDiagFileName());
     mIncDirMap.read(incDepsFilePath);
     if(mode == PM_CovInstr)
 	{
@@ -144,7 +144,10 @@ OovStringSet ComponentBuilder::getComponentCompileArgs(OovStringRef const compNa
 		}
 	    }
 	}
-// lnk args cannot be sent to clang.
+// lnk args should not be sent to clang?
+// clang compiler gives, "unknown argument: '-mwindows'" when -lnk-mwindows is used.
+// instead, use: "-lnk-Wl,--subsystem,windows"
+// https://gcc.gnu.org/ml/gcc-help/2004-01/msg00225.html
 /*
     OovString argStr = file.getComponentBuildArgs(compName);
     for(auto const &arg : CompoundValueRef::parseString(argStr))
@@ -189,11 +192,7 @@ IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(OovStringRef cons
 OovString makeLibFn(OovStringRef const outputPath, OovStringRef const packageName)
     {
     OovString libName = packageName;
-    size_t libNamePos = rfindPathSep(libName);
-    if(libNamePos != std::string::npos)
-    	libNamePos++;
-    else
-    	libNamePos = 0;
+    size_t libNamePos = FilePathGetPosEndDir(libName);
     libName.insert(libNamePos, "lib");
     OovString outFn = outputPath;
     outFn += libName + ".a";
@@ -415,7 +414,7 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
     {
     FilePath outDir(outFile, FP_File);
     outDir.discardFilename();
-    bool success = ensurePathExists(outDir);
+    bool success = FileEnsurePathExists(outDir);
     if(success)
 	{
         OovString processStr = "oovBuilder Building ";
@@ -605,7 +604,7 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
     if(shared)
 	outFileName += ".so";
     else
-	outFileName = makeExeFilename(outFileName);
+	outFileName = FilePathMakeExeFilename(outFileName);
 
     OovStringVec objects;
     for(const auto &src : sources)
@@ -670,7 +669,7 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
 	for(const auto &path : libDirs)
 	    {
 	    std::string quotedPath = path;
-	    quoteCommandLinePath(quotedPath);
+	    FilePathQuoteCommandLinePath(quotedPath);
 	    std::string arg = std::string("-L") + quotedPath;
 	    ca.addArg(arg);
 	    }

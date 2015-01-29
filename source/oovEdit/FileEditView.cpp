@@ -84,7 +84,7 @@ bool FileEditView::openTextFile(OovStringRef const fn)
 	    gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
 	    gtk_text_buffer_set_modified(mTextBuffer, FALSE);
 	    }
-	setNeedHighlightUpdate(HS_NeedHighlight);
+	highlightRequest();
 	}
     return(file.isOpen());
     }
@@ -111,7 +111,7 @@ GuiText FileEditView::getBuffer()
     return GuiText(gtk_text_buffer_get_text(mTextBuffer, &start, &end, false));
     }
 
-void FileEditView::highlight()
+void FileEditView::highlightRequest()
     {
     if(mFileName.length())
 	{
@@ -122,10 +122,7 @@ void FileEditView::highlight()
 
 	FilePath path;
 	path.getAbsolutePath(mFileName, FP_File);
-//	mHighlighter.highlight(mTextView, path, getBuffer(),
-//		gtk_text_buffer_get_char_count(mTextBuffer), cppArgv, numArgs);
-	mHighlighter.highlight(mTextView, path, getBuffer(),
-		gtk_text_buffer_get_char_count(mTextBuffer), cppArgs.getArgv(), cppArgs.getArgc());
+	mHighlighter.highlightRequest(path, cppArgs.getArgv(), cppArgs.getArgc());
 	}
     }
 
@@ -192,8 +189,8 @@ bool FileEditView::saveAsTextFile(OovStringRef const fn)
 	GuiText buf = getBuffer();
 	writeSize = fwrite(buf.c_str(), 1, size, file.getFp());
 	file.close();
-	deleteFile(fn);
-	renameFile(tempFn, fn);
+	FileDelete(fn);
+	FileRename(tempFn, fn);
 	gtk_text_buffer_set_modified(mTextBuffer, FALSE);
 	}
     return(writeSize > 0);
@@ -311,7 +308,7 @@ void FileEditView::bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *loca
 	int offset = HistoryItem::getOffset(location);
 	addHistoryItem(HistoryItem(true, offset, text, len));
 	}
-    setNeedHighlightUpdate(HS_NeedHighlight);
+    highlightRequest();
     }
 
 void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
@@ -323,26 +320,32 @@ void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *sta
 	GuiText str(gtk_text_buffer_get_text(textbuffer, start, end, false));
 	addHistoryItem(HistoryItem(false, offset, str, str.length()));
 	}
-    setNeedHighlightUpdate(HS_NeedHighlight);
+    highlightRequest();
     }
 
-/*
-void FileEditView::drawHighlight()
+bool FileEditView::idleHighlight()
     {
-    if(getHighlightUpdate() == HS_DrawHighlight)
-	{
-	setNeedHighlightUpdate(HS_HighlightDone);
-	}
-    }
-*/
-
-void FileEditView::idleHighlight()
-    {
-    if(getHighlightUpdate() == HS_NeedHighlight)
-	{
-	highlight();
-	setNeedHighlightUpdate(HS_HighlightDone);
-	}
+    bool foundToken = false;
+    eHighlightTask task = mHighlighter.highlightUpdate(mTextView, getBuffer(),
+		gtk_text_buffer_get_char_count(mTextBuffer));
+    if(task & HT_FindToken)
+        {
+        foundToken = true;
+        }
+    if(task & HT_ShowMembers)
+        {
+        OovStringVec members = mHighlighter.getShowMembers();
+	GtkTextView *findView = GTK_TEXT_VIEW(Builder::getBuilder()->
+		getWidget("FindTextview"));
+	Gui::clear(findView);
+	for(auto const &str : members)
+	    {
+	    std::string appendStr = str;
+	    appendStr += '\n';
+	    Gui::appendText(findView, appendStr);
+	    }
+        }
+    return foundToken;
     }
 
 bool FileEditView::handleIndentKeys(GdkEvent *event)
@@ -351,6 +354,30 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
     int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
     switch(event->key.keyval)
 	{
+	case '>':	// Checking for "->"
+	case '.':
+	    {
+	    GtkTextIter cursorIter = getCursorIter();
+	    int offset = getCursorOffset();
+	    offset--;
+	    if(event->key.keyval == '>')
+		{
+		GtkTextIter prevCharIter = cursorIter;
+		gtk_text_iter_backward_char(&prevCharIter);
+		GuiText str(gtk_text_buffer_get_text(mTextBuffer,
+			&prevCharIter, &cursorIter, false));
+		if(str[0] == '-')
+		    offset--;
+		else
+		    offset = -1;
+		}
+	    if(offset != -1)
+		{
+		mHighlighter.showMembers(offset);
+		}
+	    }
+	    break;
+
 	case GDK_KEY_ISO_Left_Tab:	// This is shift tab on PC
 	    // On Windows, modKeys==0, on Linux, modKeys==GDK_SHIFT_MASK
 	    if(event->key.state == GDK_SHIFT_MASK || modKeys == 0 ||
@@ -392,10 +419,17 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
     return handled;
     }
 
-bool FileEditView::find(eFindTokenTypes ft, std::string &fn, int &offset)
+GtkTextIter FileEditView::getCursorIter() const
     {
     GtkTextMark *mark = gtk_text_buffer_get_insert(mTextBuffer);
     GtkTextIter curLoc;
     gtk_text_buffer_get_iter_at_mark(mTextBuffer, &curLoc, mark);
-    return mHighlighter.getTokenizer().find(ft, gtk_text_iter_get_offset(&curLoc), fn, offset);
+    return curLoc;
     }
+
+int FileEditView::getCursorOffset() const
+    {
+    GtkTextIter curLoc = getCursorIter();
+    return gtk_text_iter_get_offset(&curLoc);
+    }
+

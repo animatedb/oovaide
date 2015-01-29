@@ -138,6 +138,8 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
 	void replaceStrs(OovStringRef const srchStr, OovStringRef const repStr);
 	char const * const getStr() const
 	    { return std::string::c_str(); }
+	std::string &getStdString()
+	    { return *this; }
     };
 
 #endif /* OOVSTRING_H_ */

@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 #include "Debug.h"
-#include "OovThreadedQueue.h"
+#include "OovThreadedWaitQueue.h"
 
 
 class VerboseDumper
@@ -35,7 +35,7 @@ struct fileInfo
 
 /// Recursively finds source files, and parses the source file
 /// for static information, and saves into analysis files.
-class srcFileParser:public dirRecurser, public ThreadedWorkQueue<CppChildArgs, srcFileParser>
+class srcFileParser:public dirRecurser, public ThreadedWorkWaitQueue<CppChildArgs, srcFileParser>
 {
 public:
     srcFileParser(const ComponentFinder &compFinder):

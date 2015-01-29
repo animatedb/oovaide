@@ -53,9 +53,9 @@ class RootDirPackage
 	void setExternalReferenceDir(OovString const &extRefDir)
 	    { mExternalReferenceDir = extRefDir; }
 
-	OovString getPkgName() const
+	OovString const &getPkgName() const
 	    { return mName; }
-	OovString getRootDir() const
+	FilePath const &getRootDir() const
 	    { return mRootDir; }
 	OovStringVec getExtRefDirs() const;
 	OovStringVec getLibraryNames() const;

@@ -66,11 +66,11 @@ bool FileStat::isOutputOld(OovStringRef const outputFn,
     {
     time_t outTime;
     time_t inTime;
-    bool success = getFileTime(outputFn, outTime);
+    bool success = FileGetFileTime(outputFn, outTime);
     bool old = !success;
     if(success)
 	{
-	success = getFileTime(inputFn, inTime);
+	success = FileGetFileTime(inputFn, inTime);
 	if(success)
 	    old = inTime > outTime;
 	else
@@ -111,7 +111,7 @@ ScannedComponentsInfo::MapIter ScannedComponentsInfo::addComponents(
     FilePath parent = FilePath(compName, FP_Dir).getParent();
     if(parent.length() > 0)
 	{
-	removePathSep(parent, parent.length()-1);
+	FilePathRemovePathSep(parent, parent.length()-1);
         addComponents(parent);
 	}
     MapIter it = mComponents.find(compName);
@@ -224,13 +224,12 @@ OovString ComponentFinder::getComponentName(OovStringRef const filePath) const
 	    mProject.getSrcRootDirectory());
     if(compName.length() == 0)
     	{
-	path.moveLeftPathSep();
-	mRootPathName = path.getPathSegment();
+	mRootPathName = path.getPathSegment(path.getPosEndDir());
 	compName = "<Root>";
     	}
     else
 	{
-	removePathSep(compName, compName.length()-1);
+	FilePathRemovePathSep(compName, compName.length()-1);
 	}
     return compName;
     }

@@ -463,7 +463,7 @@ void Editor::editPreferences()
 	if(compFile.getComponentType(name) == ComponentTypesFile::CT_Program)
 	    {
 	    FilePath fp(Project::getOutputDir(BuildConfigDebug), FP_Dir);
-	    fp.appendFile(makeExeFilename(name));
+	    fp.appendFile(FilePathMakeExeFilename(name));
 	    Gui::appendText(cb, fp);
 	    haveNames = true;
 	    if(fp.compare(dbgComponent) == 0)
@@ -526,9 +526,9 @@ void Editor::setPreferencesWorkingDir()
 #define SINGLE_INSTANCE 1
 #if(SINGLE_INSTANCE)
 
-// Note that this is called from a few places. If command line arguments are
-// given, then it is called from the open, otherwise it is called from
-// g_application_run
+// Note that this is called a few times. If command line arguments are
+// given, then it is called from the open. It can also be called from
+// g_application_run.
 static void activateApp(GApplication *gapp)
     {
     GtkApplication *app = GTK_APPLICATION (gapp);
@@ -539,7 +539,8 @@ static void activateApp(GApplication *gapp)
     }
 
 // command-line signal
-// Beware - this is called many times when starting up.
+// Beware - this is called many times when starting up.   It is a bit strange,
+// but this function can be called from different processes during startup.
 static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
     gpointer user_data)
     {
@@ -556,7 +557,7 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 		{
 		if(argv[argi][1] == 'p')
 		    {
-		    OovString fname = fixFilePath(&argv[argi][2]);
+		    OovString fname = FilePathFixFilePath(&argv[argi][2]);
 		    gEditor.setProjectDir(fname);
 		    }
 		else
@@ -566,7 +567,7 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 		{
 		if(argv[argi][1] == 'p')
 		    {
-		    OovString fname = fixFilePath(&argv[argi][2]);
+		    OovString fname = FilePathFixFilePath(&argv[argi][2]);
 		    gEditor.setProjectDir(fname);
 		    }
 		else
@@ -577,7 +578,8 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 	    }
 	if(fn)
 	    {
-	    gEditor.getEditFiles().viewModule(fixFilePath(fn), line);
+	    activateApp(gapp);
+	    gEditor.getEditFiles().viewModule(FilePathFixFilePath(fn), line);
 	    }
 	}
     if(goodArgs)

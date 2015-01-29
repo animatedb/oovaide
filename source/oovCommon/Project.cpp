@@ -26,17 +26,15 @@ OovString makeBuildConfigArgName(OovStringRef const baseName,
 
 OovString Project::getComponentTypesFilePath()
     {
-    OovString fn = sProjectDirectory;
-    ensureLastPathSep(fn);
-    fn += "oovcde-comptypes.txt";
+    FilePath fn(sProjectDirectory, FP_Dir);
+    fn.appendFile("oovcde-comptypes.txt");
     return fn;
     }
 
 OovString Project::getComponentSourceListFilePath()
     {
-    OovString fn = sProjectDirectory;
-    ensureLastPathSep(fn);
-    fn += "oovcde-tmp-compsources.txt";
+    FilePath fn(sProjectDirectory, FP_Dir);
+    fn.appendFile("oovcde-tmp-compsources.txt");
     return fn;
     }
 
@@ -67,17 +65,15 @@ OovStringRef const Project::getSrcRootDirectory()
 
 OovString Project::getProjectFilePath()
     {
-    OovString fn = sProjectDirectory;
-    ensureLastPathSep(fn);
-    fn += "oovcde.txt";
+    FilePath fn(sProjectDirectory, FP_Dir);
+    fn.appendFile("oovcde.txt");
     return fn;
     }
 
 OovString Project::getGuiOptionsFilePath()
     {
-    OovString fn = sProjectDirectory;
-    ensureLastPathSep(fn);
-    fn += "oovcde-gui.txt";
+    FilePath fn(sProjectDirectory, FP_Dir);
+    fn.appendFile("oovcde-gui.txt");
     return fn;
     }
 
@@ -107,7 +103,7 @@ OovString Project::getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileNa
     if(pos != std::string::npos)
 	{
 	relSrcFileName.erase(pos, srcRootDir.numChars());
-	removePathSep(relSrcFileName, 0);
+	FilePathRemovePathSep(relSrcFileName, 0);
 	}
     return relSrcFileName;
     }
@@ -120,7 +116,7 @@ OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcFileNam
     if(pos != std::string::npos)
 	{
 	relSrcFileDir.erase(pos, srcRootDir.numChars());
-	removePathSep(relSrcFileDir, 0);
+	FilePathRemovePathSep(relSrcFileDir, 0);
 	}
     return relSrcFileDir;
     }
@@ -140,9 +136,8 @@ OovString Project::makeOutBaseFileName(OovStringRef const srcFileName,
 	file.erase(0, 1);
     replaceChars(file, '/', '_');
     replaceChars(file, '.', '_');
-    OovString outFileName = outFilePath;
-    ensureLastPathSep(outFileName);
-    outFileName += file;
+    FilePath outFileName(outFilePath, FP_Dir);
+    outFileName.appendFile(file);
     return outFileName;
     }
 

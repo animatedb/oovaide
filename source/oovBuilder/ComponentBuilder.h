@@ -10,7 +10,7 @@
 
 #include "ComponentFinder.h"
 #include "ObjSymbols.h"
-#include "OovThreadedQueue.h"
+#include "OovThreadedWaitQueue.h"
 #include "Project.h"
 
 
@@ -51,7 +51,7 @@ class TaskQueueListener
 		OovStringRef const stdOutFn, ProcessArgs const &item) = 0;
     };
 
-class ComponentTaskQueue:public ThreadedWorkQueue<ProcessArgs, ComponentTaskQueue>
+class ComponentTaskQueue:public ThreadedWorkWaitQueue<ProcessArgs, ComponentTaskQueue>
     {
     public:
 	ComponentTaskQueue():

@@ -333,7 +333,7 @@ static DebuggerLocation getLocationFromResult(const std::string &resultStr)
     line.getInt(0, INT_MAX, lineNum);
 // For some reason, "fullname" has doubled slashes on Windows, Sometimes "file"
 // contains a full good path, but not all the time.
-    FilePath fullFn(fixFilePath(getTagValue(resultStr, "fullname")),
+    FilePath fullFn(FilePathFixFilePath(getTagValue(resultStr, "fullname")),
 	    FP_File);
     loc.setFileLine(fullFn, lineNum);
 //    loc.setFileLine(getTagValue(resultStr, "file"), lineNum);

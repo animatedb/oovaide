@@ -16,7 +16,7 @@
 #define DBG_EDITF 0
 #if(DBG_EDITF)
 #include "Debug.h"
-DebugFile sDbgFile("DbgEditFiles.txt");
+DebugFile sDbgFile("DbgEditFiles.txt", false);
 #endif
 
 
@@ -416,6 +416,9 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
 	    g_signal_connect(editView, "button_press_event",
 		    G_CALLBACK(on_EditFiles_button_press_event), NULL);
 	    mFileViews.push_back(std::unique_ptr<ScrolledFileView>(scrolledView));
+#if(DBG_EDITF)
+	sDbgFile.printflush("viewFile count = %d\n", mFileViews.size());
+#endif
 	    iter = mFileViews.end()-1;
 	    }
 	}
@@ -427,7 +430,7 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
 	// focus is set after the screen is displayed by onIdle
 //	gtk_widget_grab_focus(GTK_WIDGET((*iter).getTextView()));
 #if(DBG_EDITF)
-	sDbgFile.printflush("ViewFile %d\n", pageIndex);
+	sDbgFile.printflush("viewFile %d\n", pageIndex);
 #endif
 	(*iter)->mDesiredLine = lineNum;
 	}
@@ -454,11 +457,23 @@ void EditFiles::idleHighlight()
     {
     timeval curTime;
     gettimeofday(&curTime, NULL);
-    if(curTime.tv_sec != mLastHightlightIdleUpdate.tv_sec /*||
-	    abs(curTime.tv_usec - mLastHightlightIdleUpdate.tv_usec) > 300*/)
+    if(curTime.tv_sec != mLastHightlightIdleUpdate.tv_sec ||
+	    abs(curTime.tv_usec - mLastHightlightIdleUpdate.tv_usec) > 300)
 	{
+        OovString fn;
+        int offset;
 	for(auto &view : mFileViews)
-	    view->getFileEditView().idleHighlight();
+            {
+	    FileEditView &editView = view->getFileEditView();
+	    if(editView.idleHighlight())
+                {
+                editView.getFindTokenResults(fn, offset);
+                }
+            }
+	if(fn.length() > 0)
+	    {
+	    viewFile(fn, offset);
+	    }
 	mLastHightlightIdleUpdate = curTime;
 	}
     }
@@ -544,7 +559,7 @@ bool EditFiles::checkDebugger()
 // The debugger could be on the path.
 //	    if(fileExists(debugger))
 		{
-		if(fileExists(debuggee))
+		if(FileIsFileOnDisk(debuggee))
 		    {
 		    ok = true;
 		    }
@@ -638,7 +653,8 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *wid
 	    sEditFiles->getDebugger().startGetVariable(
 		    Gui::getSelectedText(view->getTextView()));
 #if(DBG_EDITF)
-    sDbgFile.printflush("ViewVar %s\n", Gui::getSelectedText(view->getTextView()));
+    const char *str = Gui::getSelectedText(view->getTextView());
+    sDbgFile.printflush("ViewVar %s\n", str);
 #endif
 	    }
 	}

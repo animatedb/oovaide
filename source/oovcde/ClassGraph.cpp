@@ -453,7 +453,8 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
     }
 
 void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options,
-	char const * const className, int nodeDepth, bool clear)
+	char const * const className, ClassGraph::eAddNodeTypes addType,
+	int nodeDepth, bool clear)
     {
     static int depth = 0;
     depth++;
@@ -471,7 +472,7 @@ void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options
 		{
 		addRelationKeyNode(options);
 		}
-	    addRelatedNodesRecurse(model, classifier, options, ClassGraph::AN_All, nodeDepth);
+	    addRelatedNodesRecurse(model, classifier, options, addType, nodeDepth);
 	    updateGraph(model, options);
 	    }
 	mModified = false;

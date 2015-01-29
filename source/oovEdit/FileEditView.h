@@ -18,8 +18,7 @@ class FileEditView
     {
     public:
 	FileEditView():
-	    mTextView(nullptr), mTextBuffer(nullptr), mCurHistoryPos(0), mDoingHistory(false),
-	    mNeedHighlightUpdate(HS_HighlightDone)
+	    mTextView(nullptr), mTextBuffer(nullptr), mCurHistoryPos(0), mDoingHistory(false)
 	    {}
 	void init(GtkTextView *textView);
 	bool openTextFile(OovStringRef const fn);
@@ -30,7 +29,10 @@ class FileEditView
 	bool find(char const * const findStr, bool forward, bool caseSensitive);
 	bool findAndReplace(char const * const findStr, bool forward,
 		bool caseSensitive, char const * const replaceStr);
-	bool find(eFindTokenTypes ft, std::string &fn, int &offset);
+	void findToken(eFindTokenTypes ft)
+            { mHighlighter.findToken(ft, getCursorOffset()); }
+        void getFindTokenResults(std::string &fn, int &offset)
+            { mHighlighter.getFindTokenResults(fn, offset); }
 	void cut()
 	    {
 	    GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);
@@ -83,7 +85,8 @@ class FileEditView
 		wnd = GTK_WINDOW(mTextView);
 	    return wnd;
 	    }
-	void idleHighlight();
+        // Return = true if find def/decl has results.
+	bool idleHighlight();
 	void gotoLine(int lineNum);
 	void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
 	        gchar *text, gint len);
@@ -100,22 +103,14 @@ class FileEditView
 	std::vector<HistoryItem> mHistoryItems;
 	size_t mCurHistoryPos;		// Range is 0 to size()-1.
 	bool mDoingHistory;		// Doing undo or redo.
-	enum HightlightStates
-	    {
-	    HS_NeedHighlight,	// The text buffer has changed and a highlight update is needed.
-	    HS_HighlightDone
-	    };
-	HightlightStates mNeedHighlightUpdate;
 	Highlighter mHighlighter;
 	Indenter mIndenter;
 	void setFileName(OovStringRef const fn)
 	    { mFileName = fn; }
 	bool saveAsTextFile(OovStringRef const fn);
-	void highlight();
-	void setNeedHighlightUpdate(HightlightStates hs)
-	    { mNeedHighlightUpdate = hs; }
-	HightlightStates getHighlightUpdate() const
-	    { return mNeedHighlightUpdate; }
+	void highlightRequest();
+	int getCursorOffset() const;
+	GtkTextIter getCursorIter() const;
 	void moveToIter(GtkTextIter startIter, GtkTextIter *endIter=NULL);
 	GuiText getBuffer();
     };

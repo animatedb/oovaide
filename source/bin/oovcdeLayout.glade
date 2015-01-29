@@ -352,7 +352,7 @@ Use this dialog to set up component definitions.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="has_tooltip">True</property>
-                        <property name="tooltip_text" translatable="yes">Example: -lnk-W1,--subsystem:windows</property>
+                        <property name="tooltip_text" translatable="yes">Example: -lnk-Wl,--subsystem,windows</property>
                       </object>
                     </child>
                   </object>
@@ -523,6 +523,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddStandardMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add class relations, but not function relations</property>
         <property name="label" translatable="yes">Add Standard Relations</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddStandardMenuitem_activate" swapped="no"/>
@@ -547,6 +548,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddSuperclassesMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add superclasses to this class</property>
         <property name="label" translatable="yes">Add Superclasses</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddSuperclassesMenuitem_activate" swapped="no"/>
@@ -556,6 +558,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddSubclassesMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add subclasses of this class</property>
         <property name="label" translatable="yes">Add Subclasses</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddSubclassesMenuitem_activate" swapped="no"/>
@@ -565,7 +568,8 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddMembersUsingMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Add Members Using</property>
+        <property name="tooltip_text" translatable="yes">Add members of this class</property>
+        <property name="label" translatable="yes">Add Members</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddMembersUsingMenuitem_activate" swapped="no"/>
       </object>
@@ -574,6 +578,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddMemberUsersMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add other classes that have members that use this class</property>
         <property name="label" translatable="yes">Add Member Users</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddMemberUsersMenuitem_activate" swapped="no"/>
@@ -589,7 +594,8 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncParamsUsingMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Add Func Params Using</property>
+        <property name="tooltip_text" translatable="yes">Add classes that are used in function parameters of this class</property>
+        <property name="label" translatable="yes">Add Func Params</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncParamsUsingMenuitem_activate" swapped="no"/>
       </object>
@@ -598,6 +604,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncParamUsersMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add other functions that have parameters that use this class</property>
         <property name="label" translatable="yes">Add Func Param Users</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncParamUsersMenuitem_activate" swapped="no"/>
@@ -607,7 +614,8 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncBodyVarUsingMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Add Func Body Var Using</property>
+        <property name="tooltip_text" translatable="yes">Add classes that are used in functions of this class</property>
+        <property name="label" translatable="yes">Add Func Body Var</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncBodyVarUsingMenuitem_activate" swapped="no"/>
       </object>
@@ -616,6 +624,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncBodyVarUsersMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add functions that have instantiations that use this class</property>
         <property name="label" translatable="yes">Add Func Body Var Users</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncBodyVarUsersMenuitem_activate" swapped="no"/>

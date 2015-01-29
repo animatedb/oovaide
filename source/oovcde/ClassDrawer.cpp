@@ -22,11 +22,11 @@ struct DrawString
 
 static void getLeafPath(std::string &moduleStr)
     {
-    size_t pos = rfindPathSep(moduleStr);
+    size_t pos = FilePathGetPosLeftPathSep(moduleStr, moduleStr.length()-1, RP_RetPosFailure);
     if(pos != std::string::npos)
 	{
 	moduleStr.resize(pos+1);
-	pos = rfindPathSep(moduleStr, pos-1);
+	pos = FilePathGetPosLeftPathSep(moduleStr, pos-1, RP_RetPosFailure);
 	if(pos != std::string::npos)
 	    {
 	    moduleStr.erase(0, pos);

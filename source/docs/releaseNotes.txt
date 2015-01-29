@@ -17,6 +17,8 @@ Missing Features
 ----------------
 - General
 	- fix sleepMs
+	- create minimal code guidelines, ex: "The Power of Ten – Rules for Developing Safety Critical Code"
+	- add assertions
 - Gui
 	- Add improved open recent files
 	- Add toolbar buttons
@@ -163,6 +165,11 @@ Missing Features
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future
+	- Add autocomplete ("efficient autocompletion database")
+		Three types (types, instances and members(., ->)), save def,decl location, namespaces?
+		http://emacswiki.org/emacs/AutoComplete
+		http://www.vldb.org/pvldb/vol6/p373-xiao.pdf
+		http://stackoverflow.com/questions/2332028/what-is-an-efficient-search-algorithm-to-provide-auto-completion
 	- Add design quality based on function inter-relations / call-tree?
 		http://www.graphviz.org/content/tips-usefully-visualizing-non-trivial-graphs
 		https://en.wikipedia.org/wiki/Design_structure_matrix

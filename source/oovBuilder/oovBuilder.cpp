@@ -122,7 +122,7 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 	}
 
     OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
-    ensurePathExists(analysisPath);
+    FileEnsurePathExists(analysisPath);
 
     FilePath compFn(analysisPath, FP_Dir);
     compFn.appendFile(Project::getAnalysisComponentsFilename());

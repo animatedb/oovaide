@@ -380,8 +380,8 @@ bool ObjSymbols::makeObjectSymbols(OovStringVec const &libFiles,
 	libSymName.discardDirectory();
 	libSymName.discardExtension();
 	OovString libSymPath = outSymPath;
-	ensureLastPathSep(libSymPath);
-	ensurePathExists(libSymPath);
+	FilePathEnsureLastPathSep(libSymPath);
+	FileEnsurePathExists(libSymPath);
 	OovString outSymRawFileName = libSymPath + libSymName + ".txt";
 /*
 	std::string libName = libFilePath;
@@ -422,7 +422,7 @@ bool ObjSymbols::makeObjectSymbols(OovStringVec const &libFiles,
 		OovProcessChildArgs ca;
 		ca.addArg(objSymbolTool);
 		std::string quotedLibFilePath = libFn.mLibFilePath;
-		quoteCommandLinePath(quotedLibFilePath);
+		FilePathQuoteCommandLinePath(quotedLibFilePath);
 		ca.addArg(quotedLibFilePath);
 
 		ProcessArgs procArgs(objSymbolTool, libFn.mLibSymFileName, ca,
@@ -475,8 +475,7 @@ void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
 	OovStringRef const outPath,
 	OovStringVec &sortedLibFileNames)
     {
-    OovString depSymFileName = outPath;
-    ensureLastPathSep(depSymFileName);
+    FilePath depSymFileName(outPath, FP_Dir);
     depSymFileName += "LibSym-";
     depSymFileName += clumpName;
     depSymFileName += "-Dep.txt";

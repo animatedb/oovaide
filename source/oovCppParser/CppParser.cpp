@@ -142,7 +142,7 @@ void IncDirDependencyMap::insert(const std::string &includerFn,
 #ifdef __linux__
 
 #else
-    if(includedFn.findPathSegment("mingw") == std::string::npos)
+    if(includedFn.getPosPathSegment("mingw") == std::string::npos)
 #endif
 	{
 	mParsedIncludeDependencies[includerFn].insert(includedFn);
@@ -1006,7 +1006,7 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
 //    unsigned options = 0;
     CXTranslationUnit tu;
 
-    CXErrorCode errCode;
+    CXErrorCode errCode = CXError_Success;
     try
 	{
 	errCode = clang_parseTranslationUnit2(index, srcFn,

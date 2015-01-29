@@ -89,13 +89,13 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
 	    if(success)
 		{
 		OovString srcRoot = mSrcRootDir;
-		ensureLastPathSep(srcRoot);
+		FilePathEnsureLastPathSep(srcRoot);
 		OovString outFileName = Project::makeAnalysisFileName(srcFile,
 			srcRoot, mAnalysisDir);
 		if(FileStat::isOutputOld(outFileName, srcFile))
 		    {
 		    std::string procPath = ToolPathFile::getAnalysisToolPath();
-		    procPath = makeExeFilename(procPath);
+		    procPath = FilePathMakeExeFilename(procPath);
 		    CppChildArgs ca;
 		    ca.addArg(procPath);
 		    ca.addArg(srcFile);
