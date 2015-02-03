@@ -57,6 +57,16 @@ class Project
 	static OovString getComponentTypesFilePath();
 	static OovString getComponentSourceListFilePath();
 
+	static char const *getRootComponentName()
+	    { return "<Root>"; }
+	// This is the name without a path.
+	static OovString getRootComponentFileName()
+	    {
+	    FilePath path(sSourceRootDirectory, FP_Dir);
+	    return path.getPathSegment(path.getPosLeftPathSep(
+		    path.getPosEndDir(), RP_RetPosNatural)+1);
+	    }
+
 	static OovString getPackagesFilePath();
 	static OovString getBuildPackagesFilePath();
 

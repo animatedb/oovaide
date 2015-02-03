@@ -1,4 +1,4 @@
-BuildArgsBase|-c;-EPmingw-w64;-EPgtk+-3.0;-EPllvm;
+BuildArgsBase|-c;-EPmingw-w64;-EPgtk+-3.0;-EPllvm;-lnk-static-libgcc;
 BuildArgsExtra-Analyze|-x;c++;-std=c++11;
 BuildArgsExtra-Debug|-std=c++0x;-O0;-g3;
 BuildArgsExtra-Release|-std=c++0x;-O3;

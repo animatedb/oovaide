@@ -1,7 +1,7 @@
 // TestProcess.cpp
 
 #include "TestCpp.h"
-#include "../../oovCommon/OovThreadedQueue.h"
+#include "../../oovCommon/OovThreadedWaitQueue.h"
 #include "../../oovCommon/OovProcess.h"     // For sleepMs
 // Including this causes oovbuilder to crash!
 //#include "../../oovCommon/OovProcess.h"
@@ -36,7 +36,7 @@ TEST_F(gProcessUnitTest, ThreadQueueSingleItemTest)
 */
 
 
-class ThreadedQueue:public ThreadedWorkQueue<std::string, class ThreadedQueue>
+class ThreadedQueue:public ThreadedWorkWaitQueue<std::string, class ThreadedQueue>
     {
     public:
         bool processItem(std::string const &item)

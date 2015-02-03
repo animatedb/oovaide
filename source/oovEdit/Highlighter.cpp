@@ -563,13 +563,16 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
 #endif
 	    }
 	}
-    mResultsLock.lock();
-    if(mTaskResults & HT_Parse)
+    if(mParseRequestCounter == mParseFinishedCounter)
 	{
-	applyTags(gtk_text_view_get_buffer(textView), mTokenResults);
-        mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_Parse);
+	mResultsLock.lock();
+	if(mTaskResults & HT_Parse)
+	    {
+	    applyTags(gtk_text_view_get_buffer(textView), mTokenResults);
+	    mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_Parse);
+	    }
+	mResultsLock.unlock();
 	}
-    mResultsLock.unlock();
     DUMP_THREAD("highlightUpdate-end");
     return mTaskResults;
     }
@@ -624,6 +627,10 @@ void Highlighter::getFindTokenResults(std::string &fn, int &offset)
     mResultsLock.unlock();
     }
 
+// On Windows, when tags are applied, 38% of CPU time is used for
+// seven oovBuilder source modules open.  This is true even though the
+// applyTags function is not normally running while idle. When only half
+// the tags for each file is applied, then it drops to 25% usage.
 void Highlighter::applyTags(GtkTextBuffer *textBuffer, const TokenRange &tokens)
     {
     DUMP_THREAD("applyTags");

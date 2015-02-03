@@ -109,17 +109,17 @@ void FileRename(OovStringRef const oldPath, OovStringRef const newPath);
 template<typename T_Str> class FilePathRefInterface
     {
     public:
-	size_t getPosStartDir()
+	size_t getPosStartDir() const
 	    { return FilePathGetPosStartDir(getThisStr()); }
-	size_t getPosEndDir()
+	size_t getPosEndDir() const
 	    { return FilePathGetPosEndDir(getThisStr()); }
-	size_t getPosExtension(eReturnPosition rp)
+	size_t getPosExtension(eReturnPosition rp) const
 	    { return FilePathGetPosExtension(getThisStr(), rp); }
 	size_t getPosPathSegment(OovStringRef const seg) const
 	    { return FilePathGetPosSegment(getThisStr(), seg); }
-	size_t getPosLeftPathSep(size_t startPos, eReturnPosition rp)
+	size_t getPosLeftPathSep(size_t startPos, eReturnPosition rp) const
 	    { return FilePathGetPosLeftPathSep(getThisStr(), startPos, rp); }
-	size_t getPosRightPathSep(size_t startPos, eReturnPosition rp)
+	size_t getPosRightPathSep(size_t startPos, eReturnPosition rp) const
 	    { return FilePathGetPosRightPathSep(getThisStr(), startPos, rp); }
 
 	OovString getHead(size_t startPos) const

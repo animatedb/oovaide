@@ -74,18 +74,18 @@ std::string EditFiles::getEditViewSelectedText()
 
 void EditFiles::updateDebugMenu()
     {
-    GdbChildStates state = mDebugger.getChildState();
+    DebuggerChildStates state = mDebugger.getChildState();
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugGo")),
-	    state != GCS_GdbChildRunning);
+	    state != DCS_ChildRunning);
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStepOver")),
-	    state != GCS_GdbChildRunning);
+	    state != DCS_ChildRunning);
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStepInto")),
-	    state != GCS_GdbChildRunning);
+	    state != DCS_ChildRunning);
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugPause")),
-	    state == GCS_GdbChildRunning);
+	    state == DCS_ChildRunning);
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStop")), true);
     Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugViewVariable")),
-	    state != GCS_GdbChildRunning);
+	    state != DCS_ChildRunning);
     }
 
 void EditFiles::gotoLine(int lineNum)
@@ -260,9 +260,9 @@ void EditFiles::drawRightMargin(GtkWidget *widget, cairo_t *cr, int leftMargin, 
 static void displayContextMenu(guint button, guint32 acttime, gpointer data)
     {
     GtkMenu *menu = Builder::getBuilder()->getMenu("EditPopupMenu");
-    GdbChildStates state = sEditFiles->getDebugger().getChildState();
+    DebuggerChildStates state = sEditFiles->getDebugger().getChildState();
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget("DebugViewVariable")),
-	    state != GCS_GdbChildRunning);
+	    state != DCS_ChildRunning);
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
     }
 

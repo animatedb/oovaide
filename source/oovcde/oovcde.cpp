@@ -645,7 +645,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
 	    "NewModule_ComponentComboboxtext")));
 
     FilePath compDir(basePath, FP_Dir);
-    if(compName != "<Root>")
+    if(compName != Project::getRootComponentName())
 	compDir.appendDir(compName);
     // Create the new component directory if it doesn't exist.
     FileEnsurePathExists(compDir);
@@ -689,7 +689,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
 	if(names.size() == 0)
 	    {
 	    Gui::appendText(GTK_COMBO_BOX_TEXT(gOovGui.getBuilder().getWidget(
-		    "NewModule_ComponentComboboxtext")), "<Root>");
+		    "NewModule_ComponentComboboxtext")), Project::getRootComponentName());
 	    }
 	for(auto const &name : names)
 	    {

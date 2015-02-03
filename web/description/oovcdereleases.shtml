@@ -25,6 +25,16 @@ Created: 6-8-2009
 The following lists releases in reverse chronological order.<br>
 <br>
 
+<h2>2015-2</h2>
+This version contains:
+<ul>
+  <li>Added background thread to editor</li>
+  <li>Added go to definition for include files in editor</li>
+  <li>Added display members in editor</li>
+  <li>Improved go to definition for variables</li>
+  <li>Improved internal filepath handling</li>
+</ul>
+
 <h2>2015-1</h2>
 This version contains:
 <ul>

@@ -224,8 +224,10 @@ OovString ComponentFinder::getComponentName(OovStringRef const filePath) const
 	    mProject.getSrcRootDirectory());
     if(compName.length() == 0)
     	{
-	mRootPathName = path.getPathSegment(path.getPosEndDir());
-	compName = "<Root>";
+	mRootPathName = Project::getRootComponentFileName();
+//	mRootPathName = path.getPathSegment(path.getPosLeftPathSep(path.getPosEndDir(),
+//		RP_RetPosNatural));
+	compName = Project::getRootComponentName();
     	}
     else
 	{

@@ -152,7 +152,7 @@ class ComponentFinder:public dirRecurser
 	OovString makeFileName(OovStringRef const projName) const
 	    {
 	    OovString fn = projName;
-	    if(strcmp(projName, "<Root>") == 0)
+	    if(strcmp(projName, Project::getRootComponentName()) == 0)
 		{ fn = mRootPathName; }
 	    return fn;
 	    }

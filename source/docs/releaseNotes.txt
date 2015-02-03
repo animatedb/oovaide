@@ -187,6 +187,8 @@ Missing Features
 	- static analysis: clang++ --analyze -I/home/ad/IP/Lib/src/  -Weverything
 		 -pedantic -fshow-column -fcaret-diagnostics -fcolor-diagnostics
 		 -ferror-limit=9999999 -fdiagnostics-show-category -std=c++98 file1.cpp
+	- proofs - Coq, TLA+
+		http://www.cs.unh.edu/~charpov/Teaching/TLA/
 	- Add dynamic package diagrams using ldd/depends
 	- select two classes and show shortest path
 	- test facilitation (show number of paths/tests/complexity/duplication)
@@ -195,6 +197,8 @@ Missing Features
 	- abstract interpretation (show ranges of variables)
 	- C Intermediate Language - http://www.cs.berkeley.edu/~necula/cil/cil016.html
 	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
+		http://nsis.sourceforge.net/Main_Page
+		https://github.com/jordansissel/fpm, http://www.exemsi.com/, Wix(.Net only)
 		http://ubuntuforums.org/showthread.php?t=910717
 		http://unix.stackexchange.com/questions/30303/how-to-create-a-deb-file-manually
 

@@ -17,7 +17,14 @@
 #include <queue>
 
 
-enum GdbChildStates { GCS_GdbChildNotRunning, GCS_GdbChildRunning, GCS_GdbChildPaused };
+#define USE_LLDB 0
+#if(USE_LLDB)
+#include <LLDB.h>
+#endif
+
+
+enum DebuggerChildStates { DCS_ChildNotRunning, DCS_ChildRunning, DCS_ChildPaused };
+enum eDebuggerChangeStatus { DCS_None, DCS_RunState, DCS_Stack, DCS_Value };
 
 class DebuggerLocation
     {
@@ -97,11 +104,13 @@ class DebuggerListener
 	virtual void DebugStatusChanged() = 0;
     };
 
-class Debugger:public OovProcessListener
+
+class DebuggerBase
     {
     public:
-	enum eChangeStatus { CS_None, CS_RunState, CS_Stack, CS_Value };
-	Debugger();
+	DebuggerBase();
+	virtual ~DebuggerBase()
+            {}
 	void setListener(DebuggerListener &listener)
 	    { mDebuggerListener = &listener; }
 	void setDebuggerFilePath(OovStringRef const dbgPath)
@@ -114,59 +123,85 @@ class Debugger:public OovProcessListener
 	/// This is the working directory of the debuggee.
 	void setWorkingDir(OovStringRef const dir)
 	    { mWorkingDir = dir; }
+
 	/// @param frameLine One line of text returned from getStack
 	///	Lines are separated with \n.
-	void setStackFrame(OovStringRef const frameLine);
-	void toggleBreakpoint(const DebuggerBreakpoint &br);
-	void stepInto();
-	void stepOver();
-	void resume();
-	void interrupt();	// pause
-	void stop();
+	virtual void setStackFrame(OovStringRef const frameLine) = 0;
+	virtual void toggleBreakpoint(const DebuggerBreakpoint &br) = 0;
+        
+	virtual void stepInto()=0;
+	virtual void stepOver()=0;
+	virtual void resume()=0;
+	virtual void interrupt()=0;	// pause
+	virtual void stop()=0;
 	/// This allows the user to send a typed in debugger command.
-	void sendCommand(OovStringRef const command);
-	void startGetVariable(OovStringRef const variable);
-	void startGetStack();
-	void startGetMemory(OovStringRef const addr);
-
+	virtual void sendCommand(OovStringRef const command) = 0;
 	std::string const &getDebuggerFilePath() const
 	    { return mDebuggerFilePath; }
 	std::string const &getDebuggeeFilePath() const
 	    { return mDebuggeeFilePath; }
 	DebuggerBreakpoints const &getBreakpoints() const
 	    { return mBreakpoints; }
-
 	// The following info must be thread protected
-	Debugger::eChangeStatus getChangeStatus();
-	GdbChildStates getChildState();
+	eDebuggerChangeStatus getChangeStatus();
+	DebuggerChildStates getChildState();
 	OovString getStack();
 	OovString getVarValue();
 	// Returns empty filename if not stopped.
 	DebuggerLocation getStoppedLocation();
 
-    private:
+    protected:
 	OovString mDebuggerFilePath;
 	OovString mDebuggeeFilePath;
 	OovString mDebuggeeArgs;
 	OovString mWorkingDir;
 
 	DebuggerBreakpoints mBreakpoints;
-	OovBackgroundPipeProcess mBkgPipeProc;
 	DebuggerListener *mDebuggerListener;
+
+	// Thread protected data
+	std::string mDebuggerOutputBuffer;
+	OovString mStack;
+	std::string mVarValue;
+	DebuggerChildStates mDebuggerChildState;
+	InProcMutex mStatusLock;
+	std::queue<eDebuggerChangeStatus> mChangeStatusQueue;
+	DebuggerLocation mStoppedLocation;
+	void updateChangeStatus(eDebuggerChangeStatus status);
+	void changeChildState(DebuggerChildStates state);
+    };
+
+
+#if(!USE_LLDB)
+class DebuggerGdb:public OovProcessListener, public DebuggerBase
+    {
+    public:
+        DebuggerGdb();
+        virtual ~DebuggerGdb()
+            {}
+	/// @param frameLine One line of text returned from getStack
+	///	Lines are separated with \n.
+	void setStackFrame(OovStringRef const frameLine) override;
+	void toggleBreakpoint(const DebuggerBreakpoint &br) override;
+	void stepInto() override;
+	void stepOver() override;
+	void resume() override;
+	void interrupt() override;	// pause
+	void stop() override;
+
+	/// This allows the user to send a typed in debugger command.
+	void sendCommand(OovStringRef const command) override;
+	void startGetVariable(OovStringRef const variable);
+	void startGetStack();
+	void startGetMemory(OovStringRef const addr);
+
+    private:
+	OovBackgroundPipeProcess mBkgPipeProc;
 	int mCommandIndex;
 	// Frame numbers start at 0
 	int mFrameNumber;
 	// Thread numbers start at 1
 	int mCurrentThread;
-
-	// Thread protected data
-	std::string mGdbOutputBuffer;
-	OovString mStack;
-	std::string mVarValue;
-	GdbChildStates mGdbChildState;
-	InProcMutex mStatusLock;
-	std::queue<Debugger::eChangeStatus> mChangeStatusQueue;
-	DebuggerLocation mStoppedLocation;
 
 	void resetFrameNumber()
 	    { mFrameNumber = 0; }
@@ -175,8 +210,6 @@ class Debugger:public OovProcessListener
 	void sendAddBreakpoint(const DebuggerBreakpoint &br);
 	void sendDeleteBreakpoint(const DebuggerBreakpoint &br);
 	void sendMiCommand(OovStringRef const command);
-	void changeChildState(GdbChildStates state);
-	void updateChangeStatus(Debugger::eChangeStatus);
 	void handleResult(const std::string &resultStr);
 	void handleBreakpoint(const std::string &resultStr);
 	void handleStack(const std::string &resultStr);
@@ -184,5 +217,27 @@ class Debugger:public OovProcessListener
 	virtual void onStdOut(OovStringRef const out, int len);
 	virtual void onStdErr(OovStringRef const out, int len);
     };
+#endif
+
+
+#if(USE_LLDB)
+class DebuggerLlvm:public DebuggerBase
+    {
+    private:
+	virtual ~DebuggerLlvm();
+        SBDebugger mDebugger;
+        SBTarget mDebuggee;
+        SBProcess mDebuggeeProcess;
+
+        void runDebuggee();
+    };
+#endif
+
+
+#if(USE_LLDB)
+typedef DebuggerLlvm Debugger;
+#else
+typedef DebuggerGdb Debugger;
+#endif
 
 #endif /* DEBUGGER_H_ */

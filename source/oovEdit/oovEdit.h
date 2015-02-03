@@ -113,7 +113,7 @@ class Editor:public DebuggerListener
 */
 	void editPreferences();
 	void setPreferencesWorkingDir();
-	void idleDebugStatusChange(Debugger::eChangeStatus st);
+	void idleDebugStatusChange(eDebuggerChangeStatus st);
 	virtual void DebugOutput(OovStringRef const str)
 	    {
 	    mDebugOut.append(str);

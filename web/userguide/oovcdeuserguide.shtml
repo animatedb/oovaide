@@ -376,8 +376,8 @@ is different so that different analysis directories are used.<br>
 
 
 Things can be difficult especially on Windows since Oovcde by default
-uses CLang for analysis, and the gnu compiler for builds. The gnu
-compiler is available from the MinGW, MinGW-builds or MinGW-W64 projects.
+uses CLang for analysis, and can use either CLang or the gnu compiler for builds.
+The gnu compiler is available from the MinGW, MinGW-builds or MinGW-W64 projects.
 The old MinGW-builds project has now been incorporated into MinGW-W64.
 MinGW-builds or MinGW-W64 is required to build Oovcde instead of mingw because it
 supports C++11 threading.

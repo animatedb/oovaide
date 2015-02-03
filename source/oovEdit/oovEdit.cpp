@@ -362,8 +362,8 @@ gboolean Editor::onIdle(gpointer data)
 	Gui::scrollToCursor(view);
 	gEditor.mDebugOut.clear();
 	}
-    Debugger::eChangeStatus dbgStatus = gEditor.mDebugger.getChangeStatus();
-    if(dbgStatus != Debugger::CS_None)
+    eDebuggerChangeStatus dbgStatus = gEditor.mDebugger.getChangeStatus();
+    if(dbgStatus != DCS_None)
 	{
 	gEditor.idleDebugStatusChange(dbgStatus);
 	}
@@ -372,24 +372,24 @@ gboolean Editor::onIdle(gpointer data)
     return true;
     }
 
-void Editor::idleDebugStatusChange(Debugger::eChangeStatus st)
+void Editor::idleDebugStatusChange(eDebuggerChangeStatus st)
     {
-    if(st == Debugger::CS_RunState)
+    if(st == DCS_RunState)
 	{
 	getEditFiles().updateDebugMenu();
-	if(mDebugger.getChildState() == GCS_GdbChildPaused)
+	if(mDebugger.getChildState() == DCS_ChildPaused)
 	    {
 	    auto const &loc = mDebugger.getStoppedLocation();
 	    mEditFiles.viewModule(loc.getFilename(), loc.getLine());
 	    mDebugger.startGetStack();
 	    }
 	}
-    else if(st == Debugger::CS_Stack)
+    else if(st == DCS_Stack)
 	{
 	GtkTextView *view = GTK_TEXT_VIEW(mBuilder.getWidget("StackTextview"));
 	Gui::setText(view, mDebugger.getStack());
 	}
-    else if(st == Debugger::CS_Value)
+    else if(st == DCS_Value)
 	{
 	mVarView.appendText(GuiTreeItem(), mDebugger.getVarValue());
 	}
@@ -463,7 +463,10 @@ void Editor::editPreferences()
 	if(compFile.getComponentType(name) == ComponentTypesFile::CT_Program)
 	    {
 	    FilePath fp(Project::getOutputDir(BuildConfigDebug), FP_Dir);
-	    fp.appendFile(FilePathMakeExeFilename(name));
+	    OovString filename = name;
+	    if(strcmp(name.c_str(), Project::getRootComponentName()) == 0)
+		filename = Project::getRootComponentFileName();
+	    fp.appendFile(FilePathMakeExeFilename(filename));
 	    Gui::appendText(cb, fp);
 	    haveNames = true;
 	    if(fp.compare(dbgComponent) == 0)

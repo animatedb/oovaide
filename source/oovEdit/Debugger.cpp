@@ -30,18 +30,90 @@ std::string DebuggerLocation::getAsString() const
 
 
 
-Debugger::Debugger():
-    mBkgPipeProc(*this), mDebuggerListener(nullptr), mCommandIndex(0),
-    mFrameNumber(0), mCurrentThread(1)
+DebuggerBase::DebuggerBase():
+    mDebuggerListener(nullptr)
     {
-    resetFrameNumber();
+    }
+
+DebuggerLocation DebuggerBase::getStoppedLocation()
+    {
+    DebuggerLocation loc;
+    if(getChildState() == DCS_ChildPaused)
+	{
+	LockGuard lock(mStatusLock);
+	loc = mStoppedLocation;
+	}
+    return loc;
+    }
+
+eDebuggerChangeStatus DebuggerBase::getChangeStatus()
+    {
+    LockGuard lock(mStatusLock);
+    eDebuggerChangeStatus st = DCS_None;
+    if(!mChangeStatusQueue.empty())
+	{
+	st = mChangeStatusQueue.front();
+	mChangeStatusQueue.pop();
+	}
+    return st;
+    }
+
+DebuggerChildStates DebuggerBase::getChildState()
+    {
+    LockGuard lock(mStatusLock);
+    DebuggerChildStates cs = mDebuggerChildState;
+    return cs;
+    }
+
+OovString DebuggerBase::getStack()
+    {
+    LockGuard lock(mStatusLock);
+    OovString str = mStack;
+    return str;
+    }
+
+OovString DebuggerBase::getVarValue()
+    {
+    LockGuard lock(mStatusLock);
+    std::string str = mVarValue;
+    return str;
+    }
+
+void DebuggerBase::updateChangeStatus(eDebuggerChangeStatus status)
+    {
+	{
+	LockGuard lock(mStatusLock);
+	mChangeStatusQueue.push(status);
+	}
+    if(mDebuggerListener)
+	mDebuggerListener->DebugStatusChanged();
+    }
+
+void DebuggerBase::changeChildState(DebuggerChildStates state)
+    {
+	{
+	LockGuard lock(mStatusLock);
+	mDebuggerChildState = state;
+	}
+    updateChangeStatus(DCS_RunState);
+    }
+
+
+
+/////////////////////////
+
+#if(!USE_LLDB)
+DebuggerGdb::DebuggerGdb():
+    mBkgPipeProc(*this), mCommandIndex(0), mFrameNumber(0), mCurrentThread(1)
+    {
     // It seems like "-exec-run" must be used to start the debugger,
     // so this is needed to prevent it from running to the end when
     // single stepping is used to start the program.
     toggleBreakpoint(DebuggerBreakpoint("main"));
+    resetFrameNumber();
     }
 
-bool Debugger::runDebuggerProcess()
+bool DebuggerGdb::runDebuggerProcess()
     {
     bool started = mBkgPipeProc.isIdle();
     if(started)
@@ -58,16 +130,16 @@ bool Debugger::runDebuggerProcess()
     return started;
     }
 
-void Debugger::resume()
+void DebuggerGdb::resume()
     {
     resetFrameNumber();
     ensureGdbChildRunning();
     sendMiCommand("-exec-continue");
     }
 
-void Debugger::toggleBreakpoint(const DebuggerBreakpoint &br)
+void DebuggerGdb::toggleBreakpoint(const DebuggerBreakpoint &br)
     {
-    if(getChildState() == GCS_GdbChildRunning)
+    if(getChildState() == DCS_ChildRunning)
 	{
 	interrupt();
 	}
@@ -75,7 +147,7 @@ void Debugger::toggleBreakpoint(const DebuggerBreakpoint &br)
     if(iter == mBreakpoints.end())
 	{
 	mBreakpoints.push_back(br);
-	if(getChildState() == GCS_GdbChildPaused)
+	if(getChildState() == DCS_ChildPaused)
 	    {
 	    sendAddBreakpoint(br);
 	    }
@@ -83,7 +155,7 @@ void Debugger::toggleBreakpoint(const DebuggerBreakpoint &br)
     else
 	{
 	mBreakpoints.erase(iter);
-	if(getChildState() == GCS_GdbChildPaused)
+	if(getChildState() == DCS_ChildPaused)
 	    {
 	    if(br.mBreakpointNumber != -1)
 		{
@@ -93,60 +165,60 @@ void Debugger::toggleBreakpoint(const DebuggerBreakpoint &br)
 	}
     }
 
-void Debugger::sendAddBreakpoint(const DebuggerBreakpoint &br)
+void DebuggerGdb::sendAddBreakpoint(const DebuggerBreakpoint &br)
     {
     OovString command = "-break-insert -f ";
     command += br.getAsString();
     sendMiCommand(command);
     }
 
-void Debugger::sendDeleteBreakpoint(const DebuggerBreakpoint &br)
+void DebuggerGdb::sendDeleteBreakpoint(const DebuggerBreakpoint &br)
     {
     OovString command = "-break-delete ";
     command.appendInt(br.mBreakpointNumber);
     sendMiCommand(command);
     }
 
-void Debugger::stepInto()
+void DebuggerGdb::stepInto()
     {
     resetFrameNumber();
     ensureGdbChildRunning();
     sendMiCommand("-exec-step");
     }
 
-void Debugger::stepOver()
+void DebuggerGdb::stepOver()
     {
     resetFrameNumber();
     ensureGdbChildRunning();
     sendMiCommand("-exec-next");
     }
 
-void Debugger::interrupt()
+void DebuggerGdb::interrupt()
     {
-    if(!mBkgPipeProc.isIdle() && getChildState() == GCS_GdbChildRunning)
+    if(!mBkgPipeProc.isIdle() && getChildState() == DCS_ChildRunning)
 	{
 	sendMiCommand("-exec-interrupt");
 	}
     }
 
-void Debugger::stop()
+void DebuggerGdb::stop()
     {
     if(!mBkgPipeProc.isIdle())
 	{
 	sendMiCommand("-gdb-exit");
 	mBkgPipeProc.childProcessClose();
-	changeChildState(GCS_GdbChildNotRunning);
+	changeChildState(DCS_ChildNotRunning);
 	}
     }
 
-void Debugger::ensureGdbChildRunning()
+void DebuggerGdb::ensureGdbChildRunning()
     {
     if(runDebuggerProcess())
 	{
 	for(auto const &br : mBreakpoints)
 	    sendAddBreakpoint(br);
 	}
-    if(getChildState() == GCS_GdbChildNotRunning)
+    if(getChildState() == DCS_ChildNotRunning)
 	{
 	if(mWorkingDir.length())
 	    {
@@ -164,7 +236,7 @@ void Debugger::ensureGdbChildRunning()
 	}
     }
 
-void Debugger::startGetVariable(OovStringRef const variable)
+void DebuggerGdb::startGetVariable(OovStringRef const variable)
     {
     OovString cmd = "-data-evaluate-expression ";
     cmd += "--thread ";
@@ -176,19 +248,19 @@ void Debugger::startGetVariable(OovStringRef const variable)
     sendMiCommand(cmd);
     }
 
-void Debugger::startGetStack()
+void DebuggerGdb::startGetStack()
     {
     sendMiCommand("-stack-list-frames");
     }
 
-void Debugger::startGetMemory(OovStringRef const addr)
+void DebuggerGdb::startGetMemory(OovStringRef const addr)
     {
     OovString cmd = "-data-read-memory-bytes ";
     cmd += addr;
     sendMiCommand(cmd);
     }
 
-void Debugger::sendMiCommand(OovStringRef const command)
+void DebuggerGdb::sendMiCommand(OovStringRef const command)
     {
     OovString cmd;
     cmd.appendInt(++mCommandIndex);
@@ -196,7 +268,7 @@ void Debugger::sendMiCommand(OovStringRef const command)
     sendCommand(cmd);
     }
 
-void Debugger::sendCommand(OovStringRef const command)
+void DebuggerGdb::sendCommand(OovStringRef const command)
     {
     OovString cmd = command;
     size_t pos = cmd.find('\n');
@@ -220,62 +292,27 @@ void Debugger::sendCommand(OovStringRef const command)
 #endif
     }
 
-void Debugger::onStdOut(OovStringRef const out, int len)\
+void DebuggerGdb::onStdOut(OovStringRef const out, int len)\
     {
-    mGdbOutputBuffer.append(out, len);
+    mDebuggerOutputBuffer.append(out, len);
     while(1)
 	{
-	size_t pos = mGdbOutputBuffer.find('\n');
+	size_t pos = mDebuggerOutputBuffer.find('\n');
 	if(pos != std::string::npos)
 	    {
-	    std::string res(mGdbOutputBuffer, 0, pos+1);
+	    std::string res(mDebuggerOutputBuffer, 0, pos+1);
 	    handleResult(res);
-	    mGdbOutputBuffer.erase(0, pos+1);
+	    mDebuggerOutputBuffer.erase(0, pos+1);
 	    }
 	else
 	    break;
 	}
     }
 
-DebuggerLocation Debugger::getStoppedLocation()
-    {
-    DebuggerLocation loc;
-    if(getChildState() == GCS_GdbChildPaused)
-	{
-	LockGuard lock(mStatusLock);
-	loc = mStoppedLocation;
-	}
-    return loc;
-    }
-
-Debugger::eChangeStatus Debugger::getChangeStatus()
-    {
-    LockGuard lock(mStatusLock);
-    Debugger::eChangeStatus st = CS_None;
-    if(!mChangeStatusQueue.empty())
-	{
-	st = mChangeStatusQueue.front();
-	mChangeStatusQueue.pop();
-	}
-    return st;
-    }
-GdbChildStates Debugger::getChildState()
-    {
-    LockGuard lock(mStatusLock);
-    GdbChildStates cs = mGdbChildState;
-    return cs;
-    }
-OovString Debugger::getStack()
-    {
-    LockGuard lock(mStatusLock);
-    OovString str = mStack;
-    return str;
-    }
-
 // The docs say that -stack-select-frame is deprecated for the --frame option.
 // When --frame is used, --thread must also be specified.
 // The --frame option does work with many commands such as -data-evaluate-expression
-void Debugger::setStackFrame(OovStringRef const frameLine)
+void DebuggerGdb::setStackFrame(OovStringRef const frameLine)
     {
     OovString line = frameLine;
     size_t pos = line.find(':');
@@ -291,15 +328,8 @@ void Debugger::setStackFrame(OovStringRef const frameLine)
 	}
     }
 
-OovString Debugger::getVarValue()
-    {
-    LockGuard lock(mStatusLock);
-    std::string str = mVarValue;
-    return str;
-    }
 
-
-void Debugger::onStdErr(OovStringRef const out, int len)
+void DebuggerGdb::onStdErr(OovStringRef const out, int len)
     {
     std::string result(out, len);
     if(mDebuggerListener)
@@ -383,7 +413,7 @@ static size_t getResultTuple(int pos, const std::string &resultStr, std::string 
     return endPos;
     }
 
-void Debugger::handleBreakpoint(const std::string &resultStr)
+void DebuggerGdb::handleBreakpoint(const std::string &resultStr)
     {
     OovString brkNumStr = getTagValue(resultStr, "number");
     int brkNum;
@@ -394,12 +424,12 @@ void Debugger::handleBreakpoint(const std::string &resultStr)
 	}
     }
 
-void Debugger::handleValue(const std::string &resultStr)
+void DebuggerGdb::handleValue(const std::string &resultStr)
     {
     cDebugResult debRes;
     debRes.parseResult(resultStr);
     mVarValue = debRes.getAsString();
-    updateChangeStatus(Debugger::CS_Value);
+    updateChangeStatus(DCS_Value);
     if(mDebuggerListener)
 	mDebuggerListener->DebugOutput(mVarValue);
     }
@@ -408,7 +438,7 @@ void Debugger::handleValue(const std::string &resultStr)
 //    frame={level="0",addr="0x00408d0b",func="printf",file="c:/mingw/include/stdio.h",
 //	fullname="c:\\mingw\\include\\stdio.h",line="240"},
 //    frame={level="1",...
-void Debugger::handleStack(const std::string &resultStr)
+void DebuggerGdb::handleStack(const std::string &resultStr)
     {
 	{
 	LockGuard lock(mStatusLock);
@@ -433,7 +463,7 @@ void Debugger::handleStack(const std::string &resultStr)
 		break;
 	    } while(pos!=std::string::npos);
 	}
-    updateChangeStatus(Debugger::CS_Stack);
+    updateChangeStatus(DCS_Stack);
     }
 
 static int compareSubstr(const std::string &resultStr, size_t pos, char const *substr)
@@ -441,7 +471,7 @@ static int compareSubstr(const std::string &resultStr, size_t pos, char const *s
     return resultStr.compare(pos, strlen(substr), substr);
     }
 
-void Debugger::handleResult(const std::string &resultStr)
+void DebuggerGdb::handleResult(const std::string &resultStr)
     {
     // Values are: "^running", "^error", "*stop"
     // "^connected", "^exit"
@@ -463,7 +493,7 @@ void Debugger::handleResult(const std::string &resultStr)
 		//	running, done, connected, error, exit
 		if(compareSubstr(resultStr, pos+1, "running") == 0)
 		    {
-		    changeChildState(GCS_GdbChildRunning);
+		    changeChildState(DCS_ChildRunning);
 		    }
 		else if(compareSubstr(resultStr, pos+1, "error") == 0)
 		    {
@@ -496,7 +526,7 @@ void Debugger::handleResult(const std::string &resultStr)
 		    }
 		else if(compareSubstr(resultStr, pos+1, "exit") == 0)
 		    {
-		    changeChildState(GCS_GdbChildNotRunning);
+		    changeChildState(DCS_ChildNotRunning);
 		    }
 		}
 		break;
@@ -518,16 +548,16 @@ void Debugger::handleResult(const std::string &resultStr)
 			    LockGuard lock(mStatusLock);
 			    mStoppedLocation = getLocationFromResult(resultStr);
 			    }
-			changeChildState(GCS_GdbChildPaused);
+			changeChildState(DCS_ChildPaused);
 			}
 		    else if(reason.find("exited-normally") != std::string::npos)
 			{
-			changeChildState(GCS_GdbChildNotRunning);
+			changeChildState(DCS_ChildNotRunning);
 			}
 		    }
 		else if(resultStr.compare(1, std::string::npos, "stop") == 0)
 		    {
-		    changeChildState(GCS_GdbChildNotRunning);
+		    changeChildState(DCS_ChildNotRunning);
 		    }
 		}
 		break;
@@ -543,22 +573,32 @@ void Debugger::handleResult(const std::string &resultStr)
     if(mDebuggerListener)
 	mDebuggerListener->DebugOutput(resultStr);
     }
+#endif
 
-void Debugger::updateChangeStatus(Debugger::eChangeStatus status)
+
+/////////////////////////
+
+#if(USE_LLDB)
+
+bool DebuggerLlvm::runDebuggee()
     {
-	{
-	LockGuard lock(mStatusLock);
-	mChangeStatusQueue.push(status);
-	}
-    if(mDebuggerListener)
-	mDebuggerListener->DebugStatusChanged();
+    if(!mDebuggeeProcess.IsValid())
+        {
+        mDebuggeeProcess = LaunchSimple(mDebuggerFilePath, nullptr,
+            ".");
+//        mDebuggeeProcess.GetState();
+/*
+# Get a handle on the process's broadcaster.
+        broadcaster = process.GetBroadcaster()
+
+        # Create an empty event object.
+        event = SBEvent()
+
+        # Create a listener object and register with the broadcaster.
+        listener = SBListener('my listener')
+        rc = broadcaster.AddListener(listener, SBProcess.eBroadcastBitStateChanged)
+*/
+        }
     }
 
-void Debugger::changeChildState(GdbChildStates state)
-    {
-	{
-	LockGuard lock(mStatusLock);
-	mGdbChildState = state;
-	}
-    updateChangeStatus(CS_RunState);
-    }
+#endif
