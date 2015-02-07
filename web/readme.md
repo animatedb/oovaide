@@ -18,15 +18,18 @@ and Objective C languages.
 
 ## Features
 
-- An analysis system that searches directories for source code and uses CLang
-  to generate dependencies between files and components.
-- The analysis system uses CLang to parse the object relationships and
-  sequence information.
-- Oovcde can dynamically generate diagrams allowing quick navigation between objects.
-- Diagrams can be edited in Oovcde, then saved as SVG and edited using tools
-  such as Inkscape.
-- A multithreaded build system that uses the analysis information for easy setup.
-- A simple code editor with a debugger.
+- The analysis system searches directories for source code and uses CLang.
+	- Dependencies are generated automatically between files and components.
+	- Object relationships and sequence information is saved for diagrams.
+	- Diagrams (class, sequence, and dependency) can be dynamically generated
+	  allowing quick navigation
+	  between objects. Diagrams can be edited in Oovcde, then saved as
+	  SVG and edited using tools such as Inkscape.
+- The multithreaded build system uses analysis information for easy setup.
+- The code editor has syntax highlighting, and a debugger.
+- Code test coverage instruments the code and produces coverage information.
+- Complexity measurements are provided for each method of a class.
+- Duplicate code is found and listed.
 
 
 ## Download
@@ -47,6 +50,7 @@ The explanation of the examples is here.
 ## Project Goals
 
 - Maximize programmer productivity
+	- visibility of code and design information
 	- simple setup
 	- background operations
 	- fast (written in C++)

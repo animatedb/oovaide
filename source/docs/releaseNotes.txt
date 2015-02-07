@@ -180,6 +180,10 @@ Missing Features
 		https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
 		http://www.codergears.com/Blog/?p=201
 		http://www.ccfinder.net/ccfinderxos.html
+	- Emotional connections: Similarity of modules by which functions are used
+		https://en.wikipedia.org/wiki/Force-directed_graph_drawing, kamada-kawai boost.
+		http://stackoverflow.com/questions/6563488/jung-graphs-vertex-similarity
+		http://www.theparisreview.org/blog/2015/02/04/man-in-hole/
 	- Sloppy code indicator (unused members, single use members, etc.)
 	- Refactoring functions
 		- Display unused public functions of a class

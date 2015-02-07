@@ -16,6 +16,7 @@
 #include "File.h"
 #include "Version.h"
 #include "Complexity.h"
+#include "Duplicates.h"
 #include "StaticAnalysis.h"
 #include <stdlib.h>
 
@@ -77,6 +78,8 @@ void Menu::updateMenuEnables()
 		mGui.getBuilder().getWidget("ComplexityMenuitem"), idle && open);
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("MemberUsageMenuitem"), idle && open);
+	gtk_widget_set_sensitive(
+		mGui.getBuilder().getWidget("DuplicatesMenuitem"), idle && open);
 
 	gtk_widget_set_sensitive(
 		mGui.getBuilder().getWidget("BuildSettingsMenuitem"), open);
@@ -419,7 +422,7 @@ static void displayBrowserFile(OovStringRef const fileName)
 	args[0] = prog;
 	args[1] = fp.c_str();
 	args[2] = '\0';
-printf("FF %s\n", fp.c_str());
+//printf("FF %s\n", fp.c_str());
         execvp(prog, const_cast<char**>(args));
 	}
 #else
@@ -446,6 +449,26 @@ void oovGui::makeMemberUseFile()
     if(createStaticAnalysisFile(mModelData, fn))
 	{
 	displayBrowserFile(fn);
+	}
+    else
+	{
+	Gui::messageBox("Unable to write file to project output directory");
+	}
+    }
+
+void oovGui::makeDuplicatesFile()
+    {
+    std::string fn;
+    eDupReturn ret = createDuplicatesFile(fn);
+    if(ret == DR_Success)
+	{
+	displayBrowserFile(fn);
+	}
+    else if(ret == DR_NoDupFilesFound)
+	{
+	Gui::messageBox("Unable to find dup files. Delete the analysis "
+		"directory, and use -dups in "
+		"Analysis/Settings/Build Arguments/Analyze/Extra Build Arguments");
 	}
     else
 	{
@@ -757,6 +780,12 @@ extern "C" G_MODULE_EXPORT void on_MemberUsageMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
     gOovGui.makeMemberUseFile();
+    }
+
+extern "C" G_MODULE_EXPORT void on_DuplicatesMenuitem_activate(
+	GtkWidget *button, gpointer data)
+    {
+    gOovGui.makeDuplicatesFile();
     }
 
 extern "C" G_MODULE_EXPORT void on_BuildDebugMenuitem_activate(

@@ -67,17 +67,5 @@ Linux versions:
 		- Run "make" from the same directory
 
 
-Windows versions on or before 2014-01:
-	GTK-3.0
-		From:	http://www.tarnyko.net/dl/
-		File:	"version 3.6.1 TARNYKO 11-13-2012 for Windows"
-	CLang 3.2
-		From:	http://llvm.org/releases/download.html
-		File:	"Experimental Clang Binaries for Mingw32/x86"
-	MinGW
-		From:	https://sourceforge.net/projects/oovcde/files/
-		File:	mingw-get-inst-20120426.exe
-
-
 Release notes and issues can be seen under "Code" in
 trunk/docs/releaseNotes.txt.

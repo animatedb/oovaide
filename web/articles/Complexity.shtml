@@ -11,8 +11,6 @@
 
 <body>
 
-<title>Oovcde Complexity</title>
-
 <h1>C++ Complexity and Testing</h1>
 This document examines the relationship between complexity and testing, and
 clarifies existing tools and measures.  Much of this document applies to

@@ -101,7 +101,7 @@ void TokenRange::tokenize(CXTranslationUnit transUnit/*, CXFile srcFile ,
     unsigned int numTokens = 0;
     clang_tokenize(transUnit, range, &tokens, &numTokens);
     resize(numTokens);
-    for (size_t i = 0; i < numTokens; i++)
+    for (size_t i = 0; i < numTokens-1; i++)
 	{
 	at(i).mTokenKind = clang_getTokenKind(tokens[i]);
 	CXSourceRange tokRange = clang_getTokenExtent(transUnit, tokens[i]);

@@ -215,15 +215,18 @@ void appendCursorTokenString(CXCursor cursor, std::string &str)
     unsigned int nTokens = 0;
     CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
     clang_tokenize(tu, range, &tokens, &nTokens);
-    for (size_t i = 0; i < nTokens; i++)
+    if(nTokens > 0)
 	{
-	CXTokenKind kind = clang_getTokenKind(tokens[i]);
-	if(kind != CXToken_Comment)
+	for (size_t i = 0; i < nTokens-1; i++)
 	    {
-	    if(str.length() != 0)
-		str += " ";
-	    CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
-	    str += spelling;
+	    CXTokenKind kind = clang_getTokenKind(tokens[i]);
+	    if(kind != CXToken_Comment)
+		{
+		if(str.length() != 0)
+		    str += " ";
+		CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
+		str += spelling;
+		}
 	    }
 	}
     clang_disposeTokens(tu, tokens, nTokens);

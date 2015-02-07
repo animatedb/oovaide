@@ -116,6 +116,30 @@ class SwitchContexts:public std::vector<SwitchContext>
 	SwitchContext mDummyContext;
     };
 
+class cDupHashFile
+    {
+    public:
+	cDupHashFile():
+	    mAlreadyAddedBreak(true)
+	    {}
+        void open(OovStringRef const fn)
+            { mFile.open(fn, "w"); }
+        bool isOpen() const
+            { return mFile.isOpen(); }
+        void append(OovStringRef const text, unsigned int line);
+        void appendBreak()
+	    {
+            if(!mAlreadyAddedBreak)
+        	{
+		fprintf(mFile.getFp(), "\n");
+		mAlreadyAddedBreak = true;
+        	}
+	    }
+
+    private:
+        File mFile;
+        bool mAlreadyAddedBreak;
+    };
 
 /// This parses a C++ source file, then saves important data into a file.
 class CppParser
@@ -128,7 +152,7 @@ class CppParser
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
 	    ET_CLangError, ET_ParseError };
         /// Parses a C++ source file.
-	eErrorTypes parse(char const * const srcFn, char const * const srcRootDir,
+	eErrorTypes parse(bool lineHashes, char const * const srcFn, char const * const srcRootDir,
 		char const * const outDir,
 		char const * const clang_args[], int num_clang_args);
 	/// These are public for access by global functions callbacks.
@@ -137,10 +161,12 @@ class CppParser
 	CXChildVisitResult visitRecord(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddArgs(CXCursor cursor, CXCursor parent);
 	CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor parent);
+	CXChildVisitResult visitFunctionAddDupHashes(CXCursor cursor, CXCursor parent);
 
     private:
         /// This contains all parsed information.
 	ModelData mModelData;
+        cDupHashFile mDupHashFile;
 	ModelClassifier *mClassifier;    /// Current class being parsed.
 	ModelOperation *mOperation;      /// Current operation being parsed.
 	ModelStatements *mStatements; 	 /// Current statements of a function.

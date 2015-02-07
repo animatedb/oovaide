@@ -28,6 +28,7 @@
 // setModule is called for every class defined in the current TU.
 // setModule is called for every operation defined in the current TU.
 
+#define DEBUG_HASH 0
 #define DEBUG_PARSE 0
 #if(DEBUG_PARSE)
 static DebugFile sLog("DebugCppParse.txt", false);
@@ -169,6 +170,25 @@ static void dumpCursor(FILE *fp, char const * const str, CXCursor cursor)
 	}
     }
 
+static std::string getFileLoc(CXCursor cursor, int *retLine = nullptr)
+    {
+    CXSourceLocation loc = clang_getCursorLocation(cursor);
+    CXFile file;
+    unsigned line;
+    unsigned column;
+    unsigned offset;
+    std::string fn;
+    clang_getExpansionLocation(loc, &file, &line, &column, &offset);
+    if(file != nullptr)
+	{
+	CXStringDisposer tempFn = clang_getFileName(file);
+	fn = tempFn;
+	}
+    if(retLine)
+	*retLine = line;
+    return fn;
+    }
+
 class cCrashDiagnostics
     {
     public:
@@ -247,6 +267,12 @@ static CXChildVisitResult visitFunctionAddStatements(CXCursor cursor, CXCursor p
     return parser->visitFunctionAddStatements(cursor, parent);
     }
 
+static CXChildVisitResult visitFunctionAddDupHashes(CXCursor cursor, CXCursor parent,
+	CXClientData client_data)
+    {
+    CppParser *parser = static_cast<CppParser*>(client_data);
+    return parser->visitFunctionAddDupHashes(cursor, parent);
+    }
 
 
 /////////////////////////
@@ -348,6 +374,15 @@ void CppParser::addOperationParts(CXCursor cursor, bool addParams)
 #endif
     mStatements = &mOperation->getStatements();
     clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+    if(mDupHashFile.isOpen())
+	{
+	FilePath fn(getFileLoc(cursor), FP_File);
+	if(fn == mTopParseFn)
+	    {
+	    mDupHashFile.appendBreak();
+	    clang_visitChildren(cursor, ::visitFunctionAddDupHashes, this);
+	    }
+	}
     }
 
 static bool isField(CXCursor cursor)
@@ -421,25 +456,6 @@ static bool isPureVirtual(CXCursor cursor)
     }
 */
 
-static std::string getFileLoc(CXCursor cursor, int *retLine = nullptr)
-    {
-    CXSourceLocation loc = clang_getCursorLocation(cursor);
-    CXFile file;
-    unsigned line;
-    unsigned column;
-    unsigned offset;
-    std::string fn;
-    clang_getExpansionLocation(loc, &file, &line, &column, &offset);
-    if(file != nullptr)
-	{
-	CXStringDisposer tempFn = clang_getFileName(file);
-	fn = tempFn;
-	}
-    if(retLine)
-	*retLine = line;
-    return fn;
-    }
-
 // This is to find part of conditional statements in a for loop.
 // The first part of a for loop is a decl stmt, so skip this and get next operator or expression.
 // This must catch things like:
@@ -459,7 +475,7 @@ static CXChildVisitResult getConditionStr(CXCursor cursor, CXCursor parent,
 	    cursKind == CXCursor_CallExpr)
 	{
 	appendConditionString(cursor, *op);
-	removeLastNonIdentChar(*op);
+//	removeLastNonIdentChar(*op);
 	return CXChildVisit_Break;
 	}
     return CXChildVisit_Continue;
@@ -490,7 +506,7 @@ OovString CppParser::buildCondExpr(CXCursor condStmtCursor, int condExprIndex)
 	fullop += " == ";
 	}
     appendCursorTokenString(getNthChildCursor(condStmtCursor, condExprIndex), fullop);
-    removeLastNonIdentChar(fullop);
+//    removeLastNonIdentChar(fullop);
     fullop += ']';
     return fullop;
     }
@@ -542,6 +558,58 @@ void CppParser::addElseStatement(CXCursor condStmtCursor, int elseBodyIndex)
 	fprintf(sLog.mFp, "end else visited\n");
 #endif
 	}
+    }
+
+static unsigned int makeHash(OovStringRef const text)
+    {
+    // djb2 hash function
+    unsigned int hash = 5381;
+    char const *str = text;
+
+    while(*str)
+        {
+        int c = *str++;
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        }
+    return hash;
+    }
+
+void cDupHashFile::append(OovStringRef const text, unsigned int line)
+    {
+#if(DEBUG_HASH)
+    fprintf(mFile.getFp(), "%x %u %s\n", makeHash(text), line, text.getStr());
+#else
+    fprintf(mFile.getFp(), "%x %u\n", makeHash(text), line);
+#endif
+    mAlreadyAddedBreak = false;
+    }
+
+CXChildVisitResult CppParser::visitFunctionAddDupHashes(CXCursor cursor,
+    CXCursor parent)
+    {
+    CXChildVisitResult res = CXChildVisit_Recurse;
+    CXCursorKind cursKind = clang_getCursorKind(cursor);
+    // Many statements have children. If it is a statement that has children,
+    // break it into separate parts.  For example, the if condition from the main clause
+    // or else clause.
+    //
+    // This discards some information such as nesting, or the type of statement.
+    // For example, a while statement is indistinguishable from an if
+    // statement, but for duplicate code detection, it probably works well enough.
+    // If not, some identifier string could be prepended on to the child, such as
+    // "if#", "{#", or "else#".
+    if(!clang_isStatement(cursKind))
+	{
+	std::string text;
+	appendCursorTokenString(cursor, text);
+	CXSourceLocation loc = clang_getCursorLocation(cursor);
+	unsigned int line;
+	clang_getExpansionLocation(loc, nullptr, &line, nullptr, nullptr);
+	mDupHashFile.append(text, line);
+
+	res = CXChildVisit_Continue;
+	}
+    return res;
     }
 
 
@@ -983,8 +1051,8 @@ CXChildVisitResult CppParser::visitTranslationUnitForIncludes(CXCursor cursor, C
     return CXChildVisit_Continue;
     }
 
-CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * const srcRootDir,
-	char const * const outDir,
+CppParser::eErrorTypes CppParser::parse(bool lineHashes, char const * const srcFn,
+	char const * const srcRootDir, char const * const outDir,
 	char const * const clang_args[], int num_clang_args)
     {
     eErrorTypes errType = ET_None;
@@ -998,6 +1066,22 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
     mIncDirDeps.read(outDir, Project::getAnalysisIncDepsFilename());
 
     CXIndex index = clang_createIndex(1, 1);
+
+    std::string outBaseFileName = Project::makeOutBaseFileName(srcFn,
+	    srcRootDir, outDir);
+    if(lineHashes)
+	{
+	FilePath fn(outBaseFileName, FP_File);
+	FilePath outHashFilePath(outDir, FP_Dir);
+
+	outHashFilePath.discardTail(outHashFilePath.getPosLeftPathSep(
+		outHashFilePath.getPosEndDir(), RP_RetPosNatural));
+	outHashFilePath.appendDir(DupsDir);
+	outHashFilePath.ensurePathExists();
+	outHashFilePath.appendFile(fn.getName());
+	outHashFilePath.appendExtension(DupsHashExtension);
+	mDupHashFile.open(outHashFilePath);
+	}
 
 // This doesn't appear to change anything.
 //    clang_toggleCrashRecovery(true);
@@ -1038,9 +1122,6 @@ CppParser::eErrorTypes CppParser::parse(char const * const srcFn, char const * c
 	    }
 	fflush(sLog.mFp);
 #endif
-
-	std::string outBaseFileName = Project::makeOutBaseFileName(srcFn,
-		srcRootDir, outDir);
 
 	try
 	    {

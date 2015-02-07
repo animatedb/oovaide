@@ -1,10 +1,13 @@
 <html>
 
-<h1>Oovcde Articles</h1>
+<h1>Oovcde Descriptive Articles</h1>
+<a href="Complexity.shtml">C++ Complexity</a><br/>
+<a href="DuplicateCode.html">Duplicate Code Detection</a><br/>
+<a href="TestCoverage.shtml">Test Coverage</a><br/>
+
+<h1>Oovcde Internal Code Articles</h1>
 <a href="c++11LoopHints.shtml">C++11 More Pythonic Loops</a><br/>
 <a href="TaskQueue.shtml">Process Task Queue</a><br/>
-<a href="TestCoverage.shtml">Oovcde Test Coverage</a><br/>
-<a href="Complexity.shtml">C++ Complexity</a><br/>
 
 </html>
 

@@ -25,6 +25,13 @@ Created: 6-8-2009
 The following lists releases in reverse chronological order.<br>
 <br>
 
+<h2>2015-3</h2>
+This version contains:
+<ul>
+  <li>Added duplicate code detection</li>
+</ul>
+
+
 <h2>2015-2</h2>
 This version contains:
 <ul>

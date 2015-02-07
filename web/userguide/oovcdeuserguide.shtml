@@ -1,13 +1,13 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head>
 
-<html><head><!-- DC Blaha - 6/8/2009 -->
+<!-- DC Blaha - 6/8/2009 -->
 
 
 
 
 <link rel="stylesheet" type="text/css" href="../style.css">
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<title>Oovcde User Guide</title></head><body>
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Oovcde User Guide</title></head><body>
 
 <font size="+3">Oovcde User Guide<br></font>
 <hr style="width: 100%; height: 3px;">
@@ -19,17 +19,12 @@ Last update: Dec 30, 2014
 </p><p>
 </p>
 <h1><a class="mozTocH2" name="mozTocId927306"></a>Contents</h1><span style="text-decoration: underline;"></span>
-<ol id="mozToc">
-<!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId937452">Quick Start
+<br>
+<br>
+<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId937452">Quick Start
 
-    </a></li><li><a href="#mozTocId381773">Drawing Overview</a></li><li><a href="#mozTocId651087">Oovcde</a><ol><li><a href="#mozTocId728139">Setting Up Analysis Projects</a></li><li><a href="#mozTocId407903">Modifying Component Diagrams</a></li><li><a href="#mozTocId269360">Modifying Class Diagrams</a></li><li><a href="#mozTocId213642">Changing Class Diagram Display Options</a></li><li><a href="#mozTocId261032">Displaying Sequence Diagrams</a></li><li><a href="#mozTocId120758">Editing SVG diagrams</a></li><li><a href="#mozTocId108517">Complexity Analysis</a></li><li><a href="#mozTocId108517">Member Usage Analysis</a></li></ol></li><li><a href="#mozTocId894354">Code Test Coverage System</a></li><li><a href="#mozTocId246966">Build System</a><ol><li><a href="#mozTocId418717">Build Goals</a></li><li><a href="#mozTocId102170">Build Features</a></li><li><a href="#mozTocId675000">Build Quick Start</a></li><li><a href="#mozTocId349590">Cross Compiling</a></li><li><a href="#mozTocId206848">Resolving Include Problems During Analysis
-
-
-</a><ol><li><a href="#mozTocId824690">Windows Include Problems
-
-
-</a></li></ol></li><li><a href="#mozTocId450611">Linux Example</a></li><li><a href="#mozTocId913463">Windows Example</a></li><li><a href="#mozTocId813985">Build Sequence</a></li><li><a href="#mozTocId932506">Project Limitations</a></li></ol></li><li><a href="#mozTocId21842">OovEdit</a></li>
-</ol>
+</a></li><li><a href="#mozTocId381773">Drawing Overview</a></li><li><a href="#mozTocId651087">Oovcde</a><ol><li><a href="#mozTocId728139">Setting Up Analysis Projects</a></li><li><a href="#mozTocId407903">Modifying Component Diagrams</a></li><li><a href="#mozTocId269360">Modifying Class Diagrams</a></li><li><a href="#mozTocId213642">Changing Class Diagram Display Options</a></li><li><a href="#mozTocId261032">Displaying Sequence Diagrams</a></li><li><a href="#mozTocId120758">Editing SVG diagrams</a></li><li><a href="#mozTocId108517">Complexity Analysis
+</a></li><li><a href="#mozTocId108517">Member Usage Analysis</a></li><li><a href="#mozTocId261866">Duplicate Code Analysis</a></li><li><a href="#mozTocId894354">Code Test Coverage System</a></li></ol></li><li><a href="#mozTocId246966">Build System</a><ol><li><a href="#mozTocId418717">Build Goals</a></li><li><a href="#mozTocId102170">Build Features</a></li><li><a href="#mozTocId675000">Build Quick Start</a></li><li><a href="#mozTocId349590">Cross Compiling</a></li><li><a href="#mozTocId206848">Resolving Include Problems During Analysis</a><ol><li><a href="#mozTocId824690">Windows Include Problems</a></li></ol></li><li><a href="#mozTocId450611">Linux Example</a></li><li><a href="#mozTocId913463">Windows Example</a></li><li><a href="#mozTocId813985">Build Sequence</a></li><li><a href="#mozTocId932506">Project Limitations</a></li></ol></li><li><a href="#mozTocId21842">OovEdit</a></li></ol>
 <h1><a class="mozTocH2" name="mozTocId937452"></a>Quick Start<br>
 
 </h1>
@@ -194,12 +189,21 @@ For more complexity information, see
   <li>After the analysis has been performed, select Analysis/Member
 Usage to save usage information about members.&nbsp; This shows the
 number of member functions of a class that use each class member
-attribute.<br>
+attribute.</li>
+</ol>
+<h2><a class="mozTocH2" name="mozTocId261866"></a>Duplicate Code Analysis</h2>
+<ol>
+  <li>Turn on duplicate code analysis by adding -dups to the Analysis/Settings/Build Arguments/Analyze/Extra Build Arguments</li>
+  <li>Delete any existing analysis directories in the Oovcde project directory so that a complete analysis is run.</li>
+  <li>Run Analysis/Analyze</li>
+  <li>Run Analysis/Duplicates<br>
   </li>
 </ol>
 
 
-<h1><a class="mozTocH1" name="mozTocId894354"></a>Code Test Coverage System</h1>
+
+<h2><a class="mozTocH1" name="mozTocId894354"></a>Code Test Coverage System</h2>
+
 
     <ol>
     <li>Running Coverage/Instrument will create an "oov-cov" directory that
@@ -366,13 +370,13 @@ See the include problems below for more information.
 Oovcde produces analysis directories for each set of build
 arguments.&nbsp; This is in case the classes may be different for debug
 or release, etc.
-<p>
+</p><p>
 The analysis directories are not kept unique for the clang
 and GCC compilers. Build argument differences are used to make unique analysis
 directories. If they are using the same directory, and different include paths are needed, set an argument that
 is different so that different analysis directories are used.<br>
 
-<h3><a class="mozTocH5" name="mozTocId824690"></a>Windows Include Problems</h3>
+</p><h3><a class="mozTocH5" name="mozTocId824690"></a>Windows Include Problems</h3>
 
 
 Things can be difficult especially on Windows since Oovcde by default
@@ -385,17 +389,17 @@ supports C++11 threading.
 The gnu compiler will normally find include and library paths since the compiler
 searches paths relative to the g++ directory. The CLang compiler will find many
 mingw paths, but does not find paths for Mingw-W64.
-<p>
+</p><p>
 Switching between the packages often requires nothing more than changing the
 path environment variable or setting the compiler name in the Oovcde
 Analysis/Settings/Build Arguments dialog.<br>
-<p>
+</p><p>
 CLang normally finds mingw by searching for default paths, but does not find mingw-w64.
 For this reason, mingw-w64 is defined as a package that can be included in the Analysis/Settings/
 menu in the Build Arguments tab using the External Project Packages button.
-<p>
+</p><p>
 So there are a few usage scenarios:<br>
-<ul>
+</p><ul>
   <li>Perform Analysis with Oovcde using Mingw - Typically CLang will require include
 	files to be in \MinGW
   </li>
@@ -413,12 +417,12 @@ Arguments.
 The typical location for mingw is in the \MinGW directory. CLang supports the
 following MinGW installations on Windows.<br>
 <br>
-<table border="1">
+</p><table border="1">
   <tbody>
     <tr>
-      <td style>CLang Version<br>
+      <td style="">CLang Version<br>
       </td>
-      <td style>MinGW Versions Supported<br>
+      <td style="">MinGW Versions Supported<br>
       </td>
     </tr>
     <tr>
@@ -515,7 +519,7 @@ There
 are some limitations on projects. The basic rule is that a directory
 can be defined as a component and all source files that are contained
 in that directory or other child directories of that directory will be
-used to build the component. The include files can be in any directory,
+used to build the component. The include files can be in any child directory,
 and will be found automatically.<br>
 <br>
 If multiple directories are used to build a component that are not under one directory, it is possible to create many

@@ -34,6 +34,9 @@
 #define BuildConfigDebug "Debug"
 #define BuildConfigRelease "Release"
 
+#define DupsDir "dups"
+#define DupsHashExtension "hsh"
+
 OovString makeBuildConfigArgName(OovStringRef const baseName,
 	OovStringRef const buildConfig);
 
@@ -70,6 +73,7 @@ class Project
 	static OovString getPackagesFilePath();
 	static OovString getBuildPackagesFilePath();
 
+        /// buildDirClass = BuildConfigAnalysis, BuildConfigDebug, etc.
 	static FilePath getOutputDir(OovStringRef const buildDirClass);
 	static FilePath getIntermediateDir(OovStringRef const buildDirClass);
 
@@ -107,9 +111,12 @@ class Project
 	static OovString makeOutBaseFileName(OovStringRef const srcFileName,
 		OovStringRef const srcRootDir, OovStringRef const outFilePath);
 	// This does not have an extension.
+	// This converts the filename so that it does not nest into subdirectories.
 	static OovString makeTreeOutBaseFileName(OovStringRef const srcFileName,
 		OovStringRef const srcRootDir, OovStringRef const outFilePath);
-	static void replaceChars(std::string &str, char oldC, char newC);
+	// This recovers the actual source file name that was changed by
+	// makeTreeOutBaseFileName.
+	static OovString recoverFileName(OovStringRef const srcFileName);
     private:
 	static OovString sProjectDirectory;
 	static OovString sSourceRootDirectory;

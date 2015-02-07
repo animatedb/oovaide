@@ -134,11 +134,21 @@ OovString Project::makeOutBaseFileName(OovStringRef const srcFileName,
     OovString file = getSrcRootDirRelativeSrcFileName(srcFileName, srcRootDir);
     if(file[0] == '/')
 	file.erase(0, 1);
-    replaceChars(file, '/', '_');
-    replaceChars(file, '.', '_');
+    file.replaceStrs("_", "_u");
+    file.replaceStrs("/", "_s");
+    file.replaceStrs(".", "_d");
     FilePath outFileName(outFilePath, FP_Dir);
     outFileName.appendFile(file);
     return outFileName;
+    }
+
+OovString Project::recoverFileName(OovStringRef const srcFileName)
+    {
+    OovString file = srcFileName;
+    file.replaceStrs("_u", "_");
+    file.replaceStrs("_s", "/");
+    file.replaceStrs("_d", ".");
+    return file;
     }
 
 OovString Project::makeTreeOutBaseFileName(OovStringRef const srcFileName,
@@ -179,13 +189,6 @@ OovString Project::getCoverageProjectDirectory()
     return coverageDir;
     }
 
-
-void Project::replaceChars(std::string &str, char oldC, char newC)
-    {
-    size_t pos;
-    while((pos = str.find(oldC)) != std::string::npos)
-	str.replace(pos, 1, 1, newC);
-    }
 
 bool ProjectReader::readOovProject(OovStringRef const oovProjectDir,
 	OovStringRef const buildConfigName)

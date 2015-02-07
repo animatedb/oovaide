@@ -11,52 +11,34 @@
 
 #include "CppParser.h"
 #include "Version.h"
+#include "OovProcess.h"
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
 #include <stdio.h>
 
-
-#define DEBUG_CPP_PARSE 0
 
 static CppParser sCppParser;
 
 int main(int argc, char const *const argv[])
     {
     CppParser::eErrorTypes et = CppParser::ET_None;
-#if(DEBUG_CPP_PARSE)
-    if(argc == 1)
-	{
-	int numArgs = 0;
-	char const *cppArgv[40];
-	cppArgv[numArgs++] = "";
-	cppArgv[numArgs++] = "../oovcde/Builder.h";
-	cppArgv[numArgs++] = "../";
-	cppArgv[numArgs++] = "../../../../trunk-oovcde/";
-	cppArgv[numArgs++] = "-x";
-	cppArgv[numArgs++] = "c++";
-	cppArgv[numArgs++] = "-std=c++11";
-	cppArgv[numArgs++] = "-I/mingw/include";
-	cppArgv[numArgs++] = "-I/mingw/lib/gcc/mingw32/4.6.2/include";
-	cppArgv[numArgs++] = "-I/mingw/lib/gcc/mingw32/4.6.2/include/c++";
-	cppArgv[numArgs++] = "-I/mingw/lib/gcc/mingw32/4.6.2/include/c++/mingw32";
-	cppArgv[numArgs++] = "-IC:/Program Files/GTK+-Bundle-3.6.1/include/gtk-3.0";
-	cppArgv[numArgs++] = "-IC:/Program Files/GTK+-Bundle-3.6.1/include/glib-2.0";
-	cppArgv[numArgs++] = "-IC:/Program Files/GTK+-Bundle-3.6.1/lib/glib-2.0/include";
-	cppArgv[numArgs++] = "-IC:/Program Files/GTK+-Bundle-3.6.1/include/pango-1.0";
-	cppArgv[numArgs++] = "-IC:/Program Files/GTK+-Bundle-3.6.1/include/cairo";
-	cppArgv[numArgs++] = "-IC:/Program Files/GTK+-Bundle-3.6.1/include/gdk-pixbuf-2.0";
-	cppArgv[numArgs++] = "-IC:/Program Files/GTK+-Bundle-3.6.1/include/atk-1.0";
-	cppArgv[numArgs++] = "-I../oovCommon";
-//	success = sCppParser.parse("../../../testinput/testaggr.cpp", "../../../testinput/", "../../../testoutput/", cppArgv, numArgs);
-//	success = sCppParser.parse("../testinput/cParam.h", "../testinput/", "../testoutput/", cppArgv, numArgs);
-//	success = sCppParser.parse("../oovCommon/ModelObjects.h", "../", "../../../../trunk-oovcde/", cppArgv, numArgs);
-	et = sCppParser.parse(cppArgv[1], cppArgv[2], cppArgv[3], &cppArgv[4], numArgs-4);
-    }
-    else
-#endif
     if(argc >= 4)
 	{
+	bool dupHashes = false;
+	OovProcessChildArgs childArgs;
+	for(int i=4; i<argc; i++)
+	    {
+	    if(strcmp(argv[i], "-dups") == 0)
+		{
+		dupHashes = true;
+		}
+	    else
+		{
+		childArgs.addArg(argv[i]);
+		}
+	    }
 	// This saves the CPP info in an XMI file.
-	et = sCppParser.parse(argv[1], argv[2], argv[3], &argv[4], argc-4);
+//	et = sCppParser.parse(dupHashes, argv[1], argv[2], argv[3], &argv[4], argc-4);
+	et = sCppParser.parse(dupHashes, argv[1], argv[2], argv[3], childArgs.getArgv(), childArgs.getArgc());
 	if(et == CppParser::ET_CLangError)
 	    {
 	    fprintf(stderr, "oovCppParser: CLang error analyzing file %s.\n"
@@ -70,7 +52,7 @@ int main(int argc, char const *const argv[])
     else
 	{
 	fprintf(stderr, "OovCppParser version %s\n", OOV_VERSION);
-	fprintf(stderr, "oovCppParser: Args are: sourceFilePath sourceRootDir outputProjectFilesDir [cppArgs]...\n");
+	fprintf(stderr, "oovCppParser args are: sourceFilePath sourceRootDir outputProjectFilesDir [cppArgs]...\n");
 	}
     int exitCode = 0;
     if(et != CppParser::ET_None && et != CppParser::ET_CompileWarnings)
