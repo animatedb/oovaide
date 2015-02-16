@@ -108,6 +108,29 @@ void Journal::displayComponents()
 	}
     }
 
+void Journal::displayWorldZone()
+    {
+    if(mBuilder)
+	{
+	OovStringRef const zoneName = "<WorldZone>";
+	int recordIndex = findRecord(zoneName);
+	JournalRecordZoneDiagram *rec;
+	if(recordIndex == -1)
+	    {
+	    rec = new JournalRecordZoneDiagram(*mBuilder, *mModel, *mListener);
+	    rec->mZoneDiagram.drawToDrawingArea();
+	    addRecord(rec, zoneName);
+	    rec->mZoneDiagram.clearGraphAndAddWorldZone();
+	    }
+	else
+	    {
+	    setCurrentRecord(recordIndex);
+	    rec = reinterpret_cast<JournalRecordZoneDiagram*>(getCurrentRecord());
+	    rec->mZoneDiagram.drawToDrawingArea();
+	    }
+	}
+    }
+
 void Journal::addRecord(JournalRecord *record, OovStringRef const name)
     {
     record->setName(name);

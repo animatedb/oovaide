@@ -36,7 +36,6 @@ class BuildSettingsDialog
 	ComponentTypesFile mComponentFile;
 	std::string mLastCompName;
 	GuiTreeItem getParent(std::string const &compName);
-	std::string getChildName(std::string const &compName);
 	void saveFromScreen(std::string const &compName);
 	void loadToScreen(std::string const &compName);
     };

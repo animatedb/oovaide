@@ -340,16 +340,29 @@ void GuiList::setSelected(OovStringRef const str)
     }
 
 void GuiTree::init(Builder &builder, OovStringRef const widgetName,
-	OovStringRef const title)
+	OovStringRef const title, ColumnTypes columnType)
     {
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
 
+    // Add a string column as the first column
     GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(
-        title, renderer, "text", LIST_ITEM, nullptr);
+        title, renderer, "text", TV_StringIndex, nullptr);
     gtk_tree_view_append_column(GTK_TREE_VIEW(mTreeView), column);
 
-    GtkTreeStore *store = gtk_tree_store_new(N_COLUMNS, G_TYPE_STRING);
+    GtkTreeStore *store;
+    if(columnType == CT_String)
+	store = gtk_tree_store_new(N_StringColumns, G_TYPE_STRING);
+    else
+	{
+	store = gtk_tree_store_new(N_StringBoolColumns, G_TYPE_STRING, G_TYPE_BOOLEAN);
+
+	// Add a boolean checkbox column
+	GtkCellRenderer *renderer = gtk_cell_renderer_toggle_new();
+	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes
+		("Show", renderer, "active", GuiTree::TV_BoolIndex, NULL);
+	gtk_tree_view_append_column(mTreeView, column);
+	}
     gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
     g_object_unref(store);
     }
@@ -362,13 +375,13 @@ GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, OovStringRef const str)
 	{
 	GtkListStore *store = GTK_LIST_STORE(model);
 	gtk_list_store_append(store, &item.mIter);
-	gtk_list_store_set(store, &item.mIter, LIST_ITEM, str.getStr(), -1);
+	gtk_list_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
 	}
     else
 	{
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	gtk_tree_store_append(store, &item.mIter, parentItem.getPtr());
-	gtk_tree_store_set(store, &item.mIter, LIST_ITEM, str.getStr(), -1);
+	gtk_tree_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
 	}
     return item;
     }
@@ -384,13 +397,13 @@ OovStringVec const GuiTree::getSelected() const
     if (gtk_tree_selection_get_selected(sel, &model, &child))
         {
 	char *value;
-	gtk_tree_model_get(model, &child, LIST_ITEM, &value, -1);
+	gtk_tree_model_get(model, &child, TV_StringIndex, &value, -1);
 	names.push_back(value);
 	g_free(value);
         while(gtk_tree_model_iter_parent(model, &parent, &child))
             {
     	    char *value;
-	    gtk_tree_model_get(model, &parent, LIST_ITEM, &value, -1);
+	    gtk_tree_model_get(model, &parent, TV_StringIndex, &value, -1);
 	    names.push_back(value);
 	    g_free(value);
 	    child = parent;
@@ -398,6 +411,55 @@ OovStringVec const GuiTree::getSelected() const
         }
     std::reverse(names.begin(), names.end());
     return names;
+    }
+
+void GuiTree::setAllCheckboxes(GtkTreeIter *iter, bool set)
+    {
+    GtkTreeIter child;
+    do
+	{
+	gtk_tree_store_set(getTreeStore(), iter, GuiTree::TV_BoolIndex, set, -1);
+	if(gtk_tree_model_iter_children(getModel(), &child, iter))
+	    {
+	    do
+		{
+		setAllCheckboxes(&child, set);
+		} while(gtk_tree_model_iter_next(getModel(), &child));
+	    }
+	} while(gtk_tree_model_iter_next(getModel(), iter));
+    }
+
+void GuiTree::setAllCheckboxes(bool set)
+    {
+    GtkTreeIter iter;
+    if(gtk_tree_model_get_iter_first(getModel(), &iter))
+	{
+	setAllCheckboxes(&iter, set);
+	}
+    }
+
+bool GuiTree::toggleSelectedCheckbox()
+    {
+    GtkTreeIter iter;
+    bool val = false;
+    if(getSelectedIter(&iter))
+	{
+	GValue value;
+	gtk_tree_model_get_value(getModel(), &iter,
+		GuiTree::TV_BoolIndex, &value);
+	val = g_value_get_boolean(&value);
+	gtk_tree_store_set(getTreeStore(), &iter,
+		GuiTree::TV_BoolIndex, !val, -1);
+	g_value_unset(&value);
+	}
+    return !val;
+    }
+
+bool GuiTree::getSelectedIter(GtkTreeIter *childIter) const
+    {
+    GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
+    GtkTreeModel *model;
+    return gtk_tree_selection_get_selected(sel, &model, childIter);
     }
 
 void GuiTree::setSelected(OovStringVec const &names)
@@ -435,7 +497,7 @@ bool GuiTree::findNodeIter(GtkTreeIter *parent,
 	while(success && !found)
 	    {
 	    GuiTreeValue value;
-	    gtk_tree_model_get(model, iter, LIST_ITEM, &value.mStr, -1);
+	    gtk_tree_model_get(model, iter, TV_StringIndex, &value.mStr, -1);
 	    if(tokens[0].compare(value.mStr) == 0)
 		{
 		if(tokens.size() > 1)

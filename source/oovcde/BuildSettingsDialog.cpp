@@ -47,31 +47,16 @@ void BuildSettingsDialog::enterScreen()
 		{
 		mLastCompName = name;
 		}
-	    mComponentTree.appendText(getParent(name), getChildName(name));
+	    mComponentTree.appendText(getParent(name),
+		    ComponentTypesFile::getComponentChildName(name));
 	    }
 	}
     mComponentTree.setSelected(mLastCompName, '/');
     }
 
-std::string BuildSettingsDialog::getChildName(std::string const &compName)
-    {
-    OovString child = compName;
-    size_t pos = child.rfind('/');
-    if(pos != OovString::npos)
-	{
-	child.erase(0, pos+1);
-	}
-    return child;
-    }
-
 GuiTreeItem BuildSettingsDialog::getParent(std::string const &compName)
     {
-    OovString parent = compName;
-    size_t pos = parent.rfind('/');
-    if(pos != OovString::npos)
-	{
-	parent.erase(pos);
-	}
+    std::string parent = ComponentTypesFile::getComponentParentName(compName);
     return mComponentTree.getItem(parent, '/');
     }
 

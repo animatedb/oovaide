@@ -25,12 +25,14 @@ struct ComponentListItem
     std::string mPathName;
     };
 
+// This is a component list that includes modules.
 class ComponentList:public GuiTree
     {
     public:
-	void init(Builder &builder)
+	void init(Builder &builder, OovStringRef const widgetName,
+		OovStringRef const title)
 	    {
-	    GuiTree::init(builder, "ComponentTreeview", "Component List");
+	    GuiTree::init(builder, widgetName, title);
 	    }
 	void clear()
 	    {

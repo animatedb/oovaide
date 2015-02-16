@@ -162,6 +162,8 @@ class GuiTreeView
 	    {}
 	void clear();
 	void removeSelected();
+	GtkTreeView *getTreeView()
+	    { return mTreeView; }
 
     protected:
 	GtkTreeView *mTreeView;
@@ -224,27 +226,49 @@ class GuiTree:public GuiTreeView
     public:
 	enum TreeViewItems
             {
-            LIST_ITEM = 0,
-            N_COLUMNS
+            TV_StringIndex = 0,
+            TV_BoolIndex = 1,
+            N_StringColumns = 1,
+            N_StringBoolColumns = 2
             };
+	enum ColumnTypes { CT_String, CT_StringBool };
 	void init(Builder &builder, OovStringRef const widgetName,
-		OovStringRef const title);
+		OovStringRef const title, ColumnTypes CT_String=CT_String);
 	/// Returns the newly created child item.
 	GuiTreeItem appendText(GuiTreeItem parentItem, OovStringRef const str);
-	/// first element is parent, second is child
+	/// First element is parent, second is child
 	OovStringVec const getSelected() const;
+	bool getSelectedIter(GtkTreeIter *childIter) const;
+	/// First element is parent, second is child,...
+	/// The returned string is the elements joined together using the
+	/// delimiter passed in.
 	OovString const getSelected(char delimiter) const;
 	void clearSelection()
 	    { gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(mTreeView)); }
 	void setSelected(OovStringVec const &names);
 	void setSelected(OovString const &name, char delimeter);
+
+	// This is for a CT_StringBool list.
+	void setAllCheckboxes(bool set);
+	// This is for a CT_StringBool list.
+	// The value returned is true if the checkbox is set after the toggle.
+	bool toggleSelectedCheckbox();
+
 	GuiTreeItem getItem(OovString const &name, char delimiter);
+	GtkTreeModel *getModel()
+	    { return gtk_tree_view_get_model(mTreeView); }
+	GtkTreeStore *getTreeStore()
+	    {
+	    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+	    return GTK_IS_TREE_STORE(model) ? GTK_TREE_STORE(model) : nullptr;
+	    }
 
     private:
 	// parent can be nullptr to find top level nodes,
 	// otherwise this finds the child nodes.
 	bool findNodeIter(GtkTreeIter *parent, OovString const &name,
 		char delimiter, GtkTreeIter *childIter);
+	void setAllCheckboxes(GtkTreeIter *iter, bool set);
     };
 
 class BackgroundDialog:public Dialog

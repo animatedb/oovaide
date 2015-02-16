@@ -61,6 +61,28 @@ bool ComponentTypesFile::readTypesOnly(OovStringRef const fn)
     return mCompTypesFile.readFile();
     }
 
+std::string ComponentTypesFile::getComponentChildName(std::string const &compName)
+    {
+    OovString child = compName;
+    size_t pos = child.rfind('/');
+    if(pos != OovString::npos)
+	{
+	child.erase(0, pos+1);
+	}
+    return child;
+    }
+
+std::string ComponentTypesFile::getComponentParentName(std::string const &compName)
+    {
+    OovString parent = compName;
+    size_t pos = parent.rfind('/');
+    if(pos != OovString::npos)
+	{
+	parent.erase(pos);
+	}
+    return parent;
+    }
+
 bool ComponentTypesFile::anyComponentsDefined() const
     {
     auto const &names = getComponentNames();

@@ -97,6 +97,7 @@ class GraphRect
 	// if a line were drawn to the centers of both rectangles.
 	void findConnectPoints(GraphRect const &rect2, GraphPoint &p1e,
 		GraphPoint &p2e) const;
+	void unionRect(GraphRect const &rect2);
 	GraphRect getZoomed(double zoomX, double zoomY) const
 	    {
 	    GraphRect rect;

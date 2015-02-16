@@ -15,10 +15,28 @@
 class GtkCairoContext
     {
     public:
-	GtkCairoContext(GtkWidget *widget)
-	    { mCr = gdk_cairo_create(gtk_widget_get_window(widget));  }
+	GtkCairoContext(GtkWidget *widget=nullptr):
+	    mCr(nullptr)
+	    {
+	    setContext(widget);
+	    }
+	void setContext(GtkWidget *widget)
+	    {
+	    if(widget)
+		{
+		clear();
+		mCr = gdk_cairo_create(gtk_widget_get_window(widget));
+		}
+	    }
+	void clear()
+	    {
+	    if(mCr)
+		cairo_destroy(mCr);
+	    }
 	~GtkCairoContext()
-	    { cairo_destroy(mCr); }
+	    {
+	    clear();
+	    }
 	cairo_t *getCairo()
 	    { return mCr; }
 	// Pad is currently defined as 1/10 of font size.
@@ -28,7 +46,7 @@ class GtkCairoContext
 	cairo_t *mCr;
     };
 
-/// Provides a null interface for drawing. This allows drawing to a null device so
+/// Defines a null interface for drawing. This allows drawing to a null device so
 /// that calculations can be performed for object sizes based on fonts.
 class NullDrawer:public DiagramDrawer
     {
@@ -36,6 +54,8 @@ class NullDrawer:public DiagramDrawer
 	NullDrawer(cairo_t *c):
 	    cr(c)
 	    {}
+	void setGraphicsLib(cairo_t *c)
+	    { cr = c; }
 	bool haveCr() const
 	    { return(cr != nullptr); }
 	virtual void setDiagramSize(GraphSize size)

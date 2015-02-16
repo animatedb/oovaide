@@ -53,3 +53,15 @@ void GraphRect::findConnectPoints(GraphRect const &rect2, GraphPoint &p1e, Graph
     p2e = findIntersect(p1, p2, rect2.size);
     }
 
+void GraphRect::unionRect(GraphRect const &rect2)
+    {
+    GraphRect &rect1 = *this;
+    if(rect2.start.x < rect1.start.x)
+	rect1.start.x = rect2.start.x;
+    if(rect2.start.y < rect1.start.y)
+	rect1.start.y = rect2.start.y;
+    if(rect2.endx() > rect1.endx())
+	rect1.size.x = rect2.endx() - rect1.start.x;
+    if(rect2.endy() > rect1.endy())
+	rect1.size.y = rect2.endy() - rect1.start.y;
+    }

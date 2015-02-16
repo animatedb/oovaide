@@ -352,7 +352,7 @@ Use this dialog to set up component definitions.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="has_tooltip">True</property>
-                        <property name="tooltip_text" translatable="yes">Example: -lnk-W1,--subsystem:windows</property>
+                        <property name="tooltip_text" translatable="yes">Example: -lnk-Wl,--subsystem,windows</property>
                       </object>
                     </child>
                   </object>
@@ -523,6 +523,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddStandardMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add class relations, but not function relations</property>
         <property name="label" translatable="yes">Add Standard Relations</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddStandardMenuitem_activate" swapped="no"/>
@@ -547,6 +548,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddSuperclassesMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add superclasses to this class</property>
         <property name="label" translatable="yes">Add Superclasses</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddSuperclassesMenuitem_activate" swapped="no"/>
@@ -556,6 +558,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddSubclassesMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add subclasses of this class</property>
         <property name="label" translatable="yes">Add Subclasses</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddSubclassesMenuitem_activate" swapped="no"/>
@@ -565,7 +568,8 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddMembersUsingMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Add Members Using</property>
+        <property name="tooltip_text" translatable="yes">Add members of this class</property>
+        <property name="label" translatable="yes">Add Members</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddMembersUsingMenuitem_activate" swapped="no"/>
       </object>
@@ -574,6 +578,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddMemberUsersMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add other classes that have members that use this class</property>
         <property name="label" translatable="yes">Add Member Users</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddMemberUsersMenuitem_activate" swapped="no"/>
@@ -589,7 +594,8 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncParamsUsingMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Add Func Params Using</property>
+        <property name="tooltip_text" translatable="yes">Add classes that are used in function parameters of this class</property>
+        <property name="label" translatable="yes">Add Func Params</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncParamsUsingMenuitem_activate" swapped="no"/>
       </object>
@@ -598,6 +604,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncParamUsersMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add other functions that have parameters that use this class</property>
         <property name="label" translatable="yes">Add Func Param Users</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncParamUsersMenuitem_activate" swapped="no"/>
@@ -607,7 +614,8 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncBodyVarUsingMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Add Func Body Var Using</property>
+        <property name="tooltip_text" translatable="yes">Add classes that are used in functions of this class</property>
+        <property name="label" translatable="yes">Add Func Body Var</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncBodyVarUsingMenuitem_activate" swapped="no"/>
       </object>
@@ -616,6 +624,7 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkMenuItem" id="AddFuncBodyVarUsersMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="tooltip_text" translatable="yes">Add functions that have instantiations that use this class</property>
         <property name="label" translatable="yes">Add Func Body Var Users</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_AddFuncBodyVarUsersMenuitem_activate" swapped="no"/>
@@ -811,6 +820,83 @@ Use this dialog to set up component definitions.</property>
         <property name="label" translatable="yes">Remove All</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_OperRemoveAllMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="DrawZonePopupMenu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="ZoneGotoClassMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Go To Class</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneGotoClassMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneViewSourceMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">View Source</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneViewSourceMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneRestartMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <signal name="activate" handler="on_ZoneRestartMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="menuitem14">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="ShowFunctionRelationsCheckmenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show Function Relations</property>
+        <property name="use_underline">True</property>
+        <signal name="toggled" handler="on_ShowFunctionRelationsCheckmenuitem_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneZoomInMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Zoom In</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneZoomInMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneZoomOutMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Zoom Out</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneZoomOutMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="menuitem19">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneRemoveAllMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Remove All</property>
+        <signal name="activate" handler="on_ZoneRemoveAllMenuitem_activate" swapped="no"/>
       </object>
     </child>
   </object>
@@ -2702,6 +2788,15 @@ These arguments are specific to the selected configuration.
                         <signal name="activate" handler="on_MemberUsageMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
+                    <child>
+                      <object class="GtkMenuItem" id="DuplicatesMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">_Duplicates</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_DuplicatesMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
@@ -2872,15 +2967,15 @@ These arguments are specific to the selected configuration.
                 <property name="enable_popup">True</property>
                 <signal name="switch-page" handler="on_ListNotebook_switch_page" swapped="no"/>
                 <child>
-                  <object class="GtkScrolledWindow" id="ComponentScrolledwindow">
+                  <object class="GtkScrolledWindow" id="ModuleScrolledwindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkTreeView" id="ComponentTreeview">
+                      <object class="GtkTreeView" id="ModuleTreeview">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="cursor-changed" handler="on_ComponentTreeview_cursor_changed" swapped="no"/>
+                        <signal name="cursor-changed" handler="on_ModuleTreeview_cursor_changed" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection" id="treeview-selection6"/>
                         </child>
@@ -2889,12 +2984,43 @@ These arguments are specific to the selected configuration.
                   </object>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel" id="label9">
+                  <object class="GtkLabel" id="ComponentLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Comp</property>
                   </object>
                   <packing>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="ZoneScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkTreeView" id="ZoneTreeview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <signal name="cursor-changed" handler="on_ZoneTreeview_cursor_changed" swapped="no"/>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection" id="treeview-selection13"/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel" id="ZoneLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Zone</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2916,7 +3042,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -2926,7 +3052,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Class</property>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2947,7 +3073,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -2957,7 +3083,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Oper</property>
                   </object>
                   <packing>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2978,7 +3104,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -2988,7 +3114,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Journ</property>
                   </object>
                   <packing>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>

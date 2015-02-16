@@ -823,6 +823,83 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
   </object>
+  <object class="GtkMenu" id="DrawZonePopupMenu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="ZoneGotoClassMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Go To Class</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneGotoClassMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneViewSourceMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">View Source</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneViewSourceMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneRestartMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <signal name="activate" handler="on_ZoneRestartMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="menuitem14">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkCheckMenuItem" id="ShowFunctionRelationsCheckmenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show Function Relations</property>
+        <property name="use_underline">True</property>
+        <signal name="toggled" handler="on_ShowFunctionRelationsCheckmenuitem_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneZoomInMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Zoom In</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneZoomInMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneZoomOutMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Zoom Out</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ZoneZoomOutMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="menuitem19">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneRemoveAllMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Remove All</property>
+        <signal name="activate" handler="on_ZoneRemoveAllMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkDialog" id="NewBuildConfigDialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -2890,15 +2967,15 @@ These arguments are specific to the selected configuration.
                 <property name="enable_popup">True</property>
                 <signal name="switch-page" handler="on_ListNotebook_switch_page" swapped="no"/>
                 <child>
-                  <object class="GtkScrolledWindow" id="ComponentScrolledwindow">
+                  <object class="GtkScrolledWindow" id="ModuleScrolledwindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkTreeView" id="ComponentTreeview">
+                      <object class="GtkTreeView" id="ModuleTreeview">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <signal name="cursor-changed" handler="on_ComponentTreeview_cursor_changed" swapped="no"/>
+                        <signal name="cursor-changed" handler="on_ModuleTreeview_cursor_changed" swapped="no"/>
                         <child internal-child="selection">
                           <object class="GtkTreeSelection" id="treeview-selection6"/>
                         </child>
@@ -2907,12 +2984,43 @@ These arguments are specific to the selected configuration.
                   </object>
                 </child>
                 <child type="tab">
-                  <object class="GtkLabel" id="label9">
+                  <object class="GtkLabel" id="ComponentLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="label" translatable="yes">Comp</property>
                   </object>
                   <packing>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkScrolledWindow" id="ZoneScrolledWindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <object class="GtkTreeView" id="ZoneTreeview">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <signal name="cursor-changed" handler="on_ZoneTreeview_cursor_changed" swapped="no"/>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection" id="treeview-selection13"/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel" id="ZoneLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Zone</property>
+                  </object>
+                  <packing>
+                    <property name="position">1</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2934,7 +3042,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -2944,7 +3052,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Class</property>
                   </object>
                   <packing>
-                    <property name="position">1</property>
+                    <property name="position">2</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2965,7 +3073,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -2975,7 +3083,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Oper</property>
                   </object>
                   <packing>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -2996,7 +3104,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -3006,7 +3114,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Journ</property>
                   </object>
                   <packing>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>

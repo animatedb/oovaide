@@ -37,6 +37,7 @@ class DiagramDrawer
 		bool dashed=false)=0;
 	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor) = 0;
 	virtual void drawPoly(const OovPolygon &poly, Color fillColor)=0;
+	// The point specifies the bottom left corner of the text.
 	virtual void drawText(const GraphPoint &p, OovStringRef const text)=0;
 	virtual float getTextExtentWidth(OovStringRef const name) const =0;
 	virtual float getTextExtentHeight(OovStringRef const name) const =0;

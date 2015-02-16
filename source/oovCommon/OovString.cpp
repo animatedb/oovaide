@@ -292,10 +292,11 @@ void OovString::replaceStrs(OovStringRef const srchStr, OovStringRef const repSt
     size_t starti = 0;
     do
 	{
-	starti = find(srchStr);
+	starti = find(srchStr, starti);
 	if(starti != OovString::npos)
 	    {
 	    std::string::replace(starti, strlen(srchStr), repStr);
+	    starti+=strlen(repStr.getStr());
 	    }
 	} while(starti != OovString::npos);
     }

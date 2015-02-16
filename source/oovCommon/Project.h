@@ -147,6 +147,7 @@ class ProjectReader:public NameValueFile
 	ProjectReader():
 	    mProjectPackages(false), mBuildPackages(false), mVerbose(false)
 	    {}
+	bool miniReadOovProject(OovStringRef const oovProjectDir);
 	bool readOovProject(OovStringRef const oovProjectDir,
 		OovStringRef const buildConfigName);
 

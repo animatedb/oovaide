@@ -190,17 +190,26 @@ OovString Project::getCoverageProjectDirectory()
     }
 
 
-bool ProjectReader::readOovProject(OovStringRef const oovProjectDir,
-	OovStringRef const buildConfigName)
+bool ProjectReader::miniReadOovProject(OovStringRef const oovProjectDir)
     {
     Project::setProjectDirectory(oovProjectDir);
     setFilename(Project::getProjectFilePath());
     bool success = readFile();
     if(success)
 	{
+	Project::setSourceRootDirectory(getValue(OptSourceRootDir));
+	}
+    return success;
+    }
+
+bool ProjectReader::readOovProject(OovStringRef const oovProjectDir,
+	OovStringRef const buildConfigName)
+    {
+    bool success = miniReadOovProject(oovProjectDir);
+    if(success)
+	{
 	mProjectPackages.read();
 	mBuildPackages.read();
-	Project::setSourceRootDirectory(getValue(OptSourceRootDir));
 
 	OovStringVec args;
 	CompoundValue baseArgs;

@@ -19,6 +19,7 @@ bool isHeader(OovStringRef const file);
 bool isSource(OovStringRef const file);
 bool isLibrary(OovStringRef const file);
 
+
 /// This file is read and written by both oovcde and oovBuilder.
 /// This defines each component's source and include files.
 class ComponentTypesFile
@@ -43,6 +44,9 @@ class ComponentTypesFile
 	    return CompoundValueRef::parseString(
 		    mCompTypesFile.getValue("Components"));
 	    }
+	static std::string getComponentChildName(std::string const &compName);
+	static std::string getComponentParentName(std::string const &compName);
+
 	bool anyComponentsDefined() const;
 	enum eCompTypes getComponentType(OovStringRef const compName) const;
         void setComponentType(OovStringRef const compName, OovStringRef const typeName);

@@ -140,6 +140,8 @@ class oovGui:public JournalListener, public WindowBuildListener
 	    { return mBuilder; }
 	Journal &getJournal()
 	    { return mJournal; }
+	ZoneDiagramList &getZoneList()
+	    { return(mZoneList); }
 	void setProjectOpen(bool open)
 	    {
 	    mProjectOpen = open;
@@ -174,8 +176,10 @@ class oovGui:public JournalListener, public WindowBuildListener
 
     private:
 	ClassList mClassList;
+	// This is the list of components (directories), not modules (source files).
 	ComponentList mComponentList;
 	OperationList mOperationList;
+	ZoneDiagramList mZoneList;
 	JournalList mJournalList;
 	Builder mBuilder;
 	ModelData mModelData;

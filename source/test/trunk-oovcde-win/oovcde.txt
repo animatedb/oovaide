@@ -1,8 +1,8 @@
 BuildArgsBase|-c;-EPmingw-w64;-EPgtk+-3.0;-EPllvm;-lnk-static-libgcc;
-BuildArgsExtra-Analyze|-x;c++;-std=c++11;
+BuildArgsExtra-Analyze|-x;c++;-std=c++11;-dups;
 BuildArgsExtra-Debug|-std=c++0x;-O0;-g3;
 BuildArgsExtra-Release|-std=c++0x;-O3;
-ExcludeDirs|bin/;.metadata/;
+ExcludeDirs|bin/;.metadata/;test/
 SourceRootDir|C:/Dave/Mine/software/oovcde/svn/trunk/
 Tool-CompilerPath-Analyze|clang++.exe
 Tool-CompilerPath-Debug|clang++.exe

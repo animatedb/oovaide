@@ -11,9 +11,10 @@
 
 #include "CppParser.h"
 #include "Version.h"
-#include "OovProcess.h"
+#include "OovProcessArgs.h"
 #include <stdlib.h>     /* exit, EXIT_FAILURE */
 #include <stdio.h>
+#include <string.h>
 
 
 static CppParser sCppParser;

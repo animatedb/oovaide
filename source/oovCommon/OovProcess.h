@@ -23,6 +23,8 @@
 #endif
 #include "OovString.h"
 
+#include "OovProcessArgs.h"
+
 
 void sleepMs(int ms);
 
@@ -228,28 +230,6 @@ class OovPipeProcess
 #else
 	OovPipeProcessWindows mPipeProcWindows;
 #endif
-    };
-
-/// Builds arguments for a child process.
-class OovProcessChildArgs
-    {
-    public:
-	OovProcessChildArgs()
-	    { clearArgs(); }
-
-	// WARNING: The arg[0] must be added.
-	void addArg(OovStringRef const argStr);
-	void clearArgs()
-	    { mArgStrings.clear(); }
-	char const * const *getArgv() const;
-	const int getArgc() const
-	    { return mArgStrings.size(); }
-	OovString getArgsAsStr() const;
-	void printArgs(FILE *fh) const;
-
-    private:
-	OovStringVec mArgStrings;
-	mutable std::vector<char const*> mArgv;	// These are created temporarily during getArgv
     };
 
 

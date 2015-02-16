@@ -44,6 +44,11 @@ Missing Features
 - Component Diagrams
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
+- Zone Diagrams
+	- Add zoom buttons, and zoom in based on cursor position
+	- Filter by area
+	- Display class names as tooltip
+	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams
 	- Non-class types are not shown (even templated types)
 	- Show parameter reference/pointer/const in methods
@@ -175,16 +180,12 @@ Missing Features
 		https://en.wikipedia.org/wiki/Design_structure_matrix
 	- Add timing diagram that can show state changes/variables over time from method calls
 	- Add find methods that use class variable
-	- dup code http://scg.unibe.ch/archive/papers/Duca99bCodeDuplication.pdf
-		http://www.ics.heacademy.ac.uk/resources/assessment/plagiarism/detectiontools_sourcecode.html
-		https://en.wikipedia.org/wiki/Rabin%E2%80%93Karp_algorithm
-		http://www.codergears.com/Blog/?p=201
-		http://www.ccfinder.net/ccfinderxos.html
 	- Emotional connections: Similarity of modules by which functions are used
+		https://en.wikipedia.org/wiki/Circle_graph, group by directory
+		http://blog.ivank.net/force-based-graph-drawing-in-as3.html
 		https://en.wikipedia.org/wiki/Force-directed_graph_drawing, kamada-kawai boost.
 		http://stackoverflow.com/questions/6563488/jung-graphs-vertex-similarity
 		http://www.theparisreview.org/blog/2015/02/04/man-in-hole/
-	- Sloppy code indicator (unused members, single use members, etc.)
 	- Refactoring functions
 		- Display unused public functions of a class
 		- Dump ASCII public functions

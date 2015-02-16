@@ -13,8 +13,9 @@
 #include "ClassDiagram.h"
 #include "OperationDiagram.h"
 #include "ComponentDiagram.h"
+#include "ZoneDiagram.h"
 
-enum eRecordTypes { RT_Class, RT_Sequence, RT_Component };
+enum eRecordTypes { RT_Class, RT_Sequence, RT_Component, RT_Zone };
 
 class JournalListener
     {
@@ -139,6 +140,34 @@ class JournalRecordComponentDiagram:public JournalRecord
 	    { return mComponentDiagram.getGraph().isModified(); }
     };
 
+class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
+    {
+    public:
+	JournalRecordZoneDiagram(Builder &builder, const ModelData &model,
+		JournalListener &listener):
+	    JournalRecord(RT_Zone, listener)
+	    {
+	    mZoneDiagram.initialize(builder, model, this);
+	    }
+	ZoneDiagram mZoneDiagram;
+
+    private:
+	virtual void gotoClass(OovStringRef const className)
+	    { displayClass(className); }
+	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
+	    { mZoneDiagram.buttonPressEvent(event); }
+	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event)
+	    { mZoneDiagram.buttonReleaseEvent(event); }
+	virtual void drawingAreaDrawEvent()
+	    { mZoneDiagram.drawToDrawingArea(); }
+	virtual void cppArgOptionsChangedUpdateDrawings()
+	    {}
+	virtual void saveFile(FILE *fp)
+	    { mZoneDiagram.drawSvgDiagram(fp); }
+	virtual bool isModified() const
+	    { return mZoneDiagram.getZoneGraph().isModified(); }
+    };
+
 /// This class provides a non-volatile history of diagrams.
 class Journal
     {
@@ -154,6 +183,7 @@ class Journal
 	void displayOperation(OovStringRef const className, OovStringRef const operName,
 		bool isConst);
 	void displayComponents();
+	void displayWorldZone();
 	void saveFile(FILE *fp);
 	void cppArgOptionsChangedUpdateDrawings();
 	void setCurrentRecord(size_t index)

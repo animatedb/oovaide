@@ -110,8 +110,9 @@ void oovGui::init()
     {
     mBuilder.connectSignals();
     mClassList.init(mBuilder);
-    mComponentList.init(mBuilder);
+    mComponentList.init(mBuilder, "ModuleTreeview", "Module List");
     mOperationList.init(mBuilder);
+    mZoneList.init();
     mJournalList.init(mBuilder);
     mJournal.init(mBuilder, mModelData, *this);
     g_idle_add(onIdle, this);
@@ -128,6 +129,7 @@ void oovGui::clear()
     mComponentList.clear();
     mJournalList.clear();
     mOperationList.clear();
+    mZoneList.clear();
     mProjectOpen = false;
 #if(LAZY_UPDATE)
     setBackgroundUpdateClassListSize(0);
@@ -166,6 +168,11 @@ void oovGui::openProject()
 	    FilePath(".xmi", FP_File), fileNames);
     if(open)
 	{
+	ProjectReader reader;
+	open = reader.miniReadOovProject(Project::getProjectDirectory());
+	}
+    if(open)
+	{
 	int typeIndex = 0;
 	BackgroundDialog backDlg;
 	backDlg.setDialogText("Loading files.");
@@ -197,6 +204,11 @@ void oovGui::openProject()
     if(sOptionsDialog)
 	sOptionsDialog->openedProject();
     updateComponentList();
+    mZoneList.update();
+    Gui::setCurrentPage(GTK_NOTEBOOK(
+	    mBuilder.getWidget("ListNotebook")), 0);
+    gOovGui.clearSelectedComponent();;
+    gOovGui.getJournal().displayComponents();
     setProjectOpen(open);
     }
 
@@ -906,7 +918,7 @@ extern "C" G_MODULE_EXPORT void on_JournalTreeview_cursor_changed(
     gtk_widget_queue_draw(gOovGui.getBuilder().getWidget("DiagramDrawingarea"));
     }
 
-extern "C" G_MODULE_EXPORT void on_ComponentTreeview_cursor_changed(
+extern "C" G_MODULE_EXPORT void on_ModuleTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
     if(gOovGui.isProjectOpen())
@@ -922,6 +934,29 @@ extern "C" G_MODULE_EXPORT void on_ComponentTreeview_cursor_changed(
 	}
     }
 
+extern "C" G_MODULE_EXPORT void on_ZoneTreeview_cursor_changed(
+	GtkWidget *widget, gpointer data)
+    {
+    if(gOovGui.isProjectOpen())
+	{
+	JournalRecord *rec = gOovGui.getJournal().getCurrentRecord();
+	if(rec && rec->getRecordType() == RT_Zone)
+	    {
+	    JournalRecordZoneDiagram *zoneRecord =
+		    static_cast<JournalRecordZoneDiagram *>(rec);
+	    if(zoneRecord)
+		{
+		std::string comp = gOovGui.getZoneList().getComponentTree().getSelected('/');
+		if(comp.length() > 0)
+		    {
+		    bool show = gOovGui.getZoneList().toggleSelected();
+		    zoneRecord->mZoneDiagram.setFilter(comp, !show);
+		    }
+		}
+	    }
+	}
+    }
+
 extern "C" G_MODULE_EXPORT void on_ListNotebook_switch_page(GtkNotebook *notebook,
 	GtkWidget *page, guint page_num, gpointer user_data)
     {
@@ -929,20 +964,27 @@ extern "C" G_MODULE_EXPORT void on_ListNotebook_switch_page(GtkNotebook *noteboo
 	{
 	case 0:
 	    gOovGui.clearSelectedComponent();;
-	    on_ComponentTreeview_cursor_changed(nullptr, nullptr);
+	    on_ModuleTreeview_cursor_changed(nullptr, nullptr);
 	    break;
 
 	case 1:
+	    if(gOovGui.isProjectOpen())
+		{
+		gOovGui.getJournal().displayWorldZone();
+		}
+	    break;
+
+	case 2:
 	    on_ClassTreeview_cursor_changed(nullptr, nullptr);
 	    break;
 
 	// Operation is always related to class, so it must be initialized
 	// to first operation of class.
-	case 2:
+	case 3:
 //	    on_OperationsTreeview_cursor_changed(nullptr, nullptr);
 	    break;
 
-	case 3:
+	case 4:
 	    on_JournalTreeview_cursor_changed(nullptr, nullptr);
 	    break;
 	}
