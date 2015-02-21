@@ -233,12 +233,11 @@ class GuiTree:public GuiTreeView
             };
 	enum ColumnTypes { CT_String, CT_StringBool };
 	void init(Builder &builder, OovStringRef const widgetName,
-		OovStringRef const title, ColumnTypes CT_String=CT_String);
+		OovStringRef const title, ColumnTypes ct=CT_String);
 	/// Returns the newly created child item.
 	GuiTreeItem appendText(GuiTreeItem parentItem, OovStringRef const str);
 	/// First element is parent, second is child
 	OovStringVec const getSelected() const;
-	bool getSelectedIter(GtkTreeIter *childIter) const;
 	/// First element is parent, second is child,...
 	/// The returned string is the elements joined together using the
 	/// delimiter passed in.
@@ -250,9 +249,12 @@ class GuiTree:public GuiTreeView
 
 	// This is for a CT_StringBool list.
 	void setAllCheckboxes(bool set);
+	void setSelectedChildCheckboxes(bool set);
 	// This is for a CT_StringBool list.
 	// The value returned is true if the checkbox is set after the toggle.
 	bool toggleSelectedCheckbox();
+	bool getSelectedCheckbox(bool &checked);
+	OovStringVec getSelectedChildNodeNames(char delimiter);
 
 	GuiTreeItem getItem(OovString const &name, char delimiter);
 	GtkTreeModel *getModel()
@@ -268,7 +270,15 @@ class GuiTree:public GuiTreeView
 	// otherwise this finds the child nodes.
 	bool findNodeIter(GtkTreeIter *parent, OovString const &name,
 		char delimiter, GtkTreeIter *childIter);
-	void setAllCheckboxes(GtkTreeIter *iter, bool set);
+	// @param iter	The parent iterator of the checkboxes to set or clear.
+	void setChildCheckboxes(GtkTreeIter *iter, bool set);
+	bool getSelectedIter(GtkTreeIter *childIter) const;
+	/// First element is parent, second is child,...
+	/// The returned string is the elements joined together using the
+	/// delimiter passed in.
+	OovStringVec const getChildNodeNames(GtkTreeIter *iter, char delimeter);
+	OovStringVec const getNodeVec(GtkTreeIter iter) const;
+	OovString const getNodeName(GtkTreeIter iter, char delimiter) const;
     };
 
 class BackgroundDialog:public Dialog

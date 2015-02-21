@@ -28,9 +28,15 @@ The following lists releases in reverse chronological order.<br>
 <h2>2015-3</h2>
 This version contains:
 <ul>
-  <li>Added duplicate code detection</li>
+  <li>Improved switch case conditions</li>
 </ul>
 
+<h2>2015-2-1</h2>
+This version contains:
+<ul>
+  <li>Added zone diagrams (circle diagrams for class relations)</li>
+  <li>Added duplicate code detection</li>
+</ul>
 
 <h2>2015-2</h2>
 This version contains:

@@ -135,7 +135,7 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
 	    { *this = StringJoin(tokens, delim); }
 	OovString makeXml() const
 	    { return StringMakeXml(getStr()); }
-	void replaceStrs(OovStringRef const srchStr, OovStringRef const repStr);
+	bool replaceStrs(OovStringRef const srchStr, OovStringRef const repStr);
 	char const * const getStr() const
 	    { return std::string::c_str(); }
 	std::string &getStdString()

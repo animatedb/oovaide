@@ -159,6 +159,7 @@ void FlowTest::flowLoopsCompound(int a, int b, Funcs &funcs)
         } while(a>5);
     }
 
+/*
 void FlowTest::flowSwitch(int a, int b)
     {
     switch(a)
@@ -186,6 +187,7 @@ void FlowTest::flowSwitch(int a, int b)
             break;
         }
     }
+*/
 
 void FlowTest::flowSwitchFunc(int a, int b, Funcs &funcs)
     {
@@ -247,11 +249,28 @@ void FlowTest::flowSwitchFunc(int a, int b, Funcs &funcs)
             if(a>9)
                 {
                 b = 7;
+        	    funcs.funcCase();
                 }
             else
                 {
                 b = 8;
+        	    funcs.funcCase();
                 }
             break;
-        }
+
+		case 14:
+    	    funcs.funcCase();
+			return;
+
+		case 15:
+			if(b > 5)
+				{
+	    	    funcs.funcCase();
+				return;
+				}
+
+		case 16:	// Note that a==15 falls through to here in some cases.
+    	    funcs.funcCase();
+			return;
+		}
     }

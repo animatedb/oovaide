@@ -188,36 +188,61 @@ void removeLastNonIdentChar(std::string &name)
 
 void appendConditionString(CXCursor cursor, std::string &str)
     {
-    appendCursorTokenString(cursor, str);
-    int nestParenCount = 0;
-    for(size_t i=0; i<str.length(); i++)
-	{
-	if(str[i] == '(')
-	    {
-	    nestParenCount++;
-	    }
-	else if(str[i] == ')')
-	    {
-	    if(nestParenCount == 0)
-		{
-		str.resize(i);
-		break;
-		}
-	    nestParenCount--;
-	    }
-	}
+    appendCursorTokenString(cursor, str, true);
     }
 
-void appendCursorTokenString(CXCursor cursor, std::string &str)
+// clang_tokenize will return some arbitrary stuff sometimes, and will create
+// multi megabyte output files. This was first noticed on the
+// LLVM lib/IR/Verifier.cpp file when run with MinGW-W64 with some math
+// include errors using clang 3.5.1.
+class ConditionTerminator
     {
+    public:
+	ConditionTerminator():
+	    mNestParenCount(0)
+	    {}
+	// This should only be called for CXToken_Punctuation tokens so that it
+	// does not match parenthesis inside of literals.
+	bool endConditionDetected(std::string &str)
+	    {
+	    bool endDetected = false;
+	    if(str[0] == '(')
+		{
+		mNestParenCount++;
+		}
+	    else if(str[0] == ')')
+		{
+		if(mNestParenCount == 0)
+		    {
+		    endDetected = true;
+		    }
+		mNestParenCount--;
+		}
+	    else if(str[0] == '#')
+		{
+		endDetected = true;
+		}
+	    return endDetected;
+	    }
+
+    private:
+	int mNestParenCount;
+    };
+
+void appendCursorTokenString(CXCursor cursor, std::string &str, bool endCondition)
+    {
+    ConditionTerminator condTerm;
     CXSourceRange range = clang_getCursorExtent(cursor);
     CXToken *tokens = 0;
     unsigned int nTokens = 0;
     CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
+    // clang_tokenize is a strange function. Sometimes it returns a last
+    // token that is part of the cursor, and sometimes it returns a last token
+    // that is part of the next cursor.
     clang_tokenize(tu, range, &tokens, &nTokens);
     if(nTokens > 0)
 	{
-	for (size_t i = 0; i < nTokens-1; i++)
+	for (size_t i = 0; i < nTokens; i++)
 	    {
 	    CXTokenKind kind = clang_getTokenKind(tokens[i]);
 	    if(kind != CXToken_Comment)
@@ -225,6 +250,13 @@ void appendCursorTokenString(CXCursor cursor, std::string &str)
 		if(str.length() != 0)
 		    str += " ";
 		CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
+		if(kind == CXToken_Punctuation && endCondition)
+		    {
+		    if(condTerm.endConditionDetected(spelling))
+			{
+			break;
+			}
+		    }
 		str += spelling;
 		}
 	    }

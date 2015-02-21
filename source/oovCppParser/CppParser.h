@@ -39,67 +39,69 @@ class IncDirDependencyMap:public NameValueFile
 // kind of interesting to graph in a sequence diagram since cases without breaks
 // are actually ored together.
 //
-// The following code:
 //	switch(a)
 //		{
-//		case '5':
+//		case 5:
 //			func1();
-//		case '6':
+//		case 6:
 //			func2();
 //			break;
 //		}
 //
-// Gets represented as:
+// This gets represented as:
 //	[a == 5]
 //		-> func1
 //	[a == 5 || a == 6]
 //		-> func2
+//
+// Another interesting problem is a return or break under a conditional.
+// This does not get handled correctly at this time since the nested statement
+// always ends the case, but it should actually depend on the conditions.
+//	switch(a)
+//		{
+//		case 4:
+//			return;
+//		case 5:
+//			if(b == 3)
+//				func1();
+//				return;		// Or break
+//			func2();
+//		case 6:
+//			func3();
+//			break;
+//		}
+//
+// Something like the following should not create separate conditionals, but
+// should only output a single [a==4 || a==5]:
+//	switch(a)
+//		{
+//		case 4:
+//		case 5:
+//			func1();
+//			break;
+//		}
 class SwitchContext
     {
     public:
 	SwitchContext():
-	    mInCase(false), mOpenStatementIndex(5000)
+	    mInCase(false), mParentFuncStatements(nullptr)
 	    {}
 	SwitchContext(std::string exprString):
-	    mSwitchExprString(exprString), mInCase(false), mOpenStatementIndex(5000)
+	    mSwitchExprString(exprString), mInCase(false),
+	    mParentFuncStatements(nullptr)
 	    {}
-	void maybeStartCase(ModelStatements *statements, OovString &opStr)
-	    {
-	    if(!mInCase)
-		{
-		statements->addStatement(ModelStatement(opStr, ST_OpenNest));
-		mOpenStatementIndex = statements->size()-1;
-		mInCase = true;
-		}
-	    else
-		{
-		if(mOpenStatementIndex < statements->size())
-		    {
-		    std::string expr = (*statements)[mOpenStatementIndex].getName();
-		    expr.erase(expr.size()-1);
-		    expr += " || ";
-		    expr += opStr.substr(1);
-		    statements->addStatement(ModelStatement("", ST_CloseNest));
-//		    (*statements)[mOpenStatementIndex].setName(expr);
-		    statements->addStatement(ModelStatement(expr, ST_OpenNest));
-		    mOpenStatementIndex = statements->size()-1;
-		    }
-		}
-	    }
-	// This is called for a break, or the end of a switch without a break.
-	void endCase(ModelStatements *statements)
-	    {
-	    if(mInCase)
-		{
-		statements->addStatement(ModelStatement("", ST_CloseNest));
-		mInCase = false;
-		}
-	    }
+	// This will only output the case statement if there is some functionality
+	// after the case.
+	void startCase(ModelStatements *parentFuncStatements, CXCursor cursor,
+		OovString &opStr);
+	// This is called for a break, return, or the end of a switch without a break.
+	void endCase();
 	std::string mSwitchExprString;
 
     private:
 	bool mInCase;
-	size_t mOpenStatementIndex;
+	ModelStatements *mParentFuncStatements;
+	OovString mConditionalStr;
     };
 
 // This holds the context during a switch statement. Switch statements can

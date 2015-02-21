@@ -41,7 +41,8 @@ CXCursor getCursorCallMemberRef(CXCursor cursor);
 void debugDumpCursor(CXCursor cursor, bool recurse=true);
 void removeLastNonIdentChar(std::string &name);
 void appendConditionString(CXCursor cursor, std::string &str);
-void appendCursorTokenString(CXCursor cursor, std::string &str);
+// endCondition=true is the same as appendConditionString().
+void appendCursorTokenString(CXCursor cursor, std::string &str, bool endCondition=false);
 void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers);
 bool isMethodConst(CXCursor cursor);
 bool isConstType(CXCursor cursor);

@@ -147,7 +147,7 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 		JournalListener &listener):
 	    JournalRecord(RT_Zone, listener)
 	    {
-	    mZoneDiagram.initialize(builder, model, this);
+	    mZoneDiagram.initialize(model, this);
 	    }
 	ZoneDiagram mZoneDiagram;
 
@@ -155,9 +155,9 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 	virtual void gotoClass(OovStringRef const className)
 	    { displayClass(className); }
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
-	    { mZoneDiagram.buttonPressEvent(event); }
+	    { mZoneDiagram.graphButtonPressEvent(event); }
 	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event)
-	    { mZoneDiagram.buttonReleaseEvent(event); }
+	    { mZoneDiagram.graphButtonReleaseEvent(event); }
 	virtual void drawingAreaDrawEvent()
 	    { mZoneDiagram.drawToDrawingArea(); }
 	virtual void cppArgOptionsChangedUpdateDrawings()
@@ -175,6 +175,7 @@ class Journal
 	Journal();
 	virtual ~Journal()
 	    {}
+	static Journal *getJournal();
 	void init(Builder &builder, const ModelData &model, JournalListener &listener)
 	    { mBuilder = &builder; mModel = &model; mListener = &listener; }
 	void clear();
@@ -197,6 +198,19 @@ class Journal
 	JournalRecord *getCurrentRecord()
 	    { return (mRecords.size() > 0) ? mRecords[mCurrentRecord] : NULL; }
 	void removeUnmodifiedRecords();
+	ZoneDiagram *getCurrentZoneDiagram()
+	    {
+	    JournalRecord *rec = getCurrentRecord();
+	    ZoneDiagram *zoneDiagram = nullptr;
+	    if(rec && rec->getRecordType() == RT_Zone)
+		{
+		JournalRecordZoneDiagram *zoneRecord =
+			static_cast<JournalRecordZoneDiagram *>(rec);
+		if(zoneRecord)
+		    zoneDiagram = &zoneRecord->mZoneDiagram;
+		}
+	    return zoneDiagram;
+	    }
 
     private:
 	std::vector<JournalRecord*> mRecords;

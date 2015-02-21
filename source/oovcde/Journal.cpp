@@ -25,6 +25,11 @@ Journal::Journal():
     gJournal = this;
     }
 
+Journal *Journal::getJournal()
+    {
+    return gJournal;
+    }
+
 void Journal::clear()
     {
     for(auto &rec : mRecords)

@@ -48,6 +48,7 @@ std::string getFirstNonCommentToken(CXCursor cursor)
     return str;
     }
 
+/// @todo - this is a duplicate of a function in ParseBase.cpp
 void appendCursorTokenString(CXCursor cursor, std::string &str)
     {
     CXSourceRange range = clang_getCursorExtent(cursor);

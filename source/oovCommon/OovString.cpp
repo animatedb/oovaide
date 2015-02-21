@@ -287,16 +287,19 @@ OovString StringJoin(OovStringVec const &tokens, char delimiter)
     return str;
     }
 
-void OovString::replaceStrs(OovStringRef const srchStr, OovStringRef const repStr)
+bool OovString::replaceStrs(OovStringRef const srchStr, OovStringRef const repStr)
     {
     size_t starti = 0;
+    bool didReplace = false;
     do
 	{
 	starti = find(srchStr, starti);
 	if(starti != OovString::npos)
 	    {
+	    didReplace = true;
 	    std::string::replace(starti, strlen(srchStr), repStr);
 	    starti+=strlen(repStr.getStr());
 	    }
 	} while(starti != OovString::npos);
+    return didReplace;
     }

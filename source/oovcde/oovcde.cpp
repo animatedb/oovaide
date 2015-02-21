@@ -939,23 +939,50 @@ extern "C" G_MODULE_EXPORT void on_ZoneTreeview_cursor_changed(
     {
     if(gOovGui.isProjectOpen())
 	{
-	JournalRecord *rec = gOovGui.getJournal().getCurrentRecord();
-	if(rec && rec->getRecordType() == RT_Zone)
+	ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
+	if(zoneDiagram)
 	    {
-	    JournalRecordZoneDiagram *zoneRecord =
-		    static_cast<JournalRecordZoneDiagram *>(rec);
-	    if(zoneRecord)
+	    bool show = false;
+	    std::string comp = gOovGui.getZoneList().getComponentTree().getSelected('/');
+	    if(comp.length() > 0)
 		{
-		std::string comp = gOovGui.getZoneList().getComponentTree().getSelected('/');
-		if(comp.length() > 0)
-		    {
-		    bool show = gOovGui.getZoneList().toggleSelected();
-		    zoneRecord->mZoneDiagram.setFilter(comp, !show);
-		    }
+		show = gOovGui.getZoneList().getComponentTree().toggleSelectedCheckbox();
+		zoneDiagram->setFilter(comp, !show);
 		}
 	    }
 	}
     }
+
+extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_press_event(
+	GtkWidget *widget, const GdkEventButton *event)
+    {
+    // The following is commented out because the selection should be
+    // made.
+
+    // This prevents the right click display of popup from changing a checkbox.
+//    return(event->button != 1);
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_release_event(
+	GtkWidget *widget, const GdkEventButton *event)
+    {
+    bool handled = false;
+    if(event->button != 1)
+	{
+	handled = true;
+	if(gOovGui.isProjectOpen())
+	    {
+	    ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
+	    if(zoneDiagram)
+		{
+		zoneDiagram->listDisplayContextMenu(event);
+		}
+	    }
+	}
+    return handled;
+    }
+
 
 extern "C" G_MODULE_EXPORT void on_ListNotebook_switch_page(GtkNotebook *notebook,
 	GtkWidget *page, guint page_num, gpointer user_data)

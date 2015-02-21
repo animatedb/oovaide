@@ -21,8 +21,8 @@ and Objective C languages.
 - The analysis system searches directories for source code and uses CLang.
 	- Dependencies are generated automatically between files and components.
 	- Object relationships and sequence information is saved for diagrams.
-	- Diagrams (class, sequence, and dependency) can be dynamically generated
-	  allowing quick navigation
+	- Diagrams (zone, class, sequence, and dependency) can be dynamically
+	  generated allowing quick navigation
 	  between objects. Diagrams can be edited in Oovcde, then saved as
 	  SVG and edited using tools such as Inkscape.
 - The multithreaded build system uses analysis information for easy setup.

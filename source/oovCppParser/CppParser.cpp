@@ -170,6 +170,54 @@ static void dumpCursor(FILE *fp, char const * const str, CXCursor cursor)
 	}
     }
 
+void SwitchContext::startCase(ModelStatements *parentFuncStatements,
+	CXCursor cursor, OovString &opStr)
+    {
+    mParentFuncStatements = parentFuncStatements;
+
+    // This will only output the case statement if there is some functionality
+    // after the case.
+    bool hasFunctionality = false;
+    CXCursor c1 = getNthChildCursor(cursor, 1);
+    if(c1.kind != CXCursor_CaseStmt && c1.kind != CXCursor_DefaultStmt)
+	{
+	hasFunctionality = true;
+	}
+    if(!mInCase)
+	{
+	mConditionalStr = opStr;
+	if(hasFunctionality)
+	    {
+	    mParentFuncStatements->addStatement(ModelStatement(mConditionalStr, ST_OpenNest));
+	    }
+	}
+    else
+	{
+	std::string expr = mConditionalStr;
+	removeLastNonIdentChar(expr);	// Remove the ']'
+	removeLastNonIdentChar(expr);	// Remove the ' '
+	expr += " || ";
+	expr += opStr.substr(1);
+	mConditionalStr = expr;
+	if(hasFunctionality)
+	    {
+	    mParentFuncStatements->addStatement(ModelStatement("", ST_CloseNest));
+	    mParentFuncStatements->addStatement(ModelStatement(mConditionalStr, ST_OpenNest));
+	    }
+	}
+    mInCase = true;
+    }
+
+void SwitchContext::endCase()
+    {
+    if(mInCase)
+	{
+	mParentFuncStatements->addStatement(ModelStatement("", ST_CloseNest));
+	mInCase = false;
+	}
+    }
+
+
 static std::string getFileLoc(CXCursor cursor, int *retLine = nullptr)
     {
     CXSourceLocation loc = clang_getCursorLocation(cursor);
@@ -505,8 +553,11 @@ OovString CppParser::buildCondExpr(CXCursor condStmtCursor, int condExprIndex)
 	fullop += mSwitchContexts.getCurrentContext().mSwitchExprString;
 	fullop += " == ";
 	}
-    appendCursorTokenString(getNthChildCursor(condStmtCursor, condExprIndex), fullop);
-//    removeLastNonIdentChar(fullop);
+    appendConditionString(getNthChildCursor(condStmtCursor, condExprIndex), fullop);
+    if(condStmtCursKind == CXCursor_CaseStmt)
+	{
+	removeLastNonIdentChar(fullop);	// Remove the ':' from the case.
+	}
     fullop += ']';
     return fullop;
     }
@@ -634,7 +685,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    mSwitchContexts.push_back(tempStr);
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    SwitchContext &context = mSwitchContexts.getCurrentContext();
-	    context.endCase(mStatements);
+	    context.endCase();
 	    mSwitchContexts.pop_back();
 	    }
 	    break;
@@ -654,7 +705,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    {
 	    OovString fullop = buildCondExpr(cursor, 0);
 	    SwitchContext &context = mSwitchContexts.getCurrentContext();
-	    context.maybeStartCase(mStatements, fullop);
+	    context.startCase(mStatements, cursor, fullop);
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    }
 	    break;
@@ -663,15 +714,19 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
 	    {
 	    SwitchContext &context = mSwitchContexts.getCurrentContext();
 	    OovString defStr("[default]");
-	    context.maybeStartCase(mStatements, defStr);
+	    context.startCase(mStatements, cursor, defStr);
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    }
 	    break;
 
+	// This isn't quite right. If the break or return is under a
+	// conditional, then the case hasn't ended.
+	case CXCursor_ReturnStmt:
 	case CXCursor_BreakStmt:
 	    {
 	    SwitchContext &context = mSwitchContexts.getCurrentContext();
-	    context.endCase(mStatements);
+	    context.endCase();
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    }
 	    break;
 
