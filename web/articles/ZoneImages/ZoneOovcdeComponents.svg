@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="500" height="439">
+<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="231" y1="47" x2="231" y2="36" />
+<line x1="332" y1="82" x2="339" y2="74" />
+<line x1="335" y1="85" x2="343" y2="76" />
+<line x1="351" y1="303" x2="359" y2="310" />
+<line x1="337" y1="317" x2="344" y2="325" />
+<line x1="300" y1="342" x2="305" y2="351" />
+<line x1="194" y1="351" x2="191" y2="362" />
+<line x1="149" y1="332" x2="143" y2="341" />
+<line x1="383" y1="193" x2="283" y2="60" />
+<line x1="383" y1="193" x2="375" y2="185" />
+<line x1="383" y1="193" x2="378" y2="183" />
+<line x1="383" y1="193" x2="331" y2="87" />
+<line x1="383" y1="193" x2="376" y2="184" />
+<line x1="383" y1="193" x2="380" y2="182" />
+<line x1="341" y1="307" x2="383" y2="193" />
+<line x1="383" y1="193" x2="381" y2="204" />
+<line x1="383" y1="193" x2="377" y2="203" />
+<line x1="317" y1="326" x2="383" y2="193" />
+<line x1="383" y1="193" x2="380" y2="204" />
+<line x1="383" y1="193" x2="376" y2="202" />
+<line x1="247" y1="351" x2="383" y2="193" />
+<line x1="383" y1="193" x2="377" y2="203" />
+<line x1="383" y1="193" x2="374" y2="200" />
+<line x1="171" y1="338" x2="383" y2="193" />
+<line x1="383" y1="193" x2="375" y2="201" />
+<line x1="383" y1="193" x2="373" y2="197" />
+<line x1="171" y1="338" x2="247" y2="351" />
+<line x1="171" y1="338" x2="182" y2="338" />
+<line x1="171" y1="338" x2="182" y2="342" />
+<line x1="89" y1="162" x2="383" y2="193" />
+<line x1="383" y1="193" x2="372" y2="193" />
+<line x1="383" y1="193" x2="372" y2="190" />
+<line x1="89" y1="162" x2="171" y2="338" />
+<line x1="171" y1="338" x2="165" y2="329" />
+<line x1="171" y1="338" x2="168" y2="327" />
+<circle cx="283" cy="60" r="1" style="fill:#ffffff" />
+<circle cx="331" cy="87" r="1" style="fill:#ffffff" />
+<circle cx="383" cy="193" r="1" style="fill:#ffffff" />
+<circle cx="341" cy="307" r="1" style="fill:#ffffff" />
+<circle cx="317" cy="326" r="1" style="fill:#ffffff" />
+<circle cx="247" cy="351" r="1" style="fill:#ffffff" />
+<circle cx="171" cy="338" r="1" style="fill:#ffffff" />
+<circle cx="89" cy="162" r="1" style="fill:#ffffff" />
+</g>
+<g font-size="10.000000">
+<text x="295" y="19">oovBuilder</text>
+<text x="354" y="53">oovCMaker</text>
+<text x="419" y="184">oovCommon</text>
+<text x="366" y="325">oovCovInstr</text>
+<text x="336" y="347">oovCppParser</text>
+<text x="250" y="380">oovEdit</text>
+<text x="78" y="364">oovGuiCommon</text>
+<text x="19" y="145">oovcde</text>
+</g>
+</svg>

@@ -46,7 +46,6 @@ Missing Features
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
 	- Add zoom buttons, and zoom in based on cursor position
-	- Filter by area
 	- Display class names as tooltip
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams

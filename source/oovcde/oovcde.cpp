@@ -948,6 +948,7 @@ extern "C" G_MODULE_EXPORT void on_ZoneTreeview_cursor_changed(
 		{
 		show = gOovGui.getZoneList().getComponentTree().toggleSelectedCheckbox();
 		zoneDiagram->setFilter(comp, !show);
+		zoneDiagram->updateDiagram();
 		}
 	    }
 	}

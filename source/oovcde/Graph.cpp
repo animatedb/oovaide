@@ -17,7 +17,7 @@ static double slope(GraphPoint p1, GraphPoint p2)
 
 
 // From p1, find the intersect with the p2 rect.
-GraphPoint findIntersect(GraphPoint p1, GraphPoint p2, GraphSize p2size)
+static GraphPoint findIntersect(GraphPoint p1, GraphPoint p2, GraphSize p2size)
 {
     GraphPoint retP;
     int halfRectWidth = p2size.x/2;

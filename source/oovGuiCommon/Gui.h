@@ -255,6 +255,8 @@ class GuiTree:public GuiTreeView
 	bool toggleSelectedCheckbox();
 	bool getSelectedCheckbox(bool &checked);
 	OovStringVec getSelectedChildNodeNames(char delimiter);
+	OovStringVec getAllChildNodeNames(char delimiter)
+	    { return getChildNodeNames(nullptr, delimiter); }
 
 	GuiTreeItem getItem(OovString const &name, char delimiter);
 	GtkTreeModel *getModel()

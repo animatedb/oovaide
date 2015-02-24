@@ -28,7 +28,9 @@ The following lists releases in reverse chronological order.<br>
 <h2>2015-3</h2>
 This version contains:
 <ul>
+  <li>Added many zone diagram features</li>
   <li>Improved switch case conditions</li>
+  <li>Fixed default public/private for class/struct</li>
 </ul>
 
 <h2>2015-2-1</h2>

@@ -992,16 +992,16 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	    // CXCursor_TemplateTemplateParameter
 	    // CXCursor_ClassTemplatePartialSpecialization
 	    // CXCursor_TemplateRef
-	    addRecord(cursor, Visibility::Public);
+	    addRecord(cursor, Visibility::Private);
 	    break;
 
 	case CXCursor_ClassDecl:
-	    addRecord(cursor, Visibility::Public);
+	    addRecord(cursor, Visibility::Private);
 	    break;
 
 	case CXCursor_StructDecl:
 	case CXCursor_UnionDecl:
-	    addRecord(cursor, Visibility::Private);
+	    addRecord(cursor, Visibility::Public);
 	    break;
 
 	case CXCursor_Constructor:
