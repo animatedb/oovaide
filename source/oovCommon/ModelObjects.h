@@ -499,10 +499,8 @@ class ModelData
     private:
 	ModelObject *createDataType(eModelDataTypes type, const std::string &id);
 	std::string getBaseType(OovStringRef const fullStr) const;
-	const ModelClassifier *findClassByModelId(int id) const;
-	const ModelType *findTypeByModelId(int id) const;
-        void resolveStatements(ModelStatements &stmt);
-        void resolveDecl(ModelTypeRef &decl);
+        void resolveStatements(class TypeIdMap const &typeMap, ModelStatements &stmt);
+        void resolveDecl(class TypeIdMap const &typeMap, ModelTypeRef &decl);
 	bool isTypeReferencedByStatements(ModelStatements const &stmts, ModelType const &type) const;
 	void dumpTypes();
     };

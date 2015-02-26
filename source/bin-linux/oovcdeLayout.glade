@@ -877,6 +877,15 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
+      <object class="GtkCheckMenuItem" id="ShowDependenciesMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show Dependencies</property>
+        <property name="use_underline">True</property>
+        <signal name="toggled" handler="on_ShowDependenciesMenuitem_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="ZoneZoomInMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -3209,6 +3218,24 @@ These arguments are specific to the selected configuration.
   <object class="GtkMenu" id="ZoneListPopupMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="ShowAllMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show All</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ShowAllMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="HideAllMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Hide All</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_HideAllMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
     <child>
       <object class="GtkMenuItem" id="ZoneShowChildrenMenuitem">
         <property name="visible">True</property>

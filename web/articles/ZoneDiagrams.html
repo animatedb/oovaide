@@ -36,8 +36,8 @@ This makes it easier to see that oovcde and oovEdit are both related to oovGuiCo
 and oovCommon, but the other components are not.
 <p />
 <h2>Viewing the LLVM project</h2>
-Showing all classes for the LLVM project is pretty messy.  I have never looked at
-the source for LLVM, so let's see what we can learn.
+Showing all classes for the LLVM project is pretty messy since it has over 3000
+classes.  I have never looked at the source for LLVM, so let's see what we can learn.
 <br />
 <embed src="ZoneImages/ZoneLlvmClasses.svg" type="image/svg+xml">
 <br />
@@ -80,45 +80,63 @@ Some of the interesting aspects are:
 	the web indicates it stands for Machine Code, so this coupling makes sense.</li>
 </ul>
 <p/>
-So let's look at the MC/AsmPrinter relations in more detail. Turning on the dependency
-indications shows that the AsmPrinter classes are dependent on the include/llvm/MC
-directory and not the other way around.
+So let's look at the MC/AsmPrinter relations in more detail. Turning on the
+dependency indications shows that the AsmPrinter classes are dependent on the
+include/llvm/MC directory and not the other way around.
 
 <br />
 <embed src="ZoneImages/ZoneLlvmMcAsmPrinterComps.svg" type="image/svg+xml">
 <br />
  
-There are a few other directories that are not related to AsmPrinter such as lib/MC/MCParser,
-so we'll turn them off which now shows all classes related between include/llvm/MC and
-AsmPrinter.
+There are a few other directories that are not related to CodeGen/AsmPrinter
+such as lib/MC/MCParser, so we'll turn them off which now shows all classes
+related between include/llvm/MC and AsmPrinter.
 <br />
 <embed src="ZoneImages/ZoneLlvmMcAsmPrinterClasses.svg" type="image/svg+xml">
 <br />
 
-There is a relationship between SrcLineInfo and MCSymbol, so switching to
+There is a relationship between DIELabel and MCSymbol, so switching to
 a class view diagram should show this.
 
 <br />
-<embed src="ZoneImages/ZoneLlvmSrcLineInfo.svg" type="image/svg+xml">
+<embed src="ZoneImages/ZoneLlvmDIELabelClass.svg" type="image/svg+xml">
 <br />
 <p />
-The actual code looks like the following:
+This diagram shows that DIELabel in AsmPrinter has a member that is an MCSymbol
+from the MC directory, so the AsmPrinter is truly dependent on the MC directory.
+<p />
+The actual DIELabel class code with comments removed looks like the following:
 <pre>
-class SrcLineInfo {
-  unsigned Line;     // Source line number.
-  unsigned Column;   // Source column.
-  unsigned SourceID; // Source ID number.
-  MCSymbol *Label;   // Label in code ID number.
-public:
-  SrcLineInfo(unsigned L, unsigned C, unsigned S, MCSymbol *label)
-      : Line(L), Column(C), SourceID(S), Label(label) {}
+    class DIELabel : public DIEValue {
+      const MCSymbol *Label;
 
-  // Accessors
-  unsigned getLine() const { return Line; }
-  unsigned getColumn() const { return Column; }
-  unsigned getSourceID() const { return SourceID; }
-  MCSymbol *getLabel() const { return Label; }
-};
+    public:
+      explicit DIELabel(const MCSymbol *L) : DIEValue(isLabel), Label(L) {}
+      void EmitValue(AsmPrinter *AP, dwarf::Form Form) const override;
+      const MCSymbol *getValue() const { return Label; }
+      unsigned SizeOf(AsmPrinter *AP, dwarf::Form Form) const override;
+      static bool classof(const DIEValue *L) { return L->getType() == isLabel; }
+
+    #ifndef NDEBUG
+      void print(raw_ostream &O) const override;
+    #endif
+    };
 </pre>
+
+Displaying the sequence or operation diagram for the print function of DIELabel
+shows the following:
+<br />
+<embed src="ZoneImages/ZoneLlvmDIELabelPrintSeq.svg" type="image/svg+xml">
+<br />
+<p />
+The print member function calls the MCSymbol::getName() method. The code looks
+like the following:
+<pre>
+    void DIELabel::print(raw_ostream &O) const {
+      O << "Lbl: " << Label->getName();
+    }
+</pre>
+<p />
+This is about as far as we can drill in today. Next time, the atom.
 
 </body>

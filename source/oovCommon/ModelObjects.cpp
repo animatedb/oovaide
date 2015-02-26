@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <algorithm>
-
+#include <map>
 
 #define DEBUG_TYPES 0
 
@@ -348,11 +348,34 @@ void ModelData::clear()
     mTypes.clear();
     }
 
-void ModelData::resolveDecl(ModelTypeRef &decl)
+// The resolveModelIds() function takes a long time for large projects.
+// This reduces the time for resolving types to about 1/3 of the time of
+// iterating through the type map to find the types.
+class TypeIdMap:public std::map<int, ModelType *>
+    {
+    public:
+	TypeIdMap(std::vector<std::unique_ptr<ModelType>> const &types)
+	    {
+	    for(auto &type : types)
+		{
+		insert(std::pair<int, ModelType*>(type->getModelId(), type.get()));
+		}
+	    }
+	ModelType *getTypeByModelId(int id) const
+	    {
+	    ModelType *type = nullptr;
+	    auto it = find(id);
+	    if(it != end())
+		type = (*it).second;
+	    return type;
+	    }
+    };
+
+void ModelData::resolveDecl(TypeIdMap const &typeMap, ModelTypeRef &decl)
     {
     if(decl.getDeclTypeModelId() != UNDEFINED_ID)
 	{
-	decl.setDeclType(findTypeByModelId(decl.getDeclTypeModelId()));
+	decl.setDeclType(typeMap.getTypeByModelId(decl.getDeclTypeModelId()));
 	decl.setDeclTypeModelId(UNDEFINED_ID);
 	}
     }
@@ -373,17 +396,17 @@ void ModelData::dumpTypes()
 #endif
     }
 
-void ModelData::resolveStatements(ModelStatements &stmts)
+void ModelData::resolveStatements(class TypeIdMap const &typeMap, ModelStatements &stmts)
     {
     for(auto &stmt : stmts)
 	{
 	if(stmt.getStatementType() == ST_Call ||
 		stmt.getStatementType() == ST_VarRef)
 	    {
-	    resolveDecl(stmt.getClassDecl());
+	    resolveDecl(typeMap, stmt.getClassDecl());
 	    if(stmt.getStatementType() == ST_VarRef)
 		{
-		resolveDecl(stmt.getVarDecl());
+		resolveDecl(typeMap, stmt.getVarDecl());
 		}
 	    }
 	}
@@ -392,6 +415,7 @@ void ModelData::resolveStatements(ModelStatements &stmts)
 void ModelData::resolveModelIds()
     {
     dumpTypes();
+    TypeIdMap typeMap(mTypes);
     // Resolve class member attributes and operations.
     for(const auto &type : mTypes)
 	{
@@ -400,27 +424,27 @@ void ModelData::resolveModelIds()
 	    ModelClassifier *classifier = type->getClass();
 	    for(auto &attr : classifier->getAttributes())
 		{
-		resolveDecl(*attr);
+		resolveDecl(typeMap, *attr);
 		}
 	    for(auto &oper : classifier->getOperations())
 		{
 		// Resolve function parameters.
 		for(auto &param : oper->getParams())
 		    {
-		    resolveDecl(*param);
+		    resolveDecl(typeMap, *param);
 		    }
 		// Resolve function call decls.
 		ModelStatements &stmts = oper->getStatements();
-		resolveStatements(stmts);
+		resolveStatements(typeMap, stmts);
 
 		// Resolve body variables.
 		for(auto &vd : oper->getBodyVarDeclarators())
 		    {
-		    resolveDecl(*vd);
+		    resolveDecl(typeMap, *vd);
 		    }
 
 #if(OPER_RET_TYPE)
-		resolveDecl(oper->getReturnType());
+		resolveDecl(typeMap, oper->getReturnType());
 #endif
 		}
 	    }
@@ -430,8 +454,8 @@ void ModelData::resolveModelIds()
         {
 	if(assoc->getChildModelId() != UNDEFINED_ID)
 	    {
-	    assoc->setChildClass(findClassByModelId(assoc->getChildModelId()));
-	    assoc->setParentClass(findClassByModelId(assoc->getParentModelId()));
+	    assoc->setChildClass(typeMap.getTypeByModelId(assoc->getChildModelId())->getClass());
+	    assoc->setParentClass(typeMap.getTypeByModelId(assoc->getParentModelId())->getClass());
 /*
 	    assoc->setChildModelId(UNDEFINED_ID);
 	    assoc->setParentModelId(UNDEFINED_ID);
@@ -919,25 +943,6 @@ ModelModule const * const ModelData::findModuleById(int id)
 	DebugAssert(__FILE__, __LINE__);
 	}
     return mod;
-    }
-
-const ModelClassifier *ModelData::findClassByModelId(int id) const
-    {
-    return findTypeByModelId(id)->getClass();
-    }
-
-const ModelType *ModelData::findTypeByModelId(int id) const
-    {
-    const ModelType *rettype = nullptr;
-    for (auto &type : mTypes)
-	{
-	if (type->getModelId() == id)
-	    {
-	    rettype = type.get();
-	    break;
-	    }
-	}
-    return rettype;
     }
 
 static size_t findIdentC(const std::string &str, size_t pos)
