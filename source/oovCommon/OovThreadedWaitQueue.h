@@ -14,30 +14,18 @@
 // Some references.
 // http://en.cppreference.com/w/cpp/thread/condition_variable
 // http://www.justsoftwaresolutions.co.uk/threading/
-//        implementing-a-thread-safe-queue-using-condition-variables.html
+//      implementing-a-thread-safe-queue-using-condition-variables.html
+// https://eugenedruy.wordpress.com/2009/07/19/refactoring-template-bloat/
 #include <list>
 #include <vector>
 #include <thread>
 #include <mutex>
 #include <condition_variable>
+#include "OovProcess.h"         // For sleepMs
 
-// This is not defined on Windows with some versions of MinGW because things
-// like std::condition_variable are not defined. If USE_THREADS is not defined,
-// then revert to single threading, but provide the same interface.
-#ifdef __linux__
-#define USE_THREADS 1
-#else
-#if defined(_GLIBCXX_HAS_GTHREADS)
-#define USE_THREADS 1
-#else
-#define USE_THREADS 0
-#endif
-#endif
 
-#if(USE_THREADS)
-
-/// This class reduces template code bloat. See  OovThreadSafeQueue for
-/// description.
+/// This class reduces template code bloat. See  OovThreadedWaitQueue for
+/// interface description.  See top of file for reference for reducing bloat.
 class OovThreadedWaitQueuePrivate
     {
     public:
@@ -116,16 +104,13 @@ template<typename T_ThreadQueueItem>
             mQueue.pop_front();
 	    }
     };
-#endif
 
-#if(USE_THREADS)
 // This class reduces template code bloat.
 class ThreadedWorkWaitPrivate
     {
     public:
 	static void joinThreads(std::vector<std::thread> &workerThreads);
     };
-#endif
 
 /// This uses a producer consumer model where a single producer places items in
 /// the queue and multiple consumer threads remove and process the queue.
@@ -163,43 +148,30 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
         void setupQueue(int numThreads)
             {
             mTaskQueue.initThreadSafeQueue();
-#if(USE_THREADS)
             setupThreads(numThreads);
-#endif
             }
         // This will block if the worker threads are busy processing the queue.
         // @param item The item to push onto the queue to process.
         void addTask(T_ThreadQueueItem const &item)
             {
-#if(USE_THREADS)
             mTaskQueue.waitPush(item);
-#else
-            static_cast<T_ProcessItem*>(this)->processItem(item);
-#endif
             }
 
         // Wait for all threads to complete work on the queued items.
         // setupQueue must be called each time after waitForCompletion.
         void waitForCompletion()
             {
-#if(USE_THREADS)
 	    mTaskQueue.quitPops();
             ThreadedWorkWaitPrivate::joinThreads(mWorkerThreads);
-#endif
             }
 
         // Uses std::thread::hardware_concurrency() to find number of
         // threads.
          static int getNumHardwareThreads()
             {
-#if(USE_THREADS)
             return std::thread::hardware_concurrency();
-#else
-            return 1;
-#endif
             }
 
-#if(USE_THREADS)
     private:
         OovThreadedWaitQueue<T_ThreadQueueItem> mTaskQueue;
         std::vector<std::thread> mWorkerThreads;
@@ -224,7 +196,6 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
                 static_cast<T_ProcessItem*>(workQueue)->processItem(item);
                 }
             }
-#endif
     };
 
 #endif

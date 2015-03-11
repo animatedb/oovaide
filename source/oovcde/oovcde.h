@@ -14,101 +14,155 @@
 #include "ComponentList.h"
 #include "OperationList.h"
 #include "JournalList.h"
-#include "OovProcess.h"
-#include "ModelObjects.h"
 #include "Journal.h"
+#include "OovProject.h"
+#include <atomic>
 
 class WindowBuildListener:public OovProcessListener
     {
     public:
 	WindowBuildListener():
-	    mOpenProject(false), mProcessComplete(false),
-	    mStatusTextView(nullptr)
+	    mStatusTextView(nullptr), mComplete(false)
 	    {}
 	void initListener(Builder &builder)
 	    {
 	    // "DrawingStatusPaned"
-	    mStatusTextView = GTK_TEXT_VIEW(builder.getWidget("StatusTextview"));
+	    if(!mStatusTextView)
+		{
+		mStatusTextView = GTK_TEXT_VIEW(builder.getWidget("StatusTextview"));
+		}
 	    Gui::clear(mStatusTextView);
 	    }
-	void clearListener(Builder &builder)
+	void clearStatusTextView(Builder &builder)
 	    { initListener(builder); }
 	virtual ~WindowBuildListener()
 	    {}
-	virtual void onStdOut(OovStringRef const out, int len)
+	virtual void onStdOut(OovStringRef const out, int len) override
 	    {
 // Adding this guard causes a hang in linux when children have tons of errors.
 	    LockGuard guard(mMutex);
 	    mStdOutAndErr.append(out, len);
 	    }
-	virtual void onStdErr(OovStringRef const out, int len)
+	virtual void onStdErr(OovStringRef const out, int len) override
 	    {
 	    LockGuard guard(mMutex);
 	    mStdOutAndErr.append(out, len);
 	    }
-	virtual void processComplete()
-	    {
-	    mProcessComplete = true;
-	    }
-	// This is called from the GUI thread.
-	bool onBackgroundProcessIdle(bool &completed);
-
-	protected:
-	    bool mOpenProject;
-	    bool mProcessComplete;
+	virtual void processComplete() override;
+	/// This is called from the GUI thread.
+	/// @return true if something was done.
+	bool onBackgroundProcessIdle(bool &complete);
 
 	private:
 	    GtkTextView *mStatusTextView;
 	    std::string mStdOutAndErr;
 	    InProcMutex mMutex;
+	    bool mComplete;
     };
 
-class Menu
+
+/// The virtual functions in this class may be called from a background thread.
+/// The idle function should be called from the GUI thread.
+class WindowProjectStatusListener: public OovTaskStatusListener
     {
     public:
-	Menu(class oovGui &gui):
-	    mGui(gui), mBuildIdle(true), mProjectOpen(false), mInit(true)
+	WindowProjectStatusListener():
+	    mProgressIteration(0), mState(TS_Stopped)
 	    {}
-	void updateMenuEnables();
+	virtual OovTaskStatusListenerId startTask(OovStringRef const &text, size_t i) override
+	    {
+	    mState = TS_Running;
+	    std::lock_guard<std::mutex> lock(mMutex);
+	    mBackDlg.startTask(text, i);
+	    return 0;
+	    }
+	/// @return true to keep going, false to stop iteration.
+	virtual bool updateProgressIteration(OovTaskStatusListenerId id,
+		size_t i, OovStringRef const &text) override
+	    {
+	    if(text)
+		{
+		std::lock_guard<std::mutex> lock(mMutex);
+		mUpdateText = text;
+		}
+	    mProgressIteration = i;
+	    return(mState == TS_Running);
+	    }
+	// Set a flag so the GUI idle can close the dialog.
+	virtual void endTask(OovTaskStatusListenerId id) override
+	    { mState = TS_Stopping; }
+	// Call this from the onIdle.
+	void idleUpdateProgress()
+	    {
+	    if(mState == TS_Running)
+		{
+		OovString text;
+		    {
+		    std::lock_guard<std::mutex> lock(mMutex);
+		    text = mUpdateText;
+		    }
+		if(!mBackDlg.updateProgressIteration(mProgressIteration,
+			text, false))
+		    {
+		    mState = TS_Stopping;
+		    }
+		}
+	    if(mState == TS_Stopping)
+		{
+		std::lock_guard<std::mutex> lock(mMutex);
+		mBackDlg.endTask();
+		mState = TS_Stopped;
+		}
+	    }
 
     private:
-	class oovGui &mGui;
-	bool mBuildIdle;
-	bool mProjectOpen;
-	bool mInit;
+	int mProgressIteration;
+	std::mutex mMutex;
+	OovString mUpdateText;
+	enum eTaskStates { TS_Stopped, TS_Running, TS_Stopping };
+	std::atomic<eTaskStates> mState;
+	BackgroundDialog mBackDlg;
     };
 
-#define LAZY_UPDATE 0
-
-class oovGui:public JournalListener, public WindowBuildListener
+class oovGui:public JournalListener
     {
     friend class Menu;
     public:
-	oovGui():
-	    mProjectOpen(false), mMenu(*this), mBackgroundProc(*this)
-	    {}
-	~oovGui()
-	    { clear(); }
 	void init();
-	void clear();
-	static gboolean onIdle(gpointer data);
-	void openProject();
-	enum eSrcManagerOptions { SM_Analyze, SM_Build, SM_CovInstr, SM_CovBuild, SM_CovStats };
-	bool runSrcManager(OovStringRef const buildConfigName, eSrcManagerOptions smo);
-	void stopSrcManager();
-	void updateProject();
-	virtual void displayClass(OovStringRef const className);
-	virtual void addClass(OovStringRef const className);
+	~oovGui();
+	void clearAnalysis();
+	bool canStartAnalysis();
+	static gboolean onIdle(gpointer data)
+	    {
+	    oovGui *gui = reinterpret_cast<oovGui*>(data);
+	    return gui->onBackgroundIdle(data);
+	    }
+	void runSrcManager(OovStringRef const buildConfigName,
+		OovProject::eSrcManagerOptions smo);
+	void stopSrcManager()
+	    { mProject.stopSrcManager(); }
+
+	void addClass(OovStringRef const className);
+	virtual void displayClass(OovStringRef const className) override;
 	virtual void displayOperation(OovStringRef const className,
-		OovStringRef const operName, bool isConst);
+		OovStringRef const operName, bool isConst) override;
+
+	void updateGuiForAnalysis();
+	void updateGuiForProjectChange();
+
+	void updateMenuEnables(ProjectStatus const &projStat);
+	/// Reads from the journal and updates the GUI journal list.
 	void updateJournalList();
 	void updateComponentList()
 	    { mComponentList.updateComponentList(); }
 	void updateOperationList(const ModelData &modelData, OovStringRef const className);
 	void updateClassList(OovStringRef const className);
+
 	void makeComplexityFile();
 	void makeMemberUseFile();
 	void makeDuplicatesFile();
+	void displayProjectStats();
+
 	void setLastSavedPath(const std::string &fn)
 	    { mLastSavedPath = fn; }
 	std::string &getLastSavedPath()
@@ -138,41 +192,20 @@ class oovGui:public JournalListener, public WindowBuildListener
 	    { return mJournalList.getSelectedIndex(); }
 	Builder &getBuilder()
 	    { return mBuilder; }
+	OovProject &getProject()
+	    { return mProject; }
 	Journal &getJournal()
 	    { return mJournal; }
 	ZoneDiagramList &getZoneList()
 	    { return(mZoneList); }
-	void setProjectOpen(bool open)
-	    {
-	    mProjectOpen = open;
-	    mMenu.updateMenuEnables();
-	    }
-	bool isProjectOpen() const
-	    { return mProjectOpen; }
 	// fn is only filled if a fn, colons, and line number are found.
 	int getStatusSourceFile(std::string &fn);
 	GtkWindow *getWindow()
 	    {
 	    return GTK_WINDOW(getBuilder().getWidget("TopWindow"));
 	    }
-#if(LAZY_UPDATE)
-	void setBackgroundUpdateClassListSize(int size)
-	    {
-	    mLazyClassListCurrentIndex = 0;
-	    mLazyClassListCount = size;
-	    }
-	bool backgroundUpdateClassListItem()
-	    {
-	    bool didSomething = mLazyClassListCurrentIndex < mLazyClassListCount;
-	    if(didSomething)
-		{
-		if(mModelData.mTypes[mLazyClassListCurrentIndex]->getObjectType() == otClass)
-		    mClassList.appendText(mModelData.mTypes[mLazyClassListCurrentIndex]->getName());
-		mLazyClassListCurrentIndex++;
-		}
-	    return didSomething;
-	    }
-#endif
+	ProjectStatus &getLastProjectStatus()
+	    { return mLastProjectStatus; }
 
     private:
 	ClassList mClassList;
@@ -182,16 +215,13 @@ class oovGui:public JournalListener, public WindowBuildListener
 	ZoneDiagramList mZoneList;
 	JournalList mJournalList;
 	Builder mBuilder;
-	ModelData mModelData;
+	OovProject mProject;
+	ProjectStatus mLastProjectStatus;
 	Journal mJournal;
 	std::string mLastSavedPath;
-	bool mProjectOpen;
-#if(LAZY_UPDATE)
-	int mLazyClassListCurrentIndex;
-	int mLazyClassListCount;
-#endif
-	Menu mMenu;
-	OovBackgroundPipeProcess mBackgroundProc;
+	WindowBuildListener mWindowBuildListener;
+	WindowProjectStatusListener mProjectStatusListener;
+	gboolean onBackgroundIdle(gpointer data);
     };
 
 #endif /* OOVCDE_H_ */

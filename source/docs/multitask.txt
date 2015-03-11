@@ -2,6 +2,22 @@
 Think about NUMA?
 	http://lwn.net/Articles/250967/
 
+Multithreaded tasks:
+	- oovBuilder 
+		process status is through std output
+		run as many threads as possible
+		- analyze source files
+		- build components
+	- oovEdit
+		process status is visible in editor
+		run single highlight thread
+		- highlight text
+	- oovcde
+		process status is in background progress dialog
+		could run many worker threads, but depends on paralization ability
+		- load analysis files (if busy, prompts to discard to start another job)
+		- layout class graph (if busy, kills current job without prompts)
+		- find duplicates
 
 FindFirstChangeNotification - files are always changed by a process (including editor),
 they could broadcast completion.
@@ -14,7 +30,7 @@ they could broadcast completion.
 - User specifies idle build time?
 - Where do errors/completion progress go?
 
-Tasks:
+Task Error Handling:
 	- Oovcde
 		- DONE - launches editor at error line number
 		- runs OovBuilder (OovSrcManager) constantly in background?

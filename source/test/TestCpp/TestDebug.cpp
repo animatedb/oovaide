@@ -3,15 +3,15 @@
 #include "TestCpp.h"
 #include "../../oovEdit/DebugResult.h"
 
-class cDebugUnitTest:public cTestCppModule
+class DebugUnitTest:public TestCppModule
     {
     public:
-        cDebugUnitTest():
-            cTestCppModule("Debug")
+        DebugUnitTest():
+            TestCppModule("Debug")
             {}
     };
 
-static cDebugUnitTest gDebugUnitTest;
+static DebugUnitTest gDebugUnitTest;
 
 static std::string quoteStr(char const * const str)
     {

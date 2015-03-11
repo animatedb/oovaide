@@ -69,7 +69,9 @@ void viewSource(OovStringRef const module, int lineNum)
 	    lineArg.appendInt(lineNum);
 	    args.addArg(lineArg);
 	    }
-	args.addArg(module);
+	FilePath file(module, FP_File);
+	FilePathQuoteCommandLinePath(file);
+	args.addArg(file);
 
 	std::string projArg;
 	if(proc.find("oovEdit") != std::string::npos)

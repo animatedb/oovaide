@@ -63,7 +63,7 @@ GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
 void OperationDrawer::drawLifeLines(const std::vector<OperationClass> &classes,
 	std::vector<int> const &classEndY, int endy)
     {
-    mDrawer.groupShapes(true, Color(245,245,255));
+    mDrawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
     endy += mCharHeight;
     for(size_t i=0; i<classes.size(); i++)
 	{
@@ -71,7 +71,7 @@ void OperationDrawer::drawLifeLines(const std::vector<OperationClass> &classes,
 	int x = cl.getLifelinePosX();
 	mDrawer.drawLine(GraphPoint(x, classEndY[i]), GraphPoint(x, endy));
 	}
-    mDrawer.groupShapes(false, Color(245,245,255));
+    mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
     }
 
 GraphSize OperationDrawer::drawClass(const OperationClass &node,
@@ -100,9 +100,9 @@ GraphSize OperationDrawer::drawClass(const OperationClass &node,
 		rectx = curx;
 	    }
 
-	mDrawer.groupShapes(true, Color(245,245,255));
+	mDrawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
 	mDrawer.drawRect(GraphRect(startpos.x, startpos.y, rectx, recty));
-	mDrawer.groupShapes(false, Color(245,245,255));
+	mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 
 	for(size_t i=0; i<strs.size(); i++)
 	    {
@@ -342,10 +342,10 @@ GraphSize OperationDrawer::drawOperation(GraphPoint pos,
     {
     std::vector<DrawString> drawStrings;
 
-    mDrawer.groupShapes(true, Color(245,245,255));
+    mDrawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
     GraphSize size = drawOperationNoText(pos, operDef, graph, options,
 	    drawnOperations, drawStrings);
-    mDrawer.groupShapes(false, Color(245,245,255));
+    mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 
     mDrawer.groupText(true);
     for(size_t i=0; i<drawStrings.size(); i++)

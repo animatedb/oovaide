@@ -16,9 +16,8 @@ Explanations
 Missing Features
 ----------------
 - General
-	- fix sleepMs
+	- BUG: Goto class doesn't change tab to class tab
 	- create minimal code guidelines, ex: "The Power of Ten – Rules for Developing Safety Critical Code"
-	- add assertions
 - Gui
 	- Add improved open recent files
 	- Add toolbar buttons
@@ -26,7 +25,6 @@ Missing Features
 	- BUG: Editing external package paths in dialogs doesn't work?
 	- BUG: Sometimes in Linux, Stop Build, doesn't change state, but builder
 	  is not running. Happens when resizing output window while building?
-	- BUG: First component in list doesn't save type in Build/Settings
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
 		- window might be busy and is not responding (oovCommon/PackagesProcess?)
 	- Filter class list by component/dir
@@ -49,9 +47,9 @@ Missing Features
 	- Display class names as tooltip
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams
+	- BUG: forward class definitions mess up source line numbers
 	- Non-class types are not shown (even templated types)
 	- Show parameter reference/pointer/const in methods
-	- BUG: forward class definitions mess up source line numbers
 	- find way to reduce strlen: std::allocator, std::less, std::basic_string<char> etc.
 	  see ComponentBuilder
 	- When class members are not shown, should be easy way to view members
@@ -126,7 +124,6 @@ Missing Features
 		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Editor
-	- initial parse for highlighter should run on background thread.
 	- find declaration/definition (also in other translation units)
 	- Hover over tab should display full file path
 	- tab name should change with file rename/save as.

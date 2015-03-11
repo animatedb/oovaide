@@ -87,6 +87,31 @@ class OovProcessListener
 	    {}
     };
 
+class OovTaskContinueListener
+    {
+    public:
+	virtual ~OovTaskContinueListener()
+	    {}
+	virtual bool continueProcessingItem() const = 0;
+    };
+
+typedef int OovTaskStatusListenerId;
+
+/// Warning - this may be called from a background thread and should not make
+/// any direct calls to GUI functions.
+class OovTaskStatusListener
+    {
+    public:
+	virtual ~OovTaskStatusListener()
+	    {}
+	virtual OovTaskStatusListenerId startTask(OovStringRef const &text,
+		size_t totalIterations) = 0;
+	/// @return false to stop iteration.
+	virtual bool updateProgressIteration(OovTaskStatusListenerId id, size_t i,
+		OovStringRef const &text=nullptr) = 0;
+	virtual void endTask(OovTaskStatusListenerId id) = 0;
+    };
+
 /// This is a listener that defaults to sending the output to the
 /// the stdout and stderr.
 class OovProcessStdListener:public OovProcessListener
@@ -129,9 +154,9 @@ class OovProcessBufferedStdListener:public OovProcessStdListener
 	virtual ~OovProcessBufferedStdListener()
 	    {}
 	void setProcessIdStr(OovStringRef const str);
-	virtual void processComplete();
-	virtual void onStdOut(OovStringRef const out, int len);
-	virtual void onStdErr(OovStringRef const out, int len);
+	virtual void processComplete() override;
+	virtual void onStdOut(OovStringRef const out, int len) override;
+	virtual void onStdErr(OovStringRef const out, int len) override;
 
     private:
 // This isn't available yet.
@@ -238,10 +263,13 @@ class OovBackgroundPipeProcess:public OovPipeProcess
     {
     public:
 	enum ThreadStates { TS_Idle, TS_Running, TS_Stopping };
-	OovBackgroundPipeProcess(OovProcessListener &listener);
+	/// If the listener is not set, it must be set with setListener()
+	OovBackgroundPipeProcess(OovProcessListener *listener=nullptr);
 	~OovBackgroundPipeProcess();
+	void setListener(OovProcessListener *listener)
+	    { mListener = listener; }
 	bool startProcess(OovStringRef const procPath, char const * const *argv);
-	bool isIdle()
+	bool isIdle() const
 	    { return(mThreadState == TS_Idle || mThreadState == TS_Stopping); }
 	void stopProcess();
 

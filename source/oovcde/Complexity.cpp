@@ -482,7 +482,7 @@ bool createComplexityFile(ModelData const &modelData, std::string &fn)
 			"    <McCabe>%d</McCabe>\n"
 			"    <Oovcde>%d</Oovcde>\n"
 			"  </Oper>\n";
-		    fprintf(compFile.getFp(), item, classifier->getName().c_str(),
+		    fprintf(compFile.getFp(), item, classifier->getName().makeXml().c_str(),
 			    oper->getName().makeXml().c_str(), mcCabe, oov);
 		    }
 		}

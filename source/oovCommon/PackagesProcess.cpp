@@ -19,9 +19,9 @@ class TextProcessor:public OovProcessListener
     public:
 	virtual ~TextProcessor()
 	    {}
-	virtual void onStdOut(OovStringRef const out, int len);
-	virtual void onStdErr(OovStringRef const out, int len);
-	virtual void processComplete()
+	virtual void onStdOut(OovStringRef const out, int len) override;
+	virtual void onStdErr(OovStringRef const out, int len) override;
+	virtual void processComplete() override
 	    {}
 	bool spawn(char const * const procPath, char const * const *argv);
 

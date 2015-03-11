@@ -21,7 +21,7 @@ class OptionsDialog
 	OptionsDialog();
 	virtual ~OptionsDialog()
 	    {}
-	void openedProject();
+	void updateBuildConfig();
 	void showScreen();
 	void saveScreen();
 	void setBuildConfig();
@@ -37,7 +37,6 @@ class OptionsDialog
 	std::string mCurrentBuildConfig;
 	int mDialogRunning;
 	std::vector<GtkWidget *> mMenuItems;
-	void updateBuildConfig();
 	void updateBuildMenu(OovStringVec &names);
     };
 

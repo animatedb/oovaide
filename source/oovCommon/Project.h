@@ -56,6 +56,8 @@ class Project
 
 	static void setSourceRootDirectory(OovStringRef const projDir)
 	    { sSourceRootDirectory = projDir; }
+	static OovString const &getSourceRootDirectory()
+	    { return sSourceRootDirectory; }
 
 	static OovString getComponentTypesFilePath();
 	static OovString getComponentSourceListFilePath();

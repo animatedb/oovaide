@@ -51,8 +51,8 @@ class ProjectPackagesDialog:public Dialog
 	std::string &mBaseBuildArgs;
 	std::string mLastSelectedPackage;
 	bool mAllowSelection;
-	virtual void beforeRun();
-	virtual void afterRun(bool ok);
+	virtual void beforeRun() override;
+	virtual void afterRun(bool ok) override;
 	void savePackage(const std::string &pkgName);
 	void updatePackageList();
 	void clearPackageDisplay();

@@ -32,21 +32,21 @@ static const ClassDrawOptions &getDrawOptions()
     }
 
 void ClassDiagram::initialize(Builder &builder, const ModelData &modelData,
-	ClassDiagramListener *listener)
+	ClassDiagramListener *listener, OovTaskStatusListener *taskStatusListener)
     {
     mBuilder = &builder;
     mModelData = &modelData;
     mListener = listener;
-    mClassGraph.initialize(getDiagramWidget());
+    mClassGraph.initialize(getDiagramWidget(), taskStatusListener);
     }
 
 void ClassDiagram::updateGraph()
     {
     mClassGraph.updateGraph(getModelData(), getDrawOptions());
-    updateGraphSize();
+    updateDrawingAreaSize();
     }
 
-void ClassDiagram::updateGraphSize()
+void ClassDiagram::updateDrawingAreaSize()
     {
     GraphSize size = mClassGraph.getGraphSize().getZoomed(getDesiredZoom(),
 	    getDesiredZoom());
@@ -67,10 +67,11 @@ void ClassDiagram::restart()
 void ClassDiagram::clearGraphAndAddClass(OovStringRef const className,
 	ClassGraph::eAddNodeTypes addType)
     {
-    mClassGraph.clearGraphAndAddNode(getModelData(),
-	    getDrawOptions(), className, addType, NODE_DEPTH);
+    mClassGraph.clearGraph();
+    mClassGraph.addNode(getModelData(), getDrawOptions(), className, addType,
+	    NODE_DEPTH);
     setLastSelectedClassName(className);
-    updateGraphSize();
+    drawToDrawingArea();
     }
 
 void ClassDiagram::addClass(OovStringRef const className, ClassGraph::eAddNodeTypes addType)
@@ -92,6 +93,7 @@ void ClassDiagram::drawSvgDiagram(FILE *fp)
 void ClassDiagram::drawToDrawingArea()
     {
     drawDiagram(getDrawOptions());
+    updateDrawingAreaSize();
     }
 
 ClassNode *ClassDiagram::getNode(int x, int y)
@@ -287,11 +289,9 @@ extern "C" G_MODULE_EXPORT void on_RemoveClassMenuitem_activate(GtkWidget *widge
     ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
 	{
-	gClassDiagram->getClassGraph().removeNode(*node);
-	gClassDiagram->getClassGraph().updateConnections(gClassDiagram->getModelData(),
-		    getDrawOptions());
-	gClassDiagram->drawDiagram(getDrawOptions());
-//	gClassDiagram->updateGraph();
+	gClassDiagram->getClassGraph().removeNode(*node,
+		gClassDiagram->getModelData(), getDrawOptions());
+	gClassDiagram->drawToDrawingArea();
 	}
     }
 
@@ -322,9 +322,9 @@ extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *
 	ClassPreferencesDialog dlg;
 	if(dlg.run(gClassDiagram->getBuilder(), node->getDrawOptions()))
 	    {
-	    gClassDiagram->getClassGraph().setModified();
-	    gClassDiagram->getClassGraph().updateNodeSizes(getDrawOptions());
-	    gClassDiagram->drawDiagram(getDrawOptions());
+	    gClassDiagram->getClassGraph().changeDrawOptions(
+		    gClassDiagram->getModelData(), getDrawOptions());
+	    gClassDiagram->drawToDrawingArea();
 	    }
 	}
     }
@@ -332,20 +332,17 @@ extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *
 extern "C" G_MODULE_EXPORT void on_Zoom1Menuitem_activate(GtkWidget *widget, gpointer data)
     {
     gClassDiagram->setZoom(1);
-    gClassDiagram->drawDiagram(getDrawOptions());
-    gClassDiagram->updateGraphSize();
+    gClassDiagram->drawToDrawingArea();
     }
 
 extern "C" G_MODULE_EXPORT void on_ZoomHalfMenuitem_activate(GtkWidget *widget, gpointer data)
     {
     gClassDiagram->setZoom(0.5);
-    gClassDiagram->drawDiagram(getDrawOptions());
-    gClassDiagram->updateGraphSize();
+    gClassDiagram->drawToDrawingArea();
     }
 
 extern "C" G_MODULE_EXPORT void on_ZoomQuarterMenuitem_activate(GtkWidget *widget, gpointer data)
     {
     gClassDiagram->setZoom(0.25);
-    gClassDiagram->drawDiagram(getDrawOptions());
-    gClassDiagram->updateGraphSize();
+    gClassDiagram->drawToDrawingArea();
     }

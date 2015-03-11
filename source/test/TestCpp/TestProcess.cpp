@@ -1,20 +1,31 @@
 // TestProcess.cpp
 
 #include "TestCpp.h"
+#include "../../oovCommon/OovThreadedBackgroundQueue.h"
 #include "../../oovCommon/OovThreadedWaitQueue.h"
 #include "../../oovCommon/OovProcess.h"     // For sleepMs
 // Including this causes oovbuilder to crash!
 //#include "../../oovCommon/OovProcess.h"
 
-class cProcessUnitTest:public cTestCppModule
+class WaitQueueUnitTest:public TestCppModule
     {
     public:
-        cProcessUnitTest():
-            cTestCppModule("Process")
+        WaitQueueUnitTest():
+            TestCppModule("WaitQueue")
             {}
     };
 
-static cProcessUnitTest gProcessUnitTest;
+static WaitQueueUnitTest gWaitQueueUnitTest;
+
+class BackgroundQueueUnitTest:public TestCppModule
+    {
+    public:
+        BackgroundQueueUnitTest():
+            TestCppModule("BackgroundQueue")
+            {}
+    };
+
+static BackgroundQueueUnitTest gBackgroundQueueUnitTest;
 
 
 /*
@@ -36,37 +47,99 @@ TEST_F(gProcessUnitTest, ThreadQueueSingleItemTest)
 */
 
 
-class ThreadedQueue:public ThreadedWorkWaitQueue<std::string, class ThreadedQueue>
+class ThreadedWaitQueue:public ThreadedWorkWaitQueue<int,
+    class ThreadedWaitQueue>
     {
     public:
-        bool processItem(std::string const &item)
+        ThreadedWaitQueue():
+            mItems{0}
+            {}
+        bool processItem(int item)
             {
-            sleepMs(1000);  // Give time for main thread to push items.
-            printf("%s\n", item.c_str());
+            mItems[item]++;
+            sleepMs(250);  // Give time for main thread to push items.
+            printf("wait processed %d\n", item);
             fflush(stdout);
             return true;
             }
+        int mItems[10];
     };
 
-TEST_F(gProcessUnitTest, ThreadQueueItemsTest)
+// Create two tasks and wait for both to complete.
+// Check that processItem was called twice.
+TEST_F(gWaitQueueUnitTest, WaitThreadQueueItemsTest)
     {
-    ThreadedQueue proc;
+    ThreadedWaitQueue queue;
 
-    int numThreads = ThreadedQueue::getNumHardwareThreads();
-    EXPECT_EQ(numThreads>0, true);
-    proc.setupQueue(numThreads);
-    proc.addTask("Foo1");
-    proc.addTask("Foo2");
-    proc.waitForCompletion();
+    int numThreads = ThreadedWaitQueue::getNumHardwareThreads();
+    EXPECT_EQ(numThreads > 0, true);
+    queue.setupQueue(numThreads);
+    queue.addTask(0);
+    queue.addTask(1);
+    queue.waitForCompletion();
+    EXPECT_EQ(queue.mItems[0] == 1, true);
+    EXPECT_EQ(queue.mItems[1] == 1, true);
     }
 
-TEST_F(gProcessUnitTest, ThreadQueueEmptyTest)
+// Create zero tasks and wait for completion.
+// Check that processItem was not called.
+TEST_F(gWaitQueueUnitTest, WaitThreadQueueEmptyTest)
     {
-    ThreadedQueue proc;
+    ThreadedWaitQueue queue;
 
-    int numThreads = ThreadedQueue::getNumHardwareThreads();
-    EXPECT_EQ(numThreads>0, true);
-    proc.setupQueue(numThreads);
-    proc.waitForCompletion();
+    int numThreads = ThreadedWaitQueue::getNumHardwareThreads();
+    EXPECT_EQ(numThreads > 0, true);
+    queue.setupQueue(numThreads);
+    queue.waitForCompletion();
+    EXPECT_EQ(queue.mItems[0] == 0, true);
     }
 
+
+class ThreadedBackgroundQueue:public ThreadedWorkBackgroundQueue<
+    class ThreadedBackgroundQueue, int>
+    {
+    public:
+        ThreadedBackgroundQueue():
+            mItems{0}
+            {}
+        void processItem(int item)
+            {
+            mItems[item]++;
+            sleepMs(250);  // Give time for main thread to push items.
+            printf("back processed %d\n", item);
+            fflush(stdout);
+            }
+        int mItems[10];
+    };
+
+// Create two tasks and wait for both to complete.
+// Check that processItem was called twice.
+TEST_F(gBackgroundQueueUnitTest, BackgroundThreadQueueItemsTest)
+    {
+    ThreadedBackgroundQueue queue;
+
+    queue.addTask(0);
+    EXPECT_EQ(queue.isQueueBusy(), true);
+    queue.addTask(1);
+    sleepMs(700);   // Wait for both tasks to complete.
+    EXPECT_EQ(queue.isQueueBusy(), false);
+    queue.stopAndWaitForCompletion();
+    EXPECT_EQ(queue.mItems[0] == 1, true);
+    EXPECT_EQ(queue.mItems[1] == 1, true);
+    EXPECT_EQ(queue.isQueueBusy(), false);
+    }
+
+// Create two tasks and stop early.
+// Check that processItem was called once.
+TEST_F(gBackgroundQueueUnitTest, BackgroundThreadQueueStopTest)
+    {
+    ThreadedBackgroundQueue queue;
+
+    queue.addTask(0);
+    queue.addTask(1);
+    sleepMs(100);   // Wait for first task to get started.
+    queue.stopAndWaitForCompletion();
+    sleepMs(700);   // Wait for both tasks to complete.
+    EXPECT_EQ(queue.isQueueBusy(), false);
+    EXPECT_EQ(queue.mItems[0] + queue.mItems[1] == 1, true);
+    }

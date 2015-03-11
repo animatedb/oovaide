@@ -13,6 +13,7 @@
 #include "Gui.h"
 #include <gtk/gtk.h>	// For GtkWidget and cairo_t
 #include <map>
+#include "OovThreadedBackgroundQueue.h"
 
 struct ClassNodeDrawOptions
     {
@@ -133,17 +134,31 @@ struct ClassConnectItem
     Visibility mAccess;
     };
 
+class ClassGraphBackgroundItem
+    {
+    public:
+	ClassGraphBackgroundItem(const ModelData *modelData=nullptr,
+	    const ClassDrawOptions *options=nullptr):
+	    mModelData(modelData), mOptions(options)
+	    {}
+    const ModelData *mModelData;
+    const ClassDrawOptions *mOptions;
+    };
+
 /// This defines a class graph that holds class nodes and connections between
 /// the class nodes.
-class ClassGraph
+class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgroundItem>
     {
     public:
 	ClassGraph():
-	    mDrawingArea(NULL), mModified(false)
+	    mDrawingArea(nullptr), mModified(false), mBackgroundDialogLevel(0),
+	    mTaskStatusListener(nullptr)
 	    {}
-	void initialize(GtkWidget *drawingArea);
-	void addNode(const ClassNode &node);
-	void removeNode(const ClassNode &node);
+	~ClassGraph()
+	    {
+            stopAndWaitForCompletion();
+	    }
+	void initialize(GtkWidget *drawingArea, OovTaskStatusListener *taskStatusListener);
 	enum eAddNodeTypes
 	    {
 	    AN_Superclass=0x01, AN_Subclass=0x02,
@@ -154,21 +169,24 @@ class ClassGraph
 	    AN_AllStandard=AN_Superclass | AN_Subclass | AN_MemberChildren | AN_MemberUsers,
 	    AN_ClassesAndChildren=AN_Superclass | AN_Subclass | AN_MemberChildren,
 	};
+
+	/// This relayouts the graph nodes.
+	/// This is slow since it updates genes and repositions nodes.
+	/// Updates node sizes and node connections in the graph.
+	/// Initializes genes from the model.
+	/// The nodes generally must have been added with the same modelData.
+	GraphSize updateGraph(const ModelData &modelData, const ClassDrawOptions &options);
+
 	void clearGraph()
 	    {
 	    mNodes.clear();
 	    mConnectMap.clear();
 	    }
-	/// Clears the graph and adds nodes. See the addRelatedNodes function for more
-	/// description.
-	void clearGraphAndAddNode(const ModelData &model, const ClassDrawOptions &options,
-		char const * const className, eAddNodeTypes addType, int nodeDepth)
-	    {
-	    addNode(model, options, className, addType, nodeDepth,  true);
-	    }
+
+	/// See the addRelatedNodes function for more description.
 	void addNode(const ModelData &model, const ClassDrawOptions &options,
-		char const * const className, eAddNodeTypes addType, int nodeDepth,
-		bool clear=false);
+		char const * const className, eAddNodeTypes addType, int nodeDepth);
+
 	/// Adds nodes/classes/types to a graph.
 	/// @param model Used to look up related classes.
 	/// @param type The type/class to be added to the graph.
@@ -178,13 +196,21 @@ class ClassGraph
 		const ClassNodeDrawOptions &options, eAddNodeTypes addType=AN_All,
 		int maxDepth=2);
 
-	/// Initializes genes from the model.
-	/// Updates node sizes and node connections in the graph.
-	/// The nodes generally must have been added with the same modelData.
-	GraphSize updateGraph(const ModelData &modelData, const ClassDrawOptions &options);
-	void updateNodeSizes(const ClassDrawOptions &options);
-	/// Update connections between nodes.
-	void updateConnections(const ModelData &modelData, const ClassRelationDrawOptions &options);
+	void removeNode(const ClassNode &node, const ModelData &modelData,
+		const ClassDrawOptions &options)
+	    {
+	    removeNode(node);
+	    updateConnections(modelData, options);
+	    }
+
+	/// Changing options doesn't change number of nodes, so only the size
+	/// of nodes needs to be updated.
+	void changeDrawOptions(const ModelData &modelData, const ClassDrawOptions &options)
+	    {
+	    setModified();
+	    updateNodeSizes(options);
+	    }
+
 	GraphSize getNodeSizeWithPadding(int nodeIndex) const;
 	GraphSize getGraphSize() const;
 	ClassNode *getNode(int x, int y);
@@ -206,6 +232,10 @@ class ClassGraph
 	std::map<nodePair_t, ClassConnectItem> getConnections() const
 	    { return mConnectMap; }
 
+	// Called from ThreadedWorkBackgroundQueue
+	void processItem(ClassGraphBackgroundItem const &item)
+	    { updateGenes(*item.mModelData, *item.mOptions); }
+
     private:
 	/// @todo - this should be a set?
 	// This may have some duplicate relations for the different types
@@ -216,12 +246,20 @@ class ClassGraph
 	GraphSize mPad;
 	GtkWidget *mDrawingArea;
 	bool mModified;
-	RecursiveBackgroundLevel mBackgroundDialogLevel;
+	int mBackgroundDialogLevel;
+	OovTaskStatusListener *mTaskStatusListener;
+
+	void addNode(const ClassNode &node);
+	void removeNode(const ClassNode &node);
 
 	/// This updates quality information, runs the genetic algorithm for
 	/// placing the nodes, and then draws them.
 	void updateGenes(const ModelData &modelData,
 		const ClassDrawOptions &options);
+
+	/// Update connections between nodes.
+	void updateConnections(const ModelData &modelData, const ClassRelationDrawOptions &options);
+	void updateNodeSizes(const ClassDrawOptions &options);
 
 	void insertConnection(int node1, int node2,
 		const ClassConnectItem &connectItem);

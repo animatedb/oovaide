@@ -708,8 +708,8 @@ static gpointer BackgroundThreadFunc(gpointer data)
     }
 #endif
 
-OovBackgroundPipeProcess::OovBackgroundPipeProcess(OovProcessListener &listener):
-	mListener(&listener),
+OovBackgroundPipeProcess::OovBackgroundPipeProcess(OovProcessListener *listener):
+	mListener(listener),
 #if(USE_STD_THREAD)
 #else
             mThread(nullptr),
@@ -789,7 +789,10 @@ void OovBackgroundPipeProcess::privateBackground()
 #if(DEBUG_PROC)
 	sDbgFile.printflush("bkg-background - listening\n");
 #endif
-	childProcessListen(*mListener, mChildProcessExitCode);
+	if(mListener)
+	    {
+	    childProcessListen(*mListener, mChildProcessExitCode);
+	    }
 	childProcessClose();
 #if(DEBUG_PROC)
 	sDbgFile.printflush("bkg-background - T_Stopping\n");

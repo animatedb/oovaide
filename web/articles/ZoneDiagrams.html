@@ -18,9 +18,9 @@ Traditional class diagrams can show in the tens of classes, but often times
 these diagrams can be too difficult to understand relationships quickly.
 <p />
 A different way of viewing these classes is to use a circle diagram where
-all of the classes are a single point on the circle. The dependencies
-are displayed as lines between the classes.  The classes are grouped by
-directories.
+all of the classes are a single point on the circle. The classes are grouped
+by directories.  The dependencies are displayed as lines between the classes.
+The lines are colored by the provider directory.
 <br />
 <embed src="ZoneImages/ZoneOovcdeClasses.svg" type="image/svg+xml">
 
@@ -44,7 +44,7 @@ classes.  I have never looked at the source for LLVM, so let's see what we can l
 Viewing just the directory relations is more manageable. It is still messy,
 but now we start to get a view of the whole project.
 <br />
-<embed src="ZoneLlvmComponents.svg" type="image/svg+xml">
+<embed src="ZoneImages/ZoneLlvmComponents.svg" type="image/svg+xml">
 <br />
 Since this project has a directory structure that looks like this:
 <pre>
@@ -56,7 +56,7 @@ Since this project has a directory structure that looks like this:
         AST
 </pre>
 Lets group this so that the include and lib directories are mapped together,
-and filter out examples, tests, and tools.
+and filter out examples, tests, tools, and utilities.
 <br />
 <embed src="ZoneImages/ZoneLlvmIncLib.svg" type="image/svg+xml">
 <br />

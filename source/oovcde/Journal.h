@@ -35,6 +35,7 @@ class JournalRecord
 	    {}
 	virtual ~JournalRecord()
 	    {}
+	virtual char const *getRecordTypeName() const = 0;
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) = 0;
 	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) = 0;
 	virtual void drawingAreaDrawEvent() = 0;
@@ -61,27 +62,30 @@ class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListene
     {
     public:
 	JournalRecordClassDiagram(Builder &builder, const ModelData &model,
-		JournalListener &listener):
-	    JournalRecord(RT_Class, listener)
+		JournalListener &journalListener,
+		OovTaskStatusListener &taskStatusListener):
+	    JournalRecord(RT_Class, journalListener)
 	    {
-	    mClassDiagram.initialize(builder, model, this);
+	    mClassDiagram.initialize(builder, model, this, &taskStatusListener);
 	    }
 	ClassDiagram mClassDiagram;
 
     private:
-	virtual void gotoClass(OovStringRef const className)
+	virtual char const *getRecordTypeName() const override
+	    { return "Class"; }
+	virtual void gotoClass(OovStringRef const className) override
 	    { displayClass(className); }
-	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
+	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
 	    { mClassDiagram.buttonPressEvent(event); }
-	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event)
+	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override
 	    { mClassDiagram.buttonReleaseEvent(event); }
-	virtual void drawingAreaDrawEvent()
+	virtual void drawingAreaDrawEvent() override
 	    { mClassDiagram.drawToDrawingArea(); }
-	virtual void cppArgOptionsChangedUpdateDrawings()
+	virtual void cppArgOptionsChangedUpdateDrawings() override
 	    { mClassDiagram.updateGraph(); }
-	virtual void saveFile(FILE *fp)
+	virtual void saveFile(FILE *fp) override
 	    { mClassDiagram.drawSvgDiagram(fp); }
-	virtual bool isModified() const
+	virtual bool isModified() const override
 	    { return mClassDiagram.getClassGraph().isModified(); }
     };
 
@@ -97,19 +101,21 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
 	OperationDiagram mOperationDiagram;
 
     private:
-	virtual void gotoClass(OovStringRef const className)
+	virtual char const *getRecordTypeName() const override
+	    { return "Seq"; }
+	virtual void gotoClass(OovStringRef const className) override
 	    { displayClass(className); }
-	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
+	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
 	    { mOperationDiagram.buttonPressEvent(event); }
-	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event)
+	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override
 	    { mOperationDiagram.buttonReleaseEvent(event); }
-	virtual void drawingAreaDrawEvent()
+	virtual void drawingAreaDrawEvent() override
 	    { mOperationDiagram.drawToDrawingArea(); }
-	virtual void cppArgOptionsChangedUpdateDrawings()
+	virtual void cppArgOptionsChangedUpdateDrawings() override
 	    {}
-	virtual void saveFile(FILE *fp)
+	virtual void saveFile(FILE *fp) override
 	    { mOperationDiagram.drawSvgDiagram(fp); }
-	virtual bool isModified() const
+	virtual bool isModified() const override
 	    { return mOperationDiagram.getOpGraph().isModified(); }
     };
 
@@ -124,20 +130,22 @@ class JournalRecordComponentDiagram:public JournalRecord
 	ComponentDiagram mComponentDiagram;
 
     private:
-	virtual void gotoClass(OovStringRef const className)
-	    { displayClass(className); }
-	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
+	virtual char const *getRecordTypeName() const override
+	    { return "Comp"; }
+	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
 	    { mComponentDiagram.buttonPressEvent(event); }
-	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event)
+	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override
 	    { mComponentDiagram.buttonReleaseEvent(event); }
-	virtual void drawingAreaDrawEvent()
+	virtual void drawingAreaDrawEvent() override
 	    { mComponentDiagram.drawToDrawingArea(); }
-	virtual void cppArgOptionsChangedUpdateDrawings()
+	virtual void cppArgOptionsChangedUpdateDrawings() override
 	    {}
-	virtual void saveFile(FILE *fp)
+	virtual void saveFile(FILE *fp) override
 	    { mComponentDiagram.drawSvgDiagram(fp); }
-	virtual bool isModified() const
-	    { return mComponentDiagram.getGraph().isModified(); }
+	// Indicate it is always modified so the single diagram is kept around.
+	virtual bool isModified() const override
+	    { return true; }
+//	    { return mComponentDiagram.getGraph().isModified(); }
     };
 
 class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
@@ -152,20 +160,24 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 	ZoneDiagram mZoneDiagram;
 
     private:
-	virtual void gotoClass(OovStringRef const className)
+	virtual char const *getRecordTypeName() const override
+	    { return "Zone"; }
+	virtual void gotoClass(OovStringRef const className) override
 	    { displayClass(className); }
-	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event)
+	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
 	    { mZoneDiagram.graphButtonPressEvent(event); }
-	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event)
+	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override
 	    { mZoneDiagram.graphButtonReleaseEvent(event); }
-	virtual void drawingAreaDrawEvent()
+	virtual void drawingAreaDrawEvent() override
 	    { mZoneDiagram.drawToDrawingArea(); }
-	virtual void cppArgOptionsChangedUpdateDrawings()
+	virtual void cppArgOptionsChangedUpdateDrawings() override
 	    {}
-	virtual void saveFile(FILE *fp)
+	virtual void saveFile(FILE *fp) override
 	    { mZoneDiagram.drawSvgDiagram(fp); }
-	virtual bool isModified() const
-	    { return mZoneDiagram.getZoneGraph().isModified(); }
+	// Indicate it is always modified so the single diagram is kept around.
+	virtual bool isModified() const override
+	    { return true; }
+//	    { return mZoneDiagram.getZoneGraph().isModified(); }
     };
 
 /// This class provides a non-volatile history of diagrams.
@@ -176,8 +188,21 @@ class Journal
 	virtual ~Journal()
 	    {}
 	static Journal *getJournal();
-	void init(Builder &builder, const ModelData &model, JournalListener &listener)
-	    { mBuilder = &builder; mModel = &model; mListener = &listener; }
+	void init(Builder &builder, const ModelData &model,
+		JournalListener &journalListener,
+		OovTaskStatusListener &taskStatusListener)
+	    {
+	    mBuilder = &builder;
+	    mModel = &model;
+	    mJournalListener = &journalListener;
+	    mTaskStatusListener = &taskStatusListener;
+	    }
+	void stopAndWaitForBackgroundComplete()
+	    {
+	    /// This deletes all records, which should clean up all background
+	    /// threads as long as the destructors are correct.
+	    clear();
+	    }
 	void clear();
 	void displayClass(OovStringRef const className);
 	void addClass(OovStringRef const className);
@@ -217,7 +242,8 @@ class Journal
 	int mCurrentRecord;
 	Builder *mBuilder;
 	const ModelData *mModel;
-	JournalListener *mListener;
+	JournalListener *mJournalListener;
+	OovTaskStatusListener *mTaskStatusListener;
 	const JournalRecord *getCurrentRecord() const
 	    { return (mRecords.size() > 0) ? mRecords[mRecords.size()-1] : NULL; }
 	void addRecord(JournalRecord *record,	OovStringRef const name);

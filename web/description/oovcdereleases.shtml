@@ -16,14 +16,22 @@
 <h2>OOVCDE Release Details</h2>
 <hr style="width: 100%; height: 3px;">
 
-Created: 6-8-2009
-
 <p>
 <img src="OovLogo.png" style="height: 16mm; width: 30mm;">
 
 </p><h2>Releases</h2>
 The following lists releases in reverse chronological order.<br>
 <br>
+
+<h2>2015-3-2</h2>
+This version contains:
+<ul>
+  <li>CLang 3.6 for improved MSVC support</li>
+  <li>Added color to zone diagrams</li>
+  <li>Fixed journal record selection</li>
+  <li>Improved duplicate code detection</li>
+  <li>Improved background processing - cancel of loading analysis files</li>
+</ul>
 
 <h2>2015-3</h2>
 This version contains:

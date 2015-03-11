@@ -167,7 +167,7 @@ class FindFiles:public dirRecurser
 	    { return mNumMatches; }
 
     private:
-	virtual bool processFile(OovStringRef const filePath);
+	virtual bool processFile(OovStringRef const filePath) override;
 
     private:
 	std::string mSrchStr;

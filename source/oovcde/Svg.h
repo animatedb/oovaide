@@ -17,18 +17,18 @@ class SvgDrawer:public DiagramDrawer
 	SvgDrawer(FILE *fp, cairo_t *c):
 	    mFp(fp), mFontSize(10.0), cr(c)
 	    {}
-	virtual void setDiagramSize(GraphSize size);
-	virtual void setFontSize(double size);
-	virtual void drawRect(const GraphRect &rect);
+	virtual void setDiagramSize(GraphSize size) override;
+	virtual void setFontSize(double size) override;
+	virtual void drawRect(const GraphRect &rect) override;
 	virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
-		bool dashed=false);
-	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor);
-	virtual void drawPoly(const OovPolygon &poly, Color fillColor);
-	virtual void groupShapes(bool start, Color fillColor);
-	virtual void groupText(bool start);
-	virtual void drawText(const GraphPoint &p, OovStringRef const text);
-	virtual float getTextExtentWidth(OovStringRef const name) const;
-	virtual float getTextExtentHeight(OovStringRef const name) const;
+		bool dashed=false) override;
+	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor) override;
+	virtual void drawPoly(const OovPolygon &poly, Color fillColor) override;
+	virtual void groupShapes(bool start, Color lineColor, Color fillColor) override;
+	virtual void groupText(bool start) override;
+	virtual void drawText(const GraphPoint &p, OovStringRef const text) override;
+	virtual float getTextExtentWidth(OovStringRef const name) const override;
+	virtual float getTextExtentHeight(OovStringRef const name) const override;
     private:
 	FILE *mFp;
 	double mFontSize;

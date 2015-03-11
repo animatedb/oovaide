@@ -55,9 +55,10 @@ class Dialog
 	// Glade is set to -5 (GTK_RESPONSE_OK), and cancel is set to
 	// -6 (GTK_RESPONSE_CANCEL).
 	//
-	// Use gtk_widget_hide_on_delete to prevent the close button from
-	// destroying the dialog. In glade, this is set on the GtkDialog
-	// top level window under the GtkWidget signals.
+	// In glade, set the callback for the dialog's GtkWidget "delete-event" to
+	// gtk_widget_hide_on_delete for the title bar close button to work.
+	// This prevents the close button from destroying the dialog. In glade,
+	// this is set on the GtkDialog top level window under the GtkWidget signals.
 	bool run(bool hideDialogAfterButtonPress = false);
 	virtual void beforeRun()
 	    {}
@@ -118,6 +119,8 @@ namespace Gui
 	    { gtk_combo_box_set_active(GTK_COMBO_BOX(cb), index); }
 
 	inline void setEnabled(GtkButton *w, bool enabled)
+	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
+	inline void setEnabled(GtkEntry *w, bool enabled)
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
 	inline void setEnabled(GtkLabel *w, bool enabled)
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
@@ -243,7 +246,13 @@ class GuiTree:public GuiTreeView
 	/// delimiter passed in.
 	OovString const getSelected(char delimiter) const;
 	void clearSelection()
-	    { gtk_tree_selection_unselect_all(gtk_tree_view_get_selection(mTreeView)); }
+	    {
+	    GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
+	    if(sel)
+		{
+		gtk_tree_selection_unselect_all(sel);
+		}
+	    }
 	void setSelected(OovStringVec const &names);
 	void setSelected(OovString const &name, char delimeter);
 
@@ -290,60 +299,35 @@ class BackgroundDialog:public Dialog
 	~BackgroundDialog();
 	void setParentWindow(GtkWindow *parent)
 	    { mParent = parent; }
-	void setDialogText(char const *str);
-	void setProgressIterations(int totalIters);
+
+	/// This does not call GUI functions, can be on any thread
+	/// This resets the mKeepGoing flag and start time
+	void startTask(char const *str, int totalIters);
+
 	// Return is false when a cancel is performed.
-	bool updateProgressIteration(int currentIter);
-	// Set from signal
+	// This is a GUI function, must be on the GUI thread
+	/// @todo allowRecurse should be removed eventually.
+	bool updateProgressIteration(int currentIter, OovStringRef text,
+		bool allowRecurse = true);
+
+	// This is only needed if the destructor is not used to close the dialog.
+	// This is a GUI function, must be on the GUI thread
+	void endTask()
+	    { showDialog(false); }
+
+	// Public since this is called from signal
 	void cancelButtonPressed()
 	    { mKeepGoing = false; }
 
     private:
+	std::string mDialogText;
 	Builder *mBuilder;
 	GtkWindow *mParent;
 	bool mKeepGoing;
 	int mTotalIters;
 	time_t mStartTime;
+	time_t mProgressTime;
 	void showDialog(bool show);
-    };
-
-class RecursiveBackgroundLevel
-    {
-    public:
-	RecursiveBackgroundLevel():
-	    mLevel(0)
-	    {}
-	int mLevel;
-    };
-
-class RecursiveBackgroundDialog:public BackgroundDialog
-    {
-    public:
-	RecursiveBackgroundDialog(RecursiveBackgroundLevel &level):
-	    mLevel(level)
-	    { ++mLevel.mLevel; }
-	~RecursiveBackgroundDialog()
-	    { --mLevel.mLevel; }
-	void setDialogText(char const *str)
-	    {
-	    if(mLevel.mLevel == 1)
-		BackgroundDialog::setDialogText(str);
-	    }
-	void setProgressIterations(int totalIters)
-	    {
-	    if(mLevel.mLevel == 1)
-		BackgroundDialog::setProgressIterations(totalIters);
-	    }
-	bool updateProgressIteration(int currentIter)
-	    {
-	    if(mLevel.mLevel == 1)
-		return BackgroundDialog::updateProgressIteration(currentIter);
-	    else
-		return true;
-	    }
-
-    private:
-	RecursiveBackgroundLevel &mLevel;
     };
 
 #endif /* GUI_H_ */

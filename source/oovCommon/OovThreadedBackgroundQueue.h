@@ -1,10 +1,10 @@
-// Provides a queue so a single producer can place tasks into a
-// queue and processed by single consumer thread.
+// Provides a queue so a single producer can place tasks into a queue and
+// processed by single consumer background thread.  Background thread
+// remains around and waits for a signal to process the queue, but can be
+// stopped and joined by the client at any time.
 //
 // On Windows, this module uses MinGW-W64 because it fully supports
 // std::thread and atomic functions. MinGW does not at this time. (2014)
-// If normal MinGW is used, the interface stays the same, but the queue
-// will only work as if it is single threaded.
 //  \copyright 2014 DCBlaha.  Distributed under the GPL.
 
 #ifndef OOV_THREADED_BACKGROUND_QUEUE
@@ -14,12 +14,13 @@
 // http://en.cppreference.com/w/cpp/thread/condition_variable
 // http://www.justsoftwaresolutions.co.uk/threading/
 //        implementing-a-thread-safe-queue-using-condition-variables.html
+// https://eugenedruy.wordpress.com/2009/07/19/refactoring-template-bloat/
 #include <list>
-#include <vector>
 #include <thread>
 #include <mutex>
+#include <atomic>
 #include <condition_variable>
-#include "OovProcess.h"		/// @todo - for sleepMs
+#include "OovProcess.h"		/// @todo - for sleepMs, and continueListener
 
 
 #define DEBUG_PROC_QUEUE 0
@@ -33,23 +34,8 @@ void logProc(char const *str, const void *ptr, int val=0);
 #endif
 
 
-// This is not defined on Windows with some versions of MinGW because things
-// like std::condition_variable are not defined. If USE_THREADS is not defined,
-// then revert to single threading, but provide the same interface.
-#ifdef __linux__
-#define USE_THREADS 1
-#else
-#if defined(_GLIBCXX_HAS_GTHREADS)
-#define USE_THREADS 1
-#else
-#define USE_THREADS 0
-#endif
-#endif
-
-#if(USE_THREADS)
-
-/// This class reduces template code bloat. See  OovThreadSafeQueue for
-/// description.
+/// This class reduces template code bloat. See  OovThreadedBackgroundQueue for
+/// interface description.  See top of file for reference for reducing bloat.
 class OovThreadedBackgroundQueuePrivate
     {
     public:
@@ -58,7 +44,7 @@ class OovThreadedBackgroundQueuePrivate
             {}
         virtual ~OovThreadedBackgroundQueuePrivate()
             {}
-        void initThreadSafeQueuePrivate()
+        void clearQuitPoppingPrivate()
             { mQuitPopping = false; }
         void pushPrivate(void const *item);
         bool waitPopPrivate(void *item);
@@ -66,14 +52,14 @@ class OovThreadedBackgroundQueuePrivate
         bool isEmptyPrivate();
 
     private:
-        // Indicates to quit waiting for pops, nothing more will be put on
-        // the queue, and the queue will be cleared.
-        bool mQuitPopping;
+        /// Indicates to quit waiting for pops, nothing more will be put on
+        /// the queue, and the queue will be cleared.
+        std::atomic_bool mQuitPopping;
         std::mutex mProcessQueueMutex;
-        // A signal that the provider pushed something onto the queue, or
-        // the provider wants the consumers to check the queue.
+        /// A signal that the provider pushed something onto the queue, or
+        /// the provider wants the consumers to check the queue.
         std::condition_variable  mProviderPushedSignal;
-        // A signal that a consumer popped everything from the queue.
+        /// A signal that a consumer popped everything from the queue.
         std::condition_variable  mConsumerPoppedQueueEmptySignal;
 
         virtual bool isQueueEmpty() const = 0;
@@ -93,34 +79,36 @@ template<typename T_ThreadQueueItem>
         virtual ~OovThreadedBackgroundQueue()
             {}
 
-        void initThreadSafeQueue()
-            { initThreadSafeQueuePrivate(); }
+        void clearQuitPopping()
+            { clearQuitPoppingPrivate(); }
 
-        // Called by the provider thread.
-        // @param item Item that will be pushed onto the queue.
+        /// Called by the provider thread.
+        /// @param item Item that will be pushed onto the queue.
         void push(T_ThreadQueueItem const &item)
-            { pushPrivate(&item); }
+            {
+            pushPrivate(&item);
+            }
 
-        // Called by the consumer threads.
-        // Waits until something is read from the queue or until quitPops
-        // is called.
-        // @param item Item to fill from the queue.
-        // The return indicates whether a queue item was read.
+        /// Called by the consumer thread.
+        /// Waits until there is an item on the queue or until quitPops is
+        /// called.
+        /// @param item Item to fill from the queue.
+        /// The return indicates whether a queue item was read.
         bool waitPop(T_ThreadQueueItem &item)
             { return waitPopPrivate(&item); }
 
-        // Called by the provider thread.
-        // This will clear all queue items and will not process
-        // items that are still in the queue.
-        // This will cause the waitPop functions to quit and return false
-        // if there are no more queue entries.
+        /// Called by the provider thread.
+        /// This will clear all queue items and will not process
+        /// items that are still in the queue.
+        /// This will cause the waitPop functions to quit and return false
+        /// if there are no more queue entries.
         void quitPops()
             { quitPopsPrivate(); }
 
         bool isEmpty()
             { return isEmptyPrivate(); }
 
-        /// @todo - this is dirty.
+        /// @todo - this works, but should be a signal?
         void workCompleted()
             {
             mGotItemFromQueue = false;
@@ -134,7 +122,7 @@ template<typename T_ThreadQueueItem>
 
     private:
         std::list<T_ThreadQueueItem> mQueue;
-        bool mGotItemFromQueue;
+        std::atomic_bool mGotItemFromQueue;
 
         virtual bool isQueueEmpty() const override
             { return mQueue.empty(); }
@@ -152,106 +140,112 @@ template<typename T_ThreadQueueItem>
             mQueue.clear();
             }
     };
-#endif
 
 /// This uses a producer consumer model where a single producer places items in
-/// the queue and multiple consumer threads remove and process the queue.
-/// Also only stores so many items so that queue doesn't get too
-/// large/take too much memory.
+/// the queue and a single consumer thread removes and processes the queue.
 ///
 /// This is meant to be used by a single client thread.
 /// The processItem function can be overridden for the work that will be
-/// processed by the worker/consumer threads.
+/// processed by the worker/consumer thread.
 ///
-/// The threads are started by setup(), and are cleaned up by this class during
-/// waitForCompletion().
+/// The thread is started when a task is added to the queue, and is cleaned up
+/// by this class during stopAndWaitForCompletion().
 ///
 /// @param T_ThreadQueueItem The type of item that will be in the queue.
-/// @param T_ProcessItem A type derived from ThreadedWorkQueue that contains a
-/// 	function that returns true to continue processing:
-/// 	bool processItem(T_ThreadQueueItem const &item)
+/// @param T_ProcessItem A type derived from OovThreadedBackgroundQueue that contains a
+/// 	function to process items:
+/// 	void processItem(T_ThreadQueueItem const &item)
 ///
 /// A usage example:
-/// class ThreadedQueue:public ThreadedWorkQueue<class ThreadedQueue, std::string>
+/// class ThreadedQueue:public OovThreadedBackgroundQueue<class ThreadedQueue, std::string>
 ///    {
 ///    public:
 ///        // The function that will be called by the worker threads.
-///        bool processItem(std::string const &item) {}
+///        void processItem(std::string const &item) {}
 ///    };
 template<typename T_ProcessClass, typename T_ThreadQueueItem>
-    class ThreadedWorkBackgroundQueue
+    class ThreadedWorkBackgroundQueue: public OovTaskContinueListener
     {
     public:
         ThreadedWorkBackgroundQueue(/*int numThreads = 1*/)
             {
 	    LOG_PROC("ThreadedWorkBackgroundQueue", this);
-            mTaskQueue.initThreadSafeQueue();
             }
-        // The worker thread is joined at destruction.
+        /// WARNING - The worker thread is NOT joined at destruction.  This is
+        /// because the derived class contains the callback override, and it
+        /// must be available. The derived function must call
+        /// stopAndWaitForCompletion().
         virtual ~ThreadedWorkBackgroundQueue()
             {
 	    LOG_PROC("~ThreadedWorkBackgroundQueue", this);
-//            waitForCompletion();
             }
 
-        // Starts the worker/consumer threads.
-        // @param numThreads The number of threads to use to process the queue.
-        // This will block if the worker threads are busy processing the queue.
-        // @param item The item to push onto the queue to process.
+        /// Starts the worker/consumer thread.
+        /// This will block if the worker thread is busy processing the queue.
+        /// @param item The item to push onto the queue to process.
         void addTask(T_ThreadQueueItem const &item)
             {
-#if(USE_THREADS)
+	    LOG_PROC("addTask", this);
+	    mContinueProcessingItem = true;
+	    mTaskQueue.clearQuitPopping();
             if(!mWorkerThread.joinable())
         	{
         	mWorkerThread = std::thread(workerThreadProc, this);
         	}
             mTaskQueue.push(item);
-#else
-            static_cast<T_ProcessClass*>(ptr)->processItem(item);
-#endif
             }
 
-        // Wait for the thread to complete work on the queued items.
-        void waitForCompletion()
+        /// Stop processing background items and wait for any that are being
+        /// processed.
+        void stopAndWaitForCompletion()
             {
-#if(USE_THREADS)
-	    LOG_PROC("waitForCompletion", this);
+	    LOG_PROC("stopAndWaitForCompletion", this);
+	    mContinueProcessingItem = false;
 	    mTaskQueue.quitPops();
 	    while(isQueueBusy())
 		{
 		sleepMs(100);		/// @todo - cleanup
 		}
-            LOG_PROC("waitForCompletion - this", this);
-            LOG_PROC_INT("waitForCompletion - work", this, mTaskQueue.isWorkingOnItem());
-            LOG_PROC_INT("waitForCompletion - queue", this, mTaskQueue.isEmpty());
+            LOG_PROC("stopAndWaitForCompletion - this", this);
+            LOG_PROC_INT("stopAndWaitForCompletion - work", this, mTaskQueue.isWorkingOnItem());
+            LOG_PROC_INT("stopAndWaitForCompletion - queue", this, mTaskQueue.isEmpty());
             if(mWorkerThread.joinable())
         	{
         	mWorkerThread.join();
         	}
-#endif
             }
 
-//        bool isQueueEmpty()
-//            { return mTaskQueue.isEmpty(); }
-        // Is there something in the queue, or is there some processing of the queue
+        /// Is there something in the queue, or is there some processing of the queue
         bool isQueueBusy()
             { return !mTaskQueue.isEmpty() || mTaskQueue.isWorkingOnItem(); }
 
-#if(USE_THREADS)
+        /// This can be called from processItem to see if the process item should be aborted.
+        virtual bool continueProcessingItem() const override
+            {
+            LOG_PROC_INT("continue proc", this, mContinueProcessingItem);
+            return mContinueProcessingItem;
+            }
+
     private:
         OovThreadedBackgroundQueue<T_ThreadQueueItem> mTaskQueue;
         std::thread mWorkerThread;
+	std::atomic_bool mContinueProcessingItem;
         static void workerThreadProc(
         	ThreadedWorkBackgroundQueue<T_ProcessClass, T_ThreadQueueItem> *workQueue)
             {
+            LOG_PROC("start workerThreadProc", nullptr);
             T_ThreadQueueItem item;
             while(workQueue->mTaskQueue.waitPop(item))
                 {
+                LOG_PROC_INT("start processItem", static_cast<T_ProcessClass*>(workQueue),
+                	workQueue->mTaskQueue.isWorkingOnItem());
                 static_cast<T_ProcessClass*>(workQueue)->processItem(item);
+                LOG_PROC_INT("done processItem", static_cast<T_ProcessClass*>(workQueue),
+                	workQueue->mTaskQueue.isWorkingOnItem());
                 workQueue->mTaskQueue.workCompleted();
                 }
+            LOG_PROC("done workerThreadProc", nullptr);
             }
-#endif
     };
 
 #endif

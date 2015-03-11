@@ -85,7 +85,7 @@ void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
 	    pointsStr.c_str(), fillColor.getRGB());
     }
 
-void SvgDrawer::groupShapes(bool start, Color fillColor)
+void SvgDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
     {
     if(start)
 	{
@@ -93,7 +93,8 @@ void SvgDrawer::groupShapes(bool start, Color fillColor)
 	char temp[40];
 	snprintf(temp, sizeof(temp), "#%06x", fillColor.getRGB());
 	addArg(argStr, "fill", temp);
-	addArg(argStr, "stroke", "rgb(0,0,0)");
+	snprintf(temp, sizeof(temp), "#%06x", lineColor.getRGB());
+	addArg(argStr, "stroke", temp);
 	addArg(argStr, "style", "stroke-width:1");
 	fprintf(mFp, "<g %s>\n", argStr.c_str());
 	}
@@ -105,8 +106,9 @@ void SvgDrawer::groupShapes(bool start, Color fillColor)
 
 void SvgDrawer::groupText(bool start)
     {
+	// stroke none means no outline, only fill
     if(start)
-	fprintf(mFp, "<g font-size=\"%f\">\n", mFontSize);
+	fprintf(mFp, "<g font-size=\"%f\" stroke=\"none\">\n", mFontSize);
     else
 	fprintf(mFp, "</g>\n");
     }

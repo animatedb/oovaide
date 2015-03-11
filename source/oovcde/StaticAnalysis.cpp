@@ -126,7 +126,7 @@ bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
 			"    <UseCount>%d</UseCount>\n"
 			"  </Attr>\n";
 		    fprintf(useFile.getFp(), item,
-			classifier->getName().c_str(), attr->getName().c_str(), usageCount);
+			classifier->getName().makeXml().c_str(), attr->getName().c_str(), usageCount);
 		    }
 		}
 	    }

@@ -11,6 +11,7 @@
 #include "FastGene.h"
 #include "ModelObjects.h"
 #include "Graph.h"
+#include "OovProcess.h"
 #include <math.h>	// For sqrt
 
 struct DiagramLine
@@ -34,14 +35,15 @@ class ClassGenes:public GenePool
     public:
 	void initialize(const class ClassGraph &graph, int avgNodeSize);
 	// Do some iterations, and move the positions from the gene pool into the graph.
-	void updatePositionsInGraph(class ClassGraph &graph);
+	void updatePositionsInGraph(class ClassGraph &graph,
+		OovTaskStatusListener *listener, OovTaskContinueListener &contListener);
 
     private:
 	const class ClassGraph *mGraph;
 	GraphSize mDiagramSize;
 
 	virtual void setupQualityEachGeneration();
-	virtual QualityType calculateSingleGeneQuality(int geneIndex) const;
+	virtual QualityType calculateSingleGeneQuality(int geneIndex) const override;
 	// GeneIndex contains the positions
 	bool nodesOverlap(int geneIndex, int node1, int node2) const;
 	bool lineNodeOverlap(int geneIndex, int ni, DiagramLine const &line) const;

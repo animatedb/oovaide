@@ -12,7 +12,7 @@ static Journal *gJournal;
 
 std::string JournalRecord::getFullName(bool addSpace) const
     {
-    std::string fullName = (getRecordType() == RT_Class) ? "Class" : "Seq";
+    std::string fullName = getRecordTypeName();
     if(addSpace)
 	fullName += ' ';
     fullName += getName();
@@ -20,7 +20,8 @@ std::string JournalRecord::getFullName(bool addSpace) const
     }
 
 Journal::Journal():
-    mCurrentRecord(0), mBuilder(nullptr), mModel(nullptr), mListener(nullptr)
+    mCurrentRecord(0), mBuilder(nullptr), mModel(nullptr),
+    mJournalListener(nullptr), mTaskStatusListener(nullptr)
     {
     gJournal = this;
     }
@@ -45,8 +46,8 @@ void Journal::displayClass(OovStringRef const className)
     int recordIndex = findRecord(className);
     if(recordIndex == -1)
 	{
-	rec = new JournalRecordClassDiagram(*mBuilder,
-		*mModel, *mListener);
+	rec = new JournalRecordClassDiagram(*mBuilder, *mModel,
+		*mJournalListener, *mTaskStatusListener);
 	addRecord(rec, className);
 	rec->mClassDiagram.clearGraphAndAddClass(className,
 		ClassGraph::AN_ClassesAndChildren);
@@ -64,7 +65,8 @@ void Journal::addClass(OovStringRef const className)
     JournalRecord *rec = getCurrentRecord();
     if(rec && rec->getRecordType() == RT_Class)
 	{
-	JournalRecordClassDiagram *recClass = reinterpret_cast<JournalRecordClassDiagram*>(rec);
+	JournalRecordClassDiagram *recClass =
+		reinterpret_cast<JournalRecordClassDiagram*>(rec);
 	recClass->mClassDiagram.addClass(className);
 	}
     }
@@ -79,7 +81,8 @@ void Journal::displayOperation(OovStringRef const className,
     int recordIndex = findRecord(fullOperName);
     if(recordIndex == -1)
 	{
-	rec = new JournalRecordOperationDiagram(*mBuilder, *mModel, *mListener);
+	rec = new JournalRecordOperationDiagram(*mBuilder, *mModel,
+		*mJournalListener);
 	addRecord(rec, fullOperName);
 	rec->mOperationDiagram.clearGraphAndAddOperation(className, operName, isConst);
 	}
@@ -100,7 +103,7 @@ void Journal::displayComponents()
 	JournalRecordComponentDiagram *rec;
 	if(recordIndex == -1)
 	    {
-	    rec = new JournalRecordComponentDiagram(*mBuilder, *mListener);
+	    rec = new JournalRecordComponentDiagram(*mBuilder, *mJournalListener);
 	    rec->mComponentDiagram.drawToDrawingArea();
 	    addRecord(rec, componentName);
 	    }
@@ -122,7 +125,7 @@ void Journal::displayWorldZone()
 	JournalRecordZoneDiagram *rec;
 	if(recordIndex == -1)
 	    {
-	    rec = new JournalRecordZoneDiagram(*mBuilder, *mModel, *mListener);
+	    rec = new JournalRecordZoneDiagram(*mBuilder, *mModel, *mJournalListener);
 	    rec->mZoneDiagram.drawToDrawingArea();
 	    addRecord(rec, zoneName);
 	    rec->mZoneDiagram.clearGraphAndAddWorldZone();

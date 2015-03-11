@@ -56,6 +56,6 @@ private:
     OovStringVec mIncDirArgs;
     const ComponentFinder &mComponentFinder;
 
-    virtual bool processFile(OovStringRef const filePath);
+    virtual bool processFile(OovStringRef const filePath) override;
 };
 

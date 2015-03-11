@@ -250,15 +250,18 @@ void ClassGenes::getPosition(int geneIndex, int nodeIndex, GraphPoint &pos) cons
     pos.y = getValue(geneIndex, nodeIndex*2*sizeof(GeneValue)+sizeof(GeneValue));
     }
 
-void ClassGenes::updatePositionsInGraph(class ClassGraph &graph)
+void ClassGenes::updatePositionsInGraph(class ClassGraph &graph,
+	OovTaskStatusListener *listener, OovTaskContinueListener &contListener)
     {
-    BackgroundDialog backDlg;
-    backDlg.setDialogText("Optimizing layout.");
-    backDlg.setProgressIterations(NumGenerations);
-    for(int i=0; i<NumGenerations; i++)
+    OovTaskStatusListenerId taskId = 0;
+    if(listener)
+	{
+	taskId = listener->startTask("Optimizing layout.", NumGenerations);
+	}
+    for(int i=0; i<NumGenerations && contListener.continueProcessingItem(); i++)
 	{
 	singleGeneration();
-	if(!backDlg.updateProgressIteration(i))
+	if(!listener->updateProgressIteration(taskId, i, nullptr))
 	    {
 	    break;
 	    }
@@ -274,5 +277,9 @@ void ClassGenes::updatePositionsInGraph(class ClassGraph &graph)
 	GraphPoint pos;
 	getPosition(bestGeneI, i, pos);
 	graph.getNodes()[i].setPosition(pos);
+	}
+    if(listener)
+	{
+	listener->endTask(taskId);
 	}
     }

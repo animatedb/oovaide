@@ -195,11 +195,15 @@ void GuiTreeView::clear()
 	{
 	GtkTreeStore *store = GTK_TREE_STORE(model);
 	GtkTreeIter iter;
-	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(
-		gtk_tree_view_get_model(mTreeView)), &iter))
+	GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+	if(model)
 	    {
-	    while(gtk_tree_store_remove(store, &iter))
+	    if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(
+		    model), &iter))
 		{
+		while(gtk_tree_store_remove(store, &iter))
+		    {
+		    }
 		}
 	    }
 	}
@@ -211,17 +215,20 @@ void GuiTreeView::removeSelected()
     GtkTreeModel *model;
 
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
-    if (gtk_tree_selection_get_selected(sel, &model, &iter))
-        {
-	if(GTK_IS_LIST_STORE(model))
+    if(sel)
+	{
+	if (gtk_tree_selection_get_selected(sel, &model, &iter))
 	    {
-	    gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+	    if(GTK_IS_LIST_STORE(model))
+		{
+		gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+		}
+	    else
+		{
+		gtk_tree_store_remove(GTK_TREE_STORE(model), &iter);
+		}
 	    }
-	else
-	    {
-	    gtk_tree_store_remove(GTK_TREE_STORE(model), &iter);
-	    }
-        }
+	}
     }
 
 
@@ -283,13 +290,16 @@ OovString GuiList::getSelected() const
     std::string selectedStr;
 
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
-    if (gtk_tree_selection_get_selected(sel, &model, &iter))
-        {
-        char *value;
-        gtk_tree_model_get(model, &iter, LIST_ITEM, &value,  -1);
-        selectedStr = value;
-        g_free(value);
-        }
+    if(sel)
+	{
+	if (gtk_tree_selection_get_selected(sel, &model, &iter))
+	    {
+	    char *value;
+	    gtk_tree_model_get(model, &iter, LIST_ITEM, &value,  -1);
+	    selectedStr = value;
+	    g_free(value);
+	    }
+	}
     return selectedStr;
     }
 
@@ -299,14 +309,17 @@ int GuiList::getSelectedIndex() const
     int index = -1;
 
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
-    GList *listOfPaths = gtk_tree_selection_get_selected_rows(sel, &model);
-    if (listOfPaths)
-        {
-	gint *p = gtk_tree_path_get_indices((GtkTreePath*)g_list_nth_data(listOfPaths, 0));
-	if(p)
-	    index = *p;
-        g_list_free(listOfPaths);
-        }
+    if(sel)
+	{
+	GList *listOfPaths = gtk_tree_selection_get_selected_rows(sel, &model);
+	if (listOfPaths)
+	    {
+	    gint *p = gtk_tree_path_get_indices((GtkTreePath*)g_list_nth_data(listOfPaths, 0));
+	    if(p)
+		index = *p;
+	    g_list_free(listOfPaths);
+	    }
+	}
     return index;
     }
 
@@ -389,8 +402,13 @@ GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, OovStringRef const str)
 bool GuiTree::getSelectedIter(GtkTreeIter *childIter) const
     {
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
-    GtkTreeModel *model;
-    return gtk_tree_selection_get_selected(sel, &model, childIter);
+    bool haveSel = false;
+    if(sel)
+	{
+	GtkTreeModel *model;
+	haveSel = gtk_tree_selection_get_selected(sel, &model, childIter);
+	}
+    return haveSel;
     }
 
 #if(1)
@@ -617,10 +635,9 @@ GuiTreeItem GuiTree::getItem(OovString const &name, char delimiter)
 
 
 BackgroundDialog::BackgroundDialog():
-	mBuilder(nullptr), mParent(nullptr), mKeepGoing(true),
-	mTotalIters(0), mStartTime(0)
+	mBuilder(nullptr), mParent(nullptr),
+	mKeepGoing(true), mTotalIters(0), mStartTime(0), mProgressTime(0)
     {
-    mBuilder = Builder::getBuilder();
     }
 
 BackgroundDialog::~BackgroundDialog()
@@ -628,8 +645,9 @@ BackgroundDialog::~BackgroundDialog()
     showDialog(false);
     }
 
-void BackgroundDialog::setProgressIterations(int totalIters)
+void BackgroundDialog::startTask(char const *str, int totalIters)
     {
+    mDialogText = str;
     mTotalIters = totalIters;
     time(&mStartTime);
     mKeepGoing = true;
@@ -646,6 +664,10 @@ static void BackgroundResponse(GtkDialog *dialog, gint response_id,
 
 void BackgroundDialog::showDialog(bool show)
     {
+    if(!mBuilder)
+	{
+	mBuilder = Builder::getBuilder();
+	}
     if(mBuilder)
 	{
 	GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
@@ -666,39 +688,49 @@ void BackgroundDialog::showDialog(bool show)
 	}
     }
 
-void BackgroundDialog::setDialogText(char const *str)
+bool BackgroundDialog::updateProgressIteration(int currentIter,
+	OovStringRef text, bool allowRecurse)
     {
-    if(mBuilder)
+    if(!mBuilder)
 	{
-	std::string totalStr = str;
-	totalStr += "\nPress cancel to abort this operation.";
-	Gui::setText(GTK_LABEL(mBuilder->getWidget("ProgressTextLabel")), totalStr.c_str());
-	updateProgressIteration(-1);
+	mBuilder = Builder::getBuilder();
 	}
-    }
-
-bool BackgroundDialog::updateProgressIteration(int currentIter)
-    {
+    if(mDialogText.length())
+	{
+	std::string totalStr = mDialogText;
+	totalStr += "\nPress cancel to abort this operation.";
+	Gui::setText(GTK_LABEL(mBuilder->getWidget("ProgressDialogCancelLabel")), totalStr.c_str());
+	mDialogText.clear();
+	}
     if(mKeepGoing)	// It appears that after a cancel, the widgets are not valid.
 	{
 	time_t curTime;
 	time(&curTime);
 	GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
 	bool visible = gtk_widget_get_visible(dlg);
-	if(!visible && mTotalIters != 0 && curTime > mStartTime+1)
+	if(!visible && mTotalIters > 0 && curTime > mStartTime+1)
 	    showDialog(true);
 	if(visible)
 	    {
+	    if(text && curTime != mStartTime)
+		{
+		GtkLabel *textLabel = GTK_LABEL(mBuilder->getWidget("ProgressTextLabel"));
+		Gui::setText(textLabel, text);
+		mStartTime = curTime;
+		}
 	    if(mBuilder && currentIter >= 0)
 		{
 		GtkProgressBar *bar = GTK_PROGRESS_BAR(mBuilder->getWidget("BackgroundProgressbar"));
 		gtk_progress_bar_set_fraction(bar, (double)currentIter/mTotalIters);
 		}
-	    // Allow progress update to display.
-	    // For some reason, gtk_events_pending never quits.
-	    for(int i=0; i<50 && gtk_events_pending(); i++)
+	    if(allowRecurse)
 		{
-		gtk_main_iteration();
+		// Allow progress update to display.
+		// For some reason, gtk_events_pending never quits.
+		for(int i=0; i<50 && gtk_events_pending(); i++)
+		    {
+		    gtk_main_iteration();
+		    }
 		}
 	    }
 	}

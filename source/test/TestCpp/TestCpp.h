@@ -8,7 +8,7 @@
 // The syntax here is somewhat close to a limited subset of Google Test. This is
 // more portable since it does much less.
 //
-// The main usage is to define a cTestCppModule class that will represent the module that is
+// The main usage is to define a TestCppModule class that will represent the module that is
 // being unit tested. This can hold anything that is common between tests.
 //
 // For each test, the TEST_F macro is used to define a test.
@@ -18,9 +18,9 @@
 //
 // Usage may look like this:
 //
-// 		class cExampleUnitTest:public cTestCppModule
+// 		class ExampleUnitTest:public TestCppModule
 //			{};
-// 		static cExampleUnitTest gExampleUnitTest;
+// 		static ExampleUnitTest gExampleUnitTest;
 //
 //		TEST_F(gExampleUnitTest, ExampleFailTest)
 //			{
@@ -28,7 +28,7 @@
 //			}
 //
 //		int main()
-//			{ cExampleUnitTest.runAllTests(); }
+//			{ ExampleUnitTest.runAllTests(); }
 //
 // Output is stored in a file called TestCpp.txt that logs tests as they are run,
 // and pass/fail counts at the end.
@@ -42,17 +42,17 @@
 #include <string>
 #include <sys/time.h>
 
-class cTime
+class TestTime
     {
     public:
-	cTime()
+        TestTime()
 	    { mTime.tv_sec=0; mTime.tv_usec=0; }
-	cTime(timeval val):
+	TestTime(timeval val):
 	    mTime(val)
 	    {}
 	static void sleepMs(int ms);
 	void getCurrentTime();
-	double elapsedSecondsSinceStart(const cTime &startTime);
+	double elapsedSecondsSinceStart(const TestTime &startTime);
 	operator double() const
 	    { return(mTime.tv_sec + (static_cast<double>(mTime.tv_usec) / 1e6)); }
 
@@ -60,32 +60,32 @@ class cTime
 	timeval mTime;
     };
 
-class cTestAllModules
+class TestAllModules
     {
     public:
-        cTestAllModules();
-        ~cTestAllModules();
-        static void addModule(class cTestCppModule *module);
+        TestAllModules();
+        ~TestAllModules();
+        static void addModule(class TestCppModule *module);
         void runAllTests();
-        static cTestAllModules *getAllModules()
+        static TestAllModules *getAllModules()
             { return sTestAllModules; }
 	FILE *getLogFp()
 		{ return mLogFp; }
 
     private:
-        std::vector<class cTestCppModule *> mModules;
+        std::vector<class TestCppModule *> mModules;
 	FILE *mLogFp;
-        static cTestAllModules *sTestAllModules;
+        static TestAllModules *sTestAllModules;
     };
 
 // This can be derived from to hold data that is common between tests. It provides
 // functions to run defined tests and logs tests as they are run.
 // This accumulates counts of pass and fail and logs at the end.
-class cTestCppModule
+class TestCppModule
 {
 public:
-	cTestCppModule(char const * const moduleName);
-	void addFunctionTest(class cTestCppFunction *func);
+	TestCppModule(char const * const moduleName);
+	void addFunctionTest(class TestCppFunction *func);
 	void runAllTests();
 	void addExtraDiagnostics(const char *str)
 	    { mExtraDiagnostics.push_back(str); }
@@ -94,7 +94,7 @@ public:
             { return mModuleName; }
 
 private:
-	std::vector<class cTestCppFunction*> mTestFunctions;
+	std::vector<class TestCppFunction*> mTestFunctions;
 	int mPassCount;
 	int mFailCount;
         char const * const mModuleName;
@@ -104,23 +104,23 @@ private:
 // This will define a test function, it is instantiated with the TEST_F macro.
 // When instantiated, this adds itself to the parent module to allow the parent
 // module to call it.
-class cTestCppFunction
+class TestCppFunction
 {
 public:
-	cTestCppFunction(const char *moduleName, const char *testName, cTestCppModule &parentModule):
+	TestCppFunction(const char *moduleName, const char *testName, TestCppModule &parentModule):
 		mModuleName(moduleName), mTestName(testName), mParentModule(parentModule), mAnyFailure(false)
 		{
 		parentModule.addFunctionTest(this);
 		}
-	virtual ~cTestCppFunction()
+	virtual ~TestCppFunction()
 		{}
-	virtual void doFunctionTest(cTestCppModule &testModule) = 0;
+	virtual void doFunctionTest(TestCppModule &testModule) = 0;
 	void testCppOutput(int lineNum, bool passed);
 
 public:
 	std::string mModuleName;
 	std::string mTestName;
-	cTestCppModule &mParentModule;
+	TestCppModule &mParentModule;
 	bool mAnyFailure;
 };
 
@@ -129,19 +129,19 @@ public:
 #define FUNCTION_CLASS_NAME(moduleName, functionName) TestClass_##moduleName##_##functionName
 #define INSTANTIATE_CLASS_NAME(moduleName, functionName) g_Test_##moduleName##_##functionName
 
-// Macro to instantiate a test function. This defines a subclass of cTestCppFunction
+// Macro to instantiate a test function. This defines a subclass of TestCppFunction
 // and instantiates it. It also defines a global test function and overrides a virtual function
 // that will call it.
 #define TEST_F(moduleName, functionName)			\
-	struct FUNCTION_CLASS_NAME(moduleName, functionName):public cTestCppFunction		\
+	struct FUNCTION_CLASS_NAME(moduleName, functionName):public TestCppFunction		\
 		{ FUNCTION_CLASS_NAME(moduleName, functionName)():\
-			cTestCppFunction(#moduleName, #functionName, moduleName){} \
-			virtual void doFunctionTest(cTestCppModule &testModule)	\
-			{	void FUNCTION_TEST_NAME(moduleName, functionName)(cTestCppFunction&);	/* global scope function declaration */ \
+			TestCppFunction(#moduleName, #functionName, moduleName){} \
+			virtual void doFunctionTest(TestCppModule &testModule)	\
+			{	void FUNCTION_TEST_NAME(moduleName, functionName)(TestCppFunction&);	/* global scope function declaration */ \
 			FUNCTION_TEST_NAME(moduleName, functionName)(*this); }		\
 		};	\
 	static FUNCTION_CLASS_NAME(moduleName, functionName) INSTANTIATE_CLASS_NAME(moduleName, functionName);	\
-	void FUNCTION_TEST_NAME(moduleName, functionName)(cTestCppFunction &func)
+	void FUNCTION_TEST_NAME(moduleName, functionName)(TestCppFunction &func)
 
 // Macro to compare values and store in the output file.
 #define EXPECT_EQ(x, y)		func.testCppOutput(__LINE__, ((x) == (y)));

@@ -214,8 +214,8 @@ class DebuggerGdb:public OovProcessListener, public DebuggerBase
 	void handleBreakpoint(const std::string &resultStr);
 	void handleStack(const std::string &resultStr);
 	void handleValue(const std::string &resultStr);
-	virtual void onStdOut(OovStringRef const out, int len);
-	virtual void onStdErr(OovStringRef const out, int len);
+	virtual void onStdOut(OovStringRef const out, int len) override;
+	virtual void onStdErr(OovStringRef const out, int len) override;
     };
 #endif
 

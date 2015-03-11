@@ -229,11 +229,11 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node, const ClassDrawOptions &o
 	    }
 	maxWidth += pad2;
 	y += pad2;
-	mDrawer.groupShapes(true, Color(245,245,255));
+	mDrawer.groupShapes(true, Color(0,0,0), Color(245,255,245));
 	mDrawer.drawRect(GraphRect(startpos.x, startpos.y, maxWidth, y-startpos.y));
 	mDrawer.drawLine(GraphPoint(startpos.x, line1), GraphPoint(startpos.x+maxWidth, line1));
 	mDrawer.drawLine(GraphPoint(startpos.x, line2), GraphPoint(startpos.x+maxWidth, line2));
-	mDrawer.groupShapes(false, Color(245,245,255));
+	mDrawer.groupShapes(false, 0, 0);
 	mDrawer.groupText(true);
 	for(const auto &dstr : drawStrings)
 	    mDrawer.drawText(dstr.pos, dstr.str);
@@ -552,7 +552,7 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node,
     int shapeHeight = 14 * mActualZoomY;
     int keyWidth = strLenPixels+shapeWidth+pad*4;
     int keyHeight = strs.size()*shapeHeight+pad*3;
-    mDrawer.groupShapes(true, Color(245,245,255));
+    mDrawer.groupShapes(true, Color(0,0,0), Color(245,255,245));
     mDrawer.drawRect(GraphRect(startpos.x, startpos.y, keyWidth, keyHeight));
     GraphPoint p1 = startpos;
     mDrawer.drawLine(GraphPoint(p1.x, p1.y+shapeHeight-pad),
@@ -598,7 +598,7 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node,
 	drawInfo.setPoints(p1, p2);
 	drawVisibility(mDrawer, drawInfo, Visibility::Private);
 	}
-    mDrawer.groupShapes(false, Color(245,245,255));
+    mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 
     mDrawer.groupText(true);
     p1 = startpos;
@@ -641,7 +641,7 @@ void ClassDrawer::drawDiagram(const ClassGraph &graph,
 	    {
 	    drawNode(graph.getNodes()[ni1], options);
 	    }
-	mDrawer.groupShapes(true, Color(245,245,255));
+	mDrawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
 	for(size_t ni1=0; ni1<graph.getNodes().size(); ni1++)
 	    {
 	    for(size_t ni2=ni1+1; ni2<graph.getNodes().size(); ni2++)
@@ -664,7 +664,7 @@ void ClassDrawer::drawDiagram(const ClassGraph &graph,
 		    }
 		}
 	    }
-	mDrawer.groupShapes(false, Color(245,245,255));
+	mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 	}
     }
 

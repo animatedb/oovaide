@@ -8,17 +8,23 @@
 #define DEBUG_PROC_QUEUE 0
 #if(DEBUG_PROC_QUEUE)
 #include "Debug.h"
-DebugFile sDebugQueue("DbgQueue.txt");
+DebugFile sDebugQueue("DbgQueue.txt", false);
+void logProc(char const *str, const void *ptr, int val)
+    {
+    sDebugQueue.printflush("%s %p %d\n", str, ptr, val);
+    }
+#define LOG_PROC(str, ptr)	logProc(str, ptr, 0);
+#define LOG_PROC_INT(str, ptr, val)	logProc(str, ptr, val);
+#else
+#define LOG_PROC(str, ptr)
+#define LOG_PROC_INT(str, ptr, val)
 #endif
 
-#if(USE_THREADS)
 
 void OovThreadedWaitQueuePrivate::waitPushPrivate(void const *item)
     {
     std::unique_lock<std::mutex> lock(mProcessQueueMutex);
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("push lock\n");
-#endif
+    LOG_PROC("push lock", this);
     // Wait while not empty
     while(!isQueueEmpty())
         {
@@ -26,14 +32,10 @@ void OovThreadedWaitQueuePrivate::waitPushPrivate(void const *item)
         mConsumerPoppedSignal.wait(lock);
         // After signaled, lock is reaquired.
         }
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("push\n");
-#endif
+    LOG_PROC("push", this);
     pushBack(item);
 
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("push unlock\n");
-#endif
+    LOG_PROC("push unlock", this);
     lock.unlock();
     // Signal to waitPop that data is ready.
     mProviderPushedSignal.notify_one();
@@ -43,9 +45,7 @@ bool OovThreadedWaitQueuePrivate::waitPopPrivate(void *item)
     {
     std::unique_lock<std::mutex> lock(mProcessQueueMutex);
     bool gotItem = false;
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("pop lock\n");
-#endif
+    LOG_PROC("pop lock", this);
     // Wait while empty
     while(isQueueEmpty() && !mQuitPopping)
         {
@@ -58,49 +58,36 @@ bool OovThreadedWaitQueuePrivate::waitPopPrivate(void *item)
     // If it is empty, then there was a signal, but nothing was
     // in the queue. This means that the quit function was called.
     gotItem = !isQueueEmpty();
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("pop got item=%d\n", gotItem);
-#endif
+    LOG_PROC_INT("pop got item", this, gotItem);
     if(gotItem)
         {
 	getFront(item);
         }
 
-#if(DEBUG_PROC_QUEUE)
-        sDebugQueue.printflush("pop unlock %d\n", gotItem);
-#endif
+    LOG_PROC_INT("pop unlock", this, gotItem);
     // unlock and signal to provider thread that queue is processed.
     lock.unlock();
     mConsumerPoppedSignal.notify_one();
-#if(DEBUG_PROC_QUEUE)
-        sDebugQueue.printflush("pop done\n");
-#endif
+    LOG_PROC("pop done", this);
     return gotItem;
     }
 
 void OovThreadedWaitQueuePrivate::quitPopsPrivate()
     {
     std::unique_lock<std::mutex> lock(mProcessQueueMutex);
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("quitPops lock\n");
-#endif
+    LOG_PROC("quitPops lock", this);
     mQuitPopping = true;
     // Wait to make sure all queue items were processed.
     while(!isQueueEmpty())
         {
         mConsumerPoppedSignal.wait(lock);
         }
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("quitPops unlock\n");
-#endif
+    LOG_PROC("quitPops unlock", this);
     lock.unlock();
     mProviderPushedSignal.notify_all();
-#if(DEBUG_PROC_QUEUE)
-    sDebugQueue.printflush("quitPops done\n");
-#endif
+    LOG_PROC("quitPops done", this);
     }
 
-#if(USE_THREADS)
 void ThreadedWorkWaitPrivate::joinThreads(std::vector<std::thread> &workerThreads)
     {
     if(workerThreads.size() > 0)
@@ -112,7 +99,4 @@ void ThreadedWorkWaitPrivate::joinThreads(std::vector<std::thread> &workerThread
         workerThreads.clear();
         }
     }
-#endif
-
-#endif
 

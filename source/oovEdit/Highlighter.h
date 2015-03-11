@@ -162,7 +162,7 @@ class Highlighter:public ThreadedWorkBackgroundQueue<
 #if(SHARED_QUEUE)
             sSharedQueue.waitForCompletion();
 #else
-            waitForCompletion();
+            stopAndWaitForCompletion();
 #endif
 	    }
 	/// @todo - this interface requires that no parameters change during

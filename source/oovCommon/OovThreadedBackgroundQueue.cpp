@@ -14,7 +14,6 @@ void logProc(char const *str, const void *ptr, int val)
 #endif
 
 
-#if(USE_THREADS)
 
 void OovThreadedBackgroundQueuePrivate::pushPrivate(void const *item)
     {
@@ -86,6 +85,4 @@ bool OovThreadedBackgroundQueuePrivate::isEmptyPrivate()
     std::unique_lock<std::mutex> lock(mProcessQueueMutex);
     return isQueueEmpty();
     }
-
-#endif
 

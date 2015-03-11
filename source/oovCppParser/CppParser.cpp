@@ -627,12 +627,15 @@ static unsigned int makeHash(OovStringRef const text)
 
 void cDupHashFile::append(OovStringRef const text, unsigned int line)
     {
+    if(text.length() > 0)
+	{
 #if(DEBUG_HASH)
-    fprintf(mFile.getFp(), "%x %u %s\n", makeHash(text), line, text.getStr());
+	fprintf(mFile.getFp(), "%x %u %s\n", makeHash(text), line, text.getStr());
 #else
-    fprintf(mFile.getFp(), "%x %u\n", makeHash(text), line);
+	fprintf(mFile.getFp(), "%x %u\n", makeHash(text), line);
 #endif
-    mAlreadyAddedBreak = false;
+	mAlreadyAddedBreak = false;
+	}
     }
 
 CXChildVisitResult CppParser::visitFunctionAddDupHashes(CXCursor cursor,

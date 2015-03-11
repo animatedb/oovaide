@@ -43,7 +43,7 @@ class DiagramDrawer
 	virtual float getTextExtentHeight(OovStringRef const name) const =0;
 	/// These functions indicate when the start/end of some grouping
 	/// of shapes is performed so similar attributes can be used.
-	virtual void groupShapes(bool start, Color fillColor)
+	virtual void groupShapes(bool start, Color lineColor, Color fillColor)
 	    {}
 	virtual void groupText(bool start)
 	    {}

@@ -8,6 +8,7 @@
 #include <memory.h>
 #include <string.h>
 #include <stdio.h>
+#include <algorithm>
 
 OovString OovStringVec::getStr(size_t index)
     {
@@ -15,6 +16,13 @@ OovString OovStringVec::getStr(size_t index)
     if(index < size())
 	str = at(index);
     return str;
+    }
+
+void OovStringVec::deleteEmptyStrings()
+    {
+    erase(std::remove_if(begin(), end(),
+	    [](const OovString &str){ return(str.length() == 0); }),
+	    end());
     }
 
 static int isAsciiLenOk(OovStringRef const buf, int maxLen)
@@ -133,6 +141,30 @@ bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInBytes, int
     return success;
     }
 
+bool FloatToAsciiString(float value, char * const buffer, size_t dstSizeInBytes)
+    {
+    bool success = false;
+    if(dstSizeInBytes > 0)
+    	{
+	const int numBufSize = 30;
+    	char numBuf[numBufSize];
+	snprintf(numBuf, sizeof(numBuf), "%f", value);
+	if(isAsciiLenOk(numBuf, dstSizeInBytes))
+	    {
+	    copyString(buffer, dstSizeInBytes, numBuf, numBufSize);
+	    success = true;
+	    }
+	else if(dstSizeInBytes >= 2)
+	    {
+	    buffer[0] = '*';
+	    buffer[1] = '\0';
+	    }
+	else
+	    buffer[0] = '\0';
+    	}
+    return success;
+    }
+
 // This can count the number of multibyte or ASCII characters.
 // Count all first-bytes (the ones that don't match 10xxxxxx).
 size_t StringNumChars(char const * const str)
@@ -196,6 +228,11 @@ OovString StringMakeXml(char const * const text)
 
 //////////////
 
+int OovStringRef::length() const
+    {
+    return strlen(mStr);
+    }
+
 void OovString::setUpperCase(OovStringRef const str)
 {
     char const *p = str;
@@ -216,6 +253,13 @@ void OovString::appendInt(int val, int radix)
     {
     char buf[30];
     IntToAsciiString(val, buf, sizeof(buf), radix);
+    append(buf);
+    }
+
+void OovString::appendFloat(float val)
+    {
+    char buf[30];
+    FloatToAsciiString(val, buf, sizeof(buf));
     append(buf);
     }
 

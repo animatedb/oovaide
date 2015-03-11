@@ -44,8 +44,8 @@ class EntryOption:public Option
 	    {}
 	virtual ~EntryOption()
 	    {}
-	virtual void optionToScreen(NameValueFile const &file) const;
-	virtual void screenToOption(NameValueFile &file) const;
+	virtual void optionToScreen(NameValueFile const &file) const override;
+	virtual void screenToOption(NameValueFile &file) const override;
     };
 
 void EntryOption::optionToScreen(NameValueFile const &file) const
@@ -68,8 +68,8 @@ class CheckOption:public Option
 	    {}
 	virtual ~CheckOption()
 	    {}
-	virtual void optionToScreen(NameValueFile const &file) const;
-	virtual void screenToOption(NameValueFile &file) const;
+	virtual void optionToScreen(NameValueFile const &file) const override;
+	virtual void screenToOption(NameValueFile &file) const override;
     };
 
 void CheckOption::optionToScreen(NameValueFile const &file) const
@@ -94,8 +94,8 @@ class TextViewOption:public Option
 	    {}
 	virtual ~TextViewOption()
 	    {}
-	virtual void optionToScreen(NameValueFile const &file) const;
-	virtual void screenToOption(NameValueFile &file) const;
+	virtual void optionToScreen(NameValueFile const &file) const override;
+	virtual void screenToOption(NameValueFile &file) const override;
     };
 
 void TextViewOption::optionToScreen(NameValueFile const &file) const
@@ -220,11 +220,6 @@ OptionsDialog::OptionsDialog():
     {
     gOptionsDlg = this;
     mBuildConfigList.init(*Builder::getBuilder(), "BuildConfigTreeview", "Build Configurations");
-    updateBuildConfig();
-    }
-
-void OptionsDialog::openedProject()
-    {
     updateBuildConfig();
     }
 

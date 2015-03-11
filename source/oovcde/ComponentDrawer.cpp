@@ -38,11 +38,11 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
 	    maxWidth = width;
 	}
 
-    mDrawer.groupShapes(true, Color(245,245,255));
+    mDrawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
     mDrawer.drawRect(GraphRect(startpos.x+symbolSize, startpos.y, maxWidth-symbolSize, rectHeight));
     mDrawer.drawRect(GraphRect(startpos.x, startpos.y+symbolSize, symbolSize*2, symbolSize));
     mDrawer.drawRect(GraphRect(startpos.x, startpos.y+symbolSize*3, symbolSize*2, symbolSize));
-    mDrawer.groupShapes(false, Color(245,245,255));
+    mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 
     mDrawer.groupText(true);
     int y = startpos.y;
@@ -80,7 +80,7 @@ void ComponentDrawer::drawDiagram(const ComponentGraph &graph)
 void ComponentDrawer::drawConnection(const ComponentGraph &graph,
 	ComponentConnection const &connect)
     {
-    mDrawer.groupShapes(true, Color(245,245,255));
+    mDrawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
     GraphPoint producer;
     GraphPoint consumer;
     graph.getNodes()[connect.mNodeConsumer].getRect().findConnectPoints(
@@ -111,5 +111,5 @@ void ComponentDrawer::drawConnection(const ComponentGraph &graph,
 	cos(lineAngleRadians+triangleAngle) * arrowtop);
     mDrawer.drawLine(producer, p2+producer);
 
-    mDrawer.groupShapes(false, Color(245,245,255));
+    mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
     }

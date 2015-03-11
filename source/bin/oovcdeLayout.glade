@@ -133,7 +133,6 @@
   <object class="GtkDialog" id="BackgroundProgressDialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
-    <property name="modal">True</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child internal-child="vbox">
@@ -176,7 +175,7 @@
             <property name="can_focus">False</property>
             <property name="orientation">vertical</property>
             <child>
-              <object class="GtkLabel" id="ProgressTextLabel">
+              <object class="GtkLabel" id="ProgressDialogCancelLabel">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Press cancel to abort this operation.</property>
@@ -196,6 +195,17 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkLabel" id="ProgressTextLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -1234,7 +1244,7 @@ Use this dialog to set up component definitions.</property>
   <object class="GtkDialog" id="NewProjectDialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
-    <property name="title" translatable="yes">New Project</property>
+    <property name="title" translatable="yes">Project Settings</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
@@ -1254,7 +1264,6 @@ Use this dialog to set up component definitions.</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_NewProjectCancelButton_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1269,7 +1278,7 @@ Use this dialog to set up component definitions.</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_NewProjectOkButton_clicked" swapped="no"/>
+                <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -1447,8 +1456,8 @@ This should normally not be under the Root Source Directory.</property>
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">NewProjectCancelButton</action-widget>
-      <action-widget response="0">NewProjectOkButton</action-widget>
+      <action-widget response="-6">NewProjectCancelButton</action-widget>
+      <action-widget response="-5">NewProjectOkButton</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="OptionsDialog">
@@ -2765,6 +2774,15 @@ These arguments are specific to the selected configuration.
                       </object>
                     </child>
                     <child>
+                      <object class="GtkMenuItem" id="ProjectSettingsMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Project Settings...</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_ProjectSettingsMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GtkMenuItem" id="BuildAnalyzeMenuitem">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -2813,6 +2831,15 @@ These arguments are specific to the selected configuration.
                         <property name="label" translatable="yes">_Duplicates</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_DuplicatesMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="ProjectStatsMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Project Statistics</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_ProjectStatsMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>

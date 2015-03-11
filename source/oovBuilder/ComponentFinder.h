@@ -171,7 +171,7 @@ class ComponentFinder:public dirRecurser
 
 	/// While searching the directories add C++ source files to the
 	/// mComponentNames set, and C++ include files to the mIncludeDirs list.
-	virtual bool processFile(OovStringRef const filePath);
+	virtual bool processFile(OovStringRef const filePath) override;
     };
 
 class CppChildArgs:public OovProcessChildArgs

@@ -4,10 +4,9 @@
 //============================================================================
 
 #include "oovcde.h"
-#include "DirList.h"
-#include "Xmi2Object.h"
 #include "Options.h"
 #include "OptionsDialog.h"
+#include "ProjectSettingsDialog.h"
 #include "BuildSettingsDialog.h"
 #include "BuildConfigReader.h"
 #include "Svg.h"
@@ -25,10 +24,9 @@ static oovGui gOovGui;
 static OptionsDialog *sOptionsDialog;
 
 
-bool WindowBuildListener::onBackgroundProcessIdle(bool &completed)
+bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
     {
     bool didSomething = false;
-    completed = false;
     std::string tempStdStr;
 	{
 	LockGuard guard(mMutex);
@@ -40,176 +38,189 @@ bool WindowBuildListener::onBackgroundProcessIdle(bool &completed)
 	    }
 	}
     Gui::appendText(mStatusTextView, tempStdStr);
-    if(mProcessComplete)
-	{
-	OovStringRef const str = "\nComplete\n";
-	Gui::appendText(mStatusTextView, str);
-	mProcessComplete = false;
-	completed = true;
-	didSomething = true;
-	}
     if(didSomething)
 	Gui::scrollToCursor(mStatusTextView);
+    complete = mComplete;
+    if(mComplete)
+	{
+	Gui::appendText(mStatusTextView, "\nComplete\n");
+	mComplete = false;
+	}
     return didSomething;
     }
 
-void Menu::updateMenuEnables()
+void WindowBuildListener::processComplete()
     {
-    bool idle = mGui.mBackgroundProc.isIdle();
-    bool open = mGui.isProjectOpen();
-
-    if(idle != mBuildIdle || open != mProjectOpen || mInit)
-	{
-	gtk_widget_set_sensitive(mGui.getBuilder().getWidget(
-		"EditOptionsmenuitem"), open);
-
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("NewModuleMenuitem"), open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("SaveDrawingMenuitem"), open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("SaveDrawingAsMenuitem"), open);
-
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("BuildAnalyzeMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("StopAnalyzeMenuitem"), !idle);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("ComplexityMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("MemberUsageMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("DuplicatesMenuitem"), idle && open);
-
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("BuildSettingsMenuitem"), open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("BuildDebugMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("BuildReleaseMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("StopBuildMenuitem"), !idle);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("MakeCMakeMenuitem"), open);
-
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("InstrumentMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("CoverageBuildMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("CoverageStatsMenuitem"), idle && open);
-	gtk_widget_set_sensitive(
-		mGui.getBuilder().getWidget("StopInstrumentMenuitem"), !idle);
-	mBuildIdle = idle;
-	mProjectOpen = open;
-	mInit = false;
-	}
+    mComplete = true;
     }
+
+
 
 void oovGui::init()
     {
+    mProject.setBackgroundProcessListener(&mWindowBuildListener);
+    mProject.setStatusListener(&mProjectStatusListener);
+    mWindowBuildListener.initListener(mBuilder);
     mBuilder.connectSignals();
     mClassList.init(mBuilder);
     mComponentList.init(mBuilder, "ModuleTreeview", "Module List");
     mOperationList.init(mBuilder);
     mZoneList.init();
     mJournalList.init(mBuilder);
-    mJournal.init(mBuilder, mModelData, *this);
+    mJournal.init(mBuilder, mProject.getModelData(), *this, mProjectStatusListener);
     g_idle_add(onIdle, this);
-    initListener(mBuilder);
-    mMenu.updateMenuEnables();
-    setProjectOpen(false);
+    updateMenuEnables(ProjectStatus());
     }
 
-void oovGui::clear()
+oovGui::~oovGui()
     {
+    mProject.stopAndWaitForBackgroundComplete();
+    mJournal.stopAndWaitForBackgroundComplete();
+    clearAnalysis();
+    g_idle_remove_by_data(this);
+    }
+
+void oovGui::clearAnalysis()
+    {
+    mProject.clearAnalysis();
     mJournal.clear();
-    mModelData.clear();
     mClassList.clear();
     mComponentList.clear();
+    clearSelectedComponent();
     mJournalList.clear();
     mOperationList.clear();
     mZoneList.clear();
-    mProjectOpen = false;
-#if(LAZY_UPDATE)
-    setBackgroundUpdateClassListSize(0);
-#endif
+    updateGuiForProjectChange();
     }
 
-gboolean oovGui::onIdle(gpointer data)
+bool oovGui::canStartAnalysis()
     {
-    oovGui *gui = reinterpret_cast<oovGui*>(data);
-    if(gui->mOpenProject)
+    bool success = mProject.isProjectIdle();
+    if(!success)
+    	{
+    	success = Gui::messageBox("Do you want to stop the current analysis?",
+    	    GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
+    	if(success)
+    	    {
+    	    getProject().stopAndWaitForBackgroundComplete();
+    	    }
+    	}
+    if(success)
 	{
-	gui->openProject();
-	gui->mOpenProject = false;
+	clearAnalysis();
 	}
-    bool completed;
-    if(!gui->onBackgroundProcessIdle(completed)
-#if(LAZY_UPDATE)
-	&& !gui->backgroundUpdateClassListItem()
-#endif
-	    )
+    return success;
+    }
+
+void oovGui::updateGuiForProjectChange()
+    {
+    ProjectStatus projStat = mProject.getProjectStatus();
+    if(projStat != getLastProjectStatus())
+	{
+	updateMenuEnables(projStat);
+	if(projStat.mAnalysisStatus != mLastProjectStatus.mAnalysisStatus)
+	    {
+	    mLastProjectStatus.mAnalysisStatus = projStat.mAnalysisStatus;
+	    if(projStat.mAnalysisStatus & ProjectStatus::AS_Loaded)
+		{
+		updateGuiForAnalysis();
+		}
+	    }
+	mLastProjectStatus = projStat;
+	}
+    }
+
+void oovGui::updateGuiForAnalysis()
+    {
+    if(gBuildOptions.read())
+	{
+	gGuiOptions.read();
+	ModelData &modelData = mProject.getModelData();
+	mClassList.clear();
+	for(size_t i=0; i<modelData.mTypes.size(); i++)
+	    {
+	    if(modelData.mTypes[i]->getDataType() == DT_Class)
+		mClassList.appendText(modelData.mTypes[i]->getName());
+	    }
+	gOovGui.updateComponentList();
+	mClassList.sort();
+	if(sOptionsDialog)
+	    sOptionsDialog->updateBuildConfig();
+	mZoneList.update();
+	Gui::setCurrentPage(GTK_NOTEBOOK(mBuilder.getWidget("ListNotebook")), 0);
+	}
+    }
+
+gboolean oovGui::onBackgroundIdle(gpointer data)
+    {
+    bool complete;
+    bool didSomething = mWindowBuildListener.onBackgroundProcessIdle(complete);
+    if(complete)
+	{
+	clearAnalysis();
+	updateComponentList();
+	mProject.loadAnalysisFiles();
+	didSomething = true;
+	}
+    // This must be after running analysis functions.
+    updateGuiForProjectChange();
+    mProjectStatusListener.idleUpdateProgress();
+    if(!didSomething)
 	{
 	sleepMs(5);
 	}
-    if(completed)
-	gui->mOpenProject = true;
-    gui->mMenu.updateMenuEnables();
     return true;
     }
 
-void oovGui::openProject()
+void oovGui::updateMenuEnables(ProjectStatus const &projStat)
     {
-    gOovGui.clear();
-    BuildConfigReader buildConfig;
-    std::vector<std::string> fileNames;
-    bool open = getDirListMatchExt(buildConfig.getAnalysisPath(),
-	    FilePath(".xmi", FP_File), fileNames);
-    if(open)
-	{
-	ProjectReader reader;
-	open = reader.miniReadOovProject(Project::getProjectDirectory());
-	}
-    if(open)
-	{
-	int typeIndex = 0;
-	BackgroundDialog backDlg;
-	backDlg.setDialogText("Loading files.");
-	backDlg.setProgressIterations(fileNames.size());
-	for(size_t i=0; i<fileNames.size() ; i++)
-	    {
-	    File file(fileNames[i], "r");
-	    if(file.isOpen())
-		{
-		loadXmiFile(file.getFp(), mModelData, fileNames[i], typeIndex);
-		}
-	    if(!backDlg.updateProgressIteration(i))
-		{
-		break;
-		}
-	    }
-	mModelData.resolveModelIds();
-#if(LAZY_UPDATE)
-	setBackgroundUpdateClassListSize(mModelData.mTypes.size());
-#else
-	for(size_t i=0; i<mModelData.mTypes.size(); i++)
-	    {
-	    if(mModelData.mTypes[i]->getDataType() == DT_Class)
-		mClassList.appendText(mModelData.mTypes[i]->getName());
-	    }
-	mClassList.sort();
-#endif
-	}
-    if(sOptionsDialog)
-	sOptionsDialog->openedProject();
-    updateComponentList();
-    mZoneList.update();
-    Gui::setCurrentPage(GTK_NOTEBOOK(
-	    mBuilder.getWidget("ListNotebook")), 0);
-    gOovGui.clearSelectedComponent();;
-    gOovGui.getJournal().displayComponents();
-    setProjectOpen(open);
+    bool idle = projStat.isIdle();
+    bool open = projStat.mProjectOpen;
+    bool analRdy = projStat.isAnalysisReady();
+
+    Builder *builder = Builder::getBuilder();
+    gtk_widget_set_sensitive(builder->getWidget(
+	    "EditOptionsmenuitem"), open);
+
+    gtk_widget_set_sensitive(
+	    builder->getWidget("NewModuleMenuitem"), open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("SaveDrawingMenuitem"), open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("SaveDrawingAsMenuitem"), open);
+
+    gtk_widget_set_sensitive(
+	    builder->getWidget("BuildAnalyzeMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("StopAnalyzeMenuitem"), !idle);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("ComplexityMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("MemberUsageMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("DuplicatesMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("ProjectStatsMenuitem"), idle && analRdy);
+
+    gtk_widget_set_sensitive(
+	    builder->getWidget("BuildSettingsMenuitem"), open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("BuildDebugMenuitem"), idle && open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("BuildReleaseMenuitem"), idle && open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("StopBuildMenuitem"), !idle);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("MakeCMakeMenuitem"), open);
+
+    gtk_widget_set_sensitive(
+	    builder->getWidget("InstrumentMenuitem"), idle && open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("CoverageBuildMenuitem"), idle && open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("CoverageStatsMenuitem"), idle && open);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("StopInstrumentMenuitem"), !idle);
     }
 
 void oovGui::displayClass(OovStringRef const className)
@@ -218,7 +229,7 @@ void oovGui::displayClass(OovStringRef const className)
     if(std::string(className).length() > 0)
 	{
 	updateClassList(className);
-	updateOperationList(mModelData, className);
+	updateOperationList(mProject.getModelData(), className);
 	mJournal.displayClass(className);
 	updateJournalList();
 	}
@@ -256,75 +267,45 @@ static bool checkAnyComponents()
     return success;
     }
 
-bool oovGui::runSrcManager(OovStringRef const buildConfigName, eSrcManagerOptions smo)
+void oovGui::runSrcManager(OovStringRef const buildConfigName,
+	OovProject::eSrcManagerOptions smo)
     {
+    mWindowBuildListener.clearStatusTextView(getBuilder());
     bool success = true;
-#ifdef __linux__
-    OovStringRef const procPath = "./oovBuilder";
-#else
-    OovStringRef const procPath = "./oovBuilder.exe";
-#endif
-    clearListener(getBuilder());
-    OovProcessChildArgs args;
-    args.addArg(procPath);
-    args.addArg(Project::getProjectDirectory());
+    char const *str = nullptr;
+    switch(smo)
+	{
+	case OovProject::SM_Analyze:
+	    str = "\nAnalyzing\n";
+	    break;
 
-    mMenu.updateMenuEnables();
-    char const *str = NULL;
-    if(smo == SM_Analyze)
-	{
-	str = "\nAnalyzing\n";
-	args.addArg("-mode-analyze");
-	}
-    else if(smo == SM_Build)
-	{
-	str = "\nBuilding\n";
-	args.addArg("-mode-build");
-	args.addArg(makeBuildConfigArgName("-cfg", buildConfigName));
-	success = checkAnyComponents();
-	}
-    else if(smo == SM_CovInstr)
-	{
-	str = "\nInstrumenting\n";
-	args.addArg("-mode-cov-instr");
-	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigAnalysis));
-	success = checkAnyComponents();
-	}
-    else if(smo == SM_CovBuild)
-	{
-	str = "\nBuilding coverage\n";
-	args.addArg("-mode-cov-build");
-	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug));
-	}
-    else if(smo == SM_CovStats)
-	{
-	str = "\nGenerating coverage statistics\n";
-	args.addArg("-mode-cov-stats");
-	args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug));
+	case OovProject::SM_Build:
+	    str = "\nBuilding\n";
+	    success = checkAnyComponents();
+	    break;
+
+	case OovProject::SM_CovInstr:
+	    str = "\nInstrumenting\n";
+	    success = checkAnyComponents();
+	    break;
+
+	case OovProject::SM_CovBuild:
+	    str = "\nBuilding coverage\n";
+	    break;
+
+	case OovProject::SM_CovStats:
+	    str = "\nGenerating coverage statistics\n";
+	    break;
+
+	default:
+	    break;
 	}
     if(success)
 	{
-	onStdOut(str, std::string(str).length());
-	success = mBackgroundProc.startProcess(procPath, args.getArgv());
+	mWindowBuildListener.onStdOut(str, std::string(str).length());
+	mProject.runSrcManager(buildConfigName, str, smo);
 	}
-    return success;
-    }
-
-void oovGui::stopSrcManager()
-    {
-    mBackgroundProc.childProcessKill();
-    }
-
-void oovGui::updateProject()
-    {
-    if(gBuildOptions.read())
-	{
-	gGuiOptions.read();
-//	mOpenProject = true;
-	runSrcManager(BuildConfigAnalysis, SM_Analyze);
-	}
-    else
-	Gui::messageBox("Unable to open project");
+    updateMenuEnables(mProject.getProjectStatus());
     }
 
 std::string oovGui::getDefaultDiagramName()
@@ -445,7 +426,7 @@ static void displayBrowserFile(OovStringRef const fileName)
 void oovGui::makeComplexityFile()
     {
     std::string fn;
-    if(createComplexityFile(mModelData, fn))
+    if(createComplexityFile(mProject.getModelData(), fn))
 	{
 	displayBrowserFile(fn);
 	}
@@ -458,7 +439,7 @@ void oovGui::makeComplexityFile()
 void oovGui::makeMemberUseFile()
     {
     std::string fn;
-    if(createStaticAnalysisFile(mModelData, fn))
+    if(createStaticAnalysisFile(mProject.getModelData(), fn))
 	{
 	displayBrowserFile(fn);
 	}
@@ -488,18 +469,80 @@ void oovGui::makeDuplicatesFile()
 	}
     }
 
+void oovGui::displayProjectStats()
+    {
+    ModelData const &model = mProject.getModelData();
+    unsigned numClasses = 0;
+    unsigned numFiles = model.mModules.size();
+    unsigned numOps = 0;
+    unsigned numAttrs = 0;
+    unsigned maxOpsPerClass = 0;
+    unsigned maxAttrsPerClass = 0;
+    std::string maxOpsStr;
+    std::string maxAttrStr;
+    for(auto const &type : model.mTypes)
+	{
+	ModelClassifier const *classifier = type.get()->getClass();
+	if(classifier && classifier->getName().length() > 0)
+	    {
+	    numClasses++;
+	    unsigned ops = classifier->getOperations().size();
+	    if(ops > maxOpsPerClass)
+		{
+		maxOpsStr = classifier->getName();
+		maxOpsPerClass = ops;
+		}
+	    numOps += ops;
+	    unsigned attrs = classifier->getAttributes().size();
+	    if(attrs > maxAttrsPerClass)
+		{
+		maxAttrStr = classifier->getName();
+		maxAttrsPerClass = attrs;
+		}
+	    numAttrs += attrs;
+	    }
+	}
+    OovString str;
+    str += "Number of files: ";
+    str.appendInt(numFiles);
+    str += "\nNumber of classes: ";
+    str.appendInt(numClasses);
+    str += "\nNumber of operations: ";
+    str.appendInt(numOps);
+    str += "\nNumber of attributes: ";
+    str.appendInt(numAttrs);
+    if(numFiles > 0)
+	{
+	str += "\n\nClasses per file: ";
+	str.appendFloat(static_cast<float>(numClasses)/numFiles);
+	}
+    if(numClasses > 0)
+	{
+	str += "\n\nAverage operations per class: ";
+	str.appendFloat(static_cast<float>(numOps)/numClasses);
+	str += "\nAverage attributes per class: ";
+	str.appendFloat(static_cast<float>(numAttrs)/numClasses);
+	str += "\nMax operations per class: ";
+	str.appendFloat(maxOpsPerClass);
+	str += ' ' + maxOpsStr;
+	str += "\nMax attributes per class: ";
+	str.appendFloat(maxAttrsPerClass);
+	str += ' ' + maxAttrStr;
+	}
+    Gui::messageBox(str, GTK_MESSAGE_INFO);
+    }
 
 
 class OptionsDialogUpdate:public OptionsDialog
     {
-    virtual void updateOptions()
+    virtual void updateOptions() override
 	{
 	gOovGui.getJournal().cppArgOptionsChangedUpdateDrawings();
-	gOovGui.updateProject();
+	gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
 	}
-    virtual void buildConfig(OovStringRef const name)
+    virtual void buildConfig(OovStringRef const name) override
 	{
-	gOovGui.runSrcManager(name, oovGui::SM_Build);
+	gOovGui.runSrcManager(name, OovProject::SM_Build);
 	}
     };
 
@@ -524,125 +567,79 @@ int main(int argc, char *argv[])
     return 0;
     }
 
-///// New Project Dialog ///////
-
-extern "C" G_MODULE_EXPORT void on_RootSourceDirButton_clicked(
-	GtkWidget *button, gpointer data)
-    {
-    PathChooser ch;
-    OovString srcRootDir;
-    if(ch.ChoosePath(gOovGui.getWindow(), "Open Root Source Directory",
-	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, srcRootDir))
-	{
-	GtkEntry *dirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
-		"RootSourceDirEntry"));
-	gtk_entry_set_text(dirEntry, srcRootDir.c_str());
-	}
-    }
-
-extern "C" G_MODULE_EXPORT void on_OovcdeProjectDirButton_clicked(
-	GtkWidget *button, gpointer data)
-    {
-    PathChooser ch;
-    OovString projectDir;
-    if(ch.ChoosePath(gOovGui.getWindow(), "Create OOVCDE Project Directory",
-	    GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
-	projectDir))
-	{
-	GtkEntry *dirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
-		"OovcdeProjectDirEntry"));
-	gtk_entry_set_text(dirEntry, projectDir.c_str());
-	}
-    }
-
-extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
-	GtkWidget *button, gpointer data)
-    {
-    gBuildOptions.setDefaultOptions();
-    gGuiOptions.setDefaultOptions();
-    GtkEntry *dirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget("RootSourceDirEntry"));
-    FilePath rootSrcText(gtk_entry_get_text(dirEntry), FP_Dir);
-    gBuildOptions.setNameValue(OptSourceRootDir, rootSrcText);
-
-    GtkEntry *projDirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
-	    "OovcdeProjectDirEntry"));
-
-    FilePathRemovePathSep(rootSrcText, rootSrcText.length()-1);
-    Project::setSourceRootDirectory(rootSrcText);
-    rootSrcText.appendFile("-oovcde");
-    gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
-    }
-
-extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
-	GtkWidget *button, gpointer data)
-    {
-    PathChooser ch;
-    OovString dir;
-    if(ch.ChoosePath(gOovGui.getWindow(), "Add Exclude Directory",
-	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
-	{
-	GtkTextView *dirTextView = GTK_TEXT_VIEW(gOovGui.getBuilder().getWidget(
-		"ExcludeDirsTextview"));
-	std::string relDir;
-	relDir = Project::getSrcRootDirRelativeSrcFileDir(dir);
-	relDir += '\n';
-	Gui::appendText(dirTextView, relDir);
-	}
-    }
-
-extern "C" G_MODULE_EXPORT void on_NewProjectOkButton_clicked(
-	GtkWidget *button, gpointer data)
-    {
-    GtkEntry *dirEntry = GTK_ENTRY(gOovGui.getBuilder().getWidget(
-	    "OovcdeProjectDirEntry"));
-    OovString projDir = gtk_entry_get_text(dirEntry);
-    if(projDir.length())
-	{
-	FilePathEnsureLastPathSep(projDir);
-	if(FileEnsurePathExists(projDir))
-	    {
-	    Project::setProjectDirectory(projDir);
-
-	    gBuildOptions.setFilename(Project::getProjectFilePath());
-
-	    GtkTextView *excDirTextView = GTK_TEXT_VIEW(gOovGui.getBuilder().getWidget(
-		    "ExcludeDirsTextview"));
-	    CompoundValue val;
-	    val.parseString(Gui::getText(excDirTextView), '\n');
-	    gBuildOptions.setNameValue(OptProjectExcludeDirs, val.getAsString(';'));
-
-	    gGuiOptions.setFilename(Project::getGuiOptionsFilePath());
-	    if(gBuildOptions.writeFile())
-		{
-		gGuiOptions.writeFile();
-		gOovGui.updateProject();
-		}
-	    else
-		{
-		Gui::messageBox("Unable to write project file");
-		gOovGui.setProjectOpen(false);
-		}
-	    }
-	else
-	    Gui::messageBox("Unable to create project directory");
-	gtk_widget_hide(gOovGui.getBuilder().getWidget("NewProjectDialog"));
-	}
-    }
-
-// In glade, set the callback for the dialog's GtkWidget "delete-event" to
-// gtk_widget_hide_on_delete for the title bar close button to work.
-extern "C" G_MODULE_EXPORT void on_NewProjectCancelButton_clicked(
-	GtkWidget *button, gpointer data)
-    {
-    gtk_widget_hide(gOovGui.getBuilder().getWidget("NewProjectDialog"));
-    }
-
 extern "C" G_MODULE_EXPORT void on_NewProjectMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    Dialog dlg(GTK_DIALOG(gOovGui.getBuilder().getWidget("NewProjectDialog")),
-	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
-    dlg.run();
+    ProjectSettingsDialog dlg(gOovGui.getWindow(), true);
+    if(dlg.runDialog())
+	{
+	if(gOovGui.canStartAnalysis())
+	    {
+	    OovProject::eNewProjectStatus projStatus;
+	    if(gOovGui.getProject().newProject(
+		    dlg.getProjectDir(), dlg.getExcludeDirs(), projStatus))
+		{
+		switch(projStatus)
+		    {
+		    case OovProject::NP_CreatedProject:
+			gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+			gtk_widget_hide(gOovGui.getBuilder().getWidget("NewProjectDialog"));
+			break;
+
+		    case OovProject::NP_CantCreateDir:
+			Gui::messageBox("Unable to create project directory");
+			break;
+
+		    case OovProject::NP_CantCreateFile:
+			Gui::messageBox("Unable to write project file");
+			break;
+		    }
+		}
+	    }
+	}
+    }
+
+extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
+	GtkWidget *button, gpointer data)
+    {
+    OovString projectDir;
+    PathChooser ch;
+    if(ch.ChoosePath(gOovGui.getWindow(), "Open OOVCDE Project Directory",
+	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, projectDir))
+	{
+	if(gOovGui.canStartAnalysis())
+	    {
+	    gGuiOptions.read();	// Make editor available for component list.
+	    bool openedProject = false;
+	    if(gOovGui.getProject().openProject(projectDir, openedProject))
+		{
+		if(openedProject)
+		    {
+		    gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+		    }
+		else
+		    {
+		    Gui::messageBox("Unable to open project file");
+		    }
+		}
+	    }
+	}
+    }
+
+extern "C" G_MODULE_EXPORT void on_ProjectSettingsMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    ProjectSettingsDialog dlg(gOovGui.getWindow(), false);
+    if(dlg.runDialog())
+	{
+	if(gOovGui.canStartAnalysis())
+	    {
+	    gBuildOptions.setNameValue(OptProjectExcludeDirs,
+		    dlg.getExcludeDirs().getAsString(';'));
+	    gBuildOptions.writeFile();
+	    gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+	    }
+	}
     }
 
 ////// New Module Dialog ////////////
@@ -707,7 +704,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
     else
 	Gui::messageBox("Implementation already exists", GTK_MESSAGE_INFO);
 
-    gOovGui.updateProject();
+    gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
     }
 
 extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
@@ -737,22 +734,6 @@ extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
     dlg.run();
     }
 
-//////////////////
-
-extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
-	GtkWidget *button, gpointer data)
-    {
-    OovString projectDir;
-    PathChooser ch;
-    if(ch.ChoosePath(gOovGui.getWindow(), "Open OOVCDE Project Directory",
-	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, projectDir))
-	{
-	Project::setProjectDirectory(projectDir);
-	gOovGui.clear();
-	gOovGui.updateProject();
-	}
-    }
-
 extern "C" G_MODULE_EXPORT void on_SaveDrawingMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
@@ -779,7 +760,7 @@ extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_BuildAnalyzeMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_Analyze);
+    gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
     }
 
 extern "C" G_MODULE_EXPORT void on_ComplexityMenuitem_activate(
@@ -803,13 +784,13 @@ extern "C" G_MODULE_EXPORT void on_DuplicatesMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_BuildDebugMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigDebug, oovGui::SM_Build);
+    gOovGui.runSrcManager(BuildConfigDebug, OovProject::SM_Build);
     }
 
 extern "C" G_MODULE_EXPORT void on_BuildReleaseMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigRelease, oovGui::SM_Build);
+    gOovGui.runSrcManager(BuildConfigRelease, OovProject::SM_Build);
     }
 
 extern "C" G_MODULE_EXPORT void on_StopBuildMenuitem_activate(
@@ -821,19 +802,19 @@ extern "C" G_MODULE_EXPORT void on_StopBuildMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_InstrumentMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_CovInstr);
+    gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_CovInstr);
     }
 
 extern "C" G_MODULE_EXPORT void on_CoverageBuildMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_CovBuild);
+    gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_CovBuild);
     }
 
 extern "C" G_MODULE_EXPORT void on_CoverageStatsMenuitem_activate(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.runSrcManager(BuildConfigAnalysis, oovGui::SM_CovStats);
+    gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_CovStats);
     }
 
 extern "C" G_MODULE_EXPORT void on_MakeCMakeMenuitem_activate(
@@ -872,15 +853,18 @@ static bool sDisplayClassViewRightClick = false;
 extern "C" G_MODULE_EXPORT void on_ClassTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    std::string className = gOovGui.getSelectedClass();
-    if(sDisplayClassViewRightClick)
+    if(gOovGui.getProject().isAnalysisReady())
 	{
-	gOovGui.addClass(className);
-	sDisplayClassViewRightClick = false;
-	}
-    else
-	{
-	gOovGui.displayClass(className);
+	std::string className = gOovGui.getSelectedClass();
+	if(sDisplayClassViewRightClick)
+	    {
+	    gOovGui.addClass(className);
+	    sDisplayClassViewRightClick = false;
+	    }
+	else
+	    {
+	    gOovGui.displayClass(className);
+	    }
 	}
     }
 
@@ -911,21 +895,32 @@ extern "C" G_MODULE_EXPORT void on_OperationsTreeview_cursor_changed(
     gOovGui.displayOperation(className, operName, isConst);
     }
 
+class NotebookHandler
+    {
+    public:
+	enum ePageIndices { PI_Component, PI_Zone, PI_Class, PI_Seq, PI_Journal };
+	int mCurrentPage;
+    };
+
+NotebookHandler gNotebook;
+
 extern "C" G_MODULE_EXPORT void on_JournalTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    gOovGui.getJournal().setCurrentRecord(gOovGui.getSelectedJournalIndex());
-    gtk_widget_queue_draw(gOovGui.getBuilder().getWidget("DiagramDrawingarea"));
+    if(gNotebook.mCurrentPage == NotebookHandler::PI_Journal)
+	{
+	gOovGui.getJournal().setCurrentRecord(gOovGui.getSelectedJournalIndex());
+	gtk_widget_queue_draw(gOovGui.getBuilder().getWidget("DiagramDrawingarea"));
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_ModuleTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    if(gOovGui.isProjectOpen())
+    // The component list should be available all the time as long as a
+    // component can be selected.
+//    if(gOovGui.getProject().isAnalysisReady())
 	{
-	gOovGui.getJournal().displayComponents();
-	gOovGui.updateJournalList();
-
 	std::string fn = gOovGui.getSelectedComponent();
 	if(fn.length() > 0)
 	    {
@@ -937,7 +932,7 @@ extern "C" G_MODULE_EXPORT void on_ModuleTreeview_cursor_changed(
 extern "C" G_MODULE_EXPORT void on_ZoneTreeview_cursor_changed(
 	GtkWidget *widget, gpointer data)
     {
-    if(gOovGui.isProjectOpen())
+    if(gOovGui.getProject().isAnalysisReady())
 	{
 	ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
 	if(zoneDiagram)
@@ -972,7 +967,7 @@ extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_release_event(
     if(event->button != 1)
 	{
 	handled = true;
-	if(gOovGui.isProjectOpen())
+	if(gOovGui.getProject().isAnalysisReady())
 	    {
 	    ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
 	    if(zoneDiagram)
@@ -988,31 +983,34 @@ extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_release_event(
 extern "C" G_MODULE_EXPORT void on_ListNotebook_switch_page(GtkNotebook *notebook,
 	GtkWidget *page, guint page_num, gpointer user_data)
     {
+    gNotebook.mCurrentPage = page_num;
     switch(page_num)
 	{
-	case 0:
+	case NotebookHandler::PI_Component:
 	    gOovGui.clearSelectedComponent();;
-	    on_ModuleTreeview_cursor_changed(nullptr, nullptr);
+	    gOovGui.getJournal().displayComponents();
+	    gOovGui.updateJournalList();
 	    break;
 
-	case 1:
-	    if(gOovGui.isProjectOpen())
+	case NotebookHandler::PI_Zone:
+	    if(gOovGui.getProject().isAnalysisReady())
 		{
 		gOovGui.getJournal().displayWorldZone();
+		gOovGui.updateJournalList();
 		}
 	    break;
 
-	case 2:
+	case NotebookHandler::PI_Class:
 	    on_ClassTreeview_cursor_changed(nullptr, nullptr);
 	    break;
 
 	// Operation is always related to class, so it must be initialized
 	// to first operation of class.
-	case 3:
-//	    on_OperationsTreeview_cursor_changed(nullptr, nullptr);
+	case NotebookHandler::PI_Seq:
+	    on_OperationsTreeview_cursor_changed(nullptr, nullptr);
 	    break;
 
-	case 4:
+	case NotebookHandler::PI_Journal:
 	    on_JournalTreeview_cursor_changed(nullptr, nullptr);
 	    break;
 	}
@@ -1032,6 +1030,11 @@ extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_press_event(
 	    }
 	}
     return FALSE;
+    }
+
+extern "C" G_MODULE_EXPORT void on_ProjectStatsMenuitem_activate(GtkWidget *widget, gpointer data)
+    {
+    gOovGui.displayProjectStats();
     }
 
 extern "C" G_MODULE_EXPORT void on_HelpAboutmenuitem_activate(GtkWidget *widget, gpointer data)

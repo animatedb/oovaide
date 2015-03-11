@@ -29,6 +29,7 @@ class OovStringVec:public std::vector<class OovString>
     public:
 	using vector::vector;
 	OovString getStr(size_t index);
+	void deleteEmptyStrings();
     };
 
 class OovStringSet:public std::set<class OovString>
@@ -99,6 +100,7 @@ class OovStringRef:public OovStringRefInterface<OovStringRef>
 	    {}
 	char operator[] (int index) const
 	    { return mStr[index]; }
+	int length() const;
 	char const * const getStr() const
 	    { return mStr; }
 	operator char const * const() const
@@ -131,6 +133,7 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
 	void setUpperCase(OovStringRef const str);
 	void setLowerCase(OovStringRef const str);
 	void appendInt(int val, int radix=10);
+	void appendFloat(float val);
 	void join(OovStringVec const &tokens, char delim)
 	    { *this = StringJoin(tokens, delim); }
 	OovString makeXml() const

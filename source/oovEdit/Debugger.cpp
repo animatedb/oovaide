@@ -104,7 +104,7 @@ void DebuggerBase::changeChildState(DebuggerChildStates state)
 
 #if(!USE_LLDB)
 DebuggerGdb::DebuggerGdb():
-    mBkgPipeProc(*this), mCommandIndex(0), mFrameNumber(0), mCurrentThread(1)
+    mBkgPipeProc(this), mCommandIndex(0), mFrameNumber(0), mCurrentThread(1)
     {
     // It seems like "-exec-run" must be used to start the debugger,
     // so this is needed to prevent it from running to the end when

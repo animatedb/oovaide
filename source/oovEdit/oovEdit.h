@@ -114,11 +114,11 @@ class Editor:public DebuggerListener
 	void editPreferences();
 	void setPreferencesWorkingDir();
 	void idleDebugStatusChange(eDebuggerChangeStatus st);
-	virtual void DebugOutput(OovStringRef const str)
+	virtual void DebugOutput(OovStringRef const str) override
 	    {
 	    mDebugOut.append(str);
 	    }
-	virtual void DebugStatusChanged()
+	virtual void DebugStatusChanged() override
 	    {
 	    }
 	void debugSetStackFrame(OovStringRef const frameLine);

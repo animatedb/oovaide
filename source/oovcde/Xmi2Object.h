@@ -98,10 +98,10 @@ class XmiParser:private XmlParser
         void updateDeclTypeIndices(ModelTypeRef &decl);
         void updateStatementTypeIndices(ModelStatements &stmt);
         void updateTypeIndices();
-        virtual void onOpenElem(char const * const name, int len);
-        virtual void onCloseElem(char const * const /*name*/, int /*len*/);
+        virtual void onOpenElem(char const * const name, int len) override;
+        virtual void onCloseElem(char const * const /*name*/, int /*len*/) override;
         virtual void onAttr(char const * const name, int &nameLen,
-        	char const * const val, int &valLen);
+        	char const * const val, int &valLen) override;
         void addClass(const ModelClassifier *obj);
         void addAttrs(const ModelClassifier *obj);
         void addOpers(const ModelClassifier *obj);

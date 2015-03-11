@@ -58,21 +58,21 @@ class NullDrawer:public DiagramDrawer
 	    { cr = c; }
 	bool haveCr() const
 	    { return(cr != nullptr); }
-	virtual void setDiagramSize(GraphSize size)
+	virtual void setDiagramSize(GraphSize size) override
 	    {}
-	virtual void drawRect(const GraphRect &rect)
+	virtual void drawRect(const GraphRect &rect) override
 	    {}
 	virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
-		bool dashed=false)
+		bool dashed=false) override
 	    {}
-	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor)
+	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor) override
 	    {}
-	virtual void drawPoly(const OovPolygon &poly, Color fillColor)
+	virtual void drawPoly(const OovPolygon &poly, Color fillColor) override
 	    {}
-	virtual void drawText(const GraphPoint &p, OovStringRef const text)
+	virtual void drawText(const GraphPoint &p, OovStringRef const text) override
 	    {}
-	virtual float getTextExtentWidth(OovStringRef const name) const;
-	virtual float getTextExtentHeight(OovStringRef const name) const;
+	virtual float getTextExtentWidth(OovStringRef const name) const override;
+	virtual float getTextExtentHeight(OovStringRef const name) const override;
     protected:
 	cairo_t *cr;
     };
@@ -84,20 +84,20 @@ class CairoDrawer:public NullDrawer
 	CairoDrawer(cairo_t *c):
 	    NullDrawer(c)
 	    {}
-	virtual void setDiagramSize(GraphSize size)
+	virtual void setDiagramSize(GraphSize size) override
 	    {}
-	virtual void setFontSize(double size);
-	virtual void drawRect(const GraphRect &rect);
+	virtual void setFontSize(double size) override;
+	virtual void drawRect(const GraphRect &rect) override;
 	virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
-		bool dashed=false);
-	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor);
-	virtual void drawPoly(const OovPolygon &poly, Color fillColor);
-	virtual void drawText(const GraphPoint &p, OovStringRef const text);
-	virtual void groupShapes(bool start, Color fillColor);
-	virtual void groupText(bool start);
+		bool dashed=false) override;
+	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor) override;
+	virtual void drawPoly(const OovPolygon &poly, Color fillColor) override;
+	virtual void drawText(const GraphPoint &p, OovStringRef const text) override;
+	virtual void groupShapes(bool start, Color lineColor, Color fillColor) override;
+	virtual void groupText(bool start) override;
 
 	void setColor(Color c)
-	    { cairo_set_source_rgb(cr, c.red/255.0, c.blue/255.0, c.green/255.0); }
+	    { cairo_set_source_rgb(cr, c.red/255.0, c.green/255.0, c.blue/255.0); }
     private:
 	Color mFillColor;
 	Color mLineColor;

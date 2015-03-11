@@ -86,11 +86,12 @@ void CairoDrawer::drawText(const GraphPoint &p, OovStringRef const text)
     cairo_show_text(cr, text);
     }
 
-void CairoDrawer::groupShapes(bool start, Color fillColor)
+void CairoDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
     {
     if(start)
 	{
 	mFillColor = fillColor;
+	mLineColor = lineColor;
 	cairo_set_line_width(cr, 1);
 	}
     }

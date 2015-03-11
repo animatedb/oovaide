@@ -26,9 +26,11 @@
 	}
 #endif
 
-void ClassGraph::initialize(GtkWidget *drawingArea)
+void ClassGraph::initialize(GtkWidget *drawingArea,
+	OovTaskStatusListener *taskStatusListener)
     {
     mDrawingArea = drawingArea;
+    mTaskStatusListener = taskStatusListener;
 // This is set in glade.
 //    gtk_widget_add_events(mDrawingArea, GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK |
 //	    GDK_FOCUS_CHANGE_MASK);
@@ -80,11 +82,11 @@ void ClassGraph::updateGenes(const ModelData &modelData,
     if(mNodes.size() > 1)
 	{
 	mGenes.initialize(*this, getAvgNodeSize());
-	mGenes.updatePositionsInGraph(*this);
+	mGenes.updatePositionsInGraph(*this, mTaskStatusListener, *this);
 	}
     else
 	{
-	/// @todo - need to place single node
+	// single node just ends up at 0,0
 	}
     redraw();
     }
@@ -227,6 +229,47 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
 	}
     }
 
+class RecursiveBackgroundLevel
+    {
+    public:
+	RecursiveBackgroundLevel():
+	    mLevel(0)
+	    {}
+	int mLevel;
+    };
+
+class RecursiveBackgroundDialog:public BackgroundDialog
+    {
+    public:
+	RecursiveBackgroundDialog(int &level):
+	    mLevel(level)
+	    { ++mLevel; }
+	~RecursiveBackgroundDialog()
+	    { --mLevel; }
+	void startTask(char const *str, size_t totalIters)
+	    {
+	    if(mLevel == 1)
+		BackgroundDialog::startTask(str, totalIters);
+	    }
+	void endTask()
+	    {
+	    if(mLevel == 0)
+		BackgroundDialog::endTask();
+	    }
+	bool updateProgressIteration(int currentIter, OovStringRef text)
+	    {
+	    if(mLevel == 1)
+		{
+		return BackgroundDialog::updateProgressIteration(currentIter, text);
+		}
+	    else
+		return true;
+	    }
+
+    private:
+	int &mLevel;
+    };
+
 void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType *type,
 	const ClassNodeDrawOptions &options, eAddNodeTypes addType, int maxDepth)
     {
@@ -248,13 +291,12 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 		}
 	    addNode(ClassNode(type, options));
 	    }
-	backDlg.setDialogText("Adding user relations.");
-	backDlg.setProgressIterations(model.mTypes.size());
+	backDlg.startTask("Adding relations.", model.mTypes.size());
 	for(size_t i=0; i<model.mTypes.size(); i++)
 	    {
 	    addRelatedNodesRecurseUser(model, type, model.mTypes[i].get(), options,
 		    addType, maxDepth);
-	    if(!backDlg.updateProgressIteration(i))
+	    if(!backDlg.updateProgressIteration(i, nullptr))
 		{
 		break;
 		}
@@ -262,7 +304,6 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 	const ModelClassifier *classifier = type->getClass();
 	if(classifier)
 	    {
-	    backDlg.setDialogText("Adding member relations.");
 	    addNode(ClassNode(classifier, options));
 	    if((addType & AN_MemberChildren) > 0)
 		{
@@ -332,7 +373,7 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 		    }
 		}
 	    }
-	backDlg.setDialogText("Done adding relations.");
+	backDlg.endTask();
 	}
     }
 
@@ -454,7 +495,7 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 
 void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options,
 	char const * const className, ClassGraph::eAddNodeTypes addType,
-	int nodeDepth, bool clear)
+	int nodeDepth)
     {
     static int depth = 0;
     depth++;
@@ -464,10 +505,6 @@ void ClassGraph::addNode(const ModelData &model, const ClassDrawOptions &options
 	const ModelClassifier *classifier = type->getClass();
 	if(classifier)
 	    {
-	    if(clear)
-		{
-		clearGraph();
-		}
 	    if(mNodes.size() == 0 && options.drawRelationKey)
 		{
 		addRelationKeyNode(options);
@@ -523,7 +560,8 @@ GraphSize ClassGraph::getNodeSizeWithPadding(int nodeIndex) const
 
 GraphSize ClassGraph::updateGraph(const ModelData &modelData, const ClassDrawOptions &options)
     {
-    updateGenes(modelData, options);
+    stopAndWaitForCompletion();
+    addTask(ClassGraphBackgroundItem(&modelData, &options));
     return(getGraphSize());
     }
 
