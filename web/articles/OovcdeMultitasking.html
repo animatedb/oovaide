@@ -1,0 +1,120 @@
+<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<!-- DC Blaha - 3/10/2015 -->
+
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+<title>Oovcde Multitasking</title>
+
+</head>
+
+
+<body>
+<h1>Oovcde Multitasking</h1>
+
+The Oovcde program uses many types of multitasking.  This provides a brief
+explanation of the design and implementation, and what design issues are handled.
+
+<ul>
+<li>How many threads are run</li>
+<li>How to stop and start threads</li>
+<li>Whether to fail requests when busy, or stop and start new request</li>
+<li>How is output status handled</li>
+<li>How to isolate GUI thread</li>
+</ul>
+
+<h2>Editor Highlighting</h2>
+	The OovEditor uses a background thread to run CLang in order to perform
+	syntax highlighting.
+	Since the compiler cannot be stopped, a check is made at completion to see
+	if there were any changes since it was started, and CLang is restarted if so.
+	When the highlight information is updated, the foreground thread applies the
+	information to the editor view.
+<p/>
+	When the view is loaded or edited, a highlight request is made using 
+	<a href="TaskBackgroundQueue.html">ThreadedWorkBackgroundQueue</a>
+	class that indicates that highlighting is needed.
+	The ThreadedWorkBackgroundQueue provides a single background thread that
+	starts CLang when the request is made, and updates the highlight information.
+	The GUI idle processing is used to update the view with the new highlight
+	information.
+<p/>
+	At the moment, there is a single thread for each file view.
+
+<h2>Builder</h2>
+	The OovBuilder runs CLang to compile analysis information, and to compile
+	object files. It also runs other build tools such as nm, and ar, to
+	get symbol names, build libraries, and to link programs.  The goal is to
+	run as many processes at once while not bogging down the system too much.
+	The output is sent to the calling program using stdout and stderr,
+	so that the user can see the output status of each of the build tools.
+<p/>
+	When a project is analyzed or built, many source files must be compiled
+	using CLang or one of the other build tools. The build tool process name,
+	source file name, and arguments are queued using the
+	<a href="TaskWaitQueue.html">ThreadedWorkWaitQueue</a>
+	class. This queue runs many background threads that each wait from
+	something to be put on the queue.  The client thread only puts things on
+	the queue if the queue is empty. This reduces the amount of memory used
+	since many files may have to be processed.
+
+<h2>Oovcde</h2>
+	The Oovcde program performs many types of background tasks that are
+	described below.
+
+<h3>Building</h3>
+	The Oovcde program runs the OovBuilder on a background thread so that
+	other tasks can be performed during a build.  The std output of the
+	builder program shows up in a view in the Oovcde program.
+<p/>
+	The Oovcde program runs the background builder process using the
+	OovBackgroundPipeProcess class.  This class has a background thread
+	that listens to the stdout and
+	stderr of the OovBuilder, and calls a listener callback.  The Oovcde
+	program buffers this data and updates the view with the GUI idle
+	processing.  The Oovcde program is able to kill the OovBuilder
+	child process at any time.
+
+<h3>Loading Analysis Files</h3>
+	The Oovcde program takes some time to load the analysis files for
+	large projects.  During this time, a non-modal screen is displayed
+	which shows progress, and allows cancelling the loading of files.
+	Requesting a new load while busy will allow the user to continue
+	the original load, or start the new load.
+<p/>
+	When the analysis files are loaded, the 
+	<a href="TaskBackgroundQueue.html">ThreadedWorkBackgroundQueue</a>
+	class is used that indicates that the analysis must be performed.
+	A listener is used so that the background thread can update progress
+	status.  The Oovcde program updates the status using the GUI idle
+	processing and allows the user to abort placement.
+	An analysis status flag is also updated by the worker
+	thread.  This flag is used to fail client function requests until
+	the analysis has ended.  The GUI part of the Oovcde program detects
+	the failure, and displays a message to the user to request whether
+	to stop and start the new job, or let the old job continue.
+
+<h3>Updating the Class Graph</h3>
+	The Oovcde program takes time to update class graphs since it
+	uses a genetic algorithm to optimize class placement in diagrams.
+<p/>
+	When the graph must be updated, the 
+	<a href="TaskBackgroundQueue.html">ThreadedWorkBackgroundQueue</a>
+	class is used that indicates that the placement must be performed.
+	When the placement is complete, it requests the GUI to redraw.
+	Apparently this GUI provided queue function is thread safe.
+	A listener is used so that the background thread can update progress
+	status.  The Oovcde program updates the status using the GUI idle
+	processing and allows the user to abort placement.
+	When the GUI requests the graph to update, and it is already busy,
+	it simply stops the current placement and starts the next placement
+	without notifying the user.
+
+</body>
+</html>

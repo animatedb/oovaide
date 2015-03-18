@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<html>
+<!-- DC Blaha - 2/6/2015 -->
+
+<head>
+<link rel="stylesheet" type="text/css" href="../style.css">
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<title>Oovcde Duplicate Code Detection</title>
+</head>
+
+<body>
+
+<h1>Oovcde Duplicate Code Detection</h1>
+<h2>Code Parsing</h2>
+Many duplicate detection programs use a source line as the code chunk size
+(comparison chunk) for comparison.
+They may strip comments, remove spaces, or perform other transformations on
+each line.  They then compare lines to see where there are matches.
+This could mean that long lines do not show up in the output since multiple
+lines must match to show up in the output.
+<p/>
+The Oovcde project uses CLang to parse the C++ source files.  Oovcde does this at
+the same time as it parses the project for class relationship information during
+the analysis phase if the -dups switch is used during the analysis phase.
+<p/>
+As the source is parsed and converted into an Abstract Syntax Tree (AST),
+each statement is broken into its child parts. As an example, this means
+that an "if" statement will be separated into the conditional part, the
+body of the "if", and the body of the "else" if it exists.
+Another example is that a compound statement will be separated into each
+of the child statements.  Each statement part is used as a comparison chunk, and
+anything else other than statements from the AST is also used as a comparison chunk.
+
+<h2>Hashing</h2>
+Each comparison chunk is hashed using the djb2 hash function and saved as
+a 32 bit hash.  The djb2 hash function is a simple function that seems to
+have very few collisions when used with source code.  Since the Oovcde program
+will only output duplicates if it finds some number of hashes in a row, then
+it is very suitable for this use.
+<p/>
+For each source file, a duplicate code file is created that contains all of
+the hashes, and the source line number for each hash.
+
+<h2>Outputting Duplicate Information</h2>
+After the analysis phase has produced the duplicate code hash files, the user
+can invoke the menu to perform the comparison of hash files.  Each file is
+compared with every other file including itself.
+<p/>
+The output lists the number of lines that match, each source file, and
+the starting line number of the match for each source file.
+At the moment, the output may look something like the following:
+<pre>
+lines=3
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ComponentBuilder.cpp 76
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ComponentBuilder.cpp 102
+lines=4
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ComponentBuilder.cpp 136
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ComponentBuilder.cpp 168
+lines=10
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ComponentBuilder.cpp 643
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ComponentBuilder.cpp 652
+lines=3
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ComponentBuilder.cpp 210
+  C:/test/trunk-oovcde-win/dups/oovBuilder/ObjSymbols.cpp 348
+</pre>
+
+</body>
+</html>

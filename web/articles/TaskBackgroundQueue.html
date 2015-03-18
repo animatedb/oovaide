@@ -1,0 +1,42 @@
+<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<!-- DC Blaha - 3/10/2015 -->
+
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+<title>Background Task Queue</title>
+
+</head>
+
+
+<body>
+<h1>Background Task Queue</h1>
+
+Last updated: March 10, 2015<br>
+
+The Oovcde project has many types of multitasking that must be performed that
+are described in <a href="OovcdeMultitasking.html">OovcdeMultitasking</a>.
+The queue described here copies from <a href="TaskWaitQueue.html">ThreadedWorkWaitQueue</a>.
+<p/>
+This queue provides a single thread for processing background queued items.
+The following functions are available to the client:
+<ul>
+<li>addTask</li>
+<li>stopAndWaitForCompletion</li>
+<li>isQueueBusy</li>
+</ul>
+Each item is processed on the background thread from the processItem function.
+For long running tasks, the function called from processItem can query the
+continueProcessingItem function so that long running tasks can abort.
+<p/>
+There is a class in OovProcess.h named OovTaskStatusListener that can be called from
+the processItem function.  This status can be buffered by the GUI so that the
+BackgroundDialog class in Gui.h can display the status from the GUI idle processing.
+
+</body>

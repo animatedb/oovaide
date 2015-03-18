@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="276" height="74">
+<g font-size="10.000000">
+<g  fill="#f5fff5" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="7" y="7" width="75" height="9" />
+</g>
+<text x="9" y="14">llvm::DIELabel</text>
+</g>
+<g font-size="10.000000">
+<g  fill="#f5fff5" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="89" y="7" width="90" height="9" />
+</g>
+<text x="91" y="14">llvm::raw_ostream</text>
+</g>
+<g font-size="10.000000">
+<g  fill="#f5fff5" stroke="rgb(0,0,0)" style="stroke-width:1">
+<rect x="186" y="7" width="83" height="9" />
+</g>
+<text x="188" y="14">llvm::MCSymbol</text>
+</g>
+<g  fill="#f5fff5" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="7" y1="29" x2="44" y2="29" style="stroke-dasharray: 4, 4 "/>
+<line x1="40" y1="25" x2="44" y2="29" />
+<line x1="40" y1="33" x2="44" y2="29" />
+<line x1="44" y1="36" x2="134" y2="36" />
+<line x1="130" y1="32" x2="134" y2="36" />
+<line x1="130" y1="40" x2="134" y2="36" />
+<line x1="44" y1="50" x2="227" y2="50" style="stroke-dasharray: 4, 4 "/>
+<line x1="223" y1="46" x2="227" y2="50" />
+<line x1="223" y1="54" x2="227" y2="50" />
+<line x1="44" y1="64" x2="134" y2="64" />
+<line x1="130" y1="60" x2="134" y2="64" />
+<line x1="130" y1="68" x2="134" y2="64" />
+<polygon points="" style="fill:#f5fff5" />
+</g>
+<g font-size="10.000000">
+<text x="7" y="25">print</text>
+<text x="46" y="32">operator&lt;&lt;</text>
+<text x="46" y="46">getName</text>
+<text x="46" y="60">operator&lt;&lt;</text>
+</g>
+<g  fill="#f5fff5" stroke="rgb(0,0,0)" style="stroke-width:1">
+<line x1="44" y1="16" x2="44" y2="74" />
+<line x1="134" y1="16" x2="134" y2="74" />
+<line x1="227" y1="16" x2="227" y2="74" />
+</g>
+</svg>

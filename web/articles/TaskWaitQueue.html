@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<!-- DC Blaha - 1/1/2014 -->
+<head>
+<link rel="stylesheet" type="text/css" href="../style.css">
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<title>Oovcde Task Queue</title>
+</head>
+
+<body>
+<h1>C++11 Task Queue</h1>
+Last updated: May 23, 2014<br>
+<h2>Overview</h2>
+The Oovcde project needed a task queue where a provider could put work items to
+ work on in a queue, and multiple consumer threads would process the work items.
+ One key point is that the queue should not grow too large as the provider is
+ placing items on the queue, in the case that the consumer's are not processing
+ the queue as quickly as the provider is adding them.
+ In other words, the provider should block if all of the consumer threads are busy.<br>
+<br>
+The starting point for this queue is from this article: 
+<a href="http://www.justsoftwaresolutions.co.uk/threading/
+implementing-a-thread-safe-queue-using-condition-variables.html">
+Implementing a Thread-Safe Queue using Condition Variables</a>.
+<br>
+
+
+<h2>Provider Add to Queue</h2>
+The provider calls the waitPush function. The pseudocode for the waitPush function is:<br><br>
+<pre>void OovThreadSafeQueue::waitPush(QueueItem const &amp;workItem)
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp; std::unique_lock&lt;std::mutex&gt; lock(mProcessQueueMutex);
+&nbsp;&nbsp;&nbsp; // Wait while not empty
+&nbsp;&nbsp;&nbsp; while(!isQueueEmpty())
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Release lock and wait for signal.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mConsumerPoppedSignal.wait(lock);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // After signaled, lock is reaquired.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp;  push_back(workItem);<br>
+&nbsp;&nbsp;&nbsp; lock.unlock();
+&nbsp;&nbsp;&nbsp; // Signal to waitPop that data is ready.
+&nbsp;&nbsp;&nbsp; mProviderPushedSignal.notify_one();
+&nbsp;&nbsp;&nbsp; }</pre>
+<br>The mConsumerPoppedSignal and mProviderPushedSignal are declared in the header file like:<br>
+<pre>
+&nbsp;&nbsp;&nbsp; std::condition_variable&nbsp; mConsumerPoppedSignal;
+</pre>
+<br>One key aspect is that the wait does not sleep and periodically wake up. It waits
+for a signal (either from notify_one or notify_all), and wakes up to add more to the
+queue when a consumer thread signals
+that an item is read from the queue. The mConsumerPoppedSignal.wait() function will
+release the unique_lock, wait for a signal, and then reaquires the lock when the
+wait function continues.
+<br><br>
+The waitPop function that is called from the consumer threads works in a similar manner.
+
+
+<h2>Consumer Read from Queue</h2>
+Here is the pseudocode for the waitPop function.
+<pre>
+bool OovThreadSafeQueue::waitPop(QueueItem &amp;workItem)
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp; std::unique_lock<std::mutex> lock(mProcessQueueMutex);
+&nbsp;&nbsp;&nbsp; bool gotItem = false;
+&nbsp;&nbsp;&nbsp; // Wait while empty
+&nbsp;&nbsp;&nbsp; while(isQueueEmpty() && !mQuitPopping)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // Release lock and wait for signal.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mProviderPushedSignal.wait(lock);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; // After signaled, lock is reaquired.
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+
+&nbsp;&nbsp;&nbsp; // In the normal case this will not be empty.
+&nbsp;&nbsp;&nbsp; // If it is empty, then there was a signal, but nothing was
+&nbsp;&nbsp;&nbsp; // in the queue. This means that the quit function was called.
+&nbsp;&nbsp;&nbsp; gotItem = !isQueueEmpty();
+&nbsp;&nbsp;&nbsp; if(gotItem)
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; { getFront(item); }
+
+&nbsp;&nbsp;&nbsp; lock.unlock();
+&nbsp;&nbsp;&nbsp; mConsumerPoppedSignal.notify_one();
+&nbsp;&nbsp;&nbsp; return gotItem;
+&nbsp;&nbsp;&nbsp; }
+</pre>
+There is an extra piece of code here, and that is the check for mQuitPopping.
+This allows the consumer to indicate that the consumer threads can quit waiting,
+which will allow the threads to end.
+
+
+<h2>Provider Wait and Quit</h2>
+This function can set the mQuitPopping flag, and then wait for the queue to become
+empty in the same manner as waitPush.
+The provider can signal all consumer threads to end waiting for a signal.
+At this point, the queue will be empty, but the consumer threads may still
+be working on the queued task item.
+If the threads are joined by the provider, that means all work has been
+completed. Once the threads are joined, then this means there has been a clean
+shutdown of all threads.
+<pre>
+void OovThreadSafeQueuePrivate::quitPopsPrivate()
+&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp; std::unique_lock<std::mutex> lock(mProcessQueueMutex);
+&nbsp;&nbsp;&nbsp; mQuitPopping = true;
+&nbsp;&nbsp;&nbsp; // Wait to make sure all queue items were processed.
+&nbsp;&nbsp;&nbsp; while(!isQueueEmpty())
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; {
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; mConsumerPoppedSignal.wait(lock);
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; }
+&nbsp;&nbsp;&nbsp; lock.unlock();
+&nbsp;&nbsp;&nbsp; mProviderPushedSignal.notify_all();
+&nbsp;&nbsp;&nbsp; }
+</pre>
+When they wake up, they will check the mQuitPopping flag, and can quit the wait
+function.
+
+<h2>Reducing Code Bloat</h2>
+In the Oovcde project, the thread safe queue will be instantiated many times.
+To reduce code bloat, the push and pop functions are moved into a separate
+non-template class, and then a template class is used to call them.
+An example of how to do this is described here:
+<a href="http://eugenedruy.wordpress.com/2009/07/19/refactoring-template-bloat/">
+Refactoring template bloat</a>
+
+<h2>Threads</h2>
+Once the queue is complete, another class can be written that manages the
+threads. The threads can be defined as:
+<pre>&nbsp;&nbsp;&nbsp;std::vector&lt;std::thread&gt; mWorkerThreads;</pre>
+Then call push_back with a thread constructor. At the end, then set the
+flag to quit the pops after all items have been added to the queue, and
+then call join on all threads.  The complete example can be seen in the
+OovThreadedQueue header and source file in the Oovcde project on both SourceForge
+and GitHub. The files are in Github here:
+<a href="https://github.com/animatedb/oovcde/blob/master/source/oovCommon/OovThreadedQueue.h">
+GitHub/oovcde/OovThreadedQueue.h</a>
+<br>
+<a href="https://github.com/animatedb/oovcde/blob/master/source/oovCommon/OovThreadedQueue.cpp">
+GitHub/oovcde/OovThreadedQueue.cpp</a>
+
+<h2>Other Factors</h2>
+The MinGW project does not support some of these features yet. But the MinGW-builds
+project does, so that the code is portable on both Windows or Linux.
+<br>
+The Oovcde project does not have the cleanest implementation, but is usable and
+can be used as an example.  I would like to get rid of more of the virtual functions,
+and instead use template functions, but haven't completed it yet.
+An example is in this article:
+<a href="http://stackoverflow.com/questions/16988450/c-using-templates-instead-of-virtual-functions">
+Use templates instead of virtual functions</a>
+
