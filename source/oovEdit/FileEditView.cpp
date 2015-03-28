@@ -623,7 +623,7 @@ extern "C" G_MODULE_EXPORT void on_CompletionListTreeview_focus_out_event(GtkWid
     sCurrentCompleteList->lostFocus();
     }
 
-extern "C" G_MODULE_EXPORT boolean on_CompletionListTreeview_draw(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT bool on_CompletionListTreeview_draw(GtkWidget *widget, gpointer data)
     {
     sCurrentCompleteList->resize();
     return false;
