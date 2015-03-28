@@ -128,7 +128,9 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, int bufLen,
 //    unsigned options = clang_defaultEditingTranslationUnitOptions();
     // This is needed to support include directives.
 //    options |= CXTranslationUnit_DetailedPreprocessingRecord;
-    unsigned options = clang_defaultCodeCompleteOptions();
+// These options are not for the parse function, they are for the code complete at func.
+//    unsigned options = clang_defaultCodeCompleteOptions();
+    unsigned options = clang_defaultEditingTranslationUnitOptions();
     if(!mSourceFile)
 	{
 	mSourceFilename = fileName;
@@ -308,6 +310,12 @@ static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
     return cursor;
     }
 
+void Tokenizer::getLineColumn(int charOffset, unsigned int &line, unsigned int &column)
+    {
+    CXSourceLocation loc = clang_getLocationForOffset(mTransUnit, mSourceFile, charOffset);
+    clang_getSpellingLocation(loc, nullptr, &line, &column, nullptr);
+    }
+
 
 // Desired functions:
 //	Go to definition of variable/function
@@ -436,6 +444,47 @@ static CXChildVisitResult visitClass(CXCursor cursor, CXCursor parent,
     // return CXChildVisit_Recurse;
     }
 
+#if(CODE_COMPLETE)
+OovStringVec Tokenizer::codeComplete(int offset)
+    {
+    OovStringVec strs;
+    unsigned options = 0;
+// This gets more than we want.
+//    unsigned options = clang_defaultCodeCompleteOptions();
+    unsigned int line;
+    unsigned int column;
+    getLineColumn(offset, line, column);
+    CXCodeCompleteResults *results = clang_codeCompleteAt(mTransUnit,
+	    mSourceFilename.getStr(), line, column,
+	    nullptr, 0, options);
+    if(results)
+	{
+	clang_sortCodeCompletionResults(&results->Results[0], results->NumResults);
+	for(size_t ri=0; ri<results->NumResults /*&& ri < 50*/; ri++)
+	    {
+	    OovString str;
+	    CXCompletionString compStr = results->Results[ri].CompletionString;
+	    size_t numChunks = clang_getNumCompletionChunks(compStr);
+	    for(size_t ci=0; ci<numChunks && ci < 30; ci++)
+		{
+		CXCompletionChunkKind chunkKind = clang_getCompletionChunkKind(compStr, ci);
+		if(chunkKind == CXCompletionChunk_TypedText)
+		    {
+		    CXStringDisposer chunkStr = clang_getCompletionChunkText(compStr, ci);
+		    if(str.length() != 0)
+			str += ' ';
+		    str += chunkStr;
+		    }
+		}
+	    strs.push_back(str);
+	    }
+	clang_disposeCodeCompleteResults(results);
+	}
+    return strs;
+    }
+
+#else
+
 OovStringVec Tokenizer::getMembers(int offset)
     {
     OovStringVec members;
@@ -466,6 +515,7 @@ OovStringVec Tokenizer::getMembers(int offset)
     mTransUnitMutex.unlock();
     return members;
     }
+#endif
 
 
 HighlightTag::HighlightTag():
@@ -498,6 +548,112 @@ void HighlightTags::initTags(GtkTextBuffer *textBuffer)
 	}
     }
 
+
+//////////////
+
+void HighlighterBackgroundThreadData::initArgs(OovStringRef const filename,
+	char const * const clang_args[], int num_clang_args)
+    {
+    if(mClang_args.getArgc() == 0)
+	{
+	mFilename = filename;
+	mClang_args.clearArgs();
+	for(int i=0; i<num_clang_args; i++)
+	    {
+	    mClang_args.addArg(clang_args[i]);
+	    }
+	}
+    }
+
+OovStringVec HighlighterBackgroundThreadData::getShowMembersResults()
+    {
+    OovStringVec members = mShowMemberResults;
+    std::lock_guard<std::mutex> lock(mResultsLock);
+    mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_ShowMembers);
+    return members;
+    }
+
+TokenRange HighlighterBackgroundThreadData::getParseResults()
+    {
+    TokenRange retTokens;
+    std::lock_guard<std::mutex> lock(mResultsLock);
+    if(mTaskResults & HT_Parse)
+	{
+	retTokens = std::move(mTokenResults);
+	mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_Parse);
+	}
+    return retTokens;
+    }
+
+void HighlighterBackgroundThreadData::getFindTokenResults(std::string &fn, int &offset)
+    {
+    std::lock_guard<std::mutex> lock(mResultsLock);
+    fn = mFindTokenResultFilename;
+    offset = mFindTokenResultOffset;
+    mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_FindToken);
+    }
+
+void HighlighterBackgroundThreadData::processItem(HighlightTaskItem const &item)
+    {
+    DUMP_THREAD("processItem");
+    switch(item.getTask())
+        {
+        case HT_Parse:
+            {
+            DUMP_THREAD("processItem-Parse");
+            int counter = mParseRequestCounter;
+            mTokenizer.parse(mFilename, item.mParseSourceBuffer,
+                item.mParseSourceBuffer.length(),
+                mClang_args.getArgv(), mClang_args.getArgc());
+            std::lock_guard<std::mutex> lock(mResultsLock);
+            mParseFinishedCounter = counter;
+            mTokenizer.tokenize(mTokenResults);
+            mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_Parse);
+            DUMP_THREAD("processItem-Parse end");
+            }
+            break;
+
+        case HT_FindToken:
+            {
+            OovString fn;
+            int offset;
+            DUMP_THREAD("processItem-FindToken");
+            if(mTokenizer.findToken(item.mFindTokenFt, item.mOffset,
+                fn, offset))
+                {
+		std::lock_guard<std::mutex> lock(mResultsLock);
+                mFindTokenResultFilename = fn;
+                mFindTokenResultOffset = offset;
+                mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_FindToken);
+                }
+            DUMP_THREAD("processItem-FindToken end");
+            }
+            break;
+
+        case HT_ShowMembers:
+            {
+            DUMP_THREAD("processItem-ShowMembers");
+#if(CODE_COMPLETE)
+            OovStringVec vec = mTokenizer.codeComplete(item.mOffset);
+#else
+            OovStringVec vec = mTokenizer.getMembers(item.mOffset);
+#endif
+            std::lock_guard<std::mutex> lock(mResultsLock);
+            mShowMemberResults = vec;
+            mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_ShowMembers);
+            DUMP_THREAD("processItem-ShowMembers end");
+            }
+            break;
+
+        default:
+            break;
+        }
+    }
+
+
+
+//////////////
+
 void Highlighter::highlightRequest(
 	OovStringRef const filename,
 	char const * const clang_args[], int num_clang_args)
@@ -524,16 +680,8 @@ void Highlighter::highlightRequest(
 //    if(startLineY < 1)
 //	startLineY = 1;
 
-    if(mClang_args.getArgc() == 0)
-	{
-	mFilename = filename;
-	mClang_args.clearArgs();
-	for(int i=0; i<num_clang_args; i++)
-	    {
-	    mClang_args.addArg(clang_args[i]);
-	    }
-	}
-    mParseRequestCounter++;
+    mBackgroundThreadData.initArgs(filename, clang_args, num_clang_args);
+    mBackgroundThreadData.makeParseRequest();
     DUMP_THREAD("highlightRequest-end");
     }
 
@@ -541,12 +689,12 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
 	OovStringRef const buffer, int bufLen)
     {
     DUMP_THREAD("highlightUpdate");
-    if(mParseRequestCounter != mParseFinishedCounter)
+    if(mBackgroundThreadData.isParseNeeded())
 	{
 #if(SHARED_QUEUE)
 	if(!sSharedQueue.isQueueBusy())
 #else
-	if(!isQueueBusy())
+	if(!mBackgroundThreadData.isQueueBusy())
 #endif
 	    {
 	    DUMP_THREAD("highlightUpdate - set parse task");
@@ -559,23 +707,19 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
 #if(SHARED_QUEUE)
 	    sSharedQueue.addTask(task);
 #else
-	    addTask(task);
+	    mBackgroundThreadData.addTask(task);
 #endif
 	    }
 	}
-    if(mParseRequestCounter == mParseFinishedCounter)
+    if(!mBackgroundThreadData.isParseNeeded() &&
+	    mBackgroundThreadData.getTaskResults() & HT_Parse)
 	{
-	mResultsLock.lock();
-	if(mTaskResults & HT_Parse)
-	    {
-	    applyTags(gtk_text_view_get_buffer(textView), mTokenResults);
-	    mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_Parse);
-	    }
-	mResultsLock.unlock();
+	applyTags(gtk_text_view_get_buffer(textView), mBackgroundThreadData.getParseResults());
 	}
     DUMP_THREAD("highlightUpdate-end");
-    return mTaskResults;
+    return mBackgroundThreadData.getTaskResults();
     }
+
 
 void Highlighter::showMembers(int offset)
     {
@@ -589,17 +733,8 @@ void Highlighter::showMembers(int offset)
 #if(SHARED_QUEUE)
     sSharedQueue.addTask(task);
 #else
-    addTask(task);
+    mBackgroundThreadData.addTask(task);
 #endif
-    }
-
-OovStringVec Highlighter::getShowMembers()
-    {
-    mResultsLock.lock();
-    OovStringVec members = mShowMemberResults;
-    mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_ShowMembers);
-    mResultsLock.unlock();
-    return members;
     }
 
 void Highlighter::findToken(eFindTokenTypes ft, int origOffset)
@@ -614,17 +749,8 @@ void Highlighter::findToken(eFindTokenTypes ft, int origOffset)
 #if(SHARED_QUEUE)
     sSharedQueue.addTask(task);
 #else
-    addTask(task);
+    mBackgroundThreadData.addTask(task);
 #endif
-    }
-
-void Highlighter::getFindTokenResults(std::string &fn, int &offset)
-    {
-    mResultsLock.lock();
-    fn = mFindTokenResultFilename;
-    offset = mFindTokenResultOffset;
-    mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_FindToken);
-    mResultsLock.unlock();
     }
 
 // On Windows, when tags are applied, 38% of CPU time is used for
@@ -656,59 +782,3 @@ void HighlighterSharedQueue::processItem(HighlightTaskItem const &item)
     item.mHighlighter->processItem(item);
     }
 #endif
-
-void Highlighter::processItem(HighlightTaskItem const &item)
-    {
-    DUMP_THREAD("processItem");
-    switch(item.getTask())
-        {
-        case HT_Parse:
-            {
-            DUMP_THREAD("processItem-Parse");
-            int counter = mParseRequestCounter;
-            mTokenizer.parse(mFilename, item.mParseSourceBuffer,
-                item.mParseSourceBuffer.length(),
-                mClang_args.getArgv(), mClang_args.getArgc());
-            mResultsLock.lock();
-            mParseFinishedCounter = counter;
-            mTokenizer.tokenize(mTokenResults);
-            mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_Parse);
-            mResultsLock.unlock();
-            DUMP_THREAD("processItem-Parse end");
-            }
-            break;
-
-        case HT_FindToken:
-            {
-            OovString fn;
-            int offset;
-            DUMP_THREAD("processItem-FindToken");
-            if(mTokenizer.findToken(item.mFindTokenFt, item.mOffset,
-                fn, offset))
-                {
-                mResultsLock.lock();
-                mFindTokenResultFilename = fn;
-                mFindTokenResultOffset = offset;
-                mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_FindToken);
-                mResultsLock.unlock();
-                }
-            DUMP_THREAD("processItem-FindToken end");
-            }
-            break;
-
-        case HT_ShowMembers:
-            {
-            DUMP_THREAD("processItem-ShowMembers");
-            OovStringVec vec = mTokenizer.getMembers(item.mOffset);
-            mResultsLock.lock();
-            mShowMemberResults = vec;
-            mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_ShowMembers);
-            mResultsLock.unlock();
-            DUMP_THREAD("processItem-ShowMembers end");
-            }
-            break;
-
-        default:
-            break;
-        }
-    }

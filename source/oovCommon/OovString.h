@@ -22,7 +22,9 @@ bool StringToUnsignedInt(char const * const str, unsigned int min,
 size_t StringNumChars(char const * const str);
 bool StringIsAscii(char const * const str);
 int StringCompareNoCase(char const * const str1, char const * const str2);
+int StringCompareNoCaseNumCharsMatch(char const * const str1, char const * const str2);
 size_t StringFindSpace(char const * const str, size_t startPos);
+size_t StringFindNonSpace(char const * const str, size_t startPos);
 
 class OovStringVec:public std::vector<class OovString>
     {
@@ -43,11 +45,11 @@ void StringToLower(class OovString &str);
 class OovString StringJoin(OovStringVec const &tokens, char delimiter);
 class OovString StringMakeXml(char const * const str);
 
-// This template requires T_Str to have a member "char const * const getStr()".
-// getStr() is used instead of c_str so that references to c_str() can be found and removed.
-// This uses CRTP (Curiously recurring template pattern).
-// This class is immutable. It does not do memory allocation or deallocation and
-// does not keep any memory.
+/// This template requires T_Str to have a member "char const * const getStr()".
+/// getStr() is used instead of c_str so that references to c_str() can be found and removed.
+/// This uses CRTP (Curiously recurring template pattern).
+/// This class is immutable. It does not do memory allocation or deallocation and
+/// does not keep any memory.
 template<typename T_Str> class OovStringRefInterface
     {
     public:
@@ -77,15 +79,15 @@ template<typename T_Str> class OovStringRefInterface
     };
 
 
-// This is a constant string reference that does no memory allocation.
-// This will not modify the contents of the source string.
-//
-// The purpose of this class is to replace "const char *" or
-// "const std::string &"
-//
-// The typical usage of this is "OovStringRef const var" and not
-// "OovStringRef const &var".  This allows automatic conversion from a
-// literal string pointer.
+/// This is a constant string reference that does no memory allocation.
+/// This will not modify the contents of the source string.
+///
+/// The purpose of this class is to replace "const char *" or
+/// "const std::string &"
+///
+/// The typical usage of this is "OovStringRef const var" and not
+/// "OovStringRef const &var".  This allows automatic conversion from a
+/// literal string pointer.
 class OovStringRef:public OovStringRefInterface<OovStringRef>
     {
     public:

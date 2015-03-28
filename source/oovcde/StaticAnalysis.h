@@ -11,5 +11,7 @@
 #include "ModelObjects.h"
 
 bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn);
+bool createProjectStats(ModelData const &modelData, std::string &displayStr);
+bool createLineStatsFile(ModelData const &modelData, std::string &fn);
 
 #endif /* STATICANALYSIS_H_ */

@@ -394,8 +394,14 @@ bool ModelWriter::writeFile(OovStringRef const filename)
     if(success)
         {
         int moduleXmiId=MIO_Module;
-        fprintf(mFp, "  <Module id=\"%d\" module=\"%s\" >\n",
-            moduleXmiId, mModelData.mModules[0]->getModulePath().c_str());
+        ModelModule const *module = mModelData.mModules[0].get();
+        fprintf(mFp, "  <Module id=\"%d\" module=\"%s\" codeLines=\"%d\" "
+        	"commentLines=\"%d\" moduleLines=\"%d\" >\n",
+            moduleXmiId, module->getModulePath().c_str(),
+            module->mLineStats.mNumCodeLines,
+            module->mLineStats.mNumCommentLines,
+            module->mLineStats.mNumModuleLines
+            );
         fprintf(mFp, "  </Module>\n");
 #if(DEBUG_WRITE)
         writeDebugStr(std::string("     Types"));

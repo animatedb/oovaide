@@ -474,6 +474,12 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
 		ModelModule *mod = static_cast<ModelModule*>(elItem.mModelObject);
 		if(strcmp(attrName.c_str(), "module") == 0)
 		    mod->setModulePath(attrVal);
+		else if(strcmp(attrName.c_str(), "codeLines") == 0)
+		    mod->mLineStats.mNumCodeLines = getInt(attrVal.c_str());
+		else if(strcmp(attrName.c_str(), "commentLines") == 0)
+		    mod->mLineStats.mNumCommentLines = getInt(attrVal.c_str());
+		else if(strcmp(attrName.c_str(), "moduleLines") == 0)
+		    mod->mLineStats.mNumModuleLines = getInt(attrVal.c_str());
 		}
 		break;
 

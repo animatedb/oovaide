@@ -427,8 +427,17 @@ void CppParser::addOperationParts(CXCursor cursor, bool addParams)
 	FilePath fn(getFileLoc(cursor), FP_File);
 	if(fn == mTopParseFn)
 	    {
+	    // Originally, this code used to pass all children of the method cursor,
+	    // but this caused problems because for some reason the breaks were not
+	    // separating all method signatures.  Most people probably think duplicate
+	    // code detection should discard the parameters of the methods, so this
+	    // is what is done now.
 	    mDupHashFile.appendBreak();
-	    clang_visitChildren(cursor, ::visitFunctionAddDupHashes, this);
+	    CXCursor bodyCursor = getCursorChildKind(cursor, CXCursor_CompoundStmt);
+	    if(!clang_Cursor_isNull(bodyCursor))
+		{
+		clang_visitChildren(bodyCursor, ::visitFunctionAddDupHashes, this);
+		}
 	    }
 	}
     }
@@ -1109,6 +1118,63 @@ CXChildVisitResult CppParser::visitTranslationUnitForIncludes(CXCursor cursor, C
     return CXChildVisit_Continue;
     }
 
+#define LINE_STATS 1
+#if(LINE_STATS)
+ModelModuleLineStats makeLineStats(CXCursor cursor)
+    {
+    unsigned int numCodeLines = 0;
+    unsigned int numCommentLines = 0;
+    unsigned int totalLines = 0;
+    CXSourceRange range = clang_getCursorExtent(cursor);
+    CXToken *tokens = 0;
+    unsigned int nTokens = 0;
+    CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
+    // clang_tokenize is a strange function. Sometimes it returns a last
+    // token that is part of the cursor, and sometimes it returns a last token
+    // that is part of the next cursor.
+    clang_tokenize(tu, range, &tokens, &nTokens);
+    unsigned int lastCommentLine = 0;
+    unsigned int lastCodeLine = 0;
+    for (size_t i = 0; i < nTokens; i++)
+	{
+	CXTokenKind kind = clang_getTokenKind(tokens[i]);
+//	CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
+//	size_t n = std::count(spelling.begin(), spelling.end(), '\n');	// No line feeds in tokens
+	CXSourceRange range = clang_getTokenExtent(tu, tokens[i]);
+	CXSourceLocation startLoc = clang_getRangeStart(range);
+	CXSourceLocation endLoc = clang_getRangeEnd(range);
+	unsigned startLine;
+	unsigned endLine;
+	clang_getExpansionLocation(startLoc, nullptr, &startLine, nullptr, nullptr);
+	clang_getExpansionLocation(endLoc, nullptr, &endLine, nullptr, nullptr);
+	int n = endLine - startLine;
+	if(n == 0)
+	    {
+	    n = 1;
+	    }
+	totalLines = endLine;
+	if(kind == CXToken_Comment)
+	    {
+	    if(lastCommentLine != endLine)
+		{
+		numCommentLines += n;
+		lastCommentLine = endLine;
+		}
+	    }
+	else
+	    {
+	    if(lastCodeLine != endLine)
+		{
+		numCodeLines += n;
+		lastCodeLine = endLine;
+		}
+	    }
+	}
+    clang_disposeTokens(tu, tokens, nTokens);
+    return ModelModuleLineStats(numCodeLines, numCommentLines, totalLines);
+    }
+#endif
+
 CppParser::eErrorTypes CppParser::parse(bool lineHashes, char const * const srcFn,
 	char const * const srcRootDir, char const * const outDir,
 	char const * const clang_args[], int num_clang_args)
@@ -1165,6 +1231,9 @@ CppParser::eErrorTypes CppParser::parse(bool lineHashes, char const * const srcF
 	    {
 	    clang_visitChildren(rootCursor, ::visitTranslationUnit, this);
 	    clang_visitChildren(rootCursor, ::visitTranslationUnitForIncludes, this);
+#if(LINE_STATS)
+	    mModelData.mModules[0].get()->mLineStats = makeLineStats(rootCursor);
+#endif
 	    }
 	catch(...)
 	    {

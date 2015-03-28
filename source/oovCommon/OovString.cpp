@@ -114,6 +114,20 @@ int StringCompareNoCase(char const * const str1, char const * const str2)
     return(*p1-*p2);
     }
 
+int StringCompareNoCaseNumCharsMatch(char const * const str1, char const * const str2)
+    {
+    char const * p1 = str1;
+    char const * p2 = str2;
+    while(*p1)
+	{
+	if(tolower(*p1) != tolower(*p2))
+	    break;
+	p1++;
+	p2++;
+	}
+    return(p1-str1);
+    }
+
 bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInBytes, int radix)
     {
     bool success = false;
@@ -196,6 +210,22 @@ size_t StringFindSpace(char const * const str, size_t startPos)
     while(*p)
 	{
 	if(isspace(*p))
+	    break;
+	else
+	    p++;
+	}
+    if(*p == '\0')
+	return std::string::npos;
+    else
+	return p - str;
+    }
+
+size_t StringFindNonSpace(char const * const str, size_t startPos)
+    {
+    char const * p = str + startPos;
+    while(*p)
+	{
+	if(!isspace(*p))
 	    break;
 	else
 	    p++;

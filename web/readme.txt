@@ -47,7 +47,7 @@ Windows versions:
 		File: "GTK+ 3.6.4 Bundle for Windows"
 			Extract to "C:\Program Files\GTK+-Bundle-3.6.4"
 
-	Clang 3.4, 3.4.1 or 3.5:
+	Clang 3.4-3.6:
 		From: http://llvm.org/releases/download.html
 		File: "Clang for Windows (.sig)"
 			Install to C:\Program Files\LLVM

@@ -425,6 +425,24 @@ private:
     Visibility mAccess;
 };
 
+/// There can be code and comments on the same lines. There can also
+/// be blank lines. So totalling these does not equal the number of
+/// lines in the module.
+class ModelModuleLineStats
+    {
+    public:
+	ModelModuleLineStats(int code=0, int comments=0, int total=0):
+	    mNumCodeLines(code), mNumCommentLines(comments), mNumModuleLines(total)
+	    {}
+	/// The number of lines that have some code on them.
+	unsigned int mNumCodeLines;
+	/// The number of lines that have a comment on them. If the comment
+	/// includes a blank line, it is included in the count.
+	unsigned int mNumCommentLines;
+	/// The total number of lines in the module.
+	unsigned int mNumModuleLines;
+    };
+
 /// This stores the module where an operation or class was defined.
 class ModelModule:public ModelObject
     {
@@ -436,6 +454,7 @@ class ModelModule:public ModelObject
 	    { setName(str); }
 	const std::string &getModulePath() const
 	    { return getName(); }
+	ModelModuleLineStats mLineStats;
     };
 
 /// This is used for references to types in other classes.

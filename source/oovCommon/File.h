@@ -12,7 +12,7 @@
 #include "OovString.h"
 #define __NO_MINGW_LFS 1
 
-/// This is a simple file interface.
+/// This is a simple buffered file interface.
 class File
     {
     public:
@@ -78,7 +78,7 @@ class BaseSimpleFile
 	int mFd;
     };
 
-// non-buffered file
+/// non-buffered file
 class SimpleFile:public BaseSimpleFile
     {
     public:

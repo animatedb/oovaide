@@ -14,6 +14,12 @@
 #include "OovThreadedBackgroundQueue.h"
 #include "OovProcess.h"
 
+#ifdef __linux__
+#define CODE_COMPLETE 0
+#else
+#define CODE_COMPLETE 0
+#endif
+
 struct Token
     {
     CXTokenKind mTokenKind;
@@ -42,13 +48,18 @@ class Tokenizer
 	// line numbers are 1 based.
 	void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
 	bool findToken(eFindTokenTypes ft, int origOffset, std::string &fn, int &offset);
+#if(CODE_COMPLETE)
+	OovStringVec codeComplete(int offset);
+#else
 	OovStringVec getMembers(int offset);
+#endif
 
     private:
 	CXTranslationUnit mTransUnit;
 	std::mutex mTransUnitMutex;
 	CXFile mSourceFile;
-	std::string mSourceFilename;
+	OovString mSourceFilename;
+	void getLineColumn(int charOffset, unsigned int &line, unsigned int &column);
     };
 
 class HighlightTag
@@ -148,23 +159,60 @@ class HighlighterSharedQueue:public ThreadedWorkBackgroundQueue<
     };
 #endif
 
-class Highlighter:public ThreadedWorkBackgroundQueue<
-    class Highlighter, HighlightTaskItem>
+
+// This contains all data that is used by the background thread.
+// This means it also contains all data shared between the foreground and
+// background thread.
+class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
+    class HighlighterBackgroundThreadData, HighlightTaskItem>
     {
     public:
-	Highlighter():
-	    mTaskResults(HT_None), mFindTokenResultOffset(0),
-		mParseRequestCounter(0), mParseFinishedCounter(0)
-	    {
-	    }
-	~Highlighter()
+	HighlighterBackgroundThreadData():
+	    mParseRequestCounter(0), mParseFinishedCounter(0),
+	    mTaskResults(HT_None), mFindTokenResultOffset(0)
+	{}
+	~HighlighterBackgroundThreadData()
 	    {
 #if(SHARED_QUEUE)
-            sSharedQueue.waitForCompletion();
+	    sSharedQueue.waitForCompletion();
 #else
-            stopAndWaitForCompletion();
+	    stopAndWaitForCompletion();
 #endif
 	    }
+	void initArgs(OovStringRef const filename,
+		char const * const clang_args[], int num_clang_args);
+	void makeParseRequest()
+	    { mParseRequestCounter++; }
+	bool isParseNeeded() const
+	    { return(mParseRequestCounter != mParseFinishedCounter); }
+	TokenRange getParseResults();
+	OovStringVec getShowMembersResults();
+	void getFindTokenResults(std::string &fn, int &offset);
+	eHighlightTask getTaskResults() const
+	    { return mTaskResults; }
+	// Called by HighlighterSharedQueue on background thread.
+	void processItem(HighlightTaskItem const &item);
+
+    private:
+	OovString mFilename;
+	OovProcessChildArgs mClang_args;
+	Tokenizer mTokenizer;
+	int mParseRequestCounter;
+	int mParseFinishedCounter;
+        std::mutex mResultsLock;
+
+        // All results must be protected with mResultsLock.
+        eHighlightTask mTaskResults;
+	TokenRange mTokenResults;
+        OovStringVec mShowMemberResults;
+        OovString mFindTokenResultFilename;
+        int mFindTokenResultOffset;
+    };
+
+
+class Highlighter
+    {
+    public:
 	/// @todo - this interface requires that no parameters change during
 	/// the lifetime of this class.
 	void highlightRequest(OovStringRef const filename,
@@ -175,30 +223,19 @@ class Highlighter:public ThreadedWorkBackgroundQueue<
 	eHighlightTask highlightUpdate(GtkTextView *textView, OovStringRef const buffer,
             int bufLen);
         void showMembers(int offset);
-        OovStringVec getShowMembers();
+        OovStringVec getShowMembers()
+            { return mBackgroundThreadData.getShowMembersResults(); }
         void findToken(eFindTokenTypes ft, int origOffset);
-        void getFindTokenResults(std::string &fn, int &offset);
-        // Called by HighlighterSharedQueue on background thread.
-        void processItem(HighlightTaskItem const &item);
+        void getFindTokenResults(std::string &fn, int &offset)
+            { return mBackgroundThreadData.getFindTokenResults(fn, offset); }
 
     private:
-	Tokenizer mTokenizer;
+        HighlighterBackgroundThreadData mBackgroundThreadData;
 	HighlightTags mHighlightTags;
-	OovString mFilename;
-	OovProcessChildArgs mClang_args;
 
-        std::mutex mResultsLock;
-        eHighlightTask mTaskResults;
 #if(SHARED_QUEUE)
         static HighlighterSharedQueue sSharedQueue;
 #endif
-	TokenRange mTokenResults;
-        OovStringVec mShowMemberResults;
-        OovString mFindTokenResultFilename;
-        int mFindTokenResultOffset;
-
-	int mParseRequestCounter;
-	int mParseFinishedCounter;
 	void applyTags(GtkTextBuffer *textBuffer, const TokenRange &tokens);
     };
 

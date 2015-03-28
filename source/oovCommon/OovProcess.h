@@ -34,6 +34,7 @@ int spawnNoWait(OovStringRef const procPath, char const * const *argv);
 
 
 /// Note that on Linux, this is not recursive.
+/// Deprecated: Use std::mutex for C++11.
 class InProcMutex
     {
     public:
@@ -62,6 +63,7 @@ private:
 #endif
     };
 
+/// Deprecated: Use std::lock_quard for C++11.
 class LockGuard
     {
     public:

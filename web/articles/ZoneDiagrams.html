@@ -1,113 +1,90 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-
 <html>
-<!-- DC Blaha - 2/13/2015 -->
-
-<head>
-<link rel="stylesheet" type="text/css" href="../style.css">
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-<title>Viewing C++ Project Dependencies</title>
-</head>
-
-<body>
-
-<h1>Viewing C++ Project Cohesion (Code Zone Diagrams)</h1>
-Have you ever wanted to view hundreds or thousands of classes of a project at
-one time and their dependencies on each other?
-Traditional class diagrams can show in the tens of classes, but often times
-these diagrams can be too difficult to understand relationships quickly.
-<p />
-A different way of viewing these classes is to use a circle diagram where
-all of the classes are a single point on the circle. The classes are grouped
-by directories.  The dependencies are displayed as lines between the classes.
-The lines are colored by the provider directory.
-<br />
-<embed src="ZoneImages/ZoneOovcdeClasses.svg" type="image/svg+xml">
-
-<p />
-This first example shows a small project, but what if we need to display a project
-such as LLVM? Showing lines between all classes is too much (See the LLVM diagram below),
-so only lines between directories are displayed where the classes are related. The
-arrows can be turned on to indicate dependency direction.
-<br />
-<embed src="ZoneImages/ZoneOovcdeComponents.svg" type="image/svg+xml">
-<p />
-This makes it easier to see that oovcde and oovEdit are both related to oovGuiCommon,
-and oovCommon, but the other components are not.
-<p />
-<h2>Viewing the LLVM project</h2>
-Showing all classes for the LLVM project is pretty messy since it has over 3000
-classes.  I have never looked at the source for LLVM, so let's see what we can learn.
-<br />
-<embed src="ZoneImages/ZoneLlvmClasses.svg" type="image/svg+xml">
-<br />
-Viewing just the directory relations is more manageable. It is still messy,
-but now we start to get a view of the whole project.
-<br />
-<embed src="ZoneImages/ZoneLlvmComponents.svg" type="image/svg+xml">
-<br />
-Since this project has a directory structure that looks like this:
-<pre>
-    include/llvm/
+  <!-- DC Blaha - 2/13/2015 -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Viewing Object Oriented Project Dependencies</title>
+  </head>
+  <body>
+    <h1>Viewing C++ Project Cohesion (Code Zone Diagrams)</h1>
+    Have you ever wanted to view hundreds or thousands of classes of a project
+    at one time and their dependencies on each other? Traditional class diagrams
+    can show in the tens of classes, but often times these diagrams can be too
+    difficult to understand relationships quickly.
+    <p> A different way of viewing these classes is to use a circle diagram
+      where all of the classes are a single point on the circle. The classes are
+      grouped by directories. The dependencies are displayed as lines between
+      the classes. The lines are colored by the provider directory. <br>
+      <embed src="ZoneImages/ZoneOovcdeClasses.svg" type="image/svg+xml"> </p>
+    <p> This first example shows the small Oovcde project that parses C++ to
+      make these diagrams, but what if we need to display a million line project
+      such as LLVM? Showing lines between all classes is too much, so only lines
+      between directories are displayed where the classes are related. The
+      arrows can be turned on to indicate dependency direction. The following
+      diagram is the same project as the diagram above, but only shows class
+      dependencies between directories.<br>
+      <embed src="ZoneImages/ZoneOovcdeComponents.svg" type="image/svg+xml"> </p>
+    <p> This makes it easier to see that oovcde and oovEdit are both related to
+      oovGuiCommon, and oovCommon, but the other components are not. </p>
+    <h2>Viewing the LLVM project</h2>
+    Showing all classes for the LLVM project is pretty messy since it has over
+    3000 classes and somewhere near a million lines of code. I have never looked
+    at the source for LLVM, so let's see what we can learn. <br>
+    <embed src="ZoneImages/ZoneLlvmClasses.svg" type="image/svg+xml"> <br>
+    Viewing just the directory relations is more manageable. It is still messy,
+    but now we start to get a view of the whole project. <br>
+    <embed src="ZoneImages/ZoneLlvmComponents.svg" type="image/svg+xml"> <br>
+    Since this project has a directory structure that looks like this:
+    <pre>    include/llvm/
         Analysis
         AST
+        ...
     lib/
         Analysis
         AST
-</pre>
-Lets group this so that the include and lib directories are mapped together,
-and filter out examples, tests, tools, and utilities.
-<br />
-<embed src="ZoneImages/ZoneLlvmIncLib.svg" type="image/svg+xml">
-<br />
-There are an awful lot of targets that we are not interested in. Lets dump them.
-<br />
-<embed src="ZoneImages/ZoneLlvmIncLibNoTarget.svg" type="image/svg+xml">
-<br />
-Now turning on all classes will show more of the cohesion between classes.
-<br />
-<embed src="ZoneImages/ZoneLlvmIncLibNoTargetAllClasses.svg" type="image/svg+xml">
-<br />
-Some of the interesting aspects are:
-<ul>
-  <li>There are lots of relations inside of CodeGen to itself. This indicates
-	pretty good cohesion, although CodeGen is large.</li>
-  <li>The Support library has very few connections to other classes.
-	We may need to turn on function relations to see if the library is
-	well used.</li>
-  <li>There is a lot of coupling between IR and Transform.</li>
-  <li>There is a lot of coupling between MC and AsmPrinter. Looking up MC on
-	the web indicates it stands for Machine Code, so this coupling makes sense.</li>
-</ul>
-<p/>
-So let's look at the MC/AsmPrinter relations in more detail. Turning on the
-dependency indications shows that the AsmPrinter classes are dependent on the
-include/llvm/MC directory and not the other way around.
-
-<br />
-<embed src="ZoneImages/ZoneLlvmMcAsmPrinterComps.svg" type="image/svg+xml">
-<br />
- 
-There are a few other directories that are not related to CodeGen/AsmPrinter
-such as lib/MC/MCParser, so we'll turn them off which now shows all classes
-related between include/llvm/MC and AsmPrinter.
-<br />
-<embed src="ZoneImages/ZoneLlvmMcAsmPrinterClasses.svg" type="image/svg+xml">
-<br />
-
-There is a relationship between DIELabel and MCSymbol, so switching to
-a class view diagram should show this.
-
-<br />
-<embed src="ZoneImages/ZoneLlvmDIELabelClass.svg" type="image/svg+xml">
-<br />
-<p />
-This diagram shows that DIELabel in AsmPrinter has a member that is an MCSymbol
-from the MC directory, so the AsmPrinter is truly dependent on the MC directory.
-<p />
-The actual DIELabel class code with comments removed looks like the following:
-<pre>
-    class DIELabel : public DIEValue {
+        ...
+    </pre>
+    Lets group this so that the include and lib directories are mapped together,
+    and filter out examples, tests, tools, and utilities. <br>
+    <embed src="ZoneImages/ZoneLlvmIncLib.svg" type="image/svg+xml"> <br>
+    There are an awful lot of targets that we are not interested in. Lets dump
+    them. <br>
+    <embed src="ZoneImages/ZoneLlvmIncLibNoTarget.svg" type="image/svg+xml"> <br>
+    Now turning on all classes will show more of the cohesion between classes in
+    the directories. <br>
+    <embed src="ZoneImages/ZoneLlvmIncLibNoTargetAllClasses.svg" type="image/svg+xml">
+    <br>
+    Some of the interesting aspects are:
+    <ul>
+      <li>There are lots of relations inside of CodeGen to itself. This
+        indicates pretty good cohesion, although CodeGen is large.</li>
+      <li>The Support library has very few connections to other classes. We may
+        need to turn on function relations to see if the library is well used.</li>
+      <li>There is a lot of coupling between IR and Transform.</li>
+      <li>There is a lot of coupling between MC and AsmPrinter. Looking up MC on
+        the web indicates it stands for Machine Code, so this coupling makes
+        sense.</li>
+    </ul>
+    <p> So let's look at the MC/AsmPrinter relations in more detail. Turning on
+      the dependency indications shows that the AsmPrinter classes are dependent
+      on the include/llvm/MC directory and not the other way around. <br>
+      <embed src="ZoneImages/ZoneLlvmMcAsmPrinterComps.svg" type="image/svg+xml">
+      <br>
+      There are a few other directories that are not related to
+      CodeGen/AsmPrinter such as lib/MC/MCParser, so we'll turn them off which
+      now shows all classes related between include/llvm/MC and AsmPrinter. <br>
+      <embed src="ZoneImages/ZoneLlvmMcAsmPrinterClasses.svg" type="image/svg+xml">
+      <br>
+      There is a relationship between DIELabel and MCSymbol, so switching to a
+      class view diagram should show this. <br>
+      <embed src="ZoneImages/ZoneLlvmDIELabelClass.svg" type="image/svg+xml">
+    <p> This diagram shows that DIELabel in AsmPrinter has a member that is an
+      MCSymbol from the MC directory, so the AsmPrinter is truly dependent on
+      the MC directory. </p>
+    <p> The actual DIELabel class code with comments removed looks like the
+      following: </p>
+    <pre>    class DIELabel : public DIEValue {
       const MCSymbol *Label;
 
     public:
@@ -115,28 +92,22 @@ The actual DIELabel class code with comments removed looks like the following:
       void EmitValue(AsmPrinter *AP, dwarf::Form Form) const override;
       const MCSymbol *getValue() const { return Label; }
       unsigned SizeOf(AsmPrinter *AP, dwarf::Form Form) const override;
-      static bool classof(const DIEValue *L) { return L->getType() == isLabel; }
+      static bool classof(const DIEValue *L) { return L-&gt;getType() == isLabel; }
 
     #ifndef NDEBUG
-      void print(raw_ostream &O) const override;
+      void print(raw_ostream &amp;O) const override;
     #endif
     };
-</pre>
-
-Displaying the sequence or operation diagram for the print function of DIELabel
-shows the following:
-<br />
-<embed src="ZoneImages/ZoneLlvmDIELabelPrintSeq.svg" type="image/svg+xml">
-<br />
-<p />
-The print member function calls the MCSymbol::getName() method. The code looks
-like the following:
-<pre>
-    void DIELabel::print(raw_ostream &O) const {
-      O << "Lbl: " << Label->getName();
+    </pre>
+    Displaying the sequence or operation diagram for the print function of
+    DIELabel shows the following: <br>
+    <embed src="ZoneImages/ZoneLlvmDIELabelPrintSeq.svg" type="image/svg+xml"> <br>
+    <p> The print member function calls the MCSymbol::getName() method. The code
+      looks like the following: </p>
+    <pre>    void DIELabel::print(raw_ostream &amp;O) const {
+      O &lt;&lt; "Lbl: " &lt;&lt; Label-&gt;getName();
     }
-</pre>
-<p />
-This is about as far as we can drill in today. Next time, the atom.
-
-</body>
+    </pre>
+    <p> This is about as far as we can drill in today. Next time, the atom. </p>
+  </body>
+</html>

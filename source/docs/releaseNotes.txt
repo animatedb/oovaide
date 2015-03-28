@@ -166,7 +166,11 @@ Missing Features
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future
+	- more component stats - lines, classes, etc.
+	- Cohesion in a class (how methods use attributes)
+		http://www.bth.se/fou/cuppsats.nsf/all/86e880ce9d0b94aec1256f0e004778e5/$file/thesis_report.pdf
 	- Add autocomplete ("efficient autocompletion database")
+		- editor code completion llvm 3.6
 		Three types (types, instances and members(., ->)), save def,decl location, namespaces?
 		http://emacswiki.org/emacs/AutoComplete
 		http://www.vldb.org/pvldb/vol6/p373-xiao.pdf

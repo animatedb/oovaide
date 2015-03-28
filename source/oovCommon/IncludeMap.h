@@ -13,6 +13,10 @@
 #include "NameValueFile.h"
 #include "FilePath.h"
 
+
+/// This keeps two pieces of information. The path to a file, and the filename
+/// of the file.  This is used to store the C++ "#include" filename, and the
+/// path where the file exists.
 struct IncludedPath
     {
     public:
@@ -36,7 +40,7 @@ struct IncludedPath
     // This saves the included path such as "gtk/gtk.h" and the directory to
     // get to the included path.
     OovString mFullPath;
-    size_t mPos;
+    size_t mPos;	/// The position between the path and filename.
     };
 
 void discardDirs(OovStringVec &dirs);

@@ -172,6 +172,51 @@ bool Gui::messageBox(OovStringRef const msg, GtkMessageType msgType,
     return(resp == GTK_RESPONSE_OK || resp == GTK_RESPONSE_YES);
     }
 
+void Gui::resizeParentScrolledWindow(GtkWidget *childWidget, GtkScrolledWindow *sw)
+    {
+    int minY;
+    int naturalY;
+    gtk_widget_get_preferred_height(childWidget, &minY, &naturalY);
+    int screenHeight = gdk_screen_get_height(gtk_widget_get_screen(childWidget));
+    if(naturalY > screenHeight)
+	{
+	gint wx, wy;
+	gdk_window_get_origin(gtk_widget_get_window(childWidget), &wx, &wy);
+	naturalY = screenHeight - wy;
+	}
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(sw), naturalY);
+//    gtk_widget_set_size_request(GTK_WIDGET(sw), naturalY, naturalY);
+    }
+
+
+/////////////
+
+
+GtkTextIter GuiTextBuffer::getCursorIter(GtkTextBuffer *buf)
+    {
+    GtkTextMark *mark = gtk_text_buffer_get_insert(buf);
+    GtkTextIter curLoc;
+    gtk_text_buffer_get_iter_at_mark(buf, &curLoc, mark);
+    return curLoc;
+    }
+
+int GuiTextBuffer::getCursorOffset(GtkTextBuffer *buf)
+    {
+    GtkTextIter curLoc = getCursorIter(buf);
+    return gtk_text_iter_get_offset(&curLoc);
+    }
+
+OovString GuiTextBuffer::getText(GtkTextBuffer *buf, int startOffset, int endOffset)
+    {
+    GtkTextIter startIter;
+    GtkTextIter endIter;
+    gtk_text_buffer_get_iter_at_offset(buf, &startIter, startOffset);
+    gtk_text_buffer_get_iter_at_offset(buf, &endIter, endOffset);
+    GuiText str(gtk_text_buffer_get_text(buf, &startIter, &endIter, false));
+    return str;
+    }
+
+
 
 /////////////
 
@@ -231,7 +276,6 @@ void GuiTreeView::removeSelected()
 	}
     }
 
-
 void GuiList::init(Builder &builder, OovStringRef const widgetName,
 	OovStringRef const title)
     {
@@ -272,12 +316,10 @@ OovStringVec GuiList::getText() const
 	{
 	do
 	    {
-	    GValue val = { 0 };
-	    gtk_tree_model_get_value(model, &iter, 0, &val);
-	    char const *v = g_value_get_string(&val);
+	    GuiListStringValue val;
+	    char const *v = val.getStringFromModel(model, &iter);
 	    if(v)
 		text.push_back(v);
-	    g_value_unset(&val);
 	    } while(gtk_tree_model_iter_next(model, &iter));
 	}
     return text;
@@ -351,6 +393,34 @@ void GuiList::setSelected(OovStringRef const str)
 	    }
 	}
     }
+
+OovString GuiList::findLongestMatch(OovStringRef const str)
+    {
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    GtkTreeIter iter;
+    OovString bestStr;
+    if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model), &iter))
+	{
+	int bestMatchCount = 0;
+	do
+	    {
+	    GuiListStringValue val;
+	    char const *v = val.getStringFromModel(model, &iter);
+	    if(v)
+		{
+		int count = StringCompareNoCaseNumCharsMatch(str, v);
+		if(count > bestMatchCount)
+		    {
+		    bestStr = v;
+		    bestMatchCount = count;
+		    }
+		}
+	    } while(gtk_tree_model_iter_next(model, &iter));
+	}
+    return bestStr;
+    }
+
+
 
 void GuiTree::init(Builder &builder, OovStringRef const widgetName,
 	OovStringRef const title, ColumnTypes columnType)
@@ -581,6 +651,21 @@ void GuiTree::setSelected(OovString const &name, char delimiter)
     OovStringVec tokens = name.split(delimiter);
     setSelected(tokens);
     }
+
+class GuiTreeValue
+    {
+    public:
+	GuiTreeValue():
+	    mStr(nullptr)
+	    {}
+	~GuiTreeValue()
+	    {
+	    if(mStr)
+		g_free(mStr);
+	    }
+
+    char *mStr;
+    };
 
 bool GuiTree::findNodeIter(GtkTreeIter *parent,
 	OovString const &name, char delimiter, GtkTreeIter *iter)

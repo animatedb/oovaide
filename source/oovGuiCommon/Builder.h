@@ -11,6 +11,9 @@
 #include <gtk/gtk.h>
 #include "OovString.h"
 
+
+/// This wraps the GtkBuilder.
+/// This loads a GTK Glade file that defines user interface components.
 class Builder
     {
     public:

@@ -16,6 +16,7 @@
 #define GUI_OK "_OK"
 #define GUI_CANCEL "_Cancel"
 
+/// Displays a dialog that allows choosing a file path.
 class PathChooser
     {
     public:
@@ -32,6 +33,7 @@ class PathChooser
 	OovString mDefaultPath;
     };
 
+/// This displays a dialog and handles running it.
 class Dialog
     {
     public:
@@ -75,6 +77,9 @@ class Dialog
 	GtkDialog *mDialog;
     };
 
+/// Many GTK functions return a string that must be freed.  This class
+/// provides a constructor that moves the string into an std::string, then
+/// frees the GTK string.
 class GuiText:public std::string
     {
     public:
@@ -125,6 +130,10 @@ namespace Gui
 	inline void setEnabled(GtkLabel *w, bool enabled)
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
 
+	inline bool hasFocus(GtkWidget *w)
+	    { return(gtk_widget_is_focus(w)); }
+	inline bool isVisible(GtkWidget *w)
+	    { return(gtk_widget_get_visible(w)); }
 	inline void setVisible(GtkWidget *w, bool show)
 	    {
 	    if(show)
@@ -155,8 +164,22 @@ namespace Gui
 	void reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent);
 	inline void redraw(GtkWidget *widget)
 	    { gtk_widget_queue_draw(widget); }
+
+	// This can be called from the draw signal so that the child has
+	// computed the size.
+	void resizeParentScrolledWindow(GtkWidget *childWidget, GtkScrolledWindow *sw);
     };
 
+class GuiTextBuffer
+    {
+    public:
+	/// Iterators are invalid after many types of buffer modifications.
+	static GtkTextIter getCursorIter(GtkTextBuffer *buf);
+	static int getCursorOffset(GtkTextBuffer *buf);
+	static OovString getText(GtkTextBuffer *buf, int startOffset, int endOffset);
+    };
+
+/// This wraps a GtkTreeView.  A tree view is used for both trees and lists.
 class GuiTreeView
     {
     public:
@@ -172,6 +195,36 @@ class GuiTreeView
 	GtkTreeView *mTreeView;
     };
 
+class GuiListStringValue
+    {
+    public:
+	GuiListStringValue():
+	    mValue(G_VALUE_INIT)
+	    {
+	    }
+	~GuiListStringValue()
+	    {
+	    clear();
+	    };
+	char const *getStringFromModel(GtkTreeModel *model, GtkTreeIter *iter)
+	    {
+	    clear();
+	    gtk_tree_model_get_value(model, iter, 0, &mValue);
+	    return g_value_get_string(&mValue);
+	    }
+
+    private:
+	GValue mValue;
+	void clear()
+	    {
+	    if(G_VALUE_TYPE(&mValue) == G_TYPE_STRING)
+		{
+		g_value_unset(&mValue);
+		}
+	    }
+    };
+
+/// This is a single column list.
 class GuiList:public GuiTreeView
     {
     public:
@@ -184,25 +237,11 @@ class GuiList:public GuiTreeView
 		OovStringRef const title);
 	void appendText(OovStringRef const str);
 	void sort();
+	OovString findLongestMatch(OovStringRef const str);
 	OovStringVec getText() const;
 	OovString getSelected() const;
 	int getSelectedIndex() const;
 	void setSelected(OovStringRef const str);
-    };
-
-class GuiTreeValue
-    {
-    public:
-	GuiTreeValue():
-	    mStr(nullptr)
-	    {}
-	~GuiTreeValue()
-	    {
-	    if(mStr)
-		g_free(mStr);
-	    }
-
-    char *mStr;
     };
 
 class GuiTreeItem
@@ -223,7 +262,8 @@ class GuiTreeItem
 	bool mRoot;
     };
 
-/// This only supports a 2 level tree at this time.
+/// This only supports a few types of trees.  A tree where each item is a
+/// string, or a tree where each item is a string and a boolean checkbox.
 class GuiTree:public GuiTreeView
     {
     public:
@@ -292,6 +332,9 @@ class GuiTree:public GuiTreeView
 	OovString const getNodeName(GtkTreeIter iter, char delimiter) const;
     };
 
+/// This dialog is meant for tasks that execute in the background while the
+/// user can do other things.  This dialog presents progress information and
+/// allows the user to cancel background processing.
 class BackgroundDialog:public Dialog
     {
     public:
@@ -302,20 +345,24 @@ class BackgroundDialog:public Dialog
 
 	/// This does not call GUI functions, can be on any thread
 	/// This resets the mKeepGoing flag and start time
+	/// @param str		Some text to display about the task that is running.
+	/// @param totalIters	The total number of iterations that will be run.
 	void startTask(char const *str, int totalIters);
 
 	// Return is false when a cancel is performed.
 	// This is a GUI function, must be on the GUI thread
 	/// @todo allowRecurse should be removed eventually.
+	/// @param text		Some text that will be updated and displayed
+	///			to the user periodically.
 	bool updateProgressIteration(int currentIter, OovStringRef text,
 		bool allowRecurse = true);
 
-	// This is only needed if the destructor is not used to close the dialog.
-	// This is a GUI function, must be on the GUI thread
+	/// This is only needed if the destructor is not used to close the dialog.
+	/// This is a GUI function, must be on the GUI thread
 	void endTask()
 	    { showDialog(false); }
 
-	// Public since this is called from signal
+	/// Public since this is called from signal
 	void cancelButtonPressed()
 	    { mKeepGoing = false; }
 

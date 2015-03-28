@@ -12,6 +12,9 @@
 #include "FilePath.h"
 #include <map>
 
+/// This is for code coverage header source file that is included and added
+/// to the project being analyzed.  The header contains a bunch of #defined
+/// macros that increment a usage count in an array.
 class CoverageHeaderReader
     {
     public:

@@ -13,6 +13,33 @@
 #include "Indenter.h"
 #include "History.h"
 
+#define COMPLETION_WINDOW 1
+
+#if(COMPLETION_WINDOW)
+class CompletionList
+    {
+    public:
+	CompletionList():
+	    mTopWidget(nullptr), mTextBuffer(nullptr),
+	    mCompletionTriggerPointOffset(0), mLastKey(0)
+	    {}
+	void init(GtkTextBuffer *textBuffer);
+	void resize();
+	// Detects when to display the completion list.
+	void handleEditorKey(int key);
+	bool handleListKey(int key);
+	void setList(OovStringVec const &strs);
+	void activateSelectedItem();
+	void lostFocus();
+
+    private:
+	GtkWidget *mTopWidget;
+	GuiList mGuiList;
+	GtkTextBuffer *mTextBuffer;
+	int mCompletionTriggerPointOffset;
+	int mLastKey;
+    };
+#endif
 
 class FileEditView
     {
@@ -30,7 +57,7 @@ class FileEditView
 	bool findAndReplace(char const * const findStr, bool forward,
 		bool caseSensitive, char const * const replaceStr);
 	void findToken(eFindTokenTypes ft)
-            { mHighlighter.findToken(ft, getCursorOffset()); }
+            { mHighlighter.findToken(ft, GuiTextBuffer::getCursorOffset(mTextBuffer)); }
         void getFindTokenResults(std::string &fn, int &offset)
             { mHighlighter.getFindTokenResults(fn, offset); }
 	void cut()
@@ -88,6 +115,8 @@ class FileEditView
         // Return = true if find def/decl has results.
 	bool idleHighlight();
 	void gotoLine(int lineNum);
+
+	// These are called by callbacks.
 	void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
 	        gchar *text, gint len);
 	void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
@@ -105,12 +134,13 @@ class FileEditView
 	bool mDoingHistory;		// Doing undo or redo.
 	Highlighter mHighlighter;
 	Indenter mIndenter;
+#if(COMPLETION_WINDOW)
+	CompletionList mCompleteList;
+#endif
 	void setFileName(OovStringRef const fn)
 	    { mFileName = fn; }
 	bool saveAsTextFile(OovStringRef const fn);
 	void highlightRequest();
-	int getCursorOffset() const;
-	GtkTextIter getCursorIter() const;
 	void moveToIter(GtkTextIter startIter, GtkTextIter *endIter=NULL);
 	GuiText getBuffer();
     };

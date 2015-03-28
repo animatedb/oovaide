@@ -1,3 +1,5 @@
+// This file is for testing the c++ parser for differnt code flow constructs.
+// This can be used for complexity calculations or for sequence diagrams.
 
 class Funcs
     {

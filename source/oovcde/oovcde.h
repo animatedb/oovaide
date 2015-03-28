@@ -162,6 +162,7 @@ class oovGui:public JournalListener
 	void makeMemberUseFile();
 	void makeDuplicatesFile();
 	void displayProjectStats();
+	void makeLineStats();
 
 	void setLastSavedPath(const std::string &fn)
 	    { mLastSavedPath = fn; }

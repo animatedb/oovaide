@@ -201,6 +201,8 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
 	    builder->getWidget("DuplicatesMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
 	    builder->getWidget("ProjectStatsMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
+	    builder->getWidget("LineStatsMenuitem"), idle && analRdy);
 
     gtk_widget_set_sensitive(
 	    builder->getWidget("BuildSettingsMenuitem"), open);
@@ -432,7 +434,8 @@ void oovGui::makeComplexityFile()
 	}
     else
 	{
-	Gui::messageBox("Unable to write oovcde-out-Complex.txt to project directory");
+	OovString str = "Unable to write " + fn + " to project directory";
+	Gui::messageBox(str);
 	}
     }
 
@@ -445,7 +448,22 @@ void oovGui::makeMemberUseFile()
 	}
     else
 	{
-	Gui::messageBox("Unable to write file to project output directory");
+	OovString str = "Unable to write " + fn + " to project directory";
+	Gui::messageBox(str);
+	}
+    }
+
+void oovGui::makeLineStats()
+    {
+    std::string fn;
+    if(createLineStatsFile(mProject.getModelData(), fn))
+	{
+	displayBrowserFile(fn);
+	}
+    else
+	{
+	OovString str = "Unable to write " + fn + " to project directory";
+	Gui::messageBox(str);
 	}
     }
 
@@ -471,67 +489,10 @@ void oovGui::makeDuplicatesFile()
 
 void oovGui::displayProjectStats()
     {
-    ModelData const &model = mProject.getModelData();
-    unsigned numClasses = 0;
-    unsigned numFiles = model.mModules.size();
-    unsigned numOps = 0;
-    unsigned numAttrs = 0;
-    unsigned maxOpsPerClass = 0;
-    unsigned maxAttrsPerClass = 0;
-    std::string maxOpsStr;
-    std::string maxAttrStr;
-    for(auto const &type : model.mTypes)
-	{
-	ModelClassifier const *classifier = type.get()->getClass();
-	if(classifier && classifier->getName().length() > 0)
-	    {
-	    numClasses++;
-	    unsigned ops = classifier->getOperations().size();
-	    if(ops > maxOpsPerClass)
-		{
-		maxOpsStr = classifier->getName();
-		maxOpsPerClass = ops;
-		}
-	    numOps += ops;
-	    unsigned attrs = classifier->getAttributes().size();
-	    if(attrs > maxAttrsPerClass)
-		{
-		maxAttrStr = classifier->getName();
-		maxAttrsPerClass = attrs;
-		}
-	    numAttrs += attrs;
-	    }
-	}
     OovString str;
-    str += "Number of files: ";
-    str.appendInt(numFiles);
-    str += "\nNumber of classes: ";
-    str.appendInt(numClasses);
-    str += "\nNumber of operations: ";
-    str.appendInt(numOps);
-    str += "\nNumber of attributes: ";
-    str.appendInt(numAttrs);
-    if(numFiles > 0)
-	{
-	str += "\n\nClasses per file: ";
-	str.appendFloat(static_cast<float>(numClasses)/numFiles);
-	}
-    if(numClasses > 0)
-	{
-	str += "\n\nAverage operations per class: ";
-	str.appendFloat(static_cast<float>(numOps)/numClasses);
-	str += "\nAverage attributes per class: ";
-	str.appendFloat(static_cast<float>(numAttrs)/numClasses);
-	str += "\nMax operations per class: ";
-	str.appendFloat(maxOpsPerClass);
-	str += ' ' + maxOpsStr;
-	str += "\nMax attributes per class: ";
-	str.appendFloat(maxAttrsPerClass);
-	str += ' ' + maxAttrStr;
-	}
+    createProjectStats(mProject.getModelData(), str);
     Gui::messageBox(str, GTK_MESSAGE_INFO);
     }
-
 
 class OptionsDialogUpdate:public OptionsDialog
     {
@@ -1035,6 +996,11 @@ extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_press_event(
 extern "C" G_MODULE_EXPORT void on_ProjectStatsMenuitem_activate(GtkWidget *widget, gpointer data)
     {
     gOovGui.displayProjectStats();
+    }
+
+extern "C" G_MODULE_EXPORT void on_LineStatsMenuitem_activate(GtkWidget *widget, gpointer data)
+    {
+    gOovGui.makeLineStats();
     }
 
 extern "C" G_MODULE_EXPORT void on_HelpAboutmenuitem_activate(GtkWidget *widget, gpointer data)

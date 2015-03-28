@@ -136,3 +136,195 @@ bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
 	}
     return useFile.isOpen();
     }
+
+
+bool createProjectStats(ModelData const &modelData, std::string &displayStr)
+    {
+    unsigned numClasses = 0;
+    unsigned numFiles = modelData.mModules.size();
+    unsigned numOps = 0;
+    unsigned numAttrs = 0;
+    unsigned maxOpsPerClass = 0;
+    unsigned maxAttrsPerClass = 0;
+    std::string maxOpsStr;
+    std::string maxAttrStr;
+    for(auto const &type : modelData.mTypes)
+	{
+	ModelClassifier const *classifier = type.get()->getClass();
+	if(classifier && classifier->getName().length() > 0)
+	    {
+	    numClasses++;
+	    unsigned ops = classifier->getOperations().size();
+	    if(ops > maxOpsPerClass)
+		{
+		maxOpsStr = classifier->getName();
+		maxOpsPerClass = ops;
+		}
+	    numOps += ops;
+	    unsigned attrs = classifier->getAttributes().size();
+	    if(attrs > maxAttrsPerClass)
+		{
+		maxAttrStr = classifier->getName();
+		maxAttrsPerClass = attrs;
+		}
+	    numAttrs += attrs;
+	    }
+	}
+    OovString str;
+    str += "Number of files: ";
+    str.appendInt(numFiles);
+    str += "\nNumber of classes: ";
+    str.appendInt(numClasses);
+    str += "\nNumber of operations: ";
+    str.appendInt(numOps);
+    str += "\nNumber of attributes: ";
+    str.appendInt(numAttrs);
+    if(numFiles > 0)
+	{
+	str += "\n\nClasses per file: ";
+	str.appendFloat(static_cast<float>(numClasses)/numFiles);
+	}
+    if(numClasses > 0)
+	{
+	str += "\n\nAverage operations per class: ";
+	str.appendFloat(static_cast<float>(numOps)/numClasses);
+	str += "\nAverage attributes per class: ";
+	str.appendFloat(static_cast<float>(numAttrs)/numClasses);
+	str += "\nMax operations per class: ";
+	str.appendFloat(maxOpsPerClass);
+	str += ' ' + maxOpsStr;
+	str += "\nMax attributes per class: ";
+	str.appendFloat(maxAttrsPerClass);
+	str += ' ' + maxAttrStr;
+	}
+    return true;
+    }
+
+static void createLineStatsStyleTransform(const std::string &fullPath)
+    {
+    static const char *text =
+	    "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
+	    "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
+	    "<xsl:output method=\"html\" />\n"
+	    "\n"
+	    "  <xsl:template match=\"/\">\n"
+	    "    <html>\n"
+	    "      <head>\n"
+	    "        <title>\n"
+	    "          <xsl:text>Line Statistics Report</xsl:text>\n"
+	    "        </title>\n"
+	    "      </head>\n"
+	    "      <body>\n"
+	    "        <h1>\n"
+	    "          <xsl:text>Line Statistics</xsl:text>\n"
+	    "        </h1>\n"
+	    "        <xsl:text>Note that code and comments can be on the same line,\n"
+	    "		and will be counted in both counts.</xsl:text>\n"
+// Output the total project table
+
+	    "        <p/><xsl:text>\n"
+	    "          Total code lines: \n"
+	    "        </xsl:text>\n"
+	    "          <xsl:call-template name=\"SumCodeLines\" /><br/>\n"
+
+	    "        <xsl:text>\n"
+	    "          Total comment lines: \n"
+	    "        </xsl:text>\n"
+	    "          <xsl:call-template name=\"SumCommentLines\" /><p/>\n"
+
+// Output the individual modules table
+	    "        <table border=\"1\">\n"
+	    "          <tr>\n"
+	    "            <th>Module Name</th>\n"
+	    "            <th>Code Lines</th>\n"
+	    "            <th>Comment Lines</th>\n"
+	    "            <th>Module Lines</th>\n"
+	    "          </tr>\n"
+	    "          <xsl:apply-templates select=\"LineStatisticsReport/Module\">\n"
+	    "	         <xsl:sort select=\"ModuleLines\" data-type=\"number\" />\n"
+	    "	       </xsl:apply-templates>\n"
+	    "        </table>\n"
+
+	    "      </body>\n"
+	    "    </html>\n"
+	    "  </xsl:template>\n"
+	    "\n"
+
+// Template function SumCodeLines
+	    "  <xsl:template name=\"SumCodeLines\">\n"
+	    "    <xsl:value-of select='sum(//CodeLines)'/>\n"
+	    "  </xsl:template>\n"
+
+	    "  <xsl:template name=\"SumCommentLines\">\n"
+	    "    <xsl:value-of select='sum(//CommentLines)'/>\n"
+	    "  </xsl:template>\n"
+
+// The Module template match
+	    "  <xsl:template match=\"Module\">\n"
+	    "    <tr>\n"
+	    "      <td>\n"
+	    "        <xsl:value-of select=\"ModuleName\" />\n"
+	    "      </td>\n"
+	    "      <td>\n"
+	    "        <xsl:value-of select=\"CodeLines\" />\n"
+	    "      </td>\n"
+	    "      <td>\n"
+	    "        <xsl:value-of select=\"CommentLines\" />\n"
+	    "      </td>\n"
+	    "      <td>\n"
+	    "        <xsl:value-of select=\"ModuleLines\" />\n"
+	    "      </td>\n"
+	    "    </tr>\n"
+	    "  </xsl:template>\n"
+
+	    "</xsl:stylesheet>\n";
+    File transformFile(fullPath, "w");
+    fprintf(transformFile.getFp(), "%s", text);
+    }
+
+static OovString getRelativeFileName(OovString const &fullFn)
+    {
+    FilePath srcDir(Project::getSourceRootDirectory(), FP_Dir);
+    return Project::getSrcRootDirRelativeSrcFileName(fullFn, srcDir);
+    }
+
+bool createLineStatsFile(ModelData const &modelData, std::string &fn)
+    {
+    FilePath fp(Project::getProjectDirectory(), FP_Dir);
+    fp.appendDir("output");
+    fp.appendFile("LineStatistics");
+
+    FileEnsurePathExists(fp);
+    createLineStatsStyleTransform(fp + ".xslt");
+
+    fp.appendFile(".xml");
+    fn = fp;
+    File useFile(fp, "w");
+    if(useFile.isOpen())
+	{
+	static const char *header =
+		"<?xml version=\"1.0\"?>\n"
+		"<?xml-stylesheet type=\"text/xsl\" href=\"LineStatistics.xslt\"?>\n"
+		"<LineStatisticsReport>\n";
+	fprintf(useFile.getFp(), "%s", header);
+	for(auto const &module : modelData.mModules)
+	    {
+	    static const char *item =
+		"  <Module>\n"
+		"    <ModuleName>%s</ModuleName>\n"
+		"    <CodeLines>%d</CodeLines>\n"
+		"    <CommentLines>%d</CommentLines>\n"
+		"    <ModuleLines>%d</ModuleLines>\n"
+		"  </Module>\n";
+	    fprintf(useFile.getFp(), item,
+		getRelativeFileName(module->getName()).makeXml().c_str(),
+		module.get()->mLineStats.mNumCodeLines,
+		module.get()->mLineStats.mNumCommentLines,
+		module.get()->mLineStats.mNumModuleLines);
+	    }
+
+	static const char *footer = "</LineStatisticsReport>\n";
+	fprintf(useFile.getFp(), "%s", footer);
+	}
+    return useFile.isOpen();
+    }

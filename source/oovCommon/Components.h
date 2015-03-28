@@ -22,6 +22,7 @@ bool isLibrary(OovStringRef const file);
 
 /// This file is read and written by both oovcde and oovBuilder.
 /// This defines each component's source and include files.
+/// A component pretty directly maps to a directory in the project.
 class ComponentTypesFile
     {
     public:

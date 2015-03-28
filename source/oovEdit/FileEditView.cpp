@@ -9,6 +9,7 @@
 #include "FilePath.h"
 #include "File.h"
 #include "OovString.h"
+#include "Builder.h"
 #include <string.h>
 
 
@@ -51,12 +52,187 @@ void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
 //gboolean draw(GtkWidget *widget, void *cr, gpointer user_data);
 
 
+#if(COMPLETION_WINDOW)
+void CompletionList::init(GtkTextBuffer *textBuffer)
+    {
+    mTopWidget = Builder::getBuilder()->getWidget("CompletionListWindow");
+    mGuiList.init(*Builder::getBuilder(), "CompletionListTreeview", "");
+    mTextBuffer = textBuffer;
+    }
+
+static bool isIdentC(int key)
+    {
+    return (isalnum(key) || key == '_');
+    }
+
+static bool isInsertableC(int key)
+    {
+    bool ctrl = iscntrl(key);
+    return (!ctrl && key < 0x80);
+    }
+
+static bool isListKey(int key)
+    {
+    return(key == GDK_KEY_Down || key == GDK_KEY_Up ||
+	    key == GDK_KEY_KP_Down || key == GDK_KEY_KP_Up ||
+	    key == GDK_KEY_Return);
+    }
+
+static bool isModifierKey(int key)
+    {
+    return(key == GDK_KEY_Shift_R || key == GDK_KEY_Shift_L);
+    }
+
+static CompletionList *sCurrentCompleteList;
+void CompletionList::handleEditorKey(int key)
+    {
+    sCurrentCompleteList = this;
+    if(key == '.' || (mLastKey == '-' && key == '>'))
+	{
+	mCompletionTriggerPointOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
+	mGuiList.clear();
+	Gui::setVisible(mTopWidget, true);
+	}
+    if(!isModifierKey(key))
+	{
+	mLastKey = key;
+	}
+    }
+
+
+/*
+ * Classes of keys:
+ * 	List control keys (arrows, return)	!quit list,	!modify editbuf,	list movement,
+ * 	Modifier keys (shift)			!quit list,	!modify editbuf,
+ * 	Delete/backspace			!quit list, 	modify editbuf
+ * 	Non-insertable (esc)			quit list,	!modify editbuf
+ * 	punctuation (parens, comma)		quit list,	modify editbuf
+ *	identifiers				!quit list,	modify editbuf
+ */
+/// @todo - Need to handle searching list
+/// @todo - Need to position completion window
+bool CompletionList::handleListKey(int key)
+    {
+    bool handled = true;
+    bool doneList = true;
+
+    if(key == GDK_KEY_BackSpace)
+	{
+	GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
+	gtk_text_buffer_backspace(mTextBuffer, &iter, true, true);
+	doneList = (GuiTextBuffer::getCursorOffset(mTextBuffer) ==
+		mCompletionTriggerPointOffset);
+	}
+    else if(key == GDK_KEY_Delete || key == GDK_KEY_KP_Delete)
+	{
+	GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
+	GtkTextIter endIter = iter;
+	if(gtk_text_iter_forward_char(&endIter))
+	    {
+	    gtk_text_buffer_delete(mTextBuffer, &iter, &endIter);
+	    }
+	}
+    else if(isListKey(key) || isModifierKey(key))
+	{
+	handled = false;
+	doneList = false;
+	}
+    else if(isInsertableC(key))
+	{
+	// Punctuation and other things need to be inserted.
+	char keyStr[1];
+	keyStr[0] = key;
+	gtk_text_buffer_insert_at_cursor(mTextBuffer, keyStr, 1);
+	if(isIdentC(key))
+	    {
+	    doneList = false;
+	    }
+	}
+    if(Gui::isVisible(mTopWidget))
+	{
+	int cursOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
+	OovString str = GuiTextBuffer::getText(mTextBuffer,
+		mCompletionTriggerPointOffset+1, cursOffset);
+	mGuiList.setSelected(mGuiList.findLongestMatch(str));
+	}
+    if(doneList)
+	{
+	Gui::setVisible(mTopWidget, false);
+	}
+    return handled;
+    }
+
+void CompletionList::lostFocus()
+    {
+    Gui::setVisible(mTopWidget, false);
+    }
+
+void CompletionList::setList(OovStringVec const &strs)
+    {
+    mGuiList.clear();
+    for(auto const &str : strs)
+	{
+	mGuiList.appendText(str);
+	}
+    if(strs.size())
+	{
+	mGuiList.setSelected(strs[0]);
+	}
+/*
+    GtkWidget *sw = Builder::getBuilder()->getWidget("CompletionListScrolledwindow");
+    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(sw), -1);
+*/
+//    gtk_widget_queue_resize(GTK_WIDGET(mGuiList.getTreeView()));
+//    gtk_widget_queue_resize(sw);
+//    gtk_widget_queue_resize(mTopWidget);
+/*
+    GtkWidget *w;
+    GtkRequisition min, nat;
+
+    w = mTopWidget;
+    gtk_widget_get_preferred_size(w, &min, &nat);
+    printf("top %d %d\n", min.height, nat.height);
+
+    w = Builder::getBuilder()->getWidget("CompletionListScrolledwindow");
+    gtk_widget_get_preferred_size(w, &min, &nat);
+    printf("scrollw %d %d\n", min.height, nat.height);
+
+    w = GTK_WIDGET(mGuiList.getTreeView());
+    gtk_widget_get_preferred_size(w, &min, &nat);
+    printf("treeview %d %d\n", min.height, nat.height);
+
+    gtk_widget_set_size_request(w, 0, 0);
+//    gtk_widget_set_preferred_size(w, 0, 0);
+
+    printf("--\n");
+
+    fflush(stdout);
+*/
+    }
+
+void CompletionList::resize()
+    {
+    GtkWidget *sw = Builder::getBuilder()->getWidget("CompletionListScrolledwindow");
+    Gui::resizeParentScrolledWindow(GTK_WIDGET(mGuiList.getTreeView()),
+	    GTK_SCROLLED_WINDOW(sw));
+    }
+
+void CompletionList::activateSelectedItem()
+    {
+    OovString str = mGuiList.getSelected();
+    gtk_text_buffer_insert_at_cursor(mTextBuffer, str.getStr(), str.length());
+    Gui::setVisible(mTopWidget, false);
+    }
+
+#endif
+
 
 void FileEditView::init(GtkTextView *textView)
     {
     mTextView = textView;
     mTextBuffer = gtk_text_view_get_buffer(mTextView);
     mIndenter.init(mTextBuffer);
+    mCompleteList.init(mTextBuffer);
     gtk_widget_grab_focus(GTK_WIDGET(mTextView));
     g_signal_connect(G_OBJECT(mTextBuffer), "insert-text",
           G_CALLBACK(signalBufferInsertText), NULL);
@@ -335,6 +511,9 @@ bool FileEditView::idleHighlight()
     if(task & HT_ShowMembers)
         {
         OovStringVec members = mHighlighter.getShowMembers();
+#if(COMPLETION_WINDOW)
+        mCompleteList.setList(members);
+#else
 	GtkTextView *findView = GTK_TEXT_VIEW(Builder::getBuilder()->
 		getWidget("FindTextview"));
 	Gui::clear(findView);
@@ -344,6 +523,7 @@ bool FileEditView::idleHighlight()
 	    appendStr += '\n';
 	    Gui::appendText(findView, appendStr);
 	    }
+#endif
         }
     return foundToken;
     }
@@ -352,13 +532,20 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
     {
     bool handled = false;
     int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
+#if(COMPLETION_WINDOW)
+    mCompleteList.handleEditorKey(event->key.keyval);
+#endif
     switch(event->key.keyval)
 	{
 	case '>':	// Checking for "->"
 	case '.':
 	    {
-	    GtkTextIter cursorIter = getCursorIter();
+#if(CODE_COMPLETE)
 	    int offset = getCursorOffset();
+	    mHighlighter.showMembers(offset-1);
+#else
+	    GtkTextIter cursorIter = GuiTextBuffer::getCursorIter(mTextBuffer);
+	    int offset = GuiTextBuffer::getCursorOffset(mTextBuffer);
 	    offset--;
 	    if(event->key.keyval == '>')
 		{
@@ -375,6 +562,7 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
 		{
 		mHighlighter.showMembers(offset);
 		}
+#endif
 	    }
 	    break;
 
@@ -419,17 +607,24 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
     return handled;
     }
 
-GtkTextIter FileEditView::getCursorIter() const
+extern "C" G_MODULE_EXPORT void on_CompletionListTreeview_row_activated(GtkWidget *widget, gpointer data)
     {
-    GtkTextMark *mark = gtk_text_buffer_get_insert(mTextBuffer);
-    GtkTextIter curLoc;
-    gtk_text_buffer_get_iter_at_mark(mTextBuffer, &curLoc, mark);
-    return curLoc;
+    sCurrentCompleteList->activateSelectedItem();
     }
 
-int FileEditView::getCursorOffset() const
+extern "C" G_MODULE_EXPORT bool on_CompletionListTreeview_key_press_event(
+	GtkWidget *widget, GdkEvent *event, gpointer user_data)
     {
-    GtkTextIter curLoc = getCursorIter();
-    return gtk_text_iter_get_offset(&curLoc);
+    return sCurrentCompleteList->handleListKey(event->key.keyval);
     }
 
+extern "C" G_MODULE_EXPORT void on_CompletionListTreeview_focus_out_event(GtkWidget *widget, gpointer data)
+    {
+    sCurrentCompleteList->lostFocus();
+    }
+
+extern "C" G_MODULE_EXPORT boolean on_CompletionListTreeview_draw(GtkWidget *widget, gpointer data)
+    {
+    sCurrentCompleteList->resize();
+    return false;
+    }

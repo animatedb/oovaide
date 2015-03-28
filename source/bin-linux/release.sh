@@ -8,6 +8,9 @@ dstFromTrunk=../../backup/oovcde
 rm -r $dst
 mkdir $dst
 
+find ../test/trunk-oovcde-*/analysis* -delete
+find ../test/trunk-oovcde-*/oovcde-tmp* -delete
+
 rsync -av --exclude='.svn' $trnk/../web/ $dst/web/
 rsync -av --exclude='.svn' $trnk/bin-linux/ $dst/bin/
 #rsync -av $clang/lib/clang $dst/lib/
