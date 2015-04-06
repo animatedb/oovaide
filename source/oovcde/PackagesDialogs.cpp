@@ -290,10 +290,11 @@ void ProjectPackagesDialog::winScanDirectories()
 	    mProjectPackagesList.getSelected());
     if(pkg.getPkgName().length() > 0)
 	{
+	OovString rootDir = getEntry("PackageRootDirEntry");
 	FilePaths dirs;
 	dirs.push_back(FilePath("/", FP_Dir));
 	dirs.push_back(FilePath("/Program Files", FP_Dir));
-	OovString dir = findMatchingDir(dirs, pkg.getRootDir());
+	OovString dir = findMatchingDir(dirs, rootDir);
 	if(dir.length())
 	    {
 	    pkg.setRootDir(dir);

@@ -8,7 +8,8 @@
 #ifndef CAIRODRAWER_H_
 #define CAIRODRAWER_H_
 
-#include "ClassDrawer.h"
+#include "DiagramDrawer.h"
+#include <gtk/gtk.h>
 
 /// Defines a basic context for drawing that can be used for screen or
 /// printing to files.

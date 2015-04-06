@@ -17,7 +17,8 @@ Missing Features
 ----------------
 - General
 	- BUG: Goto class doesn't change tab to class tab
-	- create minimal code guidelines, ex: "The Power of Ten – Rules for Developing Safety Critical Code"
+	- create minimal code guidelines, ex:
+	  "The Power of Ten – Rules for Developing Safety Critical Code"
 - Gui
 	- Add improved open recent files
 	- Add toolbar buttons
@@ -29,10 +30,7 @@ Missing Features
 		- window might be busy and is not responding (oovCommon/PackagesProcess?)
 	- Filter class list by component/dir
 	- Clicking on warnings doesn't display editor.
-	- Doesn't load new include paths when reopening a project. (Close oovcde and restart)
 	- Changing preferences should update drawings
-	- Refactor to improve separation of GUI. Collection of graphs in backend.
-		http://geekswithblogs.net/gregorymalcolm/archive/2009/07/14/user-interface-patterns.aspx
 - Source/project management
 	- Make it clear which files must be saved to save project settings.
 	  Gui Options don't get recreated if project is opened instead of newed.
@@ -69,7 +67,7 @@ Missing Features
 	- Grid for class placement, option for grid size
 	- Add filter for class list (GTK search feature exists)
 - Sequence Diagrams
-	- Fix else/switch case
+	- Improve else/switch case
 	- Show method parameters optionally
 	- Find top level function in diagram, may not be first class.
 	- View source only working on top level operation
@@ -168,13 +166,15 @@ Missing Features
 - Future
 	- more component stats - lines, classes, etc.
 	- Cohesion in a class (how methods use attributes)
-		http://www.bth.se/fou/cuppsats.nsf/all/86e880ce9d0b94aec1256f0e004778e5/$file/thesis_report.pdf
+		http://www.bth.se/fou/cuppsats.nsf/all/86e880ce9d0b94aec1256f0e004778e5/
+			$file/thesis_report.pdf
 	- Add autocomplete ("efficient autocompletion database")
 		- editor code completion llvm 3.6
 		Three types (types, instances and members(., ->)), save def,decl location, namespaces?
 		http://emacswiki.org/emacs/AutoComplete
 		http://www.vldb.org/pvldb/vol6/p373-xiao.pdf
-		http://stackoverflow.com/questions/2332028/what-is-an-efficient-search-algorithm-to-provide-auto-completion
+		http://stackoverflow.com/questions/2332028/
+			what-is-an-efficient-search-algorithm-to-provide-auto-completion
 	- Add design quality based on function inter-relations / call-tree?
 		http://www.graphviz.org/content/tips-usefully-visualizing-non-trivial-graphs
 		https://en.wikipedia.org/wiki/Design_structure_matrix

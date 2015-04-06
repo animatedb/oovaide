@@ -12,7 +12,6 @@
       <object class="GtkScrolledWindow" id="CompletionListScrolledwindow">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="hscrollbar_policy">never</property>
         <property name="shadow_type">in</property>
         <child>
           <object class="GtkTreeView" id="CompletionListTreeview">
@@ -24,8 +23,8 @@
             <property name="show_expanders">False</property>
             <signal name="draw" handler="on_CompletionListTreeview_draw" swapped="no"/>
             <signal name="row-activated" handler="on_CompletionListTreeview_row_activated" swapped="no"/>
-            <signal name="focus-out-event" handler="on_CompletionListTreeview_focus_out_event" swapped="no"/>
             <signal name="key-press-event" handler="on_CompletionListTreeview_key_press_event" swapped="no"/>
+            <signal name="focus-out-event" handler="on_CompletionListTreeview_focus_out_event" swapped="no"/>
             <child internal-child="selection">
               <object class="GtkTreeSelection" id="treeview-selection"/>
             </child>

@@ -1,654 +1,716 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><!-- DC Blaha - 6/8/2009 -->
-
-
-
-
-
-
-
-<link rel="stylesheet" type="text/css" href="../style.css">
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Oovcde User Guide</title></head><body>
-
-<font size="+3">Oovcde User Guide<br></font>
-<hr style="width: 100%; height: 3px;">
-
-Created: June 8, 2009
-Last update: March 3, 2015
-<p>
-<img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
-</p><p>
-</p>
-<h1><a class="mozTocH2" name="mozTocId927306"></a>Contents</h1><span style="text-decoration: underline;"></span>
-<br>
-<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId927306">Contents</a></li><li><a href="#mozTocId937452">Quick Start
-
-</a></li><li><a href="#mozTocId651087">Oovcde</a><ol><li><a href="#mozTocId728139">Setting Up Analysis Projects</a></li><li><a href="#mozTocId407903">Component Diagrams</a></li><li><a href="#mozTocId269360">Class Diagrams</a><ol><li><a href="#mozTocId381773">Class Diagram Symbols</a></li><li><a href="#mozTocId213642">Class Diagram Display Options</a></li></ol></li><li><a href="#mozTocId280779">Zone Diagrams</a></li><li><a href="#mozTocId261032">Sequence Diagrams</a></li><li><a href="#mozTocId120758">Editing SVG diagrams</a></li><li><a href="#mozTocId108517">Complexity Analysis
-</a></li><li><a href="#mozTocId108517">Member Usage Analysis</a></li><li><a href="#mozTocId261866">Duplicate Code Analysis</a></li><li><a href="#mozTocId894354">Code Test Coverage System</a></li></ol></li><li><a href="#mozTocId246966">Build System</a><ol><li><a href="#mozTocId418717">Build Goals</a></li><li><a href="#mozTocId102170">Build Features</a></li><li><a href="#mozTocId675000">Build Quick Start</a></li><li><a href="#mozTocId349590">Cross Compiling</a></li><li><a href="#mozTocId206848">Resolving Include Problems During Analysis</a><ol><li><a href="#mozTocId824690">Windows Include Problems</a></li></ol></li><li><a href="#mozTocId450611">Linux Example</a></li><li><a href="#mozTocId913463">Windows Example</a></li><li><a href="#mozTocId813985">Build Sequence</a></li><li><a href="#mozTocId932506">Project Limitations</a></li></ol></li><li><a href="#mozTocId21842">OovEdit</a></li></ol>
-<h1><a class="mozTocH2" name="mozTocId937452"></a>Quick Start<br>
-
-</h1>
-To work with the examples, see <a href="examples.shtml">examples.shtml</a>.<br>
-<br>
-
-<ol>
-  
-  <li>Use File/New and create a new Oovcde project using an existing or
-new C++ project. There are example source projects in trunk/examples.<br>
-  </li>
-  <ol>
-<li>select a new directory for source files, or an existing directory that is
- the root directory of existing source files.</li><li>select an output project
-  directory to store oov project files.</li>
-  </ol>
-<li>OR: Use File/Open and open the trunk/test/trunk-oovcde-win or
- trunk/test/trunk-oovcde-linux directory.<br>
-</li><li>At this point, it may be possible to view diagrams if the include paths
-are set. They are already set if the oovcde project was opened. Select
-Analysis/Settings and select the Cpp Arguments tab to change
-the include paths and compile and link settings. Note that the include
-and library paths can both be set using recursive searches using "-ER".
-See below for more information.<br>
-  </li>
-  <li>Build a project. These steps are not required for viewing diagrams. Building
-Oovcde requires CLang and GTK to be downloaded and to match the paths
-in the Analysis/Settings/Cpp Arguments settings.<br>
-</li>
-  <ol>
-    <li>Select
-Build/Settings and set the component type for each component. For the
-Oovcde project, the oovCommon and oovGuiCommon components are static
-libraries, and all other oov... components are executables.<br>
-    </li>
-    <li>Select Build/Build Debug to build a debug version of the project.<br>
-  </li>
-  </ol>
-</ol>
-
-<h1><a class="mozTocH2" name="mozTocId651087"></a>Oovcde</h1>
-
-
-<h2><a class="mozTocH3" name="mozTocId728139"></a>Setting Up Analysis Projects</h2>Anlyzing
-projects allows viewing zone, class and sequence diagrams. It is also the
-first step towards building projects and running code coverage.<br>
-<br>
-
-
-    <ol>
-    <li>Start the "oovcde" program</li>
-    <li>Use File/New to create a new project</li>
-    <li>The Project Settings dialog will appear that allows choosing the
-	source root of the source files to analyze. The location can be specified
-	for saving all of the project files for Oovcde. Files can be excluded from
-	analysis.  This can also be changed later.</li>
-    <li>Select the Analysis/Settings menu item. Choose the "Cpp Arguments" tab
-	to change the include paths and other compiler settings.  Errors during
-	compilation are stored in the project directory.  If there are errors,
-	change the compiler settings and restart analysis. </li>
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <!-- DC Blaha - 6/8/2009 -->
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Oovcde User Guide</title>
+  </head>
+  <body>
+    <font size="+3">Oovcde User Guide<br>
+    </font>
+    <hr style="width: 100%; height: 3px;">
+    Created: June 8, 2009
+    Last update: April 1, 2015
+    <p>
+      <img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
+    </p>
+    <p>
+    </p>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId927306"></a>Contents</h1>
+    <span style="text-decoration: underline;"></span>
+    <br>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId927306">Contents</a></li>
+      <li><a href="#mozTocId937452">Quick Start</a></li>
+      <li><a href="#mozTocId651087">Oovcde</a>
+        <ol>
+          <li><a href="#mozTocId728139">Setting Up Analysis Projects</a></li>
+          <li><a href="#mozTocId407903">Component Diagrams</a></li>
+          <li><a href="#mozTocId280779">Zone Diagrams</a></li>
+          <li><a href="#mozTocId269360">Class Diagrams</a>
+            <ol>
+              <li><a href="#mozTocId381773">Class Diagram Symbols</a></li>
+              <li><a href="#mozTocId213642">Class Diagram Display Options</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId261032">Sequence Diagrams</a></li>
+          <li><a href="#mozTocId120758">Editing SVG diagrams</a></li>
+          <li><a href="#mozTocId108517">Complexity Analysis</a></li>
+          <li><a href="#mozTocId108517">Member Usage Analysis</a></li>
+          <li><a href="#mozTocId261866">Duplicate Code Analysis</a></li>
+          <li><a href="#mozTocId894354">Code Test Coverage System</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId246966">Build System</a>
+        <ol>
+          <li><a href="#mozTocId102170">Build Features</a></li>
+          <li><a href="#mozTocId675000">Build Quick Start</a></li>
+          <li><a href="#mozTocId349590">Cross Compiling</a></li>
+          <li><a href="#mozTocId206848">Resolving Include Problems During
+              Analysis</a>
+            <ol>
+              <li><a href="#mozTocId824690">Windows Include Problems</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId450611">Linux Example</a></li>
+          <li><a href="#mozTocId913463">Windows MFC Example</a></li>
+          <li><a href="#mozTocId913463">Windows GTK Example</a></li>
+          <li><a href="#mozTocId813985">Build Sequence</a></li>
+          <li><a href="#mozTocId932506">Project Limitations</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId21842">OovEdit</a></li>
     </ol>
-    To open a previously saved project, select File/Open and specify
-	the previously saved Oovcde project directory.
-
-<h2><a class="mozTocH2" name="mozTocId407903"></a>Component Diagrams</h2>Component
-diagrams are similar to UML (Unified Modelling Language) component
-diagrams. A component diagram displays components such as static or
-shared libraries and executables. When the Comp tab is clicked, the
-component diagram for a project is generated automatically.<br>
-<br>
-Any component that has the Component Type defined in the Build Settings
-dialog will be displayed. In addition, the components that are defined
-in the Analysis/Settings Build Arguments dialog using the External
-Project Packages will be displayed. The analysis will figure out the
-dependencies and the dependency arrows will also be generated
-automatically.<br>
-<ol>
-    <li>The components for a project are displayed in the left pane in the "Comp" tab.
-    The components list is a list of the source files for the project.</li>
-    <li>After the Component Types have been specified in the Build/Settings dialog,
-    and the analysis has been run, then clicking on any component in the components
-    list will update the diagram and show the dependencies between the run-time
-    components.</li>
-  <li>The components can be moved by clicking and dragging the components.</li>
-  <li>Right clicking on a component allows:</li>
-  <ol>
-    <li>Remove Component - Removes the component from the diagram</li>
-    <li>Show Implicit Relations - Shows relations between all components</li>
-    <li>Relayout - Repositions the components</li>
-    <li>Restart - Adds all removed components.<br>
-    </li>
-  </ol>
-
-    </ol>
-
-<h2><a class="mozTocH2" name="mozTocId280779"></a>Zone Diagrams</h2>
-A zone diagram displays all classes in the project in a circle diagram
-where all classes are layed out on the circumfrence of the
-circle.&nbsp; Any two classes that are related will have a line drawn
-between them.<br>
-<ol>
-  <li>The zone diagram component (directory) list/tree allows selecting which components are displayed on the diagram.</li>
-  <li>Right clicking on the component list allows:</li>
-  <ol>
-    <li>Hide All, Show All - Hiding or showing all components</li>
-    <li>Hide Children, Show Children - Hiding or showing all components that are children of the selected component</li>
-    <li>Map Path - This allows combining directories into a single directory for the graph. For example, mapping /usr/include to /inc-lib and /usr/lib
-to /inc-lib, will combine both directories into one component in the
-graph. Child components with unique names are listed separately.<br>
-    </li>
-  </ol>
-  <li>Right clicking on the graph allows:</li>
-  <ol>
-    <li>Go To Class - Displays the class diagram for the selected class</li>
-    <li>View Source - Displays the source code for the selected class</li>
-    <li>Show All Classes - Showing all classes or just showing components</li>
-    <li>Show Function Relations - Shows classes as related if a class has a member function that uses another class.</li>
-    <li>Show Dependencies - Displays an arrow at the end of a
-relationship. The arrow end is the end that is the supplier and the
-non-arrow end is the consumer.</li>
-    <li>Zoom In/Out - Zoom the diagram<br>
-    </li>
-  </ol>
-</ol>
-
-<h2><a class="mozTocH3" name="mozTocId269360"></a>Class Diagrams</h2>
-Class diagrams are similar to UML (Unified Modelling Language) class
-diagrams. They display the members of the classes and relations between
-classes.<br>
-<br>
-
-
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId937452"></a>Quick Start<br>
+    </h1>
+    To work with the examples, see <a href="examples.shtml">examples.shtml</a>.<br>
+    <br>
     <ol>
-    <li>The classes for a project are displayed in the
-left pane in the Class tab. Left click on a class to display a diagram
-of related classes with standard relations. Right click adds the
-selected class with standard relations.<br>
-</li>
-    <li>Right clicking on a class will display a popup menu that allows
-	adding classes with various types of relationships.</li>
-    <li>Left click on a class and drag the cursor to the desired location to
-	move a class.</li>
+      <li>Use File/New and create a new Oovcde project using an existing or
+        new C++ project. There are example source projects in trunk/examples.<br>
+      </li>
+      <ol>
+        <li>select a new directory for source files, or an existing directory
+          that is the root directory of existing source files.</li>
+        <li>select an output project directory to store oov project files.</li>
+      </ol>
+      <li>OR: Use File/Open and open the trunk/test/trunk-oovcde-win or
+        trunk/test/trunk-oovcde-linux directory.<br>
+      </li>
+      <li>At this point, it may be possible to view diagrams if the include
+        paths
+        are set. They are already set if the oovcde project was opened. Select
+        Analysis/Settings and select the Cpp Arguments tab to change
+        the include paths and compile and link settings. Note that the include
+        and library paths can both be set using recursive searches using "-ER".
+        See below for more information.<br>
+      </li>
+      <li>Build a project. These steps are not required for viewing diagrams.
+        Building
+        Oovcde requires CLang and GTK to be downloaded and to match the paths
+        in the Analysis/Settings/Cpp Arguments settings.<br>
+      </li>
+      <ol>
+        <li>Select
+          Build/Settings and set the component type for each component. For the
+          Oovcde project, the oovCommon and oovGuiCommon components are static
+          libraries, and all other oov... components are executables.<br>
+        </li>
+        <li>Select Build/Build Debug to build a debug version of the project.<br>
+        </li>
+      </ol>
+    </ol>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId651087"></a>Oovcde</h1>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId728139"></a>Setting Up
+      Analysis Projects</h2>
+    Anlyzing
+    projects allows viewing zone, class and sequence diagrams. It is also the
+    first step towards building projects and running code coverage.<br>
+    <br>
+    <ol>
+      <li>Start the "oovcde" program</li>
+      <li>Use File/New to create a new project</li>
+      <li>The Project Settings dialog will appear that allows choosing the
+        source root of the source files to analyze. The location can be
+        specified for saving all of the project files for Oovcde. Files can be
+        excluded from analysis. This can also be changed later.</li>
+      <li>Select the Analysis/Settings menu item. Choose the "Cpp Arguments" tab
+        to change the include paths and other compiler settings. Errors during
+        compilation are stored in the project directory. If there are errors,
+        change the compiler settings and restart analysis.See the Build section
+        for more examples.</li>
+    </ol>
+    To open a previously saved project, select File/Open and specify the
+    previously saved Oovcde project directory.
+    <h2><a class="mozTocH2" name="mozTocId407903"></a>Component Diagrams</h2>
+    Component
+    diagrams are similar to UML (Unified Modelling Language) component
+    diagrams. A component diagram displays components such as static or
+    shared libraries and executables. When the Comp tab is clicked, the
+    component diagram for a project is generated automatically.<br>
+    <br>
+    Any component that has the Component Type defined in the Build Settings
+    dialog will be displayed. In addition, the components that are defined
+    in the Analysis/Settings Build Arguments dialog using the External
+    Project Packages will be displayed. The analysis will figure out the
+    dependencies and the dependency arrows will also be generated
+    automatically.<br>
+    <ol>
+      <li>The components for a project are displayed in the left pane in the
+        "Comp" tab. The components list is a list of the source files for the
+        project.</li>
+      <li>After the Component Types have been specified in the Build/Settings
+        dialog, and the analysis has been run, then clicking on any component in
+        the components list will update the diagram and show the dependencies
+        between the run-time components.</li>
+      <li>The components can be moved by clicking and dragging the components.</li>
+      <li>Right clicking on a component allows:</li>
+      <ol>
+        <li>Remove Component - Removes the component from the diagram</li>
+        <li>Show Implicit Relations - Shows relations between all components</li>
+        <li>Relayout - Repositions the components</li>
+        <li>Restart - Adds all removed components.<br>
+        </li>
+      </ol>
+    </ol>
+    <h2><a class="mozTocH2" name="mozTocId280779"></a>Zone Diagrams</h2>
+    A zone diagram displays all classes in the project in a circle diagram
+    where all classes are layed out on the circumfrence of the
+    circle.&nbsp; Any two classes that are related will have a line drawn
+    between them.<br>
+    <ol>
+      <li>The zone diagram component (directory) list/tree allows selecting
+        which components are displayed on the diagram.</li>
+      <li>Right clicking on the component list allows:</li>
+      <ol>
+        <li>Hide All, Show All - Hiding or showing all components</li>
+        <li>Hide Children, Show Children - Hiding or showing all components that
+          are children of the selected component</li>
+        <li>Map Path - This allows combining directories into a single directory
+          for the graph. For example, mapping /usr/include to /inc-lib and
+          /usr/lib
+          to /inc-lib, will combine both directories into one component in the
+          graph. Child components with unique names are listed separately.<br>
+        </li>
+      </ol>
+      <li>Right clicking on the graph allows:</li>
+      <ol>
+        <li>Go To Class - Displays the class diagram for the selected class</li>
+        <li>View Source - Displays the source code for the selected class</li>
+        <li>Show All Classes - Showing all classes or just showing components</li>
+        <li>Show Function Relations - Shows classes as related if a class has a
+          member function that uses another class.</li>
+        <li>Show Dependencies - Displays an arrow at the end of a
+          relationship. The arrow end is the end that is the supplier and the
+          non-arrow end is the consumer.</li>
+        <li>Zoom In/Out - Zoom the diagram<br>
+        </li>
+      </ol>
+    </ol>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId269360"></a>Class Diagrams</h2>
+    Class diagrams are similar to UML (Unified Modelling Language) class
+    diagrams. They display the members of the classes and relations between
+    classes.<br>
+    <br>
+    <ol>
+      <li>The classes for a project are displayed in the
+        left pane in the Class tab. Left click on a class to display a diagram
+        of related classes with standard relations. Right click adds the
+        selected class with standard relations.<br>
+      </li>
+      <li>Right clicking on a class will display a popup menu that allows adding
+        classes with various types of relationships.</li>
+      <li>Left click on a class and drag the cursor to the desired location to
+        move a class.</li>
     </ol>
     Right clicking on a class also allows
-	<ul>
-	<li>Go To Class - Shows the class diagram for the selected class</li>
-	<li>View Source - Views the source code</li>
-  <li>Add Standard Relations - Adds classes that have relations where
-the classes are related either through aggregation or inheritance.</li>
-  <li>All All Relations - Adds classes that have standard relations
-plus relations where member functions are related to the other classes.</li>
-  <li>Zoom - Zooms the diagram.<br>
-  </li>
-
-	<li>Removing class - Removes the selected class</li>
-  <li>Remove All Classes - Removes all classes</li>
-  <li>Restart - Adds the classes with standard relations<br>
-  </li>
-
-	</ul>
-
-<h3><a class="mozTocH2" name="mozTocId381773"></a>Class Diagram Symbols</h3>
-
-    So what are circles and V shapes doing on the drawings?  Don't
-    worry, they can be turned off if desired.  These extra Oov symbols are used to
-    provide quick visibility into other relations that are not displayed on
-    standard UML diagrams.  The goal is to find and show as many relationships
-    as possible on the diagram for quick understandability and verification of the code.
+    <ul>
+      <li>Go To Class - Shows the class diagram for the selected class</li>
+      <li>View Source - Views the source code</li>
+      <li>Add Standard Relations - Adds classes that have relations where
+        the classes are related either through aggregation or inheritance.</li>
+      <li>All All Relations - Adds classes that have standard relations
+        plus relations where member functions are related to the other classes.</li>
+      <li>Zoom - Zooms the diagram.<br>
+      </li>
+      <li>Removing class - Removes the selected class</li>
+      <li>Remove All Classes - Removes all classes</li>
+      <li>Restart - Adds the classes with standard relations<br>
+      </li>
+    </ul>
+    <h3><a class="mozTocH2 mozTocH3" name="mozTocId381773"></a>Class Diagram
+      Symbols</h3>
+    So what are circles and V shapes doing on the drawings? Don't worry, they
+    can be turned off if desired. These extra Oov symbols are used to provide
+    quick visibility into other relations that are not displayed on standard UML
+    diagrams. The goal is to find and show as many relationships as possible on
+    the diagram for quick understandability and verification of the code.
+    <p> (See the screenshots to see examples.) The enhanced symbols are: </p>
+    <ul>
+      <li>the nested circles indicate the private, public, protected scope
+        relations. Fully empty means public, and fully filled means private,
+        otherwise it is protected.</li>
+      <li>the V shape indicates read only (const)</li>
+      <li>the circle standing alone means a relationship with a function
+        variable</li>
+      <li>a small circle next to a circle is a function parameter relationship.</li>
+    </ul>
+    The other symbols are standard UML symbols.
+    <h3><a class="mozTocH3" name="mozTocId213642"></a>Class Diagram Display
+      Options</h3>
+    <ol>
+      <li>Select the Analysis/Settings menu item.</li>
+      <li>Choose the "Draw Options" tab and check or uncheck the various
+        options. These options do not change how classes are added to the
+        diagrams.</li>
+    </ol>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId261032"></a>Sequence Diagrams</h2>
+    Sequence
+    or operation diagrams are similar to UML (Unified Modelling Language)
+    sequence
+    diagrams. They display the member functions of the classes, and some
+    detail of the members and relations to members in other classes.<br>
+    <br>
+    Sequence diagrams are only slightly modified from standard UML diagrams. The
+    guard conditions are not shown on each arrow, but are instead shown on the
+    lifeline blocks. This prevents duplication of the condition for each
+    operation call, and is still very easy to read for someone that is used to
+    UML.
+    <br>
+    <ol>
+      <li>Selecting a class in the class list will change the operations in the
+        Operations (Oper tab) list. Clicking on an operation will display the
+        sequence diagram for the operation.</li>
+      <li>Selecting an operation from the operation list will display the
+        contents of the operation.</li>
+      <li>Right clicking on the sequence diagram depends on whether a class or
+        operation is clicked on. Right clicking allows:</li>
+      <ol>
+        <li>Go To Operation - Displays a new diagram for the different
+          operation.</li>
+        <li>Add Calls - Expands the selected call to show the child calls</li>
+        <li>Add Callers - Shows the operations that call the selected operation.<br>
+        </li>
+      </ol>
+    </ol>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId120758"></a>Editing SVG
+      diagrams</h2>
+    <ol>
+      <li>Use File/Save or File/Save As to save an SVG file. A class diagram
+        will be saved if the class diagram is displayed, otherwise the sequence
+        diagram will be saved.</li>
+      <li>Download Inkscape from <a href="http://inkscape.org/">inkscape.org</a></li>
+    </ol>
+    When using File/Save, the file will be saved to the location of the
+    executable files. This may be changed in the future.<br>
+    <h2><a class="mozTocH1 mozTocH2" name="mozTocId108517"></a>Complexity
+      Analysis<br>
+    </h2>
+    <ol>
+      <li>After the analysis has been performed, select Analysis/Complexity to
+        update the complexity information for each source file.<br>
+      </li>
+    </ol>
+    For more complexity information, see
+    <a href="../articles/Complexity.shtml">Complexity.shtml</a>.<br>
+    <br>
+    <h2><a class="mozTocH1 mozTocH2" name="mozTocId108517"></a>Member Usage
+      Analysis</h2>
+    <ol>
+      <li>After the analysis has been performed, select Analysis/Member
+        Usage to save usage information about members.&nbsp; This shows the
+        number of member functions of a class that use each class member
+        attribute.</li>
+    </ol>
+    <h2><a class="mozTocH2" name="mozTocId261866"></a>Duplicate Code Analysis</h2>
+    <ol>
+      <li>Turn on duplicate code analysis by adding -dups to the
+        Analysis/Settings/Build Arguments/Analyze/Extra Build Arguments</li>
+      <li>Delete any existing analysis directories in the Oovcde project
+        directory so that a complete analysis is run.</li>
+      <li>Run Analysis/Analyze</li>
+      <li>Run Analysis/Duplicates<br>
+      </li>
+    </ol>
+    <h2><a class="mozTocH1 mozTocH2" name="mozTocId894354"></a>Code Test
+      Coverage System</h2>
+    <ol>
+      <li>Running Coverage/Instrument will create an "oov-cov" directory that
+        contains a copy of all source files and modifies them so that they
+        include coverage counting software. It copies the oovcde build files so
+        if the project was built previously, the new project files will
+        automatically build the coverage project when the Coverage/Build menu is
+        run.</li>
+      <li>Running Coverage/Build will build the coverage project.</li>
+      <li>Running the coverage project components will update coverage counts.</li>
+      <li>Running Coverage/Statistics will output a coverage percentage file.</li>
+    </ol>
+    For more coverage information, see <a href="../articles/TestCoverage.shtml">TestCoverage.shtml</a>.<br>
+    <br>
+    <h1><a class="mozTocH3 mozTocH1" name="mozTocId246966"></a>Build System</h1>
+    The build system is not required to view diagrams.<br>
+    <br>
+    There must be a set of installed build tools such as clang or GNU. The
+    oovBuilder manages the project source, and is an executable that can be run
+    from the command line. It can be run from the build menu in the oovcde
+    program. <br>
+    <br>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId102170"></a>Build Features</h2>
+    <ul>
+      <li>Provides a very simple setup for building projects</li>
+      <li>Eliminates reasons for "clean". Rarely any out of date dependencies</li>
+      <li>Source directories are not cluttered up with build files.</li>
+      <li>Fast builds using multitasking. Multitasking is used to analyze and
+        build multiple object, library, executables files</li>
+      <li>Component names are derived from the directory names of directories
+        that contain C++ source files.</li>
+      <li>Directories are scanned to find header files, and generate include
+        paths.</li>
+      <li>Directories are scanned to find libraries, and library symbols are
+        parsed to determine library link order, and to determine which static
+        libraries are required for executables and shared libraries. </li>
+      <li>Source files are parsed using CLang to find include dependencies.
+        Include dependencies are used to determine which files need to be built.
+        Rebuilding will only compile files that need to be rebuilt based on
+        dependencies.</li>
+      <li>External packages can be specified by selecting the package, or the
+        root path of external projects can be specified for locations of header
+        and library files. On Linux, the pkg-config system is used to find
+        available packages. Exclusion criteria can be used to select only one of
+        many types of library or header files.</li>
+      <li>Build tools are determined from paths and installed tools, but can be
+        specified manually.</li>
+      <li>Project information is scanned and stored for different sets of build
+        arguments. Debug and release configurations will not conflict.</li>
+    </ul>
+    <br>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId675000"></a>Build Quick Start</h2>
+    The examples are a quick way to understand some basic principles.
+    See <a href="examples.shtml">Examples</a>.<br>
+    The build details are described in <a href="../design/OovcdeBuildDesign.html">Oovcde
+      Build Design</a>.<br>
+    Note that the Oovcde binary packages do not include a compiler for building.<br>
+    <br>
+    The following steps can be followed:<br>
+    <br>
+    <ul>
+      <li>Run Oovcde and either create a new project, or open an existing
+        project. Either the gnu or clang compilers should be installed in the
+        system. In Windows, Oovcde searches the path and if LLVM is present,
+        then clang++ is used as the compiler. In Linux, the clang++ compiler is
+        searched for in the /usr/bin directory, and if found clang++ is used as
+        the compiler.</li>
+      <li>Add some references to external project packages. These are specified
+        under Analysis/Settings/Build Arguments.</li>
+      <ul>
+        <li>Use the External Project Packages button to specify a package on the
+          system. In Linux, this uses pkg-confg, and will define all includes,
+          flags and libraries. In Windows, there are a few predefined packages
+          that are defined in a file in the bin directory. </li>
+        <li>If the required external packages do not exist, either custom
+          packages can be created, or add some external project root references.
+        </li>
+        <li>An external directory can be specified, and may look like
+          "-ERC:\ExternalPackage". The full syntax allows excluding some
+          subdirectories using an exclamation point as a not symbol. This is
+          required for cases where external project references contain multiple
+          libraries with the same symbols. For example,
+          "-ER/home/dave/software/oovcde/2.0/clang+llvm-3.2!libclang_rt" will
+          prevent using any path with libclang_rt in it.</li>
+      </ul>
+      <li>Select Build/Settings and specify what type of output to produce for
+        each component listed in the dialog. If the needed components are not
+        listed, then Oovcde will not build your type of project. Either
+        rearrange the directory structure, or contact the Oovcde developers.<br>
+      </li>
+      <li>Run Build/Build Debug or Build/Build Release.<br>
+      </li>
+    </ul>
+    The trunk/test/trunk-oovcde directorys show example files for
+    building the oovcde project. This is a somewhat complex project since
+    it uses both Gtk and Clang, and has multiple libraries and executables.
+    Early versions of CLang on Windows required building CLang, and the
+    complex library order for
+    Clang was able to be determined by the build system.<br>
+    <br>
+    <h2><a class="mozTocH4 mozTocH2" name="mozTocId349590"></a>Cross Compiling</h2>
+    The following example shows the use of Ubuntu for cross compiling to an
+    ARM hard float platform. This requires that the gcc-arm-linux-gnueabihf
+    package is installed using apt-get or synaptic:<br>
+    <ul>
+      <li>Select Analysis/Settings</li>
+      <li>Select Debug under Build Configurations, and click the NewConfig
+        button. Enter "Arm-Debug" as a new configuration.<br>
+      </li>
+      <li>Enter arm-linux-gnueabihf-g++ for the Compiler Path</li>
+      <li>Add to the Common Build Arguments:</li>
+      <ul>
+        <li>-fPIC</li>
+        <li>-march=armv7-a</li>
+        <li>-mfloat-abi=hard</li>
+      </ul>
+      <li>Add something like the fillowing to the Extra Build Arguments for the
+        Arm-Debug configuration:</li>
+      <ul>
+        <li>-lnk-L/target-sysroot/arm-linux-gnueabihf/usr/lib</li>
+        <li>-lnk-L/target-sysroot/arm-linux-gnueabihf/lib</li>
+        <li>-lnk-Wl,-rpath-link,/target-sysroot/arm-linux-gnueabihf/usr/lib</li>
+        <li>-lnk-Wl,-rpath-link,/target-sysroot/arm-linux-gnueabihf/lib</li>
+      </ul>
+      <li>When compiling, the linker may say, "cannot find", and then list
+        some library name. If the target files were copied from the device, the
+        links may contain paths to the directories for the target machine. This
+        files can be edited and the paths removed so that the local files are
+        found.If shared libraries are created, there may be some cases where a
+        static
+        library can be hidden by being renamed to force the shared library to
+        be used. </li>
+    </ul>
+    <br>
+    <h2><a class="mozTocH4 mozTocH2" name="mozTocId206848"></a>Resolving Include
+      Problems During Analysis</h2>
+    The Oovcde analysis will often produce usable output even when include files
+    cannot
+    be found, although this may result in missing classes, or methods in
+    sequence diagrams.<br>
+    <br>
+    Oovcde uses the OovCppParser to perform the analysis, and the
+    OovCppParser uses CLang. Clang has hard coded paths compiled into the
+    analysis binary. Compilers will only search for a certain set of include
+    paths.
+    See the include problems below for more information.
     <p>
-    (See the screenshots to see examples.)  The enhanced symbols are:
-        </p><ul>
-        <li>the nested circles indicate the private, public, protected scope
-	    relations. Fully empty means public, and fully filled means private,
-	    otherwise it is protected.</li>
-        <li>the V shape indicates read only (const)</li>
-        <li>the circle standing alone means a relationship with a function variable</li>
-        <li>a small circle next to a circle is a function parameter relationship.</li>
+      Oovcde produces analysis directories for each set of build
+      arguments.&nbsp; This is in case the classes may be different for debug
+      or release, etc.
+    </p>
+    <p>
+      The analysis directories are not kept unique for the clang
+      and GCC compilers. Build argument differences are used to make unique
+      analysis
+      directories. If they are using the same directory, and different include
+      paths are needed, set an argument that
+      is different so that different analysis directories are used.<br>
+    </p>
+    <h3><a class="mozTocH5 mozTocH3" name="mozTocId824690"></a>Windows Include
+      Problems</h3>
+    Things can be difficult especially on Windows since Oovcde by default
+    uses CLang for analysis, and can use either CLang or the gnu compiler for
+    builds.
+    The gnu compiler is available from the MinGW, MinGW-builds or MinGW-W64
+    projects.
+    The old MinGW-builds project has now been incorporated into MinGW-W64.
+    MinGW-builds or MinGW-W64 is required to build Oovcde instead of mingw
+    because it
+    supports C++11 threading.
+    <p>
+      The gnu compiler will normally find include and library paths since the
+      compiler
+      searches paths relative to the g++ directory. The CLang compiler will find
+      many
+      mingw paths, but does not find paths for Mingw-W64.
+    </p>
+    <p>
+      Switching between the packages often requires nothing more than changing
+      the
+      path environment variable or setting the compiler name in the Oovcde
+      Analysis/Settings/Build Arguments dialog.<br>
+    </p>
+    <p>
+      CLang normally finds mingw by searching for default paths, but does not
+      find mingw-w64.
+      For this reason, mingw-w64 is defined as a package that can be included in
+      the Analysis/Settings/
+      menu in the Build Arguments tab using the External Project Packages
+      button.
+    </p>
+    <p>
+      So there are a few usage scenarios:<br>
+    </p>
+    <ul>
+      <li>Perform Analysis with Oovcde using Mingw - Typically CLang will
+        require include files to be in \MinGW </li>
+      <li>Perform Analysis with Oovcde using Mingw-W64 or Build Oovcde - Use
+        MinGW-W64 by selecting the package in the project and ensuring the path
+        is correct </li>
+    </ul>
+    <br>
+    If the compiler cannot find a standard library file, then it isn't
+    finding the file in its include directories. To view the CLang or GCC
+    compiler include paths, use the -v option in the Oovcde
+    Analysis/Settings/Build
+    Arguments.
+    <p>
+      The typical location for mingw is in the \MinGW directory. CLang supports
+      the
+      following MinGW installations on Windows.<br>
+      <br>
+    </p>
+    <table border="1">
+      <tbody>
+        <tr>
+          <td style="">CLang Version<br>
+          </td>
+          <td style="">MinGW Versions Supported<br>
+          </td>
+        </tr>
+        <tr>
+          <td>CLang 3.4</td>
+          <td>4.5.0, 4.5.1, 4.5.2, 4.5.4, 4.6.0, 4.6.1, 4.6.2, 4.6.3, 4.7.0,
+            4.8.1</td>
+        </tr>
+        <tr>
+          <td>CLang 3.5</td>
+          <td>4.7.0, 4.7.1, 4.7.2, 4.7.3, 4.8.0, 4.8.1, 4.8.2</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <h2><a class="mozTocH4 mozTocH2" name="mozTocId450611"></a>Linux Example</h2>
+    This is an old Linux example. The best method currently is to load the
+    required packages in the Analysis/Settings/Build Arguments tab.<br>
+    For Linux, the following arguments work to build all Oovcde components with
+    the CLang compiler.
+    These arguments will build the complete oovcde project on Linux when the
+    component types are set in the components tab. This is how the arguments may
+    look in the Analysis/Settings/Build Arguments dialog.
+    <pre>	-c<br>	-std=c++0x<br>	-ER/usr/include/gtk-3.0<br>	-ER/usr/include/glib-2.0<br>	-I/usr/include/c++<br>	-ER/usr/include/cairo<br>	-ER/usr/include/pango-1.0<br>	-ER/usr/lib/x86_64-linux-gnu/glib-2.0<br>	-ER/usr/include/gdk-pixbuf-2.0<br>	-ER/usr/include/atk-1.0<br>	-ER/usr/lib/x86_64-linux-gnu!libmcheck!libieee<br>	-ER/home/dave/software/oovcde/2.0/clang+llvm-3.2!libclang_rt<br>	-lnk-static-libstdc++<br>	-lnk-Wl,-rpath=./<br>	-lnk-rdynamic<br>	</pre>
+    <h2><a class="mozTocH4 mozTocH2" name="mozTocId913463"></a>Windows MFC
+      Example</h2>
+    This example may compile with errors, but allows much of the analysis to
+    occur correctly. Note that _M_IX86 cannot be used with the CLang compiler
+    since it does not handle inline assembly. Much of the analysis still works
+    even though the target is incorrect.<br>
+    <br>
+    Base Build Arguments<br>
+    <pre>-c
+-x
+c++
+-fms-extensions
+-fmsc-version=1500
+-ferror-limit=3000
+-D_M_IA64=1
+-D_WIN32_WINNT=0x0501
+-D_MSC_VER=1200
+-D"WIN32"=1
+-D="_WINDOWS"
+-D_ALLOCA_S_MARKER_SIZE=8
+-IC:\Program Files\Microsoft Visual Studio 9.0\VC\include
+-IC:\Program Files\Microsoft Visual Studio 9.0\VC\atlmfc\include
+-IC:\Program Files\Microsoft SDKs\Windows\v6.0A\include </pre>
+    <br>
+    <h2><a class="mozTocH4 mozTocH2" name="mozTocId913463"></a>Windows GTK
+      Example</h2>
+    This is an old Windows example. The best method currently is to load the
+    required packages in the Analysis/Settings/Build Arguments tab. For
+    Windows, the following arguments work to build all Oovcde components
+    with the g++ compiler.<br>
+    <br>
+    Base Build Arguments
+    <pre>-c<br>-ERC:/Program Files/GTK+-Bundle-3.6.4<br>-IC:/Program Files/LLVM/include<br>-lnk-LC:/Program Files/LLVM/lib<br>-lnk-lpthread<br>-lnk-lpsapi<br>-lnk-limagehlp<br>-lnk-mwindows<br>-lnk-llibclang</pre>
+    <br>
+    Extra Analysis Arguments<br>
+    <pre>-x<br>c++<br>-std=c++11</pre>
+    Extra Debug Arguments<br>
+    <pre>-O0<br>-g3<br>-std=c++0x</pre>
+    Extra Release Arguments<br>
+    <pre>-O3<br>-g3<br>-std=c++0x</pre>
+    <br>
+    <br>
+    For Windows, the arguments may look something like this when compiling with
+    clang++ 3.2. The only problem is that clang 3.2 does not export symbols in
+    the object files, so the link with GTK fails.
+    <pre>	-c<br>	-std=c++0x<br>	-ERC:\Program Files\GTK+-Bundle-3.6.1<br>	-ERC:\Dave\Mine\software\oovcde\clang+llvm-3.2</pre>
+    <h2><a class="mozTocH4 mozTocH2" name="mozTocId813985"></a>Build Sequence</h2>
+    The detailed sequence of the build is:
+    <ul>
+      <li>The user specifies the source root directory and output oovcde project
+        directory. The build system scans the source root directory for include
+        and source files. Each directory with source files is considered a
+        component. Each directory with include files is added to the initial
+        include paths.</li>
+      <li>The program tries to determine the compiler and other build tools.
+        <ul>
+          <li>On Windows, the path is searched for clang, otherwise the build
+            tools default to the GNU tools. (g++, ar, etc.) The llvm-ar tool is
+            not used on Windows since it does not work.</li>
+          <li>On Linux, the path is checked for /usr/bin/clang++, and if not
+            present, the build tools default to the GNU tools. </li>
+          <li>Manually edit oovcde.txt to change build tools.</li>
         </ul>
-        The other symbols are standard UML symbols.
-
-<h3><a class="mozTocH3" name="mozTocId213642"></a>Class Diagram Display Options</h3>
-
-
+      </li>
+      <li>The
+        user specifies additional external project packages or package roots
+        for includes and libraries. If include files are found, the paths are
+        added to the initial include paths. If libraries are found, the paths
+        are added to the initial library paths. The user must specify the
+        project packages in the correct order. Include paths are scanned in the
+        order that packages and external
+        references are specified. During the link, the libraries are scanned in
+        opposite order. Project package order is determined by the builder.</li>
+      <li>The program parses the source files for include dependencies using the
+        initial include paths. The include dependencies are optimized so only
+        needed include paths are used to detect dependencies for each component.</li>
+      <li>The program generates a list of components that could be built.</li>
+      <li>The user specifies the type of component such as static library,
+        shared library or program.</li>
+      <li>The user can start a build.</li>
+      <li>The dependencies of external project libraries are determined to
+        create libraries in the correct order for the linker. The external
+        project libraries are used in the opposite order that the external
+        project roots were specified. The library dependencies are optimizes so
+        only needed libraries are used for each component. </li>
+      <li>Only out of date targets are built.</li>
+    </ul>
+    <h2><a class="mozTocH4 mozTocH2" name="mozTocId932506"></a>Project
+      Limitations</h2>
+    There
+    are some limitations on projects. The basic rule is that a directory
+    can be defined as a component and all source files that are contained
+    in that directory or other child directories of that directory will be
+    used to build the component. The include files can be in any child
+    directory,
+    and will be found automatically.<br>
+    <br>
+    If multiple directories are used to build a component that are not under one
+    directory, it is possible to create many
+    static libraries. Oovcde will determine static library link order
+    automatically.<br>
+    <br>
+    The following shows a typical project that can be
+    supported. <br>
+    <br>
+    Root directory of project source code<br>
+    <pre>  Sub-directory1 - Component1<br>      *.cpp - All of these files are used for Component1<br>      *.h - These can be used by any component<br><br>  Sub-directory2<br>      *.h - These can be used by any component<br><br>  Sub-directory3<br>      Sub-directory4 - Component2<br>          *.cpp - These can only be used for Component2<br>          *.h - These can be used by any component<br><br>  Sub-directory5 - Component3<br>      Sub-directory6<br>          *.cpp - These can be used for Component3<br><br>  Sub-directory7<br>          *.cpp - These can be used for Component3</pre>
+    <br>
+    There are also these limitations.<br>
+    <ul>
+      <li>Only GNU or clang projects. CLang support for MSVC projects is
+        improving, but unknown.<br>
+      </li>
+      <li>External project roots are expected that they will not be changed. In
+        order to update library information, delete the out/sym files.</li>
+      <li>The component names will be created from the directory names.</li>
+      <li>Some duplicate filenames (includes) may cause problems for determining
+        dependencies. Circular dependencies may cause problems. These may be
+        able to be resolved:
+        <ul>
+          <li>View oovcde-incdep.txt to see include directory dependencies found
+            by compiler</li>
+        </ul>
+      </li>
+      <li>Only C++ is compiled. (No .C or .ASM) Other types of files must be put
+        into external objects or libraries.</li>
+    </ul>
+    There are some problems using llvm/clang 3.2 on Windows or Linux. The build
+    tool will attempt to use tools that are known to work. CLang 3.4 may not
+    have these problems.<br>
+    <ul>
+      <li>Symbols are not exported. This appears to be a compile time (clang++)
+        problem.</li>
+      <li>The llvm-ar tool will cause a link error</li>
+      <li>The llvm-nm tool has no output on Linux, and gives a bad file error on
+        Windows.</li>
+    </ul>
+    <br>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId21842"></a>OovEdit</h1>
+    The OovEdit program is a simple text editor. It has the following features.<br>
     <ol>
-    <li>Select the Analysis/Settings menu item.</li>
-    <li>Choose the "Draw Options" tab and check or uncheck the various options.
-	These options do not change how classes are added to the diagrams.</li>
+      <li> C++ syntax highlighting using CLang</li>
+      <li>Debugging using GDB<br>
+      </li>
+      <li>Find/Replace</li>
+      <li>Find in files<br>
+      </li>
+      <li>Undo/Redo</li>
+      <li>Copy/Paste</li>
+      <li>Find forward or reverse, and case sensitive or insensitive<br>
+      </li>
     </ol>
-
-<h2><a class="mozTocH3" name="mozTocId261032"></a>Sequence Diagrams</h2>Sequence
-or operation diagrams are similar to UML (Unified Modelling Language)
-sequence
-diagrams. They display the member functions of the classes, and some
-detail of the members and relations to members in other classes.<br>
-<br>
-
-    Sequence diagrams are only slightly modified from standard UML diagrams.
-    The guard conditions are not shown on each arrow, but are instead shown on the
-    lifeline blocks.  This prevents duplication of the condition for each operation
-    call, and is still very easy to read for someone that is used to UML.
-
-<br>
-<ol>
-    <li>Selecting a class in the class list will change the operations in the
-	Operations (Oper tab) list. Clicking on an operation will display the sequence
-	diagram for the operation.</li>
-  <li>Selecting an operation from the operation list will display the contents of the operation.</li>
-  <li>Right clicking on the sequence diagram depends on whether a class or operation is clicked on. Right clicking allows:</li>
-  <ol>
-    <li>Go To Operation - Displays a new diagram for the different operation.</li>
-    <li>Add Calls - Expands the selected call to show the child calls</li>
-    <li>Add Callers - Shows the operations that call the selected operation.<br>
-    </li>
-  </ol>
-
-    </ol><h2><a class="mozTocH3" name="mozTocId120758"></a>Editing SVG diagrams</h2>
-
-    <ol>
-    <li>Use File/Save or File/Save As to save an SVG file.  A class diagram
-	will be saved if the class diagram is displayed, otherwise the sequence
-	diagram will be saved.</li>
-    <li>Download Inkscape from <a href="http://inkscape.org/">inkscape.org</a></li>
-    </ol>
-    When using File/Save, the file will be saved to the location of the executable
-    files.  This may be changed in the future.<br>
-<h2><a class="mozTocH1" name="mozTocId108517"></a>Complexity Analysis<br>
-</h2>
-
-    
-<ol>
-<li>After the analysis has been performed, select Analysis/Complexity to update
- the complexity information for each source file.<br>
-</li>
-</ol>
-
-For more complexity information, see
-<a href="../articles/Complexity.shtml">Complexity.shtml</a>.<br>
-<br>
-<h2><a class="mozTocH1" name="mozTocId108517"></a>Member Usage Analysis</h2>
-
-<ol>
-  <li>After the analysis has been performed, select Analysis/Member
-Usage to save usage information about members.&nbsp; This shows the
-number of member functions of a class that use each class member
-attribute.</li>
-</ol>
-<h2><a class="mozTocH2" name="mozTocId261866"></a>Duplicate Code Analysis</h2>
-<ol>
-  <li>Turn on duplicate code analysis by adding -dups to the Analysis/Settings/Build Arguments/Analyze/Extra Build Arguments</li>
-  <li>Delete any existing analysis directories in the Oovcde project directory so that a complete analysis is run.</li>
-  <li>Run Analysis/Analyze</li>
-  <li>Run Analysis/Duplicates<br>
-  </li>
-</ol>
-
-
-
-<h2><a class="mozTocH1" name="mozTocId894354"></a>Code Test Coverage System</h2>
-
-
-    <ol>
-    <li>Running Coverage/Instrument will create an "oov-cov" directory that
-    contains a copy of all source files and modifies them so that they include
-    coverage counting software.  It copies the oovcde build files so if the
-    project was built previously, the new project files will automatically
-    build the coverage project when the Coverage/Build menu is run.</li>
-    <li>Running Coverage/Build will build the coverage project.</li>
-    <li>Running the coverage project components will update coverage counts.</li>
-    <li>Running Coverage/Statistics will output a coverage percentage file.</li>
-    </ol>
-For more coverage information, see 
-<a href="../articles/TestCoverage.shtml">TestCoverage.shtml</a>.<br>
-
-<br><h1><a class="mozTocH3" name="mozTocId246966"></a>Build System</h1>
-
-The build system is not required to view diagrams.<br>
-<br>
-There must be a set of installed
-	build tools such as clang or GNU. The oovBuilder manages the project
-	source, and is an executable that can be run from the command line. It can
-	be run from the build menu in the oovcde program.
-	<br>
-
-<br>
-<h2><a class="mozTocH3" name="mozTocId102170"></a>Build Features</h2>
-
-
-<ul>
-  <li>Provides a very simple setup for building projects</li>
-  <li>Eliminates reasons for "clean". Rarely any out of date dependencies</li>
-  <li>Source directories are not cluttered up with build files.</li>
-  <li>Fast builds using multitasking. Multitasking is used to analyze
-  and build multiple object, library, executables files</li>
-  <li>Component names are derived from the directory names of directories
-  that contain C++ source files.</li>
-  <li>Directories are scanned to find header files, and generate include paths.</li>
-  <li>Directories are scanned to find libraries, and library symbols
-    are parsed to determine library link order, and to determine which
-    static libraries are required for executables and shared libraries.
-  </li>
-  <li>Source
-    files are parsed using CLang to find include dependencies. Include dependencies are
-    used to determine which files need to be built. Rebuilding will only
-    compile files that need to be rebuilt based on dependencies.</li>
-  <li>External packages can be specified by selecting the package, or
-    the root path of external projects can be specified for
-    locations of header and library files. On Linux, the pkg-config system
-    is used to find available packages. Exclusion criteria can be used
-    to select only one of many types of library or header files.</li>
-  <li>Build tools are determined from paths and installed tools, but can
-    be specified manually.</li>
-  <li>Project information is scanned and stored for different sets of
-    build arguments. Debug and release configurations will not conflict.</li>
-</ul>
-<br>
-
-<h2><a class="mozTocH3" name="mozTocId675000"></a>Build Quick Start</h2>
-The examples are a quick way to understand some basic principles.
-See <a href="examples.shtml">Examples</a>.<br>
-The build details are described in 
-<a href="../design/OovcdeBuildDesign.html">Oovcde Build Design</a>.<br>
-Note that the Oovcde binary packages do not include a compiler for building.<br>
-<br>
-The following steps can be followed:<br>
-<br>
-<ul>
-  <li>Run Oovcde and either create a new project, or open an existing project.
-    Either the gnu or clang compilers should be installed in the system. In Windows,
-    Oovcde searches the path and if LLVM is present, then clang++ is used as the compiler.
-     In Linux, the clang++ compiler is searched for in the /usr/bin directory, and if found
-     clang++ is used as the compiler.</li>
-  <li>Add some references to external project packages.
-    These are specified under Analysis/Settings/Build Arguments.</li>
-  <ul>
-    <li>Use the External Project Packages button to specify a package on the system.
-    In Linux, this uses pkg-confg, and will define all includes, flags and libraries.
-    In Windows, there are a few predefined packages that are defined in a file in
-    the bin directory.
-    </li>
-    <li>If the required external packages do not exist, either custom packages can
-    be created, or add some external project root references.
-    </li>
-    <li>An external directory can be specified, and may look like
-    "-ERC:\ExternalPackage". The full syntax allows excluding some subdirectories
-    using an exclamation point as a not symbol.
-    This is required for cases where external project references contain
-    multiple libraries with the same symbols. For example,
-    "-ER/home/dave/software/oovcde/2.0/clang+llvm-3.2!libclang_rt" will
-    prevent using any path with libclang_rt in it.</li></ul>
-  <li>Select Build/Settings and specify what type of output to produce
-	for each component listed in the dialog. If the needed components are not
-	listed, then Oovcde will not build your type of project. Either
-	rearrange the directory structure, or contact the Oovcde developers.<br>
-  </li>
-  <li>Run Build/Build Debug or Build/Build Release.<br>
-  </li>
-</ul>The trunk/test/trunk-oovcde directorys show example files for
-building the oovcde project. This is a somewhat complex project since
-it uses both Gtk and Clang, and has multiple libraries and executables.
-Early versions of CLang on Windows required building CLang, and the
-complex library order for
-Clang was able to be determined by the build system.<br>
-<br>
-<h2><a class="mozTocH4" name="mozTocId349590"></a>Cross Compiling</h2>
-
-The following example shows the use of Ubuntu for cross compiling to an
-ARM hard float platform. This requires that the gcc-arm-linux-gnueabihf
-package is installed using apt-get or synaptic:<br>
-<ul>
-  <li>Select Analysis/Settings</li>
-  <li>Select Debug under Build Configurations, and click the NewConfig button. Enter "Arm-Debug" as a new configuration.<br>
-</li>
-  <li>Enter arm-linux-gnueabihf-g++ for the Compiler Path</li>
-  <li>Add to the Common Build Arguments:</li>
-  <ul>
-    <li>-fPIC</li>
-    <li>-march=armv7-a</li>
-    <li>-mfloat-abi=hard</li>
-  </ul>
-  <li>Add something like the fillowing to the Extra Build Arguments for the Arm-Debug configuration:</li>
-  <ul>
-    <li>-lnk-L/target-sysroot/arm-linux-gnueabihf/usr/lib</li>
-    <li>-lnk-L/target-sysroot/arm-linux-gnueabihf/lib</li>
-    <li>-lnk-Wl,-rpath-link,/target-sysroot/arm-linux-gnueabihf/usr/lib</li>
-    <li>-lnk-Wl,-rpath-link,/target-sysroot/arm-linux-gnueabihf/lib</li>
-
-
-  </ul>
-  <li>When compiling, the linker may say, "cannot find", and then list
-some library name. If the target files were copied from the device, the
-links may contain paths to the directories for the target machine. This
-files can be edited and the paths removed so that the local files are
-found.If shared libraries are created, there may be some cases where a static
-library can be hidden by being renamed to force the shared library to
-be used.
-  </li>
-
-
-</ul>
-<br>
-
-<h2><a class="mozTocH4" name="mozTocId206848"></a>Resolving Include Problems During Analysis</h2>
-
-The Oovcde analysis will often produce usable output even when include files cannot
-be found, although this may result in missing classes, or methods in
-sequence diagrams.<br>
-
-<br>
-Oovcde uses the OovCppParser to perform the analysis, and the
-OovCppParser uses CLang. Clang has hard coded paths compiled into the
-analysis binary. Compilers will only search for a certain set of include paths.
-See the include problems below for more information.
-<p>
-Oovcde produces analysis directories for each set of build
-arguments.&nbsp; This is in case the classes may be different for debug
-or release, etc.
-</p><p>
-The analysis directories are not kept unique for the clang
-and GCC compilers. Build argument differences are used to make unique analysis
-directories. If they are using the same directory, and different include paths are needed, set an argument that
-is different so that different analysis directories are used.<br>
-
-</p><h3><a class="mozTocH5" name="mozTocId824690"></a>Windows Include Problems</h3>
-
-
-Things can be difficult especially on Windows since Oovcde by default
-uses CLang for analysis, and can use either CLang or the gnu compiler for builds.
-The gnu compiler is available from the MinGW, MinGW-builds or MinGW-W64 projects.
-The old MinGW-builds project has now been incorporated into MinGW-W64.
-MinGW-builds or MinGW-W64 is required to build Oovcde instead of mingw because it
-supports C++11 threading.
-<p>
-The gnu compiler will normally find include and library paths since the compiler
-searches paths relative to the g++ directory. The CLang compiler will find many
-mingw paths, but does not find paths for Mingw-W64.
-</p><p>
-Switching between the packages often requires nothing more than changing the
-path environment variable or setting the compiler name in the Oovcde
-Analysis/Settings/Build Arguments dialog.<br>
-</p><p>
-CLang normally finds mingw by searching for default paths, but does not find mingw-w64.
-For this reason, mingw-w64 is defined as a package that can be included in the Analysis/Settings/
-menu in the Build Arguments tab using the External Project Packages button.
-</p><p>
-So there are a few usage scenarios:<br>
-</p><ul>
-  <li>Perform Analysis with Oovcde using Mingw - Typically CLang will require include
-	files to be in \MinGW
-  </li>
-  <li>Perform Analysis with Oovcde using Mingw-W64 or Build Oovcde - Use MinGW-W64 by
-	selecting the package in the project and ensuring the path is correct
-  </li>
-</ul>
-
-<br>
-If the compiler cannot find a standard library file, then it isn't
-finding the file in its include directories. To view the CLang or GCC
-compiler include paths, use the -v option in the Oovcde Analysis/Settings/Build
-Arguments.
-<p>
-The typical location for mingw is in the \MinGW directory. CLang supports the
-following MinGW installations on Windows.<br>
-<br>
-</p><table border="1">
-  <tbody>
-    <tr>
-      <td style="">CLang Version<br>
-      </td>
-      <td style="">MinGW Versions Supported<br>
-      </td>
-    </tr>
-    <tr>
-      <td>CLang 3.4</td><td>4.5.0, 4.5.1, 4.5.2, 4.5.4, 4.6.0, 4.6.1, 4.6.2, 4.6.3, 4.7.0, 4.8.1<br></td>
-    </tr>
-    <tr>
-      <td>CLang 3.5</td><td>4.7.0, 4.7.1, 4.7.2, 4.7.3, 4.8.0, 4.8.1, 4.8.2<br></td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<br>
-<h2><a class="mozTocH4" name="mozTocId450611"></a>Linux Example</h2>
-
-This is an old Linux example. The best method currently is to load the
-required packages in the Analysis/Settings/Build Arguments tab.<br>
-For Linux, the following arguments work to build all Oovcde components with the CLang compiler.
-These arguments
-	will build the complete oovcde project on Linux when the component types
-	are set in the components tab. This is how the arguments may look in the Analysis/Settings/Build Arguments dialog.<pre>	-c<br>	-std=c++0x<br>	-ER/usr/include/gtk-3.0<br>	-ER/usr/include/glib-2.0<br>	-I/usr/include/c++<br>	-ER/usr/include/cairo<br>	-ER/usr/include/pango-1.0<br>	-ER/usr/lib/x86_64-linux-gnu/glib-2.0<br>	-ER/usr/include/gdk-pixbuf-2.0<br>	-ER/usr/include/atk-1.0<br>	-ER/usr/lib/x86_64-linux-gnu!libmcheck!libieee<br>	-ER/home/dave/software/oovcde/2.0/clang+llvm-3.2!libclang_rt<br>	-lnk-static-libstdc++<br>	-lnk-Wl,-rpath=./<br>	-lnk-rdynamic<br>	</pre>
-<h2><a class="mozTocH4" name="mozTocId913463"></a>Windows Example</h2>
-
-This is an old Windows example. The best method currently is to load the
-required packages in the Analysis/Settings/Build Arguments tab. For
-Windows, the following arguments work to build all Oovcde components
-with the g++ compiler.<br>
-<br>
-Base Build Arguments
-<pre>-c<br>-ERC:/Program Files/GTK+-Bundle-3.6.4<br>-IC:/Program Files/LLVM/include<br>-lnk-LC:/Program Files/LLVM/lib<br>-lnk-lpthread<br>-lnk-lpsapi<br>-lnk-limagehlp<br>-lnk-mwindows<br>-lnk-llibclang<br></pre>
-<br>
-Extra Analysis Arguments<br>
-<pre>-x<br>c++<br>-std=c++11<br></pre>
-Extra Debug Arguments<br>
-<pre>-O0<br>-g3<br>-std=c++0x<br></pre>
-Extra Release Arguments<br>
-<pre>-O3<br>-g3<br>-std=c++0x<br></pre>
-<br>
-<br>
-	For Windows, the arguments may look something like this when compiling with clang++ 3.2.
-	The only problem is that clang 3.2 does not export symbols in the object files, so
-	the link with GTK fails.
-<pre>	-c<br>	-std=c++0x<br>	-ERC:\Program Files\GTK+-Bundle-3.6.1<br>	-ERC:\Dave\Mine\software\oovcde\clang+llvm-3.2<br></pre>
-<h2><a class="mozTocH4" name="mozTocId813985"></a>Build Sequence</h2>
-
-
-The detailed sequence of the build is:
-	<ul>
-	<li>The user specifies the source root directory and output oovcde project
-	directory. The build system scans the source root directory for include and source
-	files. Each directory with source files is considered a component. Each
-	directory with include files is added to the initial include paths.</li>
-
-	
-  <li>The program tries to determine the compiler and other build tools.
-		<ul><li>On Windows, the path is searched for clang, otherwise the
-		build tools default to the GNU tools. (g++, ar, etc.)
-		The llvm-ar tool is not used on Windows since it does not work.</li><li>On Linux, the path is checked for /usr/bin/clang++, and if
-		not present, the build tools default to the GNU tools.
-		</li><li>Manually edit oovcde.txt to change build tools.</li></ul>
-
-	</li><li>The
-user specifies additional external project packages or package roots
-for includes and libraries. If include files are found, the paths are
-added to the initial include paths. If libraries are found, the paths
-are added to the initial library paths. The user must specify the
-project packages in the correct order. Include paths are scanned in the
-order that packages and external
-references are specified. During the link, the libraries are scanned in
-opposite order. Project package order is determined by the builder.</li>
-
-	<li>The program parses the source files for include dependencies using
-	the initial include paths.
-	The include dependencies are optimized so only needed include
-	paths are used to detect dependencies for each component.</li>
-
-	<li>The program generates a list of components that could be built.</li>
-
-	<li>The user specifies the type of component such as static library,
-	shared library or program.</li>
-
-	<li>The user can start a build.</li><li>The dependencies of external project libraries are determined to
-	create libraries in the correct order for the linker. The external
-	project libraries are used in the opposite order that the external
-	project roots were specified.
-	The library dependencies are optimizes so only needed libraries
-	are used for each component.
-	</li>
-
-	<li>Only out of date targets are built.</li>
-	</ul>
-<h2><a class="mozTocH4" name="mozTocId932506"></a>Project Limitations</h2>
-
-There
-are some limitations on projects. The basic rule is that a directory
-can be defined as a component and all source files that are contained
-in that directory or other child directories of that directory will be
-used to build the component. The include files can be in any child directory,
-and will be found automatically.<br>
-<br>
-If multiple directories are used to build a component that are not under one directory, it is possible to create many
-static libraries. Oovcde will determine static library link order
-automatically.<br>
-<br>
-The following shows a typical project that can be
-supported. <br>
-<br>Root directory of project source code<br>
-<pre>  Sub-directory1 - Component1<br>      *.cpp - All of these files are used for Component1<br>      *.h - These can be used by any component<br><br>  Sub-directory2<br>      *.h - These can be used by any component<br><br>  Sub-directory3<br>      Sub-directory4 - Component2<br>          *.cpp - These can only be used for Component2<br>          *.h - These can be used by any component<br><br>  Sub-directory5 - Component3<br>      Sub-directory6<br>          *.cpp - These can be used for Component3<br><br>  Sub-directory7<br>          *.cpp - These can be used for Component3<br></pre>
-<br>
-There are also these limitations.<br>
-
-	<ul>
-	<li>Only GNU or clang projects. CLang support for MSVC projects is improving, but unknown.<br>
-</li>
-	
-	<li>External project roots are expected that they will not be changed. In
-	order to update library information, delete the out/sym files.</li>
-	<li>The component names will be created from the directory names.</li>
-	<li>Some duplicate filenames (includes) may cause problems for determining
-	dependencies. Circular dependencies may cause problems. These may be
-	able to be resolved:
-		<ul><li>View oovcde-incdep.txt to see include directory dependencies
-		found by compiler</li>
-		</ul>
-	</li>
-	<li>Only C++ is compiled. (No .C or .ASM) Other types of files must be put into external
-	objects or libraries.</li>
-	</ul>There are some problems using llvm/clang 3.2 on Windows or Linux. The build tool 
-	will attempt to use tools that are known to work. CLang 3.4 may not have these problems.<br>
-<ul>
-  <li>Symbols are not exported. This appears to be a compile time (clang++) problem.</li>
-  <li>The llvm-ar tool will cause a link error</li>
-  <li>The llvm-nm tool has no output on Linux, and gives a bad file error on Windows.</li>
-</ul><br>
-<h1><a class="mozTocH2" name="mozTocId21842"></a>OovEdit</h1>
-
-The OovEdit program is a simple text editor. It has the following features.<br>
-<ol>
-  <li> C++ syntax highlighting using CLang</li>
-  <li>Debugging using GDB<br>
-  </li>
-  <li>Find/Replace</li>
-  <li>Find in files<br>
-  </li>
-
-  <li>Undo/Redo</li>
-  <li>Copy/Paste</li>
-  <li>Find forward or reverse, and case sensitive or insensitive<br>
-  </li>
-
-</ol>
-<br>
-<br>
-
-
-
-
-
-</body></html>
+    <br>
+    <br>
+  </body>
+</html>

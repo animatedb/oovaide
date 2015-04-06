@@ -468,7 +468,11 @@ OovStringVec Tokenizer::codeComplete(int offset)
 	    for(size_t ci=0; ci<numChunks && ci < 30; ci++)
 		{
 		CXCompletionChunkKind chunkKind = clang_getCompletionChunkKind(compStr, ci);
-		if(chunkKind == CXCompletionChunk_TypedText)
+		// We will discard return values from functions, so the first
+		// chunk returned will be the identifier or function name.  Function
+		// arguments will be returned after a space, so they can be
+		// discarded easily.
+		if(chunkKind == CXCompletionChunk_TypedText || str.length())
 		    {
 		    CXStringDisposer chunkStr = clang_getCompletionChunkText(compStr, ci);
 		    if(str.length() != 0)

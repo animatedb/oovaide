@@ -172,22 +172,6 @@ bool Gui::messageBox(OovStringRef const msg, GtkMessageType msgType,
     return(resp == GTK_RESPONSE_OK || resp == GTK_RESPONSE_YES);
     }
 
-void Gui::resizeParentScrolledWindow(GtkWidget *childWidget, GtkScrolledWindow *sw)
-    {
-    int minY;
-    int naturalY;
-    gtk_widget_get_preferred_height(childWidget, &minY, &naturalY);
-    int screenHeight = gdk_screen_get_height(gtk_widget_get_screen(childWidget));
-    if(naturalY > screenHeight)
-	{
-	gint wx, wy;
-	gdk_window_get_origin(gtk_widget_get_window(childWidget), &wx, &wy);
-	naturalY = screenHeight - wy;
-	}
-    gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW(sw), naturalY);
-//    gtk_widget_set_size_request(GTK_WIDGET(sw), naturalY, naturalY);
-    }
-
 
 /////////////
 
@@ -200,12 +184,6 @@ GtkTextIter GuiTextBuffer::getCursorIter(GtkTextBuffer *buf)
     return curLoc;
     }
 
-int GuiTextBuffer::getCursorOffset(GtkTextBuffer *buf)
-    {
-    GtkTextIter curLoc = getCursorIter(buf);
-    return gtk_text_iter_get_offset(&curLoc);
-    }
-
 OovString GuiTextBuffer::getText(GtkTextBuffer *buf, int startOffset, int endOffset)
     {
     GtkTextIter startIter;
@@ -214,6 +192,24 @@ OovString GuiTextBuffer::getText(GtkTextBuffer *buf, int startOffset, int endOff
     gtk_text_buffer_get_iter_at_offset(buf, &endIter, endOffset);
     GuiText str(gtk_text_buffer_get_text(buf, &startIter, &endIter, false));
     return str;
+    }
+
+char GuiTextBuffer::getChar(GtkTextBuffer *buf, int offset)
+    {
+    OovString str = getText(buf, offset, offset+1);
+    char c = '\0';
+    if(str.length())
+	c = str[0];
+    return c;
+    }
+
+void GuiTextBuffer::erase(GtkTextBuffer *buf, int startOffset, int endOffset)
+    {
+    GtkTextIter startIter;
+    GtkTextIter endIter;
+    gtk_text_buffer_get_iter_at_offset(buf, &startIter, startOffset);
+    gtk_text_buffer_get_iter_at_offset(buf, &endIter, endOffset);
+    gtk_text_buffer_delete(buf, &startIter, &endIter);
     }
 
 

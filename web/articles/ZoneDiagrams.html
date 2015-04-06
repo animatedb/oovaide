@@ -10,7 +10,7 @@
     <h1>Viewing C++ Project Cohesion (Code Zone Diagrams)</h1>
     Have you ever wanted to view hundreds or thousands of classes of a project
     at one time and their dependencies on each other? Traditional class diagrams
-    can show in the tens of classes, but often times these diagrams can be too
+    can show in the tens of classes, but often times these diagrams make it
     difficult to understand relationships quickly.
     <p> A different way of viewing these classes is to use a circle diagram
       where all of the classes are a single point on the circle. The classes are
@@ -27,13 +27,32 @@
       <embed src="ZoneImages/ZoneOovcdeComponents.svg" type="image/svg+xml"> </p>
     <p> This makes it easier to see that oovcde and oovEdit are both related to
       oovGuiCommon, and oovCommon, but the other components are not. </p>
+    <p>
+	Run the following to view these diagrams.
+	<ul>
+	    <li>Download the Windows or Linux binaries from Sourceforge or
+		download the source from SourceForge or GitHub</li>
+	    <li>Extract the downloaded file to any location</li>
+	    <li>Run the oovcde program from the bin directory</li>
+	    <li>Run File/Open Project from the menu and browse to the
+		trunk/test directory and select the trunk-oovcde-...
+		file for linux or windows and press the Open button</li>
+	    <li>Wait for the analysis to complete.</li>
+	    <li>Click on the Zone tab to display the diagram</li>
+	    <li>Right click on "examples" in the list and select "Hide Children"
+		to remove the examples from the diagram</li>
+	</ul>
+	</p>
     <h2>Viewing the LLVM project</h2>
     Showing all classes for the LLVM project is pretty messy since it has over
     3000 classes and somewhere near a million lines of code. I have never looked
-    at the source for LLVM, so let's see what we can learn. <br>
+    at the source for LLVM, so let's see what we can learn. The LLVM project was
+	chosen simply because it is a large project.<br>
     <embed src="ZoneImages/ZoneLlvmClasses.svg" type="image/svg+xml"> <br>
     Viewing just the directory relations is more manageable. It is still messy,
-    but now we start to get a view of the whole project. <br>
+    but now we start to get a view of the whole project.  To toggle
+    classes/components in Oovcde, right click on the diagram and click
+    on "Show All Classes"<br>
     <embed src="ZoneImages/ZoneLlvmComponents.svg" type="image/svg+xml"> <br>
     Since this project has a directory structure that looks like this:
     <pre>    include/llvm/
@@ -46,10 +65,23 @@
         ...
     </pre>
     Lets group this so that the include and lib directories are mapped together,
-    and filter out examples, tests, tools, and utilities. <br>
+    and filter out examples, tests, tools, and utilities.
+    To map the include and lib directories together, do the following.
+    <ul>
+	<li>Right click in the Component List and select "Map Path"</li>
+	<li>Set the Search Path to "include/llvm", and the Replace Path to "inc-lib",
+		and press the Add button</li>
+	<li>Set the Search Path to "lib", and the Replace Path to "inc-lib",
+		and press the Add button</li>
+	<li>Press the OK button</li>
+	<li>In the list, right click on examples, tests, tools, etc. and select
+		"Hide Children" to remove the selected directories.</li>
+	</ul>
+    <br>
     <embed src="ZoneImages/ZoneLlvmIncLib.svg" type="image/svg+xml"> <br>
     There are an awful lot of targets that we are not interested in. Lets dump
-    them. <br>
+    them. In Oovcde, right click on lib/Target and select "Hide Children" to
+	remove them.<br>
     <embed src="ZoneImages/ZoneLlvmIncLibNoTarget.svg" type="image/svg+xml"> <br>
     Now turning on all classes will show more of the cohesion between classes in
     the directories. <br>
@@ -68,7 +100,18 @@
     </ul>
     <p> So let's look at the MC/AsmPrinter relations in more detail. Turning on
       the dependency indications shows that the AsmPrinter classes are dependent
-      on the include/llvm/MC directory and not the other way around. <br>
+      on the include/llvm/MC directory and not the other way around.
+	</p>
+    <p>In Oovcde do the following.</p>
+	<ul>
+	    <li>In the list, right click and select Map Path. Select the items
+		in the path list and press Delete to remove them.</li>
+	    <li>Right click in the list and select "Hide All" to remove all
+		components.</li>
+	    <li>Right click on include/llvm/MC and select "Show Children".
+		Do the same for lib/MC, and lib/CodeGen/AsmPrinter</li>
+	    </ul>
+	 <br>
       <embed src="ZoneImages/ZoneLlvmMcAsmPrinterComps.svg" type="image/svg+xml">
       <br>
       There are a few other directories that are not related to

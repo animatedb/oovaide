@@ -17,7 +17,7 @@
 #ifdef __linux__
 #define CODE_COMPLETE 0
 #else
-#define CODE_COMPLETE 0
+#define CODE_COMPLETE 1
 #endif
 
 struct Token

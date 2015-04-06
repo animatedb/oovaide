@@ -13,33 +13,37 @@
 #include "Indenter.h"
 #include "History.h"
 
-#define COMPLETION_WINDOW 1
 
-#if(COMPLETION_WINDOW)
 class CompletionList
     {
     public:
 	CompletionList():
-	    mTopWidget(nullptr), mTextBuffer(nullptr),
-	    mCompletionTriggerPointOffset(0), mLastKey(0)
+	    mEditView(nullptr), mTopWidget(nullptr), mTextBuffer(nullptr),
+	    mStartIdentifierOffset(0), mCompletionTriggerPointOffset(0),
+	    mLastKey(0)
 	    {}
 	void init(GtkTextBuffer *textBuffer);
-	void resize();
+	void positionCompletionWindow();
 	// Detects when to display the completion list.
-	void handleEditorKey(int key);
-	bool handleListKey(int key);
-	void setList(OovStringVec const &strs);
+	// Return indicates to start getting completion data.
+	bool handleEditorKey(int key, int modKeys);
+	bool handleListKey(int key, int modKeys);
+	void setList(class FileEditView *view, OovStringVec const &strs);
 	void activateSelectedItem();
 	void lostFocus();
+	int getCompletionTriggerPointOffset()
+	    { return mCompletionTriggerPointOffset; }
 
     private:
+	FileEditView *mEditView;
 	GtkWidget *mTopWidget;
 	GuiList mGuiList;
 	GtkTextBuffer *mTextBuffer;
+	int mStartIdentifierOffset;
 	int mCompletionTriggerPointOffset;
 	int mLastKey;
+	void setWindowPosition(GdkWindow *compWin, int screenWidth);
     };
-#endif
 
 class FileEditView
     {
@@ -124,6 +128,8 @@ class FileEditView
 	bool handleIndentKeys(GdkEvent *event);
 	std::string getFilename() const
 	    { return mFileName; }
+	GtkTextBuffer *getTextBuffer() const
+	    { return mTextBuffer; }
 
     private:
 	std::string mFileName;
@@ -134,9 +140,7 @@ class FileEditView
 	bool mDoingHistory;		// Doing undo or redo.
 	Highlighter mHighlighter;
 	Indenter mIndenter;
-#if(COMPLETION_WINDOW)
 	CompletionList mCompleteList;
-#endif
 	void setFileName(OovStringRef const fn)
 	    { mFileName = fn; }
 	bool saveAsTextFile(OovStringRef const fn);

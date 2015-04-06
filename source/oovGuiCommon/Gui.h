@@ -164,19 +164,29 @@ namespace Gui
 	void reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent);
 	inline void redraw(GtkWidget *widget)
 	    { gtk_widget_queue_draw(widget); }
-
-	// This can be called from the draw signal so that the child has
-	// computed the size.
-	void resizeParentScrolledWindow(GtkWidget *childWidget, GtkScrolledWindow *sw);
     };
 
-class GuiTextBuffer
+class GuiTextIter
+    {
+    public:
+	static int getIterOffset(GtkTextIter iter)
+	    { return gtk_text_iter_get_offset(&iter); }
+	static bool decIter(GtkTextIter *iter)
+	    { return gtk_text_iter_backward_char(iter); }
+	static bool incIter(GtkTextIter *iter)
+	    { return gtk_text_iter_forward_char(iter); }
+    };
+
+class GuiTextBuffer:public GuiTextIter
     {
     public:
 	/// Iterators are invalid after many types of buffer modifications.
 	static GtkTextIter getCursorIter(GtkTextBuffer *buf);
-	static int getCursorOffset(GtkTextBuffer *buf);
+	static int getCursorOffset(GtkTextBuffer *buf)
+	    { return getIterOffset(getCursorIter(buf)); }
 	static OovString getText(GtkTextBuffer *buf, int startOffset, int endOffset);
+	static char getChar(GtkTextBuffer *buf, int offset);
+	static void erase(GtkTextBuffer *buf, int startOffset, int endOffset);
     };
 
 /// This wraps a GtkTreeView.  A tree view is used for both trees and lists.

@@ -2372,7 +2372,7 @@ These arguments are specific to the selected configuration.
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip_text" translatable="yes">Include and library directories are relative to this directory</property>
+                    <property name="tooltip_text" translatable="yes">Include and library directories are relative to this directory. Use * as a wildcard.</property>
                     <property name="hexpand">True</property>
                     <property name="invisible_char">●</property>
                     <signal name="changed" handler="on_PackageRootDirEntry_changed" swapped="no"/>
@@ -2840,6 +2840,15 @@ These arguments are specific to the selected configuration.
                         <property name="label" translatable="yes">Project Statistics</property>
                         <property name="use_underline">True</property>
                         <signal name="activate" handler="on_ProjectStatsMenuitem_activate" swapped="no"/>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkMenuItem" id="LineStatsMenuitem">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">Line Statistics</property>
+                        <property name="use_underline">True</property>
+                        <signal name="activate" handler="on_LineStatsMenuitem_activate" swapped="no"/>
                       </object>
                     </child>
                   </object>

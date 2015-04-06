@@ -6,7 +6,7 @@
  */
 
 #include "OperationDiagram.h"
-#include "CairoDrawer.h"
+#include "ClassDrawer.h"
 #include "Svg.h"
 
 void OperationDiagram::initialize(Builder &builder, const ModelData &modelData,

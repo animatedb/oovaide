@@ -10,10 +10,12 @@
 
 #include "ModelObjects.h"
 #include "ClassGenes.h"
+#include "CairoDrawer.h"
 #include "Gui.h"
 #include <gtk/gtk.h>	// For GtkWidget and cairo_t
 #include <map>
 #include "OovThreadedBackgroundQueue.h"
+
 
 struct ClassNodeDrawOptions
     {
@@ -208,6 +210,7 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
 	void changeDrawOptions(const ModelData &modelData, const ClassDrawOptions &options)
 	    {
 	    setModified();
+	    mCairoContext.setContext(getDiagramWidget());
 	    updateNodeSizes(options);
 	    }
 
@@ -248,6 +251,11 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
 	bool mModified;
 	int mBackgroundDialogLevel;
 	OovTaskStatusListener *mTaskStatusListener;
+	/// Used to calculate font sizes. Apparently the setContext call that
+	/// calls gdk_cairo_create cannot be called from the background
+	/// thread, but the other calls to get text extents can be made from
+	/// the background thread.
+	GtkCairoContext mCairoContext;
 
 	void addNode(const ClassNode &node);
 	void removeNode(const ClassNode &node);

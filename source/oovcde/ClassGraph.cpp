@@ -6,8 +6,7 @@
  */
 
 #include "ClassGraph.h"
-#include "CairoDrawer.h"
-
+#include "ClassDrawer.h"
 #include "Debug.h"
 
 #include <gtk/gtk.h>
@@ -38,11 +37,10 @@ void ClassGraph::initialize(GtkWidget *drawingArea,
 
 void ClassGraph::updateNodeSizes(GtkWidget *widget, const ClassDrawOptions &options)
     {
-    GtkCairoContext cairo(widget);
-    CairoDrawer cairoDrawer(cairo.getCairo());
+    CairoDrawer cairoDrawer(mCairoContext.getCairo());
     mPad.x = cairoDrawer.getTextExtentWidth("W");
     mPad.y = cairoDrawer.getTextExtentHeight("W");
-    NullDrawer nulDrawer(cairo.getCairo());
+    NullDrawer nulDrawer(mCairoContext.getCairo());
     ClassDrawer drawer(nulDrawer);
     for(auto &node : mNodes)
 	{
@@ -560,6 +558,7 @@ GraphSize ClassGraph::getNodeSizeWithPadding(int nodeIndex) const
 
 GraphSize ClassGraph::updateGraph(const ModelData &modelData, const ClassDrawOptions &options)
     {
+    mCairoContext.setContext(getDiagramWidget());
     stopAndWaitForCompletion();
     addTask(ClassGraphBackgroundItem(&modelData, &options));
     return(getGraphSize());
