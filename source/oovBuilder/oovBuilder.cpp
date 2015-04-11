@@ -72,7 +72,16 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 		printf("Scanning %s\n", pkg.getPkgName().getStr());
 		/// @todo - only one ext root dir per package currently.
 		if(pkg.getExtRefDirs().size() > 0)
-		    compFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
+		    {
+		    if(pkg.getIncludeDirs().size() == 0)
+			{
+			compFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
+			}
+		    else
+			{
+			compFinder.addBuildPackage(pkg);
+			}
+		    }
 		}
 	    else
 		{

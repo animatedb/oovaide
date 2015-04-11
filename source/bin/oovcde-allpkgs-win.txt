@@ -1,18 +1,18 @@
-PkgNames|gtk+-3.0;llvm;Qt;mingw-w64;wxWidgets;Visual Studio;Microsoft SDK
+PkgNames|gtk+-3.0;llvm;Qt;mingw-w64;wxWidgets;VisualStudio;MicrosoftSDK
 Pkg-gtk+-3.0-Root|/GTK*
 Pkg-llvm-Root|/Program Files/LLVM
 Pkg-llvm-I|include
 Pkg-llvm-l|libclang.lib
 Pkg-llvm-L|lib
-Pkg-Microsoft SDK-Root|/Microsoft SDKs/Windows/v*
-Pkg-Microsoft SDK-I|Include
-Pkg-Microsoft SDK-L|Lib
+Pkg-MicrosoftSDK-Root|/Microsoft SDKs/Windows/v*
+Pkg-MicrosoftSDK-I|Include
+Pkg-MicrosoftSDK-L|Lib
 Pkg-mingw-w64-Root|/mingw-w64/*/mingw32/i686-w64-mingw32
 Pkg-mingw-w64-I|include;/include/c++;/include/c++/i686-w64-mingw32
 Pkg-Qt-Root|/Qt/*/*/mingw48_32
 Pkg-Qt-I|include
 Pkg-Qt-L|lib
 Pkg-wxWidgets-Root|/wxWidgets
-Pkg-Visual Studio-Root|/Microsoft Visual Studio*
-Pkg-Visual Studio-I|VC/include;VC/atlmfc/include
-Pkg-Visual Studio-L|VC/lib
+Pkg-VisualStudio-Root|/Microsoft Visual Studio*
+Pkg-VisualStudio-I|VC/include;VC/atlmfc/include
+Pkg-VisualStudio-L|VC/lib

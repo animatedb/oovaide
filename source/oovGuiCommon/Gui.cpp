@@ -74,7 +74,9 @@ void Gui::clear(GtkTextView *textview)
 void Gui::appendText(GtkTextView *textview, OovStringRef const text)
     {
     GtkTextBuffer *textbuf = gtk_text_view_get_buffer(textview);
-    gtk_text_buffer_insert_at_cursor(textbuf, text, text.numChars());
+    GtkTextIter iter;
+    gtk_text_buffer_get_end_iter(textbuf, &iter);
+    gtk_text_buffer_insert(textbuf, &iter, text, text.numChars());
     }
 
 void Gui::scrollToCursor(GtkTextView *textview)
@@ -212,6 +214,19 @@ void GuiTextBuffer::erase(GtkTextBuffer *buf, int startOffset, int endOffset)
     gtk_text_buffer_delete(buf, &startIter, &endIter);
     }
 
+bool GuiTextBuffer::isCursorAtEnd(GtkTextBuffer *buf)
+    {
+    GtkTextIter endIter;
+    gtk_text_buffer_get_end_iter(buf, &endIter);
+    return(getCursorOffset(buf) == getIterOffset(endIter));
+    }
+
+void GuiTextBuffer::moveCursorToEnd(GtkTextBuffer *buf)
+    {
+    GtkTextIter endIter;
+    gtk_text_buffer_get_end_iter(buf, &endIter);
+    gtk_text_buffer_place_cursor(buf, &endIter);
+    }
 
 
 /////////////

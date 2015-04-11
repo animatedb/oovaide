@@ -133,23 +133,40 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
 bool srcFileParser::processItem(CppChildArgs const &item)
     {
     OovProcessBufferedStdListener listener(mListenerStdMutex);
-    listener.setErrOut(stdout);
     int exitCode;
     OovPipeProcess pipeProc;
-    std::string processStr = "\noovBuilder Analyzing: ";
+    OovString processStr = "\noovBuilder Analyzing: ";
     processStr += item.getArgv()[1];
     processStr += "\n";
+    printf("%s", processStr.getStr());
+    fflush(stdout);
     listener.setProcessIdStr(processStr);
     bool success = pipeProc.spawn(item.getArgv()[0], item.getArgv(),
 	    listener, exitCode);
-    if(!success)
-	fprintf(stderr, "OovBuilder: Unable to execute process %s\n", item.getArgv()[0]);
     if(!success || exitCode != 0)
 	{
-	std::string tempStr = "oovBuilder: Errors from ";
+	OovString tempStr;
+	if(!success)
+	    {
+	    tempStr = "OovBuilder: Unable to execute process ";
+	    }
+	else
+	    {
+	    tempStr = "OovBuilder: Process returned error ";
+	    }
 	tempStr += item.getArgv()[0];
+	if(success)
+	    {
+	    tempStr += " ";
+	    tempStr.appendInt(exitCode);
+	    }
+	if(!pipeProc.isArgLengthOk(tempStr.length()))
+	    {
+	    tempStr += "\nToo long of command arguments.";
+	    }
 	tempStr += "\nArguments were: ";
 	tempStr += item.getArgsAsStr();
+	tempStr += "\n";
 	listener.onStdErr(tempStr, tempStr.length());
 	}
     return true;

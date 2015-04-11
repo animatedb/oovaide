@@ -180,6 +180,8 @@ class GuiTextIter
 class GuiTextBuffer:public GuiTextIter
     {
     public:
+	static GtkTextBuffer *getBuffer(GtkTextView *view)
+	    { return gtk_text_view_get_buffer(view); }
 	/// Iterators are invalid after many types of buffer modifications.
 	static GtkTextIter getCursorIter(GtkTextBuffer *buf);
 	static int getCursorOffset(GtkTextBuffer *buf)
@@ -187,6 +189,8 @@ class GuiTextBuffer:public GuiTextIter
 	static OovString getText(GtkTextBuffer *buf, int startOffset, int endOffset);
 	static char getChar(GtkTextBuffer *buf, int offset);
 	static void erase(GtkTextBuffer *buf, int startOffset, int endOffset);
+	static bool isCursorAtEnd(GtkTextBuffer *buf);
+	static void moveCursorToEnd(GtkTextBuffer *buf);
     };
 
 /// This wraps a GtkTreeView.  A tree view is used for both trees and lists.

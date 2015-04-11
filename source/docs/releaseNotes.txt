@@ -16,6 +16,8 @@ Explanations
 Missing Features
 ----------------
 - General
+	- Fix linux to remove pthread requirement
+	- BUG: add warning if package path does not exist
 	- BUG: Goto class doesn't change tab to class tab
 	- create minimal code guidelines, ex:
 	  "The Power of Ten – Rules for Developing Safety Critical Code"
@@ -164,6 +166,12 @@ Missing Features
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future
+	- Quality measurement
+		amount of const, number of raw pointers, minimal use of new/delete/malloc/...
+		interface complexity, amount of encapsulation, size of exposed interface
+			amount of state - even in called classes
+		member functions called in any order?
+		number of interface classes vs hidden classes in a module
 	- more component stats - lines, classes, etc.
 	- Cohesion in a class (how methods use attributes)
 		http://www.bth.se/fou/cuppsats.nsf/all/86e880ce9d0b94aec1256f0e004778e5/

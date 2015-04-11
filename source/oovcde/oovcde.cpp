@@ -27,6 +27,7 @@ static OptionsDialog *sOptionsDialog;
 bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
     {
     bool didSomething = false;
+    bool appended = false;
     std::string tempStdStr;
 	{
 	LockGuard guard(mMutex);
@@ -35,16 +36,23 @@ bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
 	    tempStdStr = mStdOutAndErr;
 	    mStdOutAndErr.clear();
 	    didSomething = true;
+	    appended = true;
 	    }
 	}
+    bool atEnd = GuiTextBuffer::isCursorAtEnd(GuiTextBuffer::getBuffer(mStatusTextView));
     Gui::appendText(mStatusTextView, tempStdStr);
-    if(didSomething)
-	Gui::scrollToCursor(mStatusTextView);
     complete = mComplete;
     if(mComplete)
 	{
 	Gui::appendText(mStatusTextView, "\nComplete\n");
+	appended = true;
 	mComplete = false;
+	}
+    if(atEnd)
+	GuiTextBuffer::moveCursorToEnd(GuiTextBuffer::getBuffer(mStatusTextView));
+    if(appended)
+	{
+	Gui::scrollToCursor(mStatusTextView);
 	}
     return didSomething;
     }
@@ -179,8 +187,6 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
     bool analRdy = projStat.isAnalysisReady();
 
     Builder *builder = Builder::getBuilder();
-    gtk_widget_set_sensitive(builder->getWidget(
-	    "EditOptionsmenuitem"), open);
 
     gtk_widget_set_sensitive(
 	    builder->getWidget("NewModuleMenuitem"), open);
@@ -189,6 +195,10 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
     gtk_widget_set_sensitive(
 	    builder->getWidget("SaveDrawingAsMenuitem"), open);
 
+    gtk_widget_set_sensitive(
+	    builder->getWidget("EditOptionsmenuitem"), open);
+    gtk_widget_set_sensitive(
+    	    builder->getWidget("ProjectSettingsMenuitem"), open);
     gtk_widget_set_sensitive(
 	    builder->getWidget("BuildAnalyzeMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
@@ -416,7 +426,7 @@ static void displayBrowserFile(OovStringRef const fileName)
 	char const *args[3];
 	args[0] = prog;
 	args[1] = fp.c_str();
-	args[2] = '\0';
+	args[2] = nullptr;
 //printf("FF %s\n", fp.c_str());
         execvp(prog, const_cast<char**>(args));
 	}

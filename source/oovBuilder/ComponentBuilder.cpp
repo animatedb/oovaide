@@ -420,6 +420,8 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
         OovString processStr = "oovBuilder Building ";
         processStr += outFile;
         processStr += '\n';
+	printf("%s", processStr.getStr());
+	fflush(stdout);
 	File stdoutFile;
         OovProcessBufferedStdListener listener(listenerMutex);
         listener.setProcessIdStr(processStr);

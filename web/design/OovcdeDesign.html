@@ -1,1131 +1,1257 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><!-- DC Blaha  -->
-
-
-
-<link rel="stylesheet" type="text/css" href="../style.css">
-<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type"><title>Oovcde Design</title></head><body><font size="+3">Oovcde Design<br>
-</font>
-<hr style="width: 100%; height: 3px;">
-Last update: 3-10-2015<br>Kompozer was used to edit this design document.<br>Inkscape may be used to edit .svg diagram files from Oovcde.<br>
-<br>
-<ol id="mozToc"><!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6--><li><a href="#mozTocId278883">Description</a></li><li><a href="#mozTocId304148">Components</a><ol><li><a href="#mozTocId89151">OovCppParser</a></li><li><a href="#mozTocId565763">OovBuilder</a></li><li><a href="#mozTocId514779">Oovcde</a><ol><li><a href="#mozTocId571076">Oovcde GUI</a></li><li><a href="#mozTocId821661">Class Diagrams</a></li><li><a href="#mozTocId750348">Sequence Diagrams</a></li><li><a href="#mozTocId567574">Drawing Diagrams</a></li><li><a href="#mozTocId228166">Journal</a></li></ol></li><li><a href="#mozTocId28357">OovEdit</a><ol><li><a href="#mozTocId677876">OovEdit Main Classes</a></li><li><a href="#mozTocId634834">EditFiles</a></li><li><a href="#mozTocId510508">Debugger</a></li></ol></li><li><a href="#mozTocId450840">OovCMaker</a></li></ol></li><li><a href="#mozTocId682604">
-
-
-Libraries</a><ol><li><a href="#mozTocId312284">OovCommon</a><ol><li><a href="#mozTocId766961">Model Data
-</a></li><li><a href="#mozTocId716210">Reading Model Data</a></li></ol></li><li><a href="#mozTocId90631">OovGuiCommon</a></li></ol></li><li><a href="#mozTocId68299">Processing</a><ol><li><a href="#mozTocId599543">Analysis Mode</a></li><li><a href="#mozTocId848189">Build Mode</a></li></ol></li><li><a href="#mozTocId878290">Multitasking</a></li></ol>
-<h1><a class="mozTocH1" name="mozTocId278883"></a>Description</h1>
-This design document describes the Oovcde program.&nbsp; It also
-contains examples of the diagrams that can be produced with the
-program, and it contains descriptions of the diagrams.<br>
-<br><h1><a class="mozTocH1" name="mozTocId304148"></a>Components</h1>
-
-The following are components used as part of the Oovcde project.<br>
-<br>
-<embed src="Components.svg" type="image/svg+xml"> 
-<br>
-<br>
-<br>
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <!-- DC Blaha  -->
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Oovcde Design</title>
+  </head>
+  <body><font size="+3">Oovcde Design<br>
+    </font>
+    <hr style="width: 100%; height: 3px;"> Last update: 4-7-2015<br>
+    BlueGriffon was used to edit this design document.<br>
+    Inkscape may be used to edit .svg diagram files from Oovcde.<br>
+    <br>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId278883">Description</a></li>
+      <li><a href="#mozTocId304148">Components</a>
+        <ol>
+          <li><a href="#mozTocId89151">OovCppParser</a></li>
+          <li><a href="#mozTocId565763">OovBuilder</a></li>
+          <li><a href="#mozTocId514779">Oovcde</a>
+            <ol>
+              <li><a href="#mozTocId571076">Oovcde GUI</a></li>
+              <li><a href="#mozTocId821661">Class Diagrams</a></li>
+              <li><a href="#mozTocId750348">Sequence Diagrams</a></li>
+              <li><a href="#mozTocId567574">Drawing Diagrams</a></li>
+              <li><a href="#mozTocId228166">Journal</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId28357">OovEdit</a>
+            <ol>
+              <li><a href="#mozTocId677876">OovEdit Main Classes</a></li>
+              <li><a href="#mozTocId634834">EditFiles</a></li>
+              <li><a href="#mozTocId510508">Debugger</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId450840">OovCMaker</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId682604"> Libraries</a>
+        <ol>
+          <li><a href="#mozTocId312284">OovCommon</a>
+            <ol>
+              <li><a href="#mozTocId766961">Model Data </a></li>
+              <li><a href="#mozTocId716210">Reading Model Data</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId90631">OovGuiCommon</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId68299">Processing</a>
+        <ol>
+          <li><a href="#mozTocId599543">Analysis Mode</a></li>
+          <li><a href="#mozTocId848189">Build Mode</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId878290">Multitasking</a></li>
+    </ol>
+    <h1><a class="mozTocH1" name="mozTocId278883"></a>Description</h1>
+    This design document describes the Oovcde program.&nbsp; It also contains
+    examples of the diagrams that can be produced with the program, and it
+    contains descriptions of the diagrams.<br>
+    <br>
+    <h1><a class="mozTocH1" name="mozTocId304148"></a>Components</h1>
+    The following are components used as part of the Oovcde project.<br>
+    <br>
+    <embed src="Components.svg" type="image/svg+xml"> <br>
+    <br>
+    The top three components (mingw-w64, llvm, and gtk+-3.0) are provided
+    externally.<br>
+    <br>
     <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-<th style="vertical-align: top;">Component<br>
-      </th>
-      <th style="vertical-align: top;">Description<br>
-      </th>
-      </tr>
-    <tr>
-      <td style="vertical-align: top;">OovCppParser<br>
-      </td>
-      <td style="vertical-align: top;">A command line tool that parses a C++ file and produces an XML output file.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">OovBuilder<br>
-      </td>
-      <td style="vertical-align: top;">A command line tool that recursively parses a directory
-to find C++ files, and runs the Oov CPP parser on each file. Keeps
-track of source file modification times so that only modified source
-files are parsed. This component calls the OovCppParser component to extract information from source files.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Oovcde<br>
-      </td>
-      <td style="vertical-align: top;">Top level GUI that runs the
-OovBuilder to parse source files. Then it displays the information
-as class and sequence diagrams. This component calls the OovBuilder and OovEdit programs.<br>
-      </td>
-    </tr><tr>
-      <td style="vertical-align: top;">OovEdit<br>
-      </td>
-      <td style="vertical-align: top;">A simple C++ editor<br>
-      </td>
-    </tr><tr>
-      <td style="vertical-align: top;">OovCMaker<br>
-      </td>
-      <td style="vertical-align: top;">A command line tool that creates CMake files from a project.<br>
-      </td>
-    </tr>
-
-
-  </tbody>
-</table>
-<br>
-<h2><a class="mozTocH2" name="mozTocId89151"></a>OovCppParser</h2>
-The OovCppParser is based on the CLang LLVM C++ parser. It is used to
-parse the C++ source files and save drawing information in XMI files.<br>
-
-
-<br>
-<embed src="CppParser.svg" type="image/svg+xml"> 
-<br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-<th style="vertical-align: top;">Class<br>
-      </th>
-      <th style="vertical-align: top;">Description<br>
-      </th>
-      </tr>
-    <tr>
-      <td style="vertical-align: top;">CppParser<br>
-      </td>
-      <td style="vertical-align: top;">This class parses a single source file and saves data in the ModelData.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelWriter<br>
-      </td>
-      <td style="vertical-align: top;">The ModelWriter reads the ModelData and writes the parsed C++ information to an output file.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">CXStringDisposer<br>
-      </td>
-      <td style="vertical-align: top;">This is a utility class that disposes strings allocated by CLang.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">SplitType<br>
-      </td>
-      <td style="vertical-align: top;">This class helps to extract type information.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Model...<br>
-      </td>
-      <td style="vertical-align: top;">The other model classes are described in the oovCommon library.<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-Diagram Notes:<br>
-<ul>
-  <li>The CppParser owns/contains (controls the lifetime of) the ModelData
-as seen by the filled in aggregation diamond connection. The CppParse
-can modify the Model objects from the oovCommon library since there is no unidirectional V symbol.<br>
-</li>
-  <li>The
-ModelWriter only refers (has a pointer of reference) to the ModelData as seen by the non-filled
-aggregation diamond connection. The V symbol indicates that this is a
-const references, so ModelData is not modified by the ModelWriter.<br>
-</li>
-  <li>Some CppParser functions use the CXStringDisposer as seen by the circle connection.</li>
-  <li>Some CppParser function parameters pass the SplitType class as seen by the double circle connection.</li>
-  <li>All aggregation members are private as seen by the filled circle aggregation connections.<br>
-  </li>
-</ul>
-
-<br>
-After the file is parsed into the ModelData, then it is written by the ModelWriter.<br>
-<br>
-<embed src="ModelWriter.svg" type="image/svg+xml">
-<br>
-The ModelWriter reads parts of the model and writes various model
-objects to the XML file.&nbsp; See the oovCommon library for the model
-objects descriptions.<br>
-<br>
-
-Diagram Notes:<br>
-<ul>
-  <li>Note that all Model references are const relationships.<br>
-  </li>
-</ul>
-
-<h2><a class="mozTocH2" name="mozTocId565763"></a>OovBuilder</h2>OovBuilder
-is a command line tool. The Oovcde program can invoke the OovBuilder
-from the command line. The OovBuilder works in two modes.<br>
-<ul>
-  <li>Analysis Mode - To extract drawing information,
-OovBuilder recursively parses a directory to find C++ files, and
-runs the Oov CPP
-parser on each file, and saves the information in files. It keeps track
-of source file modification times so
-that only newly modified source files are parsed.</li>
-  <li>Build Mode - OovBuilder can build a project including mutliple libraries and executables. After
-the user has defined what each component is, it can build each
-component.</li>
-</ul>The command line synopsis is:<br>
-
-<br>
-
-oovBuilder project_directory [-v][-bld-&lt;config&gt;]<br>
-
-<br>
-
-<table style="text-align: left; width: 639px; height: 108px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-    <tr>
-      <td style="vertical-align: top;">Switch<br>
-      </td>
-      <td style="vertical-align: top;">Description<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-v<br>
-      </td>
-      <td style="vertical-align: top;">Verbose<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-bld<br>
-      </td>
-      <td style="vertical-align: top;">Specifies the build configuration. For example -bld-Release will use the Release configuration to build the project.<br>
-      </td>
-    </tr>
-    
-  </tbody>
-</table>
-
-<br>
-The ComponentFinder runs in both modes to discover the components determined from the directory structure.<br>
-<br>
-
-<br>
-
-<embed src="OovBuilder.svg" type="image/svg+xml"> 
-<br>
-
-Diagram Notes:<br>
-
-<ul>
-  <li>The srcFileParser inherits from the dirRecursor to override the
-processFile function. This is shown as the arrow symbol. The open
-circles means that the inheritance relationship is public.<br>
-  </li>
-</ul>
-
-<br>
-
-    
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-    <tr>
-<th style="vertical-align: top;">Class<br>
-      </th>
-      <th style="vertical-align: top;">Description<br>
-      </th>
-      </tr>
-    <tr>
-      <td style="vertical-align: top;">dirRecurser<br>
-      </td>
-      <td style="vertical-align: top;">This class recursively finds files, and calls the virtual processFile function for each file found.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">srcFileParser<br>
-      </td>
-      <td style="vertical-align: top;">Runs the OovCppParser component for each source file found. This produces the drawing XMI files.<br>
-</td>
-    </tr>
-    
-    <tr>
-      <td style="vertical-align: top;">ComponentFinder<br>
-      </td>
-      <td style="vertical-align: top;">Scans project and external directories for include headers and libraries.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ScannedComponentsInfo<br>
-      </td>
-      <td style="vertical-align: top;">This is information kept during the scan.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ComponentsFile<br>
-      </td>
-      <td style="vertical-align: top;">This saves persistent information about the components.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ComponentBuilder<br>
-      </td>
-      <td style="vertical-align: top;">This builds object, library and executable files.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ObjSymbols<br>
-      </td>
-      <td style="vertical-align: top;">This parses library directories for symbols. It produces a sorted list of libraries.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ToolPathFile<br>
-      </td>
-      <td style="vertical-align: top;">This keeps paths to tools.<br>
-      </td>
-    </tr><tr>
-      <td style="vertical-align: top;">IncDirDependencyMapReader<br>
-      </td>
-      <td style="vertical-align: top;">Reads include dependencies from the include dependencies file that was created by OovCppParser.<br>
-      </td>
-    </tr>
-
-
-    
-    
-  </tbody>
-</table>
-
-<br>
-
-<br>
-<h2><a class="mozTocH2" name="mozTocId514779"></a>Oovcde</h2>The Oovcde program can display class and sequence diagrams.<br>
-<br>
-<h3><a class="mozTocH2" name="mozTocId571076"></a>Oovcde GUI</h3>The GUI objects are objects that can display information on screens. Some of the GUI objects are shown below.<br>
-
-<br>
-
-<img style="width: 676px; height: 718px;" alt="GUI Objects Diagram" src="GuiObjects.png"><br>
-
-<br>
-
-<br>
-
-
-
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-
-
-
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">oovGui<br>
-      </td>
-      <td style="vertical-align: top;">This is the top level class for
-the oovcde component. It inherits from the JournalListener so that the
-journal can update cause the GUI to update the class and operation list
-when a class or operation has been selected from any diagram.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalListener<br>
-      </td>
-      <td style="vertical-align: top;">Allows the journal to indicate that a class or operation should be displayed.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ProjectReader<br>
-      </td>
-      <td style="vertical-align: top;">Reads
-the project files so that all XMI files are read. The XMI files contain
-class and operation information about the source files.<br>
-      </td>
-    </tr>
-<tr>
-      <td style="vertical-align: top;">GuiList<br>
-      </td>
-      <td style="vertical-align: top;">This is a generic class for displaying lists of text.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassList<br>
-      </td>
-      <td style="vertical-align: top;">This displays a list of classes.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">OperationList<br>
-      </td>
-      <td style="vertical-align: top;">This displays a list of operations.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalList<br>
-      </td>
-      <td style="vertical-align: top;">Contains a list of journal entries. This mainly contains a list of modified diagrams.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalRecord<br>
-      </td>
-      <td style="vertical-align: top;">This is a record in the journal. It can be derived in order to save different kinds of records.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalRecordClassDiagram<br>
-      </td>
-      <td style="vertical-align: top;">This contains a journal record that can display and keep preferences for a class diagram.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalRecordOperationDiagram<br>
-      </td>
-      <td style="vertical-align: top;">This contains a journal record that can display a sequence diagram.</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">OptionsDialog<br>
-      </td>
-      <td style="vertical-align: top;">
-      
-      This displays the tabbed options dialog for Edit/Preferences.</td>
-    </tr>
-<tr>
-      <td style="vertical-align: top;">ClassPreferencesDialog<br>
-      </td>
-      <td style="vertical-align: top;">This displays the class/node preferences in the class diagram.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Builder<br>
-      </td>
-      <td style="vertical-align: top;">This
-is built on the GtkBuilder, which reads the oovcdeLayout.glade file,
-which provides the graphical layout of widgets such as the look of
-dialogs, lists, menubars, etc. It provides an interface to get a widget
-hierarchy by name.<br>
-      </td>
-    </tr>
-
-    
-    
-    
-    
-</tbody>
-</table>
-
-
-
-<br>
-<h3><a class="mozTocH2" name="mozTocId821661"></a>Class Diagrams</h3>The different diagrams (Class, Sequence, etc.) mostly follow a common pattern.<br>
-<table border="2">
-  <tbody>
-    <tr>
-      <td>Graph</td>
-      <td>Contains the nodes and edges. Does not refer to the Graph or Drawer.</td>
-    </tr>
-    <tr>
-      <td>Drawer</td>
-      <td>Refers to the Graph, but not the Diagram.&nbsp; Cannot modify the Graph.</td>
-    </tr>
-    <tr>
-      <td>Diagram</td>
-      <td>Owns
-(controls the lifetime of) the Graph, and can modify the Graph, and
-refers to the Drawer when drawing needs to be performed.</td>
-    </tr>
-  </tbody>
-</table>
-<br>
-
-
-The ClassDiagram related classes draw class diagrams, and are shown below.<br>
-<br>
-
-<img alt="ClassDiagram Diagram" src="ClassDiagram.svg"><br>
-<br>
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">ClassDiagram<br>
-      </td>
-      <td style="vertical-align: top;">This contains the graph and graph drawing for the class diagrams.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassGraph<br>
-      </td>
-      <td style="vertical-align: top;">This
-stores all of the classes that will be displayed on a diagram. It
-provides functions for adding related classes or nodes to the graph. The graph contains all of the nodes and edges, and does <br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassGenes<br>
-      </td>
-      <td style="vertical-align: top;">This contains the storage for the genetic algorithm used to position the classes on diagrams.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassDrawer<br>
-      </td>
-      <td style="vertical-align: top;">This class contains functions for drawing the graph, including classes and connections/relationships.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassNode<br>
-      </td>
-      <td style="vertical-align: top;">This contains one class or node in the graph. It refers to a ModelType from the ModelData.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassConnectItem<br>
-      </td>
-      <td style="vertical-align: top;">This contains one connection between classes.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassNodeDrawOption<br>
-      </td>
-      <td style="vertical-align: top;">This defines options for how to draw a node.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ClassRelationDrawOptions<br>
-      </td>
-      <td style="vertical-align: top;">This defines options for how to draw a connection between nodes.<br>
-      </td>
-    </tr>
-</tbody>
-</table>
-<br>
-The following shows the sequence diagram for adding class nodes to the graph.<br>
-<br>
-<img style="width: 526px; height: 1085px;" alt="SeqAddRelatedNodes diagram" src="SeqAddRelatedNodes.png"><br>
-<br>
-Drawing notes:<br>
-<ul>
-  <li>This sequence goes through all kinds of relationships and recursively adds related nodes.</li>
-  <li>Some of the C++11 classes were removed for simplicity.<br>
-  </li>
-
-  <li>Dashed lines indicate calls to const functions.<br>
-</li>
-  <li>Text with square braces indicates conditionals. [<span style="font-style: italic;">cond</span>]<br>
-  </li>
-
-  <li>An asterisk before square braces indicates a loop. *[<span style="font-style: italic;">cond</span>]</li>
-  <li>The C++11 range based for loop conditionals are indicated with a colon. *[:<span style="font-style: italic;">cond</span>]<br>
-  </li>
-  <li>The lifeline bars are wider where there are nested
-conditionals or loops.</li>
-
-  
-</ul>
-<br>
-The following shows the sequence diagram for drawing the class nodes.<br>
-<br>
-<img alt="Draw Class Diagram Sequence" src="SeqDrawDiagram.svg"><br>
-Drawing notes:<br>
-<ul>
-  <li>First all nodes/classes are drawn using ClassDrawer::drawNode.<br>
-  </li>
-  <li>All nodes are iterated to see if there is a connection between
-any two nodes on the diagram, then the connections are drawn using
-ClassDrawer::drawConnection.<br>
-  </li>
-</ul>
-<h3><a class="mozTocH2" name="mozTocId750348"></a>Sequence Diagrams</h3>
-
-The SequenceDiagram related classes are used to display sequence
-diagrams.<br>
-<embed src="OperationDiagram.svg" type="image/svg+xml"><br>
-
-<br>
-<h3><a class="mozTocH3" name="mozTocId567574"></a>Drawing Diagrams</h3>
-The drawing classes are shown below.<br><br>
-<img style="width: 720px; height: 679px;" alt="DiagramDrawer Diagram" src="DiagramDrawer.png"><br>
-<br>
-<br>
-
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">DiagramDrawer<br>
-      </td>
-      <td style="vertical-align: top;">This defines an interface with virtual drawing functions.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">SvgDrawer<br>
-      </td>
-      <td style="vertical-align: top;">This draws vector diagrams for saving to SVG files.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">NullDrawer<br>
-      </td>
-      <td style="vertical-align: top;">This doesn't draw anything, but is passed to functions to allow calculating sizes of objects.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">CairoDrawer<br>
-      </td>
-      <td style="vertical-align: top;">This draws diagrams to a Cairo object for drawing on the screen in GTK.<br>
-      </td>
-    </tr>
-    
-    
-    
-    
-</tbody>
-</table>
-
-<br>
-<h3><a class="mozTocH3" name="mozTocId228166"></a>Journal</h3>
-The Journal related classes are used to keep a volatile history of modified diagrams, and are shown below.<br>
-
-<br>
-
-<embed src="Journal.svg" type="image/svg+xml"><br>
-
-<br>
-
-
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-
-
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">Journal<br>
-      </td>
-      <td style="vertical-align: top;">This keeps a collection of journal records.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalRecord<br>
-      </td>
-      <td style="vertical-align: top;">This
-is a virtual base class that allows the journal to keep different types
-of records. The viewable display can be different for each record. When
-each record is selected from the journal, the display is updated.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalListener<br>
-      </td>
-      <td style="vertical-align: top;">This allows the journal to update a client when a class or operation is selected to be displayed.<br>
-      </td>
-    </tr>
-<tr>
-      <td style="vertical-align: top;">JournalRecordClassDiagram<br>
-      </td>
-      <td style="vertical-align: top;">This contains data for displaying one class diagram, and responding to class events.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">JournalRecordOperationDiagram<br>
-      </td>
-      <td style="vertical-align: top;">This contains data for displaying one operation diagram, and responding to operation events.
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">OperationDiagramListener<br>
-      </td>
-      <td style="vertical-align: top;">This allows the operation diagram to notify the journal record when a new class should be displayed.<br>
-      </td>
-    </tr>
-<tr>
-      <td style="vertical-align: top;">Other<br>
-      </td>
-      <td style="vertical-align: top;">The other classes are described elsewhere.<br>
-      </td>
-    </tr>
-    
-    
-    
-</tbody>
-</table>
-
-
-<br>
-
-Diagram Notes:<br>
-
-
-
-The JournalRecordClassDiagram owns the lifetime of the
-ClassDiagram as shown by the filled aggregation diamond, which means
-that every record can contain a different class diagram.<br>
-<br>
-<h2><a class="mozTocH2" name="mozTocId28357"></a>OovEdit</h2>
-The OovEdit component is a simple C++ code editor. It uses CLang to hightlight keywords.<br>
-<br>
-<h3><a class="mozTocH3" name="mozTocId677876"></a>OovEdit Main Classes</h3>
-
-The class relations are shown below.<br>
-<br>
-<embed src="oovEdit.svg" type="image/svg+xml"> 
-<br>
-<br>
-
-
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-
-
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">Editor<br>
-      </td>
-      <td style="vertical-align: top;">This is the high level class that provids all editing features.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">DebuggerListener<br>
-</td>
-      <td style="vertical-align: top;">This allows getting updates about the debugger<br>
-</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Debugger<br>
-      </td>
-      <td style="vertical-align: top;">This is an interface to a debugger<br>
-      </td>
-    </tr>
-<tr>
-      <td style="vertical-align: top;">EditFiles<br>
-      </td>
-      <td style="vertical-align: top;">Keeps editor information about a text/source file.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">FindFiles<br>
-      </td>
-      <td style="vertical-align: top;">Provides find text in files<br>
-      </td>
-    </tr>
-
-    
-    
-    
-    
-</tbody>
-</table>
-
-<br>
-<h3><a class="mozTocH3" name="mozTocId634834"></a>EditFiles</h3>
-The editor can edit files within tabs. Each file has a buffer of text
-that is highlighted. An indenter handles keys for indenting.<br>
-<br>
-<embed src="oovEditEditFiles.svg" type="image/svg+xml"> 
-<br>
-<br>
-<br>
-
-
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-
-
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">EditFiles<br>
-      </td>
-      <td style="vertical-align: top;">Keeps information about all files.&nbsp; There is typically one file that has the focus.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">FileEditView<br>
-      </td>
-      <td style="vertical-align: top;">Keeps information about a single file.<br>
-      </td>
-    </tr>
-<tr>
-      <td style="vertical-align: top;">HistoryItem</td>
-      <td style="vertical-align: top;">This is for undo and redo. Each item keeps the information for one operation.</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">TokenRange</td>
-      <td style="vertical-align: top;">This is a set of tokens within a range of line numbers.</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Tokenizer</td>
-      <td style="vertical-align: top;">The tokenizer parses a C++ file, or the contents in memory and finds a set of tokens.</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Highlighter</td>
-      <td style="vertical-align: top;">The
-highlighter gets a set of tokens, and defines tags to apply to the text
-view. The tags are color attributes to apply to the text.</td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">Indenter</td>
-      <td style="vertical-align: top;">This class handles indenting of
-C++ using the tab and backspace keys. It also handles indent using tab
-and untab of selected regions.</td>
-    </tr>
-</tbody>
-</table>
-
-
-<br>
-
-<br>
-
-
-<h3><a class="mozTocH3" name="mozTocId510508"></a>Debugger</h3>
-The editor contains a debugger. The debugger handles typical operations
-such as single stepping, setting breakpoints, displaying results, and
-starting and stopping the program being debugged.<br>
-<br>
-<embed src="oovEditDebugger.svg" type="image/svg+xml"> 
-<br>
-
-<br>
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">Debugger<br>
-      </td>
-      <td style="vertical-align: top;">Provides the top level interface for the debugger<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">DebuggerLocation<br>
-      </td>
-      <td style="vertical-align: top;">Defines a line number in a file<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">DebuggerBreakpoint<br>
-      </td>
-      <td style="vertical-align: top;">Defines a breakpoint location<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">DebugResult<br>
-      </td>
-      <td style="vertical-align: top;">Used for parsing results from the debugger.<br>
-      </td>
-    </tr>
-</tbody>
-</table>
-<br>
-<h2><a class="mozTocH2" name="mozTocId450840"></a>OovCMaker</h2>
-
-This is a command line tool that can create CMake files from a project. The synopsis is:<br>
-
-<br>
-
-OovCMaker project_directory [-v][-w][-nProjName]<br>
-
-<br>
-
-<table style="text-align: left; width: 473px; height: 116px;" border="1" cellpadding="2" cellspacing="2">
-
-  <tbody>
-    <tr>
-      <td style="vertical-align: top;">Switch<br>
-      </td>
-      <td style="vertical-align: top;">Description<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-v<br>
-      </td>
-      <td style="vertical-align: top;">Verbose<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-w<br>
-      </td>
-      <td style="vertical-align: top;">Write output to project directories<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">-n<br>
-      </td>
-      <td style="vertical-align: top;">Specify the project name. For example: -nOovcde<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<br>
-<h1><a class="mozTocH1" name="mozTocId682604"></a>
-
-
-Libraries</h1>The following are the libraries created in the Oovcde project.<br>
-<br>
-
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-<tbody><tr><th style="vertical-align: top;">Library<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">OovCommon<br>
-      </td>
-      <td style="vertical-align: top;">The OovCommon library contains shared code used by each of the components.</td>
-    </tr><tr>
-      <td style="vertical-align: top;">OovGuiCommon<br>
-      </td>
-      <td style="vertical-align: top;">The GUI library defines interfaces to GTK.<br>
-      </td>
-    </tr>
-
-</tbody>
-</table>
-<br>
-<br>
-
-<h2><a class="mozTocH2" name="mozTocId312284"></a>OovCommon</h2>The OovCommon library provides code that can be used by all components.<br>
-<br>
-
-<h3><a class="mozTocH3" name="mozTocId766961"></a>Model Data<br>
-</h3>
-The
-class relations for the Model Object classes are shown below. The
-function relations are removed from this diagram since there are too
-many relationships when they are shown.<br>
-<br>
-<img style="width: 782px; height: 919px;" alt="Model Objects Diagram" src="ModelObjects.png"><br>
-<br>
-<br>
-
-
-<table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2" cellspacing="2">
-
-<tbody><tr><th style="vertical-align: top;">Class<br>
-      </th><th style="vertical-align: top;">Description<br>
-      </th></tr><tr>
-      <td style="vertical-align: top;">ModelData<br>
-</td><td style="vertical-align: top;">This contains information about all parsed information.<br>
-</td>
-    </tr><tr>
-      <td style="vertical-align: top;">ModelObject<br>
-      </td>
-      <td style="vertical-align: top;">This is the base type for all objects saved in the ModelData.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelType<br>
-      </td>
-      <td style="vertical-align: top;">This is the base type for classes or simple types such as "int", etc.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelClassifier<br>
-      </td>
-      <td style="vertical-align: top;">This contains information for each class or struct from the C++ file.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelOperation<br>
-      </td>
-      <td style="vertical-align: top;">This contains information about a function prototype or definition. This is used for inline or out-of-line definitions.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelStatement<br>
-      </td>
-      <td style="vertical-align: top;">This defines a base class for conditional statements or operation calls.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelCondStatement<br>
-      </td>
-      <td style="vertical-align: top;">This class really defines compound statements that are generally part of conditionals.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelOperationCall<br>
-      </td>
-      <td style="vertical-align: top;">This
-defines a statement that is a call to a function. This contains a
-declarator in order to define the type that the function call / member
-function is from.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelDeclarator<br>
-      </td>
-      <td style="vertical-align: top;">Defines a type reference with a name. The type reference is const since the type must already be defined in the ModelData.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelFuncParam<br>
-      </td>
-      <td style="vertical-align: top;">This is used to define a parameter to a function.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelBodyVarDecl<br>
-      </td>
-      <td style="vertical-align: top;">This is used for variables defined in function..<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">ModelAttribute<br>
-      </td>
-      <td style="vertical-align: top;">This is member type definition as part of a class or struct.<br>
-      </td>
-    </tr>
-    
-    <tr>
-      <td style="vertical-align: top;">ModelWriter<br>
-      </td>
-      <td style="vertical-align: top;">This class in the OovCppParser component uses the ModelData.<br>
-      </td>
-    </tr><tr>
-      <td style="vertical-align: top;">Others<br>
-      </td>
-      <td style="vertical-align: top;">The other classes show usage of the model data.<br>
-      </td>
-    </tr>
-
-
-</tbody>
-</table>
-
-<br>
-<h3><a class="mozTocH3" name="mozTocId716210"></a>Reading Model Data</h3>
-When the types are read from the XML files, not all information about
-each class is in every XML file. This means that some XML files contain
-just a reference, and if the XML file does contain the information, the
-reference is upgraded from a simple type, to a class type with
-attributes and operations. This means that any other object that has
-references to the replaced type will need to point to the new object.
-The ModelData::replaceType function does this operation.<br>
-<br>
-<img style="width: 495px; height: 665px;" alt="Replace Type sequence" src="SeqReplaceType.png"><br>
-<br>
-<br>
-Drawing Notes:<br>
-<ul>
-  <li>Attributes, operations, body variable and inheritance relations are all checked for references to the existing type</li>
-  <li>The *[: classifier] indicates the C++11 range-based for loop.<br>
-  </li>
-
-  <li>The [attr-&gt;getDeclType() == existingType] is the
-condition that is checked to see if the existing type is referred to by
-any attributes.</li>
-
-  
-</ul>
-
-<h2><a class="mozTocH2" name="mozTocId90631"></a><a class="mozTocH2" name="mozTocId162874"></a>OovGuiCommon</h2>
-The OovGuiCommon library provides code that can be used by all user interface components.<br>
-
-<br>
-<h1><a class="mozTocH1" name="mozTocId68299"></a>Processing</h1>For detailes information on processing, see <a href="OovcdeBuildDesign.html">Oovcde Build Design</a>. The analysis mode described below is often run as part of the build mode.<br>
-<br>
-
-
-
-<h2><a class="mozTocH2" name="mozTocId599543"></a>Analysis Mode</h2>
-The
-Oovcde program invokes the OovBuilder to extract drawing
-information. OovBuilder runs the OovCppParser for each file found as
-it recursively navigates the source directory tree.&nbsp; These
-modified data flow diagrams were made using Inkscape.<br>
-
-
-<br>
-
-<embed src="AnalysisDataFlow.svg" type="image/svg+xml"><br>
-<br>
-<br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top;">File<br>
-      </td>
-      <td style="vertical-align: top;">Description<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">oovcde.txt<br>
-      </td>
-      <td style="vertical-align: top;">This contains the source root directory, the compiler and link arguments, and the tool names.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">oovcde-buildconfig.txt<br>
-      </td>
-      <td style="vertical-align: top;">Contains information about recently built configurations<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">oovcde-comptypes.txt<br>
-      </td>
-      <td style="vertical-align: top;">Defines the component types, such as static library, etc.<br>
-      </td>
-    </tr>
-<tr>
-      <td style="vertical-align: top;">analysis-&lt;crc&gt;/oovcde-comps.txt<br>
-      </td>
-      <td style="vertical-align: top;">This file contains scanned information about the internal and external components.<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">analysis-&lt;crc&gt;/oovcde-incdeps.txt<br>
-      </td>
-      <td style="vertical-align: top;">This file contains the C++ header include dependencies, and the update time of each file<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">analysis-&lt;crc&gt;/*.xmi<br>
-      </td>
-      <td style="vertical-align: top;">This is the extracted output of each cpp and h file that is used for analysis drawings.<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
- 
-
-<h2><a class="mozTocH2" name="mozTocId848189"></a>Build Mode</h2>When a build is performed, the component types are used to determine what type of component to build.<br>
-
-<br>
-<embed src="BuildDataFlow.svg" type="image/svg+xml"><br>
-
-
-<br>
-<table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
-  <tbody>
-    <tr>
-      <td style="vertical-align: top;">File<br>
-      </td>
-      <td style="vertical-align: top;">Description<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">\bld-*\*.o<br>
-      </td>
-      <td style="vertical-align: top;">The object modules as a result of compilation<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">\bld-*\sym\*.txt</td>
-      <td style="vertical-align: top;">The library symbol information<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">\bld-*\*.a</td>
-      <td style="vertical-align: top;">The library produced for static library components<br>
-      </td>
-    </tr>
-    <tr>
-      <td style="vertical-align: top;">\bld-*\*.exe</td>
-      <td style="vertical-align: top;">The executable produced for program components<br>
-      </td>
-    </tr>
-  </tbody>
-</table>
-<br>
-<h1><a class="mozTocH1" name="mozTocId878290"></a>Multitasking</h1>
-<br>
-See the document <a href="../articles/OovcdeMultitasking.html">MultiTasking</a><br>
-<br>
-<br>
-</body></html>
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Component<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td>mingw-w64</td>
+          <td>This library is used only on Windows</td>
+        </tr>
+        <tr>
+          <td>llvm</td>
+          <td>This is the LLVM project libraries that support CLang for C++
+            parsing</td>
+        </tr>
+        <tr>
+          <td>gtk+-3.0</td>
+          <td>GTK is a library used for graphics display / GUI</td>
+        </tr>
+        <tr>
+          <td>oovCommon</td>
+          <td>A library to share common code for all tools</td>
+        </tr>
+        <tr>
+          <td>oovGuiCommon</td>
+          <td>A library to share common GUI code for GUI tools</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OovCppParser<br>
+          </td>
+          <td style="vertical-align: top;">A command line tool that parses a C++
+            file and produces an XML output file.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OovBuilder<br>
+          </td>
+          <td style="vertical-align: top;">A command line tool that recursively
+            parses a directory to find C++ files, and runs the Oov CPP parser on
+            each file. Keeps track of source file modification times so that
+            only modified source files are parsed. This component calls the
+            OovCppParser component to extract information from source files.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Oovcde<br>
+          </td>
+          <td style="vertical-align: top;">Top level GUI that runs the
+            OovBuilder to parse source files. Then it displays the information
+            as class and sequence diagrams. This component calls the OovBuilder
+            and OovEdit programs.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OovEdit<br>
+          </td>
+          <td style="vertical-align: top;">A simple C++ editor<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OovCMaker<br>
+          </td>
+          <td style="vertical-align: top;">A command line tool that creates
+            CMake files from a project.<br>
+          </td>
+        </tr>
+        <tr>
+          <td>OovCovInstr</td>
+          <td>A command line tool that generates code test coverage
+            instrumentation</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h2><a class="mozTocH2" name="mozTocId89151"></a>OovCppParser</h2>
+    The OovCppParser is based on the CLang LLVM C++ parser. It is used to parse
+    the C++ source files and save drawing information in XMI files.<br>
+    <br>
+    <embed src="CppParser.svg" type="image/svg+xml"> <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">CppParser<br>
+          </td>
+          <td style="vertical-align: top;">This class parses a single source
+            file and saves data in the ModelData.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelWriter<br>
+          </td>
+          <td style="vertical-align: top;">The ModelWriter reads the ModelData
+            and writes the parsed C++ information to an output file.<br>
+          </td>
+        </tr>
+        <tr>
+          <td>IncDirDependencyMap</td>
+          <td>The CppParser gets include dependencies from the source files, and
+            saves them to a file.</td>
+        </tr>
+        <tr>
+          <td>SwitchContexts</td>
+          <td>Saves information while compiling switch statements.</td>
+        </tr>
+        <tr>
+          <td>DupHashFile</td>
+          <td>Creates a hash of code tokens for duplicate code detection.</td>
+        </tr>
+        <tr>
+          <td>SharedFile</td>
+          <td>Synchronizes access to a file shared by multiple processes.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">CXStringDisposer<br>
+          </td>
+          <td style="vertical-align: top;">This is a utility class that disposes
+            strings allocated by CLang.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">SplitType<br>
+          </td>
+          <td style="vertical-align: top;">This class helps to extract type
+            information.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Model...<br>
+          </td>
+          <td style="vertical-align: top;">The other model classes are described
+            in the oovCommon library.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    Diagram Notes:<br>
+    <ul>
+      <li>The CppParser owns/contains (controls the lifetime of) the ModelData
+        as seen by the filled in aggregation diamond connection. The CppParse
+        can modify the Model objects from the oovCommon library since there is
+        no unidirectional V symbol.<br>
+      </li>
+      <li>The ModelWriter only refers (has a pointer of reference) to the
+        ModelData as seen by the non-filled aggregation diamond connection. The
+        V symbol indicates that this is a const references, so ModelData is not
+        modified by the ModelWriter.<br>
+      </li>
+      <li>Some CppParser functions use the CXStringDisposer as seen by the
+        circle connection.</li>
+      <li>Some CppParser function parameters pass the SplitType class as seen by
+        the double circle connection.</li>
+      <li>All aggregation members are private as seen by the filled circle
+        aggregation connections.<br>
+      </li>
+    </ul>
+    <br>
+    After the file is parsed into the ModelData, then it is written by the
+    ModelWriter.<br>
+    <br>
+    <embed src="ModelWriter.svg" type="image/svg+xml"> <br>
+    The ModelWriter reads parts of the model and writes various model objects to
+    the XML file.&nbsp; See the oovCommon library for the model objects
+    descriptions.<br>
+    <br>
+    Diagram Notes:<br>
+    <ul>
+      <li>Note that all Model references are const relationships.<br>
+      </li>
+    </ul>
+    <h2><a class="mozTocH2" name="mozTocId565763"></a>OovBuilder</h2>
+    OovBuilder is a command line tool. The Oovcde program can invoke the
+    OovBuilder from the command line. The OovBuilder works in two modes.<br>
+    <ul>
+      <li>Analysis Mode - To extract drawing information, OovBuilder recursively
+        parses a directory to find C++ files, and runs the Oov CPP parser on
+        each file, and saves the information in files. It keeps track of source
+        file modification times so that only newly modified source files are
+        parsed.</li>
+      <li>Build Mode - OovBuilder can build a project including mutliple
+        libraries and executables. After the user has defined what each
+        component is, it can build each component.</li>
+    </ul>
+    The command line synopsis is:<br>
+    <br>
+    oovBuilder project_directory [-bv][-cfg-&lt;config&gt;][-mode-&lt;mode&gt;]<br>
+    <br>
+    <table style="text-align: left; width: 639px; height: 108px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">Switch<br>
+          </td>
+          <td style="vertical-align: top;">Description<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">-bv<br>
+          </td>
+          <td style="vertical-align: top;">Verbose<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">-cfg<br>
+          </td>
+          <td style="vertical-align: top;">Specifies the build configuration.
+            For example -cfg-Release will use the Release configuration to build
+            the project.<br>
+          </td>
+        </tr>
+        <tr>
+          <td>-mode</td>
+          <td>Specifies the mode. The modes are analyze, build, cov-instr,
+            cov-build, and cov-stats. The cov arguments are for code test
+            coverage. Analyze only compiles for analysis information, while
+            build compiles, build libraries and executables.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    The ComponentFinder runs in both modes to discover the components determined
+    from the directory structure.<br>
+    <br>
+    <br>
+    <embed src="OovBuilder.svg" type="image/svg+xml"> <br>
+    Diagram Notes:<br>
+    <ul>
+      <li>The srcFileParser inherits from the dirRecursor to override the
+        processFile function. This is shown as the arrow symbol. The open
+        circles means that the inheritance relationship is public.<br>
+      </li>
+    </ul>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">dirRecurser<br>
+          </td>
+          <td style="vertical-align: top;">This class recursively finds files,
+            and calls the virtual processFile function for each file found.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">srcFileParser<br>
+          </td>
+          <td style="vertical-align: top;">Runs the OovCppParser component for
+            each source file found. This produces the drawing XMI files.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ComponentFinder<br>
+          </td>
+          <td style="vertical-align: top;">Scans project and external
+            directories for include headers and libraries.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ScannedComponentsInfo<br>
+          </td>
+          <td style="vertical-align: top;">This is information kept during the
+            scan.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ComponentsFile<br>
+          </td>
+          <td style="vertical-align: top;">This saves persistent information
+            about the components.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ComponentBuilder<br>
+          </td>
+          <td style="vertical-align: top;">This builds object, library and
+            executable files.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ObjSymbols<br>
+          </td>
+          <td style="vertical-align: top;">This parses library directories for
+            symbols. It produces a sorted list of libraries.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ToolPathFile<br>
+          </td>
+          <td style="vertical-align: top;">This keeps paths to tools.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">IncDirDependencyMapReader<br>
+          </td>
+          <td style="vertical-align: top;">Reads include dependencies from the
+            include dependencies file that was created by OovCppParser.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <h2><a class="mozTocH2" name="mozTocId514779"></a>Oovcde</h2>
+    The Oovcde program can display class and sequence diagrams.<br>
+    <br>
+    <h3><a class="mozTocH2" name="mozTocId571076"></a>Oovcde GUI</h3>
+    The GUI objects are objects that can display information on screens. Some of
+    the GUI objects are shown below.<br>
+    <br>
+    <img src="GuiObjects.svg"><br>
+    <br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovGui<br>
+          </td>
+          <td style="vertical-align: top;">This is the top level class for the
+            oovcde component. It inherits from the JournalListener so that the
+            journal can update cause the GUI to update the class and operation
+            list when a class or operation has been selected from any diagram.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">JournalListener<br>
+          </td>
+          <td style="vertical-align: top;">Allows the journal to indicate that a
+            class or operation should be displayed.<br>
+          </td>
+        </tr>
+        <tr>
+          <td>WindowBuildListener</td>
+          <td>The background processing sends standard output to this class,
+            which displayes the results in an output window.</td>
+        </tr>
+        <tr>
+          <td>ProjectStatus</td>
+          <td>This keeps track of whether the background process is busy.&nbsp;
+            The menu updates based on this status.</td>
+        </tr>
+        <tr>
+          <td>OovTaskStatusListener</td>
+          <td>The background processing can update progress. This is an interface
+            class.</td>
+        </tr>
+        <tr>
+          <td>WindowProjectStatusListener</td>
+          <td>This provides a non-modal background processing status dialog.</td>
+        </tr>
+        <tr>
+          <td>OovProject</td>
+          <td>This keeps all project related data. Oovcde can only work on a
+            single project at a time.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ProjectReader<br>
+          </td>
+          <td style="vertical-align: top;">Reads the project files so that all
+            XMI files are read. The XMI files contain class and operation
+            information about the source files.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">GuiList<br>
+          </td>
+          <td style="vertical-align: top;">This is a generic class for
+            displaying lists of text.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">...List<br>
+          </td>
+          <td style="vertical-align: top;">There are lists for classes, operations,
+            zone diagrams, etc.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">JournalRecord<br>
+          </td>
+          <td style="vertical-align: top;">This is a record in the journal. It
+            can be derived in order to save different kinds of records.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">JournalRecord...Diagram<br>
+          </td>
+          <td style="vertical-align: top;">This contains a journal record that
+            can display and keep preferences for a specific type of diagram.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OptionsDialog<br>
+          </td>
+          <td style="vertical-align: top;"> This displays the tabbed options
+            dialog for Edit/Preferences.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassPreferencesDialog<br>
+          </td>
+          <td style="vertical-align: top;">This displays the class/node
+            preferences in the class diagram.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Builder<br>
+          </td>
+          <td style="vertical-align: top;">This is built on the GtkBuilder,
+            which reads the oovcdeLayout.glade file, which provides the
+            graphical layout of widgets such as the look of dialogs, lists,
+            menubars, etc. It provides an interface to get a widget hierarchy by
+            name.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h3><a class="mozTocH2" name="mozTocId821661"></a>Class Diagrams</h3>
+    The different diagrams (Class, Sequence, etc.) mostly follow a common
+    pattern.<br>
+    <table border="2">
+      <tbody>
+        <tr>
+          <td>Graph</td>
+          <td>Contains the nodes and edges. Does not refer to the Graph or
+            Drawer.</td>
+        </tr>
+        <tr>
+          <td>Drawer</td>
+          <td>Refers to the Graph, but not the Diagram.&nbsp; Cannot modify the
+            Graph.</td>
+        </tr>
+        <tr>
+          <td>Diagram</td>
+          <td>Owns (controls the lifetime of) the Graph, and can modify the
+            Graph, and refers to the Drawer when drawing needs to be performed.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    The ClassDiagram related classes draw class diagrams, and are shown below.<br>
+    <br>
+    <img alt="ClassDiagram Diagram" src="ClassDiagram.svg"><br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassDiagram<br>
+          </td>
+          <td style="vertical-align: top;">This contains the graph and graph
+            drawing for the class diagrams.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassGraph<br>
+          </td>
+          <td style="vertical-align: top;">This stores all of the classes that
+            will be displayed on a diagram. It provides functions for adding
+            related classes or nodes to the graph. The graph contains all of the
+            nodes and edges, and does <br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassGenes<br>
+          </td>
+          <td style="vertical-align: top;">This contains the storage for the
+            genetic algorithm used to position the classes on diagrams.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassDrawer<br>
+          </td>
+          <td style="vertical-align: top;">This class contains functions for
+            drawing the graph, including classes and connections/relationships.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassNode<br>
+          </td>
+          <td style="vertical-align: top;">This contains one class or node in
+            the graph. It refers to a ModelType from the ModelData.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassConnectItem<br>
+          </td>
+          <td style="vertical-align: top;">This contains one connection between
+            classes.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassNodeDrawOption<br>
+          </td>
+          <td style="vertical-align: top;">This defines options for how to draw
+            a node.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ClassRelationDrawOptions<br>
+          </td>
+          <td style="vertical-align: top;">This defines options for how to draw
+            a connection between nodes.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    The following shows the sequence diagram for adding class nodes to the
+    graph.<br>
+    <br>
+    <img style="width: 526px; height: 1085px;" alt="SeqAddRelatedNodes diagram"
+      src="SeqAddRelatedNodes.png"><br>
+    <br>
+    Drawing notes:<br>
+    <ul>
+      <li>This sequence goes through all kinds of relationships and recursively
+        adds related nodes.</li>
+      <li>Some of the C++11 classes were removed for simplicity.<br>
+      </li>
+      <li>Dashed lines indicate calls to const functions.<br>
+      </li>
+      <li>Text with square braces indicates conditionals. [<span style="font-style: italic;">cond</span>]<br>
+      </li>
+      <li>An asterisk before square braces indicates a loop. *[<span style="font-style: italic;">cond</span>]</li>
+      <li>The C++11 range based for loop conditionals are indicated with a
+        colon. *[:<span style="font-style: italic;">cond</span>]<br>
+      </li>
+      <li>The lifeline bars are wider where there are nested conditionals or
+        loops.</li>
+    </ul>
+    <br>
+    The following shows the sequence diagram for drawing the class nodes.<br>
+    <br>
+    <img alt="Draw Class Diagram Sequence" src="SeqDrawDiagram.svg"><br>
+    Drawing notes:<br>
+    <ul>
+      <li>First all nodes/classes are drawn using ClassDrawer::drawNode.<br>
+      </li>
+      <li>All nodes are iterated to see if there is a connection between any two
+        nodes on the diagram, then the connections are drawn using
+        ClassDrawer::drawConnection.<br>
+      </li>
+    </ul>
+    <h3><a class="mozTocH2" name="mozTocId750348"></a>Sequence Diagrams</h3>
+    The SequenceDiagram related classes are used to display sequence diagrams.<br>
+    <embed src="OperationDiagram.svg" type="image/svg+xml"><br>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId567574"></a>Drawing Diagrams</h3>
+    The drawing classes are shown below.<br>
+    <br>
+    <img src="DiagramDrawer.svg"><br>
+    <br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">DiagramDrawer<br>
+          </td>
+          <td style="vertical-align: top;">This defines an interface with
+            virtual drawing functions.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">SvgDrawer<br>
+          </td>
+          <td style="vertical-align: top;">This draws vector diagrams for saving
+            to SVG files.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">NullDrawer<br>
+          </td>
+          <td style="vertical-align: top;">This doesn't draw anything, but is
+            passed to functions to allow calculating sizes of objects.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">CairoDrawer<br>
+          </td>
+          <td style="vertical-align: top;">This draws diagrams to a Cairo object
+            for drawing on the screen in GTK.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId228166"></a>Journal</h3>
+    The Journal related classes are used to keep a volatile history of modified
+    diagrams, and are shown below.<br>
+    <br>
+    <embed src="Journal.svg" type="image/svg+xml"><br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Journal<br>
+          </td>
+          <td style="vertical-align: top;">This keeps a collection of journal
+            records.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">JournalRecord<br>
+          </td>
+          <td style="vertical-align: top;">This is a virtual base class that
+            allows the journal to keep different types of records. The viewable
+            display can be different for each record. When each record is
+            selected from the journal, the display is updated.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">JournalListener<br>
+          </td>
+          <td style="vertical-align: top;">This allows the journal to update a
+            client when a class or operation is selected to be displayed.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">JournalRecordClassDiagram<br>
+          </td>
+          <td style="vertical-align: top;">This contains data for displaying one
+            class diagram, and responding to class events.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">JournalRecordOperationDiagram<br>
+          </td>
+          <td style="vertical-align: top;">This contains data for displaying one
+            operation diagram, and responding to operation events. </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OperationDiagramListener<br>
+          </td>
+          <td style="vertical-align: top;">This allows the operation diagram to
+            notify the journal record when a new class should be displayed.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Other<br>
+          </td>
+          <td style="vertical-align: top;">The other classes are described
+            elsewhere.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    Diagram Notes:<br>
+    The JournalRecordClassDiagram owns the lifetime of the ClassDiagram as shown
+    by the filled aggregation diamond, which means that every record can contain
+    a different class diagram.<br>
+    <br>
+    <h2><a class="mozTocH2" name="mozTocId28357"></a>OovEdit</h2>
+    The OovEdit component is a simple C++ code editor. It uses CLang to
+    hightlight keywords.<br>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId677876"></a>OovEdit Main Classes</h3>
+    The class relations are shown below.<br>
+    <br>
+    <embed src="oovEdit.svg" type="image/svg+xml"> <br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Editor<br>
+          </td>
+          <td style="vertical-align: top;">This is the high level class that
+            provids all editing features.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">DebuggerListener<br>
+          </td>
+          <td style="vertical-align: top;">This allows getting updates about the
+            debugger<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Debugger<br>
+          </td>
+          <td style="vertical-align: top;">This is an interface to a debugger<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">EditFiles<br>
+          </td>
+          <td style="vertical-align: top;">Keeps editor information about a
+            text/source file.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">FindFiles<br>
+          </td>
+          <td style="vertical-align: top;">Provides find text in files<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId634834"></a>EditFiles</h3>
+    The editor can edit files within tabs. Each file has a buffer of text that
+    is highlighted. An indenter handles keys for indenting.<br>
+    <br>
+    <embed src="oovEditEditFiles.svg" type="image/svg+xml"> <br>
+    <br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">EditFiles<br>
+          </td>
+          <td style="vertical-align: top;">Keeps information about all
+            files.&nbsp; There is typically one file that has the focus.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">FileEditView<br>
+          </td>
+          <td style="vertical-align: top;">Keeps information about a single
+            file.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">HistoryItem</td>
+          <td style="vertical-align: top;">This is for undo and redo. Each item
+            keeps the information for one operation.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">TokenRange</td>
+          <td style="vertical-align: top;">This is a set of tokens within a
+            range of line numbers.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Tokenizer</td>
+          <td style="vertical-align: top;">The tokenizer parses a C++ file, or
+            the contents in memory and finds a set of tokens.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Highlighter</td>
+          <td style="vertical-align: top;">The highlighter gets a set of tokens,
+            and defines tags to apply to the text view. The tags are color
+            attributes to apply to the text.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Indenter</td>
+          <td style="vertical-align: top;">This class handles indenting of C++
+            using the tab and backspace keys. It also handles indent using tab
+            and untab of selected regions.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId510508"></a>Debugger</h3>
+    The editor contains a debugger. The debugger handles typical operations such
+    as single stepping, setting breakpoints, displaying results, and starting
+    and stopping the program being debugged.<br>
+    <br>
+    <embed src="oovEditDebugger.svg" type="image/svg+xml"> <br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Debugger<br>
+          </td>
+          <td style="vertical-align: top;">Provides the top level interface for
+            the debugger<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">DebuggerLocation<br>
+          </td>
+          <td style="vertical-align: top;">Defines a line number in a file<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">DebuggerBreakpoint<br>
+          </td>
+          <td style="vertical-align: top;">Defines a breakpoint location<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">DebugResult<br>
+          </td>
+          <td style="vertical-align: top;">Used for parsing results from the
+            debugger.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h2><a class="mozTocH2" name="mozTocId450840"></a>OovCMaker</h2>
+    This is a command line tool that can create CMake files from a project. The
+    synopsis is:<br>
+    <br>
+    OovCMaker project_directory [-v][-w][-nProjName]<br>
+    <br>
+    <table style="text-align: left; width: 473px; height: 116px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">Switch<br>
+          </td>
+          <td style="vertical-align: top;">Description<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">-v<br>
+          </td>
+          <td style="vertical-align: top;">Verbose<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">-w<br>
+          </td>
+          <td style="vertical-align: top;">Write output to project directories<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">-n<br>
+          </td>
+          <td style="vertical-align: top;">Specify the project name. For
+            example: -nOovcde<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h1><a class="mozTocH1" name="mozTocId682604"></a> Libraries</h1>
+    The following are the libraries created in the Oovcde project.<br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Library<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OovCommon<br>
+          </td>
+          <td style="vertical-align: top;">The OovCommon library contains shared
+            code used by each of the components.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">OovGuiCommon<br>
+          </td>
+          <td style="vertical-align: top;">The GUI library defines interfaces to
+            GTK.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <h2><a class="mozTocH2" name="mozTocId312284"></a>OovCommon</h2>
+    The OovCommon library provides code that can be used by all components.<br>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId766961"></a>Model Data<br>
+    </h3>
+    The class relations for the Model Object classes are shown below. The
+    function relations are removed from this diagram since there are too many
+    relationships when they are shown.<br>
+    <br>
+    <img style="width: 782px; height: 919px;" alt="Model Objects Diagram" src="ModelObjects.png"><br>
+    <br>
+    <br>
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Class<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelData<br>
+          </td>
+          <td style="vertical-align: top;">This contains information about all
+            parsed information.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelObject<br>
+          </td>
+          <td style="vertical-align: top;">This is the base type for all objects
+            saved in the ModelData.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelType<br>
+          </td>
+          <td style="vertical-align: top;">This is the base type for classes or
+            simple types such as "int", etc.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelClassifier<br>
+          </td>
+          <td style="vertical-align: top;">This contains information for each
+            class or struct from the C++ file.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelOperation<br>
+          </td>
+          <td style="vertical-align: top;">This contains information about a
+            function prototype or definition. This is used for inline or
+            out-of-line definitions.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelStatement<br>
+          </td>
+          <td style="vertical-align: top;">This defines a base class for
+            conditional statements or operation calls.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelCondStatement<br>
+          </td>
+          <td style="vertical-align: top;">This class really defines compound
+            statements that are generally part of conditionals.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelOperationCall<br>
+          </td>
+          <td style="vertical-align: top;">This defines a statement that is a
+            call to a function. This contains a declarator in order to define
+            the type that the function call / member function is from.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelDeclarator<br>
+          </td>
+          <td style="vertical-align: top;">Defines a type reference with a name.
+            The type reference is const since the type must already be defined
+            in the ModelData.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelFuncParam<br>
+          </td>
+          <td style="vertical-align: top;">This is used to define a parameter to
+            a function.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelBodyVarDecl<br>
+          </td>
+          <td style="vertical-align: top;">This is used for variables defined in
+            function..<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelAttribute<br>
+          </td>
+          <td style="vertical-align: top;">This is member type definition as
+            part of a class or struct.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ModelWriter<br>
+          </td>
+          <td style="vertical-align: top;">This class in the OovCppParser
+            component uses the ModelData.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Others<br>
+          </td>
+          <td style="vertical-align: top;">The other classes show usage of the
+            model data.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h3><a class="mozTocH3" name="mozTocId716210"></a>Reading Model Data</h3>
+    When the types are read from the XML files, not all information about each
+    class is in every XML file. This means that some XML files contain just a
+    reference, and if the XML file does contain the information, the reference
+    is upgraded from a simple type, to a class type with attributes and
+    operations. This means that any other object that has references to the
+    replaced type will need to point to the new object. The
+    ModelData::replaceType function does this operation.<br>
+    <br>
+    <img style="width: 495px; height: 665px;" alt="Replace Type sequence" src="SeqReplaceType.png"><br>
+    <br>
+    <br>
+    Drawing Notes:<br>
+    <ul>
+      <li>Attributes, operations, body variable and inheritance relations are
+        all checked for references to the existing type</li>
+      <li>The *[: classifier] indicates the C++11 range-based for loop.<br>
+      </li>
+      <li>The [attr-&gt;getDeclType() == existingType] is the condition that is
+        checked to see if the existing type is referred to by any attributes.</li>
+    </ul>
+    <h2><a class="mozTocH2" name="mozTocId90631"></a><a class="mozTocH2" name="mozTocId162874"></a>OovGuiCommon</h2>
+    The OovGuiCommon library provides code that can be used by all user
+    interface components.<br>
+    <br>
+    <h1><a class="mozTocH1" name="mozTocId68299"></a>Processing</h1>
+    For detailes information on processing, see <a href="OovcdeBuildDesign.html">Oovcde
+      Build Design</a>. The analysis mode described below is often run as part
+    of the build mode.<br>
+    <br>
+    <h2><a class="mozTocH2" name="mozTocId599543"></a>Analysis Mode</h2>
+    The Oovcde program invokes the OovBuilder to extract drawing information.
+    OovBuilder runs the OovCppParser for each file found as it recursively
+    navigates the source directory tree.&nbsp; These modified data flow diagrams
+    were made using Inkscape.<br>
+    <br>
+    <embed src="AnalysisDataFlow.svg" type="image/svg+xml"><br>
+    <br>
+    <br>
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">File<br>
+          </td>
+          <td style="vertical-align: top;">Description<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovcde.txt<br>
+          </td>
+          <td style="vertical-align: top;">This contains the source root
+            directory, the compiler and link arguments, and the tool names.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovcde-buildconfig.txt<br>
+          </td>
+          <td style="vertical-align: top;">Contains information about recently
+            built configurations<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovcde-comptypes.txt<br>
+          </td>
+          <td style="vertical-align: top;">Defines the component types, such as
+            static library, etc.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">analysis-&lt;crc&gt;/oovcde-comps.txt<br>
+          </td>
+          <td style="vertical-align: top;">This file contains scanned
+            information about the internal and external components.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">analysis-&lt;crc&gt;/oovcde-incdeps.txt<br>
+          </td>
+          <td style="vertical-align: top;">This file contains the C++ header
+            include dependencies, and the update time of each file<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">analysis-&lt;crc&gt;/*.xmi<br>
+          </td>
+          <td style="vertical-align: top;">This is the extracted output of each
+            cpp and h file that is used for analysis drawings.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h2><a class="mozTocH2" name="mozTocId848189"></a>Build Mode</h2>
+    When a build is performed, the component types are used to determine what
+    type of component to build.<br>
+    <br>
+    <embed src="BuildDataFlow.svg" type="image/svg+xml"><br>
+    <br>
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">File<br>
+          </td>
+          <td style="vertical-align: top;">Description<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">\bld-*\*.o<br>
+          </td>
+          <td style="vertical-align: top;">The object modules as a result of
+            compilation<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">\bld-*\sym\*.txt</td>
+          <td style="vertical-align: top;">The library symbol information<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">\bld-*\*.a</td>
+          <td style="vertical-align: top;">The library produced for static
+            library components<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">\bld-*\*.exe</td>
+          <td style="vertical-align: top;">The executable produced for program
+            components<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h1><a class="mozTocH1" name="mozTocId878290"></a>Multitasking</h1>
+    <br>
+    See the document <a href="../articles/OovcdeMultitasking.html">MultiTasking</a><br>
+    <br>
+    <br>
+  </body>
+</html>

@@ -631,28 +631,33 @@ void OovProcessStdListener::onStdErr(OovStringRef const out, int len)
 	fprintf(mStderrFp, "%s", OovString(out, len).getStr());
     }
 
+
+////////
+
+OovProcessBufferedStdListener::~OovProcessBufferedStdListener()
+    {
+    output(mStdoutFp, mStdoutStr, true);
+    output(mStderrFp, mStderrStr, true);
+    }
+
 void OovProcessBufferedStdListener::onStdOut(OovStringRef const out, int len)
     {
 	{
 	LockGuard lock(mStdMutex);
-	if(mStdOutPlace == OP_OutputStd || mStdOutPlace == OP_OutputStdAndFile)
-	    mStdoutStr += OovString(out, len);
-	if(mStdOutPlace == OP_OutputFile || mStdOutPlace == OP_OutputStdAndFile)
+	if((mStdErrPlace & OP_OutputStd) || (mStdErrPlace & OP_OutputFile))
 	    mStdoutStr += OovString(out, len);
 	}
-    output(mStdoutFp, mStdoutStr, mStdoutTime);
+    periodicOutput(mStdoutFp, mStdoutStr, mStdoutTime);
     }
 
 void OovProcessBufferedStdListener::onStdErr(OovStringRef const out, int len)
     {
 	{
 	LockGuard lock(mStdMutex);
-	if(mStdErrPlace == OP_OutputStd || mStdErrPlace == OP_OutputStdAndFile)
-	    mStderrStr += std::string(out, len);
-	if(mStdErrPlace == OP_OutputFile || mStdErrPlace == OP_OutputStdAndFile)
+	if((mStdErrPlace & OP_OutputStd) || (mStdErrPlace & OP_OutputFile))
 	    mStderrStr += std::string(out, len);
 	}
-    output(mStderrFp, mStderrStr, mStderrTime);
+    periodicOutput(mStderrFp, mStderrStr, mStderrTime);
     }
 
 void OovProcessBufferedStdListener::setProcessIdStr(OovStringRef const str)
@@ -661,7 +666,7 @@ void OovProcessBufferedStdListener::setProcessIdStr(OovStringRef const str)
     mProcessIdStr = str;
     }
 
-void OovProcessBufferedStdListener::output(FILE *fp, std::string &str, time_t &refTime)
+void OovProcessBufferedStdListener::periodicOutput(FILE *fp, std::string &str, time_t &refTime)
     {
 
     time_t curTime;
@@ -673,26 +678,35 @@ void OovProcessBufferedStdListener::output(FILE *fp, std::string &str, time_t &r
     if(curTime-refTime > 0)
 //    if(str.length() > 20000)
 	{
-	LockGuard lock(mStdMutex);
-	size_t lastCrPos = str.rfind('\n');
-	OovString tempStr = str.substr(0, lastCrPos);
-	str.erase(0, lastCrPos);
-
-	fprintf(fp, "%s", mProcessIdStr.getStr());
-	fprintf(fp, "%s", tempStr.getStr());
+	output(fp, str, false);
 	refTime = curTime;
 	}
     }
 
-void OovProcessBufferedStdListener::processComplete()
+void OovProcessBufferedStdListener::output(FILE *fp, std::string &str, bool writeAll)
     {
     LockGuard lock(mStdMutex);
-    fprintf(mStdoutFp, "%s", mProcessIdStr.getStr());
-    fprintf(mStdoutFp, "%s", mStdoutStr.getStr());
-    fprintf(mStderrFp, "%s", mStderrStr.getStr());
-    mStdoutStr.clear();
-    mStderrStr.clear();
+    if(str.length())
+	{
+	OovString tempStr;
+	if(writeAll)
+	    {
+	    tempStr = str;
+	    str.clear();
+	    }
+	else
+	    {
+	    size_t lastCrPos = str.rfind('\n');
+	    OovString tempStr = str.substr(0, lastCrPos);
+	    str.erase(0, lastCrPos);
+	    }
+
+	fprintf(fp, "%s", mProcessIdStr.getStr());
+	fprintf(fp, "%s", tempStr.getStr());
+	fflush(fp);
+	}
     }
+
 
 #if(USE_STD_THREAD)
 static void BackgroundThreadFunc(OovBackgroundPipeProcess *proc)

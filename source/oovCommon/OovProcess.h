@@ -114,13 +114,14 @@ class OovTaskStatusListener
 	virtual void endTask(OovTaskStatusListenerId id) = 0;
     };
 
-/// This is a listener that defaults to sending the output to the
-/// the stdout and stderr.
+/// This listener collects the std output from the child process and
+/// sends the output to stdout and stderr.
 class OovProcessStdListener:public OovProcessListener
     {
     public:
-	enum OutputPlaces { OP_OutputStd, OP_OutputFile, OP_OutputStdAndFile,
-	    OP_OutputNone };
+	enum OutputPlaces { OP_OutputNone=0x00, OP_OutputStd=0x01, OP_OutputFile=0x02,
+	    OP_OutputStdAndFile=OP_OutputStd|OP_OutputFile,
+	    };
 	OovProcessStdListener():
 	    mStdOutPlace(OP_OutputStd), mStdErrPlace(OP_OutputStd),
 	    mStdoutFp(stdout), mStderrFp(stderr)
@@ -147,16 +148,19 @@ class OovProcessStdListener:public OovProcessListener
 	FILE *mStderrFp;
     };
 
+/// This listener collects the std output from the child process and
+/// periodically outputs to stdout and stderr.
+/// Since all output is not sent out at the same time, the process ID string
+/// is prepended each time there is some output.
+/// This listener must be destructed to write all buffered output.
 class OovProcessBufferedStdListener:public OovProcessStdListener
     {
     public:
 	OovProcessBufferedStdListener(InProcMutex &stdMutex):
 	    mStdMutex(stdMutex), mStdoutTime(0), mStderrTime(0)
 	    {}
-	virtual ~OovProcessBufferedStdListener()
-	    {}
+	virtual ~OovProcessBufferedStdListener();
 	void setProcessIdStr(OovStringRef const str);
-	virtual void processComplete() override;
 	virtual void onStdOut(OovStringRef const out, int len) override;
 	virtual void onStdErr(OovStringRef const out, int len) override;
 
@@ -170,7 +174,9 @@ class OovProcessBufferedStdListener:public OovProcessStdListener
 	time_t mStdoutTime;
 	time_t mStderrTime;
 
-	void output(FILE *fp, std::string &str, time_t &time);
+	void periodicOutput(FILE *fp, std::string &str, time_t &time);
+	/// writeAll = false for write to last cr.
+	void output(FILE *fp, std::string &str, bool writeAll);
     };
 
 #ifdef __linux__
@@ -250,6 +256,14 @@ class OovPipeProcess
 
 	bool spawn(OovStringRef const procPath, char const * const * argv,
 		OovProcessListener &listener, int &exitCode);
+	bool isArgLengthOk(int len) const
+	    {
+	    bool ok = true;
+#ifndef __linux__
+	    ok = (len < 32767);
+#endif
+	    return ok;
+	    }
 
     private:
 #ifdef __linux__
