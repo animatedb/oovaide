@@ -13,10 +13,19 @@
 
 // Keeps a set of indices to the class nodes where components have different
 // names. The original nodes must be in component name sorted order.
-class ZoneComponentChanges:public std::vector<int>
+// Each element contains the first class index of the changed component.
+// The first class is not considered a change, so zero is never in the vector.
+// The last class is considered a change, and is always present.
+class ZoneComponentChanges:public std::vector<size_t>
     {
     public:
-	int getComponentIndex(int classIndex);
+	size_t getComponentIndex(size_t classIndex) const;
+	// The node index from within the component.
+	size_t getComponentChildClassIndex(size_t classIndex) const;
+
+	size_t getBaseComponentChildClassIndex(size_t componentIndex) const;
+	size_t getMiddleComponentChildClassIndex(size_t componentIndex) const;
+	size_t getNumClassesForComponent(size_t componentIndex) const;
     };
 
 /// This is used to draw a zone (circle) diagram. This is a diagram that shows
@@ -39,17 +48,22 @@ class ZoneDrawer
 		mCharWidth = mDrawer->getTextExtentWidth("W");
 		}
 	    }
+	DiagramDrawer *getDrawer()
+	    { return mDrawer; };
 
 	// Sets zoom for next drawGraph.
 	void setZoom(double zoom)
 	    { mZoom = zoom; }
 
 	// This must be called before getting graph size or drawing.
-	void updateGraph(ZoneGraph const &graph);
-	GraphSize getGraphSize() const;
-	void drawGraph(ZoneDrawOptions const &drawOptions);
+	void updateGraph(ZoneGraph const &graph, bool resetPositions);
+	GraphSize getDrawingSize() const;
+	void drawGraph();
 
 	ZoneNode const *getZoneNode(GraphPoint screenPos) const;
+	// Must redraw the screen after calling this.
+	void setPosition(ZoneNode const *node, GraphPoint origScreenPos,
+		GraphPoint screenPos);
 	ZoneGraph const *getGraph() const
 	    { return mGraph; }
 
@@ -57,20 +71,22 @@ class ZoneDrawer
 	ZoneComponentChanges mComponentChanges;
         ZoneGraph const *mGraph;
 	DiagramDrawer *mDrawer;
-	float mScale;		// 1 = full drawing size of about a screen full.
+	std::vector<GraphPoint> mNodePositions;
+	// mScale is derived from mZoom, 1 = full drawing size of about a screen full.
+	float mScale;
 	double mZoom;
-	// This is the top left corner of a rectangle enclosing the circle.
-	GraphPoint mTopLeftCircleOffset;
+	// This is the top left corner of a rectangle enclosing all nodes and text.
+	GraphPoint GraphDrawOffset;
 	int mCharWidth;
-	GraphSize mGraphSize;
+	GraphSize mDrawingSize;
 	bool mDrawNodeText;
 
+	void updateNodePositions();
     	void drawNode(size_t nodeIndex);
-    	void drawConnections(ZoneDrawOptions const &drawOptions);
-    	void drawSortedConnections(std::vector<ZoneConnectIndices> const &connections,
-    		ZoneDrawOptions const &drawOptions);
+    	void drawConnections();
+    	void drawSortedConnections(std::vector<ZoneConnectIndices> const &connections);
     	void drawConnection(int firstNodeIndex, int secondNodeIndex,
-    		eZoneDependencyDirections dir, ZoneDrawOptions const &drawOptions);
+    		eZoneDependencyDirections dir);
     	void drawConnectionArrow(GraphPoint firstPoint, GraphPoint secondPoint,
     		eZoneDependencyDirections dir);
     	void drawComponentBarriers();
@@ -86,19 +102,17 @@ class ZoneDrawer
         // be positive.
         GraphRect getGraphObjectsSize();
         int getNodeRadius() const;
-        float getCircleRadius(int numNodes) const
-            {
-            float radius = numNodes / 2.0 / M_PI;
-            return(radius * mScale);
-            }
-        int getCircleCenterPosX(float radius) const
-            { return(radius + mTopLeftCircleOffset.x); }
-        int getCircleCenterPosY(float radius) const
-            { return(radius + mTopLeftCircleOffset.y); }
+        float getCircleRadius(int numNodes) const;
+        GraphPoint getCirclePos(float nodeIndex, int numNodes, int radiusOffset=0) const;
+        GraphPoint getMasterCirclePos(float nodeIndex, int radiusOffset=0) const;
+        int getMasterCircleCenterPosX(float radius) const
+            { return(radius); }
+        int getMasterCircleCenterPosY(float radius) const
+            { return(radius); }
         void drawNodeText();
+        GraphPoint getChildNodeCircleOffset(double nodeIndex) const;
         enum RelPositions { RL_TopLeftPos, RL_CenterPos };
-        GraphPoint getNodePosition(double nodeIndex, int radiusXOffset=0, int radiusYOffset=0,
-        	RelPositions=RL_CenterPos) const;
+        GraphPoint getNodePosition(double nodeIndex, RelPositions=RL_CenterPos) const;
         size_t getNodeIndexFromComponentIndex(size_t componentIndex);
 
         GraphRect getNodeRect(size_t nodeIndex);
@@ -106,7 +120,8 @@ class ZoneDrawer
         // is relative to the top left position of the graph.
         GraphRect getComponentTextRect(double nodeIndex) const;
         GraphRect getNodeTextRect(double nodeIndex) const;
-        GraphRect getTextRect(double nodeIndex, const char *text, int offset) const;
+        /// @param component True for component, false for node
+        GraphRect getTextRect(double nodeIndex, const char *text, bool component=false) const;
 
         std::string getNodeComponentText(size_t nodeIndex) const;
         std::vector<ZoneConnectIndices> getSortedConnections(

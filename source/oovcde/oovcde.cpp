@@ -500,8 +500,14 @@ void oovGui::makeDuplicatesFile()
 void oovGui::displayProjectStats()
     {
     OovString str;
-    createProjectStats(mProject.getModelData(), str);
-    Gui::messageBox(str, GTK_MESSAGE_INFO);
+    if(createProjectStats(mProject.getModelData(), str))
+	{
+	Gui::messageBox(str, GTK_MESSAGE_INFO);
+	}
+    else
+	{
+	Gui::messageBox("Unable get project statistics");
+	}
     }
 
 class OptionsDialogUpdate:public OptionsDialog
@@ -923,12 +929,8 @@ extern "C" G_MODULE_EXPORT void on_ZoneTreeview_cursor_changed(
 extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_press_event(
 	GtkWidget *widget, const GdkEventButton *event)
     {
-    // The following is commented out because the selection should be
-    // made.
-
     // This prevents the right click display of popup from changing a checkbox.
-//    return(event->button != 1);
-    return false;
+    return(event->button != 1);
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_release_event(

@@ -30,7 +30,7 @@ struct ZoneDrawOptions
     {
     ZoneDrawOptions():
 	mInitialized(false), mDrawFunctionRelations(false), mDrawAllClasses(false),
-	mDrawDependencies(false)
+	mDrawDependencies(false), mDrawChildCircles(false)
 	{}
     void initDrawOptions(bool drawAllClasses)
 	{
@@ -44,6 +44,7 @@ struct ZoneDrawOptions
     bool mDrawFunctionRelations;
     bool mDrawAllClasses;
     bool mDrawDependencies;
+    bool mDrawChildCircles;
     };
 
 class ZoneNode
@@ -165,6 +166,8 @@ class ZoneGraph
 	void updateGraph();
         std::vector<ZoneNode> const &getNodes() const
             { return mNodes; }
+        size_t getNodeIndex(ZoneNode const *node) const
+            { return(node - &mNodes[0]); }
         ZoneConnections const &getConnections() const
             { return mConnections; }
 	bool isModified() const

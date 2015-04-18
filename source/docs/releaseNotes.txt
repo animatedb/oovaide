@@ -30,7 +30,6 @@ Missing Features
 	  is not running. Happens when resizing output window while building?
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
 		- window might be busy and is not responding (oovCommon/PackagesProcess?)
-	- Filter class list by component/dir
 	- Clicking on warnings doesn't display editor.
 	- Changing preferences should update drawings
 - Source/project management
@@ -43,10 +42,13 @@ Missing Features
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
+	- BUG: component text offsets
+	- BUG: missing relation between cCrashDiagnostics and CppParser, seq diagram does show
 	- Add zoom buttons, and zoom in based on cursor position
-	- Display class names as tooltip
+	- Show unused classes - for visible drawing?
+	- Show related classes for a selected class
 	- Use genetic algorithm to optimize for shortest dependencies in each module
-- Class Diagrams
+- Class Diagrams/List
 	- BUG: forward class definitions mess up source line numbers
 	- Non-class types are not shown (even templated types)
 	- Show parameter reference/pointer/const in methods
@@ -63,6 +65,8 @@ Missing Features
 	- graph doesn't display types through typedefs (DiagramRect in DiagramGraph.h)
 	- Add more diagram options (add depth=2, more generations)
 	- Pointers/references/const not shown as part of types as text
+	- Filter class list by component/dir
+	- Allow zone selections to set filter on class list
 	- Add class list context menu to allow adding single nodes/multiple nodes
 		(two mouse buttons?, class properties?)
 	- Allow multiple selection to add relations, remove, properties
@@ -166,23 +170,18 @@ Missing Features
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future
+	- include mingw include files in package?
 	- Quality measurement
 		amount of const, number of raw pointers, minimal use of new/delete/malloc/...
 		interface complexity, amount of encapsulation, size of exposed interface
 			amount of state - even in called classes
 		member functions called in any order?
 		number of interface classes vs hidden classes in a module
+		child classes that don't use parent class data/functions
 	- more component stats - lines, classes, etc.
 	- Cohesion in a class (how methods use attributes)
 		http://www.bth.se/fou/cuppsats.nsf/all/86e880ce9d0b94aec1256f0e004778e5/
 			$file/thesis_report.pdf
-	- Add autocomplete ("efficient autocompletion database")
-		- editor code completion llvm 3.6
-		Three types (types, instances and members(., ->)), save def,decl location, namespaces?
-		http://emacswiki.org/emacs/AutoComplete
-		http://www.vldb.org/pvldb/vol6/p373-xiao.pdf
-		http://stackoverflow.com/questions/2332028/
-			what-is-an-efficient-search-algorithm-to-provide-auto-completion
 	- Add design quality based on function inter-relations / call-tree?
 		http://www.graphviz.org/content/tips-usefully-visualizing-non-trivial-graphs
 		https://en.wikipedia.org/wiki/Design_structure_matrix

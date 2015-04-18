@@ -197,6 +197,7 @@ bool createProjectStats(ModelData const &modelData, std::string &displayStr)
 	str.appendFloat(maxAttrsPerClass);
 	str += ' ' + maxAttrStr;
 	}
+    displayStr = str;
     return true;
     }
 

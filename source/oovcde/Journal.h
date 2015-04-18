@@ -39,7 +39,12 @@ class JournalRecord
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) = 0;
 	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) = 0;
 	virtual void drawingAreaDrawEvent() = 0;
-	virtual void cppArgOptionsChangedUpdateDrawings() = 0;
+	virtual void drawingAreaMotionEvent(const GdkEventMotion *event)
+	    {}
+	virtual void drawingLoseFocusEvent()
+	    {}
+	virtual void cppArgOptionsChangedUpdateDrawings()
+	    {}
 	virtual void saveFile(FILE *fp) = 0;
 	virtual bool isModified() const = 0;
 	OovStringRef const getName() const
@@ -111,8 +116,6 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
 	    { mOperationDiagram.buttonReleaseEvent(event); }
 	virtual void drawingAreaDrawEvent() override
 	    { mOperationDiagram.drawToDrawingArea(); }
-	virtual void cppArgOptionsChangedUpdateDrawings() override
-	    {}
 	virtual void saveFile(FILE *fp) override
 	    { mOperationDiagram.drawSvgDiagram(fp); }
 	virtual bool isModified() const override
@@ -138,8 +141,6 @@ class JournalRecordComponentDiagram:public JournalRecord
 	    { mComponentDiagram.buttonReleaseEvent(event); }
 	virtual void drawingAreaDrawEvent() override
 	    { mComponentDiagram.drawToDrawingArea(); }
-	virtual void cppArgOptionsChangedUpdateDrawings() override
-	    {}
 	virtual void saveFile(FILE *fp) override
 	    { mComponentDiagram.drawSvgDiagram(fp); }
 	// Indicate it is always modified so the single diagram is kept around.
@@ -170,8 +171,10 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 	    { mZoneDiagram.graphButtonReleaseEvent(event); }
 	virtual void drawingAreaDrawEvent() override
 	    { mZoneDiagram.drawToDrawingArea(); }
-	virtual void cppArgOptionsChangedUpdateDrawings() override
-	    {}
+	virtual void drawingAreaMotionEvent(const GdkEventMotion *event)
+	    { mZoneDiagram.handleDrawingAreaMotion(event->x, event->y); }
+	virtual void drawingLoseFocusEvent()
+	    { mZoneDiagram.handleDrawingAreaLoseFocus(); }
 	virtual void saveFile(FILE *fp) override
 	    { mZoneDiagram.drawSvgDiagram(fp); }
 	// Indicate it is always modified so the single diagram is kept around.

@@ -24,15 +24,6 @@ class VerboseDumper
 extern VerboseDumper sVerboseDump;
 
 
-struct fileInfo
-{
-    fileInfo(const time_t srcFileDate, bool present):
-        mSourceFileDate(srcFileDate), mPresent(present)
-        {}
-    time_t mSourceFileDate;
-    bool mPresent;
-};
-
 /// Recursively finds source files, and parses the source file
 /// for static information, and saves into analysis files.
 class srcFileParser:public dirRecurser, public ThreadedWorkWaitQueue<CppChildArgs, srcFileParser>

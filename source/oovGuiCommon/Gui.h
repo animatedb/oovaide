@@ -141,6 +141,8 @@ namespace Gui
 	    else
 		gtk_widget_hide(GTK_WIDGET(w));
 	    }
+	inline void setVisible(GtkWindow *w, bool show)
+	    { setVisible(GTK_WIDGET(w), show); }
 	inline void setVisible(GtkButton *w, bool show)
 	    { setVisible(GTK_WIDGET(w), show); }
 	inline void setVisible(GtkLabel *w, bool show)

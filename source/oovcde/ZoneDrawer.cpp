@@ -7,24 +7,66 @@
 #include "ZoneDrawer.h"
 #include "FilePath.h"
 #include "Project.h"
+#include "Debug.h"
 #include <math.h>	// for atan
 #ifndef __linux__
 #define M_PI 3.14159265
 #endif
 
 
-int ZoneComponentChanges::getComponentIndex(int classIndex)
+size_t ZoneComponentChanges::getComponentIndex(size_t classIndex) const
     {
-    int moduleIndex = size()-1;
+    size_t moduleIndex = size()-1;
     for(size_t i=0; i<size(); i++)
 	{
-	if((*this)[i] > classIndex)
+	if(at(i) > classIndex)
 	    {
-	    moduleIndex = i-1;
+	    moduleIndex = i;
 	    break;
 	    }
 	}
     return moduleIndex;
+    }
+
+size_t ZoneComponentChanges::getComponentChildClassIndex(size_t classIndex) const
+    {
+    size_t compIndex = getComponentIndex(classIndex);
+    return(classIndex - getBaseComponentChildClassIndex(compIndex));
+    }
+
+size_t ZoneComponentChanges::getBaseComponentChildClassIndex(size_t componentIndex) const
+    {
+    size_t index = 0;
+    if(componentIndex > 0)
+	{
+	if(componentIndex >= size())
+	    {
+	    DebugAssert(__FILE__, __LINE__);
+	    }
+	index = at(componentIndex-1);
+	}
+    return index;
+    }
+
+size_t ZoneComponentChanges::getMiddleComponentChildClassIndex(
+	size_t componentIndex) const
+    {
+    return(getBaseComponentChildClassIndex(componentIndex) +
+	    getNumClassesForComponent(componentIndex) / 2);
+    }
+
+size_t ZoneComponentChanges::getNumClassesForComponent(size_t componentIndex) const
+    {
+    size_t numNodes = 0;
+    if(componentIndex > 0)
+	{
+	numNodes = at(componentIndex) - at(componentIndex-1);
+	}
+    else
+	{
+	numNodes = at(componentIndex);
+	}
+    return numNodes;
     }
 
 std::string ZoneDrawer::getNodeComponentText(size_t nodeIndex) const
@@ -44,56 +86,138 @@ int ZoneDrawer::getNodeRadius() const
     return size;
     }
 
+/*
 static double getAngleInDegrees(GraphPoint p1, GraphPoint p2)
     {
     int difx = p1.x - p2.x;
     int dify = p1.y - p2.y;
     return (atan2(-difx, dify) * 180.0 / M_PI) + 180;
     }
+*/
 
-ZoneNode const *ZoneDrawer::getZoneNode(GraphPoint screenClickPos) const
+ZoneNode const *ZoneDrawer::getZoneNode(GraphPoint userSelectedScreenPos) const
     {
     ZoneNode const *node = nullptr;
-    int numNodes = mGraph->getNodes().size();
+    size_t numNodes = mGraph->getNodes().size();
+    // Cheat and make the distance somewhat based on the circle radius of all classes.
     int radius = getCircleRadius(numNodes);
-    GraphPoint centerCircle;
-    centerCircle.x = getCircleCenterPosX(radius);
-    centerCircle.y = getCircleCenterPosY(radius);
-    double angleInDegrees = getAngleInDegrees(screenClickPos, centerCircle);
-    // The angle is between the nth node, and nth+1 node, so it needs to be
-    // adjusted so the user can click from the nth-.5 and nth+.5
-    if(numNodes > 0)
+    int distLimit = radius / 10;
+    int minDist = distLimit * distLimit;
+    int minIndex = -1;
+    userSelectedScreenPos.sub(GraphDrawOffset);
+    for(size_t i=0; i<numNodes; i++)
 	{
-	angleInDegrees += ((360.0 / numNodes) / 2);
-	if(angleInDegrees > 360)
-	    angleInDegrees -= 360;
+	GraphPoint pos = mNodePositions[i];
+	int distx = abs(pos.x - userSelectedScreenPos.x);
+	int disty = abs(pos.y - userSelectedScreenPos.y);
+	int dist = distx * distx + disty * disty ;
+	if(dist < minDist)
+	    {
+	    minIndex = i;
+	    minDist = dist;
+	    }
 	}
-    /// @todo
-    int nodeIndex = (angleInDegrees / 360) * numNodes;
-    if(nodeIndex >= 0 && nodeIndex < numNodes)
-	node = &mGraph->getNodes()[nodeIndex];
+    if(minIndex != -1)
+	{
+	node = &mGraph->getNodes()[minIndex];
+	}
     return node;
     }
 
-
-GraphPoint ZoneDrawer::getNodePosition(double nodeIndex, int radiusXOffset,
-	int radiusYOffset, RelPositions relPos) const
+void ZoneDrawer::setPosition(ZoneNode const *node, GraphPoint origScreenPos,
+	GraphPoint screenPos)
     {
-//    double angleDegrees = (nodeIndex * 360.0) / mGraph->getNodes().size();
-//    double angleRadians = angleDegrees * M_PI / 180;
-    int numNodes = mGraph->getNodes().size();
+    // Only allow movement in child circle mode
+    if(mGraph->getDrawOptions().mDrawChildCircles)
+	{
+	if(node)
+	    {
+	    size_t nodeIndex = mGraph->getNodeIndex(node);
+	    GraphPoint screenOffset = screenPos;
+	    screenOffset.sub(origScreenPos);
+	    size_t compIndex = mComponentChanges.getComponentIndex(nodeIndex);
+	    size_t baseIndex = mComponentChanges.getBaseComponentChildClassIndex(compIndex);
+	    size_t numCompClasses = mComponentChanges.getNumClassesForComponent(compIndex);
+	    for(size_t ci=0; ci<numCompClasses; ci++)
+		{
+		size_t i = baseIndex + ci;
+		GraphPoint newPos = mNodePositions[i];
+		newPos.add(screenOffset);
+		mNodePositions[i] = newPos;
+		}
+	    }
+	else
+	    {
+	    DebugAssert(__FILE__, __LINE__);
+	    }
+	}
+    }
+
+GraphPoint ZoneDrawer::getCirclePos(float nodeIndex, int numNodes, int radiusOffset) const
+    {
     double angleRadians = nodeIndex * M_PI / numNodes * 2;
     float radius = getCircleRadius(numNodes);
     // Put index 0 at the top(y) and move clockwise
-    int x = (radius + radiusXOffset) * sin(angleRadians) + getCircleCenterPosX(radius);
-    int y = -((radius + radiusYOffset) * cos(angleRadians)) + getCircleCenterPosY(radius);
+    int x = (radius + radiusOffset) * sin(angleRadians);
+    int y = -((radius + radiusOffset) * cos(angleRadians));
+    return GraphPoint(x, y);
+    }
+
+GraphPoint ZoneDrawer::getMasterCirclePos(float nodeIndex, int radiusOffset) const
+    {
+    GraphPoint pos = getCirclePos(nodeIndex, mGraph->getNodes().size(), radiusOffset);
+    float radius = getCircleRadius(mGraph->getNodes().size());
+    pos.x += getMasterCircleCenterPosX(radius);
+    pos.y += getMasterCircleCenterPosY(radius);
+    return pos;
+    }
+
+GraphPoint ZoneDrawer::getChildNodeCircleOffset(double nodeIndex) const
+    {
+    int compIndex = mComponentChanges.getComponentIndex(nodeIndex);
+    int numChildNodes = mComponentChanges.getNumClassesForComponent(compIndex);
+    int childIndex = mComponentChanges.getComponentChildClassIndex(nodeIndex);
+    return getCirclePos(childIndex, numChildNodes);
+    }
+
+void ZoneDrawer::updateNodePositions()
+    {
+    size_t numNodes = mGraph->getNodes().size();
+    mNodePositions.resize(numNodes);
+    GraphPoint pos;
+    for(size_t nodeIndex=0; nodeIndex<numNodes; nodeIndex++)
+	{
+	int masterNodeIndex = 0;
+	if(mGraph->getDrawOptions().mDrawChildCircles)
+	    {
+	    int compIndex = mComponentChanges.getComponentIndex(nodeIndex);
+	    masterNodeIndex = mComponentChanges.getMiddleComponentChildClassIndex(compIndex);
+	    }
+	else
+	    {
+	    masterNodeIndex = nodeIndex;
+	    }
+	// For child circles, this is the same for the whole child circle.
+	pos = getMasterCirclePos(masterNodeIndex);
+	if(mGraph->getDrawOptions().mDrawChildCircles)
+	    {
+	    GraphPoint offset = getChildNodeCircleOffset(nodeIndex);
+	    pos.add(offset);
+	    }
+	mNodePositions[nodeIndex] = pos;
+	}
+    }
+
+GraphPoint ZoneDrawer::getNodePosition(double nodeIndex, RelPositions relPos) const
+    {
+    GraphPoint pos = mNodePositions[nodeIndex];
     if(relPos == RL_TopLeftPos)
 	{
 	int nodeRadius = getNodeRadius();
-	x -= nodeRadius;
-	y -= nodeRadius;
+	pos.x -= nodeRadius;
+	pos.y -= nodeRadius;
 	}
-    return GraphPoint(x, y);
+    return pos;
     }
 
 ZoneComponentChanges ZoneDrawer::getComponentChanges() const
@@ -104,12 +228,17 @@ ZoneComponentChanges ZoneDrawer::getComponentChanges() const
 	{
 //	FilePath module(getNodeComponentText(i), FP_File);
 	FilePath module(mGraph->getNodes()[i].getMappedComponentName(mGraph->getPathMap()), FP_File);
+	if(i == 0)
+	    {
+	    lastModule = module;
+	    }
 	if(module != lastModule)
 	    {
 	    moduleChanges.push_back(i);
 	    lastModule = module;
 	    }
 	}
+    moduleChanges.push_back(mGraph->getNodes().size());
     return moduleChanges;
     }
 
@@ -124,67 +253,105 @@ GraphRect ZoneDrawer::getNodeRect(size_t nodeIndex)
 GraphRect ZoneDrawer::getComponentTextRect(double nodeIndex) const
     {
     OovString modName = getNodeComponentText(nodeIndex);
-    int offset = getNodeRadius() + mCharWidth;
-    if(mDrawNodeText)
-	{
-	offset += mCharWidth * 5;
-	}
-    if(offset < mCharWidth * 3)
-	offset = mCharWidth * 3;
-    return getTextRect(nodeIndex, modName.getStr(), offset);
-/*
-    GraphPoint nodePos = getNodePosition(nodeIndex, offset, offset);
-    int x = 0;
-    bool leftSide = (nodeIndex > mGraph->getNodes().size()/2);
-    int textWidth = mDrawer->getTextExtentWidth(modName);
-    int textHeight = mDrawer->getTextExtentHeight(modName);
-    if(leftSide)
-	x = nodePos.x - textWidth;
-    else
-	x = nodePos.x;
-    return GraphRect(x, nodePos.y, textWidth, textHeight);
-*/
+    return getTextRect(nodeIndex, modName.getStr(), true);
     }
 
 GraphRect ZoneDrawer::getNodeTextRect(double nodeIndex) const
     {
     OovString name = mGraph->getNodes()[nodeIndex].mType->getName();
-    return getTextRect(nodeIndex, name.getStr(), 0);
+    return getTextRect(nodeIndex, name.getStr(), false);
     }
 
-GraphRect ZoneDrawer::getTextRect(double nodeIndex, const char *text, int offset) const
+static float getCircleRadius(int numNodes, double scale)
     {
-    GraphPoint nodePos = getNodePosition(nodeIndex, offset, offset);
-    int radius = getNodeRadius();
-    int numNodes = mGraph->getNodes().size();
-    bool leftSide = (nodeIndex > numNodes/2);
+    float radius = numNodes / 2.0 / M_PI;
+    return(radius * scale);
+    }
 
-    // Linearily spread the nodes out near the top and bottom of the graph.
-//    if(mDrawNodeText)
+float ZoneDrawer::getCircleRadius(int numNodes) const
+    {
+    return ::getCircleRadius(numNodes, mScale);
+    }
+
+// Return is y offset.
+// Linearly spread the nodes out near the top and bottom of the circle.
+static int spreadCircle(int nodeIndex, int numNodes, int proposedY, float scale, int charWidth)
+    {
+    int yOffset = 0;
+    float halfNodes = numNodes / 2.0f;
+    float quartNodes = halfNodes / 2;
+    // linY ranges from -1 to 1, 0 is side, -1 is top, +1 is bottom.
+    float halfIndex = nodeIndex;
+    if(halfIndex >= halfNodes)
+	halfIndex = numNodes - nodeIndex;
+    float linY = (halfIndex - quartNodes) / quartNodes;
+    // Scale to screen pos.
+    int circleRadius = getCircleRadius(numNodes, scale);
+    int addedSize = (charWidth * 2);
+    int screenLinY = linY * (circleRadius + addedSize);
+    int circleY = proposedY - circleRadius;
+    if(abs(screenLinY) > abs(circleY))
 	{
-	float halfNodes = numNodes / 2.0f;
-	float quartNodes = halfNodes / 2;
-	// linY ranges from -1 to 1, 0 is side, -1 is top, +1 is bottom.
-	float halfIndex = nodeIndex;
-	if(halfIndex >= halfNodes)
-	    halfIndex = numNodes - nodeIndex;
-	float linY = (halfIndex - quartNodes) / quartNodes;
-	// Scale to screen pos.
-	int circleRadius = getCircleRadius(numNodes);
-	int screenLinY = linY * (circleRadius + (mCharWidth * 2));
-	int circleY = nodePos.y - getCircleCenterPosY(circleRadius);
-	if(abs(screenLinY) > abs(circleY))
-	    {
-	    nodePos.y = screenLinY + getCircleCenterPosY(circleRadius);
-	    }
+	yOffset = screenLinY - circleY;
 	}
+    return yOffset;
+    }
 
+GraphRect ZoneDrawer::getTextRect(double nodeIndex, const char *text,
+	bool component) const
+    {
+    GraphPoint nodePos = getNodePosition(nodeIndex);
     int textWidth = mDrawer->getTextExtentWidth(text);
     int textHeight = mDrawer->getTextExtentHeight(text);
-    if(leftSide)
-	nodePos.x -= textWidth + mCharWidth/2 - radius;
+    int numNodes = mGraph->getNodes().size();
+    if(component)
+	{
+	if(mGraph->getDrawOptions().mDrawChildCircles)
+	    {
+	    // If drawing child circles, put the component text below the
+	    // child circle.
+	    nodePos.y += getNodeRadius() + mCharWidth * 2;
+	    }
+	else
+	    {
+	    // Scale to move text farther from center
+	    nodePos = getMasterCirclePos(nodeIndex, mCharWidth * 5);
+	    }
+	}
     else
-	nodePos.x += mCharWidth/2 - radius;
+	{
+	// If the nodes are too small and close together, the node text
+	// won't be drawn, and this code isn't called.
+	//
+	// If the nodes are too small for the text to fit inside, put the
+	// text outside of the circle.
+	int radius = getNodeRadius();
+	if(radius < mCharWidth * 4)
+	    {
+	    // If drawing child circles, the text is placed to be left or right
+	    // around the child circle.
+	    int yOffset = 0;
+	    if(mGraph->getDrawOptions().mDrawChildCircles)
+		{
+		int compIndex = mComponentChanges.getComponentIndex(nodeIndex);
+		numNodes = mComponentChanges.getNumClassesForComponent(compIndex);
+		nodeIndex = mComponentChanges.getComponentChildClassIndex(nodeIndex);
+//		int proposedY = getCirclePos(nodeIndex, numNodes).y;
+//		yOffset = spreadCircle(nodeIndex, numNodes, proposedY, mScale, mCharWidth);
+		}
+	    else
+		{
+		yOffset = spreadCircle(nodeIndex, numNodes, nodePos.y, mScale, mCharWidth);
+		nodePos.y += yOffset;
+		}
+	    }
+	}
+    // On the right side of the circle, the text is moved a bit right
+    // of the node, on the left side of the circle, the text is moved
+    // so all of the test is left of the circle.
+    bool moveLeft = (nodeIndex > numNodes/2);
+    if(moveLeft)
+	nodePos.x -= textWidth;
     return GraphRect(nodePos.x, nodePos.y, textWidth, textHeight);
     }
 
@@ -211,46 +378,48 @@ GraphRect ZoneDrawer::getGraphObjectsSize()
     return graphRect;
     }
 
-void ZoneDrawer::updateGraph(ZoneGraph const &graph)
+void ZoneDrawer::updateGraph(ZoneGraph const &graph, bool resetPositions)
     {
     mGraph = &graph;
-    mComponentChanges = getComponentChanges();
-    mTopLeftCircleOffset.x = 0;
-    mTopLeftCircleOffset.y = 0;
     if(mGraph->getNodes().size() > 0)
 	{
+	mComponentChanges = getComponentChanges();
 	float radius = mGraph->getNodes().size() / M_PI;
 	mScale = (600 / (radius * 2)) * mZoom;	/// @todo - get screen size?
+	if(resetPositions)
+	    {
+	    updateNodePositions();
+	    }
 	}
     GraphRect graphRect = getGraphObjectsSize();
     mDrawNodeText = (getNodeRadius()*3 > mDrawer->getTextExtentHeight("W"));
 
     // Add margins to the graph
     const int margin = 20;
-    mTopLeftCircleOffset.x = -(graphRect.start.x - margin);
-    mTopLeftCircleOffset.y = -(graphRect.start.y - margin);
-    mGraphSize.x = graphRect.size.x + mTopLeftCircleOffset.x + margin;
-    mGraphSize.y = graphRect.size.y + mTopLeftCircleOffset.y + margin;
+    GraphDrawOffset.x = -(graphRect.start.x - margin);
+    GraphDrawOffset.y = -(graphRect.start.y - margin);
+    mDrawingSize.x = graphRect.size.x + GraphDrawOffset.x + margin;
+    mDrawingSize.y = graphRect.size.y + GraphDrawOffset.y + margin;
     }
 
-GraphSize ZoneDrawer::getGraphSize() const
+GraphSize ZoneDrawer::getDrawingSize() const
     {
-    return mGraphSize;
+    return mDrawingSize;
     }
 
-void ZoneDrawer::drawGraph(ZoneDrawOptions const &drawOptions)
+void ZoneDrawer::drawGraph()
     {
     if(mDrawer && mGraph)
 	{
 	// This must be set for svg
-	mDrawer->setDiagramSize(getGraphSize());
+	mDrawer->setDiagramSize(getDrawingSize());
 
 	mDrawer->groupShapes(true, Color(0,0,0), Color(245,245,255));
 	drawComponentBarriers();
 	mDrawer->groupShapes(false, 0, 0);
-	drawConnections(drawOptions);
+	drawConnections();
 	mDrawer->groupShapes(true, Color(0,0,0), Color(245,245,255));
-	if(drawOptions.mDrawAllClasses)
+	if(mGraph->getDrawOptions().mDrawAllClasses)
 	    {
 	    for(size_t i=0; i<mGraph->getNodes().size(); i++)
 		{
@@ -267,7 +436,7 @@ void ZoneDrawer::drawGraph(ZoneDrawOptions const &drawOptions)
 	mDrawer->groupShapes(false, 0, 0);
 	mDrawer->groupText(true);
 	drawComponentText();
-	if(mDrawNodeText && drawOptions.mDrawAllClasses)
+	if(mDrawNodeText && mGraph->getDrawOptions().mDrawAllClasses)
 	    {
 	    drawNodeText();
 	    }
@@ -278,27 +447,32 @@ void ZoneDrawer::drawGraph(ZoneDrawOptions const &drawOptions)
 void ZoneDrawer::drawNode(size_t nodeIndex)
     {
     GraphPoint pos = getNodePosition(nodeIndex);
+    pos.add(GraphDrawOffset);
     int size = getNodeRadius();
     mDrawer->drawCircle(GraphPoint(pos.x, pos.y), size, Color(255,255,255));
     }
 
 void ZoneDrawer::drawComponentBarriers()
     {
-    for(auto const &changeIndex : mComponentChanges)
+    if(!mGraph->getDrawOptions().mDrawChildCircles)
 	{
-	GraphPoint p1 = getNodePosition(changeIndex - .5, 5, 5);
-	int size = getNodeRadius() + 25;
-	GraphPoint p2 = getNodePosition(changeIndex - .5, size, size);
-	mDrawer->drawLine(p1, p2, false);
+	for(auto const &changeIndex : mComponentChanges)
+	    {
+//	    GraphPoint p1 = getNodePosition(changeIndex - .5, 5, 5);
+	    GraphPoint p1 = getMasterCirclePos(changeIndex - .5, 5);
+	    int size = getNodeRadius() + 25;
+//	    GraphPoint p2 = getNodePosition(changeIndex - .5, size, size);
+	    GraphPoint p2 = getMasterCirclePos(changeIndex - .5, size);
+	    p1.add(GraphDrawOffset);
+	    p2.add(GraphDrawOffset);
+	    mDrawer->drawLine(p1, p2, false);
+	    }
 	}
     }
 
-size_t ZoneDrawer::getNodeIndexFromComponentIndex(size_t moduleIndex)
+size_t ZoneDrawer::getNodeIndexFromComponentIndex(size_t componentIndex)
     {
-    size_t nodeIndex2 = mGraph->getNodes().size() - 1;
-    if(moduleIndex < mComponentChanges.size()-1)
-	nodeIndex2 = mComponentChanges[moduleIndex+1];
-    return (mComponentChanges[moduleIndex] + nodeIndex2) / 2;
+    return mComponentChanges.getMiddleComponentChildClassIndex(componentIndex);
     }
 
 void ZoneDrawer::drawComponentText()
@@ -308,8 +482,9 @@ void ZoneDrawer::drawComponentText()
     for(size_t i=0; i<mComponentChanges.size(); i++)
 	{
 	size_t nodeIndex = getNodeIndexFromComponentIndex(i);
-	mDrawer->drawText(getComponentTextRect(nodeIndex).start,
-		getNodeComponentText(nodeIndex));
+	GraphPoint textPos = getComponentTextRect(nodeIndex).start;
+	textPos.add(GraphDrawOffset);
+	mDrawer->drawText(textPos, getNodeComponentText(nodeIndex));
 	}
     mDrawer->setFontSize(origFontSize);
     }
@@ -319,6 +494,7 @@ void ZoneDrawer::drawNodeText()
     for(size_t i=0; i<mGraph->getNodes().size(); i++)
 	{
 	GraphRect rect = getNodeTextRect(i);
+	rect.start.add(GraphDrawOffset);
 	mDrawer->drawText(rect.start, mGraph->getNodes()[i].mType->getName());
 	}
     }
@@ -386,11 +562,11 @@ std::vector<ZoneConnectIndices> ZoneDrawer::getSortedConnections(
     return sortedCons;
     }
 
-void ZoneDrawer::drawSortedConnections(std::vector<ZoneConnectIndices> const &sortedCons,
-	ZoneDrawOptions const &drawOptions)
+void ZoneDrawer::drawSortedConnections(std::vector<ZoneConnectIndices> const &sortedCons)
     {
     int lastCompIndex = -1;
     bool hadLines = false;
+    ZoneDrawOptions const &drawOptions = mGraph->getDrawOptions();
     for(auto const &item : sortedCons)
 	{
 	int compIndex = 0;
@@ -416,7 +592,7 @@ void ZoneDrawer::drawSortedConnections(std::vector<ZoneConnectIndices> const &so
 	    nodeIndex1 = getNodeIndexFromComponentIndex(item.mFirstIndex);
 	    nodeIndex2 = getNodeIndexFromComponentIndex(item.mSecondIndex);
 	    }
-	drawConnection(nodeIndex1, nodeIndex2, ZDD_SecondIsClient, drawOptions);
+	drawConnection(nodeIndex1, nodeIndex2, ZDD_SecondIsClient);
 	}
     if(hadLines)
 	{
@@ -428,19 +604,19 @@ void ZoneDrawer::drawSortedConnections(std::vector<ZoneConnectIndices> const &so
 	if(item.second == ZDD_Bidirectional)
 	    {
 	    drawConnection(item.first.mFirstIndex, item.first.mSecondIndex,
-		    item.second, drawOptions);
+		    item.second);
 	    }
 	}
     mDrawer->groupShapes(false, 0, 0);
     }
 
-void ZoneDrawer::drawConnections(ZoneDrawOptions const &drawOptions)
+void ZoneDrawer::drawConnections()
     {
-    if(drawOptions.mDrawAllClasses)
+    if(mGraph->getDrawOptions().mDrawAllClasses)
 	{
 	std::vector<ZoneConnectIndices> sortedCons = getSortedConnections(
 		mGraph->getConnections());
-	drawSortedConnections(sortedCons, drawOptions);
+	drawSortedConnections(sortedCons);
 	}
     else
 	{
@@ -462,7 +638,7 @@ void ZoneDrawer::drawConnections(ZoneDrawOptions const &drawOptions)
 	    }
 	std::vector<ZoneConnectIndices> sortedCons = getSortedConnections(
 		moduleConnections);
-	drawSortedConnections(sortedCons, drawOptions);
+	drawSortedConnections(sortedCons);
 	}
     }
 
@@ -502,17 +678,19 @@ GraphPoint findIntersect(GraphPoint p1, GraphPoint p2, int nodeSize)
 }
 
 void ZoneDrawer::drawConnection(int firstNodeIndex, int secondNodeIndex,
-	eZoneDependencyDirections dir, ZoneDrawOptions const &drawOptions)
+	eZoneDependencyDirections dir)
     {
     GraphPoint firstPoint = getNodePosition(firstNodeIndex);
     GraphPoint secondPoint = getNodePosition(secondNodeIndex);
+    firstPoint.add(GraphDrawOffset);
+    secondPoint.add(GraphDrawOffset);
 
     int size = getNodeRadius();
     secondPoint = findIntersect(firstPoint, secondPoint, size);
     firstPoint = findIntersect(secondPoint, firstPoint, size);
 
     mDrawer->drawLine(firstPoint, secondPoint, false);
-    if(drawOptions.mDrawDependencies)
+    if(mGraph->getDrawOptions().mDrawDependencies)
 	{
 	if(dir == ZDD_Bidirectional)
 	    {

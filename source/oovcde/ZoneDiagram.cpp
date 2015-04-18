@@ -9,6 +9,64 @@ static ZoneDiagramList *gZoneDiagramList;
 static GraphPoint gStartPosInfo;
 
 
+ZoneClassInfoToolTipWindow::~ZoneClassInfoToolTipWindow()
+    {
+    if(mLabel)
+	{
+	gtk_widget_destroy(GTK_WIDGET(mLabel));
+	}
+    if(mTopWindow)
+	{
+	gtk_widget_destroy(GTK_WIDGET(mTopWindow));
+	}
+    }
+
+void ZoneClassInfoToolTipWindow::hide()
+    {
+    if(mTopWindow)
+	{
+	Gui::setVisible(mTopWindow, false);
+	}
+    }
+
+void ZoneClassInfoToolTipWindow::lostFocus()
+    {
+    hide();
+    }
+
+void ZoneClassInfoToolTipWindow::handleCursorMovement(ZoneScreenDrawer const &drawer,
+	int x, int y, OovStringRef str)
+    {
+    if(!mTopWindow)
+	{
+	mTopWindow = gtk_window_new(GTK_WINDOW_POPUP);
+	mLabel = GTK_LABEL(gtk_label_new(nullptr));
+	// This doesn't fix the left justify
+//	gtk_label_set_justify(mLabel, GTK_JUSTIFY_LEFT);
+	gtk_container_add(GTK_CONTAINER(mTopWindow), GTK_WIDGET(mLabel));
+	}
+    Gui::setText(mLabel, str);
+    Gui::setVisible(mTopWindow, true);
+    // If the focus isn't grabbed, the drawing area won't get the
+    // focus-out event.
+    gtk_widget_grab_focus(GTK_WIDGET(drawer.getDrawingArea()));
+    // Position tooltip window relative to the drawing area window.
+    // If it clips on the right, then move it left.
+    GdkWindow *drawWin = gtk_widget_get_window(GTK_WIDGET(drawer.getDrawingArea()));
+    GdkWindow *tipWin = gtk_widget_get_window(GTK_WIDGET(mTopWindow));
+    int winX;
+    int winY;
+    gdk_window_get_origin(drawWin, &winX, &winY);
+    int padHeight = 10;
+    x += winX;
+    y += winY + padHeight;
+    int screenWidth = gdk_screen_get_width(gtk_widget_get_screen(mTopWindow));
+    int winWidth = gdk_window_get_width(tipWin);
+    if(x+winWidth > screenWidth)
+	x = screenWidth - winWidth;
+    gdk_window_move(tipWin, x, y);
+    }
+
 
 void ZoneDiagramList::init()
     {
@@ -36,6 +94,7 @@ void ZoneDiagram::initialize(const ModelData &modelData,
     {
     mModelData = &modelData;
     mListener = listener;
+    gZoneDiagram = this;
     }
 
 void ZoneDiagram::zoom(bool inc)
@@ -50,7 +109,7 @@ void ZoneDiagram::zoom(bool inc)
 	if(mZoom > .1)
 	    mZoom /= 1.5 ;
 	}
-    updateDiagram();
+    updateDiagram(true);
     }
 
 void ZoneDiagram::clearGraphAndAddWorldZone()
@@ -59,10 +118,10 @@ void ZoneDiagram::clearGraphAndAddWorldZone()
     updateDiagram();
     }
 
-void ZoneDiagram::updateGraph(const ZoneDrawOptions &options)
+void ZoneDiagram::updateGraph(const ZoneDrawOptions &options, bool resetPositions)
     {
     getZoneGraph().setDrawOptions(options);
-    updateDiagram();
+    updateDiagram(resetPositions);
     }
 
 void ZoneDiagram::restart()
@@ -76,27 +135,35 @@ void ZoneDiagram::drawSvgDiagram(FILE *fp)
     GtkCairoContext cairo(Builder::getBuilder()->getWidget("DiagramDrawingarea"));
 
     SvgDrawer svgDrawer(fp, cairo.getCairo());
+
+    ZoneDrawer &zoneDrawer = getZoneDrawer();
+    DiagramDrawer *diagScreenDrawer = zoneDrawer.getDrawer();
+    zoneDrawer.setDrawer(&svgDrawer);
+    zoneDrawer.drawGraph();
+    zoneDrawer.setDrawer(diagScreenDrawer);
+/*
     /// @todo - this could use mZoneScreenDrawer with the SvgDrawer.
     /// This would save a bit of memory and calculation time.
     ZoneDrawer zoneDrawer(&svgDrawer);
 
     zoneDrawer.setZoom(mZoom);
-    zoneDrawer.updateGraph(getZoneGraph());
-    zoneDrawer.drawGraph(getZoneGraph().getDrawOptions());
+    zoneDrawer.updateGraph(getZoneGraph(), false);
+    zoneDrawer.drawGraph();
+*/
     }
 
-ZoneScreenDrawer::ZoneScreenDrawer():
-	mCairoDrawer(nullptr), mZoneDrawer(nullptr)
+ZoneScreenDrawer::ZoneScreenDrawer(ZoneDrawer &zoneDrawer):
+	mCairoDrawer(nullptr), mZoneDrawer(zoneDrawer)
     {
     }
 
-void ZoneScreenDrawer::requestDraw(ZoneGraph const &graph, double zoom)
+void ZoneScreenDrawer::requestDraw(ZoneGraph const &graph, double zoom, bool resetPositions)
     {
     if(getCairo())	// Drawing area is not constructed initially.
 	{
 	mZoneDrawer.setZoom(zoom);
-	mZoneDrawer.updateGraph(graph);
-	GraphSize size = mZoneDrawer.getGraphSize();
+	mZoneDrawer.updateGraph(graph, resetPositions);
+	GraphSize size = mZoneDrawer.getDrawingSize();
 	gtk_widget_queue_draw(getDrawingArea());
 	gtk_widget_set_size_request(getDrawingArea(), size.x, size.y);
 	}
@@ -106,12 +173,16 @@ void ZoneScreenDrawer::drawToDrawingArea()
     {
     if(getCairo())	// Drawing area is not constructed initially.
 	{
-	mZoneDrawer.drawGraph(mZoneDrawer.getGraph()->getDrawOptions());
-	cairo_stroke(mCairoContext.getCairo());
+	ZoneGraph const *graph = mZoneDrawer.getGraph();
+	if(graph)
+	    {
+	    mZoneDrawer.drawGraph();
+	    cairo_stroke(mCairoContext.getCairo());
+	    }
 	}
     }
 
-GtkWidget *ZoneScreenDrawer::getDrawingArea()
+GtkWidget *ZoneScreenDrawer::getDrawingArea() const
     {
     return Builder::getBuilder()->getWidget("DiagramDrawingarea");
     }
@@ -137,22 +208,15 @@ cairo_t *ZoneScreenDrawer::getCairo()
     return cairo;
     }
 
-void ZoneDiagram::updateDiagram()
+void ZoneDiagram::updateDiagram(bool resetPositions)
     {
     getZoneGraph().updateGraph();
-    mZoneScreenDrawer.requestDraw(getZoneGraph(), mZoom);
+    mZoneScreenDrawer.requestDraw(getZoneGraph(), mZoom, resetPositions);
     }
 
 void ZoneDiagram::drawToDrawingArea()
     {
     mZoneScreenDrawer.drawToDrawingArea();
-    }
-
-
-void ZoneDiagram::graphButtonPressEvent(const GdkEventButton *event)
-    {
-    gZoneDiagram = this;
-    gStartPosInfo.set(event->x, event->y);
     }
 
 static void graphDisplayContextMenu(guint button, guint32 acttime, gpointer data)
@@ -170,30 +234,44 @@ static void graphDisplayContextMenu(guint button, guint32 acttime, gpointer data
     gtk_check_menu_item_set_active(allClassesItem, opts.mDrawAllClasses);
     }
 
+void ZoneDiagram::graphButtonPressEvent(const GdkEventButton *event)
+    {
+    gStartPosInfo.set(event->x, event->y);
+    }
+
 void ZoneDiagram::graphButtonReleaseEvent(const GdkEventButton *event)
     {
     if(event->button == 1)
 	{
-	/// @todo - tooltips should work as cursor is moved.
-	const ZoneNode *node = gZoneDiagram->getZoneDrawer().getZoneNode(gStartPosInfo);
+	ZoneNode const *node = getZoneDrawer().getZoneNode(gStartPosInfo);
 	if(node)
 	    {
-	    std::string str = "Class name: ";
-	    str += node->mType->getName();
-	    str += "\nComponent name: ";
-	    str += node->mType->getClass()->getModule()->getName();
-	    Gui::messageBox(str, GTK_MESSAGE_INFO);
-//	    GtkWidget *widget = Builder::getBuilder()->getWidget("DiagramDrawingarea");
-//	    gtk_widget_set_tooltip_text(widget, node->mType->getName().c_str());
-
-//	    GtkWidget *widget = Builder::getBuilder()->getWidget("DiagramDrawingarea");
-//	    gtk_widget_set_tooltip_markup(widget, node->mType->getName().c_str());
-//	    gtk_tooltip_set_text();
+	    getZoneDrawer().setPosition(node, gStartPosInfo,
+		    GraphPoint(event->x, event->y));
+	    ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
+	    zoneDiagram->updateDiagram(false);
 	    }
 	}
     else
 	{
 	graphDisplayContextMenu(event->button, event->time, (gpointer)event);
+	}
+    }
+
+void ZoneDiagram::handleDrawingAreaMotion(int x, int y)
+    {
+    const ZoneNode *node = getZoneDrawer().getZoneNode(GraphPoint(x, y));
+    if(node)
+	{
+	std::string str = "Class name: ";
+	str += node->mType->getName();
+	str += "\nComponent name: ";
+	str += node->mType->getClass()->getModule()->getName();
+	mToolTipWindow.handleCursorMovement(mZoneScreenDrawer, x, y, str);
+	}
+    else
+	{
+	mToolTipWindow.hide();
 	}
     }
 
@@ -257,7 +335,8 @@ extern "C" G_MODULE_EXPORT void on_ShowFunctionRelationsCheckmenuitem_toggled(
     {
     ZoneDrawOptions drawOptions = gZoneDiagram->getZoneGraph().getDrawOptions();
     drawOptions.mDrawFunctionRelations = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
-    gZoneDiagram->updateGraph(drawOptions);
+    gZoneDiagram->getZoneGraph().setDrawOptions(drawOptions);
+    gZoneDiagram->updateGraph(drawOptions, false);
     }
 
 extern "C" G_MODULE_EXPORT void on_ShowAllClassesCheckmenuitem_toggled(
@@ -265,6 +344,7 @@ extern "C" G_MODULE_EXPORT void on_ShowAllClassesCheckmenuitem_toggled(
     {
     ZoneDrawOptions drawOptions = gZoneDiagram->getZoneGraph().getDrawOptions();
     drawOptions.mDrawAllClasses = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+    gZoneDiagram->getZoneGraph().setDrawOptions(drawOptions);
     gZoneDiagram->updateGraph(drawOptions);
     }
 
@@ -273,7 +353,17 @@ extern "C" G_MODULE_EXPORT void on_ShowDependenciesMenuitem_toggled(
     {
     ZoneDrawOptions drawOptions = gZoneDiagram->getZoneGraph().getDrawOptions();
     drawOptions.mDrawDependencies = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
-    gZoneDiagram->updateGraph(drawOptions);
+    gZoneDiagram->getZoneGraph().setDrawOptions(drawOptions);
+    gZoneDiagram->updateGraph(drawOptions, false);
+    }
+
+extern "C" G_MODULE_EXPORT void on_ShowChildCirclesMenuitem_toggled(
+	GtkWidget *widget, gpointer data)
+    {
+    ZoneDrawOptions drawOptions = gZoneDiagram->getZoneGraph().getDrawOptions();
+    drawOptions.mDrawChildCircles = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+    gZoneDiagram->getZoneGraph().setDrawOptions(drawOptions);
+    gZoneDiagram->updateDiagram();
     }
 
 extern "C" G_MODULE_EXPORT void on_ZoneShowChildrenMenuitem_activate(

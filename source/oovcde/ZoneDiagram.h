@@ -48,18 +48,35 @@ class ZoneDiagramListener
 class ZoneScreenDrawer
     {
     public:
-	ZoneScreenDrawer();
-	void requestDraw(ZoneGraph const &graph, double zoom);
+	ZoneScreenDrawer(ZoneDrawer &zoneDrawer);
+	// If resetPositions is true, the positions overwritten.
+	void requestDraw(ZoneGraph const &graph, double zoom, bool resetPositions = true);
+	// This should be called from the draw event.
 	void drawToDrawingArea();
-	ZoneDrawer const &getZoneDrawer() const
-	    { return mZoneDrawer; }
+	GtkWidget *getDrawingArea() const;
 
     private:
 	GtkCairoContext mCairoContext;
 	CairoDrawer mCairoDrawer;
-	ZoneDrawer mZoneDrawer;
-	GtkWidget *getDrawingArea();
+	ZoneDrawer &mZoneDrawer;
 	cairo_t *getCairo();
+    };
+
+class ZoneClassInfoToolTipWindow
+    {
+    public:
+	ZoneClassInfoToolTipWindow():
+	    mTopWindow(nullptr), mLabel(nullptr)
+	    {}
+	~ZoneClassInfoToolTipWindow();
+	void hide();
+	void lostFocus();
+	void handleCursorMovement(ZoneScreenDrawer const &drawer, int x, int y,
+		OovStringRef str);
+
+    private:
+	GtkWidget *mTopWindow;
+	GtkLabel *mLabel;
     };
 
 /// This defines functions used to interact with a zone diagram. The
@@ -70,7 +87,7 @@ class ZoneDiagram
     {
     public:
 	ZoneDiagram():
-	    mModelData(nullptr), mZoneScreenDrawer(),
+	    mModelData(nullptr), mZoneDrawer(nullptr), mZoneScreenDrawer(mZoneDrawer),
 	    mListener(nullptr), mZoom(1)
 	    {}
 	void initialize(const ModelData &modelData,
@@ -84,7 +101,7 @@ class ZoneDiagram
 	    mZoneGraph.setFilter(moduleName, set);
 	    }
 	void clearGraphAndAddWorldZone();
-	void updateGraph(const ZoneDrawOptions &options);
+	void updateGraph(const ZoneDrawOptions &options, bool resetPositions=true);
 	void drawSvgDiagram(FILE *fp);
 	void restart();
 	void zoom(bool inc);
@@ -94,7 +111,7 @@ class ZoneDiagram
 	void graphButtonReleaseEvent(const GdkEventButton *event);
 	void listDisplayContextMenu(const GdkEventButton *event);
 	// This queues a draw request and sets the widget size.
-	void updateDiagram();
+	void updateDiagram(bool resetPositions = true);
 	// This should be called from the draw event.
 	void drawToDrawingArea();
 	void showChildComponents(bool show);
@@ -103,7 +120,9 @@ class ZoneDiagram
 	ZoneGraph &getZoneGraph()
 	    { return mZoneGraph; }
 	ZoneDrawer const &getZoneDrawer() const
-	    { return mZoneScreenDrawer.getZoneDrawer(); }
+	    { return mZoneDrawer; }
+	ZoneDrawer &getZoneDrawer()
+	    { return mZoneDrawer; }
 	const ZoneGraph &getZoneGraph() const
 	    { return mZoneGraph; }
 	const ModelData &getModelData() const
@@ -115,12 +134,17 @@ class ZoneDiagram
 		mListener->gotoClass(className);
 		}
 	    }
+	void handleDrawingAreaLoseFocus()
+	    { mToolTipWindow.lostFocus(); }
+	void handleDrawingAreaMotion(int x, int y);
 
     private:
 	const ModelData *mModelData;
 	ZoneGraph mZoneGraph;
+	ZoneDrawer mZoneDrawer;
 	ZoneScreenDrawer mZoneScreenDrawer;
 	ZoneDiagramListener *mListener;
+	ZoneClassInfoToolTipWindow mToolTipWindow;
 	double mZoom;
     };
 

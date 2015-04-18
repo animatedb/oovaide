@@ -220,3 +220,22 @@ extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_release_event(GtkWi
 	rec->drawingAreaButtonReleaseEvent(reinterpret_cast<GdkEventButton*>(event));
     }
 
+// "Focus Change" must be set in Glade Events for this to work.
+extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_focus_out_event(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    JournalRecord *rec = gJournal->getCurrentRecord();
+    if(rec)
+	rec->drawingLoseFocusEvent();
+    return false;
+    }
+
+// "Pointer Motion" must be set in Glade Events for this to work.
+extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_motion_notify_event(GtkWidget *widget,
+	GdkEvent *event, gpointer user_data)
+    {
+    JournalRecord *rec = gJournal->getCurrentRecord();
+    if(rec)
+	rec->drawingAreaMotionEvent(reinterpret_cast<GdkEventMotion*>(event));
+    return false;
+    }

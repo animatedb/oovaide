@@ -23,10 +23,18 @@
 The following lists releases in reverse chronological order.<br>
 <br>
 
+<h2>2015-4-2</h2>
+This version contains:
+<ul>
+  <li>Child circles in zone diagrams</li>
+</ul>
+
 <h2>2015-4</h2>
 This version contains:
 <ul>
   <li>Improved editor code completion</li>
+  <li>Improved build output</li>
+  <li>Reduced build command line length by preventing recursion for external package directories</li>
 </ul>
 
 <h2>2015-3-2</h2>

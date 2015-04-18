@@ -896,6 +896,15 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
+      <object class="GtkCheckMenuItem" id="ShowChildCirclesMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Show Child Zones</property>
+        <property name="use_underline">True</property>
+        <signal name="toggled" handler="on_ShowChildCirclesMenuitem_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="ZoneZoomInMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -1405,6 +1414,7 @@ This should normally not be under the Root Source Directory.</property>
               <object class="GtkScrolledWindow" id="scrolledwindow9">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="vexpand">True</property>
                 <property name="shadow_type">in</property>
                 <child>
                   <object class="GtkTextView" id="ExcludeDirsTextview">
@@ -3200,12 +3210,14 @@ These arguments are specific to the selected configuration.
                           <object class="GtkDrawingArea" id="DiagramDrawingarea">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="events">GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_STRUCTURE_MASK</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK</property>
                             <property name="double_buffered">False</property>
                             <signal name="draw" handler="on_DiagramDrawingarea_draw" swapped="no"/>
                             <signal name="button-press-event" handler="on_DiagramDrawingarea_button_press_event" swapped="no"/>
                             <signal name="button-release-event" handler="on_DiagramDrawingarea_button_release_event" swapped="no"/>
                             <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+                            <signal name="focus-out-event" handler="on_DiagramDrawingarea_focus_out_event" swapped="no"/>
+                            <signal name="motion-notify-event" handler="on_DiagramDrawingarea_motion_notify_event" swapped="no"/>
                           </object>
                         </child>
                       </object>
