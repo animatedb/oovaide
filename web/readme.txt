@@ -4,15 +4,22 @@ The Oovcde web site is at http://oovcde.sourceforge.net.
 	The Features shows a current list of functionality.
 
 
-Eclipse or CMake is supported for building Oovcde.
-
-
-Windows versions:
-	Parts of GTK-3.0 and CLang are included in the oovcde-*-win
-	downloads so drawing analysis does not require any additional
+Analysis - Windows Versions:
+	The oovcde-*-win downloads include parts of GTK-3.0 and CLang
+	so running analysis does not require any additional
 	downloads. Using Oovcde for more complete analysis usually
-	requires some MinGW package so that CLang can find standard
-	include files.
+	requires some MinGW or other package so that CLang can find
+	standard include files.
+
+Analysis - Linux Versions:
+	The oovcde-*-linux downloads require GTK3 and a 64 bit OS.
+	Part of CLang is included so running analysis does not
+	require any additional downloads. Using Oovcde for more
+	complete analysis usually requires some other package so
+	that CLang can find standard include files.
+
+
+Building - Windows Versions:
 	Using Oovcde to build requires MinGW, MinGW-builds or
 	MinGW-W64 because they supply the nm and ld tools.
 
@@ -52,11 +59,14 @@ Windows versions:
 		File: "Clang for Windows (.sig)"
 			Install to C:\Program Files\LLVM
 
-Linux versions:
-	For the prebuilt binaries, GTK3 and a 64 bit OS is required.
-	A compiler is not required for drawing analysis since
-	libclang.so is included, but either the Gnu or CLang compiler
-	is required for building. On ubuntu, external packages gtk+-3.0 and
+
+Building - Linux Versions:
+	Either the Gnu or CLang compiler is required for building.
+
+Building Oovcde:
+	Eclipse or CMake is supported for building Oovcde.
+
+	On ubuntu, external packages gtk+-3.0 and
 	gmodule-2.0 should be linked in order to build Oovcde.
 
 	To build oovcde on Linux using CMake (Debian/Ubuntu):
@@ -67,5 +77,7 @@ Linux versions:
 		- Run "make" from the same directory
 
 
-Release notes and issues can be seen under "Code" in
-trunk/docs/releaseNotes.txt.
+Reporting bugs:
+	Some bugs are listed under Tickets, in the sourceforge web
+	site. In addition, release notes and issues can be seen under
+	"Code" in trunk/docs/releaseNotes.txt.
