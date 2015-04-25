@@ -3123,6 +3123,30 @@ These arguments are specific to the selected configuration.
                   </packing>
                 </child>
                 <child>
+                  <object class="GtkScrolledWindow" id="PortionScrolledwindow">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="shadow_type">in</property>
+                    <child>
+                      <placeholder/>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child type="tab">
+                  <object class="GtkLabel" id="PortionLabel">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Portion</property>
+                  </object>
+                  <packing>
+                    <property name="position">3</property>
+                    <property name="tab_fill">False</property>
+                  </packing>
+                </child>
+                <child>
                   <object class="GtkScrolledWindow" id="OperationsScrolledwindow">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
@@ -3139,7 +3163,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -3149,7 +3173,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Oper</property>
                   </object>
                   <packing>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>
@@ -3170,7 +3194,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child type="tab">
@@ -3180,7 +3204,7 @@ These arguments are specific to the selected configuration.
                     <property name="label" translatable="yes">Journ</property>
                   </object>
                   <packing>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                     <property name="tab_fill">False</property>
                   </packing>
                 </child>

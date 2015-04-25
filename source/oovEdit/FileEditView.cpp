@@ -96,8 +96,8 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
     {
     sCurrentCompleteList = this;
     bool getCompletionData = false;
-    if((key == '.' || (mLastKey == '-' && key == '>')) ||
-	(key == ' ' || isControlKey(mLastKey))
+    if((key == '.' || (mLastNonModifierKey == '-' && key == '>')) ||
+	(key == ' ' && isControlKey(mLastKey))
 	    )
 	{
 	getCompletionData = true;
@@ -127,8 +127,9 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
 	}
     if(!isModifierKey(key))
 	{
-	mLastKey = key;
+	mLastNonModifierKey = key;
 	}
+    mLastKey = key;
     return getCompletionData;
     }
 

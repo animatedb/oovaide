@@ -4,22 +4,94 @@
 
 <link rel="stylesheet" type="text/css" href="style.css"><!--#include virtual="menu.html" --></head><body><div class="content">
 
-12/25/2013
-<p>
-The oovcde project creates object oriented static class, component, and
-sequence diagrams from C++ source, and can build projects with an easy
-to use build system. The diagrams are optionally a superset of UML, are
-generated automatically and quickly, and allow easy navigation between objects.
-Diagrams can be edited manually and saved as .SVG files. 
-</p><p>Core Goals:<br>
+<style>
+  #example
+	{
+	padding-left: 2em;
+	background-color: #F0F0F0
+	}
+</style>
+
+April 20, 2015
+<p/>
+The oovcde project searches subdirectories and parses C++ code to
+automatically create object oriented static class, zone, component, and
+sequence diagrams, which allow easy navigation between diagrams and code.
+<p/>
+    <div id="example">
+    The following diagram shows <a href="articles/ZoneDiagrams.html">zone diagrams</a>
+    where each point in a circle is a class.  This shows hundreds of classes and their
+    relations to each other.
+    <br/>
+        <embed src="articles/ZoneImages/ZoneOovcdeClassesChild.svg" type="image/svg+xml">
+    </div>
+<p/>
+Many of the created diagrams are similar to UML, but have optional additional
+features. The diagrams can be edited manually and saved as .SVG files.
+    <div id="example">
+    The following diagram shows a class diagram that shows inheritance,
+    aggregation, and class methods that use other classes.
+    <br/>
+        <img src="design/CppParser.svg" width="600">
+    </div>
+<p/>
+Oovcde has a <a href="design/OovcdeBuildDesign.html">multithreaded build system</a>
+    that uses dependency information from the analysis for easy setup, and also
+    supports cross compiling.
+    <div id="example">
+    The following shows the build settings dialog.
+    <br/>
+        <img src="pics/Screenshot-CrossCompile.png" width="600">
+    </div>
+<p/>
+The code editor has syntax highlighting, code completion, and a debugger.
+    <div id="example">
+    The following shows the code editor.
+    <br/>
+        <img src="pics/Screenshot-Editor.png" width="600">
+    </div>
+<p/>
+<a href="articles/Complexity.html">Complexity measurements</a> are provided for
+each method of a class.
+    <div id="example">
+    The following shows the complexity analysis results.
+    <br/>
+        <img src="pics/Screenshot-Complexity.png" width="600">
+    </div>
+<p/>
+Code <a href="articles/TestCoverage.html">test coverage</a> instruments the
+code and produces coverage information.
+    <div id="example">
+    The following shows the output from test coverage, and
+	shows the number percentage of the file that was covered.
+	In addition, it is possible to view how many times each
+	block of code was run.
+    <br/>
+        <img src="pics/Screenshot-Coverage.png" width="600">
+    </div>
+<p/>
+<a href="articles/DuplicateCode.html">Duplicate code</a> is found and listed.
+    <div id="example">
+    The following shows the output from duplicate code detection and
+	shows the number of lines that match.
+    <br/>
+        <img src="pics/Screenshot-Duplicates.png" width="600">
+    </div>
+<p/>
+There are other statistics displayed as well.
+<br/>For more information, see the
+<a href="userguide/oovcdeuserguide.shtml">User Guide</a>, and for an example
+of design documents that can be created with Oovcde, see the 
+<a href="design/OovcdeDesign.html">Oovcde Design</a> document.
+
+<h3>Project Goals</h3>
 </p>
 <ul>
   <li>Mainly for C++, or CLang related languages with header files and classes</li>
-  <li>Focused on programmer productivity with no hassles and papercuts<br>
-</li>
+  <li>Visibility of code and design information</li>
+  <li>Focused on programmer productivity with no hassles and papercuts</li>
   <li>Facilitate high quality design and code</li>
-  <li>Use modern computer architectures, flash disks, multicore processing, work in the background<br>
-  </li>
+  <li>Use modern computer architectures, flash disks, multicore processing, work in the background</li>
   <li>Fast, lightweight, minimal dependencies</li>
   <li>Separate source files from output artifacts<br>
   </li>

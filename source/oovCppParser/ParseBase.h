@@ -49,7 +49,10 @@ bool isConstType(CXCursor cursor);
 bool isConstType(CXType cursType);
 bool isIdentC(char c);
 // Gets the type name without pointer/reference.
+// These return a UML stereotype for typedefs.
 std::string getFullBaseTypeName(CXCursor cursor);
+std::string getFullBaseTypeName(CXType cursorType);
+CXType getBaseType(CXType cursorType);
 
 
 #endif /* PARSEBASE_H_ */

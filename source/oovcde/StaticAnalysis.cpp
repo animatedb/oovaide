@@ -9,31 +9,6 @@
 #include "FilePath.h"
 #include "Project.h"
 
-static bool checkAttrUsed(std::string const &attrName, ModelStatements const &statements)
-    {
-    bool used = false;
-    for(auto const &stmt : statements)
-	{
-	eModelStatementTypes stateType = stmt.getStatementType();
-	if(stateType == ST_VarRef)
-	    {
-	    if(stmt.getName() == attrName)
-		{
-		used = true;
-		break;
-		}
-	    }
-	else if(stateType == ST_Call)
-	    {
-	    if(stmt.getAttrName() == attrName)
-		{
-		used = true;
-		break;
-		}
-	    }
-	}
-    return used;
-    }
 
 static void createStyleTransform(const std::string &fullPath)
     {
@@ -116,7 +91,7 @@ bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
 		    int usageCount = 0;
 		    for(auto const &oper : classifier->getOperations())
 			{
-			if(checkAttrUsed(attr->getName(), oper->getStatements()))
+			if(oper->getStatements().checkAttrUsed(attr->getName()))
 			    usageCount++;
 			}
 		    static const char *item =

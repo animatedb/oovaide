@@ -27,7 +27,7 @@ template<class T> class Displayer
 namespace Universe
 {
 
-class Star:public Displayer<Star>
+class Star
     {
     public:
         void twinkle()
@@ -35,6 +35,10 @@ class Star:public Displayer<Star>
         char const *whatAreYou() const
             { return("little star"); }
     };
+
+class DisplayStar:public Star, public Displayer<Star>
+	{
+	};
 
 class World
     {
@@ -66,4 +70,8 @@ class Star
     };
 };
 
+typedef int NotAStar;
+typedef Star RenamedStar;
+typedef DisplayStar RenamedDisplayStar;
+typedef Displayer<Star> RenamedDisplayerStar;
 };

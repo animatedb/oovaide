@@ -329,7 +329,28 @@ static CXChildVisitResult visitFunctionAddDupHashes(CXCursor cursor, CXCursor pa
 ModelType *CppParser::createOrGetBaseTypeRef(CXCursor cursor, RefType &rt)
     {
     CXType cursorType = clang_getCursorType(cursor);
-    eModelDataTypes dType = (cursorType.kind == CXType_Record) ? DT_Class : DT_DataType;
+    eModelDataTypes dType;
+    switch(cursorType.kind)
+	{
+	case CXType_Record:
+	    dType = DT_Class;
+	    break;
+
+	case CXType_Typedef:
+	    {
+	    // Normally this should already be defined, so won't create it.
+	    ModelType const *typeRef = createOrGetTypedef(cursor);
+	    if(typeRef)
+		dType = typeRef->getDataType();
+	    else
+		dType = DT_DataType;
+	    }
+	    break;
+
+	default:
+	    dType = DT_DataType;
+	    break;
+	}
     rt.isConst = isConstType(cursor);
     switch(cursorType.kind)
 	{
@@ -891,6 +912,66 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor, CXCurs
     return CXChildVisit_Continue;
     }
 
+void CppParser::addClassFileLoc(CXCursor cursor, ModelClassifier *classifier)
+    {
+    int line;
+    std::string fn = getFileLoc(cursor, &line);
+    // Indicate to the modelwriter, that this class is in this TU.
+    FilePath normFn(fn, FP_File);
+    if(normFn == mTopParseFn)
+	{
+	classifier->setModule(mModelData.mModules[0].get());
+	}
+    classifier->setLineNum(line);
+    }
+
+ModelType *CppParser::createOrGetTypedef(CXCursor cursor)
+    {
+    std::string typedefName = getFullBaseTypeName(cursor);
+    ModelType *typeRef = nullptr;
+    CXType cursorType = clang_getTypedefDeclUnderlyingType(cursor);
+    CXType baseType = getBaseType(cursorType);
+    if(baseType.kind == CXType_Record)
+	{
+	typeRef = createOrGetClassRef(typedefName);
+	}
+    else
+	{
+	typeRef = mModelData.findType(typedefName);
+	}
+    return typeRef;
+    }
+
+void CppParser::addTypedef(CXCursor cursor)
+    {
+    CXType cursorType = clang_getCursorType(cursor);
+    if(cursorType.kind == CXType_Typedef)
+	{
+	ModelType *typeDef = createOrGetTypedef(cursor);
+	if(typeDef && typeDef->getDataType() == DT_Class)
+	    {
+	    addClassFileLoc(cursor, typeDef->getClass());
+	    // Only add typedefs that are defined in the compiled file.
+	    if(typeDef->getClass()->getModule())
+		{
+		CXType cursorType = clang_getTypedefDeclUnderlyingType(cursor);
+		CXType baseType = getBaseType(cursorType);
+		RefType rType;
+		ModelType const *parentReffedType = createOrGetDataTypeRef(baseType, rType);
+		ModelClassifier const *child = typeDef->getClass();
+		ModelClassifier const *parent = parentReffedType->getClass();
+		if(child && parent)
+		    {
+		    ModelAssociation *assoc = new ModelAssociation(child, parent,
+			getAccess(cursor));
+		    /// @todo - use make_unique when supported.
+		    mModelData.mAssociations.push_back(std::unique_ptr<ModelAssociation>(assoc));
+		    }
+		}
+	    }
+	}
+    }
+
 void CppParser::addRecord(CXCursor cursor, Visibility vis)
     {
     // Save all classes so that the access specifiers in the declared classes
@@ -899,19 +980,7 @@ void CppParser::addRecord(CXCursor cursor, Visibility vis)
     mClassifier = createOrGetClassRef(name);
     if(mClassifier)
 	{
-	int line;
-	std::string fn = getFileLoc(cursor, &line);
-	// Indicate to the modelwriter, that this class is in this TU.
-	FilePath normFn(fn, FP_File);
-	if(normFn == mTopParseFn)
-	    {
-	    mClassifier->setModule(mModelData.mModules[0].get());
-	    }
-	else
-	    {
-//	    mClassifier->setModule(mModelData.mModules[0]);
-	    }
-	mClassifier->setLineNum(line);
+	addClassFileLoc(cursor, mClassifier);
 	clang_visitChildren(cursor, ::visitRecord, this);
 	}
     mClassifier = nullptr;
@@ -1014,6 +1083,10 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor, CXCursor par
 	case CXCursor_StructDecl:
 	case CXCursor_UnionDecl:
 	    addRecord(cursor, Visibility::Public);
+	    break;
+
+	case CXCursor_TypedefDecl:
+	    addTypedef(cursor);
 	    break;
 
 	case CXCursor_Constructor:

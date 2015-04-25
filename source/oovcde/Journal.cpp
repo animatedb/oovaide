@@ -43,7 +43,7 @@ void Journal::clear()
 void Journal::displayClass(OovStringRef const className)
     {
     JournalRecordClassDiagram *rec;
-    int recordIndex = findRecord(className);
+    int recordIndex = findRecord(RT_Class, className);
     if(recordIndex == -1)
 	{
 	rec = new JournalRecordClassDiagram(*mBuilder, *mModel,
@@ -78,7 +78,7 @@ void Journal::displayOperation(OovStringRef const className,
     OovString fullOperName = operName;
     fullOperName += ' ';
     fullOperName += className;
-    int recordIndex = findRecord(fullOperName);
+    int recordIndex = findRecord(RT_Sequence, fullOperName);
     if(recordIndex == -1)
 	{
 	rec = new JournalRecordOperationDiagram(*mBuilder, *mModel,
@@ -99,7 +99,7 @@ void Journal::displayComponents()
     if(mBuilder)
 	{
 	OovStringRef const componentName = "<Components>";
-	int recordIndex = findRecord(componentName);
+	int recordIndex = findRecord(RT_Component, componentName);
 	JournalRecordComponentDiagram *rec;
 	if(recordIndex == -1)
 	    {
@@ -121,7 +121,7 @@ void Journal::displayWorldZone()
     if(mBuilder)
 	{
 	OovStringRef const zoneName = "<WorldZone>";
-	int recordIndex = findRecord(zoneName);
+	int recordIndex = findRecord(RT_Zone, zoneName);
 	JournalRecordZoneDiagram *rec;
 	if(recordIndex == -1)
 	    {
@@ -139,6 +139,28 @@ void Journal::displayWorldZone()
 	}
     }
 
+void Journal::displayPortion(OovStringRef const className)
+    {
+    if(mBuilder)
+	{
+	int recordIndex = findRecord(RT_Portion, className);
+	JournalRecordPortionDiagram *rec;
+	if(recordIndex == -1)
+	    {
+	    rec = new JournalRecordPortionDiagram(*mBuilder, *mModel, *mJournalListener);
+	    rec->mPortionDiagram.clearGraphAndAddClass(className);
+	    rec->mPortionDiagram.drawToDrawingArea();
+	    addRecord(rec, className);
+	    }
+	else
+	    {
+	    setCurrentRecord(recordIndex);
+	    rec = reinterpret_cast<JournalRecordPortionDiagram*>(getCurrentRecord());
+	    rec->mPortionDiagram.drawToDrawingArea();
+	    }
+	}
+    }
+
 void Journal::addRecord(JournalRecord *record, OovStringRef const name)
     {
     record->setName(name);
@@ -147,12 +169,13 @@ void Journal::addRecord(JournalRecord *record, OovStringRef const name)
     setCurrentRecord(mRecords.size()-1);
     }
 
-int Journal::findRecord(OovStringRef const name)
+int Journal::findRecord(eRecordTypes rt, OovStringRef const name)
     {
     int index = -1;
     for(size_t i=0; i<mRecords.size(); i++)
 	{
-	if(std::string(mRecords[i]->getName()).compare(name) == 0)
+	if(mRecords[i]->getRecordType() == rt &&
+		std::string(mRecords[i]->getName()).compare(name) == 0)
 	    {
 	    index = i;
 	    break;
@@ -202,6 +225,14 @@ extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_draw(GtkWidget *widget,
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
 	rec->drawingAreaDrawEvent();
+    else
+	{
+	// Clear background if there are no records
+	GtkWidget *widget = Builder::getBuilder()->getWidget("DiagramDrawingarea");
+	GtkCairoContext cairo(widget);
+	cairo_set_source_rgb(cairo.getCairo(), 255,255,255);
+	cairo_paint(cairo.getCairo());
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_press_event(GtkWidget *widget,

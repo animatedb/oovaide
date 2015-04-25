@@ -355,6 +355,12 @@ CXCursor getCursorCallMemberRef(CXCursor cursor)
 
 std::string getFullBaseTypeName(CXCursor cursor)
     {
+    CXType cursorType = clang_getCursorType(cursor);
+    return getFullBaseTypeName(cursorType);
+    }
+
+std::string getFullBaseTypeName(CXType cursorType)
+    {
 /*    std::string fullName;
     while(1)
 	{
@@ -384,7 +390,16 @@ std::string getFullBaseTypeName(CXCursor cursor)
 	}
     return fullName;
 */
-    CXType cursorType = clang_getCursorType(cursor);
+    CXStringDisposer spell = clang_getTypeSpelling(getBaseType(cursorType));
+    if(cursorType.kind == CXType_Typedef)
+	{
+	spell.insert(0, "<<typedef>> ");
+	}
+    return spell;
+    }
+
+CXType getBaseType(CXType cursorType)
+    {
     while(cursorType.kind == CXType_LValueReference ||
 	    cursorType.kind == CXType_RValueReference || cursorType.kind == CXType_Pointer)
 	{
@@ -402,6 +417,5 @@ std::string getFullBaseTypeName(CXCursor cursor)
 	    cursorType = clang_getCursorType(newCursor);
 	    }
 	}
-    CXStringDisposer spell = clang_getTypeSpelling(cursorType);
-    return spell;
+    return cursorType;
     }

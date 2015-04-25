@@ -248,8 +248,7 @@ void ZoneDiagram::graphButtonReleaseEvent(const GdkEventButton *event)
 	    {
 	    getZoneDrawer().setPosition(node, gStartPosInfo,
 		    GraphPoint(event->x, event->y));
-	    ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
-	    zoneDiagram->updateDiagram(false);
+	    updateDiagram(false);
 	    }
 	}
     else
@@ -286,24 +285,22 @@ void ZoneDiagram::showChildComponents(bool show)
     {
     gZoneDiagramList->getComponentTree().setSelectedChildCheckboxes(show);
     OovStringVec comps = gZoneDiagramList->getComponentTree().getSelectedChildNodeNames('/');
-    ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
     for(auto const &comp : comps)
 	{
-	zoneDiagram->setFilter(comp, !show);
+	setFilter(comp, !show);
 	}
-    zoneDiagram->updateDiagram();
+    updateDiagram();
     }
 
 void ZoneDiagram::showAllComponents(bool show)
     {
     gZoneDiagramList->getComponentTree().setAllCheckboxes(show);
     OovStringVec comps = gZoneDiagramList->getComponentTree().getAllChildNodeNames('/');
-    ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
     for(auto const &comp : comps)
 	{
-	zoneDiagram->setFilter(comp, !show);
+	setFilter(comp, !show);
 	}
-    zoneDiagram->updateDiagram();
+    updateDiagram();
     }
 
 extern "C" G_MODULE_EXPORT void on_ZoneGotoClassMenuitem_activate(

@@ -389,7 +389,6 @@ class BackgroundDialog:public Dialog
 	bool mKeepGoing;
 	int mTotalIters;
 	time_t mStartTime;
-	time_t mProgressTime;
 	void showDialog(bool show);
     };
 

@@ -732,7 +732,7 @@ GuiTreeItem GuiTree::getItem(OovString const &name, char delimiter)
 
 BackgroundDialog::BackgroundDialog():
 	mBuilder(nullptr), mParent(nullptr),
-	mKeepGoing(true), mTotalIters(0), mStartTime(0), mProgressTime(0)
+	mKeepGoing(true), mTotalIters(0), mStartTime(0)
     {
     }
 

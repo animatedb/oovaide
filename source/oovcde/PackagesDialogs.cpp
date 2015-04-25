@@ -135,13 +135,23 @@ void ProjectPackagesDialog::savePackage(const std::string &pkgName)
     {
     if(pkgName.length() > 0)
 	{
-	Package pkg(pkgName, getEntry("PackageRootDirEntry"));
-	pkg.setCompileInfo(getEntry("PackageIncDirEntry"),
-		getEntry("PackageCompileArgsEntry"));
-	pkg.setLinkInfo(getEntry("PackageLibDirEntry"), getEntry("PackageLibNamesEntry"),
-		getEntry("PackageLinkArgsEntry"));
-	pkg.setExternalReferenceDir(getEntry("PackageExternRefEntry"));
-	mProjectPackages.insertPackage(pkg);
+	bool addOk = true;
+#ifndef __linux__
+	// This isn't perfect since it displays an error, but allows
+	// the package to be inserted into the project anyway. It does
+	// allow the user to clean up themselves though.
+	addOk = winCheckDirectoryOk();
+#endif
+	if(addOk)
+	    {
+	    Package pkg(pkgName, getEntry("PackageRootDirEntry"));
+	    pkg.setCompileInfo(getEntry("PackageIncDirEntry"),
+		    getEntry("PackageCompileArgsEntry"));
+	    pkg.setLinkInfo(getEntry("PackageLibDirEntry"), getEntry("PackageLibNamesEntry"),
+		    getEntry("PackageLinkArgsEntry"));
+	    pkg.setExternalReferenceDir(getEntry("PackageExternRefEntry"));
+	    mProjectPackages.insertPackage(pkg);
+	    }
 	}
     }
 
@@ -228,6 +238,16 @@ void ProjectPackagesDialog::winSetEnableScanning()
 	    "MissingDirectoryLabel")), missing);
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget(
 	    "ScanDirectoriesButton")), missing);
+    }
+
+bool ProjectPackagesDialog::winCheckDirectoryOk()
+    {
+    bool missing = !FileIsFileOnDisk(getEntry("PackageRootDirEntry"));
+    if(missing)
+	{
+	Gui::messageBox("The root directory is not correct");
+	}
+    return(!missing);
     }
 
 /*

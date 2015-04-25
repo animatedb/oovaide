@@ -210,6 +210,7 @@ class ModelStatements:public std::vector<ModelStatement>
 	    {
 	    push_back(stmt);
 	    }
+        bool checkAttrUsed(OovStringRef attrName) const;
     };
 
 #define OPER_RET_TYPE 1
@@ -296,9 +297,27 @@ private:
 #endif
 };
 
+
+// A DT_Datatype (ModelType) is for simple non-class types. While the OovParser
+// is parsing, it is also used for class types that are not in the currently
+// compiled file. This is used for references to the type where the full type
+// may not be known.  If the full type is later defined in the program, the
+// type is upgraded to the DT_Class type if it is a record type (class or
+// struct).  The Oovcde program must combine function definitions that could
+// be defined in multiple files.
+//
+// A DT_Class (ModelClassifier) is used for records (class or struct) and for
+// templates and typedefs.  The only reason that a typedef uses a DT_Class is
+// because it contains the file and line location of the definition.
+// A template may eventually use the attributes vector to keep relations
+// between the template arguments and other classes.
+// A typedef name is prepended with the UML <<typedef>> stereotype.  The Oovcde
+// program does not draw this in a standard manner, since it draws it as
+// being inherited from the original type, but the meaning seems pretty apparent.
 enum eModelDataTypes { DT_DataType, DT_Class };
 
 /// This stores info about simple (non-class) types, and is the base for all types.
+/// See eModelDataTypes for more info.
 class ModelType:public ModelObject
     {
     public:
@@ -315,8 +334,9 @@ class ModelType:public ModelObject
 	eModelDataTypes mDataType;
     };
 
-/// This stores data for class definitions.
+/// This stores data for record definitions.
 /// This owns all pointers except for the modules, and other types.
+/// See eModelDataTypes for more info.
 class ModelClassifier:public ModelType
 {
 public:
@@ -386,7 +406,6 @@ private:
     int mLineNum;
 };
 
-/// This is used for inheritance relations
 class ModelAssociation:public ModelObject
 {
 public:

@@ -43,6 +43,7 @@ class ProjectPackagesDialog:public Dialog
 #ifndef __linux__
 	void winScanDirectories();
 	void winSetEnableScanning();
+	bool winCheckDirectoryOk();
 #endif
 
     private:

@@ -124,6 +124,32 @@ OovString ModelStatement::getAttrName() const
     return opName;
     }
 
+bool ModelStatements::checkAttrUsed(OovStringRef attrName) const
+    {
+    bool used = false;
+    for(auto const &stmt : *this)
+	{
+	eModelStatementTypes stateType = stmt.getStatementType();
+	if(stateType == ST_VarRef)
+	    {
+	    if(stmt.getName() == attrName.getStr())
+		{
+		used = true;
+		break;
+		}
+	    }
+	else if(stateType == ST_Call)
+	    {
+	    if(stmt.getAttrName() == attrName.getStr())
+		{
+		used = true;
+		break;
+		}
+	    }
+	}
+    return used;
+    }
+
 
 ModelFuncParam *ModelOperation::addMethodParameter(const std::string &name, const ModelType *type,
     bool isConst)

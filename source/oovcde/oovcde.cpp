@@ -875,7 +875,7 @@ extern "C" G_MODULE_EXPORT void on_OperationsTreeview_cursor_changed(
 class NotebookHandler
     {
     public:
-	enum ePageIndices { PI_Component, PI_Zone, PI_Class, PI_Seq, PI_Journal };
+	enum ePageIndices { PI_Component, PI_Zone, PI_Class, PI_Portion, PI_Seq, PI_Journal };
 	int mCurrentPage;
     };
 
@@ -975,6 +975,17 @@ extern "C" G_MODULE_EXPORT void on_ListNotebook_switch_page(GtkNotebook *noteboo
 
 	case NotebookHandler::PI_Class:
 	    on_ClassTreeview_cursor_changed(nullptr, nullptr);
+	    break;
+
+	case NotebookHandler::PI_Portion:
+	    {
+	    std::string className = gOovGui.getSelectedClass();;
+	    if(std::string(className).length() > 0)
+		{
+		gOovGui.getJournal().displayPortion(className);
+		gOovGui.updateJournalList();
+		}
+	    }
 	    break;
 
 	// Operation is always related to class, so it must be initialized

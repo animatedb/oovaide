@@ -16,8 +16,11 @@ Explanations
 Missing Features
 ----------------
 - General
+<<<<<<< .mine
 	- Fix linux to remove pthread requirement
 	- BUG: add warning if package path does not exist
+=======
+>>>>>>> .r1612
 	- BUG: Goto class doesn't change tab to class tab
 	- create minimal code guidelines, ex:
 	  "The Power of Ten – Rules for Developing Safety Critical Code"
@@ -25,7 +28,6 @@ Missing Features
 	- Add improved open recent files
 	- Add toolbar buttons
 	- Add External Directories button for Build Arguments dialog.
-	- BUG: Editing external package paths in dialogs doesn't work?
 	- BUG: Sometimes in Linux, Stop Build, doesn't change state, but builder
 	  is not running. Happens when resizing output window while building?
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
@@ -33,8 +35,8 @@ Missing Features
 	- Clicking on warnings doesn't display editor.
 	- Changing preferences should update drawings
 - Source/project management
-	- Make it clear which files must be saved to save project settings.
-	  Gui Options don't get recreated if project is opened instead of newed.
+	- Make it clear which files must be saved to save project settings. (add clean)
+	- Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
 - Journal
 	- Allow more copies of diagrams?
@@ -92,6 +94,8 @@ Missing Features
 	- Coverage tool - fix switch/case fall throughs
 	- Coverage tool - fix precompiled header before include oovcoverage.h
 	- Coverage tool - filenames with underscore has stats, but not lines covered
+	- Coverage tool - space before semicolon under if with no braces? -
+		Search ZoneDiagram.cpp "mZoom /= 1.5 ;"
 	- Analysis/component lists should ignore coverage directories
 	- The oovcde-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
@@ -103,7 +107,7 @@ Missing Features
 	  prevented parsing.
 	- BUG: Drive letters in path unable to write to bad filename.
 	- Templates don't list operations
-	- Typedefs not listed (oovCommon/Filepaths)
+	- Typedefs not listed, define as inheritance? (oovCommon/Filepaths)
 	- function return type not listed
 	- Multiple case statements without breaks appear nested.
 	- Some statements not parsed: else (currently faked), goto, default, return, etc.

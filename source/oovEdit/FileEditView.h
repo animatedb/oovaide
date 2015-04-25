@@ -20,7 +20,7 @@ class CompletionList
 	CompletionList():
 	    mEditView(nullptr), mTopWidget(nullptr), mTextBuffer(nullptr),
 	    mStartIdentifierOffset(0), mCompletionTriggerPointOffset(0),
-	    mLastKey(0)
+	    mLastKey(0), mLastNonModifierKey(0)
 	    {}
 	void init(GtkTextBuffer *textBuffer);
 	void positionCompletionWindow();
@@ -42,6 +42,7 @@ class CompletionList
 	int mStartIdentifierOffset;
 	int mCompletionTriggerPointOffset;
 	int mLastKey;
+	int mLastNonModifierKey;
 	void setWindowPosition(GdkWindow *compWin, int screenWidth);
     };
 

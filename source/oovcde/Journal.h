@@ -14,8 +14,9 @@
 #include "OperationDiagram.h"
 #include "ComponentDiagram.h"
 #include "ZoneDiagram.h"
+#include "PortionDiagram.h"
 
-enum eRecordTypes { RT_Class, RT_Sequence, RT_Component, RT_Zone };
+enum eRecordTypes { RT_Component, RT_Zone, RT_Class, RT_Portion, RT_Sequence  };
 
 class JournalListener
     {
@@ -49,6 +50,7 @@ class JournalRecord
 	virtual bool isModified() const = 0;
 	OovStringRef const getName() const
 	    { return mName; }
+	// No space is used for building file names.
 	std::string getFullName(bool addSpace) const;
 	void setName(OovStringRef const str)
 	    { mName = str; }
@@ -183,6 +185,33 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 //	    { return mZoneDiagram.getZoneGraph().isModified(); }
     };
 
+class JournalRecordPortionDiagram:public JournalRecord
+    {
+    public:
+	JournalRecordPortionDiagram(Builder &builder, const ModelData &model,
+		JournalListener &listener):
+	    JournalRecord(RT_Portion, listener)
+	    {
+	    mPortionDiagram.initialize(model);
+	    }
+	PortionDiagram mPortionDiagram;
+
+    private:
+	virtual char const *getRecordTypeName() const override
+	    { return "Portion"; }
+	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
+	    { mPortionDiagram.graphButtonPressEvent(event); }
+	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override
+	    { mPortionDiagram.graphButtonReleaseEvent(event); }
+	virtual void drawingAreaDrawEvent() override
+	    { mPortionDiagram.drawToDrawingArea(); }
+	virtual void saveFile(FILE *fp) override
+	    { mPortionDiagram.drawSvgDiagram(fp); }
+	// Indicate it is always modified so the single diagram is kept around.
+	virtual bool isModified() const override
+	    { return true; }
+//	    { return mZoneDiagram.getZoneGraph().isModified(); }
+    };
 /// This class provides a non-volatile history of diagrams.
 class Journal
     {
@@ -213,6 +242,7 @@ class Journal
 		bool isConst);
 	void displayComponents();
 	void displayWorldZone();
+	void displayPortion(OovStringRef const className);
 	void saveFile(FILE *fp);
 	void cppArgOptionsChangedUpdateDrawings();
 	void setCurrentRecord(size_t index)
@@ -251,7 +281,7 @@ class Journal
 	    { return (mRecords.size() > 0) ? mRecords[mRecords.size()-1] : NULL; }
 	void addRecord(JournalRecord *record,	OovStringRef const name);
 	void removeRecord(int index);
-	int findRecord(OovStringRef const name);
+	int findRecord(eRecordTypes rt, OovStringRef const name);
     };
 
 #endif /* JOURNAL_H_ */

@@ -6,11 +6,11 @@
  */
 #include "Debug.h"
 
-DebugFile gDebugAssertFile("OovAsserts.txt", true);
 
 void LogAssertFile(OovStringRef const file, int line)
     {
-    gDebugAssertFile.printflush("%s %d\n", file.getStr(), line);
+    DebugFile debugAssertFile("OovAsserts.txt", true);
+    debugAssertFile.printflush("%s %d\n", file.getStr(), line);
     }
 
 DebugFile::DebugFile(OovStringRef const fn, bool append):
@@ -18,10 +18,25 @@ DebugFile::DebugFile(OovStringRef const fn, bool append):
     {
     if(fn)
 	{
+	mFp = fopen(fn, "rb");
+	if(mFp)
+	    {
+	    fseek(mFp, 0, SEEK_END);
+	    int size = ftell(mFp);
+	    if(size > 100000)
+		{
+		append = false;
+		fclose(mFp);
+		}
+	    }
 	if(append)
+	    {
 	    mFp = fopen(fn, "a");
+	    }
 	else
+	    {
 	    mFp = fopen(fn, "w");
+	    }
 	}
     }
 

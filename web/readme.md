@@ -54,7 +54,7 @@ The explanation of the examples is here.
 	- simple setup
 	- background operations
 	- fast (written in C++)
-	- simple (minimal dependencies)
+	- simple, lightweight (minimal dependencies)
 
 
 ## Other Documentation

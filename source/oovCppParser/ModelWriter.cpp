@@ -380,11 +380,11 @@ void ModelWriter::writeAssociation(const ModelAssociation &assoc)
     {
     if(mFp)
         {
-        fprintf(mFp, "  <Genrl id=\"%d\" child=\"%d\" parent=\"%d\" "
-            "access=\"%s\" />\n",
-            newModelId(), getObjectModelId(assoc.getChild()->getName()),
-            getObjectModelId(assoc.getParent()->getName()),
-            assoc.getAccess().asUmlStr().getStr());
+	fprintf(mFp, "  <Genrl id=\"%d\" child=\"%d\" parent=\"%d\" "
+	    "access=\"%s\" />\n",
+	    newModelId(), getObjectModelId(assoc.getChild()->getName()),
+	    getObjectModelId(assoc.getParent()->getName()),
+	    assoc.getAccess().asUmlStr().getStr());
         }
     }
 

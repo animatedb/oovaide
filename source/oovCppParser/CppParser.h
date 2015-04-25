@@ -177,12 +177,16 @@ class CppParser
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;
 	int mStatementRecurseLevel;
+	ModelClassifier *createOrGetClassRef(OovStringRef const name);
 	ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);
 	ModelType *createOrGetDataTypeRef(CXType type, RefType &rt);
-	ModelClassifier *createOrGetClassRef(OovStringRef const name);
 	ModelType *createOrGetDataTypeRef(CXCursor cursor);
+	ModelType *createOrGetTypedef(CXCursor cursor);
 	void addOperationParts(CXCursor cursor, bool addParams);
 	void addRecord(CXCursor cursor, Visibility vis);
+	void addClassFileLoc(CXCursor cursor, ModelClassifier *classifier);
+	/// This only adds typedefs of class (or template?) types.
+	void addTypedef(CXCursor cursor);
 	OovString buildCondExpr(CXCursor condStmtCursor, int condExprIndex);
 	// Adds a conditional statement and its body. This gets added as an
 	// open nest and close nest statements. The name of the open nest

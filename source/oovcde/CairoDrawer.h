@@ -41,7 +41,7 @@ class GtkCairoContext
 	cairo_t *getCairo()
 	    { return mCr; }
 	// Pad is currently defined as 1/10 of font size.
-	GraphSize getPad();
+//	GraphSize getPad();
 
     private:
 	cairo_t *mCr;
