@@ -1,0 +1,216 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="669" height="734">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="15" y="22" width="293" height="170" />
+<line x1="15" y1="43" x2="308" y2="43" />
+<line x1="15" y1="55" x2="308" y2="55" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="16" y="31">DiagramDrawer</text>
+<text x="16" y="40">/oovcde/</text>
+<text x="16" y="52">-double mFontSize</text>
+<text x="16" y="64">+int getPad(int div)</text>
+<text x="16" y="73">+void DiagramDrawer()</text>
+<text x="16" y="82">+void ~DiagramDrawer()</text>
+<text x="16" y="91">+void setDiagramSize(GraphSize size)</text>
+<text x="16" y="100">+void setFontSize(double size)</text>
+<text x="16" y="109">+double getFontSize()</text>
+<text x="16" y="118">+void drawRect(GraphRect rect)</text>
+<text x="16" y="127">+void drawLine(GraphPoint p1, GraphPoint p2, bool dashed)</text>
+<text x="16" y="136">+void drawCircle(GraphPoint p, int radius, Color fillColor)</text>
+<text x="16" y="145">+void drawPoly(OovPolygon poly, Color fillColor)</text>
+<text x="16" y="154">+void drawText(GraphPoint p, OovStringRef text)</text>
+<text x="16" y="163">+float getTextExtentWidth(OovStringRef name)</text>
+<text x="16" y="172">+float getTextExtentHeight(OovStringRef name)</text>
+<text x="16" y="181">+void groupShapes(bool start, Color lineColor, Color fillColor)</text>
+<text x="16" y="190">+void groupText(bool start)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="14" y="253" width="291" height="134" />
+<line x1="14" y1="274" x2="305" y2="274" />
+<line x1="14" y1="286" x2="305" y2="286" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="15" y="262">NullDrawer</text>
+<text x="15" y="271">/oovcde/</text>
+<text x="15" y="283">#cairo_t cr</text>
+<text x="15" y="295">+float getTextExtentWidth(OovStringRef name)</text>
+<text x="15" y="304">+float getTextExtentHeight(OovStringRef name)</text>
+<text x="15" y="313">+void NullDrawer(cairo_t c)</text>
+<text x="15" y="322">+void setGraphicsLib(cairo_t c)</text>
+<text x="15" y="331">+bool haveCr()</text>
+<text x="15" y="340">+void setDiagramSize(GraphSize size)</text>
+<text x="15" y="349">+void drawRect(GraphRect rect)</text>
+<text x="15" y="358">+void drawLine(GraphPoint p1, GraphPoint p2, bool dashed)</text>
+<text x="15" y="367">+void drawCircle(GraphPoint p, int radius, Color fillColor)</text>
+<text x="15" y="376">+void drawPoly(OovPolygon poly, Color fillColor)</text>
+<text x="15" y="385">+void drawText(GraphPoint p, OovStringRef text)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="375" y="24" width="293" height="161" />
+<line x1="375" y1="45" x2="668" y2="45" />
+<line x1="375" y1="75" x2="668" y2="75" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="376" y="33">SvgDrawer</text>
+<text x="376" y="42">/oovcde/</text>
+<text x="376" y="54">-FILE mFp</text>
+<text x="376" y="63">-double mFontSize</text>
+<text x="376" y="72">-cairo_t cr</text>
+<text x="376" y="84">+void setDiagramSize(GraphSize size)</text>
+<text x="376" y="93">+void setFontSize(double size)</text>
+<text x="376" y="102">+void drawRect(GraphRect rect)</text>
+<text x="376" y="111">+void drawLine(GraphPoint p1, GraphPoint p2, bool dashed)</text>
+<text x="376" y="120">+void drawCircle(GraphPoint p, int radius, Color fillColor)</text>
+<text x="376" y="129">+void drawPoly(OovPolygon poly, Color fillColor)</text>
+<text x="376" y="138">+void groupShapes(bool start, Color lineColor, Color fillColor)</text>
+<text x="376" y="147">+void groupText(bool start)</text>
+<text x="376" y="156">+void drawText(GraphPoint p, OovStringRef text)</text>
+<text x="376" y="165">+float getTextExtentWidth(OovStringRef name)</text>
+<text x="376" y="174">+float getTextExtentHeight(OovStringRef name)</text>
+<text x="376" y="183">+void SvgDrawer(FILE fp, cairo_t c)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="16" y="481" width="293" height="152" />
+<line x1="16" y1="502" x2="309" y2="502" />
+<line x1="16" y1="532" x2="309" y2="532" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="17" y="490">CairoDrawer</text>
+<text x="17" y="499">/oovcde/</text>
+<text x="17" y="511">-Color mFillColor</text>
+<text x="17" y="520">-Color mLineColor</text>
+<text x="17" y="529">-Color mTextColor</text>
+<text x="17" y="541">+void setFontSize(double size)</text>
+<text x="17" y="550">+void drawRect(GraphRect rect)</text>
+<text x="17" y="559">+void drawLine(GraphPoint p1, GraphPoint p2, bool dashed)</text>
+<text x="17" y="568">+void drawCircle(GraphPoint p, int radius, Color fillColor)</text>
+<text x="17" y="577">+void drawPoly(OovPolygon poly, Color fillColor)</text>
+<text x="17" y="586">+void drawText(GraphPoint p, OovStringRef text)</text>
+<text x="17" y="595">+void groupShapes(bool start, Color lineColor, Color fillColor)</text>
+<text x="17" y="604">+void groupText(bool start)</text>
+<text x="17" y="613">+void CairoDrawer(cairo_t c)</text>
+<text x="17" y="622">+void setDiagramSize(GraphSize size)</text>
+<text x="17" y="631">+void setColor(Color c)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="358" y="590" width="268" height="143" />
+<line x1="358" y1="611" x2="626" y2="611" />
+<line x1="358" y1="632" x2="626" y2="632" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="359" y="599">GraphRect</text>
+<text x="359" y="608">/oovcde/</text>
+<text x="359" y="620">+GraphPoint start</text>
+<text x="359" y="629">+GraphSize size</text>
+<text x="359" y="641">+void findConnectPoints(GraphRect rect2, GraphPoint </text>
+<text x="359" y="650">   p1e, GraphPoint p2e)</text>
+<text x="359" y="659">+void unionRect(GraphRect rect2)</text>
+<text x="359" y="668">+void GraphRect()</text>
+<text x="359" y="677">+void GraphRect(int x, int y, int xsize, int ysize)</text>
+<text x="359" y="686">+int endx()</text>
+<text x="359" y="695">+int endy()</text>
+<text x="359" y="704">+int centerx()</text>
+<text x="359" y="713">+int centery()</text>
+<text x="359" y="722">+bool isPointIn(GraphPoint point)</text>
+<text x="359" y="731">+GraphRect getZoomed(double zoomX, double zoomY)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="394" y="373" width="272" height="116" />
+<line x1="394" y1="394" x2="666" y2="394" />
+<line x1="394" y1="415" x2="666" y2="415" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="395" y="382">GraphPoint</text>
+<text x="395" y="391">/oovcde/</text>
+<text x="395" y="403">+int x</text>
+<text x="395" y="412">+int y</text>
+<text x="395" y="424">+void GraphPoint()</text>
+<text x="395" y="433">+void GraphPoint(int px, int py)</text>
+<text x="395" y="442">+void set(int px, int py)</text>
+<text x="395" y="451">+void add(GraphPoint p)</text>
+<text x="395" y="460">+void sub(GraphPoint p)</text>
+<text x="395" y="469">+GraphPoint operator+(GraphPoint p)</text>
+<text x="395" y="478">+void clear()</text>
+<text x="395" y="487">+GraphPoint getZoomed(double zoomX, double zoomY)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="361" y="224" width="137" height="80" />
+<line x1="361" y1="245" x2="498" y2="245" />
+<line x1="361" y1="275" x2="498" y2="275" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="362" y="233">Color</text>
+<text x="362" y="242">/oovcde/</text>
+<text x="362" y="254">+uint8_t red</text>
+<text x="362" y="263">+uint8_t green</text>
+<text x="362" y="272">+uint8_t blue</text>
+<text x="362" y="284">+void Color(int r, int g, int b)</text>
+<text x="362" y="293">+void set(int r, int g, int b)</text>
+<text x="362" y="302">+uint32_t getRGB()</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="161" y1="192" x2="159" y2="253" />
+<circle cx="160" cy="221" r="5" style="fill:#ffffff" />
+<circle cx="160" cy="221" r="2" style="fill:#ffffff" />
+<polygon points="161,192 156,204 165,205 161,192 " style="fill:#ffffff" />
+<line x1="307" y1="106" x2="375" y2="105" />
+<circle cx="336" cy="105" r="5" style="fill:#ffffff" />
+<circle cx="336" cy="105" r="2" style="fill:#ffffff" />
+<polygon points="307,106 320,111 319,101 307,106 " style="fill:#ffffff" />
+<line x1="211" y1="192" x2="450" y2="590" />
+<polygon points="211,192 211,201 213,195 220,195 211,192 " style="fill:#ffffff" />
+<circle cx="218" cy="204" r="5" style="fill:#ffffff" />
+<circle cx="221" cy="210" r="2" style="fill:#ffffff" />
+<line x1="257" y1="192" x2="464" y2="373" />
+<polygon points="257,192 259,201 260,194 266,192 257,192 " style="fill:#ffffff" />
+<circle cx="267" cy="201" r="5" style="fill:#ffffff" />
+<circle cx="272" cy="205" r="2" style="fill:#ffffff" />
+<line x1="306" y1="192" x2="361" y2="225" />
+<circle cx="318" cy="199" r="5" style="fill:#ffffff" />
+<circle cx="324" cy="202" r="2" style="fill:#ffffff" />
+<line x1="159" y1="387" x2="162" y2="481" />
+<circle cx="159" cy="416" r="5" style="fill:#ffffff" />
+<circle cx="159" cy="416" r="2" style="fill:#ffffff" />
+<polygon points="159,387 155,400 164,399 159,387 " style="fill:#ffffff" />
+<line x1="224" y1="387" x2="423" y2="590" />
+<polygon points="224,387 225,396 226,389 233,388 224,387 " style="fill:#ffffff" />
+<circle cx="233" cy="396" r="5" style="fill:#ffffff" />
+<circle cx="238" cy="401" r="2" style="fill:#ffffff" />
+<line x1="304" y1="363" x2="394" y2="391" />
+<polygon points="304,363 309,371 307,364 313,360 304,363 " style="fill:#ffffff" />
+<circle cx="317" cy="367" r="5" style="fill:#ffffff" />
+<circle cx="324" cy="369" r="2" style="fill:#ffffff" />
+<line x1="304" y1="290" x2="361" y2="278" />
+<circle cx="317" cy="287" r="5" style="fill:#ffffff" />
+<circle cx="324" cy="285" r="2" style="fill:#ffffff" />
+<line x1="517" y1="184" x2="495" y2="590" />
+<polygon points="517,184 511,191 517,187 522,192 517,184 " style="fill:#ffffff" />
+<circle cx="516" cy="197" r="5" style="fill:#ffffff" />
+<circle cx="515" cy="204" r="2" style="fill:#ffffff" />
+<line x1="523" y1="184" x2="529" y2="373" />
+<polygon points="523,184 518,192 523,187 529,191 523,184 " style="fill:#ffffff" />
+<circle cx="523" cy="197" r="5" style="fill:#ffffff" />
+<circle cx="523" cy="204" r="2" style="fill:#ffffff" />
+<line x1="476" y1="184" x2="452" y2="224" />
+<circle cx="468" cy="196" r="5" style="fill:#ffffff" />
+<circle cx="465" cy="202" r="2" style="fill:#ffffff" />
+<line x1="308" y1="603" x2="358" y2="619" />
+<polygon points="308,603 313,611 311,604 317,600 308,603 " style="fill:#ffffff" />
+<circle cx="321" cy="607" r="5" style="fill:#ffffff" />
+<circle cx="328" cy="609" r="2" style="fill:#ffffff" />
+<line x1="308" y1="508" x2="394" y2="477" />
+<polygon points="308,508 317,510 311,507 313,500 308,508 " style="fill:#ffffff" />
+<circle cx="321" cy="503" r="5" style="fill:#ffffff" />
+<circle cx="327" cy="500" r="2" style="fill:#ffffff" />
+<line x1="231" y1="481" x2="393" y2="304" />
+<circle cx="240" cy="470" r="5" style="fill:#ffffff" />
+<circle cx="251" cy="458" r="5" style="fill:#000000" />
+<circle cx="251" cy="458" r="2" style="fill:#000000" />
+<polygon points="231,481 239,479 240,471 232,473 231,481 " style="fill:#000000" />
+<line x1="503" y1="590" x2="521" y2="489" />
+<circle cx="505" cy="576" r="5" style="fill:#ffffff" />
+<circle cx="508" cy="560" r="5" style="fill:#ffffff" />
+<circle cx="508" cy="560" r="2" style="fill:#ffffff" />
+<polygon points="503,590 508,584 505,577 500,582 503,590 " style="fill:#000000" />
+</g>
+</svg>

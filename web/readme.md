@@ -34,9 +34,20 @@ and Objective C languages.
 
 ## Download
 
-Download the Oovcde software from [Sourceforge]
+Download the Oovcde binaries from [Sourceforge]
 (http://sourceforge.net/projects/oovcde/files/). There is a version for Linux,
 and one for Windows.
+
+If you would like to build from source:
+- mkdir oovcde-git
+- cd oovcde-git
+- git clone https://github.com/animatedb/oovcde.git
+- cd oovcde
+- cmake source
+- make
+Depending on the version of LLVM on your system, it may be required that
+the CMakeLists.txt file is modified to use a different version. GTK3 is also
+required.
 
 
 ## Quick Start
