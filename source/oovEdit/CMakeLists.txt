@@ -4,8 +4,8 @@ add_executable(oovEdit Debugger.cpp DebugResult.cpp EditFiles.cpp EditOptions.cp
  )
 
 target_link_libraries(oovEdit oovCommon oovGuiCommon ${GTK_LIBRARIES} 
- )
+  ${LLVM_LIBRARIES})
 
 install(TARGETS oovEdit
-  EXPORT oovcdeTargets
+  EXPORT OovcdeTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)
