@@ -23,9 +23,10 @@
 The following lists releases in reverse chronological order.<br>
 <br>
 
-<h2>2015-4-3</h2>
+<h2>2015-5-1</h2>
 This version contains:
 <ul>
+  <li>Added portion diagrams</li>
   <li>Added typedef relationships</li>
 </ul>
 

@@ -98,3 +98,19 @@ DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 # Install the export set for use with the install-tree
 install(EXPORT OovcdeTargets DESTINATION
    "${INSTALL_CMAKE_DIR}" COMPONENT dev)
+
+# Copy some extra files to the executable directory
+add_custom_command(TARGET oovcde POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+    ${PROJECT_SOURCE_DIR}/bin/oovcdeLayout.glade
+    ${PROJECT_BINARY_DIR}/.
+    ${PROJECT_SOURCE_DIR}/bin/oovEdit.glade
+    ${PROJECT_BINARY_DIR}/.
+    ${PROJECT_SOURCE_DIR}/bin/oovEdit.css
+    ${PROJECT_BINARY_DIR}/.
+    ${PROJECT_SOURCE_DIR}/bin/oovcde-allpkgs-win.txt
+    ${PROJECT_BINARY_DIR}/.
+    ${PROJECT_SOURCE_DIR}/bin/oovLogo.png
+    ${PROJECT_BINARY_DIR}/.
+    ${PROJECT_SOURCE_DIR}/bin/oovEditLogo.png
+    ${PROJECT_BINARY_DIR}/.)

@@ -1,0 +1,74 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha - 4/24/2015 -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Viewing Object Oriented Project Dependencies</title>
+  </head>
+  <body>
+    <h1>Viewing a Class for Composition</h1>
+
+	Sometimes a class grows too large, and needs to be refactored. In
+	some cases, it can be difficult to determine what will result in a
+	clean separation of multiple classes.
+	<p/>
+	The Oovcde program can parse C++ code and create diagrams automatically.
+	The following shows an example of a class portion diagram in the
+	Oovcde program, and shows the "Package" class.  The data members are
+	shown in rectangles, and the member functions are shown in ellipses.
+	The arrows show the direction of the dependency.
+	<p/>
+        <embed src="PortionImages/PortionSimpleExample.svg" type="image/svg+xml"> <br>
+	Some notes about this example:
+	<ul>
+	<li>One of the constructors and the destructor are empty, and
+	    could be deleted.</li>
+	<li>The second constructor does reference an inherited class, which
+	    is not shown in the diagram.</li>
+	<li>The set link and get link functions reference the link arguments,
+	    but don't reference the compile arguments.</li>
+	<li>The load map and save map functions reference both the
+	    compile and link arguments.</li>
+	</ul>
+	<p/>
+	Now we move on to an example of a class that needs to be refactored.
+	This class is used in the Oovcde .cpp parser.  It is not the cleanest
+	class to analyze since it uses function pointers called by the 
+	clang visitor functions, but since this class was the inspiration for the
+	portion diagrams, it seems like a worthy example.
+        <embed src="PortionImages/PortionParserOrig.svg" type="image/svg+xml">
+	<p/>
+	For this refactoring, it is useful to think about how functions can
+	be rearranged based on the data members.
+	<ul>
+	<li>For example, the mModelData
+	member is only used by functions in the top half of the graph for
+	creation of classes and data types.</li><li>Another example is that there looks
+	like a bit of statement code related to the mStatements and mSwitchContexts
+	members.</li>
+	</ul>
+	<p/>
+	Another important aspect is to think about the lifetimes of the
+	data members. The mOperation and mClassifier members are only used while
+	parsing classes and operations.
+	<p/>
+
+	Some other notes about portion diagrams:
+	<ul>
+	<li>An attribute only used once could mean it is not used.</li>
+	<li>A method that doesn't use an attribute could be made static if
+	it does not call other non-static methods.</li>
+	<li>A group of attributes used by a group of methods could mean
+	the class should be refactored into multiple classes.</li>
+	</ul>
+	Other notes about the Oovcde program:
+	<ul>
+	<li>The Oovcde "Member Usage" feature can be used to find classes with
+	unused attributes.</li>
+	<li>The Oovcde complexity or line count features can be used to find which classes
+	could be refactored.</li>
+	</ul>
+
+  </body>
+</html>

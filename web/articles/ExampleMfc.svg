@@ -1,0 +1,298 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="634" height="552">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="490" y="33" width="133" height="143" />
+<line x1="490" y1="46" x2="623" y2="46" />
+<polygon points="603,54 615,59 615,49 603,54 " style="fill:#ffffff" />
+<polygon points="603,68 610,72 617,68 610,64 603,68 " style="fill:#ffffff" />
+<polygon points="603,82 610,86 617,82 610,78 603,82 " style="fill:#000000" />
+<polygon points="603,96 611,101 607,96 611,91 603,96 " style="fill:#ffffff" />
+<circle cx="603" cy="110" r="5" style="fill:#ffffff" />
+<circle cx="603" cy="124" r="5" style="fill:#ffffff" />
+<circle cx="610" cy="124" r="2" style="fill:#ffffff" />
+<circle cx="603" cy="138" r="5" style="fill:#ffffff" />
+<circle cx="603" cy="138" r="2" style="fill:#ffffff" />
+<circle cx="603" cy="152" r="5" style="fill:#ffffff" />
+<circle cx="603" cy="152" r="2" style="fill:#000000" />
+<circle cx="603" cy="166" r="5" style="fill:#000000" />
+<circle cx="603" cy="166" r="2" style="fill:#000000" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="491" y="42">Relations Key</text>
+<text x="491" y="56">Generalization</text>
+<text x="491" y="70">Aggregation(reference)</text>
+<text x="491" y="84">Composition(owned)</text>
+<text x="491" y="98">Const</text>
+<text x="491" y="112">Method Variable</text>
+<text x="491" y="126">Method Parameter</text>
+<text x="491" y="140">Public</text>
+<text x="491" y="154">Protected</text>
+<text x="491" y="168">Private</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="38" y="13" width="47" height="17" />
+<line x1="38" y1="25" x2="85" y2="25" />
+<line x1="38" y1="28" x2="85" y2="28" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="39" y="22">CWinApp</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="28" y="63" width="116" height="71" />
+<line x1="28" y1="84" x2="144" y2="84" />
+<line x1="28" y1="87" x2="144" y2="87" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="29" y="72">CsimpleMfcApp</text>
+<text x="29" y="81">/simpleMfc/</text>
+<text x="29" y="96">+CsimpleMfcApp()</text>
+<text x="29" y="105">+InitInstance()</text>
+<text x="29" y="114">+OnAppAbout()</text>
+<text x="29" y="123">#GetThisMessageMap()</text>
+<text x="29" y="132">#GetMessageMap()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="151" y="167" width="98" height="17" />
+<line x1="151" y1="179" x2="249" y2="179" />
+<line x1="151" y1="182" x2="249" y2="182" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="152" y="176">CCommandLineInfo</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="217" y="69" width="198" height="62" />
+<line x1="217" y1="90" x2="415" y2="90" />
+<line x1="217" y1="93" x2="415" y2="93" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="218" y="78">CAboutDlg</text>
+<text x="218" y="87">/simpleMfc/</text>
+<text x="218" y="102">+CAboutDlg()</text>
+<text x="218" y="111">#DoDataExchange(CDataExchange pDX)</text>
+<text x="218" y="120">#GetThisMessageMap()</text>
+<text x="218" y="129">#GetMessageMap()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="32" y="247" width="229" height="125" />
+<line x1="32" y1="268" x2="261" y2="268" />
+<line x1="32" y1="298" x2="261" y2="298" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="33" y="256">CMainFrame</text>
+<text x="33" y="265">/simpleMfc/</text>
+<text x="33" y="277">+CRuntimeClass classCMainFrame</text>
+<text x="33" y="286">#CStatusBar m_wndStatusBar</text>
+<text x="33" y="295">#CToolBar m_wndToolBar</text>
+<text x="33" y="307">#CMainFrame()</text>
+<text x="33" y="316">+GetRuntimeClass()</text>
+<text x="33" y="325">+CreateObject()</text>
+<text x="33" y="334">+PreCreateWindow(CREATESTRUCT cs)</text>
+<text x="33" y="343">#OnCreate(LPCREATESTRUCT lpCreateStruct)</text>
+<text x="33" y="352">#GetThisMessageMap()</text>
+<text x="33" y="361">#GetMessageMap()</text>
+<text x="33" y="370">+~CMainFrame()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="32" y="441" width="180" height="107" />
+<line x1="32" y1="462" x2="212" y2="462" />
+<line x1="32" y1="474" x2="212" y2="474" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="33" y="450">CsimpleMfcDoc</text>
+<text x="33" y="459">/simpleMfc/</text>
+<text x="33" y="471">+CRuntimeClass classCsimpleMfcDoc</text>
+<text x="33" y="483">#CsimpleMfcDoc()</text>
+<text x="33" y="492">+GetRuntimeClass()</text>
+<text x="33" y="501">+CreateObject()</text>
+<text x="33" y="510">+OnNewDocument()</text>
+<text x="33" y="519">+Serialize(CArchive ar)</text>
+<text x="33" y="528">#GetThisMessageMap()</text>
+<text x="33" y="537">#GetMessageMap()</text>
+<text x="33" y="546">+~CsimpleMfcDoc()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="413" y="341" width="220" height="143" />
+<line x1="413" y1="362" x2="633" y2="362" />
+<line x1="413" y1="374" x2="633" y2="374" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="414" y="350">CsimpleMfcView</text>
+<text x="414" y="359">/simpleMfc/</text>
+<text x="414" y="371">+CRuntimeClass classCsimpleMfcView</text>
+<text x="414" y="383">#CsimpleMfcView()</text>
+<text x="414" y="392">+GetRuntimeClass()</text>
+<text x="414" y="401">+CreateObject()</text>
+<text x="414" y="410">+OnDraw(CDC pDC)</text>
+<text x="414" y="419">+PreCreateWindow(CREATESTRUCT cs)</text>
+<text x="414" y="428">#OnPreparePrinting(CPrintInfo pInfo)</text>
+<text x="414" y="437">#OnBeginPrinting(CDC pDC, CPrintInfo pInfo)</text>
+<text x="414" y="446">#OnEndPrinting(CDC pDC, CPrintInfo pInfo)</text>
+<text x="414" y="455">#GetThisMessageMap()</text>
+<text x="414" y="464">#GetMessageMap()</text>
+<text x="414" y="473">+GetDocument()</text>
+<text x="414" y="482">+~CsimpleMfcView()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="279" y="404" width="75" height="17" />
+<line x1="279" y1="416" x2="354" y2="416" />
+<line x1="279" y1="419" x2="354" y2="419" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="280" y="413">CRuntimeClass</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="31" y="389" width="59" height="17" />
+<line x1="31" y1="401" x2="90" y2="401" />
+<line x1="31" y1="404" x2="90" y2="404" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="32" y="398">CDocument</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="285" y="507" width="45" height="17" />
+<line x1="285" y1="519" x2="330" y2="519" />
+<line x1="285" y1="522" x2="330" y2="522" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="286" y="516">CArchive</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="528" y="264" width="34" height="17" />
+<line x1="528" y1="276" x2="562" y2="276" />
+<line x1="528" y1="279" x2="562" y2="279" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="529" y="273">CView</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="456" y="534" width="24" height="17" />
+<line x1="456" y1="546" x2="480" y2="546" />
+<line x1="456" y1="549" x2="480" y2="549" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="457" y="543">CDC</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="536" y="533" width="50" height="17" />
+<line x1="536" y1="545" x2="586" y2="545" />
+<line x1="536" y1="548" x2="586" y2="548" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="537" y="542">CPrintInfo</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="443" y="220" width="105" height="17" />
+<line x1="443" y1="232" x2="548" y2="232" />
+<line x1="443" y1="235" x2="548" y2="235" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="444" y="229">CSingleDocTemplate</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="357" y="283" width="56" height="17" />
+<line x1="357" y1="295" x2="413" y2="295" />
+<line x1="357" y1="298" x2="413" y2="298" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="358" y="292">CStatusBar</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="356" y="244" width="49" height="17" />
+<line x1="356" y1="256" x2="405" y2="256" />
+<line x1="356" y1="259" x2="405" y2="259" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="357" y="253">CToolBar</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="30" y="178" width="61" height="17" />
+<line x1="30" y1="190" x2="91" y2="190" />
+<line x1="30" y1="193" x2="91" y2="193" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="31" y="187">CFrameWnd</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="297" y="12" width="41" height="17" />
+<line x1="297" y1="24" x2="338" y2="24" />
+<line x1="297" y1="27" x2="338" y2="27" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="298" y="21">CDialog</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="380" y="166" width="79" height="17" />
+<line x1="380" y1="178" x2="459" y2="178" />
+<line x1="380" y1="181" x2="459" y2="181" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="381" y="175">CDataExchange</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="278" y="167" width="77" height="17" />
+<line x1="278" y1="179" x2="355" y2="179" />
+<line x1="278" y1="182" x2="355" y2="182" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="279" y="176">AFX_MSGMAP</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="63" y1="29" x2="75" y2="63" />
+<circle cx="72" cy="57" r="5" style="fill:#ffffff" />
+<circle cx="72" cy="57" r="2" style="fill:#ffffff" />
+<polygon points="63,29 63,42 72,39 63,29 " style="fill:#ffffff" />
+<line x1="137" y1="133" x2="189" y2="167" />
+<circle cx="148" cy="140" r="5" style="fill:#ffffff" />
+<line x1="144" y1="98" x2="217" y2="100" />
+<circle cx="157" cy="98" r="5" style="fill:#ffffff" />
+<line x1="316" y1="69" x2="317" y2="28" />
+<circle cx="316" cy="57" r="5" style="fill:#ffffff" />
+<circle cx="316" cy="57" r="2" style="fill:#ffffff" />
+<polygon points="317,28 312,40 322,41 317,28 " style="fill:#ffffff" />
+<line x1="359" y1="131" x2="408" y2="166" />
+<circle cx="370" cy="139" r="5" style="fill:#ffffff" />
+<circle cx="376" cy="143" r="2" style="fill:#ffffff" />
+<line x1="316" y1="131" x2="316" y2="167" />
+<circle cx="316" cy="145" r="5" style="fill:#ffffff" />
+<line x1="248" y1="371" x2="303" y2="404" />
+<circle cx="273" cy="386" r="5" style="fill:#ffffff" />
+<circle cx="273" cy="386" r="2" style="fill:#ffffff" />
+<polygon points="248,371 252,378 260,378 256,371 248,371 " style="fill:#000000" />
+<line x1="260" y1="301" x2="357" y2="293" />
+<circle cx="289" cy="298" r="5" style="fill:#ffffff" />
+<circle cx="289" cy="298" r="2" style="fill:#000000" />
+<polygon points="260,301 268,304 273,300 267,296 260,301 " style="fill:#000000" />
+<line x1="260" y1="282" x2="356" y2="257" />
+<circle cx="289" cy="274" r="5" style="fill:#ffffff" />
+<circle cx="289" cy="274" r="2" style="fill:#000000" />
+<polygon points="260,282 268,284 273,279 266,276 260,282 " style="fill:#000000" />
+<line x1="103" y1="247" x2="65" y2="194" />
+<circle cx="82" cy="218" r="5" style="fill:#ffffff" />
+<circle cx="82" cy="218" r="2" style="fill:#ffffff" />
+<polygon points="65,194 68,207 76,201 65,194 " style="fill:#ffffff" />
+<line x1="212" y1="456" x2="298" y2="420" />
+<circle cx="239" cy="444" r="5" style="fill:#ffffff" />
+<circle cx="239" cy="444" r="2" style="fill:#ffffff" />
+<polygon points="212,456 220,457 224,451 217,449 212,456 " style="fill:#000000" />
+<line x1="89" y1="441" x2="65" y2="405" />
+<circle cx="81" cy="429" r="5" style="fill:#ffffff" />
+<circle cx="81" cy="429" r="2" style="fill:#ffffff" />
+<polygon points="65,405 67,418 76,412 65,405 " style="fill:#ffffff" />
+<line x1="212" y1="504" x2="285" y2="513" />
+<circle cx="225" cy="505" r="5" style="fill:#ffffff" />
+<circle cx="232" cy="506" r="2" style="fill:#ffffff" />
+<line x1="413" y1="412" x2="353" y2="412" />
+<circle cx="383" cy="412" r="5" style="fill:#ffffff" />
+<circle cx="383" cy="412" r="2" style="fill:#ffffff" />
+<polygon points="413,412 406,408 399,412 406,416 413,412 " style="fill:#000000" />
+<line x1="534" y1="341" x2="544" y2="280" />
+<circle cx="539" cy="309" r="5" style="fill:#ffffff" />
+<circle cx="539" cy="309" r="2" style="fill:#ffffff" />
+<polygon points="544,280 537,291 547,293 544,280 " style="fill:#ffffff" />
+<line x1="493" y1="483" x2="471" y2="534" />
+<circle cx="487" cy="495" r="5" style="fill:#ffffff" />
+<circle cx="484" cy="502" r="2" style="fill:#ffffff" />
+<line x1="543" y1="483" x2="559" y2="533" />
+<circle cx="547" cy="496" r="5" style="fill:#ffffff" />
+<circle cx="549" cy="503" r="2" style="fill:#ffffff" />
+</g>
+</svg>

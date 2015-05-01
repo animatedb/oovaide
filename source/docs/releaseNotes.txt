@@ -69,6 +69,9 @@ Missing Features
 	- Allow multiple selection to add relations, remove, properties
 	- Grid for class placement, option for grid size
 	- Add filter for class list (GTK search feature exists)
+- Portion Diagrams
+	- Should show connections to this/super
+	- Overloaded methods don't work
 - Sequence Diagrams
 	- Improve else/switch case
 	- Show method parameters optionally
