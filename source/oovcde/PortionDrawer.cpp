@@ -5,6 +5,7 @@
  */
 
 #include "PortionDrawer.h"
+#include "PortionGenes.h"
 
 
 bool PortionDrawer::attemptTofillDepth(size_t nodeIndex, std::vector<int> &depths) const
@@ -41,10 +42,11 @@ bool PortionDrawer::attemptTofillDepth(size_t nodeIndex, std::vector<int> &depth
     return resolved;
     }
 
-void PortionDrawer::fillDepths(std::vector<int> &depths) const
+void PortionDrawer::findCallDepths(std::vector<int> &depths) const
     {
     bool resolved = false;
-    for(int i=0; i<10 && !resolved; i++)
+    /// @todo - need max nesting depth to limit loop time
+    for(int i=0; i<100 && !resolved; i++)
 	{
 	for(size_t i=0; i<mGraph->getNodes().size(); i++)
 	    {
@@ -70,7 +72,7 @@ void PortionDrawer::updateNodePositions()
 	    }
 	std::vector<int> depths;
 	depths.resize(mGraph->getNodes().size());
-	fillDepths(depths);
+	findCallDepths(depths);
 
 	const int margin = 20;
 	int pad = mDrawer->getTextExtentHeight("W");
@@ -94,6 +96,16 @@ void PortionDrawer::updateNodePositions()
 	    mNodePositions[i] = rect.start;
 	    }
 	}
+#define PORTION_GENES 1
+#if(PORTION_GENES)
+    if(mNodePositions.size() > 0)
+	{
+	PortionGenes genes;
+	GraphRect rect = getNodeRect(0);
+	genes.initialize(*this, rect.size.y);
+	genes.updatePositionsInDrawer();
+	}
+#endif
     }
 
 void PortionDrawer::updateGraph(PortionGraph const &graph)
@@ -172,12 +184,20 @@ void PortionDrawer::drawNodes()
     {
     for(size_t i=0; i<mNodePositions.size(); i++)
         {
-        mDrawer->drawRect(getNodeRect(i));
+	if(mGraph->getNodes()[i].getNodeType() == PNT_Attribute)
+	    {
+	    mDrawer->drawRect(getNodeRect(i));
+	    }
+	else
+	    {
+	    mDrawer->drawEllipse(getNodeRect(i));
+	    }
         }
     }
 
 void PortionDrawer::drawConnections()
     {
+    int lastColorIndex = -1;
     for(auto const &conn : mGraph->getConnections())
 	{
 	GraphRect suppRect = getNodeRect(conn.mSupplierNodeIndex);
@@ -212,7 +232,25 @@ void PortionDrawer::drawConnections()
 		suppPoint.y += suppRect.size.y/2;
 		}
 	    }
+	int colorIndex = conn.mSupplierNodeIndex;
+	if(colorIndex != lastColorIndex)
+	    {
+	    if(lastColorIndex != -1)
+		{
+		mDrawer->groupShapes(false, 0, 0);
+		}
+	    Color lineColor = DistinctColors::getColor(colorIndex % DistinctColors::getNumColors());
+	    mDrawer->groupShapes(true, lineColor, Color(245,245,255));
+	    lastColorIndex = colorIndex;
+	    }
 	mDrawer->drawLine(suppPoint, consPoint);
+	DiagramArrow arrow(suppPoint, consPoint, 10);
+	mDrawer->drawLine(suppPoint, suppPoint + arrow.getLeftArrowPosition());
+	mDrawer->drawLine(suppPoint, suppPoint + arrow.getRightArrowPosition());
+	}
+    if(lastColorIndex != -1)
+	{
+	mDrawer->groupShapes(false, 0, 0);
 	}
     }
 

@@ -16,11 +16,6 @@ Explanations
 Missing Features
 ----------------
 - General
-<<<<<<< .mine
-	- Fix linux to remove pthread requirement
-	- BUG: add warning if package path does not exist
-=======
->>>>>>> .r1612
 	- BUG: Goto class doesn't change tab to class tab
 	- create minimal code guidelines, ex:
 	  "The Power of Ten – Rules for Developing Safety Critical Code"
@@ -89,8 +84,10 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Scan CMake files to find external pkg-config package dependencies
 	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
 	- analysis - doesn't work on filenames with spaces
+	- Complexity - could show class and module complexity
 	- Coverage tool - fix switch/case fall throughs
 	- Coverage tool - fix precompiled header before include oovcoverage.h
 	- Coverage tool - filenames with underscore has stats, but not lines covered
@@ -175,13 +172,16 @@ Missing Features
 
 - Future
 	- include mingw include files in package?
-	- Quality measurement
+	- Statistics / Quality measurement
 		amount of const, number of raw pointers, minimal use of new/delete/malloc/...
 		interface complexity, amount of encapsulation, size of exposed interface
 			amount of state - even in called classes
 		member functions called in any order?
 		number of interface classes vs hidden classes in a module
 		child classes that don't use parent class data/functions
+		class - number of classes related to a class
+		class - complexity of a class
+		number of unused classes, methods, etc.
 	- more component stats - lines, classes, etc.
 	- Cohesion in a class (how methods use attributes)
 		http://www.bth.se/fou/cuppsats.nsf/all/86e880ce9d0b94aec1256f0e004778e5/

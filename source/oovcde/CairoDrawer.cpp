@@ -63,6 +63,18 @@ void CairoDrawer::drawCircle(const GraphPoint &p, int radius, Color fillColor)
     cairo_stroke(cr);
     }
 
+void CairoDrawer::drawEllipse(const GraphRect &rect)
+    {
+    cairo_save(cr);
+    int halfX = rect.size.x / 2.0;
+    int halfY = rect.size.y / 2.0;
+    cairo_translate (cr, rect.start.x + halfX, rect.start.y + halfY);
+    cairo_scale(cr, halfX, halfY);
+    cairo_arc(cr, 0., 0., 1., 0., 2 * M_PI);
+    cairo_restore(cr);
+    cairo_stroke(cr);
+    }
+
 void CairoDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
     {
     if(poly.size() > 0)

@@ -70,6 +70,14 @@ void SvgDrawer::drawCircle(const GraphPoint &p, int radius, Color fillColor)
 	    p.x, p.y, radius, fillColor.getRGB());
     }
 
+void SvgDrawer::drawEllipse(const GraphRect &rect)
+    {
+    int halfX = rect.size.x/2;
+    int halfY = rect.size.y/2;
+    fprintf(mFp, "<ellipse cx=\"%d\" cy=\"%d\" rx=\"%d\" ry=\"%d\" />\n",
+	    rect.start.x+halfX, rect.start.y+halfY, halfX, halfY);
+    }
+
 void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
     {
     std::string pointsStr;

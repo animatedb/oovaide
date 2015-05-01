@@ -5,7 +5,6 @@
  *  \copyright 2014 DCBlaha.  Distributed under the GPL.
  */
 #include "ComponentDrawer.h"
-#include <math.h>	// for atan
 
 GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
     {
@@ -87,29 +86,9 @@ void ComponentDrawer::drawConnection(const ComponentGraph &graph,
 	    graph.getNodes()[connect.mNodeSupplier].getRect(), consumer, producer);
     mDrawer.drawLine(producer, consumer, true);
 
-    int xdist = producer.x-consumer.x;
-    int ydist = producer.y-consumer.y;
-    double lineAngleRadians;
-    if(ydist != 0)
-        lineAngleRadians = atan2(xdist, ydist);
-    else
-        {
-        if(producer.x > consumer.x)
-            lineAngleRadians = M_PI/2;
-        else
-            lineAngleRadians = -M_PI/2;
-        }
-    int arrowtop = -10;
-    const double triangleAngle = (2 * M_PI) / arrowtop;
-    GraphPoint p2;
-    // calc left point of symbol
-    p2.set(sin(lineAngleRadians-triangleAngle) * arrowtop,
-	    cos(lineAngleRadians-triangleAngle) * arrowtop);
-    mDrawer.drawLine(producer, p2+producer);
-    // calc right point of symbol
-    p2.set(sin(lineAngleRadians+triangleAngle) * arrowtop,
-	cos(lineAngleRadians+triangleAngle) * arrowtop);
-    mDrawer.drawLine(producer, p2+producer);
+    DiagramArrow arrow(producer, consumer, 10);
+    mDrawer.drawLine(producer, producer + arrow.getLeftArrowPosition());
+    mDrawer.drawLine(producer, producer + arrow.getRightArrowPosition());
 
     mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
     }

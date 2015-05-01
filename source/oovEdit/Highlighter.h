@@ -14,7 +14,7 @@
 #include "OovThreadedBackgroundQueue.h"
 #include "OovProcess.h"
 
-#ifdef __linux__
+#if(CINDEX_VERSION_MAJOR >= 6)
 #define CODE_COMPLETE 0
 #else
 #define CODE_COMPLETE 1

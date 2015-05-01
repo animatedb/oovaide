@@ -79,6 +79,8 @@ class GenePool
     public:
 	/// Do one generation of evolution for the geen pool.
 	void singleGeneration();
+	int getNumGenes() const
+	    { return numgenes; }
 	GenePtr getGene(int index)
 	    { return(&genes[(genesize + sizeof(QualityType)) * index]); }
 	ConstGenePtr getGene(int index) const

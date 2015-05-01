@@ -499,40 +499,6 @@ void ZoneDrawer::drawNodeText()
 	}
     }
 
-// Just use Kelly's colors
-// http://stackoverflow.com/questions/470690/how-to-automatically-generate-n-distinct-colors
-// @param index 0 : MaxColors
-static const int MaxColors = 19;
-static Color getColor(int index)
-    {
-    static int colors[] =
-	{
-	0xFFB300, // Vivid Yellow
-	0x803E75, // Strong Purple
-	0xFF6800, // Vivid Orange
-	0xA6BDD7, // Very Light Blue
-// RESERVED	0xC10020, // Vivid Red
-	0xCEA262, // Grayish Yellow
-	0x817066, // Medium Gray
-
-	// Not good for color blind people
-	0x007D34, // Vivid Green
-	0xF6768E, // Strong Purplish Pink
-	0x00538A, // Strong Blue
-	0xFF7A5C, // Strong Yellowish Pink
-	0x53377A, // Strong Violet
-	0xFF8E00, // Vivid Orange Yellow
-	0xB32851, // Strong Purplish Red
-	0xF4C800, // Vivid Greenish Yellow
-	0x7F180D, // Strong Reddish Brown
-	0x93AA00, // Vivid Yellowish Green
-	0x593315, // Deep Yellowish Brown
-	0xF13A13, // Vivid Reddish Orange
-	0x232C16, // Dark Olive Green
-	};
-    return(Color(colors[index]>>16, (colors[index]>>8) & 0xFF, (colors[index]) & 0xFF));
-    }
-
 std::vector<ZoneConnectIndices> ZoneDrawer::getSortedConnections(
 	ZoneConnections const &connections) const
     {
@@ -581,7 +547,7 @@ void ZoneDrawer::drawSortedConnections(std::vector<ZoneConnectIndices> const &so
 		mDrawer->groupShapes(false, 0, 0);
 		hadLines = true;
 		}
-	    Color lineColor = getColor(compIndex % MaxColors);
+	    Color lineColor = DistinctColors::getColor(compIndex % DistinctColors::getNumColors());
 	    mDrawer->groupShapes(true, lineColor, Color(245,245,255));
 	    lastCompIndex = compIndex;
 	    }
@@ -719,27 +685,8 @@ void ZoneDrawer::drawConnectionArrow(GraphPoint firstPoint, GraphPoint secondPoi
 	producer = firstPoint;
 	consumer = secondPoint;
 	}
-    int xdist = producer.x-consumer.x;
-    int ydist = producer.y-consumer.y;
-    double lineAngleRadians;
-    if(ydist != 0)
-	lineAngleRadians = atan2(xdist, ydist);
-    else
-	{
-	if(producer.x > consumer.x)
-	    lineAngleRadians = M_PI/2;
-	else
-	    lineAngleRadians = -M_PI/2;
-	}
-    int arrowtop = -12;
-    const double triangleAngle = (.7 * M_PI) / arrowtop;
-    GraphPoint p2;
-    // calc left point of symbol
-    p2.set(sin(lineAngleRadians-triangleAngle) * arrowtop,
-	    cos(lineAngleRadians-triangleAngle) * arrowtop);
-    mDrawer->drawLine(producer, p2+producer);
-    // calc right point of symbol
-    p2.set(sin(lineAngleRadians+triangleAngle) * arrowtop,
-	cos(lineAngleRadians+triangleAngle) * arrowtop);
-    mDrawer->drawLine(producer, p2+producer);
+
+    DiagramArrow arrow(producer, consumer, 12);
+    mDrawer->drawLine(producer, producer + arrow.getLeftArrowPosition());
+    mDrawer->drawLine(producer, producer + arrow.getRightArrowPosition());
     }

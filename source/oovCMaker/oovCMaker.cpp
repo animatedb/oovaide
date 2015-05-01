@@ -312,11 +312,18 @@ static void appendCommandAndNames(eCommandTypes ct, char const *compName,
 	    break;
 
 	case CT_Exec:		str += "add_executable";	break;
-	case CT_TargHeaders:	str += "set_target_properties";	break;
+	case CT_TargHeaders:	str += "set";			break;
 	case CT_TargLinkLibs:	str += "target_link_libraries";	break;
 	}
     str += "(";
-    str += compName;
+    if(ct == CT_TargHeaders)
+	{
+	str += "HEADER_FILES ";
+	}
+    else
+	{
+	str += compName;
+	}
     switch(ct)
 	{
 	case CT_Exec:		str += ' ';		break;
@@ -326,20 +333,17 @@ static void appendCommandAndNames(eCommandTypes ct, char const *compName,
 	// "Cannot find source file:", since CMake doesn't understand interface keyword.
 //	case CT_Interface:	str += " INTERFACE ";	break;
 	case CT_Interface:	str += " STATIC ";	break;
-	case CT_TargHeaders:	str += " PROPERTIES\n  PUBLIC_HEADER ";	break;
+	case CT_TargHeaders:	str += ' ';		break;
 	case CT_TargLinkLibs:	str += ' ';		break;
 	}
+    CMaker::appendNames(names, ' ', str);
+    str += ")\n\n";
     if(ct == CT_TargHeaders)
 	{
-	str += '\"';
-	CMaker::appendNames(names, ';', str);
-	str += '\"';
+	str += "set_target_properties(";
+	str += compName;
+	str += " PROPERTIES PUBLIC_HEADER \"${HEADER_FILES}\")\n\n";
 	}
-    else
-	{
-	CMaker::appendNames(names, ' ', str);
-	}
-    str += ")\n\n";
     }
 
 void CMaker::makeComponentFile(OovStringRef const compName,
@@ -400,6 +404,7 @@ void CMaker::makeComponentFile(OovStringRef const compName,
             appendCommandAndNames(CT_Static, compName, allFiles, str);
 
         appendCommandAndNames(CT_TargHeaders, compName, headers, str);
+
 
         str += "install(TARGETS ";
         str += compName;

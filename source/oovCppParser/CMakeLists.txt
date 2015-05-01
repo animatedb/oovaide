@@ -2,8 +2,8 @@
 add_executable(oovCppParser CppParser.cpp ModelWriter.cpp oovCppParser.cpp 
   ParseBase.cpp)
 
-target_link_libraries(oovCppParser oovCommon ${LLVM_LIBRARIES})
+target_link_libraries(oovCppParser oovCommon ${GTK_LIBRARIES})
 
 install(TARGETS oovCppParser
-  EXPORT OovcdeTargets
+  EXPORT oovcdeTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)

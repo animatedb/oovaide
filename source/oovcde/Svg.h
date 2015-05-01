@@ -23,6 +23,7 @@ class SvgDrawer:public DiagramDrawer
 	virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
 		bool dashed=false) override;
 	virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor) override;
+	virtual void drawEllipse(const GraphRect &rect) override;
 	virtual void drawPoly(const OovPolygon &poly, Color fillColor) override;
 	virtual void groupShapes(bool start, Color lineColor, Color fillColor) override;
 	virtual void groupText(bool start) override;
