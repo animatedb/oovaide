@@ -409,7 +409,7 @@ bool FileIsFileOnDisk(OovStringRef const path)
     OovString tempPath = path;
     FilePathRemovePathSep(tempPath, tempPath.size()-1);
     struct OovStat32 statval;
-    return(OovStat32(tempPath.getStr(), &statval) == 0);
+    return(OovStat32(tempPath.getStr(), &statval) == 0 && !S_ISDIR(statval.st_mode));
     }
 
 bool FileIsDirOnDisk(OovStringRef const path)
