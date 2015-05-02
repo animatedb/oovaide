@@ -185,11 +185,8 @@ bool OovProject::runSrcManager(OovStringRef const buildConfigName,
 	OovStringRef const runStr, eSrcManagerOptions smo)
     {
     bool success = true;
-#ifdef __linux__
-    OovStringRef const procPath = "./oovBuilder";
-#else
-    OovStringRef const procPath = "./oovBuilder.exe";
-#endif
+    OovString procPath = Project::getBinDirectory();
+    procPath += FilePathMakeExeFilename("oovBuilder");
     OovProcessChildArgs args;
     args.addArg(procPath);
     args.addArg(Project::getProjectDirectory());
