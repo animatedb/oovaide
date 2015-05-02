@@ -33,8 +33,9 @@ void ToolPathFile::getPaths()
 
 std::string ToolPathFile::getAnalysisToolPath()
     {
-	// ./ is needed in Linux
-    return("./oovCppParser");
+    OovString path = Project::getBinDirectory();
+    path += "oovCppParser";
+    return(path);
     }
 
 std::string ToolPathFile::getCompilerPath()
@@ -57,8 +58,9 @@ std::string ToolPathFile::getLibberPath()
 
 std::string ToolPathFile::getCovInstrToolPath()
     {
-	// ./ is needed in Linux
-    return("./oovCovInstr");
+    OovString path = Project::getBinDirectory();
+    path += "oovCovInstr";
+    return(path);
     }
 
 bool FileStat::isOutputOld(OovStringRef const outputFn,

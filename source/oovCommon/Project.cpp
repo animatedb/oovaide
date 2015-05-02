@@ -63,6 +63,26 @@ OovStringRef const Project::getSrcRootDirectory()
     return sSourceRootDirectory;
     }
 
+
+OovString const &Project::getBinDirectory()
+    {
+    static OovString path;
+    if(path.length() == 0)
+	{
+	// On linux, we could use the "which" command using "which oovcde", but
+	// this will probably be ok?
+	if(FileIsFileOnDisk("./oovcde"))
+	    {
+	    path = "./";
+	    }
+	else
+	    {
+	    path = "/usr/local/bin";
+	    }
+	}
+    return path;
+    }
+
 OovString Project::getProjectFilePath()
     {
     FilePath fn(sProjectDirectory, FP_Dir);

@@ -50,6 +50,7 @@ class Project
 	    { sProjectDirectory = projDir; }
 	static OovString const &getProjectDirectory()
 	    { return sProjectDirectory; }
+	static OovString const &getBinDirectory();
 	static OovString getProjectFilePath();
 
 	static OovString getGuiOptionsFilePath();

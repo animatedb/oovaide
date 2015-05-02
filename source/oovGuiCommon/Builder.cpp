@@ -7,6 +7,7 @@
 
 #include "Builder.h"
 #include "FilePath.h"
+#include "Project.h"
 
 static Builder *gBuilder;
 
@@ -26,12 +27,8 @@ bool Builder::addFromFile(OovStringRef const fn)
     {
     GError *err = nullptr;
     init();
-    if(gtk_builder_add_from_file(mGtkBuilder, fn, &err) == 0)
-	{
-	FilePath layoutPath("/usr/local/bin", FP_Dir);
-	layoutPath.appendFile(fn);
-	err = nullptr;
-	gtk_builder_add_from_file(mGtkBuilder, layoutPath.getStr(), &err);
-	}
+    OovString path = Project::getBinDirectory();
+    path += fn;
+    gtk_builder_add_from_file(mGtkBuilder, path.getStr(), &err);
     return(!err);
     }
