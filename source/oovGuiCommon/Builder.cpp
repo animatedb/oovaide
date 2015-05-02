@@ -28,7 +28,7 @@ bool Builder::addFromFile(OovStringRef const fn)
     init();
     if(gtk_builder_add_from_file(mGtkBuilder, fn, &err) == 0)
 	{
-	FilePath layoutPath("/usr/local/bin/oovcde", FP_Dir);
+	FilePath layoutPath("/usr/local/bin", FP_Dir);
 	layoutPath.appendFile(fn);
 	err = nullptr;
 	gtk_builder_add_from_file(mGtkBuilder, layoutPath.getStr(), &err);
