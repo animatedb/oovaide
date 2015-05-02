@@ -77,7 +77,7 @@ OovString const &Project::getBinDirectory()
 	    }
 	else
 	    {
-	    path = "/usr/local/bin";
+	    path = "/usr/local/bin/";
 	    }
 	}
     return path;
