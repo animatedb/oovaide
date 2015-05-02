@@ -95,7 +95,7 @@ install(FILES
    "${PROJECT_BINARY_DIR}/OovcdeConfigVersion.cmake"
 DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
-# Copy some extra files to the executable directory
+# Copy some extra files to the share directory
 install(FILES
    "${PROJECT_SOURCE_DIR}/bin/oovcdeLayout.glade"
    "${PROJECT_SOURCE_DIR}/bin/oovEdit.glade"

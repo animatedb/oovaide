@@ -6,6 +6,7 @@
  */
 
 #include "Builder.h"
+#include "FilePath.h"
 
 static Builder *gBuilder;
 
@@ -25,6 +26,12 @@ bool Builder::addFromFile(OovStringRef const fn)
     {
     GError *err = nullptr;
     init();
-    gtk_builder_add_from_file(mGtkBuilder, fn, &err);
+    if(gtk_builder_add_from_file(mGtkBuilder, fn, &err) == 0)
+	{
+	FilePath layoutPath("/usr/local/bin/oovcde", FP_Dir);
+	layoutPath.appendFile(fn);
+	err = nullptr;
+	gtk_builder_add_from_file(mGtkBuilder, layoutPath.getStr(), &err);
+	}
     return(!err);
     }
