@@ -28,6 +28,8 @@ This version contains:
 <ul>
   <li>Added portion diagrams</li>
   <li>Added typedef relationships</li>
+  <li>Improved Linux install directories</li>
+  <li>Added XAuthority for loading editor in Linux</li>
 </ul>
 
 <h2>2015-4-2</h2>
