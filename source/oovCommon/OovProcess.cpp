@@ -303,12 +303,36 @@ void OovPipeProcessLinux::linuxChildProcessKill()
 	}
     }
 
+static bool addEnvItem(OovStringRef envName, OovString &envStr)
+    {
+    char *val = getenv(envName.getStr());
+    if(val)
+	{
+	envStr += envName;
+	envStr += "=";
+	envStr += val;
+	}
+    return(val != nullptr);
+    }
+
 static int linuxSpawnNoWait(OovStringRef const procPath, char const * const *argv)
     {
     pid_t pid;
-    char const *env[2];
-    env[0] = "DISPLAY=:0.0";
-    env[1] = nullptr;
+    char const *env[5];
+    OovString envStrs[5];
+    int envCount = 0;
+
+    if(addEnvItem("DISPLAY", envStrs[envCount]))
+	{
+	env[envCount] = envStrs[envCount].getStr();
+	envCount++;
+	}
+    if(addEnvItem("XAUTHORITY", envStrs[envCount]))
+	{
+	env[envCount] = envStrs[envCount].getStr();
+	envCount++;
+	}
+    env[envCount] = nullptr;
     int ret = posix_spawnp(&pid, procPath, nullptr, nullptr,
 	const_cast<char * const *>(argv), const_cast<char * const *>(env));
     return ret;
