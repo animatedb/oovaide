@@ -75,9 +75,13 @@ OovString const &Project::getBinDirectory()
 	    {
 	    path = "./";
 	    }
-	else
+	else if(FileIsFileOnDisk("/usr/local/bin/oovcde"))
 	    {
 	    path = "/usr/local/bin/";
+	    }
+	else
+	    {
+	    path = "/usr/bin";
 	    }
 	}
     return path;
