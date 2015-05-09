@@ -8,13 +8,13 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    version="1.1"
-   width="283"
-   height="417"
+   width="263"
+   height="330"
    id="svg2"
    inkscape:version="0.48.1 "
-   sodipodi:docname="SimpleExample.svg">
+   sodipodi:docname="PortionSimpleExample.svg">
   <metadata
-     id="metadata128">
+     id="metadata164">
     <rdf:RDF>
       <cc:Work
          rdf:about="">
@@ -25,7 +25,7 @@
     </rdf:RDF>
   </metadata>
   <defs
-     id="defs126" />
+     id="defs162" />
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -35,399 +35,507 @@
      guidetolerance="10"
      inkscape:pageopacity="0"
      inkscape:pageshadow="2"
-     inkscape:window-width="801"
-     inkscape:window-height="807"
-     id="namedview124"
+     inkscape:window-width="970"
+     inkscape:window-height="848"
+     id="namedview160"
      showgrid="false"
-     inkscape:zoom="1"
-     inkscape:cx="141.5"
-     inkscape:cy="208.5"
-     inkscape:window-x="360"
-     inkscape:window-y="62"
+     inkscape:zoom="1.5"
+     inkscape:cx="121.5"
+     inkscape:cy="174.5"
+     inkscape:window-x="269"
+     inkscape:window-y="154"
      inkscape:window-maximized="0"
-     inkscape:current-layer="svg2" />
+     inkscape:current-layer="svg2"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0" />
   <g
      style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
      id="g4"
-     transform="translate(-8,-26)">
+     transform="translate(-19.5,-18.5)">
     <ellipse
-       cx="218"
-       cy="272"
+       cx="217"
+       cy="305"
        rx="41"
        ry="7"
        id="ellipse6"
-       sodipodi:cx="218"
-       sodipodi:cy="272"
+       sodipodi:cx="217"
+       sodipodi:cy="305"
        sodipodi:rx="41"
        sodipodi:ry="7"
-       d="m 259,272 c 0,3.86599 -18.35633,7 -41,7 -22.64367,0 -41,-3.13401 -41,-7 0,-3.86599 18.35633,-7 41,-7 22.64367,0 41,3.13401 41,7 z" />
+       d="m 258,305 c 0,3.86599 -18.35633,7 -41,7 -22.64367,0 -41,-3.13401 -41,-7 0,-3.86599 18.35633,-7 41,-7 22.64367,0 41,3.13401 41,7 z" />
     <ellipse
        cx="209"
-       cy="119"
+       cy="113"
        rx="30"
        ry="7"
        id="ellipse8"
        sodipodi:cx="209"
-       sodipodi:cy="119"
+       sodipodi:cy="113"
        sodipodi:rx="30"
        sodipodi:ry="7"
-       d="m 239,119 c 0,3.86599 -13.43146,7 -30,7 -16.56854,0 -30,-3.13401 -30,-7 0,-3.86599 13.43146,-7 30,-7 16.56854,0 30,3.13401 30,7 z" />
+       d="m 239,113 c 0,3.86599 -13.43146,7 -30,7 -16.56854,0 -30,-3.13401 -30,-7 0,-3.86599 13.43146,-7 30,-7 16.56854,0 30,3.13401 30,7 z" />
     <ellipse
-       cx="215"
-       cy="192"
+       cx="216"
+       cy="236"
        rx="36"
        ry="7"
        id="ellipse10"
-       sodipodi:cx="215"
-       sodipodi:cy="192"
+       sodipodi:cx="216"
+       sodipodi:cy="236"
        sodipodi:rx="36"
        sodipodi:ry="7"
-       d="m 251,192 c 0,3.86599 -16.11775,7 -36,7 -19.88225,0 -36,-3.13401 -36,-7 0,-3.86599 16.11775,-7 36,-7 19.88225,0 36,3.13401 36,7 z" />
+       d="m 252,236 c 0,3.86599 -16.11775,7 -36,7 -19.88225,0 -36,-3.13401 -36,-7 0,-3.86599 16.11775,-7 36,-7 19.88225,0 36,3.13401 36,7 z" />
     <ellipse
-       cx="212"
-       cy="149"
+       cx="209"
+       cy="269"
        rx="31"
        ry="7"
        id="ellipse12"
-       sodipodi:cx="212"
-       sodipodi:cy="149"
+       sodipodi:cx="209"
+       sodipodi:cy="269"
        sodipodi:rx="31"
        sodipodi:ry="7"
-       d="m 243,149 c 0,3.86599 -13.87917,7 -31,7 -17.12083,0 -31,-3.13401 -31,-7 0,-3.86599 13.87917,-7 31,-7 17.12083,0 31,3.13401 31,7 z" />
+       d="m 240,269 c 0,3.86599 -13.87917,7 -31,7 -17.12083,0 -31,-3.13401 -31,-7 0,-3.86599 13.87917,-7 31,-7 17.12083,0 31,3.13401 31,7 z" />
     <ellipse
-       cx="203"
-       cy="383"
+       cx="202"
+       cy="80"
        rx="23"
        ry="7"
        id="ellipse14"
-       sodipodi:cx="203"
-       sodipodi:cy="383"
+       sodipodi:cx="202"
+       sodipodi:cy="80"
        sodipodi:rx="23"
        sodipodi:ry="7"
-       d="m 226,383 c 0,3.86599 -10.29745,7 -23,7 -12.70255,0 -23,-3.13401 -23,-7 0,-3.86599 10.29745,-7 23,-7 12.70255,0 23,3.13401 23,7 z" />
+       d="m 225,80 c 0,3.865993 -10.29745,7 -23,7 -12.70255,0 -23,-3.134007 -23,-7 0,-3.865993 10.29745,-7 23,-7 12.70255,0 23,3.134007 23,7 z" />
     <ellipse
-       cx="205"
-       cy="358"
+       cx="203"
+       cy="26"
        rx="23"
        ry="7"
        id="ellipse16"
-       sodipodi:cx="205"
-       sodipodi:cy="358"
+       sodipodi:cx="203"
+       sodipodi:cy="26"
        sodipodi:rx="23"
        sodipodi:ry="7"
-       d="m 228,358 c 0,3.86599 -10.29745,7 -23,7 -12.70255,0 -23,-3.13401 -23,-7 0,-3.86599 10.29745,-7 23,-7 12.70255,0 23,3.13401 23,7 z" />
+       d="m 226,26 c 0,3.865993 -10.29745,7 -23,7 -12.70255,0 -23,-3.134007 -23,-7 0,-3.865993 10.29745,-7 23,-7 12.70255,0 23,3.134007 23,7 z" />
     <ellipse
-       cx="206"
-       cy="410"
+       cx="205"
+       cy="53"
        rx="26"
        ry="7"
        id="ellipse18"
-       sodipodi:cx="206"
-       sodipodi:cy="410"
+       sodipodi:cx="205"
+       sodipodi:cy="53"
        sodipodi:rx="26"
        sodipodi:ry="7"
-       d="m 232,410 c 0,3.86599 -11.6406,7 -26,7 -14.3594,0 -26,-3.13401 -26,-7 0,-3.86599 11.6406,-7 26,-7 14.3594,0 26,3.13401 26,7 z" />
+       d="m 231,53 c 0,3.865993 -11.6406,7 -26,7 -14.3594,0 -26,-3.134007 -26,-7 0,-3.865993 11.6406,-7 26,-7 14.3594,0 26,3.134007 26,7 z" />
     <ellipse
-       cx="219"
-       cy="317"
+       cx="218"
+       cy="205"
        rx="39"
        ry="7"
        id="ellipse20"
-       sodipodi:cx="219"
-       sodipodi:cy="317"
+       sodipodi:cx="218"
+       sodipodi:cy="205"
        sodipodi:rx="39"
        sodipodi:ry="7"
-       d="m 258,317 c 0,3.86599 -17.46089,7 -39,7 -21.53911,0 -39,-3.13401 -39,-7 0,-3.86599 17.46089,-7 39,-7 21.53911,0 39,3.13401 39,7 z" />
+       d="m 257,205 c 0,3.86599 -17.46089,7 -39,7 -21.53911,0 -39,-3.13401 -39,-7 0,-3.86599 17.46089,-7 39,-7 21.53911,0 39,3.13401 39,7 z" />
     <ellipse
-       cx="207"
-       cy="60"
+       cx="209"
+       cy="173"
        rx="28"
        ry="5"
        id="ellipse22"
-       sodipodi:cx="207"
-       sodipodi:cy="60"
+       sodipodi:cx="209"
+       sodipodi:cy="173"
        sodipodi:rx="28"
        sodipodi:ry="5"
-       d="m 235,60 c 0,2.761424 -12.53603,5 -28,5 -15.46397,0 -28,-2.238576 -28,-5 0,-2.761424 12.53603,-5 28,-5 15.46397,0 28,2.238576 28,5 z" />
+       d="m 237,173 c 0,2.76142 -12.53603,5 -28,5 -15.46397,0 -28,-2.23858 -28,-5 0,-2.76142 12.53603,-5 28,-5 15.46397,0 28,2.23858 28,5 z" />
     <ellipse
-       cx="230"
-       cy="237"
+       cx="229"
+       cy="341"
        rx="53"
        ry="7"
        id="ellipse24"
-       sodipodi:cx="230"
-       sodipodi:cy="237"
+       sodipodi:cx="229"
+       sodipodi:cy="341"
        sodipodi:rx="53"
        sodipodi:ry="7"
-       d="m 283,237 c 0,3.86599 -23.72891,7 -53,7 -29.27109,0 -53,-3.13401 -53,-7 0,-3.86599 23.72891,-7 53,-7 29.27109,0 53,3.13401 53,7 z" />
+       d="m 282,341 c 0,3.86599 -23.72891,7 -53,7 -29.27109,0 -53,-3.13401 -53,-7 0,-3.86599 23.72891,-7 53,-7 29.27109,0 53,3.13401 53,7 z" />
     <ellipse
-       cx="221"
-       cy="92"
+       cx="222"
+       cy="147"
        rx="42"
        ry="7"
        id="ellipse26"
-       sodipodi:cx="221"
-       sodipodi:cy="92"
+       sodipodi:cx="222"
+       sodipodi:cy="147"
        sodipodi:rx="42"
        sodipodi:ry="7"
-       d="m 263,92 c 0,3.865993 -18.80404,7 -42,7 -23.19596,0 -42,-3.134007 -42,-7 0,-3.865993 18.80404,-7 42,-7 23.19596,0 42,3.134007 42,7 z" />
+       d="m 264,147 c 0,3.86599 -18.80404,7 -42,7 -23.19596,0 -42,-3.13401 -42,-7 0,-3.86599 18.80404,-7 42,-7 23.19596,0 42,3.13401 42,7 z" />
     <rect
-       x="20"
-       y="225"
+       x="21"
+       y="272"
        width="76"
        height="14"
        id="rect28" />
     <rect
        x="20"
-       y="108"
+       y="118"
        width="55"
        height="14"
        id="rect30" />
+    <rect
+       x="22"
+       y="192"
+       width="23"
+       height="11"
+       id="rect32" />
     <g
        style="fill:#f5f5ff;stroke:#ff8e00;stroke-width:1"
-       id="g32">
+       id="g34">
       <line
-         x1="96"
-         y1="232"
-         x2="177"
-         y2="272"
-         id="line34" />
-      <line
-         x1="96"
-         y1="232"
-         x2="105"
-         y2="231"
+         x1="97"
+         y1="279"
+         x2="176"
+         y2="305"
          id="line36" />
       <line
-         x1="96"
-         y1="232"
-         x2="100"
-         y2="240"
+         x1="97"
+         y1="279"
+         x2="106"
+         y2="276"
          id="line38" />
       <line
-         x1="96"
-         y1="232"
-         x2="179"
-         y2="192"
+         x1="97"
+         y1="279"
+         x2="102"
+         y2="287"
          id="line40" />
       <line
-         x1="96"
-         y1="232"
-         x2="100"
-         y2="224"
+         x1="97"
+         y1="279"
+         x2="180"
+         y2="236"
          id="line42" />
       <line
-         x1="96"
-         y1="232"
-         x2="105"
-         y2="233"
+         x1="97"
+         y1="279"
+         x2="101"
+         y2="271"
          id="line44" />
       <line
-         x1="96"
-         y1="232"
-         x2="181"
-         y2="149"
+         x1="97"
+         y1="279"
+         x2="106"
+         y2="280"
          id="line46" />
       <line
-         x1="96"
-         y1="232"
-         x2="97"
-         y2="223"
+         x1="97"
+         y1="279"
+         x2="178"
+         y2="269"
          id="line48" />
       <line
-         x1="96"
-         y1="232"
-         x2="105"
-         y2="231"
+         x1="97"
+         y1="279"
+         x2="104"
+         y2="273"
          id="line50" />
       <line
-         x1="96"
-         y1="232"
-         x2="180"
-         y2="317"
+         x1="97"
+         y1="279"
+         x2="105"
+         y2="283"
          id="line52" />
       <line
-         x1="96"
-         y1="232"
-         x2="105"
-         y2="233"
+         x1="97"
+         y1="279"
+         x2="179"
+         y2="205"
          id="line54" />
       <line
-         x1="96"
-         y1="232"
-         x2="97"
-         y2="241"
+         x1="97"
+         y1="279"
+         x2="99"
+         y2="270"
          id="line56" />
       <line
-         x1="96"
-         y1="232"
-         x2="177"
-         y2="237"
+         x1="97"
+         y1="279"
+         x2="106"
+         y2="278"
          id="line58" />
       <line
-         x1="96"
-         y1="232"
-         x2="104"
-         y2="227"
+         x1="97"
+         y1="279"
+         x2="176"
+         y2="341"
          id="line60" />
       <line
-         x1="96"
-         y1="232"
-         x2="103"
-         y2="238"
+         x1="97"
+         y1="279"
+         x2="106"
+         y2="279"
          id="line62" />
+      <line
+         x1="97"
+         y1="279"
+         x2="99"
+         y2="288"
+         id="line64" />
     </g>
     <g
        style="fill:#f5f5ff;stroke:#b32851;stroke-width:1"
-       id="g64">
+       id="g66">
       <line
          x1="74"
-         y1="115"
+         y1="125"
          x2="179"
-         y2="119"
-         id="line66" />
-      <line
-         x1="74"
-         y1="115"
-         x2="82"
-         y2="110"
+         y2="113"
          id="line68" />
       <line
          x1="74"
-         y1="115"
+         y1="125"
          x2="81"
-         y2="121"
+         y2="119"
          id="line70" />
       <line
          x1="74"
-         y1="115"
-         x2="179"
-         y2="192"
+         y1="125"
+         x2="82"
+         y2="129"
          id="line72" />
       <line
          x1="74"
-         y1="115"
-         x2="83"
-         y2="115"
+         y1="125"
+         x2="180"
+         y2="236"
          id="line74" />
       <line
          x1="74"
-         y1="115"
-         x2="77"
-         y2="124"
+         y1="125"
+         x2="83"
+         y2="126"
          id="line76" />
       <line
          x1="74"
-         y1="115"
-         x2="181"
-         y2="149"
+         y1="125"
+         x2="75"
+         y2="134"
          id="line78" />
       <line
          x1="74"
-         y1="115"
-         x2="83"
-         y2="112"
+         y1="125"
+         x2="178"
+         y2="269"
          id="line80" />
       <line
          x1="74"
-         y1="115"
-         x2="79"
-         y2="123"
+         y1="125"
+         x2="83"
+         y2="128"
          id="line82" />
       <line
          x1="74"
-         y1="115"
-         x2="179"
-         y2="60"
+         y1="125"
+         x2="74"
+         y2="134"
          id="line84" />
       <line
          x1="74"
-         y1="115"
-         x2="78"
-         y2="107"
+         y1="125"
+         x2="181"
+         y2="173"
          id="line86" />
       <line
          x1="74"
-         y1="115"
+         y1="125"
          x2="83"
-         y2="116"
+         y2="123"
          id="line88" />
       <line
          x1="74"
-         y1="115"
-         x2="179"
-         y2="92"
+         y1="125"
+         x2="78"
+         y2="133"
          id="line90" />
       <line
          x1="74"
-         y1="115"
-         x2="80"
-         y2="108"
+         y1="125"
+         x2="180"
+         y2="147"
          id="line92" />
       <line
          x1="74"
-         y1="115"
+         y1="125"
          x2="83"
-         y2="119"
+         y2="121"
          id="line94" />
+      <line
+         x1="74"
+         y1="125"
+         x2="80"
+         y2="132"
+         id="line96" />
+    </g>
+    <g
+       style="fill:#f5f5ff;stroke:#f4c800;stroke-width:1"
+       id="g98">
+      <line
+         x1="44"
+         y1="197"
+         x2="180"
+         y2="236"
+         id="line100" />
+      <line
+         x1="44"
+         y1="197"
+         x2="53"
+         y2="194"
+         id="line102" />
+      <line
+         x1="44"
+         y1="197"
+         x2="50"
+         y2="204"
+         id="line104" />
+      <line
+         x1="44"
+         y1="197"
+         x2="178"
+         y2="269"
+         id="line106" />
+      <line
+         x1="44"
+         y1="197"
+         x2="53"
+         y2="196"
+         id="line108" />
+      <line
+         x1="44"
+         y1="197"
+         x2="48"
+         y2="206"
+         id="line110" />
+      <line
+         x1="44"
+         y1="197"
+         x2="179"
+         y2="80"
+         id="line112" />
+      <line
+         x1="44"
+         y1="197"
+         x2="46"
+         y2="188"
+         id="line114" />
+      <line
+         x1="44"
+         y1="197"
+         x2="53"
+         y2="197"
+         id="line116" />
+      <line
+         x1="44"
+         y1="197"
+         x2="179"
+         y2="205"
+         id="line118" />
+      <line
+         x1="44"
+         y1="197"
+         x2="52"
+         y2="192"
+         id="line120" />
+      <line
+         x1="44"
+         y1="197"
+         x2="51"
+         y2="203"
+         id="line122" />
+      <line
+         x1="44"
+         y1="197"
+         x2="181"
+         y2="173"
+         id="line124" />
+      <line
+         x1="44"
+         y1="197"
+         x2="50"
+         y2="190"
+         id="line126" />
+      <line
+         x1="44"
+         y1="197"
+         x2="52"
+         y2="201"
+         id="line128" />
     </g>
   </g>
   <g
      font-size="10.000000"
-     id="g96"
-     transform="translate(-8,-26)"
-     style="font-size:10px;stroke:none">
+     id="g130"
+     style="font-size:10px;stroke:none"
+     transform="translate(-19.5,-18.5)">
     <text
-       x="179"
-       y="274"
-       id="text98">getCompileArgs</text>
-    <text
-       x="181"
-       y="121"
-       id="text100">getLinkArgs</text>
+       x="178"
+       y="307"
+       id="text132">getCompileArgs</text>
     <text
        x="181"
-       y="194"
-       id="text102">loadFromMap</text>
+       y="115"
+       id="text134">getLinkArgs</text>
+    <text
+       x="182"
+       y="238"
+       id="text136">loadFromMap</text>
+    <text
+       x="180"
+       y="271"
+       id="text138">saveToMap</text>
+    <text
+       x="181"
+       y="82"
+       id="text140">Package</text>
+    <text
+       x="182"
+       y="28"
+       id="text142">Package</text>
+    <text
+       x="181"
+       y="55"
+       id="text144">~Package</text>
+    <text
+       x="181"
+       y="207"
+       id="text146">setCompileInfo</text>
     <text
        x="183"
-       y="151"
-       id="text104">saveToMap</text>
+       y="177"
+       id="text148">setLinkInfo</text>
+    <text
+       x="178"
+       y="343"
+       id="text150">getCompileArgsAsStr</text>
     <text
        x="182"
-       y="385"
-       id="text106">Package</text>
+       y="149"
+       id="text152">getLinkArgsAsStr</text>
     <text
-       x="184"
-       y="360"
-       id="text108">Package</text>
-    <text
-       x="182"
-       y="412"
-       id="text110">~Package</text>
-    <text
-       x="182"
-       y="319"
-       id="text112">setCompileInfo</text>
-    <text
-       x="181"
-       y="64"
-       id="text114">setLinkInfo</text>
-    <text
-       x="179"
-       y="239"
-       id="text116">getCompileArgsAsStr</text>
-    <text
-       x="181"
-       y="94"
-       id="text118">getLinkArgsAsStr</text>
+       x="23"
+       y="281"
+       id="text154">mCompileArgs</text>
     <text
        x="22"
-       y="234"
-       id="text120">mCompileArgs</text>
+       y="127"
+       id="text156">mLinkArgs</text>
     <text
-       x="22"
-       y="117"
-       id="text122">mLinkArgs</text>
+       x="24"
+       y="201"
+       id="text158">this</text>
   </g>
 </svg>

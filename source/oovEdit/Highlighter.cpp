@@ -121,8 +121,8 @@ Tokenizer::~Tokenizer()
 	clang_disposeTranslationUnit(mTransUnit);
     }
 
-void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, int bufLen,
-	char const * const clang_args[], int num_clang_args)
+void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
+	char const * const clang_args[], size_t num_clang_args)
     {
     try {
 //    unsigned options = clang_defaultEditingTranslationUnitOptions();
@@ -137,7 +137,7 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, int bufLen,
 	CXIndex index = clang_createIndex(1, 1);
 	mTransUnitMutex.lock();
 	mTransUnit = clang_parseTranslationUnit(index, fileName,
-	    clang_args, num_clang_args, 0, 0, options);
+	    clang_args, static_cast<int>(num_clang_args), 0, 0, options);
 	mTransUnitMutex.unlock();
 
 #if(0)
@@ -310,7 +310,7 @@ static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
     return cursor;
     }
 
-void Tokenizer::getLineColumn(int charOffset, unsigned int &line, unsigned int &column)
+void Tokenizer::getLineColumn(size_t charOffset, unsigned int &line, unsigned int &column)
     {
     CXSourceLocation loc = clang_getLocationForOffset(mTransUnit, mSourceFile, charOffset);
     clang_getSpellingLocation(loc, nullptr, &line, &column, nullptr);
@@ -320,8 +320,8 @@ void Tokenizer::getLineColumn(int charOffset, unsigned int &line, unsigned int &
 // Desired functions:
 //	Go to definition of variable/function
 //	Go to declaration of function/class
-bool Tokenizer::findToken(eFindTokenTypes ft, int origOffset, std::string &fn,
-	int &line)
+bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
+	size_t &line)
     {
     mTransUnitMutex.lock();
     CXCursor startCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
@@ -399,6 +399,7 @@ bool Tokenizer::findToken(eFindTokenTypes ft, int origOffset, std::string &fn,
     }
 
 
+#if(!CODE_COMPLETE)
 
 struct visitClassData
     {
@@ -408,7 +409,7 @@ struct visitClassData
     OovStringVec &mMembers;
     };
 
-static CXChildVisitResult visitClass(CXCursor cursor, CXCursor parent,
+static CXChildVisitResult visitClass(CXCursor cursor, CXCursor /*parent*/,
 	CXClientData client_data)
     {
     visitClassData *data = static_cast<visitClassData*>(client_data);
@@ -443,9 +444,10 @@ static CXChildVisitResult visitClass(CXCursor cursor, CXCursor parent,
     return CXChildVisit_Continue;
     // return CXChildVisit_Recurse;
     }
+#endif
 
 #if(CODE_COMPLETE)
-OovStringVec Tokenizer::codeComplete(int offset)
+OovStringVec Tokenizer::codeComplete(size_t offset)
     {
     OovStringVec strs;
     unsigned options = 0;
@@ -555,6 +557,15 @@ void HighlightTags::initTags(GtkTextBuffer *textBuffer)
 
 //////////////
 
+HighlighterBackgroundThreadData::~HighlighterBackgroundThreadData()
+    {
+#if(SHARED_QUEUE)
+    sSharedQueue.waitForCompletion();
+#else
+    stopAndWaitForCompletion();
+#endif
+    }
+
 void HighlighterBackgroundThreadData::initArgs(OovStringRef const filename,
 	char const * const clang_args[], int num_clang_args)
     {
@@ -589,7 +600,8 @@ TokenRange HighlighterBackgroundThreadData::getParseResults()
     return retTokens;
     }
 
-void HighlighterBackgroundThreadData::getFindTokenResults(std::string &fn, int &offset)
+void HighlighterBackgroundThreadData::getFindTokenResults(std::string &fn,
+    size_t &offset)
     {
     std::lock_guard<std::mutex> lock(mResultsLock);
     fn = mFindTokenResultFilename;
@@ -620,7 +632,7 @@ void HighlighterBackgroundThreadData::processItem(HighlightTaskItem const &item)
         case HT_FindToken:
             {
             OovString fn;
-            int offset;
+            size_t offset;
             DUMP_THREAD("processItem-FindToken");
             if(mTokenizer.findToken(item.mFindTokenFt, item.mOffset,
                 fn, offset))
@@ -690,7 +702,7 @@ void Highlighter::highlightRequest(
     }
 
 eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
-	OovStringRef const buffer, int bufLen)
+	OovStringRef const buffer, size_t bufLen)
     {
     DUMP_THREAD("highlightUpdate");
     if(mBackgroundThreadData.isParseNeeded())
@@ -725,7 +737,7 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
     }
 
 
-void Highlighter::showMembers(int offset)
+void Highlighter::showMembers(size_t offset)
     {
     DUMP_THREAD("showMembers");
 #if(SHARED_QUEUE)
@@ -741,7 +753,7 @@ void Highlighter::showMembers(int offset)
 #endif
     }
 
-void Highlighter::findToken(eFindTokenTypes ft, int origOffset)
+void Highlighter::findToken(eFindTokenTypes ft, size_t origOffset)
     {
     DUMP_THREAD("findToken");
 #if(SHARED_QUEUE)
@@ -772,8 +784,10 @@ void Highlighter::applyTags(GtkTextBuffer *textBuffer, const TokenRange &tokens)
     gtk_text_buffer_remove_all_tags(textBuffer, &start, &end);
     for(size_t i=0; i<tokens.size(); i++)
 	{
-	gtk_text_buffer_get_iter_at_offset(textBuffer, &start, tokens[i].mStartOffset);
-	gtk_text_buffer_get_iter_at_offset(textBuffer, &end, tokens[i].mEndOffset);
+	gtk_text_buffer_get_iter_at_offset(textBuffer, &start, 
+            static_cast<gint>(tokens[i].mStartOffset));
+	gtk_text_buffer_get_iter_at_offset(textBuffer, &end,
+            static_cast<gint>(tokens[i].mEndOffset));
 	gtk_text_buffer_apply_tag(textBuffer,
 		mHighlightTags.getTag(tokens[i].mTokenKind), &start, &end);
 	}

@@ -92,7 +92,7 @@ OovString FilePathGetWithoutEndPathSep(OovStringRef const path);
 
 //***** modifying path functions
 void FilePathEnsureLastPathSep(std::string &path);
-void FilePathRemovePathSep(std::string &path, int pos);
+void FilePathRemovePathSep(std::string &path, size_t pos);
 void FilePathQuoteCommandLinePath(std::string &libfilePath);
 OovString FilePathMakeExeFilename(OovStringRef const rootFn);
 // For some reason, oovEdit requires this?
@@ -152,7 +152,7 @@ template<typename T_Str> class FilePathRefInterface
 	    { FileEnsurePathExists(getThisStr()); }
 
     private:
-	char const * const getThisStr() const
+	char const * getThisStr() const
 	    { return static_cast<T_Str const *>(this)->getStr(); }
     };
 

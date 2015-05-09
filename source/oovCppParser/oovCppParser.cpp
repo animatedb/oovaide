@@ -39,7 +39,8 @@ int main(int argc, char const *const argv[])
 	    }
 	// This saves the CPP info in an XMI file.
 //	et = sCppParser.parse(dupHashes, argv[1], argv[2], argv[3], &argv[4], argc-4);
-	et = sCppParser.parse(dupHashes, argv[1], argv[2], argv[3], childArgs.getArgv(), childArgs.getArgc());
+	et = sCppParser.parse(dupHashes, argv[1], argv[2], argv[3],
+            childArgs.getArgv(), static_cast<int>(childArgs.getArgc()));
 	if(et == CppParser::ET_CLangError)
 	    {
 	    fprintf(stderr, "oovCppParser: CLang error analyzing file %s.\n"

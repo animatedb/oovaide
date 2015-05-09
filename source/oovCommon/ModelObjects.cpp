@@ -16,18 +16,21 @@
 
 #define DEBUG_TYPES 0
 
+/*
 static void strReplace(OovStringRef const origPatt, OovStringRef const newPatt, OovString &str)
     {
     std::string::size_type pos = 0;
     while ((pos = str.find(origPatt, pos)) != std::string::npos)
 	str.replace(pos, origPatt.numChars(), newPatt);
     }
-
-void strRemoveSpaceAround(OovStringRef const c, OovString &str)
+*/
+/*
+static void strRemoveSpaceAround(OovStringRef const c, OovString &str)
     {
     strReplace(OovString(c) + " ", c, str);
     strReplace(OovString(" ") + OovString(c), c, str);
     }
+*/
 
 /*
 OovStringRef const Visibility::asStr() const
@@ -106,23 +109,63 @@ const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     return getDeclType() ? getDeclType()->getClass() : nullptr;
     }
 
+
+/// @todo - code copied from ParseBase.cpp
+static size_t getFunctionPosFromMemberRefExpr(std::string &expr, bool afterSep)
+    {
+    size_t pos = expr.rfind('.');
+    if(pos == std::string::npos)
+	{
+	pos = expr.rfind(':');		// Find end of ::
+	}
+    if(pos == std::string::npos)
+	{
+	pos = expr.rfind('>');		// Find end of ->
+	}
+    if(pos != std::string::npos)
+	{
+	size_t splitLen = (expr[pos] == '.') ? 1 : 2;
+	pos++;
+	if(!afterSep)
+	    {
+	    pos = static_cast<size_t>(pos - splitLen);
+	    }
+	}
+    return pos;
+    }
+
 OovString ModelStatement::getFuncName() const
     {
     OovString opName = getName();
-    size_t opPos = opName.find('.');
-    if(opPos != std::string::npos)
-	opName.erase(0, opPos+1);
+
+    size_t pos = getFunctionPosFromMemberRefExpr(opName, true);
+    if(pos != std::string::npos)
+	opName.erase(0, pos);
     return opName;
     }
 
 OovString ModelStatement::getAttrName() const
     {
-    OovString opName = getName();
-    size_t opPos = opName.find('.');
-    if(opPos != std::string::npos)
-	opName.erase(opPos);
-    return opName;
+    OovString attrName = getName();
+    if(mStatementType == ST_Call)
+	{
+	size_t pos = getFunctionPosFromMemberRefExpr(attrName, false);
+	if(pos != std::string::npos)
+	    attrName.erase(pos);
+	else
+	    attrName.clear();
+	}
+    return attrName;
     }
+
+#if(NonMemberVariables)
+bool ModelStatement::hasNonMemberVar() const
+    {
+    OovString attrName = getName();
+    size_t pos = getFunctionPosFromMemberRefExpr(attrName, false);
+    return(attrName[pos] == getNonMemberVarSep()[0]);
+    }
+#endif
 
 bool ModelStatements::checkAttrUsed(OovStringRef attrName) const
     {
@@ -132,7 +175,7 @@ bool ModelStatements::checkAttrUsed(OovStringRef attrName) const
 	eModelStatementTypes stateType = stmt.getStatementType();
 	if(stateType == ST_VarRef)
 	    {
-	    if(stmt.getName() == attrName.getStr())
+	    if(stmt.getAttrName() == attrName.getStr())
 		{
 		used = true;
 		break;
@@ -230,8 +273,8 @@ ModelOperation *ModelClassifier::addOperation(const std::string &name,
 void ModelClassifier::replaceOperation(ModelOperation const * const operToReplace,
 	    std::unique_ptr<ModelOperation> &&newOper)
 	{
-	int index = findExactMatchingOperationIndex(*operToReplace);
-	if(index != -1)
+	size_t index = findExactMatchingOperationIndex(*operToReplace);
+	if(index != NoIndex)
 	    {
 //	    mOperations.erase(mOperations.begin() + index);
 //	    mOperations.push_back(std::move(newOper));
@@ -241,11 +284,12 @@ void ModelClassifier::replaceOperation(ModelOperation const * const operToReplac
 
 void ModelClassifier::eraseAttribute(const ModelAttribute *attr)
     {
-    for(size_t i=0; i<mAttributes.size(); i++)
+    for(size_t i=0; i<mAttributes.size(); ++i)
 	{
 	if(mAttributes[i].get() == attr)
 	    {
-	    mAttributes.erase(mAttributes.begin() + i);
+	    mAttributes.erase(mAttributes.begin() + 
+                static_cast<int>(i));
 	    break;
 	    }
 	}
@@ -253,11 +297,12 @@ void ModelClassifier::eraseAttribute(const ModelAttribute *attr)
 
 void ModelClassifier::eraseOperation(const ModelOperation *oper)
     {
-    for(size_t i=0; i<mOperations.size(); i++)
+    for(size_t i=0; i<mOperations.size(); ++i)
 	{
 	if(mOperations[i].get() == oper)
 	    {
-	    mOperations.erase(mOperations.begin() + i);
+	    mOperations.erase(mOperations.begin() + 
+                static_cast<int>(i));
 	    break;
 	    }
 	}
@@ -265,23 +310,24 @@ void ModelClassifier::eraseOperation(const ModelOperation *oper)
 
 void ModelClassifier::removeOperation(ModelOperation *oper)
     {
-    int index = -1;
-    for(size_t i=0; i<mOperations.size(); i++)
+    size_t index = NoIndex;
+    for(size_t i=0; i<mOperations.size(); ++i)
 	{
 	if(oper == mOperations[i].get())
 	    index = i;
 	}
-    if(index != -1)
+    if(index != NoIndex)
 	{
 	delete oper;
-	mOperations.erase(mOperations.begin() + index);
+	mOperations.erase(mOperations.begin() +
+            static_cast<int>(index));
 	}
     }
 
-int ModelClassifier::getAttributeIndex(const std::string &name) const
+size_t ModelClassifier::getAttributeIndex(const std::string &name) const
     {
-    int index = -1;
-    for(size_t i=0; i<mAttributes.size(); i++)
+    size_t index = NoIndex;
+    for(size_t i=0; i<mAttributes.size(); ++i)
 	{
 	if(mAttributes[i]->getName().compare(name) == 0)
 	    {
@@ -295,17 +341,17 @@ int ModelClassifier::getAttributeIndex(const std::string &name) const
 const ModelAttribute *ModelClassifier::getAttribute(const std::string &name) const
     {
     ModelAttribute *attr = nullptr;
-    int index = getAttributeIndex(name);
-    if(index != -1)
+    size_t index = getAttributeIndex(name);
+    if(index != NoIndex)
 	{
 	attr = mAttributes[index].get();
 	}
     return attr;
     }
 
-int ModelClassifier::getOperationIndex(const std::string &name, bool isConst) const
+size_t ModelClassifier::getOperationIndex(const std::string &name, bool isConst) const
     {
-    int index = -1;
+    size_t index = NoIndex;
     for(size_t i=0; i<mOperations.size(); i++)
 	{
 	if(name.compare(mOperations[i]->getName()) == 0 &&
@@ -318,9 +364,9 @@ int ModelClassifier::getOperationIndex(const std::string &name, bool isConst) co
     return index;
     }
 
-int ModelClassifier::findExactMatchingOperationIndex(const ModelOperation &matchOp) const
+size_t ModelClassifier::findExactMatchingOperationIndex(const ModelOperation &matchOp) const
     {
-    int index = -1;
+    size_t index = NoIndex;
     for(size_t i=0; i<mOperations.size(); i++)
 	{
 	ModelOperation const &arrayOp = *mOperations[i];
@@ -340,8 +386,8 @@ int ModelClassifier::findExactMatchingOperationIndex(const ModelOperation &match
 const ModelOperation *ModelClassifier::findExactMatchingOperation(const ModelOperation &op) const
     {
     ModelOperation *oper = nullptr;
-    int index = findExactMatchingOperationIndex(op);
-    if(index != -1)
+    size_t index = findExactMatchingOperationIndex(op);
+    if(index != NoIndex)
 	{
 	oper = mOperations[index].get();
 	}
@@ -351,8 +397,8 @@ const ModelOperation *ModelClassifier::findExactMatchingOperation(const ModelOpe
 const ModelOperation *ModelClassifier::getOperation(const std::string &name, bool isConst) const
     {
     ModelOperation *oper = nullptr;
-    int index = getOperationIndex(name, isConst);
-    if(index != -1)
+    size_t index = getOperationIndex(name, isConst);
+    if(index != NoIndex)
 	{
 	oper = mOperations[index].get();
 	}
@@ -729,7 +775,10 @@ void ModelData::eraseType(ModelType *existingType)
     for(size_t ci=0; ci<mTypes.size(); ci++)
 	{
 	if(mTypes[ci].get() == existingType)
-	    mTypes.erase(mTypes.begin()+ci);
+            {
+	    mTypes.erase(mTypes.begin() + 
+                static_cast<int>(ci));
+            }
 	}
     }
 
@@ -763,10 +812,10 @@ ModelObject *ModelData::createDataType(eModelDataTypes type, const std::string &
 	{
 	case DT_DataType:
 	    {
-	    ModelType *type = new ModelType(id);
+	    ModelType *dataType = new ModelType(id);
 	    /// @todo - use make_unique when supported.
-	    addType(std::unique_ptr<ModelType>(type));
-	    obj = type;
+	    addType(std::unique_ptr<ModelType>(dataType));
+	    obj = dataType;
 	    }
 	    break;
 
@@ -872,7 +921,7 @@ std::string ModelData::getBaseType(OovStringRef const fullStr) const
 		break;
 	    }
 	}
-    int len = str.length()-1;
+    size_t len = str.length()-1;
     if(str[len] == ' ')
 	str.resize(len);
 #else
@@ -947,7 +996,7 @@ ModelType *ModelData::findType(OovStringRef const name)
     return const_cast<ModelType*>(static_cast<const ModelData*>(this)->findType(name));
     }
 
-ModelModule const * const ModelData::findModuleById(int id)
+ModelModule const * ModelData::findModuleById(int id)
     {
     ModelModule *mod = nullptr;
     // Searching backwards is an effective optimization because onAttr
@@ -955,11 +1004,12 @@ ModelModule const * const ModelData::findModuleById(int id)
     // will be at the end.
     if(mModules.size() > 0)
 	{
-	for(int i=mModules.size()-1; i>=0; i--)
+	for(int i=static_cast<int>(mModules.size())-1; i>=0; i--)
 	    {
-	    if(mModules[i]->getModelId() == id)
+            size_t index = static_cast<size_t>(i);
+	    if(mModules[index]->getModelId() == id)
 		{
-		mod = mModules[i].get();
+		mod = mModules[index].get();
 		break;
 		}
 	    }
@@ -1040,7 +1090,7 @@ void ModelData::getRelatedTemplateClasses(const ModelType &type,
     }
 
 void ModelData::getRelatedFuncParamClasses(const ModelClassifier &classifier,
-	ConstModelDeclClassVector &declClasses) const
+	ConstModelDeclClasses &declClasses) const
     {
     declClasses.clear();
     for(auto &oper : classifier.getOperations())
@@ -1050,7 +1100,7 @@ void ModelData::getRelatedFuncParamClasses(const ModelClassifier &classifier,
 	    const ModelClassifier *cl = param->getDeclClassType();
 	    if(cl)
 		{
-		declClasses.push_back(ModelDeclClass(param.get(), cl));
+		declClasses.push_back(param.get());
 		}
 	    }
 	}
@@ -1070,9 +1120,9 @@ void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier
 		/// @todo = this should be a set, no need to add duplicate
 		/// relations.
 		}
-		classes.push_back(cl);
-		}
+	    classes.push_back(cl);
 	    }
+	}
 // If the function's return is a relation, then the relation will already
 // be present as either a param, member or body user
 /*
@@ -1089,16 +1139,29 @@ void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier
     }
 
 void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
-	ConstModelDeclClassVector &declClasses) const
+	ConstModelDeclClasses &declClasses) const
     {
     declClasses.clear();
     for(auto &oper : classifier.getOperations())
 	{
 	for(auto &vd : oper->getBodyVarDeclarators())
 	    {
-	    const ModelClassifier *cl = vd->getDeclClassType();
-	    if(cl)
-		declClasses.push_back(ModelDeclClass(vd.get(), cl));
+	    declClasses.push_back(vd.get());
+	    }
+	// Normally the call statements would not have to be checked since most
+	// calls are through either variable declarations, or through
+	// the parameters, but calls to global classes cannot be found this way.
+	for(auto &stmt : oper->getStatements())
+	    {
+	    if(stmt.getStatementType() == ST_Call)
+		{
+		const ModelClassifier *cl = stmt.getClassDecl().getDeclType()->getClass();
+		if(cl)
+		    {
+		    declClasses.push_back(ModelDeclClass(stmt.getAttrName(),
+			    stmt.getClassDecl().getDeclType()));
+		    }
+		}
 	    }
 	}
     }

@@ -50,7 +50,7 @@ class BuildConfig
 	    CT_ProjPathArgsCrc,		// CRC of args that affect the proj paths
 	    CT_LinkArgsCrc,
 	    CT_OtherArgsCrc,		// All other args such as optimization args
-		CT_LastCrc=CT_OtherArgsCrc,
+		CT_LastCrc=CT_OtherArgsCrc
 	    };
 
 	// Get the analysis path of the specified build type.

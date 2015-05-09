@@ -553,7 +553,8 @@ class CoverageHeader:public CoverageHeaderReader
 		int numInstrLines);
 
     private:
-	// Writes the instr def map to the file
+	/// Writes the instr def map to the file
+        /// @todo - srcFn isn't used.
 	void write(SharedFile &outDefFile, OovStringRef const srcFn,
 		int numInstrLines);
     };
@@ -570,7 +571,7 @@ void CoverageHeader::update(OovStringRef const outDefFn, OovStringRef const srcF
 	}
     }
 
-void CoverageHeader::write(SharedFile &outDefFile, OovStringRef const srcFn,
+void CoverageHeader::write(SharedFile &outDefFile, OovStringRef const /*srcFn*/,
 	int numInstrLines)
     {
     std::string fnDef = getFileDefine();
@@ -615,7 +616,7 @@ void CoverageHeader::write(SharedFile &outDefFile, OovStringRef const srcFn,
 	    }
 	outDefFile.truncate();
 	outDefFile.seekBegin();
-	outDefFile.write(&buf[0], buf.size());
+	outDefFile.write(&buf[0], static_cast<int>(buf.size()));
 	}
     }
 
@@ -626,7 +627,7 @@ void CppInstr::updateCoverageHeader(OovStringRef const fn, OovStringRef const co
     header.update(header.getFn(covDir), fn, numInstrLines);
     }
 
-void CppInstr::updateCoverageSource(OovStringRef const fn, OovStringRef const covDir)
+void CppInstr::updateCoverageSource(OovStringRef const /*fn*/, OovStringRef const covDir)
     {
     FilePath outFn(covDir, FP_Dir);
     outFn.appendDir("covLib");
@@ -774,14 +775,14 @@ CppInstr::eErrorTypes CppInstr::parse(OovStringRef const srcFn, OovStringRef con
 	    }
 	std::string outErrFileName = outFileName;
 	outErrFileName += "-err.txt";
-	int numDiags = clang_getNumDiagnostics(tu);
+	size_t numDiags = clang_getNumDiagnostics(tu);
 	if(numDiags > 0 || sCrashDiagnostics.hasCrashed())
 	    {
 	    FILE *fp = fopen(outErrFileName.c_str(), "w");
 	    if(fp)
 		{
 		sCrashDiagnostics.dumpCrashed(fp);
-		for (int i = 0; i<numDiags; i++)
+		for (size_t i = 0; i<numDiags; i++)
 		    {
 		    CXDiagnostic diag = clang_getDiagnostic(tu, i);
 		    CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);

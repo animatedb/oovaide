@@ -19,7 +19,7 @@ class ComponentPkgDeps
     public:
 	void addPkgDep(OovString const compName, OovStringRef const pkgName)
 	    { mCompPkgMap[compName].insert(pkgName); }
-	bool const isDependent(OovStringRef const compName, OovStringRef const pkgName) const;
+	bool isDependent(OovStringRef const compName, OovStringRef const pkgName) const;
 
     private:
 	std::map<OovString, OovStringSet > mCompPkgMap;
@@ -45,8 +45,7 @@ class ProcessArgs
 class TaskQueueListener
     {
     public:
-	virtual ~TaskQueueListener()
-	    {}
+	virtual ~TaskQueueListener();
 	virtual void extraProcessing(bool success, OovStringRef const outFile,
 		OovStringRef const stdOutFn, ProcessArgs const &item) = 0;
     };
@@ -122,8 +121,9 @@ class ComponentBuilder:public ComponentTaskQueue
 	/// from the external build packages.
 	void appendOrderedPackageLibs(OovStringRef const compName,
 		OovStringVec &libDirs, IndexedStringVec &sortedLibNames);
+	/// file arg is not used.
 	OovStringSet getComponentCompileArgs(OovStringRef const compName,
-		ComponentTypesFile const &file);
+		ComponentTypesFile const & /*file*/);
 	/// For the specified component, get the link arguments for the external build
 	/// packages.
 	IndexedStringSet getComponentPackageLinkArgs(OovStringRef const compName,

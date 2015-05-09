@@ -252,11 +252,11 @@ void ZoneGraph::updateConnections()
 			    indexLookup, ZDD_FirstIsClient);
 		    }
 
-		ConstModelDeclClassVector relatedDeclClasses;
+		ConstModelDeclClasses relatedDeclClasses;
 		mModel->getRelatedBodyVarClasses(*classifier, relatedDeclClasses);
 		for(auto const &item : relatedDeclClasses)
 		    {
-		    mConnections.insertConnection(nodeIndex, item.cl,
+		    mConnections.insertConnection(nodeIndex, item.getClass(),
 			    indexLookup, ZDD_FirstIsClient);
 		    }
 		}

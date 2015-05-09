@@ -44,6 +44,9 @@ bool PathChooser::ChoosePath(GtkWindow *parent, OovStringRef const dlgName,
     return success;
     }
 
+Dialog::~Dialog()
+    {}
+
 int Dialog::runHideCancel()
     {
     beforeRun();
@@ -439,10 +442,10 @@ void GuiTree::init(Builder &builder, OovStringRef const widgetName,
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
 
     // Add a string column as the first column
-    GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-    GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(
-        title, renderer, "text", TV_StringIndex, nullptr);
-    gtk_tree_view_append_column(GTK_TREE_VIEW(mTreeView), column);
+    GtkCellRenderer *textRenderer = gtk_cell_renderer_text_new();
+    GtkTreeViewColumn *textColumn = gtk_tree_view_column_new_with_attributes(
+        title, textRenderer, "text", TV_StringIndex, nullptr);
+    gtk_tree_view_append_column(GTK_TREE_VIEW(mTreeView), textColumn);
 
     GtkTreeStore *store;
     if(columnType == CT_String)
@@ -452,10 +455,10 @@ void GuiTree::init(Builder &builder, OovStringRef const widgetName,
 	store = gtk_tree_store_new(N_StringBoolColumns, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
 	// Add a boolean checkbox column
-	GtkCellRenderer *renderer = gtk_cell_renderer_toggle_new();
-	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes
-		("Show", renderer, "active", GuiTree::TV_BoolIndex, NULL);
-	gtk_tree_view_append_column(mTreeView, column);
+	GtkCellRenderer *toggleRenderer = gtk_cell_renderer_toggle_new();
+	GtkTreeViewColumn *toggleColumn = gtk_tree_view_column_new_with_attributes
+		("Show", toggleRenderer, "active", GuiTree::TV_BoolIndex, NULL);
+	gtk_tree_view_append_column(mTreeView, toggleColumn);
 	}
     gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
     g_object_unref(store);
@@ -530,10 +533,10 @@ OovStringVec const GuiTree::getNodeVec(GtkTreeIter iter) const
     GtkTreeIter parent;
     GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
     OovStringVec names;
-    char *value;
-    gtk_tree_model_get(model, &iter, TV_StringIndex, &value, -1);
-    names.push_back(value);
-    g_free(value);
+    char *nodeValue;
+    gtk_tree_model_get(model, &iter, TV_StringIndex, &nodeValue, -1);
+    names.push_back(nodeValue);
+    g_free(nodeValue);
     // Walk up the tree to the root.
     while(gtk_tree_model_iter_parent(model, &parent, &iter))
         {
@@ -621,7 +624,7 @@ bool GuiTree::toggleSelectedCheckbox()
     bool val = false;
     if(getSelectedIter(&iter))
 	{
-	GValue value = { 0 };
+	GValue value = { 0, 0 };
 	gtk_tree_model_get_value(getModel(), &iter,
 		GuiTree::TV_BoolIndex, &value);
 	val = (g_value_get_boolean(&value) == TRUE);
@@ -639,7 +642,7 @@ bool GuiTree::getSelectedCheckbox(bool &checked)
     bool selected = getSelectedIter(&iter);
     if(selected)
 	{
-	GValue value = { 0 };
+	GValue value = { 0, 0 };
 	gtk_tree_model_get_value(getModel(), &iter,
 		GuiTree::TV_BoolIndex, &value);
 	checked = (g_value_get_boolean(&value) == TRUE);
@@ -749,7 +752,7 @@ void BackgroundDialog::startTask(char const *str, int totalIters)
     mKeepGoing = true;
     }
 
-static void BackgroundResponse(GtkDialog *dialog, gint response_id,
+static void BackgroundResponse(GtkDialog * /*dialog*/, gint response_id,
 	gpointer bkgDlg)
     {
     if(response_id == GTK_RESPONSE_CANCEL)

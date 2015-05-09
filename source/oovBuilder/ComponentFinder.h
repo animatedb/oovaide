@@ -21,7 +21,7 @@ class FileStat
 	static bool isOutputOld(OovStringRef const outputFn,
 		OovStringRef const inputFn);
 	static bool isOutputOld(OovStringRef const outputFn,
-		OovStringVec const &inputs, int *oldIndex=nullptr);
+		OovStringVec const &inputs, size_t *oldIndex=nullptr);
     };
 
 class ToolPathFile:public NameValueFile

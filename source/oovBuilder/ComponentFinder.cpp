@@ -82,7 +82,7 @@ bool FileStat::isOutputOld(OovStringRef const outputFn,
     }
 
 bool FileStat::isOutputOld(OovStringRef const outputFn,
-	OovStringVec const &inputs, int *oldIndex)
+	OovStringVec const &inputs, size_t *oldIndex)
     {
     bool old = false;
     for(size_t i=0; i<inputs.size(); i++)
@@ -316,7 +316,7 @@ void CppChildArgs::addCompileArgList(const ComponentFinder &finder,
 	addArg(tempArg);
 	}
 
-    for(int i=0; static_cast<size_t>(i)<incDirs.size(); i++)
+    for(size_t i=0; static_cast<size_t>(i)<incDirs.size(); i++)
 	{
 	std::string incStr = std::string("-I") + incDirs[i];
 	CompoundValue::quoteCommandLineArg(incStr);

@@ -236,7 +236,7 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	{
 	if(stmt.getStatementType() == ST_OpenNest)
 	    {
-	    opDef.addNestStart(stmt.getName());
+	    opDef.addNestStart(stmt.getCondName());
 	    }
 	else if(stmt.getStatementType() == ST_CloseNest)
 	    {
@@ -292,7 +292,7 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 		    else
 			{
 			opDef.addStatement(std::unique_ptr<OperationStatement>(
-				new DummyOperationCall(classIndex, stmt.getName(),
+				new DummyOperationCall(classIndex, stmt.getFullName(),
 				stmt.getClassDecl().isConst())));
     #if(DEBUG_OPERGRAPH)
 			fprintf(sLog.mFp, "Bad Oper %d %s %d\n", classIndex,
@@ -476,7 +476,7 @@ void OperationGraph::addOperCallers(const ModelStatements &stmts,
 	    {
 	    const ModelClassifier *callerCls = stmt.getClassDecl().getDeclType()->
 		    getClass();
-	    if((stmt.getName().compare(callee.getName()) == 0) &&
+	    if(stmt.operMatch(callee.getOperation().getName()) &&
 		    callerCls == mOpClasses[callee.getOperClassIndex()].getType())
 		{
 		addRelatedOperations(srcCls, oper, OperationGraph::AO_All, 1);

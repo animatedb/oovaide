@@ -60,7 +60,8 @@ void CoverageHeaderReader::read(SharedFile &outDefFile)
     {
     std::string buf(outDefFile.getSize(), 0);
     int actualSize;
-    bool success = outDefFile.read(&buf[0], buf.size(), actualSize);
+    bool success = outDefFile.read(&buf[0], static_cast<int>(buf.size()),
+        actualSize);
     if(success)
 	{
 	insertBufToMap(buf);

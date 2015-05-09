@@ -32,7 +32,7 @@ class CompoundValueRef
     public:
 	static void addArg(OovStringRef const arg, OovStringVec &vec)
 	    { vec.push_back(arg); }
-	/// The delimiter is \n for editing in an editor, and a semicolon
+	/// The delimiter is '\n' for editing in an editor, and a semicolon
 	/// for passing on the command line or saved in the file.
 	static OovString getAsString(const OovStringVec &vec,
 		char delimiter=';');
@@ -61,7 +61,7 @@ class CompoundValue:public OovStringVec
 		addArg(str);
 		}
 	    }
-	static const size_t npos = -1;
+	static const size_t npos = static_cast<size_t>(-1);
 	void addArg(OovStringRef const arg)
 	    { push_back(arg); }
 	/// The delimiter is \n for editing in an editor, and a semicolon

@@ -21,6 +21,9 @@ void logProc(char const *str, const void *ptr, int val)
 #endif
 
 
+OovThreadedWaitQueuePrivate::~OovThreadedWaitQueuePrivate()
+    {}
+
 void OovThreadedWaitQueuePrivate::waitPushPrivate(void const *item)
     {
     std::unique_lock<std::mutex> lock(mProcessQueueMutex);

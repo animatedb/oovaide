@@ -20,7 +20,7 @@ static int calcMcCabeComplexity(ModelStatements const &stmts)
 	{
 	if(stmt.getStatementType() == ST_OpenNest)
 	    {
-	    if(stmt.getName() != "[else]" && stmt.getName() != "[default]")
+	    if(stmt.getCondName() != "[else]" && stmt.getCondName() != "[default]")
 		{
 		complexity++;
 		}
@@ -193,13 +193,13 @@ int OovComplexity::getDataFunctionCallComplexity()
 	    if(cls)
 		{
 		const ModelOperation *oper = cls->getOperationAnyConst(
-			stmt.getName(), false);
+			stmt.getFuncName(), false);
 		if(oper)
 		    {
 		    int opComplexity = getOperationComplexity(oper);
 		    if(opComplexity > 0)
 			{
-			operItem item(stmt.getName(), cls, opComplexity);
+			operItem item(stmt.getFuncName(), cls, opComplexity);
 			opers.insert(item);
 			}
 		    }
@@ -340,18 +340,18 @@ int OovComplexity::getControlComplexityRecurse()
 	if(stmt.getStatementType() == ST_OpenNest)
 	    {
 	    complexity += getControlComplexityRecurse();
-	    if(stmt.getName() != "[else]" && stmt.getName() != "[default]")
+	    if(stmt.getCondName() != "[else]" && stmt.getCondName() != "[default]")
 		{
-		if(conditionals.isCombinatorial(stmt.getName()))
+		if(conditionals.isCombinatorial(stmt.getCondName()))
 		    complexity += 2;
 		else
 		    complexity += 1;
-		conditionals.addConditional(stmt.getName());
+		conditionals.addConditional(stmt.getCondName());
 		// Don't double count a variable that is also used as a loop
 		// conditional.
 		for(auto &param : mParamList)
 		    {
-		    if(isIdentPresent(stmt.getName(), param.first)
+		    if(isIdentPresent(stmt.getCondName(), param.first)
 			    && param.second > 0)
 			{
 			param.second--;
@@ -369,7 +369,7 @@ int OovComplexity::getControlComplexityRecurse()
 	    // Reading adds complexity to function being analyzed.
 	    if(stmt.getVarAccessWrite() == false)
 		{
-		mWriteMemberRef[stmt.getName()] = getDeclComplexity(
+		mWriteMemberRef[stmt.getAttrName()] = getDeclComplexity(
 			stmt.getVarDecl().getDeclType());
 		}
 	    }

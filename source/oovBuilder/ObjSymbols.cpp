@@ -15,39 +15,41 @@
 class FileSymbol
     {
     public:
-	FileSymbol(OovStringRef const symbolName, int len, int fileIndex):
+	FileSymbol(OovStringRef const symbolName, unsigned int len,
+            size_t fileIndex):
 	    mSymbolName(symbolName, len), mFileIndex(fileIndex)
 	    {}
+	static const size_t NoFileIndex = static_cast<size_t>(-1);
 	// For sorting and searching
 	bool operator<(const FileSymbol &rh) const
 	    { return(mSymbolName < rh.mSymbolName); }
 	OovString mSymbolName;
-	int mFileIndex;
+	size_t mFileIndex;
     };
 
 // The first is the client file index, and the second is a container of supplier file indices.
-class FileDependencies:public std::map<int, std::set<int> >
+class FileDependencies:public std::map<size_t, std::set<size_t> >
     {
     public:
-	void addDependency(int clientIndex, int supplierIndex);
+	void addDependency(size_t clientIndex, size_t supplierIndex);
 	// Check if the file index passed in is dependent on any other files.
-	bool dependentOnAny(int fileIndex) const;
+	bool dependentOnAny(size_t fileIndex) const;
 	// Remove all references to the file index.
-	void removeValue(int fileIndex);
+	void removeValue(size_t fileIndex);
 
     private:
 	// Remove a client if there are no suppliers
 	bool removeEmptyClient();
     };
 
-void FileDependencies::addDependency(int clientIndex, int supplierIndex)
+void FileDependencies::addDependency(size_t clientIndex, size_t supplierIndex)
     {
     auto iter = find(clientIndex);
     if(iter == end())
 	{
-	std::set<int> suppliers;
+	std::set<size_t> suppliers;
 	suppliers.insert(supplierIndex);
-	insert(std::pair<int, std::set<int> >(clientIndex, suppliers));
+	insert(std::pair<size_t, std::set<size_t> >(clientIndex, suppliers));
 	}
     else
 	{
@@ -55,12 +57,12 @@ void FileDependencies::addDependency(int clientIndex, int supplierIndex)
 	}
     }
 
-bool FileDependencies::dependentOnAny(int clientIndex) const
+bool FileDependencies::dependentOnAny(size_t clientIndex) const
     {
     return(find(clientIndex) != end());
     }
 
-void FileDependencies::removeValue(int fileIndex)
+void FileDependencies::removeValue(size_t fileIndex)
     {
     for(auto &dep : *this)
 	{
@@ -90,11 +92,12 @@ bool FileDependencies::removeEmptyClient()
 class FileSymbols:public std::set<FileSymbol>
     {
     public:
-	void add(OovStringRef const symbolName, int len, int fileIndex)
+	void add(OovStringRef const symbolName, unsigned int len,
+            size_t fileIndex)
 	    { insert(FileSymbol(symbolName, len, fileIndex)); }
 	std::set<FileSymbol>::iterator findName(OovStringRef const symbolName)
 	    {
-	    FileSymbol fs(symbolName, std::string(symbolName).length(), -1);
+	    FileSymbol fs(symbolName, std::string(symbolName).length(), FileSymbol::NoFileIndex);
 	    return find(fs);
 	    }
 	bool writeSymbols(OovStringRef const symFileName);
@@ -130,11 +133,11 @@ void FileList::writeFile(FILE *outFp) const
     }
 
 
-class FileIndices:public std::vector<int>
+class FileIndices:public std::vector<size_t>
     {
     public:
-	void removeValue(int val);
-	iterator findValue(int val);
+	void removeValue(size_t val);
+	iterator findValue(size_t val);
     };
 
 
@@ -156,18 +159,18 @@ class ClumpSymbols
 	FileIndices mOrderedDependencies;
         std::mutex mDataMutex;
 	void resolveUndefinedSymbols();
-	void readRawSymbolFile(OovStringRef const outRawFileName, int fileIndex);
+	void readRawSymbolFile(OovStringRef const outRawFileName, size_t fileIndex);
     };
 
 
-void FileIndices::removeValue(int val)
+void FileIndices::removeValue(size_t val)
     {
     const auto &pos = findValue(val);
     if(pos != end())
 	erase(pos);
     }
 
-std::vector<int>::iterator FileIndices::findValue(int val)
+std::vector<size_t>::iterator FileIndices::findValue(size_t val)
     {
     iterator retiter = end();
     for(iterator iter=begin(); iter!=end(); ++iter)
@@ -230,7 +233,7 @@ static void orderDependencies(size_t numFiles, const FileDependencies &fileDepen
 	// as a client or provider for all libraries.
 	for(size_t i=0; i<origFiles.size(); i++)
 	    {
-	    int fileIndex = origFiles[i];
+	    size_t fileIndex = origFiles[i];
 	    if(!fileDeps.dependentOnAny(fileIndex))
 		{
 		orderedDependencies.insert(orderedDependencies.begin()+0, fileIndex);
@@ -243,12 +246,13 @@ static void orderDependencies(size_t numFiles, const FileDependencies &fileDepen
     // If there were any left over, there were circular dependencies.
     for(size_t i=0; i<origFiles.size(); i++)
 	{
-	int fileIndex = origFiles[i];
+	size_t fileIndex = origFiles[i];
 	orderedDependencies.insert(orderedDependencies.begin()+0, fileIndex);
 	}
     }
 
-void ClumpSymbols::readRawSymbolFile(OovStringRef const outRawFileName, int fileIndex)
+void ClumpSymbols::readRawSymbolFile(OovStringRef const outRawFileName,
+    size_t fileIndex)
     {
     FILE *inFp = fopen(outRawFileName, "r");
     if(inFp)
@@ -270,12 +274,12 @@ void ClumpSymbols::readRawSymbolFile(OovStringRef const outRawFileName, int file
 	    if(symTypeChar == 'D' || symTypeChar == 'T')
 		{
 		std::unique_lock<std::mutex> lock(mDataMutex);
-		mDefinedSymbols.add(p, endP-p, fileIndex);
+                mDefinedSymbols.add(p, static_cast<size_t>(endP-p), fileIndex);
 		}
 	    else if(symTypeChar == 'U')
 		{
 		std::unique_lock<std::mutex> lock(mDataMutex);
-		mUndefinedSymbols.add(p, endP-p, fileIndex);
+		mUndefinedSymbols.add(p, static_cast<size_t>(endP-p), fileIndex);
 		}
 	    }
 	fclose(inFp);
@@ -345,15 +349,17 @@ class ObjTaskListener:public TaskQueueListener
     private:
 	ClumpSymbols &mClumpSymbols;
 	virtual void extraProcessing(bool success, OovStringRef const outFile,
-		OovStringRef const stdOutFn, ProcessArgs const &item) override
-	    {
-	    if(success)
-		{
-		mClumpSymbols.addSymbols(item.mLibFilePath, stdOutFn);
-		}
-
-	    }
+		OovStringRef const stdOutFn, ProcessArgs const &item) override;
     };
+
+void ObjTaskListener::extraProcessing(bool success, OovStringRef const /*outFile*/,
+    OovStringRef const stdOutFn, ProcessArgs const &item)
+    {
+    if(success)
+        {
+        mClumpSymbols.addSymbols(item.mLibFilePath, stdOutFn);
+        }
+    }
 
 bool ObjSymbols::makeObjectSymbols(OovStringVec const &libFiles,
 	OovStringRef const outSymPath, OovStringRef const objSymbolTool,
@@ -484,7 +490,7 @@ void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
     if(fp)
 	{
 	std::vector<std::string> filenames;
-	std::vector<int> indices;
+	std::vector<size_t> indices;
 	char buf[500];
 	while(fgets(buf, sizeof(buf), fp))
 	    {
@@ -503,8 +509,8 @@ void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
 		    {
 		    if(isdigit(*p))
 			{
-			int num;
-			if(sscanf(p, "%d", &num) == 1)
+			size_t num;
+			if(sscanf(p, "%u", &num) == 1)
 			    {
 			    indices.push_back(num);
 			    while(isdigit(*p))

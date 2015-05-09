@@ -56,7 +56,7 @@ static bool makeCoverageComponentTypesFile(OovStringRef const srcFn, OovStringRe
     return success;
     }
 
-bool copyPackageFile(OovStringRef const srcFn, OovStringRef const dstFn)
+static bool copyPackageFile(OovStringRef const srcFn, OovStringRef const dstFn)
     {
     bool success = false;
     File srcFile(srcFn, "r");

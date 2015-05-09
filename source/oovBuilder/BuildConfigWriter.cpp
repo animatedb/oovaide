@@ -48,11 +48,11 @@ static const unsigned short CRC16Table[256]=
 };
 
 inline unsigned char swapUInt8Bits(unsigned char n)
-{
-	n = (n & 0xF0) >> 4 | (n & 0x0F) << 4;
-	n = (n & 0xCC) >> 2 | (n & 0x33) << 2;
-	return (n & 0xAA) >> 1 | (n & 0x55) << 1;
-}
+    {
+    n = static_cast<unsigned char>((n & 0xF0) >> 4 | (n & 0x0F) << 4);
+    n = static_cast<unsigned char>((n & 0xCC) >> 2 | (n & 0x33) << 2);
+    return static_cast<unsigned char>((n & 0xAA) >> 1 | (n & 0x55) << 1);
+    }
 
 static unsigned short computeCRC(unsigned char const * const dataPtr, int numBytes)
     {
@@ -62,14 +62,15 @@ static unsigned short computeCRC(unsigned char const * const dataPtr, int numByt
 	{
 	    unsigned char val = ((crc >> 8) ^ swapUInt8Bits(*localDataPtr));
 	    localDataPtr++;
-	    crc = (crc << 8) ^ CRC16Table[val];
+	    crc = static_cast<unsigned char>((crc << 8) ^ CRC16Table[val]);
 	}
     return crc;
     }
 
 static unsigned short computeCRC(OovString const &str)
     {
-    return computeCRC(reinterpret_cast<unsigned char const * const>(str.getStr()), str.length());
+    return computeCRC(reinterpret_cast<unsigned char const * const>(str.getStr()),
+	    static_cast<int>(str.length()));
     }
 
 //////////////////
@@ -79,6 +80,10 @@ OovString BuildConfigStrings::getCrcAsStr(BuildConfig::CrcTypes crcType) const
     std::string str;
     switch(crcType)
 	{
+	case BuildConfig::CT_AnalysisArgsCrc:
+	    str = mExternalConfig + mProjectConfig;
+	    break;
+
 	case BuildConfig::CT_ExtPathArgsCrc:
 	    str = mExternalConfig;
 	    break;
@@ -94,9 +99,6 @@ OovString BuildConfigStrings::getCrcAsStr(BuildConfig::CrcTypes crcType) const
 	case BuildConfig::CT_OtherArgsCrc:
 	    str = mOtherArgsConfig;
 	    break;
-
-	default:
-	    break;
 	}
     char buf[40];
     snprintf(buf, sizeof(buf), "%d", computeCRC(str));
@@ -106,7 +108,7 @@ OovString BuildConfigStrings::getCrcAsStr(BuildConfig::CrcTypes crcType) const
 static std::string normalizeArgPath(std::string argpath)
     {
     std::string str;
-    int starti = 0;
+    size_t starti = 0;
     // Trim leading spaces
     for(size_t i=0; i<argpath.size(); i++)
 	    {
@@ -134,11 +136,11 @@ static std::string normalizeArgPath(std::string argpath)
     // Remove trailing spaces
     if(str.size() > 1)
 	    {
-	    for(int i=str.size()-1; i>=0; i--)
+	    for(int i=static_cast<int>(str.size()-1); i>=0; i--)
 		{
-		if(!isspace(str[i]))
+		if(!isspace(str[static_cast<size_t>(i)]))
 		    {
-		    str.resize(i+1);
+		    str.resize(static_cast<size_t>(i+1));
 		    break;
 		    }
 		}

@@ -63,7 +63,7 @@ class FileEditView
 		bool caseSensitive, char const * const replaceStr);
 	void findToken(eFindTokenTypes ft)
             { mHighlighter.findToken(ft, GuiTextBuffer::getCursorOffset(mTextBuffer)); }
-        void getFindTokenResults(std::string &fn, int &offset)
+        void getFindTokenResults(std::string &fn, size_t &offset)
             { mHighlighter.getFindTokenResults(fn, offset); }
 	void cut()
 	    {

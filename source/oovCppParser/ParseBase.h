@@ -37,8 +37,7 @@ CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKin
 	const char *type);
 CXCursor getCursorChildKindAndNotTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
 	const char *type);
-CXCursor getCursorCallMemberRef(CXCursor cursor);
-void debugDumpCursor(CXCursor cursor, bool recurse=true);
+void debugDumpCursor(FILE *fp, CXCursor cursor);
 void removeLastNonIdentChar(std::string &name);
 void appendConditionString(CXCursor cursor, std::string &str);
 // endCondition=true is the same as appendConditionString().
@@ -52,6 +51,7 @@ bool isIdentC(char c);
 // These return a UML stereotype for typedefs.
 std::string getFullBaseTypeName(CXCursor cursor);
 std::string getFullBaseTypeName(CXType cursorType);
+size_t getFunctionNameFromMemberRefExpr(std::string &expr);
 CXType getBaseType(CXType cursorType);
 
 

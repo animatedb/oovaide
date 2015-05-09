@@ -14,7 +14,7 @@
 class HistoryItem
     {
     public:
-	HistoryItem(bool insert, int offset, OovStringRef const text, int len):
+	HistoryItem(bool insert, size_t offset, OovStringRef const text, size_t len):
 	    mInsert(insert), mOffset(offset), mText(text, len)
 	    {}
 	void undo(GtkTextBuffer *buffer)
@@ -28,12 +28,15 @@ class HistoryItem
 	void setText(bool set, GtkTextBuffer *buffer);
 	static gint getOffset(const GtkTextIter *iter)
 	    { return gtk_text_iter_get_offset(iter); }
-	static void getIter(GtkTextBuffer *buffer, int offset, GtkTextIter *iter)
-	    { gtk_text_buffer_get_iter_at_offset(buffer, iter, offset); }
+	static void getIter(GtkTextBuffer *buffer, size_t offset, GtkTextIter *iter)
+	    {
+            gtk_text_buffer_get_iter_at_offset(buffer, iter,
+                static_cast<gint>(offset));
+            }
 
     protected:
 	bool mInsert;
-	gint mOffset;
+	size_t mOffset;
 	OovString mText;
     };
 

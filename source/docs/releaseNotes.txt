@@ -17,8 +17,12 @@ Missing Features
 ----------------
 - General
 	- BUG: Goto class doesn't change tab to class tab
+	- Add UML notes to diagrams
+	- Remove duplicate connections for getRelatedBodyVarClasses, etc.
 	- create minimal code guidelines, ex:
 	  "The Power of Ten – Rules for Developing Safety Critical Code"
+	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
+	  are the same?
 - Gui
 	- Add improved open recent files
 	- Add toolbar buttons
@@ -40,7 +44,6 @@ Missing Features
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
 	- BUG: component text offsets
-	- BUG: missing relation between cCrashDiagnostics and CppParser, seq diagram does show
 	- Add zoom buttons, and zoom in based on cursor position
 	- Show unused classes - for visible drawing?
 	- Show related classes for a selected class
@@ -216,6 +219,8 @@ Missing Features
 	- abstract interpretation (show ranges of variables)
 	- C Intermediate Language - http://www.cs.berkeley.edu/~necula/cil/cil016.html
 	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
+		fpm deb/rpm
+		biicode
 		http://nsis.sourceforge.net/Main_Page
 		https://github.com/jordansissel/fpm, http://www.exemsi.com/, Wix(.Net only)
 		http://ubuntuforums.org/showthread.php?t=910717

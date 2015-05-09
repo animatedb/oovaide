@@ -32,8 +32,7 @@ class OovThreadedWaitQueuePrivate
         OovThreadedWaitQueuePrivate():
             mQuitPopping(false)
             {}
-        virtual ~OovThreadedWaitQueuePrivate()
-            {}
+        virtual ~OovThreadedWaitQueuePrivate();
         void initThreadSafeQueuePrivate()
             { mQuitPopping = false; }
         void waitPushPrivate(void const *item);
@@ -145,7 +144,7 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
             { waitForCompletion(); }
         // Starts the worker/consumer threads.
         // @param numThreads The number of threads to use to process the queue.
-        void setupQueue(int numThreads)
+        void setupQueue(size_t numThreads)
             {
             mTaskQueue.initThreadSafeQueue();
             setupThreads(numThreads);
@@ -167,7 +166,7 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
 
         // Uses std::thread::hardware_concurrency() to find number of
         // threads.
-         static int getNumHardwareThreads()
+         static size_t getNumHardwareThreads()
             {
             return std::thread::hardware_concurrency();
             }
@@ -177,11 +176,11 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
         std::vector<std::thread> mWorkerThreads;
         // Only sets the number of threads if there are
         // currently no threads running.
-        void setupThreads(int numThreads)
+        void setupThreads(size_t numThreads)
             {
             if(mWorkerThreads.size() == 0)
         	{
-		for(int i=0; i<numThreads; i++)
+		for(size_t i=0; i<numThreads; i++)
 		    {
 		    mWorkerThreads.push_back(std::thread(workerThreadProc, this));
 		    }

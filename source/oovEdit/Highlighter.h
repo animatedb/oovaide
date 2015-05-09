@@ -43,15 +43,16 @@ class Tokenizer
 	    mTransUnit(0), mSourceFile(nullptr)
 	    {}
 	~Tokenizer();
-	void parse(OovStringRef fileName, OovStringRef buffer, int bufLen,
-		char const * const clang_args[], int num_clang_args);
+	void parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
+		char const * const clang_args[], size_t num_clang_args);
 	// line numbers are 1 based.
 	void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
-	bool findToken(eFindTokenTypes ft, int origOffset, std::string &fn, int &offset);
+	bool findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
+            size_t &offset);
 #if(CODE_COMPLETE)
-	OovStringVec codeComplete(int offset);
+	OovStringVec codeComplete(size_t offset);
 #else
-	OovStringVec getMembers(int offset);
+	OovStringVec getMembers(size_t offset);
 #endif
 
     private:
@@ -59,7 +60,7 @@ class Tokenizer
 	std::mutex mTransUnitMutex;
 	CXFile mSourceFile;
 	OovString mSourceFilename;
-	void getLineColumn(int charOffset, unsigned int &line, unsigned int &column);
+	void getLineColumn(size_t charOffset, unsigned int &line, unsigned int &column);
     };
 
 class HighlightTag
@@ -114,17 +115,17 @@ class HighlightTaskItem
 #endif
             mTask(HT_None), mOffset(0), mFindTokenFt(FT_FindDecl)
             {}
-        void setParseTask(OovStringRef const buffer, int bufLen)
+        void setParseTask(OovStringRef const buffer, size_t bufLen)
             {
             mTask = HT_Parse;
 	    mParseSourceBuffer.assign(buffer, bufLen);
             }
-        void setShowMembersTask(int offset)
+        void setShowMembersTask(size_t offset)
             {
             mTask = HT_ShowMembers;
             mOffset = offset;
             }
-        void setFindTokenTask(eFindTokenTypes ft, int origOffset)
+        void setFindTokenTask(eFindTokenTypes ft, size_t origOffset)
             {
             mTask = HT_FindToken;
             mFindTokenFt = ft;
@@ -142,7 +143,7 @@ class HighlightTaskItem
 	// Parameters needed for background thread parsing
 	OovString mParseSourceBuffer;
 
-        int mOffset;
+        size_t mOffset;
 
         eFindTokenTypes mFindTokenFt;
     };
@@ -171,14 +172,7 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
 	    mParseRequestCounter(0), mParseFinishedCounter(0),
 	    mTaskResults(HT_None), mFindTokenResultOffset(0)
 	{}
-	~HighlighterBackgroundThreadData()
-	    {
-#if(SHARED_QUEUE)
-	    sSharedQueue.waitForCompletion();
-#else
-	    stopAndWaitForCompletion();
-#endif
-	    }
+	virtual ~HighlighterBackgroundThreadData();
 	void initArgs(OovStringRef const filename,
 		char const * const clang_args[], int num_clang_args);
 	void makeParseRequest()
@@ -187,7 +181,7 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
 	    { return(mParseRequestCounter != mParseFinishedCounter); }
 	TokenRange getParseResults();
 	OovStringVec getShowMembersResults();
-	void getFindTokenResults(std::string &fn, int &offset);
+	void getFindTokenResults(std::string &fn, size_t &offset);
 	eHighlightTask getTaskResults() const
 	    { return mTaskResults; }
 	// Called by HighlighterSharedQueue on background thread.
@@ -206,7 +200,7 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
 	TokenRange mTokenResults;
         OovStringVec mShowMemberResults;
         OovString mFindTokenResultFilename;
-        int mFindTokenResultOffset;
+        size_t mFindTokenResultOffset;
     };
 
 
@@ -221,12 +215,12 @@ class Highlighter
         //      HT_Parse is handled internally.
         //      HT_ShowMembers, call getShowMembers().
 	eHighlightTask highlightUpdate(GtkTextView *textView, OovStringRef const buffer,
-            int bufLen);
-        void showMembers(int offset);
+            size_t bufLen);
+        void showMembers(size_t offset);
         OovStringVec getShowMembers()
             { return mBackgroundThreadData.getShowMembersResults(); }
-        void findToken(eFindTokenTypes ft, int origOffset);
-        void getFindTokenResults(std::string &fn, int &offset)
+        void findToken(eFindTokenTypes ft, size_t origOffset);
+        void getFindTokenResults(std::string &fn, size_t &offset)
             { return mBackgroundThreadData.getFindTokenResults(fn, offset); }
 
     private:

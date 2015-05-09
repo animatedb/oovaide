@@ -17,7 +17,7 @@ BuildConfig::BuildConfig()
     mConfigFile.readFile();
     }
 
-std::string BuildConfig::getAnalysisPath(OovStringRef const buildType,
+std::string BuildConfig::getAnalysisPath(OovStringRef const /*buildType*/,
 	OovStringRef const crcStr) const
     {
     FilePath analysisCrcStr(Project::getProjectDirectory(), FP_Dir);

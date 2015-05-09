@@ -19,18 +19,20 @@
 	shown in rectangles, and the member functions are shown in ellipses.
 	The arrows show the direction of the dependency.
 	<p/>
-        <embed src="PortionImages/PortionSimpleExample.svg" type="image/svg+xml"> <br>
+        <embed src="PortionImages/PortionSimpleExample.svg" type="image/svg+xml">
+	<p/>
 	Some notes about this example:
 	<ul>
 	<li>One of the constructors and the destructor are empty, and
 	    could be deleted.</li>
-	<li>The second constructor does reference an inherited class, which
-	    is not shown in the diagram.</li>
+	<li>The second constructor calls the constructor in an inherited class,
+	    which is shown as the connection to this.</li>
 	<li>The set link and get link functions reference the link arguments,
 	    but don't reference the compile arguments.</li>
 	<li>The load map and save map functions reference both the
 	    compile and link arguments.</li>
 	</ul>
+    <h2>CppParser Example</h2>
 	<p/>
 	Now we move on to an example of a class that needs to be refactored.
 	This class is used in the Oovcde .cpp parser.  It is not the cleanest
@@ -43,17 +45,50 @@
 	be rearranged based on the data members.
 	<ul>
 	<li>For example, the mModelData
-	member is only used by functions in the top half of the graph for
-	creation of classes and data types.</li><li>Another example is that there looks
-	like a bit of statement code related to the mStatements and mSwitchContexts
-	members.</li>
+	    member is only used by functions in the top half of the graph for
+	    creation of classes and data types.</li>
+	<li>Another example is that there looks	like a bit of statement code
+	    related to the mStatements and mSwitchContexts members.</li>
 	</ul>
 	<p/>
 	Another important aspect is to think about the lifetimes of the
 	data members. The mOperation and mClassifier members are only used while
 	parsing classes and operations.
+    <h2>CppParser Example - Refactor Phase 1</h2>
+	For the first refactoring, the model data was moved into a new class called
+	ParserModelData.
 	<p/>
+        <embed src="PortionImages/PortionParserModelData.svg" type="image/svg+xml">
+	<p/>
+	The remaining CppParser class is:
+	<p/>
+        <embed src="PortionImages/PortionParserPhase1.svg" type="image/svg+xml">
+	<p/>
+	
+	The improvements that resulted are:
+	<ul>
+	<li>The interface to the model data used to be pretty large. Now the
+	    interface is only what the ParserModelData exposes.  A few new
+	    methods were added  (setLineStats, addAssociation, addParsedModule),
+	    which makes it easy to see what the interface to the model data is.</li>
+	<li>150 lines of code were removed from the CppParser class into a separate file.
+	</ul>
 
+	At this point, there are some tradeoffs for refactoring further.  The most
+	likely candidates are to move the following data members into a
+	CppOperationParser class:
+	<ul>
+	<li>mOperation</li>
+	<li>mSwitchContexts</li>
+	<li>mStatementRecurseLevel</li>
+	<li>mStatements</li>
+	</ul>
+	On the one hand, the CppParser class size would be reduced, and
+	the operation parts would be separated, but on the other hand, leaving
+	the CppParser class as is means it contains all parsing functionality.
+
+
+    <h2>Other Notes</h2>
 	Some other notes about portion diagrams:
 	<ul>
 	<li>An attribute only used once could mean it is not used.</li>

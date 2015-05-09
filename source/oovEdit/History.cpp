@@ -13,7 +13,8 @@ void HistoryItem::setText(bool set, GtkTextBuffer *buffer)
     if(set)
 	{
 	HistoryItem::getIter(buffer, mOffset, &start);
-	gtk_text_buffer_insert(buffer, &start, mText.c_str(), mText.length());
+	gtk_text_buffer_insert(buffer, &start, mText.c_str(),
+            static_cast<gint>(mText.length()));
 	}
     else
 	{

@@ -81,19 +81,17 @@ class LockGuard
 class OovProcessListener
     {
     public:
-	virtual ~OovProcessListener()
-	    {}
-	virtual void onStdOut(OovStringRef const out, int len) = 0;
-	virtual void onStdErr(OovStringRef const out, int len) = 0;
+	virtual ~OovProcessListener();
+	virtual void onStdOut(OovStringRef const out, size_t len) = 0;
+	virtual void onStdErr(OovStringRef const out, size_t len) = 0;
 	virtual void processComplete()
-	    {}
+            {}
     };
 
 class OovTaskContinueListener
     {
     public:
-	virtual ~OovTaskContinueListener()
-	    {}
+	virtual ~OovTaskContinueListener();
 	virtual bool continueProcessingItem() const = 0;
     };
 
@@ -104,8 +102,7 @@ typedef int OovTaskStatusListenerId;
 class OovTaskStatusListener
     {
     public:
-	virtual ~OovTaskStatusListener()
-	    {}
+	virtual ~OovTaskStatusListener();
 	virtual OovTaskStatusListenerId startTask(OovStringRef const &text,
 		size_t totalIterations) = 0;
 	/// @return false to stop iteration.
@@ -120,7 +117,7 @@ class OovProcessStdListener:public OovProcessListener
     {
     public:
 	enum OutputPlaces { OP_OutputNone=0x00, OP_OutputStd=0x01, OP_OutputFile=0x02,
-	    OP_OutputStdAndFile=OP_OutputStd|OP_OutputFile,
+	    OP_OutputStdAndFile=OP_OutputStd|OP_OutputFile
 	    };
 	OovProcessStdListener():
 	    mStdOutPlace(OP_OutputStd), mStdErrPlace(OP_OutputStd),
@@ -138,8 +135,8 @@ class OovProcessStdListener:public OovProcessListener
 	    }
 	virtual ~OovProcessStdListener()
 	    {}
-	virtual void onStdOut(OovStringRef const out, int len);
-	virtual void onStdErr(OovStringRef const out, int len);
+	virtual void onStdOut(OovStringRef const out, size_t len);
+	virtual void onStdErr(OovStringRef const out, size_t len);
 
     protected:
 	OutputPlaces mStdOutPlace;
@@ -161,8 +158,8 @@ class OovProcessBufferedStdListener:public OovProcessStdListener
 	    {}
 	virtual ~OovProcessBufferedStdListener();
 	void setProcessIdStr(OovStringRef const str);
-	virtual void onStdOut(OovStringRef const out, int len) override;
-	virtual void onStdErr(OovStringRef const out, int len) override;
+	virtual void onStdOut(OovStringRef const out, size_t len) override;
+	virtual void onStdErr(OovStringRef const out, size_t len) override;
 
     private:
 // This isn't available yet.

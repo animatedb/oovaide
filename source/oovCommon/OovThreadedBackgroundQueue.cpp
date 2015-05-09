@@ -14,6 +14,8 @@ void logProc(char const *str, const void *ptr, int val)
 #endif
 
 
+OovThreadedBackgroundQueuePrivate::~OovThreadedBackgroundQueuePrivate()
+    {}
 
 void OovThreadedBackgroundQueuePrivate::pushPrivate(void const *item)
     {

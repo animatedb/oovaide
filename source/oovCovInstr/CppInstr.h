@@ -126,6 +126,7 @@ class CppInstr
 	void insertNonCompoundInstr(CXCursor cursor);
 //	void instrChildNonCompoundStatements(CXCursor cursor);
 
+        /// @todo - fn isn't used.
 	static void updateCoverageHeader(OovStringRef const fn, OovStringRef const covDir,
 		int numInstrLines);
 	static void updateCoverageSource(OovStringRef const fn, OovStringRef const covDir);

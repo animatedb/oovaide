@@ -19,7 +19,15 @@ class PortionDrawOptions
     {
     };
 
-enum PortionNodeTypes { PNT_Attribute, PNT_Operation };
+enum PortionNodeTypes
+    {
+    PNT_Attribute,
+    PNT_Operation
+#if(NonMemberVariables)
+    , PNT_NonMemberVariable
+#endif
+    };
+
 class PortionNode
     {
     public:
@@ -60,7 +68,7 @@ class PortionGraph
 	    }
 	// The model must exist for the lifetime of the graph.
         void clearAndAddClass(const ModelData &model, OovStringRef classname);
-        PortionNode const *getNode(OovStringRef name) const;
+        PortionNode const *getNode(OovStringRef name, PortionNodeTypes nt) const;
         size_t getNodeIndex(PortionNode const *node) const
             { return(node - &mNodes[0]); }
         std::vector<PortionNode> const &getNodes() const
@@ -79,6 +87,8 @@ class PortionGraph
 	PortionDrawOptions mDrawOptions;
 
 	void addConnections(ModelClassifier const *cls);
+	void addAttrOperConnections(OovStringRef attrName,
+		std::vector<std::unique_ptr<ModelOperation>> const &opers);
 	// Add connections between all operations of this class.
 	void addOperationConnections(ModelClassifier const *classifier,
 		ModelStatements const &statements, PortionNode const *operNode);

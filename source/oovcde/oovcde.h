@@ -37,13 +37,13 @@ class WindowBuildListener:public OovProcessListener
 	    { initListener(builder); }
 	virtual ~WindowBuildListener()
 	    {}
-	virtual void onStdOut(OovStringRef const out, int len) override
+	virtual void onStdOut(OovStringRef const out, size_t len) override
 	    {
 // Adding this guard causes a hang in linux when children have tons of errors.
 	    LockGuard guard(mMutex);
 	    mStdOutAndErr.append(out, len);
 	    }
-	virtual void onStdErr(OovStringRef const out, int len) override
+	virtual void onStdErr(OovStringRef const out, size_t len) override
 	    {
 	    LockGuard guard(mMutex);
 	    mStdOutAndErr.append(out, len);

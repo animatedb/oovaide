@@ -8,32 +8,10 @@
 #ifndef CPPPARSER_H_
 #define CPPPARSER_H_
 
-#include "ModelObjects.h"
-#include "ParseBase.h"
-#include <map>
+#include "IncDirMap.h"
+#include "ParserModelData.h"
 #include <set>
-#include "NameValueFile.h"
-#include "FilePath.h"
 #include "OovString.h"
-
-/// This works to build include paths, and to build include file dependencies
-/// This makes a file that keeps a map of paths, and for each path:
-///	the last time the path dependencies changed,
-///	the last time the paths were checked,
-///	the included filepath (such as "gtk/gtk.h"), and the directory to get to that file.
-/// This file does not store paths that the compiler searches by default.
-class IncDirDependencyMap:public NameValueFile
-    {
-    public:
-	void read(char const * const outDir, char const * const incPath);
-	void write();
-	void insert(const std::string &includerPath, const FilePath &includedPath);
-
-    private:
-	/// This map keeps all included paths for every includer that was parsed.
-	/// This map is <includerPath, includedPath's>
-	std::map<std::string, std::set<std::string>> mParsedIncludeDependencies;
-    };
 
 // This contains context while parsing a switch statement. Case statements are
 // kind of interesting to graph in a sequence diagram since cases without breaks
@@ -148,8 +126,11 @@ class CppParser
     {
     public:
 	CppParser():
-	    mClassifier(nullptr), mOperation(nullptr), mStatements(nullptr),
+	    mClassifier(nullptr), mOperation(nullptr), mStatements(nullptr)
+#if(DEBUG_PARSE)
+	    ,
 	    mStatementRecurseLevel(0)
+#endif
 	    {}
 	enum eErrorTypes { ET_None, ET_CompileWarnings, ET_CompileErrors,
 	    ET_CLangError, ET_ParseError };
@@ -167,7 +148,7 @@ class CppParser
 
     private:
         /// This contains all parsed information.
-	ModelData mModelData;
+	ParserModelData mParserModelData;
         cDupHashFile mDupHashFile;
 	ModelClassifier *mClassifier;    /// Current class being parsed.
 	ModelOperation *mOperation;      /// Current operation being parsed.
@@ -176,14 +157,12 @@ class CppParser
 	FilePath mTopParseFn;   /// The top level file that is being parsed.
 	Visibility mClassMemberAccess;
 	IncDirDependencyMap mIncDirDeps;
+#if(DEBUG_PARSE)
 	int mStatementRecurseLevel;
-	ModelClassifier *createOrGetClassRef(OovStringRef const name);
-	ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);
-	ModelType *createOrGetDataTypeRef(CXType type, RefType &rt);
-	ModelType *createOrGetDataTypeRef(CXCursor cursor);
-	ModelType *createOrGetTypedef(CXCursor cursor);
+#endif
 	void addOperationParts(CXCursor cursor, bool addParams);
 	void addRecord(CXCursor cursor, Visibility vis);
+	void addVar(CXCursor cursor);
 	void addClassFileLoc(CXCursor cursor, ModelClassifier *classifier);
 	/// This only adds typedefs of class (or template?) types.
 	void addTypedef(CXCursor cursor);

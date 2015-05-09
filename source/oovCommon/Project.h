@@ -129,12 +129,12 @@ enum eLinkOrderIndices { LOI_InternalProject=0, LOI_AfterInternalProject=1000,
     LOI_PackageIncrement=1000 };
 struct IndexedString
     {
-    int mLinkOrderIndex;
+    size_t mLinkOrderIndex;
     std::string mString;
-    IndexedString(int index, OovStringRef const str):
+    IndexedString(size_t index, OovStringRef const str):
 	mLinkOrderIndex(index), mString(str)
 	{}
-    IndexedString(int index, const std::string &str):
+    IndexedString(size_t index, const std::string &str):
 	mLinkOrderIndex(index), mString(str)
 	{}
     bool operator<(const IndexedString &rhs) const
@@ -166,7 +166,7 @@ class ProjectReader:public NameValueFile
 	    { return mLinkArgs; }
 	const OovStringVec &getExternalArgs() const
 	    { return mExternalRootArgs; }
-	int getExternalPackageLinkOrder(OovStringRef const pkgName) const;
+	unsigned int getExternalPackageLinkOrder(OovStringRef const pkgName) const;
 	// These are only used for computing CRC's. The builder will later get
 	// the arguments from the packages because not all packages are used by
 	// all components.
@@ -200,11 +200,11 @@ class ProjectReader:public NameValueFile
 
 	void addCompileArg(OovStringRef const str)
 	    { mCompileArgs.push_back(str); }
-	void addLinkArg(int linkOrderIndex, OovStringRef const str)
+	void addLinkArg(unsigned int linkOrderIndex, OovStringRef const str)
 	    { mLinkArgs.push_back(IndexedString(linkOrderIndex, str)); }
 	void addExternalArg(OovStringRef const str)
 	    { mExternalRootArgs.push_back(str); }
-	void addExternalPackageName(int linkOrderIndex, OovStringRef const str)
+	void addExternalPackageName(unsigned int linkOrderIndex, OovStringRef const str)
 	    { mExternalPackageNames.push_back(IndexedString(linkOrderIndex, str)); }
 
 	void addPackageCrcName(OovStringRef const pkgName)

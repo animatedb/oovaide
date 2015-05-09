@@ -219,19 +219,22 @@ bool IncDirDependencyMapReader::anyRootDirsMatch(OovStringVec const &incRoots,
     return match;
     }
 
+class DirInfo
+    {
+    public:
+	DirInfo():
+	    mMatchLen(0), mMatchIndex(NoIndex)
+	    {}
+	static const size_t NoIndex = static_cast<size_t>(-1);
+	size_t mMatchLen;
+	size_t mMatchIndex;
+    };
+
 OovStringVec IncDirDependencyMapReader::getOrderedIncludeDirsForSourceFile(OovStringRef const absSrcName,
 	OovStringVec const &orderedIncRoots) const
     {
     OovStringVec incDirs;
     // put directories in search path order.
-    struct DirInfo
-    {
-	DirInfo():
-	    mMatchLen(0), mMatchIndex(-1)
-	    {}
-	size_t mMatchLen;
-	size_t mMatchIndex;
-    };
     std::vector<DirInfo> unorderedDirInfo;
     std::vector<OovString> unorderedIncDirs =
 	    getNestedIncludeDirsUsedBySourceFile(absSrcName);

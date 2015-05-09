@@ -14,6 +14,8 @@
 #include <stdlib.h>	// for getenv
 #include <algorithm>
 
+TaskQueueListener::~TaskQueueListener()
+    {}
 
 void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFilePath,
 	OovStringRef const buildDirClass)
@@ -44,7 +46,7 @@ void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFileP
 	}
     }
 
-bool const ComponentPkgDeps::isDependent(OovStringRef const compName,
+bool ComponentPkgDeps::isDependent(OovStringRef const compName,
 	OovStringRef const pkgName) const
     {
     bool dependent = false;
@@ -108,7 +110,7 @@ void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
     /// at the time that a component needs the symbols.
     for(auto &pkg : packages)
 	{
-	int linkOrderIndex = mComponentFinder.getProject().
+	unsigned int linkOrderIndex = mComponentFinder.getProject().
 		getExternalPackageLinkOrder(pkg.getPkgName());
 	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
 	    {
@@ -119,7 +121,9 @@ void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
 		{
 		OovStringVec pkgLibs = pkg.getLibraryNames();
 		for(auto &lib : pkgLibs)
+                    {
 		    sortedLibNames.push_back(IndexedString(linkOrderIndex++, lib));
+                    }
 //		std::copy(pkgLibs.begin(), pkgLibs.end(), std::back_inserter(sortedLibNames));
 
 		OovStringVec pkgLibDirs = pkg.getLibraryDirs();
@@ -130,7 +134,7 @@ void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
     }
 
 OovStringSet ComponentBuilder::getComponentCompileArgs(OovStringRef const compName,
-	ComponentTypesFile const &file)
+	ComponentTypesFile const & /* file */ )
     {
     OovStringSet compileArgs;
     BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
@@ -170,8 +174,8 @@ IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(OovStringRef cons
 	{
 	if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
 	    {
-	    int linkOrderIndex = mComponentFinder.getProject().getExternalPackageLinkOrder(
-		    pkg.getPkgName());
+	    unsigned int linkOrderIndex = mComponentFinder.getProject().
+                getExternalPackageLinkOrder(pkg.getPkgName());
 	    for(auto const &arg : pkg.getLinkArgs())
 		{
 		linkArgs.insert(IndexedString(linkOrderIndex, arg));
@@ -189,7 +193,7 @@ IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(OovStringRef cons
     return linkArgs;
     }
 
-OovString makeLibFn(OovStringRef const outputPath, OovStringRef const packageName)
+static OovString makeLibFn(OovStringRef const outputPath, OovStringRef const packageName)
     {
     OovString libName = packageName;
     size_t libNamePos = FilePathGetPosEndDir(libName);
@@ -207,12 +211,15 @@ class LibTaskListener:public TaskQueueListener
     private:
 	OovStringVec mBuiltLibs;
 	virtual void extraProcessing(bool success, OovStringRef const outFile,
-		OovStringRef const stdOutFn, ProcessArgs const &item) override
-	    {
-	    if(success)
-		mBuiltLibs.push_back(outFile);
-	    }
+		OovStringRef const /*stdOutFn*/, ProcessArgs const & /*item*/) override;
     };
+
+void LibTaskListener::extraProcessing(bool success, OovStringRef const outFile,
+    OovStringRef const /*stdOutFn*/, ProcessArgs const & /*item*/)
+    {
+    if(success)
+        mBuiltLibs.push_back(outFile);
+    }
 
 void ComponentBuilder::processSourceForComponents(eProcessModes pm)
     {
@@ -224,6 +231,7 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
             {
+            // compTypesFile is not used!!!
             OovStringSet compileArgs = getComponentCompileArgs(name,
                 compTypesFile);
             if(compTypesFile.getComponentType(name) != ComponentTypesFile::CT_Unknown)
@@ -488,7 +496,8 @@ void ComponentBuilder::processSourceFile(eProcessModes pm, OovStringRef const sr
 	}
     if(processFile)
 	{
-	int incFileOlderIndex = -1;
+	static size_t BadIndex = static_cast<size_t>(-1);
+	size_t incFileOlderIndex = BadIndex;
 	OovString outFileName;
 	if(pm == PM_CovInstr)
 	    {
@@ -526,10 +535,10 @@ void ComponentBuilder::processSourceFile(eProcessModes pm, OovStringRef const sr
 	    ca.addArg("-o");
 	    ca.addArg(outFileName);
 
-	    sVerboseDump.logProcess(srcFile, ca.getArgv(), ca.getArgc());
+	    sVerboseDump.logProcess(srcFile, ca.getArgv(), static_cast<int>(ca.getArgc()));
             addTask(ProcessArgs(procPath, outFileName, ca));
-	    if(incFileOlderIndex != -1)
-		sVerboseDump.logOutputOld(incFiles[incFileOlderIndex]);
+	    if(incFileOlderIndex != BadIndex)
+		sVerboseDump.logOutputOld(incFiles[static_cast<size_t>(incFileOlderIndex)]);
             }
 	}
     }
@@ -582,7 +591,7 @@ void ComponentBuilder::makeLib(OovStringRef const libPath,
 	    {
 	    ca.addArg(objName);
 	    }
-        sVerboseDump.logProcess(outFileName, ca.getArgv(), ca.getArgc());
+        sVerboseDump.logProcess(outFileName, ca.getArgv(), static_cast<int>(ca.getArgc()));
         addTask(ProcessArgs(procPath, outFileName, ca));
 	}
     }

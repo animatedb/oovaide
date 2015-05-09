@@ -19,8 +19,8 @@ class TextProcessor:public OovProcessListener
     public:
 	virtual ~TextProcessor()
 	    {}
-	virtual void onStdOut(OovStringRef const out, int len) override;
-	virtual void onStdErr(OovStringRef const out, int len) override;
+	virtual void onStdOut(OovStringRef const out, size_t len) override;
+	virtual void onStdErr(OovStringRef const out, size_t len) override;
 	virtual void processComplete() override
 	    {}
 	bool spawn(char const * const procPath, char const * const *argv);
@@ -37,12 +37,12 @@ bool TextProcessor::spawn(char const * const procPath, char const * const *argv)
     return(proc.spawn(procPath, argv, *this, exitCode));
     }
 
-void TextProcessor::onStdErr(OovStringRef const out, int len)
+void TextProcessor::onStdErr(OovStringRef const out, size_t len)
     {
     mText += std::string(out, len);
     }
 
-void TextProcessor::onStdOut(OovStringRef const out, int len)
+void TextProcessor::onStdOut(OovStringRef const out, size_t len)
     {
     mText += std::string(out, len);
     }

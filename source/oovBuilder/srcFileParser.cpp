@@ -85,7 +85,7 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
 	if(isHeader(ext) || isSource(ext))
 	    {
 	    struct OovStat32 srcFileStat;
-	    bool success = (OovStatFunc(srcFile, &srcFileStat) == 0);
+	    success = (OovStatFunc(srcFile, &srcFileStat) == 0);
 	    if(success)
 		{
 		OovString srcRoot = mSrcRootDir;
@@ -160,7 +160,7 @@ bool srcFileParser::processItem(CppChildArgs const &item)
 	    tempStr += " ";
 	    tempStr.appendInt(exitCode);
 	    }
-	if(!pipeProc.isArgLengthOk(tempStr.length()))
+	if(!pipeProc.isArgLengthOk(static_cast<int>(tempStr.length())))
 	    {
 	    tempStr += "\nToo long of command arguments.";
 	    }

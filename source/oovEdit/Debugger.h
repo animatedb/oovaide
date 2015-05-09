@@ -94,8 +94,7 @@ class DebuggerBreakpoints:public std::vector<DebuggerBreakpoint>
 class DebuggerListener
     {
     public:
-	virtual ~DebuggerListener()
-	    {}
+	virtual ~DebuggerListener();
 	/// All output from the debugger process is sent to this listener.
 	/// Set this up by calling Debugger::setListener.
 	virtual void DebugOutput(OovStringRef const str) = 0;
@@ -109,8 +108,7 @@ class DebuggerBase
     {
     public:
 	DebuggerBase();
-	virtual ~DebuggerBase()
-            {}
+	virtual ~DebuggerBase();
 	void setListener(DebuggerListener &listener)
 	    { mDebuggerListener = &listener; }
 	void setDebuggerFilePath(OovStringRef const dbgPath)
@@ -214,8 +212,8 @@ class DebuggerGdb:public OovProcessListener, public DebuggerBase
 	void handleBreakpoint(const std::string &resultStr);
 	void handleStack(const std::string &resultStr);
 	void handleValue(const std::string &resultStr);
-	virtual void onStdOut(OovStringRef const out, int len) override;
-	virtual void onStdErr(OovStringRef const out, int len) override;
+	virtual void onStdOut(OovStringRef const out, size_t len) override;
+	virtual void onStdErr(OovStringRef const out, size_t len) override;
     };
 #endif
 

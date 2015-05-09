@@ -69,6 +69,7 @@ OovString const &Project::getBinDirectory()
     static OovString path;
     if(path.length() == 0)
 	{
+#ifdef __linux__
 	// On linux, we could use the "which" command using "which oovcde", but
 	// this will probably be ok?
 	if(FileIsFileOnDisk("./oovcde"))
@@ -83,6 +84,9 @@ OovString const &Project::getBinDirectory()
 	    {
 	    path = "/usr/bin";
 	    }
+#else
+	path = "./";
+#endif
 	}
     return path;
     }
@@ -145,7 +149,8 @@ OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcFileNam
     return relSrcFileDir;
     }
 
-OovString getAbsoluteDirFromSrcRootDirRelativeDir(OovStringRef const relSrcFileDir)
+static OovString getAbsoluteDirFromSrcRootDirRelativeDir(
+    OovStringRef const relSrcFileDir)
     {
     FilePath absSrcFileDir(Project::getSrcRootDirectory(), FP_Dir);
     absSrcFileDir.appendDir(relSrcFileDir);
@@ -259,7 +264,7 @@ bool ProjectReader::readOovProject(OovStringRef const oovProjectDir,
 
 void ProjectReader::parseArgs(OovStringVec const &args)
     {
-    int linkOrderIndex = LOI_AfterInternalProject;
+    unsigned int linkOrderIndex = LOI_AfterInternalProject;
     for(auto const &arg : args)
 	{
 	if(arg.find("-ER", 0, 3) == 0)
@@ -363,9 +368,9 @@ const OovStringVec ProjectReader::getAllCrcLinkArgs() const
     return vec;
     }
 
-int ProjectReader::getExternalPackageLinkOrder(OovStringRef const pkgName) const
+unsigned int ProjectReader::getExternalPackageLinkOrder(OovStringRef const pkgName) const
     {
-    int index = LOI_AfterInternalProject;
+    unsigned int index = LOI_AfterInternalProject;
     for(auto &item : mExternalPackageNames)
 	{
 	if(item.mString.compare(pkgName) == 0)

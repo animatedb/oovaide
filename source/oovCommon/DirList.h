@@ -34,8 +34,7 @@ bool getDirList(OovStringRef const path, eDirListTypes, std::vector<std::string>
 class dirRecurser
 {
 public:
-    virtual ~dirRecurser()
-	{}
+    virtual ~dirRecurser();
     bool recurseDirs(OovStringRef const path);
     // Return true while success.
     virtual bool processFile(OovStringRef const filePath) = 0;

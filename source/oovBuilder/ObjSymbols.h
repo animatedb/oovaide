@@ -19,9 +19,9 @@ class ObjSymbols
 	///	files. Normally it relates to a library path that may contain
 	///	many libraries.
 	/// @param libFileNames List of all library file names in a clump.
-	/// @param outPath Location of where to put symbol information.
+	/// @param outSymPath Location of where to put symbol information.
 	/// @param objSymbolTool The executable name.
-	/// @param sortedLibFileNames Sorted names
+	/// @param queue The queue of tasks/processes for processing the libs.
 	bool makeClumpSymbols(OovStringRef const clumpName,
 		OovStringVec const &libFileNames, OovStringRef const outSymPath,
 		OovStringRef const objSymbolTool, class ComponentTaskQueue &queue);

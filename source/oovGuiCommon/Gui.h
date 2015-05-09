@@ -42,8 +42,7 @@ class Dialog
 	    {
 	    setDialog(dlg, parent);
 	    }
-	virtual ~Dialog()
-	    {}
+	virtual ~Dialog();
 	void setDialog(GtkDialog *dlg, GtkWindow *parent=nullptr)
 	    {
 	    mDialog = dlg;
@@ -270,7 +269,7 @@ class GuiTreeItem
 	bool isRoot() const
 	    { return mRoot; }
 	void setRoot(bool root=true)
-	    { mRoot = true; }
+	    { mRoot = root; }
 	GtkTreeIter *getPtr()
 	    { return(mRoot ? NULL : &mIter); }
     private:

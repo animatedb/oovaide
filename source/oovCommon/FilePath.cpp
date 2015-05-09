@@ -263,7 +263,7 @@ bool FileEnsurePathExists(OovStringRef const path)
     while(pos != 0)
 	{
 	fp.discardTail(pos);
-	if(fp.isFileOnDisk())
+	if(fp.isDirOnDisk())
 	    break;
 	else
 	    pos = fp.getPosLeftPathSep(pos, RP_RetPosFailure);
@@ -275,7 +275,7 @@ bool FileEnsurePathExists(OovStringRef const path)
 	    {
 	    OovString partPath = path;
 	    partPath.resize(pos);
-	    if(!FileIsFileOnDisk(partPath))
+	    if(!FileIsDirOnDisk(partPath))
 		{
 #ifdef __linux__
 		success = (mkdir(partPath.getStr(), 0x1FF) == 0);	// 0777
@@ -289,7 +289,7 @@ bool FileEnsurePathExists(OovStringRef const path)
     return success;
     }
 
-void FilePathRemovePathSep(std::string &path, int pos)
+void FilePathRemovePathSep(std::string &path, size_t pos)
     {
     if(path[pos] == '/' || path[pos] == '\\' )
 	path.erase(path.begin() + pos);

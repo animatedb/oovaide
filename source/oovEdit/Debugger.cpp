@@ -29,6 +29,12 @@ std::string DebuggerLocation::getAsString() const
     }
 
 
+DebuggerListener::~DebuggerListener()
+    {}
+
+DebuggerBase::~DebuggerBase()
+    {}
+
 
 DebuggerBase::DebuggerBase():
     mDebuggerListener(nullptr)
@@ -97,7 +103,6 @@ void DebuggerBase::changeChildState(DebuggerChildStates state)
 	}
     updateChangeStatus(DCS_RunState);
     }
-
 
 
 /////////////////////////
@@ -292,7 +297,7 @@ void DebuggerGdb::sendCommand(OovStringRef const command)
 #endif
     }
 
-void DebuggerGdb::onStdOut(OovStringRef const out, int len)\
+void DebuggerGdb::onStdOut(OovStringRef const out, size_t len)\
     {
     mDebuggerOutputBuffer.append(out, len);
     while(1)
@@ -329,7 +334,7 @@ void DebuggerGdb::setStackFrame(OovStringRef const frameLine)
     }
 
 
-void DebuggerGdb::onStdErr(OovStringRef const out, int len)
+void DebuggerGdb::onStdErr(OovStringRef const out, size_t len)
     {
     std::string result(out, len);
     if(mDebuggerListener)
@@ -401,7 +406,7 @@ static DebuggerLocation getLocationFromResult(const std::string &resultStr)
 //      	putTogether = 0x76251162 <onexit+53>
 //          }
 //      }"
-static size_t getResultTuple(int pos, const std::string &resultStr, std::string &tupleStr)
+static size_t getResultTuple(size_t pos, const std::string &resultStr, std::string &tupleStr)
     {
     size_t startPos = resultStr.find('{', pos);
     size_t endPos = resultStr.find('}', startPos);

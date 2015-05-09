@@ -22,7 +22,7 @@ class OovProcessChildArgs
 	void clearArgs()
 	    { mArgStrings.clear(); }
 	char const * const *getArgv() const;
-	const int getArgc() const
+	size_t getArgc() const
 	    { return mArgStrings.size(); }
 	OovString getArgsAsStr() const;
 	void printArgs(FILE *fh) const;

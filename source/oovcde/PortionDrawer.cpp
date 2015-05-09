@@ -122,8 +122,8 @@ void PortionDrawer::drawGraph()
 	// This must be set for svg
 	mDrawer->setDiagramSize(getDrawingSize());
 
-	mDrawer->groupShapes(true, Color(0,0,0), Color(245,245,255));
         drawNodes();
+	mDrawer->groupShapes(true, Color(0,0,0), Color(245,245,255));
 	drawConnections();
 	mDrawer->groupShapes(false, 0, 0);
 
@@ -140,6 +140,9 @@ GraphSize PortionDrawer::getDrawingSize() const
 	{
 	graphRect.unionRect(getNodeRect(i));
 	}
+    // Add some margin.
+    graphRect.size.x += 5;
+    graphRect.size.y += 5;
     return graphRect.size;
     }
 
@@ -182,6 +185,7 @@ void PortionDrawer::setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPo
 
 void PortionDrawer::drawNodes()
     {
+    mDrawer->groupShapes(true, Color(0,0,0), Color(245,245,255));
     for(size_t i=0; i<mNodePositions.size(); i++)
         {
 	if(mGraph->getNodes()[i].getNodeType() == PNT_Attribute)
@@ -193,6 +197,18 @@ void PortionDrawer::drawNodes()
 	    mDrawer->drawEllipse(getNodeRect(i));
 	    }
         }
+    mDrawer->groupShapes(false, 0, 0);
+#if(NonMemberVariables)
+    mDrawer->groupShapes(true, Color(0,0,255), Color(245,245,255));
+    for(size_t i=0; i<mNodePositions.size(); i++)
+	{
+	if(mGraph->getNodes()[i].getNodeType() == PNT_NonMemberVariable)
+	    {
+	    mDrawer->drawRect(getNodeRect(i));
+	    }
+	}
+    mDrawer->groupShapes(false, 0, 0);
+#endif
     }
 
 void PortionDrawer::drawConnections()

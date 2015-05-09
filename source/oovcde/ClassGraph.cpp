@@ -211,11 +211,11 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
 	const ModelClassifier*cl = modelType->getClass();
 	if(cl)
 	    {
-	    ConstModelDeclClassVector relatedDeclClasses;
+	    ConstModelDeclClasses relatedDeclClasses;
 	    model.getRelatedBodyVarClasses(*cl, relatedDeclClasses);
 	    for(auto &rdc : relatedDeclClasses)
 		{
-		if(rdc.cl == type)
+		if(rdc.getClass() == type)
 		    {
 #if(DEBUG_ADD)
 		    DebugAdd("Var User", cl);
@@ -360,14 +360,14 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 		}
 	    if((addType & AN_FuncBodyUsing) > 0)
 		{
-		ConstModelDeclClassVector relatedDeclClasses;
+		ConstModelDeclClasses relatedDeclClasses;
 		model.getRelatedBodyVarClasses(*classifier, relatedDeclClasses);
 		for(const auto &rdc : relatedDeclClasses)
 		    {
 #if(DEBUG_ADD)
 		    DebugAdd("Body Using", rdc.cl);
 #endif
-		    addRelatedNodesRecurse(model, rdc.cl, options, addType, maxDepth);
+		    addRelatedNodesRecurse(model, rdc.getClass(), options, addType, maxDepth);
 		    }
 		}
 	    }
@@ -442,12 +442,12 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 		if(options.drawOperParamRelations)
 		    {
 		    // Get operations parameters of classifier, and get the decl type
-		    ConstModelDeclClassVector declClasses;
+		    ConstModelDeclClasses declClasses;
 		    modelData.getRelatedFuncParamClasses(*classifier, declClasses);
 		    for(const auto &declCl : declClasses)
 			{
-			const ModelDeclarator *decl = declCl.decl;
-			insertConnection(ni, declCl.cl, ClassConnectItem(ctFuncParam,
+			const ModelDeclarator *decl = declCl.getDecl();
+			insertConnection(ni, declCl.getClass(), ClassConnectItem(ctFuncParam,
 				decl->isConst(), decl->isRefer(), Visibility()));
 			}
 		    }
@@ -455,12 +455,12 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 		if(options.drawOperBodyVarRelations)
 		    {
 		    // Get operations parameters of classifier, and get the decl type
-		    ConstModelDeclClassVector declClasses;
+		    ConstModelDeclClasses declClasses;
 		    modelData.getRelatedBodyVarClasses(*classifier, declClasses);
 		    for(const auto &declCl : declClasses)
 			{
-			const ModelDeclarator *decl = declCl.decl;
-			insertConnection(ni, declCl.cl, ClassConnectItem(ctFuncVar,
+			const ModelDeclarator *decl = declCl.getDecl();
+			insertConnection(ni, declCl.getClass(), ClassConnectItem(ctFuncVar,
 				decl->isConst(), decl->isRefer(), Visibility()));
 			}
 		    }

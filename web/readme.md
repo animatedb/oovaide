@@ -45,6 +45,8 @@ If you would like to build from source:
 - cd oovcde
 - cmake source
 - make
+- sudo make install
+
 Depending on the version of LLVM on your system, it may be required that
 the CMakeLists.txt file is modified to use a different version. GTK3 is also
 required.

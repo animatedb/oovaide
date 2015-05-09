@@ -461,7 +461,7 @@ void EditFiles::idleHighlight()
 	    abs(curTime.tv_usec - mLastHightlightIdleUpdate.tv_usec) > 300)
 	{
         OovString fn;
-        int offset;
+        size_t offset;
 	for(auto &view : mFileViews)
             {
 	    FileEditView &editView = view->getFileEditView();

@@ -90,17 +90,17 @@ bool ModelWriter::openFile(OovStringRef const filename)
     }
 
 static int sModelId = MIO_NoLookup;
-int newModelId()
+static int newModelId()
     { return sModelId++; }
 
 int ModelWriter::getObjectModelId(const std::string &name)
     {
     int index = -1;
-    for(unsigned int i=0; i<mModelData.mTypes.size(); i++)
+    for(size_t i=0; i<mModelData.mTypes.size(); i++)
         {
         if(name.compare(mModelData.mTypes[i]->getName()) == 0)
             {
-            index = i + MIO_Object;
+            index = static_cast<int>(i) + MIO_Object;
             break;
             }
         }
@@ -108,7 +108,7 @@ int ModelWriter::getObjectModelId(const std::string &name)
     }
 
 
-static char const * const boolStr(bool val)
+static char const * boolStr(bool val)
 {
     char const *str;
     if(val)
@@ -176,7 +176,7 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 	    switch(stmt.getStatementType())
 		{
 		case ST_OpenNest:
-		    fprintf(mFp, "{%s", translate(stmt.getName()).c_str());
+		    fprintf(mFp, "{%s", translate(stmt.getCondName()).c_str());
 		    break;
 
 		case ST_CloseNest:
@@ -188,7 +188,7 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 		    std::string className;
 		    if(stmt.getClassDecl().getDeclType())
 			className = stmt.getClassDecl().getDeclType()->getName();
-		    fprintf(mFp, "c=%s@%d", translate(stmt.getName()).c_str(),
+		    fprintf(mFp, "c=%s@%d", translate(stmt.getFullName()).c_str(),
 			getObjectModelId(className));
 		    }
 		    break;
@@ -201,7 +201,7 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 			className = stmt.getClassDecl().getDeclType()->getName();
 		    if(stmt.getVarDecl().getDeclType())
 			varType = stmt.getVarDecl().getDeclType()->getName();
-		    fprintf(mFp, "v=%s@%d@%d@%s", translate(stmt.getName()).c_str(),
+		    fprintf(mFp, "v=%s@%d@%d@%s", translate(stmt.getAttrName()).c_str(),
 			getObjectModelId(className), getObjectModelId(varType),
 			boolStr(stmt.getVarAccessWrite()));
 		    }
@@ -323,15 +323,17 @@ void ModelWriter::writeType(const ModelType &mtype)
 		    isDefinedOpers = true;
 		}
 	    }
-        if(isDefinedClass || isDefinedOpers || mModelData.isTypeReferencedByDefinedObjects(mtype))
+        if(isDefinedClass || isDefinedOpers ||
+            mModelData.isTypeReferencedByDefinedObjects(mtype))
             {
 	    char const *typeName;
 	    char lineNumStr[50];
 	    if(mtype.getDataType() == DT_Class)
 		{
 		typeName = "Class";
-		const ModelClassifier *cl = mtype.getClass();
-		snprintf(lineNumStr, sizeof(lineNumStr), "line=\"%d\"", cl->getLineNum());
+		const ModelClassifier *typeCl = mtype.getClass();
+		snprintf(lineNumStr, sizeof(lineNumStr), "line=\"%d\"",
+                    typeCl->getLineNum());
 		}
 	    else
 		{
@@ -343,14 +345,15 @@ void ModelWriter::writeType(const ModelType &mtype)
 	    std::string earlyTermStr;
 	    if(mtype.getDataType() == DT_Class)
 		{
-		const ModelClassifier *cl = mtype.getClass();
-		if(cl->getModule())
+		const ModelClassifier *typeCl = mtype.getClass();
+		if(typeCl->getModule())
 		    {
 		    moduleStr = "module=\"";
 		    moduleStr.appendInt(MIO_Module);
 		    moduleStr += "\" ";
 		    }
-		if(cl->getAttributes().size() == 0 && cl->getOperations().size() == 0)
+		if(typeCl->getAttributes().size() == 0 &&
+                    typeCl->getOperations().size() == 0)
 		    {
 		    earlyTermStr = "/";
 		    }

@@ -74,7 +74,7 @@ template<typename T_Str> class OovStringRefInterface
 	    { return StringSplit(getThisStr(), delimiters); }
 
     protected:
-	char const * const getThisStr() const
+	char const * getThisStr() const
 	    { return static_cast<T_Str const *>(this)->getStr(); }
     };
 
@@ -102,8 +102,8 @@ class OovStringRef:public OovStringRefInterface<OovStringRef>
 	    {}
 	char operator[] (int index) const
 	    { return mStr[index]; }
-	int length() const;
-	char const * const getStr() const
+	size_t length() const;
+	char const * getStr() const
 	    { return mStr; }
 	operator char const * const() const
 	    { return mStr; }
@@ -141,7 +141,7 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
 	OovString makeXml() const
 	    { return StringMakeXml(getStr()); }
 	bool replaceStrs(OovStringRef const srchStr, OovStringRef const repStr);
-	char const * const getStr() const
+	char const * getStr() const
 	    { return std::string::c_str(); }
 	std::string &getStdString()
 	    { return *this; }

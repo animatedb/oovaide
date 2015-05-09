@@ -12,11 +12,10 @@
 
 
 
-#define DEBUG_CHILDREN 0
+#define DEBUG_CHILDREN 1
 #if(DEBUG_CHILDREN)
-static DebugFile sDumpChildFile("DumpCursor.txt");
-static CXChildVisitResult debugDumpCursorVisitor(CXCursor cursor, CXCursor parent,
-	void *clientData)
+static CXChildVisitResult debugDumpCursorVisitor(CXCursor cursor,
+    CXCursor /*parent*/, void *clientData)
     {
     static int depth = 0;
     depth++;
@@ -32,23 +31,27 @@ static CXChildVisitResult debugDumpCursorVisitor(CXCursor cursor, CXCursor paren
 	tokStr.resize(maxLen);
 	tokStr += "...";
 	}
-    if(depth > 1)
-	sDumpChildFile.printflush("  ");
-    sDumpChildFile.printflush("%d@%s@%s@%s@%s@\n\n", depth, kindSp.c_str(), typeSp.c_str(),
-	    dispName.c_str(), tokStr.c_str());
+    FILE *fp = static_cast<FILE *>(clientData);
+    if(depth == 1)
+	{
+	fprintf(fp, "\n");
+	}
+    else if(depth > 1)
+	{
+	fprintf(fp, "  ");
+	}
+    fprintf(fp, "%d@%s@%s@%s@%s@\n", depth, kindSp.c_str(), typeSp.c_str(),
+	dispName.c_str(), tokStr.c_str());
+    fflush(fp);
 
-    bool recurse = false;
-    if(clientData && *((bool*)clientData))
-	recurse = true;
-    if(recurse)
-	clang_visitChildren(cursor, ::debugDumpCursorVisitor, clientData);
+    clang_visitChildren(cursor, ::debugDumpCursorVisitor, clientData);
     depth--;
     return CXChildVisit_Continue;
     }
-    void debugDumpCursor(CXCursor cursor, bool recurse)
+    void debugDumpCursor(FILE *fp, CXCursor cursor)
         {
         // clang_getCursorLexicalParent (CXCursor cursor)
-        debugDumpCursorVisitor(cursor, cursor, &recurse);
+        debugDumpCursorVisitor(cursor, cursor, fp);
         }
 #endif
 
@@ -73,8 +76,8 @@ struct ChildKindVisitor
     CXCursor mFoundCursor;
     };
 
-static CXChildVisitResult GetChildKindVisitor(CXCursor cursor, CXCursor parent,
-    CXClientData client_data)
+static CXChildVisitResult GetChildKindVisitor(CXCursor cursor,
+    CXCursor /*parent*/, CXClientData client_data)
     {
     ChildKindVisitor *context = static_cast<ChildKindVisitor*>(client_data);
     bool match = true;
@@ -113,7 +116,7 @@ CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind)
 CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
 	const char *typeSp)
     {
-    ChildKindVisitor visitorData((eMatchTypes)(MT_Kind | MT_TypeSpelling));
+    ChildKindVisitor visitorData(static_cast<eMatchTypes>(MT_Kind | MT_TypeSpelling));
     visitorData.setKind(cursKind);
     visitorData.setTypeSpelling(typeSp);
     clang_visitChildren(cursor, GetChildKindVisitor, &visitorData);
@@ -123,7 +126,7 @@ CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKin
 CXCursor getCursorChildKindAndNotTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
 	const char *typeSp)
     {
-    ChildKindVisitor visitorData((eMatchTypes)(MT_Kind | MT_NotTypeSpelling));
+    ChildKindVisitor visitorData(static_cast<eMatchTypes>(MT_Kind | MT_NotTypeSpelling));
     visitorData.setKind(cursKind);
     visitorData.setTypeSpelling(typeSp);
     clang_visitChildren(cursor, GetChildKindVisitor, &visitorData);
@@ -140,7 +143,7 @@ struct ChildCountVisitor
     CXCursor mFoundCursor;
     };
 
-static CXChildVisitResult ChildNthVisitor(CXCursor cursor, CXCursor parent,
+static CXChildVisitResult ChildNthVisitor(CXCursor cursor, CXCursor /*parent*/,
     CXClientData client_data)
     {
     ChildCountVisitor *context = static_cast<ChildCountVisitor*>(client_data);
@@ -178,7 +181,7 @@ void removeLastNonIdentChar(std::string &name)
     {
     if(name.size() > 0)
 	{
-	int lastCharIndex = name.length()-1;
+	size_t lastCharIndex = name.length()-1;
 	if(!isIdentC(name[lastCharIndex]))
 	    {
 	    name.resize(lastCharIndex);		// Remove last character
@@ -334,29 +337,28 @@ bool isConstType(CXType cursType)
     return isConst;
     }
 
-// Find "mAttr" from "mAttr.call()".
-// This has to parse things such as
-//	mAttr.call1().call2();
-//	call(mAttr);
-CXCursor getCursorCallMemberRef(CXCursor cursor)
-    {
-    // Find the first child that has a name "<bound member function type>",
-    // then recurse until the name is not "<bound member function type>".
-    char const *membFuncStr = "<bound member function type>";
-    CXCursor member = getCursorChildKindAndTypeSpelling(cursor,
-	CXCursor_MemberRefExpr, membFuncStr);
-    if(!clang_Cursor_isNull(member))
-	{
-	member = getCursorChildKindAndNotTypeSpelling(member,
-	    CXCursor_MemberRefExpr, membFuncStr);
-	}
-    return member;
-    }
-
 std::string getFullBaseTypeName(CXCursor cursor)
     {
     CXType cursorType = clang_getCursorType(cursor);
     return getFullBaseTypeName(cursorType);
+    }
+
+size_t getFunctionNameFromMemberRefExpr(std::string &expr)
+    {
+    size_t pos = expr.rfind('.');
+    if(pos == std::string::npos)
+	{
+	pos = expr.rfind('>');		// Find end of ->
+	}
+    if(pos == std::string::npos)
+	{
+	pos = expr.rfind(':');		// Find end of ::
+	}
+    if(pos != std::string::npos)
+	{
+	pos++;
+	}
+    return pos;
     }
 
 std::string getFullBaseTypeName(CXType cursorType)

@@ -1,8 +1,8 @@
-BuildArgsBase|-c;-x;c++;-std=c++11;-EPmingw-w64;-EPgtk+-3.0;-EPllvm;-lnk-static-libgcc;
+BuildArgsBase|-c;-x;c++;-std=c++11;-Wno-c++98-compat;-Weverything;-EPmingw-w64;-EPgtk+-3.0;-EPllvm;-lnk-static-libgcc;
 BuildArgsExtra-Analyze|-dups;
 BuildArgsExtra-Debug|-O0;-g3;
 BuildArgsExtra-Release|-O3;
-ExcludeDirs|bin/;.metadata/;test/trunk-oovcde-win/;test/trunk-oovcde-linux/;test/CppInput/;test/python/;
+ExcludeDirs|bin/;.metadata/;test/trunk-oovcde-win/;test/trunk-oovcde-linux/;test/python/;
 SourceRootDir|C:/Dave/Mine/software/oovcde/svn/trunk/
 Tool-CompilerPath-Analyze|clang++.exe
 Tool-CompilerPath-Debug|clang++.exe

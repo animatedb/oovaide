@@ -142,7 +142,7 @@ bool NameValueRecord::getLine(FILE *fp, OovString &str)
     while(fgets(lineBuf, sizeof(lineBuf), fp))
 	{
 	str += lineBuf;
-	int len = str.length();
+	size_t len = str.length();
 	if(str[len-1] == '\n')
 	    {
 	    str.resize(len-1);
@@ -237,10 +237,10 @@ bool NameValueFile::readOpenedFile(SharedFile &file)
     clear();
     std::string buf(file.getSize(), 0);
     int actualSize;
-    bool success = file.read(&buf[0], buf.size(), actualSize);
+    bool success = file.read(&buf[0], static_cast<int>(buf.size()), actualSize);
     if(success)
 	{
-	buf.resize(actualSize);
+	buf.resize(static_cast<size_t>(actualSize));
 	insertBufToMap(buf);
 	}
     return success;
@@ -282,7 +282,7 @@ bool NameValueFile::writeFileExclusive(class SharedFile &file)
 	readMapToBuf(buf);
 	file.truncate();
 	file.seekBegin();
-	success = file.write(&buf[0], buf.size());
+	success = file.write(&buf[0], static_cast<int>(buf.size()));
 	}
     return success;
     }

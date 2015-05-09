@@ -32,10 +32,16 @@
 
 class ModelType;
 
-
-// The basic structure is that a class contains attributes and operations.
-// A class can also inherit from another class, which must already be declared.
-
+// The basic structure is that the model contains types and associations.
+// The types can be simple data types or records. The record type is called
+// ModelClass and is used to hold classes, unions or structs.
+//
+// A class contains attributes and operations. The operations contain
+// parameters and statements. A class can also inherit or reference
+// other classes, which must already be declared at least as some kind of type.
+//
+// Many objects have names that can be resolved. The association connections
+// is saved in files as a model ID that is mapped to each named object.
 
 class Visibility
     {
@@ -43,7 +49,7 @@ class Visibility
     enum VisType {
         Public,
         Protected,
-        Private,
+        Private
     };
     Visibility(VisType v=Private)
         { vis = v; }
@@ -96,7 +102,7 @@ class ModelTypeRef
 	void setDeclType(ModelType const *type)
 	    { mDeclType = type; }
 	void setDeclTypeModelId(int id)
-	    { mDeclTypeModelId = id; }
+	    { mDeclTypeModelId = static_cast<unsigned int>(id); }
 	int getDeclTypeModelId() const
 	    { return mDeclTypeModelId; }
 	bool isConst() const
@@ -151,9 +157,12 @@ public:
 
 enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call, ST_VarRef };
 
+#define NonMemberVariables 0
+
+
 /// These aren't really statements. These are important things in a function
 /// that must be displayed in sequence/operation diagrams.
-class ModelStatement:public ModelObject
+class ModelStatement:private ModelObject
     {
     public:
 	// Different types contain different parts of this class. This is done
@@ -174,8 +183,15 @@ class ModelStatement:public ModelObject
 	    ModelObject(name), mStatementType(type), mClassDecl(nullptr),
 	    mVarDecl(nullptr), mVarAccessWrite(false)
 	    {}
-	OovString getFuncName() const;	// Only valid for call statement
-	OovString getAttrName() const;	// Only valid for call statement
+	OovString getCondName() const	// For ST_OpenNest
+	    { return getName(); }
+	OovString getFullName() const	// For ST_Call
+	    { return getName(); }
+	OovString getFuncName() const;	// For ST_Call
+	OovString getAttrName() const;	// For ST_Call or ST_VarRef
+	/// @todo - fix - should use const, etc.
+	bool operMatch(OovStringRef calleeName) const
+	    { return (getFuncName().compare(calleeName) == 0); }
 	eModelStatementTypes getStatementType() const
 	    { return mStatementType; }
 	// These are only valid for call statement.
@@ -191,13 +207,18 @@ class ModelStatement:public ModelObject
 	    { mVarAccessWrite = write; }
 	bool getVarAccessWrite() const
 	    { return mVarAccessWrite; }
+#if(NonMemberVariables)
+	bool hasNonMemberVar() const;
+	static char const *getNonMemberVarSep()
+	    { return "+>"; }
+#endif
 
     private:
 	eModelStatementTypes mStatementType;
 	ModelTypeRef mClassDecl;
 	// Only class member references are saved here.
 	ModelTypeRef mVarDecl;
-	bool mVarAccessWrite;	// Indicates whether the var decl is written or read.
+	unsigned int mVarAccessWrite;	// Indicates whether the var decl is written or read.
     };
 
 /// This is a list of statements in a function.
@@ -223,10 +244,11 @@ public:
     ModelOperation(OovStringRef const name, Visibility access,
 	    bool isConst):
         ModelObject(name), mAccess(access),
-        mIsConst(isConst), mModule(nullptr), mLineNum(0)
+        mModule(nullptr), mLineNum(0),
 #if(OPER_RET_TYPE)
-	, mReturnType(nullptr)
+	mReturnType(nullptr),
 #endif
+        mIsConst(isConst)
         {}
     // Returns a pointer to the added parameter so that it can be modified.
     ModelFuncParam *addMethodParameter(const std::string &name, const ModelType *type,
@@ -278,9 +300,9 @@ public:
 	{ mModule = module; }
     const class ModelModule *getModule() const
 	{ return mModule; }
-    void setLineNum(int lineNum)
+    void setLineNum(unsigned int lineNum)
 	{ mLineNum = lineNum; }
-    int getLineNum() const
+    unsigned int getLineNum() const
 	{ return mLineNum; }
     bool paramsMatch(std::vector<std::unique_ptr<ModelFuncParam>> const &params) const;
 
@@ -289,12 +311,12 @@ private:
     std::vector<std::unique_ptr<ModelBodyVarDecl>> mBodyVarDeclarators;
     ModelStatements mStatements;
     Visibility mAccess;
-    bool mIsConst;
     const class ModelModule *mModule;
-    int mLineNum;
+    unsigned int mLineNum;
 #if(OPER_RET_TYPE)
     ModelTypeRef mReturnType;
 #endif
+    bool mIsConst;
 };
 
 
@@ -364,15 +386,16 @@ public:
     // won't be destructed later.
     void eraseAttribute(const ModelAttribute *attr);
     void eraseOperation(const ModelOperation *oper);
-    int getAttributeIndex(const std::string &name) const;
+    size_t getAttributeIndex(const std::string &name) const;
     const ModelAttribute *getAttribute(const std::string &name) const;
 
-    int findExactMatchingOperationIndex(const ModelOperation &op) const;
+    static const size_t NoIndex = static_cast<size_t>(-1);
+    size_t findExactMatchingOperationIndex(const ModelOperation &op) const;
     const ModelOperation *findExactMatchingOperation(const ModelOperation &op) const;
 
     /// @todo - these don't work for overloaded functions.
     const ModelOperation *getOperation(const std::string &name, bool isConst) const;
-    int getOperationIndex(const std::string &name, bool isConst) const;
+    size_t getOperationIndex(const std::string &name, bool isConst) const;
     ModelOperation *getOperation(const std::string &name, bool isConst)
 	{
 	return const_cast<ModelOperation*>(
@@ -393,9 +416,9 @@ public:
 	{ mModule = module; }
     const class ModelModule *getModule() const
 	{ return mModule; }
-    void setLineNum(int lineNum)
+    void setLineNum(unsigned int lineNum)
 	{ mLineNum = lineNum; }
-    int getLineNum() const
+    unsigned int getLineNum() const
 	{ return mLineNum; }
     bool isDefinition() const;
 
@@ -403,7 +426,7 @@ private:
     std::vector<std::unique_ptr<ModelAttribute>> mAttributes;
     std::vector<std::unique_ptr<ModelOperation>> mOperations;
     const class ModelModule *mModule;
-    int mLineNum;
+    unsigned int mLineNum;
 };
 
 class ModelAssociation:public ModelObject
@@ -450,7 +473,8 @@ private:
 class ModelModuleLineStats
     {
     public:
-	ModelModuleLineStats(int code=0, int comments=0, int total=0):
+	ModelModuleLineStats(unsigned int code=0, unsigned int comments=0,
+            unsigned int total=0):
 	    mNumCodeLines(code), mNumCommentLines(comments), mNumModuleLines(total)
 	    {}
 	/// The number of lines that have some code on them.
@@ -477,20 +501,39 @@ class ModelModule:public ModelObject
     };
 
 /// This is used for references to types in other classes.
+/// The declarator is the type and the name of the reference to the type.
 /// It is used for function parameters, and function body variable references
 /// This is only used for temporary access, and is not stored in the model memory.
+/// This only exists because call statements don't contain an explicit declarator,
+/// and contain the name and the type separately.
 class ModelDeclClass
     {
     public:
-	ModelDeclClass(const ModelDeclarator *d, const ModelClassifier *c):
-	    decl(d), cl(c)
+	ModelDeclClass(const ModelDeclarator *d):
+	    mDecl(*d)
 	    {}
-	const ModelDeclarator *decl;
-	const ModelClassifier *cl;
+	ModelDeclClass(OovStringRef const name,
+		ModelType const *declType):
+		mDecl(name, declType)
+	    {}
+	ModelDeclarator const *getDecl() const
+	    { return &mDecl; }
+	ModelClassifier const *getClass() const
+	    { return mDecl.getDeclClassType(); }
+	bool operator<(const ModelDeclClass &rhs) const
+	    {
+	    return (mDecl.getName() < rhs.mDecl.getName() &&
+		    mDecl.getDeclClassType() < rhs.mDecl.getDeclClassType());
+	    }
+
+    private:
+	const ModelDeclarator mDecl;
     };
 
-typedef std::vector<ModelDeclClass> ConstModelDeclClassVector;
-typedef std::vector<const ModelClassifier*> ConstModelClassifierVector;
+//typedef std::set<ModelDeclClass> ConstModelDeclClassSet;
+// @todo - this could be a set to eliminate duplicates, but it doesn't work yet.
+typedef std::vector<ModelDeclClass> ConstModelDeclClasses;
+typedef std::vector<ModelClassifier const *> ConstModelClassifierVector;
 
 
 /// Holds all data used to make class and sequence diagrams. This data is read
@@ -509,7 +552,7 @@ class ModelData
         bool isTypeReferencedByDefinedObjects(ModelType const &type) const;
 
         void addType(std::unique_ptr<ModelType> &&type);
-        ModelModule const * const findModuleById(int id);
+        ModelModule const * findModuleById(int id);
 
         // otype is only used if a type is created.
 	ModelType *createOrGetTypeRef(OovStringRef const typeName, eModelDataTypes otype);
@@ -527,12 +570,14 @@ class ModelData
 	void takeAttributes(ModelClassifier *sourceType, ModelClassifier *destType);
 	void getRelatedTemplateClasses(const ModelType &type,
 		ConstModelClassifierVector &classes) const;
+	// Originally, this was for params and return type. But the return type
+	// is usually also a declaration in the function.
 	void getRelatedFuncInterfaceClasses(const ModelClassifier &type,
 		ConstModelClassifierVector &classes) const;
 	void getRelatedFuncParamClasses(const ModelClassifier &type,
-		ConstModelDeclClassVector &classes) const;
+		ConstModelDeclClasses &classes) const;
 	void getRelatedBodyVarClasses(const ModelClassifier &type,
-		ConstModelDeclClassVector &declclasses) const;
+		ConstModelDeclClasses &declclasses) const;
 
     private:
 	ModelObject *createDataType(eModelDataTypes type, const std::string &id);

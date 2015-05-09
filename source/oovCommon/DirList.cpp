@@ -258,6 +258,9 @@ OovString const findMatchingDir(FilePaths const &startingDirs, OovStringRef cons
     return matchedDir;
     }
 
+dirRecurser::~dirRecurser()
+    {}
+
 bool dirRecurser::recurseDirs(OovStringRef const srcDir)
     {
     bool success = true;

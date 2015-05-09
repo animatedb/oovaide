@@ -42,8 +42,7 @@ class OovThreadedBackgroundQueuePrivate
         OovThreadedBackgroundQueuePrivate():
             mQuitPopping(false)
             {}
-        virtual ~OovThreadedBackgroundQueuePrivate()
-            {}
+        virtual ~OovThreadedBackgroundQueuePrivate();
         void clearQuitPoppingPrivate()
             { mQuitPopping = false; }
         void pushPrivate(void const *item);

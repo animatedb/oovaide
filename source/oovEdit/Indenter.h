@@ -39,7 +39,7 @@ class Indenter
 
     private:
 	GtkTextBuffer *mTextBuffer;
-	static const int getIndentSize()
+	static int getIndentSize()
 	    { return 4; }
 	void dentHighlightedRegion(bool in, GtkTextIter startSelIter, GtkTextIter endSelIter);
 	void getFirstNonSpaceOnLineIter(GtkTextIter startLineIter, GtkTextIter *iter);

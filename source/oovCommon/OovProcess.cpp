@@ -53,6 +53,16 @@ void sleepMs(int ms)
 #endif
     }
 
+// Removes clang warning:
+// warning: 'OovProcessListener' has no out-of-line virtual method definitions;
+// its vtable will be emitted in every translation unit
+OovProcessListener::~OovProcessListener()
+    {}
+OovTaskContinueListener::~OovTaskContinueListener()
+    {}
+OovTaskStatusListener::~OovTaskStatusListener()
+    {}
+
 // Redirected output
 // http://msdn.microsoft.com/en-us/library/ms682499%28VS.85%29.aspx
 
@@ -405,7 +415,7 @@ static bool windowsPeekAndReadFile(HANDLE readHandle, bool writeStdout, bool &go
 class CmdLine
     {
     public:
-	CmdLine(OovStringRef const procPath, char const * const *argv)
+	CmdLine(OovStringRef const /*procPath*/, char const * const *argv)
 	    {
 	    for(int i=0; ; i++)
 		{
@@ -459,6 +469,7 @@ bool OovPipeProcessWindows::windowsCreatePipes()
 bool OovPipeProcessWindows::windowsCreatePipeProcess(OovStringRef const procPath,
 	char const * const *argv)
     {
+    /// @todo - procPath is not used.
     CmdLine cmdLine(procPath, argv);
     bool success = false;
     if(windowsCreatePipes())
@@ -639,7 +650,7 @@ int spawnNoWait(OovStringRef const procPath, char const * const *argv)
     return ret;
     }
 
-void OovProcessStdListener::onStdOut(OovStringRef const out, int len)
+void OovProcessStdListener::onStdOut(OovStringRef const out, size_t len)
     {
     if(mStdOutPlace == OP_OutputStd || mStdOutPlace == OP_OutputStdAndFile)
 	fprintf(stdout, "%s", OovString(out, len).getStr());
@@ -647,7 +658,7 @@ void OovProcessStdListener::onStdOut(OovStringRef const out, int len)
 	fprintf(mStdoutFp, "%s", OovString(out, len).getStr());
     }
 
-void OovProcessStdListener::onStdErr(OovStringRef const out, int len)
+void OovProcessStdListener::onStdErr(OovStringRef const out, size_t len)
     {
     if(mStdErrPlace == OP_OutputStd || mStdErrPlace == OP_OutputStdAndFile)
 	fprintf(stderr, "%s", OovString(out, len).getStr());
@@ -664,7 +675,7 @@ OovProcessBufferedStdListener::~OovProcessBufferedStdListener()
     output(mStderrFp, mStderrStr, true);
     }
 
-void OovProcessBufferedStdListener::onStdOut(OovStringRef const out, int len)
+void OovProcessBufferedStdListener::onStdOut(OovStringRef const out, size_t len)
     {
 	{
 	LockGuard lock(mStdMutex);
@@ -674,7 +685,7 @@ void OovProcessBufferedStdListener::onStdOut(OovStringRef const out, int len)
     periodicOutput(mStdoutFp, mStdoutStr, mStdoutTime);
     }
 
-void OovProcessBufferedStdListener::onStdErr(OovStringRef const out, int len)
+void OovProcessBufferedStdListener::onStdErr(OovStringRef const out, size_t len)
     {
 	{
 	LockGuard lock(mStdMutex);

@@ -39,7 +39,7 @@ std::string cDebugResult::getAsString(int level) const
     {
     std::string str;
 
-    std::string leadSpace(level*3, ' ');
+    std::string leadSpace(static_cast<size_t>(level*3), ' ');
     str = leadSpace;
     if(mVarName.length())
 	{
@@ -152,7 +152,7 @@ sDbgFile.printflush("parseVarName %s\n", resultStr);
     char const *p = parseItem(start, translatedStr);
 //    if(*p == '=')
 	{
-	setVarName(start, p-start-1);
+	setVarName(start, static_cast<size_t>(p-start-1));
 #if(DBG_RESULT)
 sDbgFile.printflush("   parseVarName %s\n", std::string(start, p-start).c_str());
 #endif

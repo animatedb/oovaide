@@ -233,7 +233,7 @@ void ProjectPackagesDialog::displayAddPackageDialog()
 
 void ProjectPackagesDialog::winSetEnableScanning()
     {
-    bool missing = !FileIsFileOnDisk(getEntry("PackageRootDirEntry"));
+    bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"));
     Gui::setEnabled(GTK_LABEL(Builder::getBuilder()->getWidget(
 	    "MissingDirectoryLabel")), missing);
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget(
@@ -242,7 +242,7 @@ void ProjectPackagesDialog::winSetEnableScanning()
 
 bool ProjectPackagesDialog::winCheckDirectoryOk()
     {
-    bool missing = !FileIsFileOnDisk(getEntry("PackageRootDirEntry"));
+    bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"));
     if(missing)
 	{
 	Gui::messageBox("The root directory is not correct");
