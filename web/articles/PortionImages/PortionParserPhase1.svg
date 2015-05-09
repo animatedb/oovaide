@@ -1,0 +1,316 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="757" height="674">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<ellipse cx="261" cy="276" rx="15" ry="5" />
+<ellipse cx="703" cy="116" rx="48" ry="5" />
+<ellipse cx="326" cy="100" rx="75" ry="5" />
+<ellipse cx="496" cy="308" rx="28" ry="5" />
+<ellipse cx="299" cy="27" rx="53" ry="7" />
+<ellipse cx="295" cy="524" rx="69" ry="5" />
+<ellipse cx="313" cy="662" rx="69" ry="7" />
+<ellipse cx="285" cy="462" rx="47" ry="7" />
+<ellipse cx="488" cy="109" rx="28" ry="5" />
+<ellipse cx="329" cy="47" rx="20" ry="5" />
+<ellipse cx="247" cy="183" rx="41" ry="5" />
+<ellipse cx="487" cy="228" rx="32" ry="7" />
+<ellipse cx="227" cy="558" rx="38" ry="7" />
+<ellipse cx="310" cy="606" rx="49" ry="5" />
+<ellipse cx="232" cy="633" rx="46" ry="5" />
+<ellipse cx="272" cy="364" rx="27" ry="7" />
+<rect x="20" y="19" width="95" height="11" />
+<rect x="20" y="629" width="75" height="14" />
+<rect x="20" y="180" width="57" height="11" />
+<rect x="20" y="326" width="62" height="14" />
+<rect x="20" y="540" width="68" height="11" />
+<rect x="20" y="477" width="86" height="11" />
+<rect x="20" y="223" width="72" height="14" />
+<rect x="20" y="287" width="109" height="11" />
+<rect x="20" y="122" width="66" height="14" />
+<rect x="20" y="414" width="126" height="11" />
+<rect x="417" y="623" width="23" height="11" />
+<g  fill="#f5f5ff" stroke="#593315" style="stroke-width:1">
+<line x1="67" y1="29" x2="261" y2="271" />
+<line x1="67" y1="29" x2="76" y2="31" />
+<line x1="67" y1="29" x2="67" y2="38" />
+<line x1="114" y1="24" x2="655" y2="116" />
+<line x1="114" y1="24" x2="122" y2="20" />
+<line x1="114" y1="24" x2="120" y2="31" />
+<line x1="114" y1="24" x2="468" y2="308" />
+<line x1="114" y1="24" x2="123" y2="24" />
+<line x1="114" y1="24" x2="116" y2="33" />
+<line x1="114" y1="24" x2="246" y2="27" />
+<line x1="114" y1="24" x2="122" y2="19" />
+<line x1="114" y1="24" x2="121" y2="30" />
+<line x1="67" y1="29" x2="295" y2="519" />
+<line x1="67" y1="29" x2="75" y2="33" />
+<line x1="67" y1="29" x2="66" y2="38" />
+<line x1="67" y1="29" x2="285" y2="455" />
+<line x1="67" y1="29" x2="75" y2="33" />
+<line x1="67" y1="29" x2="66" y2="38" />
+<line x1="114" y1="24" x2="460" y2="109" />
+<line x1="114" y1="24" x2="123" y2="21" />
+<line x1="114" y1="24" x2="120" y2="31" />
+<line x1="114" y1="24" x2="206" y2="183" />
+<line x1="114" y1="24" x2="123" y2="28" />
+<line x1="114" y1="24" x2="113" y2="33" />
+<line x1="114" y1="24" x2="455" y2="228" />
+<line x1="114" y1="24" x2="123" y2="24" />
+<line x1="114" y1="24" x2="117" y2="33" />
+</g>
+<g  fill="#f5f5ff" stroke="#f13a13" style="stroke-width:1">
+<line x1="57" y1="629" x2="261" y2="281" />
+<line x1="57" y1="629" x2="57" y2="620" />
+<line x1="57" y1="629" x2="66" y2="625" />
+<line x1="94" y1="636" x2="244" y2="662" />
+<line x1="94" y1="636" x2="102" y2="632" />
+<line x1="94" y1="636" x2="100" y2="643" />
+<line x1="94" y1="636" x2="238" y2="462" />
+<line x1="94" y1="636" x2="94" y2="627" />
+<line x1="94" y1="636" x2="103" y2="634" />
+</g>
+<g  fill="#f5f5ff" stroke="#232c16" style="stroke-width:1">
+<line x1="76" y1="185" x2="655" y2="116" />
+<line x1="76" y1="185" x2="83" y2="179" />
+<line x1="76" y1="185" x2="84" y2="189" />
+<line x1="76" y1="185" x2="468" y2="308" />
+<line x1="76" y1="185" x2="85" y2="182" />
+<line x1="76" y1="185" x2="81" y2="193" />
+<line x1="76" y1="185" x2="460" y2="109" />
+<line x1="76" y1="185" x2="82" y2="178" />
+<line x1="76" y1="185" x2="85" y2="189" />
+<line x1="76" y1="185" x2="245" y2="364" />
+<line x1="76" y1="185" x2="85" y2="186" />
+<line x1="76" y1="185" x2="77" y2="194" />
+</g>
+<g  fill="#f5f5ff" stroke="#ffb300" style="stroke-width:1">
+<line x1="82" y1="333" x2="655" y2="116" />
+<line x1="82" y1="333" x2="87" y2="325" />
+<line x1="82" y1="333" x2="91" y2="335" />
+<line x1="82" y1="333" x2="468" y2="308" />
+<line x1="82" y1="333" x2="89" y2="327" />
+<line x1="82" y1="333" x2="90" y2="338" />
+<line x1="51" y1="326" x2="299" y2="34" />
+<line x1="51" y1="326" x2="51" y2="317" />
+<line x1="51" y1="326" x2="60" y2="324" />
+<line x1="82" y1="333" x2="226" y2="524" />
+<line x1="82" y1="333" x2="91" y2="335" />
+<line x1="82" y1="333" x2="82" y2="342" />
+<line x1="82" y1="333" x2="238" y2="462" />
+<line x1="82" y1="333" x2="91" y2="333" />
+<line x1="82" y1="333" x2="84" y2="342" />
+<line x1="82" y1="333" x2="245" y2="364" />
+<line x1="82" y1="333" x2="91" y2="329" />
+<line x1="82" y1="333" x2="88" y2="340" />
+</g>
+<g  fill="#f5f5ff" stroke="#803e75" style="stroke-width:1">
+<line x1="88" y1="545" x2="226" y2="524" />
+<line x1="88" y1="545" x2="95" y2="538" />
+<line x1="88" y1="545" x2="96" y2="549" />
+<line x1="88" y1="545" x2="238" y2="462" />
+<line x1="88" y1="545" x2="92" y2="536" />
+<line x1="88" y1="545" x2="97" y2="546" />
+<line x1="88" y1="545" x2="261" y2="606" />
+<line x1="88" y1="545" x2="97" y2="543" />
+<line x1="88" y1="545" x2="93" y2="553" />
+<line x1="88" y1="545" x2="186" y2="633" />
+<line x1="88" y1="545" x2="97" y2="546" />
+<line x1="88" y1="545" x2="90" y2="554" />
+<line x1="88" y1="545" x2="245" y2="364" />
+<line x1="88" y1="545" x2="88" y2="536" />
+<line x1="88" y1="545" x2="97" y2="543" />
+</g>
+<g  fill="#f5f5ff" stroke="#ff6800" style="stroke-width:1">
+<line x1="106" y1="482" x2="226" y2="524" />
+<line x1="106" y1="482" x2="115" y2="480" />
+<line x1="106" y1="482" x2="111" y2="490" />
+<line x1="106" y1="482" x2="189" y2="558" />
+<line x1="106" y1="482" x2="115" y2="483" />
+<line x1="106" y1="482" x2="107" y2="491" />
+</g>
+<g  fill="#f5f5ff" stroke="#a6bdd7" style="stroke-width:1">
+<line x1="92" y1="230" x2="246" y2="276" />
+<line x1="92" y1="230" x2="101" y2="227" />
+<line x1="92" y1="230" x2="98" y2="237" />
+<line x1="92" y1="230" x2="655" y2="116" />
+<line x1="92" y1="230" x2="98" y2="223" />
+<line x1="92" y1="230" x2="101" y2="234" />
+<line x1="92" y1="230" x2="468" y2="308" />
+<line x1="92" y1="230" x2="101" y2="226" />
+<line x1="92" y1="230" x2="98" y2="237" />
+<line x1="56" y1="237" x2="285" y2="455" />
+<line x1="56" y1="237" x2="65" y2="238" />
+<line x1="56" y1="237" x2="57" y2="246" />
+<line x1="92" y1="230" x2="206" y2="183" />
+<line x1="92" y1="230" x2="97" y2="222" />
+<line x1="92" y1="230" x2="101" y2="232" />
+</g>
+<g  fill="#f5f5ff" stroke="#cea262" style="stroke-width:1">
+<line x1="128" y1="292" x2="468" y2="308" />
+<line x1="128" y1="292" x2="136" y2="287" />
+<line x1="128" y1="292" x2="135" y2="298" />
+<line x1="128" y1="292" x2="460" y2="109" />
+<line x1="128" y1="292" x2="132" y2="283" />
+<line x1="128" y1="292" x2="137" y2="293" />
+</g>
+<g  fill="#f5f5ff" stroke="#817066" style="stroke-width:1">
+<line x1="86" y1="129" x2="246" y2="276" />
+<line x1="86" y1="129" x2="95" y2="130" />
+<line x1="86" y1="129" x2="87" y2="138" />
+<line x1="86" y1="129" x2="251" y2="100" />
+<line x1="86" y1="129" x2="92" y2="122" />
+<line x1="86" y1="129" x2="94" y2="133" />
+</g>
+<g  fill="#f5f5ff" stroke="#007d34" style="stroke-width:1">
+<line x1="146" y1="419" x2="245" y2="364" />
+<line x1="146" y1="419" x2="150" y2="410" />
+<line x1="146" y1="419" x2="155" y2="420" />
+</g>
+<g  fill="#f5f5ff" stroke="#f6768e" style="stroke-width:1">
+<line x1="428" y1="623" x2="261" y2="281" />
+<line x1="428" y1="623" x2="420" y2="619" />
+<line x1="428" y1="623" x2="429" y2="614" />
+<line x1="428" y1="623" x2="703" y2="121" />
+<line x1="428" y1="623" x2="427" y2="614" />
+<line x1="428" y1="623" x2="437" y2="619" />
+<line x1="428" y1="623" x2="496" y2="313" />
+<line x1="428" y1="623" x2="424" y2="614" />
+<line x1="428" y1="623" x2="435" y2="617" />
+<line x1="417" y1="628" x2="364" y2="524" />
+<line x1="417" y1="628" x2="409" y2="624" />
+<line x1="417" y1="628" x2="418" y2="619" />
+<line x1="428" y1="623" x2="488" y2="114" />
+<line x1="428" y1="623" x2="424" y2="615" />
+<line x1="428" y1="623" x2="434" y2="616" />
+<line x1="428" y1="623" x2="487" y2="235" />
+<line x1="428" y1="623" x2="424" y2="615" />
+<line x1="428" y1="623" x2="435" y2="616" />
+<line x1="417" y1="628" x2="359" y2="606" />
+<line x1="417" y1="628" x2="408" y2="630" />
+<line x1="417" y1="628" x2="412" y2="620" />
+<line x1="417" y1="628" x2="278" y2="633" />
+<line x1="417" y1="628" x2="410" y2="634" />
+<line x1="417" y1="628" x2="409" y2="623" />
+</g>
+<g  fill="#f5f5ff" stroke="#00538a" style="stroke-width:1">
+<line x1="516" y1="109" x2="655" y2="116" />
+<line x1="516" y1="109" x2="524" y2="104" />
+<line x1="516" y1="109" x2="523" y2="115" />
+<line x1="516" y1="109" x2="655" y2="116" />
+<line x1="516" y1="109" x2="524" y2="104" />
+<line x1="516" y1="109" x2="523" y2="115" />
+<line x1="516" y1="109" x2="655" y2="116" />
+<line x1="516" y1="109" x2="524" y2="104" />
+<line x1="516" y1="109" x2="523" y2="115" />
+</g>
+<g  fill="#f5f5ff" stroke="#ff8e00" style="stroke-width:1">
+<line x1="519" y1="228" x2="655" y2="116" />
+<line x1="519" y1="228" x2="521" y2="219" />
+<line x1="519" y1="228" x2="528" y2="228" />
+</g>
+<g  fill="#f5f5ff" stroke="#ff7a5c" style="stroke-width:1">
+<line x1="349" y1="47" x2="655" y2="116" />
+<line x1="349" y1="47" x2="358" y2="44" />
+<line x1="349" y1="47" x2="355" y2="54" />
+</g>
+<g  fill="#f5f5ff" stroke="#f6768e" style="stroke-width:1">
+<line x1="332" y1="462" x2="655" y2="116" />
+<line x1="332" y1="462" x2="333" y2="453" />
+<line x1="332" y1="462" x2="341" y2="461" />
+<line x1="332" y1="462" x2="468" y2="308" />
+<line x1="332" y1="462" x2="332" y2="453" />
+<line x1="332" y1="462" x2="341" y2="460" />
+</g>
+<g  fill="#f5f5ff" stroke="#f4c800" style="stroke-width:1">
+<line x1="310" y1="601" x2="295" y2="529" />
+<line x1="310" y1="601" x2="303" y2="595" />
+<line x1="310" y1="601" x2="314" y2="592" />
+<line x1="310" y1="601" x2="295" y2="529" />
+<line x1="310" y1="601" x2="303" y2="595" />
+<line x1="310" y1="601" x2="314" y2="592" />
+</g>
+<g  fill="#f5f5ff" stroke="#b32851" style="stroke-width:1">
+<line x1="265" y1="558" x2="226" y2="524" />
+<line x1="265" y1="558" x2="256" y2="558" />
+<line x1="265" y1="558" x2="263" y2="549" />
+</g>
+<g  fill="#f5f5ff" stroke="#f4c800" style="stroke-width:1">
+<line x1="310" y1="601" x2="295" y2="529" />
+<line x1="310" y1="601" x2="303" y2="595" />
+<line x1="310" y1="601" x2="314" y2="592" />
+<line x1="310" y1="601" x2="295" y2="529" />
+<line x1="310" y1="601" x2="303" y2="595" />
+<line x1="310" y1="601" x2="314" y2="592" />
+<line x1="310" y1="601" x2="295" y2="529" />
+<line x1="310" y1="601" x2="303" y2="595" />
+<line x1="310" y1="601" x2="314" y2="592" />
+</g>
+<g  fill="#f5f5ff" stroke="#7f180d" style="stroke-width:1">
+<line x1="232" y1="628" x2="295" y2="529" />
+<line x1="232" y1="628" x2="232" y2="619" />
+<line x1="232" y1="628" x2="241" y2="625" />
+</g>
+<g  fill="#f5f5ff" stroke="#817066" style="stroke-width:1">
+<line x1="295" y1="529" x2="295" y2="519" />
+<line x1="295" y1="529" x2="290" y2="521" />
+<line x1="295" y1="529" x2="300" y2="521" />
+<line x1="295" y1="529" x2="295" y2="519" />
+<line x1="295" y1="529" x2="290" y2="521" />
+<line x1="295" y1="529" x2="300" y2="521" />
+</g>
+<g  fill="#f5f5ff" stroke="#53377a" style="stroke-width:1">
+<line x1="288" y1="183" x2="460" y2="109" />
+<line x1="288" y1="183" x2="293" y2="175" />
+<line x1="288" y1="183" x2="297" y2="185" />
+<line x1="288" y1="183" x2="455" y2="228" />
+<line x1="288" y1="183" x2="297" y2="180" />
+<line x1="288" y1="183" x2="294" y2="190" />
+</g>
+<g  fill="#f5f5ff" stroke="#b32851" style="stroke-width:1">
+<line x1="265" y1="558" x2="261" y2="606" />
+<line x1="265" y1="558" x2="270" y2="566" />
+<line x1="265" y1="558" x2="259" y2="565" />
+</g>
+<g  fill="#f5f5ff" stroke="#817066" style="stroke-width:1">
+<line x1="295" y1="529" x2="310" y2="601" />
+<line x1="295" y1="529" x2="302" y2="535" />
+<line x1="295" y1="529" x2="291" y2="538" />
+<line x1="295" y1="529" x2="310" y2="601" />
+<line x1="295" y1="529" x2="302" y2="535" />
+<line x1="295" y1="529" x2="291" y2="538" />
+<line x1="295" y1="529" x2="232" y2="628" />
+<line x1="295" y1="529" x2="295" y2="538" />
+<line x1="295" y1="529" x2="286" y2="532" />
+<line x1="295" y1="529" x2="232" y2="628" />
+<line x1="295" y1="529" x2="295" y2="538" />
+<line x1="295" y1="529" x2="286" y2="532" />
+</g>
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="248" y="280">parse</text>
+<text x="657" y="120">visitTranslationUnit</text>
+<text x="253" y="104">visitTranslationUnitForIncludes</text>
+<text x="470" y="312">visitRecord</text>
+<text x="248" y="29">visitFunctionAddArgs</text>
+<text x="228" y="528">visitFunctionAddStatements</text>
+<text x="246" y="664">visitFunctionAddDupHashes</text>
+<text x="240" y="464">addOperationParts</text>
+<text x="462" y="113">addRecord</text>
+<text x="311" y="51">addVar</text>
+<text x="208" y="187">addClassFileLoc</text>
+<text x="457" y="230">addTypedef</text>
+<text x="191" y="560">buildCondExpr</text>
+<text x="263" y="610">addCondStatement</text>
+<text x="188" y="637">addElseStatement</text>
+<text x="247" y="366">CppParser</text>
+<text x="22" y="28">mParserModelData</text>
+<text x="22" y="638">mDupHashFile</text>
+<text x="22" y="189">mClassifier</text>
+<text x="22" y="335">mOperation</text>
+<text x="22" y="549">mStatements</text>
+<text x="22" y="486">mSwitchContexts</text>
+<text x="22" y="232">mTopParseFn</text>
+<text x="22" y="296">mClassMemberAccess</text>
+<text x="22" y="131">mIncDirDeps</text>
+<text x="22" y="423">mStatementRecurseLevel</text>
+<text x="419" y="632">this</text>
+</g>
+</svg>

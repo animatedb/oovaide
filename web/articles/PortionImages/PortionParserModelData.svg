@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="644" height="277">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<ellipse cx="255" cy="216" rx="45" ry="5" />
+<ellipse cx="255" cy="245" rx="44" ry="7" />
+<ellipse cx="261" cy="64" rx="51" ry="5" />
+<ellipse cx="575" cy="131" rx="63" ry="7" />
+<ellipse cx="273" cy="37" rx="63" ry="7" />
+<ellipse cx="273" cy="10" rx="63" ry="7" />
+<ellipse cx="419" cy="101" rx="51" ry="7" />
+<ellipse cx="248" cy="194" rx="38" ry="5" />
+<ellipse cx="243" cy="173" rx="32" ry="5" />
+<ellipse cx="239" cy="266" rx="29" ry="5" />
+<rect x="20" y="168" width="66" height="11" />
+<rect x="20" y="112" width="23" height="11" />
+<g  fill="#f5f5ff" stroke="#53377a" style="stroke-width:1">
+<line x1="86" y1="173" x2="210" y2="216" />
+<line x1="86" y1="173" x2="95" y2="171" />
+<line x1="86" y1="173" x2="91" y2="181" />
+<line x1="86" y1="173" x2="211" y2="245" />
+<line x1="86" y1="173" x2="95" y2="172" />
+<line x1="86" y1="173" x2="90" y2="182" />
+<line x1="86" y1="173" x2="210" y2="64" />
+<line x1="86" y1="173" x2="88" y2="164" />
+<line x1="86" y1="173" x2="95" y2="173" />
+<line x1="86" y1="173" x2="512" y2="131" />
+<line x1="86" y1="173" x2="93" y2="167" />
+<line x1="86" y1="173" x2="94" y2="178" />
+<line x1="86" y1="173" x2="210" y2="37" />
+<line x1="86" y1="173" x2="87" y2="164" />
+<line x1="86" y1="173" x2="95" y2="171" />
+<line x1="86" y1="173" x2="210" y2="37" />
+<line x1="86" y1="173" x2="87" y2="164" />
+<line x1="86" y1="173" x2="95" y2="171" />
+<line x1="86" y1="173" x2="368" y2="101" />
+<line x1="86" y1="173" x2="92" y2="166" />
+<line x1="86" y1="173" x2="95" y2="176" />
+<line x1="86" y1="173" x2="210" y2="194" />
+<line x1="86" y1="173" x2="94" y2="169" />
+<line x1="86" y1="173" x2="92" y2="180" />
+<line x1="86" y1="173" x2="211" y2="173" />
+<line x1="86" y1="173" x2="94" y2="168" />
+<line x1="86" y1="173" x2="94" y2="178" />
+<line x1="86" y1="173" x2="210" y2="266" />
+<line x1="86" y1="173" x2="95" y2="173" />
+<line x1="86" y1="173" x2="88" y2="182" />
+</g>
+<g  fill="#f5f5ff" stroke="#ff8e00" style="stroke-width:1">
+<line x1="42" y1="117" x2="210" y2="64" />
+<line x1="42" y1="117" x2="47" y2="109" />
+<line x1="42" y1="117" x2="51" y2="120" />
+<line x1="42" y1="117" x2="512" y2="131" />
+<line x1="42" y1="117" x2="50" y2="112" />
+<line x1="42" y1="117" x2="49" y2="123" />
+<line x1="42" y1="117" x2="368" y2="101" />
+<line x1="42" y1="117" x2="49" y2="111" />
+<line x1="42" y1="117" x2="50" y2="122" />
+</g>
+<g  fill="#f5f5ff" stroke="#007d34" style="stroke-width:1">
+<line x1="470" y1="101" x2="512" y2="131" />
+<line x1="470" y1="101" x2="479" y2="101" />
+<line x1="470" y1="101" x2="473" y2="110" />
+</g>
+<g  fill="#f5f5ff" stroke="#ff6800" style="stroke-width:1">
+<line x1="312" y1="64" x2="368" y2="101" />
+<line x1="312" y1="64" x2="321" y2="64" />
+<line x1="312" y1="64" x2="315" y2="73" />
+</g>
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="212" y="220">addParsedModule</text>
+<text x="213" y="247">getParsedModule</text>
+<text x="212" y="68">createOrGetClassRef</text>
+<text x="514" y="133">createOrGetBaseTypeRef</text>
+<text x="212" y="39">createOrGetDataTypeRef</text>
+<text x="212" y="12">createOrGetDataTypeRef</text>
+<text x="370" y="103">createOrGetTypedef</text>
+<text x="212" y="198">addAssociation</text>
+<text x="213" y="177">setLineStats</text>
+<text x="212" y="270">writeModel</text>
+<text x="22" y="177">mModelData</text>
+<text x="22" y="121">this</text>
+</g>
+</svg>
