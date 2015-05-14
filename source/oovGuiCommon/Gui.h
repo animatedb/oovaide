@@ -63,7 +63,7 @@ class Dialog
 	bool run(bool hideDialogAfterButtonPress = false);
 	virtual void beforeRun()
 	    {}
-	virtual void afterRun(bool ok)
+	virtual void afterRun(bool /*ok*/)
 	    {}
 	GtkWidget *getContentArea()
 	    { return gtk_dialog_get_content_area(mDialog); }
@@ -185,6 +185,18 @@ class GuiTextBuffer:public GuiTextIter
 	    { return gtk_text_view_get_buffer(view); }
 	/// Iterators are invalid after many types of buffer modifications.
 	static GtkTextIter getCursorIter(GtkTextBuffer *buf);
+	static GtkTextIter getEndIter(GtkTextBuffer *buf)
+	    {
+	    GtkTextIter iter;
+	    gtk_text_buffer_get_end_iter(buf, &iter);
+	    return iter;
+	    }
+	static GtkTextIter getIterAtOffset(GtkTextBuffer *buf, int offset)
+	    {
+	    GtkTextIter iter;
+	    gtk_text_buffer_get_iter_at_offset(buf, &iter, offset);
+	    return iter;
+	    }
 	static int getCursorOffset(GtkTextBuffer *buf)
 	    { return getIterOffset(getCursorIter(buf)); }
 	static OovString getText(GtkTextBuffer *buf, int startOffset, int endOffset);
@@ -220,7 +232,7 @@ class GuiListStringValue
 	~GuiListStringValue()
 	    {
 	    clear();
-	    };
+	    }
 	char const *getStringFromModel(GtkTreeModel *model, GtkTreeIter *iter)
 	    {
 	    clear();
@@ -389,6 +401,29 @@ class BackgroundDialog:public Dialog
 	int mTotalIters;
 	time_t mStartTime;
 	void showDialog(bool show);
+    };
+
+class GuiHighlightTag
+    {
+    public:
+	GuiHighlightTag();
+	// Looks like the tag doesn't need to be deleted since it is owned
+	// by the buffer. A destructor isn't needed.
+
+	// A color can be "red", "black", etc.
+	void setForegroundColor(GtkTextBuffer *textBuffer, char const * const name,
+		char const * const color);
+	bool isInitialized() const
+	    { return mTag != nullptr; }
+	void applyTag(GtkTextBuffer *textBuffer, GtkTextIter *start,
+		GtkTextIter *end)
+	    {
+	    gtk_text_buffer_apply_tag(textBuffer, mTag, start, end);
+	    }
+	GtkTextTag *getTextTag() const
+	    { return mTag; }
+    private:
+	GtkTextTag *mTag;
     };
 
 #endif /* GUI_H_ */

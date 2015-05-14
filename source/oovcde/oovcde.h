@@ -24,22 +24,15 @@ class WindowBuildListener:public OovProcessListener
 	WindowBuildListener():
 	    mStatusTextView(nullptr), mComplete(false)
 	    {}
-	void initListener(Builder &builder)
-	    {
-	    // "DrawingStatusPaned"
-	    if(!mStatusTextView)
-		{
-		mStatusTextView = GTK_TEXT_VIEW(builder.getWidget("StatusTextview"));
-		}
-	    Gui::clear(mStatusTextView);
-	    }
+	void initListener(Builder &builder);
+	GtkTextBuffer *getBuffer()
+	    { return GuiTextBuffer::getBuffer(mStatusTextView); }
 	void clearStatusTextView(Builder &builder)
 	    { initListener(builder); }
 	virtual ~WindowBuildListener()
 	    {}
 	virtual void onStdOut(OovStringRef const out, size_t len) override
 	    {
-// Adding this guard causes a hang in linux when children have tons of errors.
 	    LockGuard guard(mMutex);
 	    mStdOutAndErr.append(out, len);
 	    }
@@ -57,6 +50,7 @@ class WindowBuildListener:public OovProcessListener
 	    GtkTextView *mStatusTextView;
 	    std::string mStdOutAndErr;
 	    InProcMutex mMutex;
+	    GuiHighlightTag mErrHighlightTag;
 	    bool mComplete;
     };
 

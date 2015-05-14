@@ -14,8 +14,7 @@
 class ClassDiagramListener
     {
     public:
-	virtual ~ClassDiagramListener()
-	    {}
+	virtual ~ClassDiagramListener();
 	virtual void gotoClass(OovStringRef const className) = 0;
     };
 

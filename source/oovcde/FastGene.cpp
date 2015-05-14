@@ -76,20 +76,23 @@ static int customRand(void)
 
 /// Generate a random number from 0 to numpossibles
 /// numpossibles must be a max of half the bits in an int.
-static int randmax(int numpossibles)
+static size_t randmax(size_t numpossibles)
     {
-    return((int)(((long)customRand() * numpossibles) / ((long)CUSTOM_RAND_MAX)));
+    return(static_cast<size_t>(
+        (static_cast<unsigned long>(customRand()) * numpossibles) /
+        (static_cast<unsigned long>(CUSTOM_RAND_MAX))));
     }
 
-GeneValue GenePool::randRange(int min, int max)
+GeneValue GenePool::randRange(size_t min, size_t max)
     {
     return(static_cast<GeneValue>(
-	    (min + ((long)customRand() * (max - min + 1)) / ((long)CUSTOM_RAND_MAX))
+	    (min + (static_cast<unsigned long>(customRand()) * (max - min + 1)) /
+            (static_cast<unsigned long>(CUSTOM_RAND_MAX)))
 	    ));
     }
 
-void GenePool::initialize(int genebytes, int numberofgenes, double crossoverrate,
-    double mutaterate, int minrand, int maxrand)
+void GenePool::initialize(size_t genebytes, size_t numberofgenes, double crossoverrate,
+    double mutaterate, GeneValue minrand, GeneValue maxrand)
     {
     // Copy the information we want to keep about all of the genes
     numgenes = numberofgenes;
@@ -103,7 +106,7 @@ void GenePool::initialize(int genebytes, int numberofgenes, double crossoverrate
     	{
     	crossoverrate = 0.35;
     	}
-    int numbestgenes = (int)(numgenes * crossoverrate);
+    size_t numbestgenes = static_cast<size_t>(numgenes * crossoverrate);
     if(numbestgenes & 1)	// Make numbestgenes an even number
 	numbestgenes++;
 
@@ -114,20 +117,20 @@ void GenePool::initialize(int genebytes, int numberofgenes, double crossoverrate
     worstgenes.resize(numbestgenes);
 
     // Initialize the genes with random data
-    for(int i=0; i<numgenes; i++)
+    for(size_t i=0; i<numgenes; i++)
 	randomizeGene(i);
     }
 
 
-void GenePool::randomizeGene(int index)
+void GenePool::randomizeGene(size_t index)
 	{
-	for(int i=0; i<genesize; i+=sizeof(GeneValue))
+	for(size_t i=0; i<genesize; i+=sizeof(GeneValue))
 	    {
 	    randomizeGeneValue(index, i);
 	    }
 	}
 
-void GenePool::randomizeGeneValue(int index, int offset)
+void GenePool::randomizeGeneValue(size_t index, size_t offset)
     {
     offset = geneValueBoundary(offset);
     GeneValue val = randRange(min, max);
@@ -149,7 +152,7 @@ void GenePool::singleGeneration()
 void GenePool::computeQuality()
     {
     setupQualityEachGeneration();
-    for(int i=0; i<numgenes; i++)
+    for(size_t i=0; i<numgenes; i++)
 	{
 	setGeneQuality(i, calculateSingleGeneQuality(i));
 	}
@@ -158,7 +161,7 @@ void GenePool::computeQuality()
 void GenePool::getQualityHistogram(QualityHistogram &qualities) const
     {
     QualityType maxquality = 0;
-    for(int i=0; i<numgenes; i++)
+    for(size_t i=0; i<numgenes; i++)
 	{
 	QualityType q = getGeneQuality(i);
 	if(q > maxquality)
@@ -166,7 +169,7 @@ void GenePool::getQualityHistogram(QualityHistogram &qualities) const
 	}
     qualities.resize(maxquality+1);
     // Make a histogram of the qualities of the genes
-    for(int i=0; i<numgenes; i++)
+    for(size_t i=0; i<numgenes; i++)
 	{
 	qualities[getGeneQuality(i)]++;
 	}
@@ -175,39 +178,43 @@ void GenePool::getQualityHistogram(QualityHistogram &qualities) const
 void GenePool::buildBestWorstList()
     {
     QualityType bestquality, worstquality;
-    int numQualityBins;
 
     QualityHistogram qualities;
     getQualityHistogram(qualities);
     // Find the quality value to use to determine the worst genes
-    numQualityBins = 0;
-    worstquality = qualities.size() - 1;
+    size_t numQualityBins = 0;
+    worstquality = static_cast<QualityType>(qualities.size() - 1);
     for (size_t i = 0; i < qualities.size() && worstquality == qualities.size() - 1; i++)
 	{
 	numQualityBins += qualities[i];
 	if (static_cast<unsigned>(numQualityBins) > bestgenes.size())
-	    worstquality = i;
+	    worstquality = static_cast<QualityType>(i);
 	}
 
     // Find the quality value to use to determine the best genes
     numQualityBins = 0;
     bestquality = 0;
-    for (int i = qualities.size() - 1; i >= 0 && bestquality == 0; i--)
+    for (int i = static_cast<int>(qualities.size() - 1);
+        i >= 0 && bestquality == 0; i--)
 	{
 	numQualityBins += qualities[i];
 	if (static_cast<unsigned>(numQualityBins) > bestgenes.size())
-	    bestquality = i;
+            {
+	    bestquality = static_cast<QualityType>(i);
+            }
 	}
 //printf("worstcut %d bestcut %d\n", worstquality, bestquality);
 
     // Build a list of best genes
     int besti = 0;
-    for (int i = 0; i < numgenes; i++)
+    for (size_t i = 0; i < numgenes; i++)
 	{
 	if(getGeneQuality(i) >= bestquality)
 	    {
 	    if(static_cast<unsigned>(besti) < bestgenes.size())
+                {
 		bestgenes[besti++] = getGene(i);
+                }
 	    else
 		break;
 	    }
@@ -215,12 +222,14 @@ void GenePool::buildBestWorstList()
 
     // Build a list of worst genes
     int worsti = 0;
-    for (int i = 0; i < numgenes; i++)
+    for (size_t i = 0; i < numgenes; i++)
 	{
 	if(getGeneQuality(i) <= worstquality)
 	    {
 	    if(static_cast<unsigned>(worsti) < worstgenes.size())
+                {
 		worstgenes[worsti++] = getGene(i);
+                }
 	    else
 		break;
 	    }
@@ -229,15 +238,18 @@ void GenePool::buildBestWorstList()
 
 void GenePool::crossover()
     {
-    int genesRemaining = bestgenes.size();
-    int dstgene = 0;
+    size_t genesRemaining = bestgenes.size();
+    size_t dstgene = 0;
     // Each time, take 2 good source genes, cross them, and put them
     // into the 2 worst genes.
-    while (genesRemaining)
+    while(genesRemaining)
 	{
-	int splitpos = geneValueBoundary(randmax(genesize-1));
-	int srcgene1 = randmax(genesRemaining - 1);
-	int srcgene2 = randmax(genesRemaining - 2);
+        size_t splitpos = geneValueBoundary(randmax(
+            static_cast<size_t>(genesize-1)));
+	size_t srcgene1 = randmax(
+            static_cast<size_t>(genesRemaining - 1));
+	size_t srcgene2 = randmax(
+            static_cast<size_t>(genesRemaining - 2));
 	if (srcgene1 == srcgene2)
 	    {
 	    if (srcgene1 < genesRemaining - 1)
@@ -273,13 +285,13 @@ void GenePool::crossover()
 
 void GenePool::mutate()
     {
-    int totalbytes = genesize * numgenes;
-    int mutebits = (int) ((muterate * 8) * totalbytes);
-    for(int i = 0; i < mutebits; i++)
+    size_t totalbytes = genesize * numgenes;
+    size_t mutebits = static_cast<size_t>((muterate * 8) * totalbytes);
+    for(size_t i = 0; i < mutebits; i++)
 	{
 	// Get the offset of a byte in any portion of any gene
-	int gene = randmax(numgenes-1);
-	int offset = randmax(genesize-1);
+	size_t gene = randmax(numgenes-1);
+	size_t offset = randmax(genesize-1);
 	randomizeGeneValue(gene, offset);
 
 	/*
@@ -295,7 +307,7 @@ void GenePool::mutate()
 	}
     }
 
-int GenePool::getBestGeneIndex()
+size_t GenePool::getBestGeneIndex()
     {
     computeQuality();
 
@@ -303,14 +315,16 @@ int GenePool::getBestGeneIndex()
     getQualityHistogram(qualities);
     QualityType bestQ = 0;
 
-    for(int i=qualities.size()-1; i>=0 && !bestQ; i--)
+    for(int i=static_cast<int>(qualities.size()-1); i>=0 && !bestQ; i--)
 	{
 	if(qualities[i])
-	    bestQ = i;
+            {
+	    bestQ = static_cast<QualityType>(i);
+            }
 	}
     // Most if the time, the first gene is the best.
-    int bestGeneI = 0;
-    for(int i=0; i<numgenes; i++)
+    size_t bestGeneI = 0;
+    for(size_t i=0; i<numgenes; i++)
 	{
 	if(getGeneQuality(i) == bestQ)
 	    {
@@ -329,7 +343,7 @@ int GenePool::getBestGeneIndex()
 QualityType calculateQuality(int geneIndex)
     {
     int value = 0;
-    for(int i=0; i<GENEBYTES; i++)
+    for(size_t i=0; i<GENEBYTES; i++)
 	value += getGene(geneIndex)[i];
     return(value / GENEBYTES);
     }
@@ -337,24 +351,24 @@ main(unsigned int argc, char *argv[])
     {
     double crossrate = 0.35;
     double muterate = 0.005;
-    int iterations = 10;
-    int numgenes = 100;
+    size_t iterations = 10;
+    size_t numgenes = 100;
     GenePool genes;
     genes.initialize(GENEBYTES, numgenes, crossrate, muterate);
 
-    for(i=0; i<iterations; i++)
+    for(size_t i=0; i<iterations; i++)
 	{
 	genes.singleGeneration();
 	QualityHistogram qualities;
 	genes.getQualityHistogram(qualities);
-	int worst = 0, best = 0;
+	size_t worst = 0, best = 0;
 
-	for(int i=qualities.size()-1; i>=0 && !best; i--)
+	for(size_t i=qualities.size()-1; i>=0 && !best; i--)
 	    {
 	    if(qualities[i])
 		best = i;
 	    }
-	for(int i=0; i<qualities.size()-1 && !worst; i++)
+	for(size_t i=0; i<qualities.size()-1 && !worst; i++)
 	    {
 	    if(qualities[i])
 		worst = i;

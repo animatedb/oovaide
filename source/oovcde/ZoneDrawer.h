@@ -45,11 +45,11 @@ class ZoneDrawer
 	    if(drawer)
 		{
 		mDrawer = drawer;
-		mCharWidth = mDrawer->getTextExtentWidth("W");
+		mCharWidth = static_cast<int>(mDrawer->getTextExtentWidth("W"));
 		}
 	    }
 	DiagramDrawer *getDrawer()
-	    { return mDrawer; };
+	    { return mDrawer; }
 
 	// Sets zoom for next drawGraph.
 	void setZoom(double zoom)
@@ -106,9 +106,9 @@ class ZoneDrawer
         GraphPoint getCirclePos(float nodeIndex, int numNodes, int radiusOffset=0) const;
         GraphPoint getMasterCirclePos(float nodeIndex, int radiusOffset=0) const;
         int getMasterCircleCenterPosX(float radius) const
-            { return(radius); }
+            { return(static_cast<int>(radius)); }
         int getMasterCircleCenterPosY(float radius) const
-            { return(radius); }
+            { return(static_cast<int>(radius)); }
         void drawNodeText();
         GraphPoint getChildNodeCircleOffset(double nodeIndex) const;
         enum RelPositions { RL_TopLeftPos, RL_CenterPos };

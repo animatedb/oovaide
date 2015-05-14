@@ -851,3 +851,16 @@ int Gui::findTab(GtkNotebook *book, OovStringRef const tabName)
 	}
     return tabIndex;
     }
+
+GuiHighlightTag::GuiHighlightTag():
+	mTag(nullptr)
+    {
+    }
+
+void GuiHighlightTag::setForegroundColor(GtkTextBuffer *textBuffer,
+	char const * const name, char const * const color)
+    {
+    if(!mTag)
+	mTag = gtk_text_buffer_create_tag(textBuffer, name, NULL);
+    g_object_set(G_OBJECT(mTag), "foreground", color, "foreground-set", TRUE, NULL);
+    }

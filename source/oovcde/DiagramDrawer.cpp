@@ -43,7 +43,7 @@ void splitStrings(OovStringVec &strs, size_t desiredLength)
 		pos = desiredLength;
 	    std::string temp = "   " + strs[i].substr(pos);
 	    strs[i].resize(pos);
-	    strs.insert(strs.begin()+i+1, temp);
+	    strs.insert(strs.begin()+static_cast<int>(i)+1, temp);
 	    }
 	}
     }
@@ -66,16 +66,20 @@ DiagramArrow::DiagramArrow(GraphPoint producer, GraphPoint consumer, int arrowSi
 	}
     const double triangleAngle = (2 * M_PI) / arrowSize;
     // calc left point of symbol
-    mLeftPos.set(sin(lineAngleRadians-triangleAngle) * arrowSize,
-		cos(lineAngleRadians-triangleAngle) * arrowSize);
+    mLeftPos.set(static_cast<int>(sin(lineAngleRadians-triangleAngle) * arrowSize),
+        static_cast<int>(cos(lineAngleRadians-triangleAngle) * arrowSize));
     // calc right point of symbol
-    mRightPos.set(sin(lineAngleRadians+triangleAngle) * arrowSize,
-	    cos(lineAngleRadians+triangleAngle) * arrowSize);
+    mRightPos.set(static_cast<int>(sin(lineAngleRadians+triangleAngle) * arrowSize),
+        static_cast<int>(cos(lineAngleRadians+triangleAngle) * arrowSize));
     }
+
+
+DiagramDrawer::~DiagramDrawer()
+    {}
 
 int DiagramDrawer::getPad(int div)
     {
-    int pad = getTextExtentHeight("W");
+    int pad = static_cast<int>(getTextExtentHeight("W"));
     pad /= div;
     if(pad < 1)
 	pad = 1;
@@ -117,10 +121,12 @@ Color DistinctColors::getColor(size_t index)
 	0xF13A13, // Vivid Reddish Orange
 	0x232C16, // Dark Olive Green
 	};
-    return(Color(colors[index]>>16, (colors[index]>>8) & 0xFF, (colors[index]) & 0xFF));
+    return(Color(static_cast<uint8_t>(colors[index]>>16),
+        static_cast<uint8_t>((colors[index]>>8) & 0xFF),
+        static_cast<uint8_t>((colors[index]) & 0xFF)));
     }
 
-void viewSource(OovStringRef const module, int lineNum)
+void viewSource(OovStringRef const module, unsigned int lineNum)
     {
     std::string proc = gGuiOptions.getValue(OptGuiEditorPath);
     if(proc.length() > 0)
@@ -130,7 +136,7 @@ void viewSource(OovStringRef const module, int lineNum)
 	OovString lineArg = gGuiOptions.getValue(OptGuiEditorLineArg);
 	if(lineArg.length() != 0)
 	    {
-	    lineArg.appendInt(lineNum);
+	    lineArg.appendInt(static_cast<int>(lineNum));
 	    args.addArg(lineArg);
 	    }
 	FilePath file(module, FP_File);

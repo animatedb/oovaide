@@ -57,12 +57,12 @@ inline unsigned char swapUInt8Bits(unsigned char n)
 static unsigned short computeCRC(unsigned char const * const dataPtr, int numBytes)
     {
     unsigned char const * localDataPtr = dataPtr;
-    unsigned short crc = 0xFFFF;
+    uint16_t crc = 0xFFFF;
     for(int i = numBytes; i>0; i--)
 	{
-	    unsigned char val = ((crc >> 8) ^ swapUInt8Bits(*localDataPtr));
-	    localDataPtr++;
-	    crc = static_cast<unsigned char>((crc << 8) ^ CRC16Table[val]);
+	unsigned char val = ((crc >> 8) ^ swapUInt8Bits(*localDataPtr));
+	localDataPtr++;
+	crc = static_cast<uint16_t>((static_cast<unsigned int>(crc) << 8) ^ CRC16Table[val]);
 	}
     return crc;
     }

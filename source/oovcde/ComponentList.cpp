@@ -12,7 +12,7 @@
 
 
 static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
-	OovStringRef const compSrcTagName, std::vector<ComponentListItem> &names)
+	OovStringRef const /*compSrcTagName*/, std::vector<ComponentListItem> &names)
     {
     bool added = false;
     for(const auto &fn : compFile.getComponentSources(compName))
@@ -42,6 +42,7 @@ void ComponentList::updateComponentList()
     GuiTreeItem root;
     for(const auto &compName : compFile.getComponentNames())
 	{
+/// @todo - 3rd arg is not used.
 	bool addedSrc = addNames(compName, compFile, "Comp-src-", mListMap);
 	bool addedInc = addNames(compName, compFile, "Comp-inc-", mListMap);
 	if(addedSrc || addedInc)

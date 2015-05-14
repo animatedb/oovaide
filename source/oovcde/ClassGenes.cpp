@@ -125,7 +125,7 @@ void ClassGenes::setupQualityEachGeneration()
     {
     // Go through all genes and find largest size to use to scale size quality
     mDiagramSize.clear();
-    for(int gi=0; gi<numgenes; gi++)
+    for(size_t gi=0; gi<numgenes; gi++)
 	{
 	GraphSize size = getSize(gi);
 	if(size.x > mDiagramSize.x)
@@ -150,7 +150,7 @@ GraphSize ClassGenes::getSize(int geneIndex) const
     return size;
     }
 
-QualityType ClassGenes::calculateSingleGeneQuality(int geneIndex) const
+QualityType ClassGenes::calculateSingleGeneQuality(size_t geneIndex) const
     {
     int nodesOverlapCount = 0;
 #if(LINES_OVERLAP)

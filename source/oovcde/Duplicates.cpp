@@ -27,20 +27,21 @@ class cFilterOutputHashIndices
                 }
             memset(&mFile2HashIndices[0], 0, size);
             }
-        void markAlreadyOutput(int startIndexFile1, int len, int startIndexFile2)
+        void markAlreadyOutput(size_t startIndexFile1, size_t len,
+            size_t startIndexFile2)
             {
-            for(int i=0; i<len; i++)
+            for(size_t i=0; i<len; i++)
                 {
                 mFile2HashIndices[startIndexFile2+i] = startIndexFile1+i;
                 }
             }
-        bool isAlreadyOutput(int startIndexFile1, int startIndexFile2)
+        bool isAlreadyOutput(size_t startIndexFile1, size_t startIndexFile2)
             {
             return(mFile2HashIndices[startIndexFile2] == startIndexFile1);
             }
 
     private:
-        std::vector<int> mFile2HashIndices;
+        std::vector<size_t> mFile2HashIndices;
     };
 
 
@@ -50,8 +51,8 @@ class HashItem
 	HashItem():
 	    mHash(0), mLineNum(0)
 	    {}
-    unsigned int mHash;
-    unsigned int mLineNum;
+    size_t mHash;
+    size_t mLineNum;
     };
 
 class DupOptions
@@ -120,7 +121,7 @@ void HashFile::compareHashFiles(HashFile const &refFile,
 	size_t i2=i1;
         while(i2<refFile.mHashItems.size())
             {
-            int inc=1;
+            size_t inc=1;
             bool samePlace = false;
             if(options.mFindDupsInLines)
         	samePlace = ((this == &refFile) && (i1 == i2));
@@ -128,13 +129,13 @@ void HashFile::compareHashFiles(HashFile const &refFile,
         	samePlace = ((this == &refFile) && mHashItems[i1].mLineNum == mHashItems[i2].mLineNum);
             if(!samePlace)
         	{
-		size_t inc = getDupLinesLength(i1, refFile, i2);
+		inc = getDupLinesLength(i1, refFile, i2);
 		if(inc > options.mNumTokenMatches)
 		    {
                     if(!outHashIndices.isAlreadyOutput(i1, i2))
                         {
                         outHashIndices.markAlreadyOutput(i1, inc, i2);
-                        int totalLines = (mHashItems[i1+inc-1].mLineNum - mHashItems[i1].mLineNum) + 1;
+                        size_t totalLines = (mHashItems[i1+inc-1].mLineNum - mHashItems[i1].mLineNum) + 1;
                         fprintf(outFile.getFp(), "lines %u  :  %s %u  :  %s %u\n",
                             totalLines,
                             getRelativeFileName().getStr(), mHashItems[i1].mLineNum,

@@ -14,6 +14,7 @@
 
 static const int NODE_DEPTH = 2;
 
+
 static const ClassDrawOptions &getDrawOptions()
     {
     static ClassDrawOptions dopts;
@@ -30,6 +31,9 @@ static const ClassDrawOptions &getDrawOptions()
     dopts.drawRelationKey = gGuiOptions.getValueBool(OptGuiShowRelationKey);
     return dopts;
     }
+
+ClassDiagramListener::~ClassDiagramListener()
+    {}
 
 void ClassDiagram::initialize(Builder &builder, const ModelData &modelData,
 	ClassDiagramListener *listener, OovTaskStatusListener *taskStatusListener)
@@ -98,7 +102,8 @@ void ClassDiagram::drawToDrawingArea()
 
 ClassNode *ClassDiagram::getNode(int x, int y)
     {
-    return mClassGraph.getNode(x / getDesiredZoom(), y / getDesiredZoom());
+    return mClassGraph.getNode(static_cast<int>(x / getDesiredZoom()),
+        static_cast<int>(y / getDesiredZoom()));
     }
 
 static ClassDiagram *gClassDiagram;
@@ -107,13 +112,13 @@ static GraphPoint gStartPosInfo;
 void ClassDiagram::buttonPressEvent(const GdkEventButton *event)
     {
     gClassDiagram = this;
-    gStartPosInfo.set(event->x, event->y);
+    gStartPosInfo.set(static_cast<int>(event->x), static_cast<int>(event->y));
     }
 
 void ClassDiagram::displayContextMenu(guint button, guint32 acttime, gpointer data)
     {
     GdkEventButton *event = static_cast<GdkEventButton*>(data);
-    ClassNode *node = getNode(event->x, event->y);
+    ClassNode *node = getNode(static_cast<int>(event->x), static_cast<int>(event->y));
     OovStringRef const nodeMenus[] =
 	{
 	"GotoClassMenuitem",
@@ -132,7 +137,7 @@ void ClassDiagram::displayContextMenu(guint button, guint32 acttime, gpointer da
 
     GtkMenu *menu = getBuilder().getMenu("DrawClassPopupMenu");
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
-    gStartPosInfo.set(event->x, event->y);
+    gStartPosInfo.set(static_cast<int>(event->x), static_cast<int>(event->y));
     }
 
 void ClassDiagram::buttonReleaseEvent(const GdkEventButton *event)
@@ -146,7 +151,8 @@ void ClassDiagram::buttonReleaseEvent(const GdkEventButton *event)
 		    gStartPosInfo.x, gStartPosInfo.y);
 	    if(node)
 		{
-		GraphPoint clickOffset(event->x, event->y);
+		GraphPoint clickOffset(static_cast<int>(event->x),
+                    static_cast<int>(event->y));
 		clickOffset.sub(gStartPosInfo);
 		GraphPoint newPos(node->getPosition());
 		newPos.add(clickOffset.getZoomed(1/getDesiredZoom(),
@@ -175,7 +181,8 @@ void ClassDiagram::buttonReleaseEvent(const GdkEventButton *event)
 	}
     else
 	{
-	displayContextMenu(event->button, event->time, (gpointer)event);
+	displayContextMenu(event->button, event->time,
+            reinterpret_cast<gpointer>(const_cast<GdkEventButton*>(event)));
 	}
     }
 
@@ -203,7 +210,8 @@ void ClassDiagram::drawDiagram(const ClassDrawOptions &options)
 
 // Class Diagram Popup menu
 
-extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
@@ -212,7 +220,8 @@ extern "C" G_MODULE_EXPORT void on_GotoClassMenuitem_activate(GtkWidget *widget,
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_RestartMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_RestartMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gClassDiagram->restart();
     }
@@ -234,57 +243,68 @@ void handlePopup(ClassGraph::eAddNodeTypes addType)
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_AddAllMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddAllMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_All);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddStandardMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddStandardMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_AllStandard);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddSuperclassesMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddSuperclassesMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_Superclass);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddSubclassesMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddSubclassesMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_Subclass);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddMembersUsingMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddMembersUsingMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_MemberChildren);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddMemberUsersMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddMemberUsersMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_MemberUsers);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddFuncParamsUsingMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddFuncParamsUsingMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_FuncParamsUsing);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddFuncParamUsersMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddFuncParamUsersMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_FuncParamsUsers);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddFuncBodyVarUsingMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddFuncBodyVarUsingMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_FuncBodyUsing);
     }
 
-extern "C" G_MODULE_EXPORT void on_AddFuncBodyVarUsersMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AddFuncBodyVarUsersMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     handlePopup(ClassGraph::AN_FuncBodyUsers);
     }
 
-extern "C" G_MODULE_EXPORT void on_RemoveClassMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_RemoveClassMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
@@ -295,13 +315,15 @@ extern "C" G_MODULE_EXPORT void on_RemoveClassMenuitem_activate(GtkWidget *widge
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_RemoveAllMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_RemoveAllMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gClassDiagram->getClassGraph().clearGraph();
     gClassDiagram->updateGraph();
     }
 
-extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
@@ -309,12 +331,14 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(GtkWidget *widget
 	const ModelClassifier *classifier = node->getType()->getClass();
 	if(classifier && classifier->getModule())
 	    {
-	    viewSource(classifier->getModule()->getModulePath(), classifier->getLineNum());
+	    viewSource(classifier->getModule()->getModulePath(),
+                classifier->getLineNum());
 	    }
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     ClassNode *node = gClassDiagram->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
@@ -322,26 +346,28 @@ extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(GtkWidget *
 	ClassPreferencesDialog dlg;
 	if(dlg.run(gClassDiagram->getBuilder(), node->getDrawOptions()))
 	    {
-	    gClassDiagram->getClassGraph().changeDrawOptions(
-		    gClassDiagram->getModelData(), getDrawOptions());
+	    gClassDiagram->getClassGraph().changeDrawOptions(getDrawOptions());
 	    gClassDiagram->drawToDrawingArea();
 	    }
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_Zoom1Menuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_Zoom1Menuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gClassDiagram->setZoom(1);
     gClassDiagram->drawToDrawingArea();
     }
 
-extern "C" G_MODULE_EXPORT void on_ZoomHalfMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_ZoomHalfMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gClassDiagram->setZoom(0.5);
     gClassDiagram->drawToDrawingArea();
     }
 
-extern "C" G_MODULE_EXPORT void on_ZoomQuarterMenuitem_activate(GtkWidget *widget, gpointer data)
+extern "C" G_MODULE_EXPORT void on_ZoomQuarterMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gClassDiagram->setZoom(0.25);
     gClassDiagram->drawToDrawingArea();

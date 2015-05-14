@@ -63,21 +63,6 @@ class Tokenizer
 	void getLineColumn(size_t charOffset, unsigned int &line, unsigned int &column);
     };
 
-class HighlightTag
-    {
-    public:
-	HighlightTag();
-	~HighlightTag();
-	void setForegroundColor(GtkTextBuffer *textBuffer, char const * const name,
-		char const * const color);
-	bool isInitialized() const
-	    { return mTag != nullptr; }
-	GtkTextTag *getTextTag() const
-	    { return mTag; }
-    private:
-	GtkTextTag *mTag;
-    };
-
 class HighlightTags
     {
     public:
@@ -86,7 +71,7 @@ class HighlightTags
 	    { return mTags[tagIndex].getTextTag(); }
 
     private:
-	HighlightTag mTags[5];
+	GuiHighlightTag mTags[5];
     };
 
 

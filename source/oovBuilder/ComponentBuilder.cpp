@@ -430,11 +430,11 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
         processStr += '\n';
 	printf("%s", processStr.getStr());
 	fflush(stdout);
-	File stdoutFile;
         OovProcessBufferedStdListener listener(listenerMutex);
         listener.setProcessIdStr(processStr);
 	if(stdOutFn)
 	    {
+	    File stdoutFile;
 	    // The ar tool must send its output to a file.
 	    stdoutFile.open(stdOutFn, "a");
 	    listener.setStdOut(stdoutFile.getFp(), OovProcessStdListener::OP_OutputFile);

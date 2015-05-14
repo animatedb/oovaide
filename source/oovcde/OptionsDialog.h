@@ -19,8 +19,7 @@ class OptionsDialog
     {
     public:
 	OptionsDialog();
-	virtual ~OptionsDialog()
-	    {}
+	virtual ~OptionsDialog();
 	void updateBuildConfig();
 	void showScreen();
 	void saveScreen();

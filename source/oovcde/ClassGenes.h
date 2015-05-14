@@ -43,7 +43,7 @@ class ClassGenes:public GenePool
 	GraphSize mDiagramSize;
 
 	virtual void setupQualityEachGeneration() override;
-	virtual QualityType calculateSingleGeneQuality(int geneIndex) const override;
+	virtual QualityType calculateSingleGeneQuality(size_t geneIndex) const override;
 	// GeneIndex contains the positions
 	bool nodesOverlap(int geneIndex, int node1, int node2) const;
 	bool lineNodeOverlap(int geneIndex, int ni, DiagramLine const &line) const;

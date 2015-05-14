@@ -223,6 +223,9 @@ OptionsDialog::OptionsDialog():
     updateBuildConfig();
     }
 
+OptionsDialog::~OptionsDialog()
+    {}
+
 void OptionsDialog::setBuildConfig()
     {
     if(mDialogRunning && Builder::getBuilder())

@@ -25,6 +25,11 @@
 	}
 #endif
 
+ClassGraph::~ClassGraph()
+    {
+    stopAndWaitForCompletion();
+    }
+
 void ClassGraph::initialize(GtkWidget *drawingArea,
 	OovTaskStatusListener *taskStatusListener)
     {

@@ -40,7 +40,7 @@ class JournalRecord
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) = 0;
 	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) = 0;
 	virtual void drawingAreaDrawEvent() = 0;
-	virtual void drawingAreaMotionEvent(const GdkEventMotion *event)
+	virtual void drawingAreaMotionEvent(const GdkEventMotion * /*event*/)
 	    {}
 	virtual void drawingLoseFocusEvent()
 	    {}
@@ -154,7 +154,7 @@ class JournalRecordComponentDiagram:public JournalRecord
 class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
     {
     public:
-	JournalRecordZoneDiagram(Builder &builder, const ModelData &model,
+	JournalRecordZoneDiagram(Builder & /*builder*/, const ModelData &model,
 		JournalListener &listener):
 	    JournalRecord(RT_Zone, listener)
 	    {
@@ -173,9 +173,12 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 	    { mZoneDiagram.graphButtonReleaseEvent(event); }
 	virtual void drawingAreaDrawEvent() override
 	    { mZoneDiagram.drawToDrawingArea(); }
-	virtual void drawingAreaMotionEvent(const GdkEventMotion *event)
-	    { mZoneDiagram.handleDrawingAreaMotion(event->x, event->y); }
-	virtual void drawingLoseFocusEvent()
+	virtual void drawingAreaMotionEvent(const GdkEventMotion *event) override
+	    {
+            mZoneDiagram.handleDrawingAreaMotion(
+                static_cast<int>(event->x), static_cast<int>(event->y));
+            }
+	virtual void drawingLoseFocusEvent() override
 	    { mZoneDiagram.handleDrawingAreaLoseFocus(); }
 	virtual void saveFile(FILE *fp) override
 	    { mZoneDiagram.drawSvgDiagram(fp); }
@@ -188,7 +191,7 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 class JournalRecordPortionDiagram:public JournalRecord
     {
     public:
-	JournalRecordPortionDiagram(Builder &builder, const ModelData &model,
+	JournalRecordPortionDiagram(Builder & /*builder*/, const ModelData &model,
 		JournalListener &listener):
 	    JournalRecord(RT_Portion, listener)
 	    {
@@ -272,7 +275,7 @@ class Journal
 
     private:
 	std::vector<JournalRecord*> mRecords;
-	int mCurrentRecord;
+	size_t mCurrentRecord;
 	Builder *mBuilder;
 	const ModelData *mModel;
 	JournalListener *mJournalListener;

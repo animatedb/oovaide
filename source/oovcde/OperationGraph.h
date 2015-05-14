@@ -57,8 +57,7 @@ class OperationStatement
 	    {}
 	eModelStatementTypes getStatementType() const
 	    { return mStatementType; }
-	virtual ~OperationStatement()
-	    {}
+	virtual ~OperationStatement();
 	// Returns non-const, so that the rect can be modified.
 	class OperationCall *getCall();
 	class OperationVarRef *getVarRef();
@@ -74,6 +73,7 @@ class OperationNestStart:public OperationStatement
 	OperationNestStart(char const * const expr):
 	    OperationStatement(ST_OpenNest), mExpression(expr)
 	    {}
+        virtual ~OperationNestStart();
 	OovString const &getExpr() const
 	    { return mExpression; }
     private:
@@ -86,6 +86,7 @@ class OperationNestEnd:public OperationStatement
 	OperationNestEnd():
 	    OperationStatement(ST_CloseNest)
 	    {}
+        virtual ~OperationNestEnd();
     };
 
 /// A call is a call to a method in a class.
@@ -93,11 +94,12 @@ class OperationCall:public OperationStatement
     {
     public:
 	/// operClassIndex is the class of the operation that is called.
-	OperationCall(int operClassIndex, const ModelOperation &operation):
+	OperationCall(size_t operClassIndex, const ModelOperation &operation):
 	    OperationStatement(ST_Call), mOperClassIndex(operClassIndex),
 	    mOperation(operation)
 	    {}
-	int getOperClassIndex() const
+        virtual ~OperationCall();
+	size_t getOperClassIndex() const
 	    { return mOperClassIndex; }
 	OovString const &getName() const
 	    { return mOperation.getName(); }
@@ -117,7 +119,7 @@ class OperationCall:public OperationStatement
 	    { mOperClassIndex--; }
 
     private:
-	int mOperClassIndex;
+	size_t mOperClassIndex;
 	const ModelOperation &mOperation;
 	GraphRect rect;
     };
@@ -130,6 +132,7 @@ class OperationVarRef:public OperationStatement
 	    OperationStatement(ST_VarRef), mOperClassIndex(operClassIndex),
 	    mAttribute(attr)
 	    {}
+        virtual ~OperationVarRef();
 	int getOperClassIndex() const
 	    { return mOperClassIndex; }
 	OovString const &getName() const
@@ -160,13 +163,10 @@ class OperationVarRef:public OperationStatement
 class OperationDefinition:public OperationCall
     {
     public:
-	OperationDefinition(int classIndex, const ModelOperation &operation):
+	OperationDefinition(size_t classIndex, const ModelOperation &operation):
 	    OperationCall(classIndex, operation)
 	    {}
-	~OperationDefinition()
-	    {
-	    removeStatements();
-	    }
+	virtual ~OperationDefinition();
 	void removeStatements()
 	    {
 	    mStatements.clear();
@@ -186,15 +186,17 @@ class OperationDefinition:public OperationCall
 	    mStatements.push_back(std::unique_ptr<OperationStatement>(
 		    new OperationNestEnd()));
 	    }
-	int getNestDepth() const;
+	size_t getNestDepth() const;
 	const std::vector<std::unique_ptr<OperationStatement>> &getStatements() const
 	    { return mStatements; }
 	const OperationCall *getCall(int x, int y) const;
 	bool isCalled(const OperationCall &opcall) const;
-	bool isClassReferred(int classIndex) const;
+	bool isClassReferred(size_t classIndex) const;
 
     private:
 	std::vector<std::unique_ptr<OperationStatement>> mStatements;
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
+
 	// Not defined to prevent copy.
 	OperationDefinition(const OperationDefinition &def);
 	void operator=(const OperationDefinition &def);
@@ -219,12 +221,13 @@ class OperationGraph
 	    AO_All=0xFF,
 	    };
 	/// Adds operations to a graph.
-	/// @param model Used to look up related classes.
+	/// @param operClass Used to look up related classes.
 	/// @param oper The operation to be added to the graph.
 	/// @param addType Defines the relationship types to look for.
 	/// @param maxDepth Recurses to the specified depth. 1 adds operation with no relations.
+        /// @todo - addType isn't used.
 	void addRelatedOperations(const ModelClassifier &operClass,
-            const ModelOperation &oper, eAddOperationTypes addType, int maxDepth);
+            const ModelOperation &oper, eAddOperationTypes /*addType*/, int maxDepth);
 	void clearGraph()
 	    {
 	    for(const auto &oper : mOperations)
@@ -234,17 +237,18 @@ class OperationGraph
 	    }
 	/// Clears the graph and adds related operations. See the addRelatedOperations
 	/// function for more description.
+        /// @todo - options and nodeDepth are not used.
 	void clearGraphAndAddOperation(const ModelData &model,
 		const OperationDrawOptions &options, char const * const className,
 		char const * const operName, bool isConst, int nodeDepth);
 	const std::vector<OperationClass> &getClasses() const
 	    { return mOpClasses; }
-	const OperationClass &getClass(int index) const
+	const OperationClass &getClass(size_t index) const
 	    { return mOpClasses[index]; }
 //	OperationClass *getNode(int x, int y);
 	// Can only remove leaf operations?
 //	void removeOperation(const ModelOperation *oper);
-	int getNestDepth(int classIndex);
+	size_t getNestDepth(size_t classIndex);
 	const OperationClass *getNode(int x, int y) const;
 	void removeNode(const OperationClass *classNode);
 	const OperationCall *getOperation(int x, int y) const;
@@ -264,17 +268,18 @@ class OperationGraph
 	std::vector<OperationDefinition*> mOperations;
 	GraphSize mPad;
 	bool mModified;
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
 
-	void addDefinition(int classIndex, const ModelOperation &oper);
+	void addDefinition(size_t classIndex, const ModelOperation &oper);
 	void addOperCallers(const ModelStatements &stmts, const ModelClassifier &srcCls,
 		const ModelOperation &oper, const OperationCall &callee);
 	enum eGetClass { GC_AddClasses, FT_OnlyGetClasses };
-	int addOrGetClass(const ModelClassifier *cls, eGetClass gc);
+	size_t addOrGetClass(const ModelClassifier *cls, eGetClass gc);
 	void fillDefinition(const ModelStatements &stmt, OperationDefinition &opDef,
 		eGetClass ft);
 	void removeUnusedClasses();
-	void removeOperation(int index);
-	void removeClass(int index);
+	void removeOperation(size_t index);
+	void removeClass(size_t index);
     };
 
 

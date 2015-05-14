@@ -17,27 +17,27 @@
 class PortionGenes:public GenePool
     {
     public:
-	void initialize(PortionDrawer &drawer, int nodeHeight);
+	void initialize(PortionDrawer &drawer, size_t nodeHeight);
 	// Do some iterations, and move the positions from the gene pool into
         // the drawer.
 	void updatePositionsInDrawer();
 
     private:
 	PortionDrawer *mDrawer;
-	int mNodeHeight;
-	int mMaxDrawingHeight;
-	int mMaxDistanceQ;
-	int mMaxOverlapQ;
-	int mMaxHeightQ;
+	size_t mNodeHeight;
+	size_t mMaxDrawingHeight;
+	size_t mMaxDistanceQ;
+	size_t mMaxOverlapQ;
+	size_t mMaxHeightQ;
 	void setupQualityEachGeneration() override;
-	QualityType calculateSingleGeneQuality(int geneIndex) const override;
-        GeneValue getYPosition(int geneIndex, int nodeIndex) const;
-        void setYPosition(int geneIndex, int nodeIndex, GeneValue val);
-        int getDrawingHeight(int geneIndex) const;
-        int getNodeOverlapCount(int geneIndex) const;
-        int getNodeYDistances(int geneIndex) const;
-        int getMaxNodesInColumn() const;
-        bool nodesOverlap(int geneIndex, int node1, int node2) const;
+	QualityType calculateSingleGeneQuality(size_t geneIndex) const override;
+        GeneValue getYPosition(size_t geneIndex, size_t nodeIndex) const;
+        void setYPosition(size_t geneIndex, size_t nodeIndex, GeneValue val);
+        size_t getDrawingHeight(size_t geneIndex) const;
+        size_t getNodeOverlapCount(size_t geneIndex) const;
+        size_t getNodeYDistances(size_t geneIndex) const;
+        size_t getMaxNodesInColumn() const;
+        bool nodesOverlap(size_t geneIndex, size_t node1, size_t node2) const;
     };
 
 #endif

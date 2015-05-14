@@ -61,11 +61,11 @@ class ComponentNode
 class ComponentConnection
     {
     public:
-	ComponentConnection(int nodeConsumer, int nodeSupplier):
+	ComponentConnection(size_t nodeConsumer, size_t nodeSupplier):
 	    mNodeConsumer(nodeConsumer), mNodeSupplier(nodeSupplier), mImpliedDependency(false)
 	    {}
-	uint16_t mNodeConsumer;
-	uint16_t mNodeSupplier;
+	size_t mNodeConsumer;
+	size_t mNodeSupplier;
 	uint32_t getAsInt() const
 	    { return (mNodeConsumer<<16) + mNodeSupplier; }
 	bool operator<(const ComponentConnection &np) const
@@ -108,14 +108,15 @@ class ComponentGraph
 	std::vector<ComponentNode> mNodes;
 	std::set<ComponentConnection> mConnections;
 	bool mModified;
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
 
 	// This finds include paths for all source files of each component.
 	void updateConnections(const ComponentTypesFile &compFile,
 		const ComponentDrawOptions &options);
-	int getComponentIndex(OovStringVec const &compPaths,
+	size_t getComponentIndex(OovStringVec const &compPaths,
 		OovStringRef const dir);
 	void pruneConnections();
-	void findNumPaths(int consumerIndex, int supplierIndex, int &numPaths);
+	void findNumPaths(size_t consumerIndex, size_t supplierIndex, size_t &numPaths);
     };
 
 

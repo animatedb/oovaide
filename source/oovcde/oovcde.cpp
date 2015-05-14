@@ -24,6 +24,17 @@ static oovGui gOovGui;
 static OptionsDialog *sOptionsDialog;
 
 
+void WindowBuildListener::initListener(Builder &builder)
+    {
+    // "DrawingStatusPaned"
+    if(!mStatusTextView)
+	{
+	mStatusTextView = GTK_TEXT_VIEW(builder.getWidget("StatusTextview"));
+	mErrHighlightTag.setForegroundColor(getBuffer(), "err", "red");
+	}
+    Gui::clear(mStatusTextView);
+    }
+
 bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
     {
     bool didSomething = false;
@@ -39,17 +50,41 @@ bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
 	    appended = true;
 	    }
 	}
-    bool atEnd = GuiTextBuffer::isCursorAtEnd(GuiTextBuffer::getBuffer(mStatusTextView));
-    Gui::appendText(mStatusTextView, tempStdStr);
+    GtkTextBuffer *buf = getBuffer();
+    bool atEnd = GuiTextBuffer::isCursorAtEnd(buf);
+    if(tempStdStr.length())
+	{
+	// Highlight the error output.
+	int startOffset = GuiTextIter::getIterOffset(GuiTextBuffer::getEndIter(buf));
+	Gui::appendText(mStatusTextView, tempStdStr);
+
+	size_t pos = 0;
+	while(pos != std::string::npos)
+	    {
+	    pos = tempStdStr.find("error:", pos);
+	    if(pos != std::string::npos)
+		{
+		GtkTextIter startIter = GuiTextBuffer::getIterAtOffset(buf, startOffset + pos);
+		GtkTextIter endIter = GuiTextBuffer::getIterAtOffset(buf, startOffset + pos + 6);
+		int endOffset = GuiTextIter::getIterOffset(endIter);
+
+		GuiTextBuffer::getText(buf, startOffset + pos, endOffset);
+		mErrHighlightTag.applyTag(buf, &startIter, &endIter);
+		pos++;
+		}
+	    }
+	}
+
     complete = mComplete;
     if(mComplete)
 	{
 	Gui::appendText(mStatusTextView, "\nComplete\n");
+	buf = getBuffer();
 	appended = true;
 	mComplete = false;
 	}
     if(atEnd)
-	GuiTextBuffer::moveCursorToEnd(GuiTextBuffer::getBuffer(mStatusTextView));
+	GuiTextBuffer::moveCursorToEnd(buf);
     if(appended)
 	{
 	Gui::scrollToCursor(mStatusTextView);

@@ -652,18 +652,26 @@ int spawnNoWait(OovStringRef const procPath, char const * const *argv)
 
 void OovProcessStdListener::onStdOut(OovStringRef const out, size_t len)
     {
-    if(mStdOutPlace == OP_OutputStd || mStdOutPlace == OP_OutputStdAndFile)
+    if((mStdOutPlace & OP_OutputStd) > 0)
+	{
 	fprintf(stdout, "%s", OovString(out, len).getStr());
-    if(mStdOutPlace == OP_OutputFile || mStdOutPlace == OP_OutputStdAndFile)
+	}
+    if((mStdOutPlace & OP_OutputFile) > 0)
+	{
 	fprintf(mStdoutFp, "%s", OovString(out, len).getStr());
+	}
     }
 
 void OovProcessStdListener::onStdErr(OovStringRef const out, size_t len)
     {
-    if(mStdErrPlace == OP_OutputStd || mStdErrPlace == OP_OutputStdAndFile)
+    if((mStdErrPlace & OP_OutputStd) > 0)
+	{
 	fprintf(stderr, "%s", OovString(out, len).getStr());
-    if(mStdErrPlace == OP_OutputFile || mStdErrPlace == OP_OutputStdAndFile)
+	}
+    if((mStdErrPlace & OP_OutputFile) > 0)
+	{
 	fprintf(mStderrFp, "%s", OovString(out, len).getStr());
+	}
     }
 
 
@@ -679,8 +687,10 @@ void OovProcessBufferedStdListener::onStdOut(OovStringRef const out, size_t len)
     {
 	{
 	LockGuard lock(mStdMutex);
-	if((mStdErrPlace & OP_OutputStd) || (mStdErrPlace & OP_OutputFile))
+	if((mStdOutPlace & OP_OutputStd) || (mStdOutPlace & OP_OutputFile))
+	    {
 	    mStdoutStr += OovString(out, len);
+	    }
 	}
     periodicOutput(mStdoutFp, mStdoutStr, mStdoutTime);
     }
@@ -690,7 +700,9 @@ void OovProcessBufferedStdListener::onStdErr(OovStringRef const out, size_t len)
 	{
 	LockGuard lock(mStdMutex);
 	if((mStdErrPlace & OP_OutputStd) || (mStdErrPlace & OP_OutputFile))
+	    {
 	    mStderrStr += std::string(out, len);
+	    }
 	}
     periodicOutput(mStderrFp, mStderrStr, mStderrTime);
     }
@@ -732,13 +744,19 @@ void OovProcessBufferedStdListener::output(FILE *fp, std::string &str, bool writ
 	else
 	    {
 	    size_t lastCrPos = str.rfind('\n');
-	    OovString tempStr = str.substr(0, lastCrPos);
-	    str.erase(0, lastCrPos);
+	    if(lastCrPos != std::string::npos)
+		{
+		tempStr = str.substr(0, lastCrPos);
+		str.erase(0, lastCrPos);
+		}
 	    }
 
-	fprintf(fp, "%s", mProcessIdStr.getStr());
-	fprintf(fp, "%s", tempStr.getStr());
-	fflush(fp);
+	if(tempStr.length())
+	    {
+	    fprintf(fp, "%s", mProcessIdStr.getStr());
+	    fprintf(fp, "%s", tempStr.getStr());
+	    fflush(fp);
+	    }
 	}
     }
 

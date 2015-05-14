@@ -162,28 +162,29 @@ int OovComplexity::getOperationComplexity(const ModelOperation *oper)
     return complexity;
     }
 
+struct operItem
+    {
+    operItem(const std::string &name, ModelClassifier const *cls, int complexity):
+        mName(name), mCls(cls), mComplexity(complexity)
+        {}
+    void operator=(const operItem &oper)
+        {
+        mName = oper.mName;
+        mCls = oper.mCls;
+        mComplexity = oper.mComplexity;
+        }
+    bool operator<(const operItem &oper) const
+        {
+        return(mCls < oper.mCls && mName < oper.mName);
+        }
+    std::string mName;
+    ModelClassifier const *mCls;
+    int mComplexity;
+    };
+
 int OovComplexity::getDataFunctionCallComplexity()
     {
     int complexity = 0;
-    struct operItem
-	{
-	operItem(const std::string &name, ModelClassifier const *cls, int complexity):
-	    mName(name), mCls(cls), mComplexity(complexity)
-	    {}
-	void operator=(const operItem &oper)
-	    {
-	    mName = oper.mName;
-	    mCls = oper.mCls;
-	    mComplexity = oper.mComplexity;
-	    }
-	bool operator<(const operItem &oper) const
-	    {
-	    return(mCls < oper.mCls && mName < oper.mName);
-	    }
-	std::string mName;
-	ModelClassifier const *mCls;
-	int mComplexity;
-	};
     std::set<operItem> opers;
     for(auto const &stmt : mStmts)
 	{
@@ -235,7 +236,7 @@ class SingleStatementConditional
 	// This contains all expressions on any side of a relation operator
 	// or if no relations, contains the full cond.
 	std::set<std::string> mSideExpressions;
-	int mNumConditionalExpressions;
+	size_t mNumConditionalExpressions;
 	void splitConditions(OovString const cond);
 	OovString discardJunkChars(OovStringRef const str);
     };
@@ -248,7 +249,7 @@ SingleStatementConditional::SingleStatementConditional(OovStringRef const cond):
 
 bool SingleStatementConditional::contains(SingleStatementConditional const &cond) const
     {
-    int matches = 0;
+    size_t matches = 0;
     for(auto const &expr : cond.mSideExpressions)
 	{
 	if(mSideExpressions.find(expr) != mSideExpressions.end())
@@ -266,11 +267,11 @@ void SingleStatementConditional::splitConditions(OovString const fullCond)
     OovStringVec delims = { "&&", "||" };
     OovStringVec condExpressions = cond.split(delims);
     mNumConditionalExpressions = condExpressions.size();
-    for(auto const &cond : condExpressions)
+    for(auto const &condExpr : condExpressions)
 	{
 	// Split strings based on relational operators.
 	OovStringVec relDelims = { "==", "!=", ">=", "<=", ">", "<" };
-	OovStringVec sideExprs = discardJunkChars(cond).split(relDelims);
+	OovStringVec sideExprs = discardJunkChars(condExpr).split(relDelims);
 	for(auto const &expr : sideExprs)
 	    {
 	    mSideExpressions.insert(expr);

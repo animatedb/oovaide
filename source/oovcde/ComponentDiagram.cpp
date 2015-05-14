@@ -33,6 +33,20 @@ void ComponentDiagram::updateGraph()
     updatePositionsInGraph();
     }
 
+struct NodeVectors
+    {
+    NodeVectors():
+        nodesSizeX(0)
+        {}
+    void add(ComponentNode *node, int sizeX, int pad)
+        {
+        nodeVector.push_back(node);
+        nodesSizeX += sizeX + pad;
+        }
+    std::vector<ComponentNode*> nodeVector;
+    int nodesSizeX;
+    };
+
 void ComponentDiagram::updatePositionsInGraph()
     {
     GtkCairoContext cairo(mDrawingArea);
@@ -43,19 +57,7 @@ void ComponentDiagram::updatePositionsInGraph()
 	int pad = nulDrawer.getPad(1) * 2;
 
 	enum NodeVectorsIndex { NVI_ExtPackage, NVI_Lib, NVI_Exec, NVI_NumVecs };
-	struct NodeVectors
-	{
-	    NodeVectors():
-		nodesSizeX(0)
-		{}
-	    void add(ComponentNode*node, int sizeX, int pad)
-		{
-		nodeVector.push_back(node);
-		nodesSizeX += sizeX + pad;
-		}
-	    std::vector<ComponentNode*> nodeVector;
-	    int nodesSizeX;
-	} nodeVectors[NVI_NumVecs];
+        NodeVectors nodeVectors[NVI_NumVecs];
 	int nodeSpacingY = 0;
 	for(auto &node : mComponentGraph.getNodes())
 	    {
@@ -87,8 +89,8 @@ void ComponentDiagram::updatePositionsInGraph()
 	    }
 	for(size_t veci=0; veci<sizeof(nodeVectors)/sizeof(nodeVectors[0]); veci++)
 	    {
-	    int yPos = veci * nodeSpacingY;
-	    int xPos = (biggestX - nodeVectors[veci].nodesSizeX) / 2;
+	    int yPos = static_cast<int>(veci) * nodeSpacingY;
+	    int xPos = (biggestX - static_cast<int>(nodeVectors[veci].nodesSizeX)) / 2;
 	    for(auto const &node : nodeVectors[veci].nodeVector)
 		{
 		node->setPos(GraphPoint(xPos, yPos));
@@ -131,7 +133,8 @@ static ComponentDiagram *gComponentDiagram;
 void ComponentDiagram::buttonPressEvent(const GdkEventButton *event)
     {
     gComponentDiagram = this;
-    gStartPosInfo.set(event->x, event->y);
+    gStartPosInfo.set(static_cast<int>(event->x),
+        static_cast<int>(event->y));
     }
 
 void ComponentDiagram::buttonReleaseEvent(const GdkEventButton *event)
@@ -145,7 +148,8 @@ void ComponentDiagram::buttonReleaseEvent(const GdkEventButton *event)
 	    GraphPoint offset = gStartPosInfo;
 	    offset.sub(node->getRect().start);
 
-	    GraphPoint newPos = GraphPoint(event->x, event->y);
+	    GraphPoint newPos = GraphPoint(static_cast<int>(event->x),
+                static_cast<int>(event->y));
 	    newPos.sub(offset);
 
 	    node->setPos(newPos);
@@ -159,7 +163,8 @@ void ComponentDiagram::buttonReleaseEvent(const GdkEventButton *event)
 	}
     }
 
-void ComponentDiagram::displayContextMenu(guint button, guint32 acttime, gpointer data)
+void ComponentDiagram::displayContextMenu(guint button, guint32 acttime,
+    gpointer /*data*/)
     {
     GtkMenu *menu = Builder::getBuilder()->getMenu("DrawComponentPopupMenu");
     GtkCheckMenuItem *implicitItem = GTK_CHECK_MENU_ITEM(
@@ -170,19 +175,19 @@ void ComponentDiagram::displayContextMenu(guint button, guint32 acttime, gpointe
     }
 
 extern "C" G_MODULE_EXPORT void on_RestartComponentsMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gComponentDiagram->restart();
     }
 
 extern "C" G_MODULE_EXPORT void on_RelayoutComponentsMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gComponentDiagram->relayout();
     }
 
 extern "C" G_MODULE_EXPORT void on_RemoveComponentMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     ComponentNode *node = gComponentDiagram->getGraph().getNode(gStartPosInfo.x,
 	    gStartPosInfo.y);
@@ -194,7 +199,7 @@ extern "C" G_MODULE_EXPORT void on_RemoveComponentMenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_ShowImplicitRelationsMenuitem_toggled(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     bool drawImplicitRelations = gGuiOptions.getValueBool(OptGuiShowCompImplicitRelations);
     gGuiOptions.setNameValueBool(OptGuiShowCompImplicitRelations, !drawImplicitRelations);

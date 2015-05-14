@@ -21,8 +21,7 @@ class BuildSettingsDialog
     {
     public:
 	BuildSettingsDialog();
-	virtual ~BuildSettingsDialog()
-	    {}
+	virtual ~BuildSettingsDialog();
 	// Reads from the component file and displays in the tree view
 	void enterScreen();
 	// Writes the screen selections to the component file.

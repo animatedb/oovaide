@@ -15,6 +15,8 @@
 static DebugFile sLog("OperGraph.txt");
 #endif
 
+OperationStatement::~OperationStatement()
+    {}
 
 OperationCall *OperationStatement::getCall()
     {
@@ -26,17 +28,26 @@ OperationVarRef *OperationStatement::getVarRef()
     return(mStatementType == ST_VarRef ? static_cast<OperationVarRef*>(this) : nullptr);
     }
 
+OperationNestStart::~OperationNestStart()
+    {}
+
 const OperationNestStart *OperationStatement::getNestStart() const
     {
     return(mStatementType == ST_OpenNest ?
 	    static_cast<const OperationNestStart*>(this) : nullptr);
     }
 
+OperationNestEnd::~OperationNestEnd()
+    {}
+
 const OperationNestEnd *OperationStatement::getNestEnd() const
     {
     return(mStatementType == ST_CloseNest ?
 	    static_cast<const OperationNestEnd*>(this) : nullptr);
     }
+
+OperationCall::~OperationCall()
+    {}
 
 bool OperationCall::compareOperation(const OperationCall &call) const
     {
@@ -45,10 +56,18 @@ bool OperationCall::compareOperation(const OperationCall &call) const
 	    isConst() == call.isConst());
     }
 
-int OperationDefinition::getNestDepth() const
+OperationVarRef::~OperationVarRef()
+    {}
+
+OperationDefinition::~OperationDefinition()
     {
-    int maxDepth = 0;
-    int depth = 0;
+    removeStatements();
+    }
+
+size_t OperationDefinition::getNestDepth() const
+    {
+    size_t maxDepth = 0;
+    size_t depth = 0;
     for(const auto &stmt : mStatements)
 	{
 	if(stmt->getStatementType() == ST_OpenNest)
@@ -103,7 +122,7 @@ bool OperationDefinition::isCalled(const OperationCall &opcall) const
     return called;
     }
 
-bool OperationDefinition::isClassReferred(int classIndex) const
+bool OperationDefinition::isClassReferred(size_t classIndex) const
     {
     bool referred = (getOperClassIndex() == classIndex);
     if(!referred)
@@ -122,9 +141,9 @@ bool OperationDefinition::isClassReferred(int classIndex) const
     }
 
 
-int OperationGraph::addOrGetClass(const ModelClassifier *cls, eGetClass gc)
+size_t OperationGraph::addOrGetClass(const ModelClassifier *cls, eGetClass gc)
     {
-    int index = -1;
+    size_t index = NO_INDEX;
     for(size_t i=0; i<mOpClasses.size(); i++)
 	{
 	if(mOpClasses[i].getType() == cls)
@@ -133,7 +152,7 @@ int OperationGraph::addOrGetClass(const ModelClassifier *cls, eGetClass gc)
 	    break;
 	    }
 	}
-    if(index == -1 && gc == GC_AddClasses)
+    if(index == NO_INDEX && gc == GC_AddClasses)
 	{
 	mOpClasses.push_back(cls);
 	index = mOpClasses.size()-1;
@@ -158,7 +177,7 @@ class DummyOperation:public ModelOperation
 class DummyOperationCall:public OperationCall
     {
     public:
-	DummyOperationCall(int operClassIndex, const std::string &name, bool isConst):
+	DummyOperationCall(size_t operClassIndex, const std::string &name, bool isConst):
 	    OperationCall(operClassIndex, *(mDo=new DummyOperation(name, isConst)))
 	    {}
 	~DummyOperationCall()
@@ -168,7 +187,7 @@ class DummyOperationCall:public OperationCall
     };
 
 
-static bool hasCall(const ModelStatements &stmts, int stmtIndex)
+static bool hasCall(const ModelStatements &stmts, size_t stmtIndex)
     {
     int nest=0;
     bool hasCall = false;
@@ -249,8 +268,8 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	    const ModelClassifier *cls = stmt.getClassDecl().getDeclType()->getClass();
 	    if(cls)
 		{
-		int classIndex = addOrGetClass(cls, gc);
-		if(classIndex != -1)
+		size_t classIndex = addOrGetClass(cls, gc);
+		if(classIndex != NO_INDEX)
 		    {
 		    const ModelAttribute *targetAttr = cls->getAttribute(stmt.getName());
 			{
@@ -269,14 +288,14 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	    if(!cls)
 		{
 		opDef.addStatement(std::unique_ptr<OperationStatement>(
-			new DummyOperationCall(-1, stmt.getName(),
+			new DummyOperationCall(NO_INDEX, stmt.getName(),
 			stmt.getDecl().isConst())));
 		}
 */
 	    if(cls)
 		{
-		int classIndex = addOrGetClass(cls, gc);
-		if(classIndex != -1)
+		size_t classIndex = addOrGetClass(cls, gc);
+		if(classIndex != NO_INDEX)
 		    {
 		    const ModelOperation *targetOper = cls->getOperationAnyConst(
 			    stmt.getFuncName(), stmt.getClassDecl().isConst());
@@ -316,7 +335,7 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 	}
     }
 
-void OperationGraph::addDefinition(int classIndex, const ModelOperation &oper)
+void OperationGraph::addDefinition(size_t classIndex, const ModelOperation &oper)
     {
     OperationDefinition *opDef = new OperationDefinition(classIndex, oper);
     fillDefinition(oper.getStatements(), *opDef, GC_AddClasses);
@@ -328,19 +347,19 @@ void OperationGraph::addDefinition(int classIndex, const ModelOperation &oper)
 /// @todo - this doesn't work for overloaded functions.
 void OperationGraph::addRelatedOperations(const ModelClassifier &sourceClass,
 	const ModelOperation &sourceOper,
-	eAddOperationTypes addType, int maxDepth)
+	eAddOperationTypes /*addType*/, int maxDepth)
     {
     -- maxDepth;
     if(maxDepth >= 0)
 	{
-	int sourceClassIndex = addOrGetClass(&sourceClass, GC_AddClasses);
+	size_t sourceClassIndex = addOrGetClass(&sourceClass, GC_AddClasses);
 	addDefinition(sourceClassIndex, sourceOper);
 	}
     }
 
 void OperationGraph::clearGraphAndAddOperation(const ModelData &model,
-	const OperationDrawOptions &options, char const * const className,
-	char const * const operName, bool isConst, int nodeDepth)
+	const OperationDrawOptions & /*options*/, char const * const className,
+	char const * const operName, bool isConst, int /*nodeDepth*/)
     {
 #if(DEBUG_OPERGRAPH)
     fprintf(sLog.mFp, "---------\n");
@@ -358,14 +377,14 @@ void OperationGraph::clearGraphAndAddOperation(const ModelData &model,
     mModified = false;
     }
 
-void OperationGraph::removeOperation(int index)
+void OperationGraph::removeOperation(size_t index)
     {
     delete mOperations[index];
     mOperations.erase(mOperations.begin() + index);
     mModified = true;
     }
 
-void OperationGraph::removeClass(int index)
+void OperationGraph::removeClass(size_t index)
     {
     mOpClasses.erase(mOpClasses.begin() + index);
 //    removeUnusedClasses();
@@ -374,7 +393,7 @@ void OperationGraph::removeClass(int index)
 
 void OperationGraph::removeNode(const OperationClass *classNode)
     {
-    int classIndex = -1;
+    size_t classIndex = NO_INDEX;
     for(size_t i=0; i<mOpClasses.size(); i++)
 	{
 	if(mOpClasses[i].getPosition().x == classNode->getPosition().x)
@@ -384,7 +403,7 @@ void OperationGraph::removeNode(const OperationClass *classNode)
 	    break;
 	    }
 	}
-    if(classIndex != -1)
+    if(classIndex != NO_INDEX)
 	{
 	for(size_t i=0; i<mOperations.size(); i++)
 	    {
@@ -404,14 +423,14 @@ void OperationGraph::removeNode(const OperationClass *classNode)
 	}
     }
 
-int OperationGraph::getNestDepth(int classIndex)
+size_t OperationGraph::getNestDepth(size_t classIndex)
     {
-    int maxDepth = 0;
+    size_t maxDepth = 0;
     for(const auto &oper : mOperations)
 	{
 	if(oper->getOperClassIndex() == classIndex)
 	    {
-	    int depth = oper->getNestDepth();
+	    size_t depth = oper->getNestDepth();
 	    if(depth > maxDepth)
 		maxDepth = depth;
 	    }

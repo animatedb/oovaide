@@ -1,415 +1,2049 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1035" height="793">
-<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<ellipse cx="262" cy="383" rx="15" ry="5" />
-<ellipse cx="974" cy="518" rx="48" ry="5" />
-<ellipse cx="321" cy="342" rx="75" ry="5" />
-<ellipse cx="952" cy="393" rx="28" ry="5" />
-<ellipse cx="977" cy="236" rx="53" ry="7" />
-<ellipse cx="286" cy="606" rx="69" ry="5" />
-<ellipse cx="313" cy="774" rx="69" ry="7" />
-<ellipse cx="297" cy="213" rx="51" ry="5" />
-<ellipse cx="747" cy="147" rx="63" ry="7" />
-<ellipse cx="306" cy="100" rx="63" ry="7" />
-<ellipse cx="305" cy="41" rx="63" ry="7" />
-<ellipse cx="524" cy="59" rx="51" ry="7" />
-<ellipse cx="519" cy="591" rx="47" ry="7" />
-<ellipse cx="500" cy="354" rx="28" ry="5" />
-<ellipse cx="265" cy="552" rx="20" ry="5" />
-<ellipse cx="287" cy="318" rx="41" ry="5" />
-<ellipse cx="710" cy="350" rx="32" ry="7" />
-<ellipse cx="183" cy="650" rx="38" ry="7" />
-<ellipse cx="304" cy="682" rx="49" ry="5" />
-<ellipse cx="211" cy="713" rx="46" ry="5" />
-<ellipse cx="273" cy="491" rx="27" ry="7" />
-<rect x="21" y="79" width="66" height="11" />
-<rect x="21" y="774" width="75" height="14" />
-<rect x="23" y="386" width="57" height="11" />
-<rect x="22" y="572" width="62" height="14" />
-<rect x="23" y="696" width="68" height="11" />
-<rect x="21" y="635" width="86" height="11" />
-<rect x="23" y="436" width="72" height="14" />
-<rect x="23" y="478" width="109" height="11" />
-<rect x="23" y="336" width="66" height="14" />
-<rect x="22" y="514" width="126" height="11" />
-<rect x="473" y="763" width="23" height="11" />
-<g  fill="#f5f5ff" stroke="#ff6800" style="stroke-width:1">
-<line x1="54" y1="89" x2="262" y2="378" />
-<line x1="54" y1="89" x2="63" y2="92" />
-<line x1="54" y1="89" x2="54" y2="98" />
-<line x1="87" y1="84" x2="926" y2="518" />
-<line x1="87" y1="84" x2="96" y2="83" />
-<line x1="87" y1="84" x2="91" y2="92" />
-<line x1="87" y1="84" x2="924" y2="393" />
-<line x1="87" y1="84" x2="96" y2="82" />
-<line x1="87" y1="84" x2="92" y2="92" />
-<line x1="87" y1="84" x2="246" y2="213" />
-<line x1="87" y1="84" x2="96" y2="84" />
-<line x1="87" y1="84" x2="89" y2="93" />
-<line x1="87" y1="84" x2="684" y2="147" />
-<line x1="87" y1="84" x2="95" y2="80" />
-<line x1="87" y1="84" x2="94" y2="90" />
-<line x1="87" y1="84" x2="243" y2="100" />
-<line x1="87" y1="84" x2="95" y2="79" />
-<line x1="87" y1="84" x2="94" y2="90" />
-<line x1="87" y1="84" x2="243" y2="100" />
-<line x1="87" y1="84" x2="95" y2="79" />
-<line x1="87" y1="84" x2="94" y2="90" />
-<line x1="87" y1="84" x2="473" y2="59" />
-<line x1="87" y1="84" x2="94" y2="78" />
-<line x1="87" y1="84" x2="95" y2="89" />
-<line x1="54" y1="89" x2="287" y2="313" />
-<line x1="54" y1="89" x2="63" y2="90" />
-<line x1="54" y1="89" x2="55" y2="98" />
-<line x1="87" y1="84" x2="678" y2="350" />
-<line x1="87" y1="84" x2="96" y2="82" />
-<line x1="87" y1="84" x2="91" y2="92" />
-</g>
-<g  fill="#f5f5ff" stroke="#a6bdd7" style="stroke-width:1">
-<line x1="58" y1="774" x2="262" y2="388" />
-<line x1="58" y1="774" x2="57" y2="765" />
-<line x1="58" y1="774" x2="66" y2="770" />
-<line x1="95" y1="781" x2="244" y2="774" />
-<line x1="95" y1="781" x2="102" y2="775" />
-<line x1="95" y1="781" x2="103" y2="786" />
-<line x1="95" y1="781" x2="472" y2="591" />
-<line x1="95" y1="781" x2="99" y2="773" />
-<line x1="95" y1="781" x2="104" y2="782" />
-</g>
-<g  fill="#f5f5ff" stroke="#cea262" style="stroke-width:1">
-<line x1="79" y1="391" x2="926" y2="518" />
-<line x1="79" y1="391" x2="87" y2="387" />
-<line x1="79" y1="391" x2="86" y2="398" />
-<line x1="79" y1="391" x2="924" y2="393" />
-<line x1="79" y1="391" x2="87" y2="386" />
-<line x1="79" y1="391" x2="87" y2="396" />
-<line x1="79" y1="391" x2="472" y2="354" />
-<line x1="79" y1="391" x2="86" y2="385" />
-<line x1="79" y1="391" x2="87" y2="396" />
-<line x1="79" y1="391" x2="246" y2="491" />
-<line x1="79" y1="391" x2="88" y2="391" />
-<line x1="79" y1="391" x2="82" y2="400" />
-</g>
-<g  fill="#f5f5ff" stroke="#817066" style="stroke-width:1">
-<line x1="84" y1="579" x2="926" y2="518" />
-<line x1="84" y1="579" x2="91" y2="573" />
-<line x1="84" y1="579" x2="92" y2="584" />
-<line x1="84" y1="579" x2="924" y2="393" />
-<line x1="84" y1="579" x2="90" y2="572" />
-<line x1="84" y1="579" x2="93" y2="582" />
-<line x1="84" y1="579" x2="924" y2="236" />
-<line x1="84" y1="579" x2="89" y2="571" />
-<line x1="84" y1="579" x2="93" y2="581" />
-<line x1="84" y1="579" x2="217" y2="606" />
-<line x1="84" y1="579" x2="93" y2="575" />
-<line x1="84" y1="579" x2="90" y2="586" />
-<line x1="84" y1="579" x2="472" y2="591" />
-<line x1="84" y1="579" x2="92" y2="574" />
-<line x1="84" y1="579" x2="91" y2="585" />
-<line x1="84" y1="579" x2="246" y2="491" />
-<line x1="84" y1="579" x2="88" y2="570" />
-<line x1="84" y1="579" x2="93" y2="580" />
-</g>
-<g  fill="#f5f5ff" stroke="#007d34" style="stroke-width:1">
-<line x1="91" y1="701" x2="217" y2="606" />
-<line x1="91" y1="701" x2="93" y2="692" />
-<line x1="91" y1="701" x2="100" y2="701" />
-<line x1="91" y1="701" x2="472" y2="591" />
-<line x1="91" y1="701" x2="97" y2="694" />
-<line x1="91" y1="701" x2="100" y2="704" />
-<line x1="91" y1="701" x2="255" y2="682" />
-<line x1="91" y1="701" x2="98" y2="695" />
-<line x1="91" y1="701" x2="99" y2="705" />
-<line x1="91" y1="701" x2="165" y2="713" />
-<line x1="91" y1="701" x2="99" y2="697" />
-<line x1="91" y1="701" x2="98" y2="708" />
-<line x1="91" y1="701" x2="246" y2="491" />
-<line x1="91" y1="701" x2="91" y2="692" />
-<line x1="91" y1="701" x2="100" y2="698" />
-</g>
-<g  fill="#f5f5ff" stroke="#f6768e" style="stroke-width:1">
-<line x1="107" y1="640" x2="217" y2="606" />
-<line x1="107" y1="640" x2="112" y2="632" />
-<line x1="107" y1="640" x2="116" y2="643" />
-<line x1="107" y1="640" x2="145" y2="650" />
-<line x1="107" y1="640" x2="116" y2="637" />
-<line x1="107" y1="640" x2="113" y2="647" />
-</g>
-<g  fill="#f5f5ff" stroke="#00538a" style="stroke-width:1">
-<line x1="95" y1="443" x2="247" y2="383" />
-<line x1="95" y1="443" x2="100" y2="435" />
-<line x1="95" y1="443" x2="104" y2="445" />
-<line x1="95" y1="443" x2="926" y2="518" />
-<line x1="95" y1="443" x2="103" y2="438" />
-<line x1="95" y1="443" x2="102" y2="449" />
-<line x1="95" y1="443" x2="924" y2="393" />
-<line x1="95" y1="443" x2="102" y2="437" />
-<line x1="95" y1="443" x2="103" y2="448" />
-<line x1="95" y1="443" x2="472" y2="591" />
-<line x1="95" y1="443" x2="104" y2="441" />
-<line x1="95" y1="443" x2="100" y2="451" />
-<line x1="95" y1="443" x2="246" y2="318" />
-<line x1="95" y1="443" x2="97" y2="434" />
-<line x1="95" y1="443" x2="104" y2="443" />
-</g>
-<g  fill="#f5f5ff" stroke="#ff7a5c" style="stroke-width:1">
-<line x1="131" y1="483" x2="924" y2="393" />
-<line x1="131" y1="483" x2="138" y2="477" />
-<line x1="131" y1="483" x2="139" y2="487" />
-<line x1="131" y1="483" x2="472" y2="354" />
-<line x1="131" y1="483" x2="136" y2="475" />
-<line x1="131" y1="483" x2="140" y2="485" />
-</g>
-<g  fill="#f5f5ff" stroke="#53377a" style="stroke-width:1">
-<line x1="89" y1="343" x2="247" y2="383" />
-<line x1="89" y1="343" x2="98" y2="340" />
-<line x1="89" y1="343" x2="95" y2="350" />
-<line x1="89" y1="343" x2="246" y2="342" />
-<line x1="89" y1="343" x2="97" y2="338" />
-<line x1="89" y1="343" x2="97" y2="348" />
-</g>
-<g  fill="#f5f5ff" stroke="#ff8e00" style="stroke-width:1">
-<line x1="148" y1="519" x2="246" y2="491" />
-<line x1="148" y1="519" x2="154" y2="512" />
-<line x1="148" y1="519" x2="157" y2="522" />
-</g>
-<g  fill="#f5f5ff" stroke="#b32851" style="stroke-width:1">
-<line x1="484" y1="763" x2="262" y2="388" />
-<line x1="484" y1="763" x2="475" y2="760" />
-<line x1="484" y1="763" x2="484" y2="754" />
-<line x1="495" y1="768" x2="926" y2="518" />
-<line x1="495" y1="768" x2="499" y2="759" />
-<line x1="495" y1="768" x2="504" y2="769" />
-<line x1="495" y1="768" x2="924" y2="393" />
-<line x1="495" y1="768" x2="497" y2="759" />
-<line x1="495" y1="768" x2="504" y2="768" />
-<line x1="484" y1="763" x2="977" y2="243" />
-<line x1="484" y1="763" x2="485" y2="754" />
-<line x1="484" y1="763" x2="493" y2="762" />
-<line x1="473" y1="768" x2="355" y2="606" />
-<line x1="473" y1="768" x2="464" y2="765" />
-<line x1="473" y1="768" x2="473" y2="759" />
-<line x1="484" y1="763" x2="297" y2="218" />
-<line x1="484" y1="763" x2="476" y2="758" />
-<line x1="484" y1="763" x2="486" y2="754" />
-<line x1="484" y1="763" x2="747" y2="154" />
-<line x1="484" y1="763" x2="482" y2="754" />
-<line x1="484" y1="763" x2="492" y2="758" />
-<line x1="484" y1="763" x2="524" y2="66" />
-<line x1="484" y1="763" x2="479" y2="755" />
-<line x1="484" y1="763" x2="490" y2="756" />
-<line x1="484" y1="763" x2="519" y2="598" />
-<line x1="484" y1="763" x2="480" y2="754" />
-<line x1="484" y1="763" x2="491" y2="757" />
-<line x1="484" y1="763" x2="500" y2="359" />
-<line x1="484" y1="763" x2="479" y2="755" />
-<line x1="484" y1="763" x2="490" y2="756" />
-<line x1="484" y1="763" x2="710" y2="357" />
-<line x1="484" y1="763" x2="483" y2="754" />
-<line x1="484" y1="763" x2="493" y2="759" />
-<line x1="473" y1="768" x2="353" y2="682" />
-<line x1="473" y1="768" x2="464" y2="768" />
-<line x1="473" y1="768" x2="470" y2="759" />
-<line x1="473" y1="768" x2="257" y2="713" />
-<line x1="473" y1="768" x2="464" y2="771" />
-<line x1="473" y1="768" x2="467" y2="761" />
-</g>
-<g  fill="#f5f5ff" stroke="#f4c800" style="stroke-width:1">
-<line x1="528" y1="354" x2="926" y2="518" />
-<line x1="528" y1="354" x2="537" y2="352" />
-<line x1="528" y1="354" x2="533" y2="362" />
-<line x1="528" y1="354" x2="926" y2="518" />
-<line x1="528" y1="354" x2="537" y2="352" />
-<line x1="528" y1="354" x2="533" y2="362" />
-<line x1="528" y1="354" x2="926" y2="518" />
-<line x1="528" y1="354" x2="537" y2="352" />
-<line x1="528" y1="354" x2="533" y2="362" />
-</g>
-<g  fill="#f5f5ff" stroke="#593315" style="stroke-width:1">
-<line x1="742" y1="350" x2="926" y2="518" />
-<line x1="742" y1="350" x2="751" y2="351" />
-<line x1="742" y1="350" x2="744" y2="359" />
-</g>
-<g  fill="#f5f5ff" stroke="#7f180d" style="stroke-width:1">
-<line x1="285" y1="552" x2="926" y2="518" />
-<line x1="285" y1="552" x2="292" y2="546" />
-<line x1="285" y1="552" x2="293" y2="557" />
-</g>
-<g  fill="#f5f5ff" stroke="#f6768e" style="stroke-width:1">
-<line x1="348" y1="213" x2="926" y2="518" />
-<line x1="348" y1="213" x2="357" y2="212" />
-<line x1="348" y1="213" x2="352" y2="221" />
-</g>
-<g  fill="#f5f5ff" stroke="#b32851" style="stroke-width:1">
-<line x1="566" y1="591" x2="926" y2="518" />
-<line x1="566" y1="591" x2="572" y2="584" />
-<line x1="566" y1="591" x2="575" y2="595" />
-</g>
-<g  fill="#f5f5ff" stroke="#ff7a5c" style="stroke-width:1">
-<line x1="369" y1="100" x2="924" y2="393" />
-<line x1="369" y1="100" x2="378" y2="99" />
-<line x1="369" y1="100" x2="373" y2="108" />
-<line x1="369" y1="100" x2="924" y2="393" />
-<line x1="369" y1="100" x2="378" y2="99" />
-<line x1="369" y1="100" x2="373" y2="108" />
-</g>
-<g  fill="#f5f5ff" stroke="#b32851" style="stroke-width:1">
-<line x1="566" y1="591" x2="924" y2="393" />
-<line x1="566" y1="591" x2="570" y2="582" />
-<line x1="566" y1="591" x2="575" y2="592" />
-</g>
-<g  fill="#f5f5ff" stroke="#00538a" style="stroke-width:1">
-<line x1="747" y1="154" x2="952" y2="388" />
-<line x1="747" y1="154" x2="756" y2="156" />
-<line x1="747" y1="154" x2="747" y2="163" />
-<line x1="810" y1="147" x2="924" y2="236" />
-<line x1="810" y1="147" x2="819" y2="147" />
-<line x1="810" y1="147" x2="812" y2="156" />
-</g>
-<g  fill="#f5f5ff" stroke="#232c16" style="stroke-width:1">
-<line x1="304" y1="677" x2="286" y2="611" />
-<line x1="304" y1="677" x2="297" y2="671" />
-<line x1="304" y1="677" x2="307" y2="668" />
-<line x1="304" y1="677" x2="286" y2="611" />
-<line x1="304" y1="677" x2="297" y2="671" />
-<line x1="304" y1="677" x2="307" y2="668" />
-</g>
-<g  fill="#f5f5ff" stroke="#f13a13" style="stroke-width:1">
-<line x1="221" y1="650" x2="217" y2="606" />
-<line x1="221" y1="650" x2="215" y2="643" />
-<line x1="221" y1="650" x2="226" y2="642" />
-</g>
-<g  fill="#f5f5ff" stroke="#232c16" style="stroke-width:1">
-<line x1="304" y1="677" x2="286" y2="611" />
-<line x1="304" y1="677" x2="297" y2="671" />
-<line x1="304" y1="677" x2="307" y2="668" />
-<line x1="304" y1="677" x2="286" y2="611" />
-<line x1="304" y1="677" x2="297" y2="671" />
-<line x1="304" y1="677" x2="307" y2="668" />
-<line x1="304" y1="677" x2="286" y2="611" />
-<line x1="304" y1="677" x2="297" y2="671" />
-<line x1="304" y1="677" x2="307" y2="668" />
-</g>
-<g  fill="#f5f5ff" stroke="#ffb300" style="stroke-width:1">
-<line x1="211" y1="708" x2="286" y2="611" />
-<line x1="211" y1="708" x2="211" y2="699" />
-<line x1="211" y1="708" x2="220" y2="706" />
-</g>
-<g  fill="#f5f5ff" stroke="#00538a" style="stroke-width:1">
-<line x1="684" y1="147" x2="355" y2="606" />
-<line x1="684" y1="147" x2="684" y2="156" />
-<line x1="684" y1="147" x2="675" y2="150" />
-</g>
-<g  fill="#f5f5ff" stroke="#817066" style="stroke-width:1">
-<line x1="286" y1="611" x2="286" y2="601" />
-<line x1="286" y1="611" x2="281" y2="603" />
-<line x1="286" y1="611" x2="291" y2="603" />
-<line x1="286" y1="611" x2="286" y2="601" />
-<line x1="286" y1="611" x2="281" y2="603" />
-<line x1="286" y1="611" x2="291" y2="603" />
-</g>
-<g  fill="#f5f5ff" stroke="#00538a" style="stroke-width:1">
-<line x1="684" y1="147" x2="355" y2="606" />
-<line x1="684" y1="147" x2="684" y2="156" />
-<line x1="684" y1="147" x2="675" y2="150" />
-<line x1="684" y1="147" x2="355" y2="606" />
-<line x1="684" y1="147" x2="684" y2="156" />
-<line x1="684" y1="147" x2="675" y2="150" />
-<line x1="684" y1="147" x2="355" y2="606" />
-<line x1="684" y1="147" x2="684" y2="156" />
-<line x1="684" y1="147" x2="675" y2="150" />
-</g>
-<g  fill="#f5f5ff" stroke="#ff8e00" style="stroke-width:1">
-<line x1="575" y1="59" x2="684" y2="147" />
-<line x1="575" y1="59" x2="584" y2="59" />
-<line x1="575" y1="59" x2="577" y2="68" />
-</g>
-<g  fill="#f5f5ff" stroke="#f6768e" style="stroke-width:1">
-<line x1="348" y1="213" x2="473" y2="59" />
-<line x1="348" y1="213" x2="348" y2="204" />
-<line x1="348" y1="213" x2="357" y2="211" />
-</g>
-<g  fill="#f5f5ff" stroke="#ff7a5c" style="stroke-width:1">
-<line x1="306" y1="107" x2="519" y2="584" />
-<line x1="306" y1="107" x2="314" y2="111" />
-<line x1="306" y1="107" x2="304" y2="116" />
-</g>
-<g  fill="#f5f5ff" stroke="#f6768e" style="stroke-width:1">
-<line x1="348" y1="213" x2="472" y2="354" />
-<line x1="348" y1="213" x2="357" y2="215" />
-<line x1="348" y1="213" x2="348" y2="222" />
-</g>
-<g  fill="#f5f5ff" stroke="#93aa00" style="stroke-width:1">
-<line x1="328" y1="318" x2="472" y2="354" />
-<line x1="328" y1="318" x2="337" y2="315" />
-<line x1="328" y1="318" x2="334" y2="325" />
-</g>
-<g  fill="#f5f5ff" stroke="#ff8e00" style="stroke-width:1">
-<line x1="524" y1="66" x2="710" y2="343" />
-<line x1="524" y1="66" x2="533" y2="69" />
-<line x1="524" y1="66" x2="524" y2="75" />
-</g>
-<g  fill="#f5f5ff" stroke="#93aa00" style="stroke-width:1">
-<line x1="328" y1="318" x2="678" y2="350" />
-<line x1="328" y1="318" x2="336" y2="313" />
-<line x1="328" y1="318" x2="335" y2="324" />
-</g>
-<g  fill="#f5f5ff" stroke="#ff7a5c" style="stroke-width:1">
-<line x1="369" y1="100" x2="678" y2="350" />
-<line x1="369" y1="100" x2="378" y2="100" />
-<line x1="369" y1="100" x2="371" y2="109" />
-</g>
-<g  fill="#f5f5ff" stroke="#f13a13" style="stroke-width:1">
-<line x1="221" y1="650" x2="255" y2="682" />
-<line x1="221" y1="650" x2="230" y2="651" />
-<line x1="221" y1="650" x2="222" y2="659" />
-</g>
-<g  fill="#f5f5ff" stroke="#817066" style="stroke-width:1">
-<line x1="286" y1="611" x2="304" y2="677" />
-<line x1="286" y1="611" x2="293" y2="617" />
-<line x1="286" y1="611" x2="283" y2="620" />
-<line x1="286" y1="611" x2="304" y2="677" />
-<line x1="286" y1="611" x2="293" y2="617" />
-<line x1="286" y1="611" x2="283" y2="620" />
-<line x1="286" y1="611" x2="211" y2="708" />
-<line x1="286" y1="611" x2="286" y2="620" />
-<line x1="286" y1="611" x2="277" y2="613" />
-<line x1="286" y1="611" x2="211" y2="708" />
-<line x1="286" y1="611" x2="286" y2="620" />
-<line x1="286" y1="611" x2="277" y2="613" />
-</g>
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="249" y="387">parse</text>
-<text x="928" y="522">visitTranslationUnit</text>
-<text x="248" y="346">visitTranslationUnitForIncludes</text>
-<text x="926" y="397">visitRecord</text>
-<text x="926" y="238">visitFunctionAddArgs</text>
-<text x="219" y="610">visitFunctionAddStatements</text>
-<text x="246" y="776">visitFunctionAddDupHashes</text>
-<text x="248" y="217">createOrGetClassRef</text>
-<text x="686" y="149">createOrGetBaseTypeRef</text>
-<text x="245" y="102">createOrGetDataTypeRef</text>
-<text x="244" y="43">createOrGetDataTypeRef</text>
-<text x="475" y="61">createOrGetTypedef</text>
-<text x="474" y="593">addOperationParts</text>
-<text x="474" y="358">addRecord</text>
-<text x="247" y="556">addVar</text>
-<text x="248" y="322">addClassFileLoc</text>
-<text x="680" y="352">addTypedef</text>
-<text x="147" y="652">buildCondExpr</text>
-<text x="257" y="686">addCondStatement</text>
-<text x="167" y="717">addElseStatement</text>
-<text x="248" y="493">CppParser</text>
-<text x="23" y="88">mModelData</text>
-<text x="23" y="783">mDupHashFile</text>
-<text x="25" y="395">mClassifier</text>
-<text x="24" y="581">mOperation</text>
-<text x="25" y="705">mStatements</text>
-<text x="23" y="644">mSwitchContexts</text>
-<text x="25" y="445">mTopParseFn</text>
-<text x="25" y="487">mClassMemberAccess</text>
-<text x="25" y="345">mIncDirDeps</text>
-<text x="24" y="523">mStatementRecurseLevel</text>
-<text x="475" y="772">this</text>
-</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="1035"
+   height="793"
+   id="svg2"
+   inkscape:version="0.48.1 "
+   sodipodi:docname="PortionParserOrig.svg">
+  <metadata
+     id="metadata758">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs756" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1158"
+     inkscape:window-height="918"
+     id="namedview754"
+     showgrid="false"
+     inkscape:zoom="0.9309199"
+     inkscape:cx="517.5"
+     inkscape:cy="396.5"
+     inkscape:window-x="346"
+     inkscape:window-y="88"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="15"
+     sodipodi:cy="383"
+     sodipodi:cx="262"
+     id="ellipse6"
+     ry="5"
+     rx="15"
+     cy="383"
+     cx="262" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="48"
+     sodipodi:cy="518"
+     sodipodi:cx="974"
+     id="ellipse8"
+     ry="5"
+     rx="48"
+     cy="518"
+     cx="974" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="75"
+     sodipodi:cy="342"
+     sodipodi:cx="321"
+     id="ellipse10"
+     ry="5"
+     rx="75"
+     cy="342"
+     cx="321" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="28"
+     sodipodi:cy="393"
+     sodipodi:cx="952"
+     id="ellipse12"
+     ry="5"
+     rx="28"
+     cy="393"
+     cx="952" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="53"
+     sodipodi:cy="236"
+     sodipodi:cx="977"
+     id="ellipse14"
+     ry="7"
+     rx="53"
+     cy="236"
+     cx="977" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="69"
+     sodipodi:cy="606"
+     sodipodi:cx="286"
+     id="ellipse16"
+     ry="5"
+     rx="69"
+     cy="606"
+     cx="286" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="69"
+     sodipodi:cy="774"
+     sodipodi:cx="313"
+     id="ellipse18"
+     ry="7"
+     rx="69"
+     cy="774"
+     cx="313" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="51"
+     sodipodi:cy="213"
+     sodipodi:cx="297"
+     id="ellipse20"
+     ry="5"
+     rx="51"
+     cy="213"
+     cx="297" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="63"
+     sodipodi:cy="147"
+     sodipodi:cx="747"
+     id="ellipse22"
+     ry="7"
+     rx="63"
+     cy="147"
+     cx="747" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="63"
+     sodipodi:cy="100"
+     sodipodi:cx="306"
+     id="ellipse24"
+     ry="7"
+     rx="63"
+     cy="100"
+     cx="306" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="63"
+     sodipodi:cy="41"
+     sodipodi:cx="305"
+     id="ellipse26"
+     ry="7"
+     rx="63"
+     cy="41"
+     cx="305" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="51"
+     sodipodi:cy="59"
+     sodipodi:cx="524"
+     id="ellipse28"
+     ry="7"
+     rx="51"
+     cy="59"
+     cx="524" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="47"
+     sodipodi:cy="591"
+     sodipodi:cx="519"
+     id="ellipse30"
+     ry="7"
+     rx="47"
+     cy="591"
+     cx="519" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="28"
+     sodipodi:cy="354"
+     sodipodi:cx="500"
+     id="ellipse32"
+     ry="5"
+     rx="28"
+     cy="354"
+     cx="500" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="20"
+     sodipodi:cy="552"
+     sodipodi:cx="265"
+     id="ellipse34"
+     ry="5"
+     rx="20"
+     cy="552"
+     cx="265" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="41"
+     sodipodi:cy="318"
+     sodipodi:cx="287"
+     id="ellipse36"
+     ry="5"
+     rx="41"
+     cy="318"
+     cx="287" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="32"
+     sodipodi:cy="350"
+     sodipodi:cx="710"
+     id="ellipse38"
+     ry="7"
+     rx="32"
+     cy="350"
+     cx="710" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="38"
+     sodipodi:cy="650"
+     sodipodi:cx="183"
+     id="ellipse40"
+     ry="7"
+     rx="38"
+     cy="650"
+     cx="183" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="49"
+     sodipodi:cy="682"
+     sodipodi:cx="304"
+     id="ellipse42"
+     ry="5"
+     rx="49"
+     cy="682"
+     cx="304" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="5"
+     sodipodi:rx="46"
+     sodipodi:cy="713"
+     sodipodi:cx="211"
+     id="ellipse44"
+     ry="5"
+     rx="46"
+     cy="713"
+     cx="211" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     sodipodi:ry="7"
+     sodipodi:rx="27"
+     sodipodi:cy="491"
+     sodipodi:cx="273"
+     id="ellipse46"
+     ry="7"
+     rx="27"
+     cy="491"
+     cx="273" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect48"
+     height="11"
+     width="66"
+     y="79"
+     x="21" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect50"
+     height="14"
+     width="75"
+     y="774"
+     x="21" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect52"
+     height="11"
+     width="57"
+     y="386"
+     x="23" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect54"
+     height="14"
+     width="62"
+     y="572"
+     x="22" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect56"
+     height="11"
+     width="68"
+     y="696"
+     x="23" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect58"
+     height="11"
+     width="86"
+     y="635"
+     x="21" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect60"
+     height="14"
+     width="72"
+     y="436"
+     x="23" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect62"
+     height="11"
+     width="109"
+     y="478"
+     x="23" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect64"
+     height="14"
+     width="66"
+     y="336"
+     x="23" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect66"
+     height="11"
+     width="126"
+     y="514"
+     x="22" />
+  <g
+     id="g70"
+     style="fill:#f5f5ff;stroke:#ff6800;stroke-width:1">
+    <line
+       id="line72"
+       y2="378"
+       x2="262"
+       y1="89"
+       x1="54" />
+    <line
+       id="line74"
+       y2="92"
+       x2="63"
+       y1="89"
+       x1="54" />
+    <line
+       id="line76"
+       y2="98"
+       x2="54"
+       y1="89"
+       x1="54" />
+    <line
+       id="line78"
+       y2="518"
+       x2="926"
+       y1="84"
+       x1="87" />
+    <line
+       id="line80"
+       y2="83"
+       x2="96"
+       y1="84"
+       x1="87" />
+    <line
+       id="line82"
+       y2="92"
+       x2="91"
+       y1="84"
+       x1="87" />
+    <line
+       id="line84"
+       y2="393"
+       x2="924"
+       y1="84"
+       x1="87" />
+    <line
+       id="line86"
+       y2="82"
+       x2="96"
+       y1="84"
+       x1="87" />
+    <line
+       id="line88"
+       y2="92"
+       x2="92"
+       y1="84"
+       x1="87" />
+    <line
+       id="line90"
+       y2="213"
+       x2="246"
+       y1="84"
+       x1="87" />
+    <line
+       id="line92"
+       y2="84"
+       x2="96"
+       y1="84"
+       x1="87" />
+    <line
+       id="line94"
+       y2="93"
+       x2="89"
+       y1="84"
+       x1="87" />
+    <line
+       id="line96"
+       y2="147"
+       x2="684"
+       y1="84"
+       x1="87" />
+    <line
+       id="line98"
+       y2="80"
+       x2="95"
+       y1="84"
+       x1="87" />
+    <line
+       id="line100"
+       y2="90"
+       x2="94"
+       y1="84"
+       x1="87" />
+    <line
+       id="line102"
+       y2="100"
+       x2="243"
+       y1="84"
+       x1="87" />
+    <line
+       id="line104"
+       y2="79"
+       x2="95"
+       y1="84"
+       x1="87" />
+    <line
+       id="line106"
+       y2="90"
+       x2="94"
+       y1="84"
+       x1="87" />
+    <line
+       id="line108"
+       y2="100"
+       x2="243"
+       y1="84"
+       x1="87" />
+    <line
+       id="line110"
+       y2="79"
+       x2="95"
+       y1="84"
+       x1="87" />
+    <line
+       id="line112"
+       y2="90"
+       x2="94"
+       y1="84"
+       x1="87" />
+    <line
+       id="line114"
+       y2="59"
+       x2="473"
+       y1="84"
+       x1="87" />
+    <line
+       id="line116"
+       y2="78"
+       x2="94"
+       y1="84"
+       x1="87" />
+    <line
+       id="line118"
+       y2="89"
+       x2="95"
+       y1="84"
+       x1="87" />
+    <line
+       id="line120"
+       y2="313"
+       x2="287"
+       y1="89"
+       x1="54" />
+    <line
+       id="line122"
+       y2="90"
+       x2="63"
+       y1="89"
+       x1="54" />
+    <line
+       id="line124"
+       y2="98"
+       x2="55"
+       y1="89"
+       x1="54" />
+    <line
+       id="line126"
+       y2="350"
+       x2="678"
+       y1="84"
+       x1="87" />
+    <line
+       id="line128"
+       y2="82"
+       x2="96"
+       y1="84"
+       x1="87" />
+    <line
+       id="line130"
+       y2="92"
+       x2="91"
+       y1="84"
+       x1="87" />
+  </g>
+  <g
+     id="g132"
+     style="fill:#f5f5ff;stroke:#a6bdd7;stroke-width:1">
+    <line
+       id="line134"
+       y2="388"
+       x2="262"
+       y1="774"
+       x1="58" />
+    <line
+       id="line136"
+       y2="765"
+       x2="57"
+       y1="774"
+       x1="58" />
+    <line
+       id="line138"
+       y2="770"
+       x2="66"
+       y1="774"
+       x1="58" />
+    <line
+       id="line140"
+       y2="774"
+       x2="244"
+       y1="781"
+       x1="95" />
+    <line
+       id="line142"
+       y2="775"
+       x2="102"
+       y1="781"
+       x1="95" />
+    <line
+       id="line144"
+       y2="786"
+       x2="103"
+       y1="781"
+       x1="95" />
+    <line
+       id="line146"
+       y2="591"
+       x2="472"
+       y1="781"
+       x1="95" />
+    <line
+       id="line148"
+       y2="773"
+       x2="99"
+       y1="781"
+       x1="95" />
+    <line
+       id="line150"
+       y2="782"
+       x2="104"
+       y1="781"
+       x1="95" />
+  </g>
+  <g
+     id="g152"
+     style="fill:#f5f5ff;stroke:#cea262;stroke-width:1">
+    <line
+       id="line154"
+       y2="518"
+       x2="926"
+       y1="391"
+       x1="79" />
+    <line
+       id="line156"
+       y2="387"
+       x2="87"
+       y1="391"
+       x1="79" />
+    <line
+       id="line158"
+       y2="398"
+       x2="86"
+       y1="391"
+       x1="79" />
+    <line
+       id="line160"
+       y2="393"
+       x2="924"
+       y1="391"
+       x1="79" />
+    <line
+       id="line162"
+       y2="386"
+       x2="87"
+       y1="391"
+       x1="79" />
+    <line
+       id="line164"
+       y2="396"
+       x2="87"
+       y1="391"
+       x1="79" />
+    <line
+       id="line166"
+       y2="354"
+       x2="472"
+       y1="391"
+       x1="79" />
+    <line
+       id="line168"
+       y2="385"
+       x2="86"
+       y1="391"
+       x1="79" />
+    <line
+       id="line170"
+       y2="396"
+       x2="87"
+       y1="391"
+       x1="79" />
+    <line
+       id="line172"
+       y2="491"
+       x2="246"
+       y1="391"
+       x1="79" />
+    <line
+       id="line174"
+       y2="391"
+       x2="88"
+       y1="391"
+       x1="79" />
+    <line
+       id="line176"
+       y2="400"
+       x2="82"
+       y1="391"
+       x1="79" />
+  </g>
+  <g
+     id="g178"
+     style="fill:#f5f5ff;stroke:#817066;stroke-width:1">
+    <line
+       id="line180"
+       y2="518"
+       x2="926"
+       y1="579"
+       x1="84" />
+    <line
+       id="line182"
+       y2="573"
+       x2="91"
+       y1="579"
+       x1="84" />
+    <line
+       id="line184"
+       y2="584"
+       x2="92"
+       y1="579"
+       x1="84" />
+    <line
+       id="line186"
+       y2="393"
+       x2="924"
+       y1="579"
+       x1="84" />
+    <line
+       id="line188"
+       y2="572"
+       x2="90"
+       y1="579"
+       x1="84" />
+    <line
+       id="line190"
+       y2="582"
+       x2="93"
+       y1="579"
+       x1="84" />
+    <line
+       id="line192"
+       y2="236"
+       x2="924"
+       y1="579"
+       x1="84" />
+    <line
+       id="line194"
+       y2="571"
+       x2="89"
+       y1="579"
+       x1="84" />
+    <line
+       id="line196"
+       y2="581"
+       x2="93"
+       y1="579"
+       x1="84" />
+    <line
+       id="line198"
+       y2="606"
+       x2="217"
+       y1="579"
+       x1="84" />
+    <line
+       id="line200"
+       y2="575"
+       x2="93"
+       y1="579"
+       x1="84" />
+    <line
+       id="line202"
+       y2="586"
+       x2="90"
+       y1="579"
+       x1="84" />
+    <line
+       id="line204"
+       y2="591"
+       x2="472"
+       y1="579"
+       x1="84" />
+    <line
+       id="line206"
+       y2="574"
+       x2="92"
+       y1="579"
+       x1="84" />
+    <line
+       id="line208"
+       y2="585"
+       x2="91"
+       y1="579"
+       x1="84" />
+    <line
+       id="line210"
+       y2="491"
+       x2="246"
+       y1="579"
+       x1="84" />
+    <line
+       id="line212"
+       y2="570"
+       x2="88"
+       y1="579"
+       x1="84" />
+    <line
+       id="line214"
+       y2="580"
+       x2="93"
+       y1="579"
+       x1="84" />
+  </g>
+  <g
+     id="g216"
+     style="fill:#f5f5ff;stroke:#007d34;stroke-width:1">
+    <line
+       id="line218"
+       y2="606"
+       x2="217"
+       y1="701"
+       x1="91" />
+    <line
+       id="line220"
+       y2="692"
+       x2="93"
+       y1="701"
+       x1="91" />
+    <line
+       id="line222"
+       y2="701"
+       x2="100"
+       y1="701"
+       x1="91" />
+    <line
+       id="line224"
+       y2="591"
+       x2="472"
+       y1="701"
+       x1="91" />
+    <line
+       id="line226"
+       y2="694"
+       x2="97"
+       y1="701"
+       x1="91" />
+    <line
+       id="line228"
+       y2="704"
+       x2="100"
+       y1="701"
+       x1="91" />
+    <line
+       id="line230"
+       y2="682"
+       x2="255"
+       y1="701"
+       x1="91" />
+    <line
+       id="line232"
+       y2="695"
+       x2="98"
+       y1="701"
+       x1="91" />
+    <line
+       id="line234"
+       y2="705"
+       x2="99"
+       y1="701"
+       x1="91" />
+    <line
+       id="line236"
+       y2="713"
+       x2="165"
+       y1="701"
+       x1="91" />
+    <line
+       id="line238"
+       y2="697"
+       x2="99"
+       y1="701"
+       x1="91" />
+    <line
+       id="line240"
+       y2="708"
+       x2="98"
+       y1="701"
+       x1="91" />
+    <line
+       id="line242"
+       y2="491"
+       x2="246"
+       y1="701"
+       x1="91" />
+    <line
+       id="line244"
+       y2="692"
+       x2="91"
+       y1="701"
+       x1="91" />
+    <line
+       id="line246"
+       y2="698"
+       x2="100"
+       y1="701"
+       x1="91" />
+  </g>
+  <g
+     id="g248"
+     style="fill:#f5f5ff;stroke:#f6768e;stroke-width:1">
+    <line
+       id="line250"
+       y2="606"
+       x2="217"
+       y1="640"
+       x1="107" />
+    <line
+       id="line252"
+       y2="632"
+       x2="112"
+       y1="640"
+       x1="107" />
+    <line
+       id="line254"
+       y2="643"
+       x2="116"
+       y1="640"
+       x1="107" />
+    <line
+       id="line256"
+       y2="650"
+       x2="145"
+       y1="640"
+       x1="107" />
+    <line
+       id="line258"
+       y2="637"
+       x2="116"
+       y1="640"
+       x1="107" />
+    <line
+       id="line260"
+       y2="647"
+       x2="113"
+       y1="640"
+       x1="107" />
+  </g>
+  <g
+     id="g262"
+     style="fill:#f5f5ff;stroke:#00538a;stroke-width:1">
+    <line
+       id="line264"
+       y2="383"
+       x2="247"
+       y1="443"
+       x1="95" />
+    <line
+       id="line266"
+       y2="435"
+       x2="100"
+       y1="443"
+       x1="95" />
+    <line
+       id="line268"
+       y2="445"
+       x2="104"
+       y1="443"
+       x1="95" />
+    <line
+       id="line270"
+       y2="518"
+       x2="926"
+       y1="443"
+       x1="95" />
+    <line
+       id="line272"
+       y2="438"
+       x2="103"
+       y1="443"
+       x1="95" />
+    <line
+       id="line274"
+       y2="449"
+       x2="102"
+       y1="443"
+       x1="95" />
+    <line
+       id="line276"
+       y2="393"
+       x2="924"
+       y1="443"
+       x1="95" />
+    <line
+       id="line278"
+       y2="437"
+       x2="102"
+       y1="443"
+       x1="95" />
+    <line
+       id="line280"
+       y2="448"
+       x2="103"
+       y1="443"
+       x1="95" />
+    <line
+       id="line282"
+       y2="591"
+       x2="472"
+       y1="443"
+       x1="95" />
+    <line
+       id="line284"
+       y2="441"
+       x2="104"
+       y1="443"
+       x1="95" />
+    <line
+       id="line286"
+       y2="451"
+       x2="100"
+       y1="443"
+       x1="95" />
+    <line
+       id="line288"
+       y2="318"
+       x2="246"
+       y1="443"
+       x1="95" />
+    <line
+       id="line290"
+       y2="434"
+       x2="97"
+       y1="443"
+       x1="95" />
+    <line
+       id="line292"
+       y2="443"
+       x2="104"
+       y1="443"
+       x1="95" />
+  </g>
+  <g
+     id="g294"
+     style="fill:#f5f5ff;stroke:#ff7a5c;stroke-width:1">
+    <line
+       id="line296"
+       y2="393"
+       x2="924"
+       y1="483"
+       x1="131" />
+    <line
+       id="line298"
+       y2="477"
+       x2="138"
+       y1="483"
+       x1="131" />
+    <line
+       id="line300"
+       y2="487"
+       x2="139"
+       y1="483"
+       x1="131" />
+    <line
+       id="line302"
+       y2="354"
+       x2="472"
+       y1="483"
+       x1="131" />
+    <line
+       id="line304"
+       y2="475"
+       x2="136"
+       y1="483"
+       x1="131" />
+    <line
+       id="line306"
+       y2="485"
+       x2="140"
+       y1="483"
+       x1="131" />
+  </g>
+  <g
+     id="g308"
+     style="fill:#f5f5ff;stroke:#53377a;stroke-width:1">
+    <line
+       id="line310"
+       y2="383"
+       x2="247"
+       y1="343"
+       x1="89" />
+    <line
+       id="line312"
+       y2="340"
+       x2="98"
+       y1="343"
+       x1="89" />
+    <line
+       id="line314"
+       y2="350"
+       x2="95"
+       y1="343"
+       x1="89" />
+    <line
+       id="line316"
+       y2="342"
+       x2="246"
+       y1="343"
+       x1="89" />
+    <line
+       id="line318"
+       y2="338"
+       x2="97"
+       y1="343"
+       x1="89" />
+    <line
+       id="line320"
+       y2="348"
+       x2="97"
+       y1="343"
+       x1="89" />
+  </g>
+  <g
+     id="g322"
+     style="fill:#f5f5ff;stroke:#ff8e00;stroke-width:1">
+    <line
+       id="line324"
+       y2="491"
+       x2="246"
+       y1="519"
+       x1="148" />
+    <line
+       id="line326"
+       y2="512"
+       x2="154"
+       y1="519"
+       x1="148" />
+    <line
+       id="line328"
+       y2="522"
+       x2="157"
+       y1="519"
+       x1="148" />
+  </g>
+  <g
+     id="g410"
+     style="fill:#f5f5ff;stroke:#f4c800;stroke-width:1">
+    <line
+       id="line412"
+       y2="518"
+       x2="926"
+       y1="354"
+       x1="528" />
+    <line
+       id="line414"
+       y2="352"
+       x2="537"
+       y1="354"
+       x1="528" />
+    <line
+       id="line416"
+       y2="362"
+       x2="533"
+       y1="354"
+       x1="528" />
+    <line
+       id="line418"
+       y2="518"
+       x2="926"
+       y1="354"
+       x1="528" />
+    <line
+       id="line420"
+       y2="352"
+       x2="537"
+       y1="354"
+       x1="528" />
+    <line
+       id="line422"
+       y2="362"
+       x2="533"
+       y1="354"
+       x1="528" />
+    <line
+       id="line424"
+       y2="518"
+       x2="926"
+       y1="354"
+       x1="528" />
+    <line
+       id="line426"
+       y2="352"
+       x2="537"
+       y1="354"
+       x1="528" />
+    <line
+       id="line428"
+       y2="362"
+       x2="533"
+       y1="354"
+       x1="528" />
+  </g>
+  <g
+     id="g430"
+     style="fill:#f5f5ff;stroke:#593315;stroke-width:1">
+    <line
+       id="line432"
+       y2="518"
+       x2="926"
+       y1="350"
+       x1="742" />
+    <line
+       id="line434"
+       y2="351"
+       x2="751"
+       y1="350"
+       x1="742" />
+    <line
+       id="line436"
+       y2="359"
+       x2="744"
+       y1="350"
+       x1="742" />
+  </g>
+  <g
+     id="g438"
+     style="fill:#f5f5ff;stroke:#7f180d;stroke-width:1">
+    <line
+       id="line440"
+       y2="518"
+       x2="926"
+       y1="552"
+       x1="285" />
+    <line
+       id="line442"
+       y2="546"
+       x2="292"
+       y1="552"
+       x1="285" />
+    <line
+       id="line444"
+       y2="557"
+       x2="293"
+       y1="552"
+       x1="285" />
+  </g>
+  <g
+     id="g446"
+     style="fill:#f5f5ff;stroke:#f6768e;stroke-width:1">
+    <line
+       id="line448"
+       y2="518"
+       x2="926"
+       y1="213"
+       x1="348" />
+    <line
+       id="line450"
+       y2="212"
+       x2="357"
+       y1="213"
+       x1="348" />
+    <line
+       id="line452"
+       y2="221"
+       x2="352"
+       y1="213"
+       x1="348" />
+  </g>
+  <g
+     id="g454"
+     style="fill:#f5f5ff;stroke:#b32851;stroke-width:1">
+    <line
+       id="line456"
+       y2="518"
+       x2="926"
+       y1="591"
+       x1="566" />
+    <line
+       id="line458"
+       y2="584"
+       x2="572"
+       y1="591"
+       x1="566" />
+    <line
+       id="line460"
+       y2="595"
+       x2="575"
+       y1="591"
+       x1="566" />
+  </g>
+  <g
+     id="g462"
+     style="fill:#f5f5ff;stroke:#ff7a5c;stroke-width:1">
+    <line
+       id="line464"
+       y2="393"
+       x2="924"
+       y1="100"
+       x1="369" />
+    <line
+       id="line466"
+       y2="99"
+       x2="378"
+       y1="100"
+       x1="369" />
+    <line
+       id="line468"
+       y2="108"
+       x2="373"
+       y1="100"
+       x1="369" />
+    <line
+       id="line470"
+       y2="393"
+       x2="924"
+       y1="100"
+       x1="369" />
+    <line
+       id="line472"
+       y2="99"
+       x2="378"
+       y1="100"
+       x1="369" />
+    <line
+       id="line474"
+       y2="108"
+       x2="373"
+       y1="100"
+       x1="369" />
+  </g>
+  <g
+     id="g476"
+     style="fill:#f5f5ff;stroke:#b32851;stroke-width:1">
+    <line
+       id="line478"
+       y2="393"
+       x2="924"
+       y1="591"
+       x1="566" />
+    <line
+       id="line480"
+       y2="582"
+       x2="570"
+       y1="591"
+       x1="566" />
+    <line
+       id="line482"
+       y2="592"
+       x2="575"
+       y1="591"
+       x1="566" />
+  </g>
+  <g
+     id="g484"
+     style="fill:#f5f5ff;stroke:#00538a;stroke-width:1">
+    <line
+       id="line486"
+       y2="388"
+       x2="952"
+       y1="154"
+       x1="747" />
+    <line
+       id="line488"
+       y2="156"
+       x2="756"
+       y1="154"
+       x1="747" />
+    <line
+       id="line490"
+       y2="163"
+       x2="747"
+       y1="154"
+       x1="747" />
+    <line
+       id="line492"
+       y2="236"
+       x2="924"
+       y1="147"
+       x1="810" />
+    <line
+       id="line494"
+       y2="147"
+       x2="819"
+       y1="147"
+       x1="810" />
+    <line
+       id="line496"
+       y2="156"
+       x2="812"
+       y1="147"
+       x1="810" />
+  </g>
+  <g
+     id="g498"
+     style="fill:#f5f5ff;stroke:#232c16;stroke-width:1">
+    <line
+       id="line500"
+       y2="611"
+       x2="286"
+       y1="677"
+       x1="304" />
+    <line
+       id="line502"
+       y2="671"
+       x2="297"
+       y1="677"
+       x1="304" />
+    <line
+       id="line504"
+       y2="668"
+       x2="307"
+       y1="677"
+       x1="304" />
+    <line
+       id="line506"
+       y2="611"
+       x2="286"
+       y1="677"
+       x1="304" />
+    <line
+       id="line508"
+       y2="671"
+       x2="297"
+       y1="677"
+       x1="304" />
+    <line
+       id="line510"
+       y2="668"
+       x2="307"
+       y1="677"
+       x1="304" />
+  </g>
+  <g
+     id="g512"
+     style="fill:#f5f5ff;stroke:#f13a13;stroke-width:1">
+    <line
+       id="line514"
+       y2="606"
+       x2="217"
+       y1="650"
+       x1="221" />
+    <line
+       id="line516"
+       y2="643"
+       x2="215"
+       y1="650"
+       x1="221" />
+    <line
+       id="line518"
+       y2="642"
+       x2="226"
+       y1="650"
+       x1="221" />
+  </g>
+  <g
+     id="g520"
+     style="fill:#f5f5ff;stroke:#232c16;stroke-width:1">
+    <line
+       id="line522"
+       y2="611"
+       x2="286"
+       y1="677"
+       x1="304" />
+    <line
+       id="line524"
+       y2="671"
+       x2="297"
+       y1="677"
+       x1="304" />
+    <line
+       id="line526"
+       y2="668"
+       x2="307"
+       y1="677"
+       x1="304" />
+    <line
+       id="line528"
+       y2="611"
+       x2="286"
+       y1="677"
+       x1="304" />
+    <line
+       id="line530"
+       y2="671"
+       x2="297"
+       y1="677"
+       x1="304" />
+    <line
+       id="line532"
+       y2="668"
+       x2="307"
+       y1="677"
+       x1="304" />
+    <line
+       id="line534"
+       y2="611"
+       x2="286"
+       y1="677"
+       x1="304" />
+    <line
+       id="line536"
+       y2="671"
+       x2="297"
+       y1="677"
+       x1="304" />
+    <line
+       id="line538"
+       y2="668"
+       x2="307"
+       y1="677"
+       x1="304" />
+  </g>
+  <g
+     id="g540"
+     style="fill:#f5f5ff;stroke:#ffb300;stroke-width:1">
+    <line
+       id="line542"
+       y2="611"
+       x2="286"
+       y1="708"
+       x1="211" />
+    <line
+       id="line544"
+       y2="699"
+       x2="211"
+       y1="708"
+       x1="211" />
+    <line
+       id="line546"
+       y2="706"
+       x2="220"
+       y1="708"
+       x1="211" />
+  </g>
+  <g
+     id="g548"
+     style="fill:#f5f5ff;stroke:#00538a;stroke-width:1">
+    <line
+       id="line550"
+       y2="606"
+       x2="355"
+       y1="147"
+       x1="684" />
+    <line
+       id="line552"
+       y2="156"
+       x2="684"
+       y1="147"
+       x1="684" />
+    <line
+       id="line554"
+       y2="150"
+       x2="675"
+       y1="147"
+       x1="684" />
+  </g>
+  <g
+     id="g556"
+     style="fill:#f5f5ff;stroke:#817066;stroke-width:1">
+    <line
+       id="line558"
+       y2="601"
+       x2="286"
+       y1="611"
+       x1="286" />
+    <line
+       id="line560"
+       y2="603"
+       x2="281"
+       y1="611"
+       x1="286" />
+    <line
+       id="line562"
+       y2="603"
+       x2="291"
+       y1="611"
+       x1="286" />
+    <line
+       id="line564"
+       y2="601"
+       x2="286"
+       y1="611"
+       x1="286" />
+    <line
+       id="line566"
+       y2="603"
+       x2="281"
+       y1="611"
+       x1="286" />
+    <line
+       id="line568"
+       y2="603"
+       x2="291"
+       y1="611"
+       x1="286" />
+  </g>
+  <g
+     id="g570"
+     style="fill:#f5f5ff;stroke:#00538a;stroke-width:1">
+    <line
+       id="line572"
+       y2="606"
+       x2="355"
+       y1="147"
+       x1="684" />
+    <line
+       id="line574"
+       y2="156"
+       x2="684"
+       y1="147"
+       x1="684" />
+    <line
+       id="line576"
+       y2="150"
+       x2="675"
+       y1="147"
+       x1="684" />
+    <line
+       id="line578"
+       y2="606"
+       x2="355"
+       y1="147"
+       x1="684" />
+    <line
+       id="line580"
+       y2="156"
+       x2="684"
+       y1="147"
+       x1="684" />
+    <line
+       id="line582"
+       y2="150"
+       x2="675"
+       y1="147"
+       x1="684" />
+    <line
+       id="line584"
+       y2="606"
+       x2="355"
+       y1="147"
+       x1="684" />
+    <line
+       id="line586"
+       y2="156"
+       x2="684"
+       y1="147"
+       x1="684" />
+    <line
+       id="line588"
+       y2="150"
+       x2="675"
+       y1="147"
+       x1="684" />
+  </g>
+  <g
+     id="g590"
+     style="fill:#f5f5ff;stroke:#ff8e00;stroke-width:1">
+    <line
+       id="line592"
+       y2="147"
+       x2="684"
+       y1="59"
+       x1="575" />
+    <line
+       id="line594"
+       y2="59"
+       x2="584"
+       y1="59"
+       x1="575" />
+    <line
+       id="line596"
+       y2="68"
+       x2="577"
+       y1="59"
+       x1="575" />
+  </g>
+  <g
+     id="g598"
+     style="fill:#f5f5ff;stroke:#f6768e;stroke-width:1">
+    <line
+       id="line600"
+       y2="59"
+       x2="473"
+       y1="213"
+       x1="348" />
+    <line
+       id="line602"
+       y2="204"
+       x2="348"
+       y1="213"
+       x1="348" />
+    <line
+       id="line604"
+       y2="211"
+       x2="357"
+       y1="213"
+       x1="348" />
+  </g>
+  <g
+     id="g606"
+     style="fill:#f5f5ff;stroke:#ff7a5c;stroke-width:1">
+    <line
+       id="line608"
+       y2="584"
+       x2="519"
+       y1="107"
+       x1="306" />
+    <line
+       id="line610"
+       y2="111"
+       x2="314"
+       y1="107"
+       x1="306" />
+    <line
+       id="line612"
+       y2="116"
+       x2="304"
+       y1="107"
+       x1="306" />
+  </g>
+  <g
+     id="g614"
+     style="fill:#f5f5ff;stroke:#f6768e;stroke-width:1">
+    <line
+       id="line616"
+       y2="354"
+       x2="472"
+       y1="213"
+       x1="348" />
+    <line
+       id="line618"
+       y2="215"
+       x2="357"
+       y1="213"
+       x1="348" />
+    <line
+       id="line620"
+       y2="222"
+       x2="348"
+       y1="213"
+       x1="348" />
+  </g>
+  <g
+     id="g622"
+     style="fill:#f5f5ff;stroke:#93aa00;stroke-width:1">
+    <line
+       id="line624"
+       y2="354"
+       x2="472"
+       y1="318"
+       x1="328" />
+    <line
+       id="line626"
+       y2="315"
+       x2="337"
+       y1="318"
+       x1="328" />
+    <line
+       id="line628"
+       y2="325"
+       x2="334"
+       y1="318"
+       x1="328" />
+  </g>
+  <g
+     id="g630"
+     style="fill:#f5f5ff;stroke:#ff8e00;stroke-width:1">
+    <line
+       id="line632"
+       y2="343"
+       x2="710"
+       y1="66"
+       x1="524" />
+    <line
+       id="line634"
+       y2="69"
+       x2="533"
+       y1="66"
+       x1="524" />
+    <line
+       id="line636"
+       y2="75"
+       x2="524"
+       y1="66"
+       x1="524" />
+  </g>
+  <g
+     id="g638"
+     style="fill:#f5f5ff;stroke:#93aa00;stroke-width:1">
+    <line
+       id="line640"
+       y2="350"
+       x2="678"
+       y1="318"
+       x1="328" />
+    <line
+       id="line642"
+       y2="313"
+       x2="336"
+       y1="318"
+       x1="328" />
+    <line
+       id="line644"
+       y2="324"
+       x2="335"
+       y1="318"
+       x1="328" />
+  </g>
+  <g
+     id="g646"
+     style="fill:#f5f5ff;stroke:#ff7a5c;stroke-width:1">
+    <line
+       id="line648"
+       y2="350"
+       x2="678"
+       y1="100"
+       x1="369" />
+    <line
+       id="line650"
+       y2="100"
+       x2="378"
+       y1="100"
+       x1="369" />
+    <line
+       id="line652"
+       y2="109"
+       x2="371"
+       y1="100"
+       x1="369" />
+  </g>
+  <g
+     id="g654"
+     style="fill:#f5f5ff;stroke:#f13a13;stroke-width:1">
+    <line
+       id="line656"
+       y2="682"
+       x2="255"
+       y1="650"
+       x1="221" />
+    <line
+       id="line658"
+       y2="651"
+       x2="230"
+       y1="650"
+       x1="221" />
+    <line
+       id="line660"
+       y2="659"
+       x2="222"
+       y1="650"
+       x1="221" />
+  </g>
+  <g
+     id="g662"
+     style="fill:#f5f5ff;stroke:#817066;stroke-width:1">
+    <line
+       id="line664"
+       y2="677"
+       x2="304"
+       y1="611"
+       x1="286" />
+    <line
+       id="line666"
+       y2="617"
+       x2="293"
+       y1="611"
+       x1="286" />
+    <line
+       id="line668"
+       y2="620"
+       x2="283"
+       y1="611"
+       x1="286" />
+    <line
+       id="line670"
+       y2="677"
+       x2="304"
+       y1="611"
+       x1="286" />
+    <line
+       id="line672"
+       y2="617"
+       x2="293"
+       y1="611"
+       x1="286" />
+    <line
+       id="line674"
+       y2="620"
+       x2="283"
+       y1="611"
+       x1="286" />
+    <line
+       id="line676"
+       y2="708"
+       x2="211"
+       y1="611"
+       x1="286" />
+    <line
+       id="line678"
+       y2="620"
+       x2="286"
+       y1="611"
+       x1="286" />
+    <line
+       id="line680"
+       y2="613"
+       x2="277"
+       y1="611"
+       x1="286" />
+    <line
+       id="line682"
+       y2="708"
+       x2="211"
+       y1="611"
+       x1="286" />
+    <line
+       id="line684"
+       y2="620"
+       x2="286"
+       y1="611"
+       x1="286" />
+    <line
+       id="line686"
+       y2="613"
+       x2="277"
+       y1="611"
+       x1="286" />
+  </g>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text690"
+     y="387"
+     x="249">parse</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text692"
+     y="522"
+     x="928">visitTranslationUnit</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text694"
+     y="346"
+     x="248">visitTranslationUnitForIncludes</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text696"
+     y="397"
+     x="926">visitRecord</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text698"
+     y="238"
+     x="926">visitFunctionAddArgs</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text700"
+     y="610"
+     x="219">visitFunctionAddStatements</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text702"
+     y="776"
+     x="246">visitFunctionAddDupHashes</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text704"
+     y="217"
+     x="248">createOrGetClassRef</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text706"
+     y="149"
+     x="686">createOrGetBaseTypeRef</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text708"
+     y="102"
+     x="245">createOrGetDataTypeRef</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text710"
+     y="43"
+     x="244">createOrGetDataTypeRef</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text712"
+     y="61"
+     x="475">createOrGetTypedef</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text714"
+     y="593"
+     x="474">addOperationParts</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text716"
+     y="358"
+     x="474">addRecord</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text718"
+     y="556"
+     x="247">addVar</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text720"
+     y="322"
+     x="248">addClassFileLoc</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text722"
+     y="352"
+     x="680">addTypedef</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text724"
+     y="652"
+     x="147">buildCondExpr</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text726"
+     y="686"
+     x="257">addCondStatement</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text728"
+     y="717"
+     x="167">addElseStatement</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text730"
+     y="493"
+     x="248">CppParser</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text732"
+     y="88"
+     x="23">mModelData</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text734"
+     y="783"
+     x="23">mDupHashFile</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text736"
+     y="395"
+     x="25">mClassifier</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text738"
+     y="581"
+     x="24">mOperation</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text740"
+     y="705"
+     x="25">mStatements</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text742"
+     y="644"
+     x="23">mSwitchContexts</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text744"
+     y="445"
+     x="25">mTopParseFn</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text746"
+     y="487"
+     x="25">mClassMemberAccess</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text748"
+     y="345"
+     x="25">mIncDirDeps</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text750"
+     y="523"
+     x="24">mStatementRecurseLevel</text>
 </svg>

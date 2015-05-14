@@ -18,13 +18,13 @@
 class Color
     {
     public:
-	Color(int r=0, int g=0, int b=0)
+	Color(uint8_t r=0, uint8_t g=0, uint8_t b=0)
 	    {
 	    red = r;
 	    green = g;
 	    blue = b;
 	    }
-	void set(int r, int g, int b)
+	void set(uint8_t r, uint8_t g, uint8_t b)
 	    {
 	    red = r;
 	    green = g;
@@ -59,7 +59,10 @@ class GraphPoint
 	void clear()
 	    { x=0; y=0; }
 	GraphPoint getZoomed(double zoomX, double zoomY) const
-	    { return GraphPoint(x * zoomX, y * zoomY); }
+	    {
+            return GraphPoint(static_cast<int>(x * zoomX),
+                static_cast<int>(y * zoomY));
+            }
 	GraphPoint operator-(GraphPoint const &p)
 	    {
 	    GraphPoint result(x, y);

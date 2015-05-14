@@ -16,6 +16,12 @@ Explanations
 Missing Features
 ----------------
 - General
+	- BUG: Project Settings dialog should clear exclude directories when creating project.
+	- BUG: New project with Simple attempts to delete .../bld-Analyze/.
+		deleteDirs.push_back() wrong in OovBuilder
+	- BUG: New proj with Shared example does something weird with root dir of gtk after
+		adding mingw. Also requires deleting analysis dir. UPDATE WEB SITE ALSO
+		to include gtk/mingw (in proper order?)
 	- BUG: Goto class doesn't change tab to class tab
 	- Add UML notes to diagrams
 	- Remove duplicate connections for getRelatedBodyVarClasses, etc.

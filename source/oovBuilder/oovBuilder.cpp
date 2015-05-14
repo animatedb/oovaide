@@ -113,8 +113,7 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 	    cfg.isConfigDifferent(buildConfigName,
 		BuildConfig::CT_OtherArgsCrc))
 	    {
-	    deleteDirs.push_back(Project::getIntermediateDir(buildConfigName
-		    ));
+	    deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
 	    }
 	else	// Must be only link arguments.
 	    {

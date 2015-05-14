@@ -29,14 +29,14 @@ typedef std::vector<QualityType> QualityHistogram;
 class GenePool
     {
     protected:
-	int numgenes;			/// Number of genes in pool
-	int genesize;			/// Length of each gene in bytes, not including quality
+	size_t numgenes;			/// Number of genes in pool
+	size_t genesize;			/// Length of each gene in bytes, not including quality
 	double muterate;		/// Mutation rate
 	std::vector<GeneByteValue> genes;	/// Memory for all genes
 	std::vector<GenePtr> bestgenes;		/// List of good genes to cross over
 	std::vector<GenePtr> worstgenes;	/// List of bad genes to overwrite
-	int min;			/// Minimum gene byte value
-	int max;
+	GeneValue min;			/// Minimum gene value
+	GeneValue max;
 
 	/// This fills the quality value in all of the genes.
 	void computeQuality();
@@ -57,8 +57,8 @@ class GenePool
 	/// genes with random data.
 	/// @param genebytes Length of each gene in bytes, not including quality
 	/// @param numgenes Number of genes to have in pool
-	void initialize(int genebytes, int numgenes, double crossoverrate=0.35,
-	    double mutaterate=0.005, int minrand=0, int maxrand=255);
+	void initialize(size_t genebytes, size_t numgenes, double crossoverrate=0.35,
+	    double mutaterate=0.005, GeneValue minrand=0, GeneValue maxrand=255);
 
     protected:
 	/// Called before calculating single genes.
@@ -66,43 +66,43 @@ class GenePool
 	    {}
 	/// This function is called for every gene. It is passed the gene to
 	/// test and returns the quality of the gene.
-	virtual QualityType calculateSingleGeneQuality(int geneIndex) const = 0;
-	virtual void randomizeGene(int geneIndex);
+	virtual QualityType calculateSingleGeneQuality(size_t geneIndex) const = 0;
+	virtual void randomizeGene(size_t geneIndex);
 	/// Offset is byte based.
-	virtual void randomizeGeneValue(int geneIndex, int offset);
+	virtual void randomizeGeneValue(size_t geneIndex, size_t offset);
 	/// Generate a random number between and including the min and max
-	static GeneValue randRange(int min, int max);
+	static GeneValue randRange(size_t min, size_t max);
 	// Convert the input offset so that it fits on a gene value boundary.
-	int geneValueBoundary(int offset)
+	size_t geneValueBoundary(size_t offset)
 	    { return(offset / sizeof(GeneValue) * sizeof(GeneValue)); }
 
     public:
 	/// Do one generation of evolution for the geen pool.
 	void singleGeneration();
-	int getNumGenes() const
+	size_t getNumGenes() const
 	    { return numgenes; }
-	GenePtr getGene(int index)
+	GenePtr getGene(size_t index)
 	    { return(&genes[(genesize + sizeof(QualityType)) * index]); }
-	ConstGenePtr getGene(int index) const
+	ConstGenePtr getGene(size_t index) const
 	    { return(&genes[(genesize + sizeof(QualityType)) * index]); }
-	void setValue(int geneIndex, int offset, GeneValue val)
+	void setValue(size_t geneIndex, size_t offset, GeneValue val)
 	    { memcpy(&getGene(geneIndex)[offset], &val, sizeof(val)); }
-	GeneValue getValue(int geneIndex, int offset) const
+	GeneValue getValue(size_t geneIndex, size_t offset) const
 	    {
 	    GeneValue val;
 	    memcpy(&val, &getGene(geneIndex)[offset], sizeof(val));
 	    return val;
 	    }
-	QualityType getGeneQuality(int geneIndex) const
+	QualityType getGeneQuality(size_t geneIndex) const
 	    {
 	    QualityType val;
 	    memcpy(&val, &getGene(geneIndex)[genesize], sizeof(val));
 	    return val;
 	    }
-	void setGeneQuality(int geneIndex, QualityType quality)
+	void setGeneQuality(size_t geneIndex, QualityType quality)
 	    { memcpy(&getGene(geneIndex)[genesize], &quality, sizeof(quality)); }
 	/// Build a histogram of the quality values of the genes.
 	/// This may resize the histogram.
 	void getQualityHistogram(QualityHistogram &qualities) const;
-	int getBestGeneIndex();
+	size_t getBestGeneIndex();
     };

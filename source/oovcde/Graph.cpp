@@ -30,14 +30,16 @@ static GraphPoint findIntersect(GraphPoint p1, GraphPoint p2, GraphSize p2size)
         {
 	// Mainly vertical lines
         retP.y = aboveRect ? p2.y-halfRectHeight : p2.y+halfRectHeight;
-        int xoff = (float)slopeRectCorner/slopeLine*halfRectWidth;
+        int xoff = static_cast<int>(static_cast<float>(slopeRectCorner)/
+            slopeLine*halfRectWidth);
         retP.x = aboveRect ? p2.x+xoff : p2.x-xoff;
         }
     else
         {
 	// Mainly horizontal lines
 	retP.x = leftOfRect ? p2.x-halfRectWidth : p2.x+halfRectWidth;
-        int yoff = (float)slopeLine/slopeRectCorner*halfRectHeight;
+        int yoff = static_cast<int>(static_cast<float>(slopeLine)/
+            slopeRectCorner*halfRectHeight);
         retP.y = leftOfRect ? p2.y+yoff : p2.y-yoff;
 	}
     return retP;

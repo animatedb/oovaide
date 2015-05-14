@@ -71,8 +71,8 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 			incMap.getNestedIncludeDirsUsedBySourceFile(fp);
 		for(auto const &incDir : incDirs)
 		    {
-		    int supplierIndex = getComponentIndex(compPaths, incDir);
-		    if(supplierIndex != -1 && consumerIndex != (size_t)supplierIndex)
+		    size_t supplierIndex = getComponentIndex(compPaths, incDir);
+		    if(supplierIndex != NO_INDEX && consumerIndex != supplierIndex)
 			mConnections.insert(ComponentConnection(consumerIndex, supplierIndex));
 		    }
 		}
@@ -106,7 +106,8 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 	pruneConnections();
     }
 
-void ComponentGraph::findNumPaths(int consumerIndex, int supplierIndex, int &numPaths)
+void ComponentGraph::findNumPaths(size_t consumerIndex, size_t supplierIndex,
+    size_t &numPaths)
     {
     for(auto const &connection : mConnections)
 	{
@@ -129,7 +130,7 @@ void ComponentGraph::pruneConnections()
 	// The begin() iterator is const only in the <set> header file. Since
 	// the set sorting is not dependent on the mImpliedDependency, this code is ok.
 	ComponentConnection &connection = const_cast<ComponentConnection &>(constConn);
-	int numPaths = 0;
+	size_t numPaths = 0;
 	findNumPaths(connection.mNodeConsumer, connection.mNodeSupplier, numPaths);
 	if(numPaths > 1)
 	    {
@@ -155,10 +156,10 @@ void ComponentGraph::pruneConnections()
 */
     }
 
-int ComponentGraph::getComponentIndex(OovStringVec const &compPaths,
+size_t ComponentGraph::getComponentIndex(OovStringVec const &compPaths,
 	OovStringRef const dir)
     {
-    int compIndex = -1;
+    size_t compIndex = NO_INDEX;
     for(size_t i=0; i<compPaths.size(); i++)
 	{
 	std::string const &compPath = compPaths[i];

@@ -32,15 +32,15 @@ class PortionDrawer
 	size_t getNodeIndex(GraphPoint p);
 	void setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPoint newPoint);
 
-	GraphPoint getPosition(int nodeIndex) const
+	GraphPoint getPosition(size_t nodeIndex) const
 	    { return mNodePositions[nodeIndex]; }
-	void setPosition(int nodeIndex, GraphPoint pos)
+	void setPosition(size_t nodeIndex, GraphPoint pos)
 	    { mNodePositions[nodeIndex] = pos; }
 	size_t getNumNodes() const
 	    { return mNodePositions.size(); }
 	size_t getNumConnections() const
 	    { return mGraph->getConnections().size(); }
-	PortionConnection getConnection(int index) const
+	PortionConnection getConnection(size_t index) const
 	    { return mGraph->getConnections()[index]; }
 
     private:

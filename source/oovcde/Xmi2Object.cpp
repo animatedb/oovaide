@@ -877,8 +877,8 @@ bool loadXmiFile(FILE *fp, ModelData &graph, OovStringRef const fn, int &typeInd
     if(buf)
         {
 	buf[size] = 0;
-	size_t actualSize = fread(buf, size, 1, fp);
-	if(ferror(fp) == 0 && actualSize >= 0)
+	size_t actualSize = fread(buf, 1, size, fp);
+	if(ferror(fp) == 0 && actualSize > 0)
 	    success = loadXmiBuf(buf, graph, typeIndex);
         delete [] buf;
         }

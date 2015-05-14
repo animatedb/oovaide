@@ -95,7 +95,7 @@ struct ZoneConnectIndices
 	mFirstIndex(index1), mSecondIndex(index2)
 	{}
     uint32_t getAsInt() const
-	{ return (mFirstIndex<<16) + mSecondIndex; }
+	{ return (static_cast<uint32_t>(mFirstIndex<<16)) + mSecondIndex; }
     bool operator<(ZoneConnectIndices const &item) const
 	{
 	return(getAsInt() < item.getAsInt());
@@ -167,7 +167,7 @@ class ZoneGraph
         std::vector<ZoneNode> const &getNodes() const
             { return mNodes; }
         size_t getNodeIndex(ZoneNode const *node) const
-            { return(node - &mNodes[0]); }
+            { return(static_cast<size_t>(node - &mNodes[0])); }
         ZoneConnections const &getConnections() const
             { return mConnections; }
 	bool isModified() const

@@ -23,6 +23,9 @@ BuildSettingsDialog::BuildSettingsDialog()
 //////////////
 
 
+BuildSettingsDialog::~BuildSettingsDialog()
+    {}
+
 void BuildSettingsDialog::enterScreen()
     {
     if(mComponentFile.read())

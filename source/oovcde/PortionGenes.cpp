@@ -12,34 +12,35 @@
 
 static const int NumGenerations = 30;
 
-void PortionGenes::initialize(PortionDrawer &drawer, int nodeHeight)
+void PortionGenes::initialize(PortionDrawer &drawer, size_t nodeHeight)
     {
     mDrawer = &drawer;
     mNodeHeight = nodeHeight;
-    int numNodes = drawer.getNumNodes();
-    int numGenes = 0;
+    size_t numNodes = drawer.getNumNodes();
+    size_t numGenes = 0;
     if(numNodes > 100)	// Too many nodes to draw well, so make fewer genes for speed
-	numGenes = static_cast<int>(sqrt(numNodes)) * 10;
+	numGenes = static_cast<size_t>(sqrt(numNodes)) * 10;
     else if(numNodes > 50)	// Too many nodes to draw well, so make fewer genes for speed
-	numGenes = static_cast<int>(sqrt(numNodes)) * 20;
+	numGenes = static_cast<size_t>(sqrt(numNodes)) * 20;
     else
-	numGenes = static_cast<int>(sqrt(numNodes)) * 80 + 50;
+	numGenes = static_cast<size_t>(sqrt(numNodes)) * 80 + 50;
     // Each gene contains the Y position for every node.
-    const int sizePos = sizeof(GeneValue);
-    int geneBytes = numNodes * sizePos;
-    mMaxDrawingHeight = nodeHeight * 5.0 * getMaxNodesInColumn();
-    GenePool::initialize(geneBytes, numGenes, 0.35, 0.005, 0, mMaxDrawingHeight);
+    const size_t sizePos = sizeof(GeneValue);
+    size_t geneBytes = numNodes * sizePos;
+    mMaxDrawingHeight = static_cast<size_t>(nodeHeight * 5.0 * getMaxNodesInColumn());
+    GenePool::initialize(geneBytes, numGenes, 0.35, 0.005, 0,
+        static_cast<GeneValue>(mMaxDrawingHeight));
     }
 
-int PortionGenes::getMaxNodesInColumn() const
+size_t PortionGenes::getMaxNodesInColumn() const
     {
-    int numNodes = mDrawer->getNumNodes();
-    std::map<int, int> columnCounts;
-    for(int i=0; i<numNodes; i++)
+    size_t numNodes = mDrawer->getNumNodes();
+    std::map<int, size_t> columnCounts;     // First is pos, second is count.
+    for(size_t i=0; i<numNodes; i++)
 	{
 	columnCounts[mDrawer->getPosition(i).x]++;
 	}
-    int maxNodes = 0;
+    size_t maxNodes = 0;
     for(auto it = columnCounts.begin(); it != columnCounts.end(); ++it)
 	{
 	if(it->second > maxNodes)
@@ -56,7 +57,7 @@ void PortionGenes::updatePositionsInDrawer()
 	{
 	singleGeneration();
 	}
-    int bestGeneI = getBestGeneIndex();
+    size_t bestGeneI = getBestGeneIndex();
 //printf("Best %d\n", bestGeneI);
 //fflush(stdout);
     for(size_t i=0; i<mDrawer->getNumNodes(); i++)
@@ -73,7 +74,7 @@ void PortionGenes::setupQualityEachGeneration()
     mMaxOverlapQ = 0;
     mMaxHeightQ = 0;
     size_t numNodes = mDrawer->getNumNodes();
-    for(int genei=0; genei<getNumGenes(); genei++)
+    for(size_t genei=0; genei<getNumGenes(); genei++)
 	{
 	// Move Y position of each gene to zero.
 	int lowestY = 25000;
@@ -87,22 +88,23 @@ void PortionGenes::setupQualityEachGeneration()
 	    }
 	for(size_t nodei=0; nodei<numNodes; nodei++)
 	    {
-	    setYPosition(genei, nodei, getYPosition(genei, nodei)-lowestY);
+	    setYPosition(genei, nodei, 
+                static_cast<GeneValue>(getYPosition(genei, nodei)-lowestY));
 	    }
 
-	int distance = getNodeYDistances(genei);
+	size_t distance = getNodeYDistances(genei);
 	if(distance > mMaxDistanceQ)
 	    {
 	    mMaxDistanceQ = distance;
 	    }
 
-	int nodeOverlapCount = getNodeOverlapCount(genei);
+	size_t nodeOverlapCount = getNodeOverlapCount(genei);
 	if(nodeOverlapCount > mMaxOverlapQ)
 	    {
 	    mMaxOverlapQ = nodeOverlapCount;
 	    }
 
-	int geneHeight = getDrawingHeight(genei);
+	size_t geneHeight = getDrawingHeight(genei);
 	if(geneHeight > mMaxHeightQ)
 	    {
 	    mMaxHeightQ = geneHeight;
@@ -110,7 +112,7 @@ void PortionGenes::setupQualityEachGeneration()
 	}
     }
 
-QualityType PortionGenes::calculateSingleGeneQuality(int geneIndex) const
+QualityType PortionGenes::calculateSingleGeneQuality(size_t geneIndex) const
     {
     int maxQual = std::numeric_limits<QualityType>::max() / 3;
 
@@ -140,7 +142,7 @@ QualityType PortionGenes::calculateSingleGeneQuality(int geneIndex) const
     return q;
     }
 
-int PortionGenes::getNodeYDistances(int geneIndex) const
+size_t PortionGenes::getNodeYDistances(size_t geneIndex) const
     {
     int distance = 0;
     for(size_t ci=0; ci<mDrawer->getNumConnections(); ci++)
@@ -152,9 +154,9 @@ int PortionGenes::getNodeYDistances(int geneIndex) const
     return distance;
     }
 
-int PortionGenes::getNodeOverlapCount(int geneIndex) const
+size_t PortionGenes::getNodeOverlapCount(size_t geneIndex) const
     {
-    int nodesOverlapCount = 0;
+    size_t nodesOverlapCount = 0;
     size_t numNodes = mDrawer->getNumNodes();
     for(size_t ni1=0; ni1<numNodes; ni1++)
 	{
@@ -168,7 +170,7 @@ int PortionGenes::getNodeOverlapCount(int geneIndex) const
     }
 
 // If we are only adjusting the Y, only check the Y overlap.
-bool PortionGenes::nodesOverlap(int geneIndex, int node1, int node2) const
+bool PortionGenes::nodesOverlap(size_t geneIndex, size_t node1, size_t node2) const
     {
     // Add some space between nodes
     int nodeHeight = mNodeHeight * 2;
@@ -181,22 +183,22 @@ bool PortionGenes::nodesOverlap(int geneIndex, int node1, int node2) const
     return overlap;
     }
 
-GeneValue PortionGenes::getYPosition(int geneIndex, int nodeIndex) const
+GeneValue PortionGenes::getYPosition(size_t geneIndex, size_t nodeIndex) const
     {
     return getValue(geneIndex, nodeIndex*sizeof(GeneValue));
     }
 
-void PortionGenes::setYPosition(int geneIndex, int nodeIndex, GeneValue val)
+void PortionGenes::setYPosition(size_t geneIndex, size_t nodeIndex, GeneValue val)
     {
     return setValue(geneIndex, nodeIndex*sizeof(GeneValue), val);
     }
 
-int PortionGenes::getDrawingHeight(int geneIndex) const
+size_t PortionGenes::getDrawingHeight(size_t geneIndex) const
     {
-    int ySize = 0;
+    size_t ySize = 0;
     for(size_t ni=0; ni<mDrawer->getNumNodes(); ni++)
 	{
-	int y = getYPosition(geneIndex, ni);
+	size_t y = getYPosition(geneIndex, ni);
 	if(y > ySize)
 	    {
 	    ySize = y;

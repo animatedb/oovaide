@@ -37,8 +37,7 @@ class DiagramDrawer
 	DiagramDrawer():
 	    mFontSize(10.0)
 	    {}
-	virtual ~DiagramDrawer()
-	    {}
+	virtual ~DiagramDrawer();
 	/// This must be called before any other function.
 	virtual void setDiagramSize(GraphSize size) = 0;
 	virtual void setFontSize(double size)
@@ -57,9 +56,10 @@ class DiagramDrawer
 	virtual float getTextExtentHeight(OovStringRef const name) const =0;
 	/// These functions indicate when the start/end of some grouping
 	/// of shapes is performed so similar attributes can be used.
-	virtual void groupShapes(bool start, Color lineColor, Color fillColor)
+	virtual void groupShapes(bool /*start*/, Color /*lineColor*/,
+            Color /*fillColor*/)
 	    {}
-	virtual void groupText(bool start)
+	virtual void groupText(bool /*start*/)
 	    {}
 	int getPad(int div=10);
 
@@ -76,6 +76,6 @@ class DistinctColors
 
 // This launches an editor to view source code at a certain line number in
 // the source code.
-void viewSource(OovStringRef const module, int lineNum);
+void viewSource(OovStringRef const module, unsigned int lineNum);
 
 #endif /* DIAGRAMDRAWER_H_ */

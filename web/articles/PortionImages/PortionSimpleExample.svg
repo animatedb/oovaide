@@ -50,492 +50,416 @@
      fit-margin-left="0"
      fit-margin-right="0"
      fit-margin-bottom="0" />
-  <g
+  <ellipse
      style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
-     id="g4"
+     d="m 258,305 c 0,3.86599 -18.35633,7 -41,7 -22.64367,0 -41,-3.13401 -41,-7 0,-3.86599 18.35633,-7 41,-7 22.64367,0 41,3.13401 41,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="41"
+     sodipodi:cy="305"
+     sodipodi:cx="217"
+     id="ellipse6"
+     ry="7"
+     rx="41"
+     cy="305"
+     cx="217"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 239,113 c 0,3.86599 -13.43146,7 -30,7 -16.56854,0 -30,-3.13401 -30,-7 0,-3.86599 13.43146,-7 30,-7 16.56854,0 30,3.13401 30,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="30"
+     sodipodi:cy="113"
+     sodipodi:cx="209"
+     id="ellipse8"
+     ry="7"
+     rx="30"
+     cy="113"
+     cx="209"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 252,236 c 0,3.86599 -16.11775,7 -36,7 -19.88225,0 -36,-3.13401 -36,-7 0,-3.86599 16.11775,-7 36,-7 19.88225,0 36,3.13401 36,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="36"
+     sodipodi:cy="236"
+     sodipodi:cx="216"
+     id="ellipse10"
+     ry="7"
+     rx="36"
+     cy="236"
+     cx="216"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 240,269 c 0,3.86599 -13.87917,7 -31,7 -17.12083,0 -31,-3.13401 -31,-7 0,-3.86599 13.87917,-7 31,-7 17.12083,0 31,3.13401 31,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="31"
+     sodipodi:cy="269"
+     sodipodi:cx="209"
+     id="ellipse12"
+     ry="7"
+     rx="31"
+     cy="269"
+     cx="209"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 225,80 c 0,3.865993 -10.29745,7 -23,7 -12.70255,0 -23,-3.134007 -23,-7 0,-3.865993 10.29745,-7 23,-7 12.70255,0 23,3.134007 23,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="23"
+     sodipodi:cy="80"
+     sodipodi:cx="202"
+     id="ellipse14"
+     ry="7"
+     rx="23"
+     cy="80"
+     cx="202"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 226,26 c 0,3.865993 -10.29745,7 -23,7 -12.70255,0 -23,-3.134007 -23,-7 0,-3.865993 10.29745,-7 23,-7 12.70255,0 23,3.134007 23,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="23"
+     sodipodi:cy="26"
+     sodipodi:cx="203"
+     id="ellipse16"
+     ry="7"
+     rx="23"
+     cy="26"
+     cx="203"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 231,53 c 0,3.865993 -11.6406,7 -26,7 -14.3594,0 -26,-3.134007 -26,-7 0,-3.865993 11.6406,-7 26,-7 14.3594,0 26,3.134007 26,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="26"
+     sodipodi:cy="53"
+     sodipodi:cx="205"
+     id="ellipse18"
+     ry="7"
+     rx="26"
+     cy="53"
+     cx="205"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 257,205 c 0,3.86599 -17.46089,7 -39,7 -21.53911,0 -39,-3.13401 -39,-7 0,-3.86599 17.46089,-7 39,-7 21.53911,0 39,3.13401 39,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="39"
+     sodipodi:cy="205"
+     sodipodi:cx="218"
+     id="ellipse20"
+     ry="7"
+     rx="39"
+     cy="205"
+     cx="218"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 237,173 c 0,2.76142 -12.53603,5 -28,5 -15.46397,0 -28,-2.23858 -28,-5 0,-2.76142 12.53603,-5 28,-5 15.46397,0 28,2.23858 28,5 z"
+     sodipodi:ry="5"
+     sodipodi:rx="28"
+     sodipodi:cy="173"
+     sodipodi:cx="209"
+     id="ellipse22"
+     ry="5"
+     rx="28"
+     cy="173"
+     cx="209"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 282,341 c 0,3.86599 -23.72891,7 -53,7 -29.27109,0 -53,-3.13401 -53,-7 0,-3.86599 23.72891,-7 53,-7 29.27109,0 53,3.13401 53,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="53"
+     sodipodi:cy="341"
+     sodipodi:cx="229"
+     id="ellipse24"
+     ry="7"
+     rx="53"
+     cy="341"
+     cx="229"
+     transform="translate(-19.5,-18.5)" />
+  <ellipse
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     d="m 264,147 c 0,3.86599 -18.80404,7 -42,7 -23.19596,0 -42,-3.13401 -42,-7 0,-3.86599 18.80404,-7 42,-7 23.19596,0 42,3.13401 42,7 z"
+     sodipodi:ry="7"
+     sodipodi:rx="42"
+     sodipodi:cy="147"
+     sodipodi:cx="222"
+     id="ellipse26"
+     ry="7"
+     rx="42"
+     cy="147"
+     cx="222"
+     transform="translate(-19.5,-18.5)" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect28"
+     height="14"
+     width="76"
+     y="253.5"
+     x="1.5" />
+  <rect
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="rect30"
+     height="14"
+     width="55"
+     y="99.5"
+     x="0.5" />
+  <g
+     id="g34"
+     style="fill:#f5f5ff;stroke:#ff8e00;stroke-width:1"
      transform="translate(-19.5,-18.5)">
-    <ellipse
-       cx="217"
-       cy="305"
-       rx="41"
-       ry="7"
-       id="ellipse6"
-       sodipodi:cx="217"
-       sodipodi:cy="305"
-       sodipodi:rx="41"
-       sodipodi:ry="7"
-       d="m 258,305 c 0,3.86599 -18.35633,7 -41,7 -22.64367,0 -41,-3.13401 -41,-7 0,-3.86599 18.35633,-7 41,-7 22.64367,0 41,3.13401 41,7 z" />
-    <ellipse
-       cx="209"
-       cy="113"
-       rx="30"
-       ry="7"
-       id="ellipse8"
-       sodipodi:cx="209"
-       sodipodi:cy="113"
-       sodipodi:rx="30"
-       sodipodi:ry="7"
-       d="m 239,113 c 0,3.86599 -13.43146,7 -30,7 -16.56854,0 -30,-3.13401 -30,-7 0,-3.86599 13.43146,-7 30,-7 16.56854,0 30,3.13401 30,7 z" />
-    <ellipse
-       cx="216"
-       cy="236"
-       rx="36"
-       ry="7"
-       id="ellipse10"
-       sodipodi:cx="216"
-       sodipodi:cy="236"
-       sodipodi:rx="36"
-       sodipodi:ry="7"
-       d="m 252,236 c 0,3.86599 -16.11775,7 -36,7 -19.88225,0 -36,-3.13401 -36,-7 0,-3.86599 16.11775,-7 36,-7 19.88225,0 36,3.13401 36,7 z" />
-    <ellipse
-       cx="209"
-       cy="269"
-       rx="31"
-       ry="7"
-       id="ellipse12"
-       sodipodi:cx="209"
-       sodipodi:cy="269"
-       sodipodi:rx="31"
-       sodipodi:ry="7"
-       d="m 240,269 c 0,3.86599 -13.87917,7 -31,7 -17.12083,0 -31,-3.13401 -31,-7 0,-3.86599 13.87917,-7 31,-7 17.12083,0 31,3.13401 31,7 z" />
-    <ellipse
-       cx="202"
-       cy="80"
-       rx="23"
-       ry="7"
-       id="ellipse14"
-       sodipodi:cx="202"
-       sodipodi:cy="80"
-       sodipodi:rx="23"
-       sodipodi:ry="7"
-       d="m 225,80 c 0,3.865993 -10.29745,7 -23,7 -12.70255,0 -23,-3.134007 -23,-7 0,-3.865993 10.29745,-7 23,-7 12.70255,0 23,3.134007 23,7 z" />
-    <ellipse
-       cx="203"
-       cy="26"
-       rx="23"
-       ry="7"
-       id="ellipse16"
-       sodipodi:cx="203"
-       sodipodi:cy="26"
-       sodipodi:rx="23"
-       sodipodi:ry="7"
-       d="m 226,26 c 0,3.865993 -10.29745,7 -23,7 -12.70255,0 -23,-3.134007 -23,-7 0,-3.865993 10.29745,-7 23,-7 12.70255,0 23,3.134007 23,7 z" />
-    <ellipse
-       cx="205"
-       cy="53"
-       rx="26"
-       ry="7"
-       id="ellipse18"
-       sodipodi:cx="205"
-       sodipodi:cy="53"
-       sodipodi:rx="26"
-       sodipodi:ry="7"
-       d="m 231,53 c 0,3.865993 -11.6406,7 -26,7 -14.3594,0 -26,-3.134007 -26,-7 0,-3.865993 11.6406,-7 26,-7 14.3594,0 26,3.134007 26,7 z" />
-    <ellipse
-       cx="218"
-       cy="205"
-       rx="39"
-       ry="7"
-       id="ellipse20"
-       sodipodi:cx="218"
-       sodipodi:cy="205"
-       sodipodi:rx="39"
-       sodipodi:ry="7"
-       d="m 257,205 c 0,3.86599 -17.46089,7 -39,7 -21.53911,0 -39,-3.13401 -39,-7 0,-3.86599 17.46089,-7 39,-7 21.53911,0 39,3.13401 39,7 z" />
-    <ellipse
-       cx="209"
-       cy="173"
-       rx="28"
-       ry="5"
-       id="ellipse22"
-       sodipodi:cx="209"
-       sodipodi:cy="173"
-       sodipodi:rx="28"
-       sodipodi:ry="5"
-       d="m 237,173 c 0,2.76142 -12.53603,5 -28,5 -15.46397,0 -28,-2.23858 -28,-5 0,-2.76142 12.53603,-5 28,-5 15.46397,0 28,2.23858 28,5 z" />
-    <ellipse
-       cx="229"
-       cy="341"
-       rx="53"
-       ry="7"
-       id="ellipse24"
-       sodipodi:cx="229"
-       sodipodi:cy="341"
-       sodipodi:rx="53"
-       sodipodi:ry="7"
-       d="m 282,341 c 0,3.86599 -23.72891,7 -53,7 -29.27109,0 -53,-3.13401 -53,-7 0,-3.86599 23.72891,-7 53,-7 29.27109,0 53,3.13401 53,7 z" />
-    <ellipse
-       cx="222"
-       cy="147"
-       rx="42"
-       ry="7"
-       id="ellipse26"
-       sodipodi:cx="222"
-       sodipodi:cy="147"
-       sodipodi:rx="42"
-       sodipodi:ry="7"
-       d="m 264,147 c 0,3.86599 -18.80404,7 -42,7 -23.19596,0 -42,-3.13401 -42,-7 0,-3.86599 18.80404,-7 42,-7 23.19596,0 42,3.13401 42,7 z" />
-    <rect
-       x="21"
-       y="272"
-       width="76"
-       height="14"
-       id="rect28" />
-    <rect
-       x="20"
-       y="118"
-       width="55"
-       height="14"
-       id="rect30" />
-    <rect
-       x="22"
-       y="192"
-       width="23"
-       height="11"
-       id="rect32" />
-    <g
-       style="fill:#f5f5ff;stroke:#ff8e00;stroke-width:1"
-       id="g34">
-      <line
-         x1="97"
-         y1="279"
-         x2="176"
-         y2="305"
-         id="line36" />
-      <line
-         x1="97"
-         y1="279"
-         x2="106"
-         y2="276"
-         id="line38" />
-      <line
-         x1="97"
-         y1="279"
-         x2="102"
-         y2="287"
-         id="line40" />
-      <line
-         x1="97"
-         y1="279"
-         x2="180"
-         y2="236"
-         id="line42" />
-      <line
-         x1="97"
-         y1="279"
-         x2="101"
-         y2="271"
-         id="line44" />
-      <line
-         x1="97"
-         y1="279"
-         x2="106"
-         y2="280"
-         id="line46" />
-      <line
-         x1="97"
-         y1="279"
-         x2="178"
-         y2="269"
-         id="line48" />
-      <line
-         x1="97"
-         y1="279"
-         x2="104"
-         y2="273"
-         id="line50" />
-      <line
-         x1="97"
-         y1="279"
-         x2="105"
-         y2="283"
-         id="line52" />
-      <line
-         x1="97"
-         y1="279"
-         x2="179"
-         y2="205"
-         id="line54" />
-      <line
-         x1="97"
-         y1="279"
-         x2="99"
-         y2="270"
-         id="line56" />
-      <line
-         x1="97"
-         y1="279"
-         x2="106"
-         y2="278"
-         id="line58" />
-      <line
-         x1="97"
-         y1="279"
-         x2="176"
-         y2="341"
-         id="line60" />
-      <line
-         x1="97"
-         y1="279"
-         x2="106"
-         y2="279"
-         id="line62" />
-      <line
-         x1="97"
-         y1="279"
-         x2="99"
-         y2="288"
-         id="line64" />
-    </g>
-    <g
-       style="fill:#f5f5ff;stroke:#b32851;stroke-width:1"
-       id="g66">
-      <line
-         x1="74"
-         y1="125"
-         x2="179"
-         y2="113"
-         id="line68" />
-      <line
-         x1="74"
-         y1="125"
-         x2="81"
-         y2="119"
-         id="line70" />
-      <line
-         x1="74"
-         y1="125"
-         x2="82"
-         y2="129"
-         id="line72" />
-      <line
-         x1="74"
-         y1="125"
-         x2="180"
-         y2="236"
-         id="line74" />
-      <line
-         x1="74"
-         y1="125"
-         x2="83"
-         y2="126"
-         id="line76" />
-      <line
-         x1="74"
-         y1="125"
-         x2="75"
-         y2="134"
-         id="line78" />
-      <line
-         x1="74"
-         y1="125"
-         x2="178"
-         y2="269"
-         id="line80" />
-      <line
-         x1="74"
-         y1="125"
-         x2="83"
-         y2="128"
-         id="line82" />
-      <line
-         x1="74"
-         y1="125"
-         x2="74"
-         y2="134"
-         id="line84" />
-      <line
-         x1="74"
-         y1="125"
-         x2="181"
-         y2="173"
-         id="line86" />
-      <line
-         x1="74"
-         y1="125"
-         x2="83"
-         y2="123"
-         id="line88" />
-      <line
-         x1="74"
-         y1="125"
-         x2="78"
-         y2="133"
-         id="line90" />
-      <line
-         x1="74"
-         y1="125"
-         x2="180"
-         y2="147"
-         id="line92" />
-      <line
-         x1="74"
-         y1="125"
-         x2="83"
-         y2="121"
-         id="line94" />
-      <line
-         x1="74"
-         y1="125"
-         x2="80"
-         y2="132"
-         id="line96" />
-    </g>
-    <g
-       style="fill:#f5f5ff;stroke:#f4c800;stroke-width:1"
-       id="g98">
-      <line
-         x1="44"
-         y1="197"
-         x2="180"
-         y2="236"
-         id="line100" />
-      <line
-         x1="44"
-         y1="197"
-         x2="53"
-         y2="194"
-         id="line102" />
-      <line
-         x1="44"
-         y1="197"
-         x2="50"
-         y2="204"
-         id="line104" />
-      <line
-         x1="44"
-         y1="197"
-         x2="178"
-         y2="269"
-         id="line106" />
-      <line
-         x1="44"
-         y1="197"
-         x2="53"
-         y2="196"
-         id="line108" />
-      <line
-         x1="44"
-         y1="197"
-         x2="48"
-         y2="206"
-         id="line110" />
-      <line
-         x1="44"
-         y1="197"
-         x2="179"
-         y2="80"
-         id="line112" />
-      <line
-         x1="44"
-         y1="197"
-         x2="46"
-         y2="188"
-         id="line114" />
-      <line
-         x1="44"
-         y1="197"
-         x2="53"
-         y2="197"
-         id="line116" />
-      <line
-         x1="44"
-         y1="197"
-         x2="179"
-         y2="205"
-         id="line118" />
-      <line
-         x1="44"
-         y1="197"
-         x2="52"
-         y2="192"
-         id="line120" />
-      <line
-         x1="44"
-         y1="197"
-         x2="51"
-         y2="203"
-         id="line122" />
-      <line
-         x1="44"
-         y1="197"
-         x2="181"
-         y2="173"
-         id="line124" />
-      <line
-         x1="44"
-         y1="197"
-         x2="50"
-         y2="190"
-         id="line126" />
-      <line
-         x1="44"
-         y1="197"
-         x2="52"
-         y2="201"
-         id="line128" />
-    </g>
+    <line
+       id="line36"
+       y2="305"
+       x2="176"
+       y1="279"
+       x1="97" />
+    <line
+       id="line38"
+       y2="276"
+       x2="106"
+       y1="279"
+       x1="97" />
+    <line
+       id="line40"
+       y2="287"
+       x2="102"
+       y1="279"
+       x1="97" />
+    <line
+       id="line42"
+       y2="236"
+       x2="180"
+       y1="279"
+       x1="97" />
+    <line
+       id="line44"
+       y2="271"
+       x2="101"
+       y1="279"
+       x1="97" />
+    <line
+       id="line46"
+       y2="280"
+       x2="106"
+       y1="279"
+       x1="97" />
+    <line
+       id="line48"
+       y2="269"
+       x2="178"
+       y1="279"
+       x1="97" />
+    <line
+       id="line50"
+       y2="273"
+       x2="104"
+       y1="279"
+       x1="97" />
+    <line
+       id="line52"
+       y2="283"
+       x2="105"
+       y1="279"
+       x1="97" />
+    <line
+       id="line54"
+       y2="205"
+       x2="179"
+       y1="279"
+       x1="97" />
+    <line
+       id="line56"
+       y2="270"
+       x2="99"
+       y1="279"
+       x1="97" />
+    <line
+       id="line58"
+       y2="278"
+       x2="106"
+       y1="279"
+       x1="97" />
+    <line
+       id="line60"
+       y2="341"
+       x2="176"
+       y1="279"
+       x1="97" />
+    <line
+       id="line62"
+       y2="279"
+       x2="106"
+       y1="279"
+       x1="97" />
+    <line
+       id="line64"
+       y2="288"
+       x2="99"
+       y1="279"
+       x1="97" />
   </g>
   <g
-     font-size="10.000000"
-     id="g130"
-     style="font-size:10px;stroke:none"
+     id="g66"
+     style="fill:#f5f5ff;stroke:#b32851;stroke-width:1"
      transform="translate(-19.5,-18.5)">
-    <text
-       x="178"
-       y="307"
-       id="text132">getCompileArgs</text>
-    <text
-       x="181"
-       y="115"
-       id="text134">getLinkArgs</text>
-    <text
-       x="182"
-       y="238"
-       id="text136">loadFromMap</text>
-    <text
-       x="180"
-       y="271"
-       id="text138">saveToMap</text>
-    <text
-       x="181"
-       y="82"
-       id="text140">Package</text>
-    <text
-       x="182"
-       y="28"
-       id="text142">Package</text>
-    <text
-       x="181"
-       y="55"
-       id="text144">~Package</text>
-    <text
-       x="181"
-       y="207"
-       id="text146">setCompileInfo</text>
-    <text
-       x="183"
-       y="177"
-       id="text148">setLinkInfo</text>
-    <text
-       x="178"
-       y="343"
-       id="text150">getCompileArgsAsStr</text>
-    <text
-       x="182"
-       y="149"
-       id="text152">getLinkArgsAsStr</text>
-    <text
-       x="23"
-       y="281"
-       id="text154">mCompileArgs</text>
-    <text
-       x="22"
-       y="127"
-       id="text156">mLinkArgs</text>
-    <text
-       x="24"
-       y="201"
-       id="text158">this</text>
+    <line
+       id="line68"
+       y2="113"
+       x2="179"
+       y1="125"
+       x1="74" />
+    <line
+       id="line70"
+       y2="119"
+       x2="81"
+       y1="125"
+       x1="74" />
+    <line
+       id="line72"
+       y2="129"
+       x2="82"
+       y1="125"
+       x1="74" />
+    <line
+       id="line74"
+       y2="236"
+       x2="180"
+       y1="125"
+       x1="74" />
+    <line
+       id="line76"
+       y2="126"
+       x2="83"
+       y1="125"
+       x1="74" />
+    <line
+       id="line78"
+       y2="134"
+       x2="75"
+       y1="125"
+       x1="74" />
+    <line
+       id="line80"
+       y2="269"
+       x2="178"
+       y1="125"
+       x1="74" />
+    <line
+       id="line82"
+       y2="128"
+       x2="83"
+       y1="125"
+       x1="74" />
+    <line
+       id="line84"
+       y2="134"
+       x2="74"
+       y1="125"
+       x1="74" />
+    <line
+       id="line86"
+       y2="173"
+       x2="181"
+       y1="125"
+       x1="74" />
+    <line
+       id="line88"
+       y2="123"
+       x2="83"
+       y1="125"
+       x1="74" />
+    <line
+       id="line90"
+       y2="133"
+       x2="78"
+       y1="125"
+       x1="74" />
+    <line
+       id="line92"
+       y2="147"
+       x2="180"
+       y1="125"
+       x1="74" />
+    <line
+       id="line94"
+       y2="121"
+       x2="83"
+       y1="125"
+       x1="74" />
+    <line
+       id="line96"
+       y2="132"
+       x2="80"
+       y1="125"
+       x1="74" />
   </g>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text132"
+     y="288.5"
+     x="158.5">getCompileArgs</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text134"
+     y="96.5"
+     x="161.5">getLinkArgs</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text136"
+     y="219.5"
+     x="162.5">loadFromMap</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text138"
+     y="252.5"
+     x="160.5">saveToMap</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text140"
+     y="63.5"
+     x="161.5">Package</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text142"
+     y="9.5"
+     x="162.5">Package</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text144"
+     y="36.5"
+     x="161.5">~Package</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text146"
+     y="188.5"
+     x="161.5">setCompileInfo</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text148"
+     y="158.5"
+     x="163.5">setLinkInfo</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text150"
+     y="324.5"
+     x="158.5">getCompileArgsAsStr</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text152"
+     y="130.5"
+     x="162.5">getLinkArgsAsStr</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text154"
+     y="262.5"
+     x="3.5">mCompileArgs</text>
+  <text
+     style="font-size:10px;stroke:none"
+     id="text156"
+     y="108.5"
+     x="2.5">mLinkArgs</text>
 </svg>

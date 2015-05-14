@@ -70,7 +70,7 @@ class PortionGraph
         void clearAndAddClass(const ModelData &model, OovStringRef classname);
         PortionNode const *getNode(OovStringRef name, PortionNodeTypes nt) const;
         size_t getNodeIndex(PortionNode const *node) const
-            { return(node - &mNodes[0]); }
+            { return(static_cast<size_t>(node - &mNodes[0])); }
         std::vector<PortionNode> const &getNodes() const
             { return mNodes; }
         PortionConnections const &getConnections() const

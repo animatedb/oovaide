@@ -89,12 +89,12 @@ class ClassNode
 struct nodePair
     {
     nodePair(int node1, int node2):
-	n1(node1), n2(node2)
+	n1(static_cast<uint16_t>(node1)), n2(static_cast<uint16_t>(node2))
 	{}
     uint16_t n1;
     uint16_t n2;
     uint32_t getAsInt() const
-	{ return (n1<<16) + n2; }
+	{ return (static_cast<uint32_t>(n1)<<16) + n2; }
     bool operator<(const nodePair &np) const
 	{ return getAsInt() < np.getAsInt(); }
     };
@@ -156,10 +156,7 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
 	    mDrawingArea(nullptr), mModified(false), mBackgroundDialogLevel(0),
 	    mTaskStatusListener(nullptr)
 	    {}
-	~ClassGraph()
-	    {
-            stopAndWaitForCompletion();
-	    }
+	virtual ~ClassGraph();
 	void initialize(GtkWidget *drawingArea, OovTaskStatusListener *taskStatusListener);
 	enum eAddNodeTypes
 	    {
@@ -207,7 +204,7 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
 
 	/// Changing options doesn't change number of nodes, so only the size
 	/// of nodes needs to be updated.
-	void changeDrawOptions(const ModelData &modelData, const ClassDrawOptions &options)
+	void changeDrawOptions(const ClassDrawOptions &options)
 	    {
 	    setModified();
 	    mCairoContext.setContext(getDiagramWidget());
