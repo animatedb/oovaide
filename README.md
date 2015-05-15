@@ -26,9 +26,9 @@ and Objective C languages.
 	  SVG and edited using tools such as Inkscape.
 		- Component dependency diagrams
 		- Zone diagrams (view thousands of classes)
-		- Class Diagrams
-		- Portion Diagrams (view class attribute/member relations)
-		- Sequence Diagrams 
+		- Class diagrams
+		- Portion diagrams (view class attribute/member relations)
+		- Sequence diagrams 
 	- Analysis statistics
 		- Code coverage
 		- Code complexity
