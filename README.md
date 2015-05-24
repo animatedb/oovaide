@@ -18,15 +18,29 @@ and Objective C languages.
 
 ## Features
 
-- An analysis system that searches directories for source code and uses CLang
-  to generate dependencies between files and components.
-- The analysis system uses CLang to parse the object relationships and
-  sequence information.
-- Oovcde can dynamically generate diagrams allowing quick navigation between objects.
-- Diagrams can be edited in Oovcde, then saved as SVG and edited using tools
-  such as Inkscape.
-- A multithreaded build system that uses the analysis information for easy setup.
-- A simple code editor with a debugger.
+- The analysis system searches directories for source code and uses CLang.
+	- Dependencies are generated automatically between files and components.
+	- Object relationships and sequence information is saved for diagrams.
+	- Diagrams can be dynamically generated allowing quick navigation
+	  between objects. Diagrams can be edited in Oovcde, then saved as
+	  SVG and edited using tools such as Inkscape.
+		- Component dependency diagrams
+		- Zone diagrams (view thousands of classes)
+		- Class diagrams
+		- Portion diagrams (view class attribute/member relations)
+		- Sequence diagrams 
+	- Analysis statistics
+		- Code coverage
+		- Code complexity
+		- Duplicate code
+		- Class member usage
+		- Line counts
+		- Project statistics
+- The multithreaded build system uses analysis information for easy setup.
+- The code editor has syntax highlighting, and a debugger.
+- Code test coverage instruments the code and produces coverage information.
+- Complexity measurements are provided for each method of a class.
+- Duplicate code is found and listed.
 
 
 ## Download
@@ -42,6 +56,8 @@ If you would like to build from source:
 - cd oovcde
 - cmake source
 - make
+- sudo make install
+
 Depending on the version of LLVM on your system, it may be required that
 the CMakeLists.txt file is modified to use a different version. GTK3 is also
 required.
