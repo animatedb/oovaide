@@ -157,7 +157,7 @@ public:
 
 enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call, ST_VarRef };
 
-#define NonMemberVariables 0
+#define NonMemberVariables 1
 
 
 /// These aren't really statements. These are important things in a function
@@ -208,9 +208,13 @@ class ModelStatement:private ModelObject
 	bool getVarAccessWrite() const
 	    { return mVarAccessWrite; }
 #if(NonMemberVariables)
-	bool hasNonMemberVar() const;
-	static char const *getNonMemberVarSep()
-	    { return "+>"; }
+	// Just stick a symbol in the name to indicate it is
+	// a base class member reference.
+	bool hasBaseClassMemberRef() const;
+	static char const *getBaseClassMemberRefSep()
+	    { return "+:"; }
+	static char const *getBaseClassMemberCallSep()
+	    { return "+:"; }
 #endif
 
     private:
@@ -578,6 +582,9 @@ class ModelData
 		ConstModelDeclClasses &classes) const;
 	void getRelatedBodyVarClasses(const ModelClassifier &type,
 		ConstModelDeclClasses &declclasses) const;
+	// This also gets bases of bases.
+	void getBaseClasses(ModelClassifier const &type,
+		ConstModelClassifierVector &classes) const;
 
     private:
 	ModelObject *createDataType(eModelDataTypes type, const std::string &id);

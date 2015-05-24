@@ -40,8 +40,7 @@ class ZoneDiagramList
 class ZoneDiagramListener
     {
     public:
-	virtual ~ZoneDiagramListener()
-	    {}
+	virtual ~ZoneDiagramListener();
 	virtual void gotoClass(OovStringRef const className) = 0;
     };
 

@@ -2,93 +2,24 @@
 
 #include "FastGene.h"
 
-#define MYRAND 0	// Use my random number generator or 'C' rand()
-
-#if(MYRAND)
-#define RAND_MAX 0x7fff
-#else
-#include <stdlib.h>	// Declares rand()
-#endif
 #include <stdio.h>
 #include <malloc.h>
 #include <math.h>
 #include <ctype.h>
+#include <random>
+#include <float.h>	// For DBL_MAX
 
-
-/*
-* This random number generation routine can be used in the case that the 'C'
-* library rand routine is not good enough.
-*
-* This code came from Computer Language, 10-89, page 59, T.A.Elkins.
-* Original source was assembly;
-*/
-#if(MYRAND)
-static int customRand(void)
+/// Generate a random number including 0 to maxpossible
+static size_t randmax(size_t maxpossible)
     {
-    // Initial seeds - these can be changed
-    static unsigned int h1 = 7397;
-    static unsigned int h2 = 29447;
-    static unsigned int h3 = 802;
-    // Do not change these
-    const unsigned int f1 = 179;
-    const unsigned int f2 = 183;
-    const unsigned int f3 = 182;
-    const unsigned int m1 = 32771;
-    const unsigned int m2 = 32779;
-    const unsigned int m3 = 32783;
-    register unsigned int res;
-    register unsigned char t;
-    register unsigned int temp1, temp2, temp3;
-
-    do
-	{
-	t = 0;
-	temp1 = (h1 * f1) % m1;
-	h1 = temp1;
-	temp1--;
-	if(temp1 >= 32767)
-	    t++;
-	temp2 = (h2 * f2) % m2;
-	h2 = temp2;
-	temp2--;
-	if(temp2 >= 32767)
-	t++;
-	res = temp1 + temp2;
-	temp3 = (h3 * f3) % m3;
-	h3 = temp3;
-	temp3--;
-	if(temp3 >= 32767)
-	t++;
-	} while(t != 0);
-    res += temp3;
-    res = res & 32767;
-    return(res);
-    }
-#else
-// Because of the simple int math below, this max must be less than half
-// the bits in an int.
-#define CUSTOM_RAND_MAX (0xFFFF & RAND_MAX)
-static int customRand(void)
-    {
-    return(rand() & CUSTOM_RAND_MAX);
-    }
-#endif
-
-/// Generate a random number from 0 to numpossibles
-/// numpossibles must be a max of half the bits in an int.
-static size_t randmax(size_t numpossibles)
-    {
-    return(static_cast<size_t>(
-        (static_cast<unsigned long>(customRand()) * numpossibles) /
-        (static_cast<unsigned long>(CUSTOM_RAND_MAX))));
+    static std::default_random_engine generator;
+    std::uniform_int_distribution<size_t> distribution(0, maxpossible);
+    return distribution(generator);
     }
 
 GeneValue GenePool::randRange(size_t min, size_t max)
     {
-    return(static_cast<GeneValue>(
-	    (min + (static_cast<unsigned long>(customRand()) * (max - min + 1)) /
-            (static_cast<unsigned long>(CUSTOM_RAND_MAX)))
-	    ));
+    return(static_cast<GeneValue>(randmax(max-min)+min));
     }
 
 void GenePool::initialize(size_t genebytes, size_t numberofgenes, double crossoverrate,

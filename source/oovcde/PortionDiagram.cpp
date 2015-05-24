@@ -21,6 +21,7 @@ void PortionDiagram::initialize(const ModelData &modelData)
 
 void PortionDiagram::clearGraphAndAddClass(OovStringRef className)
     {
+    mCurrentClassName = className;
     mPortionGraph.clearAndAddClass(*mModelData, className);
     mPortionDrawer.updateGraph(mPortionGraph);
     }
@@ -65,9 +66,18 @@ GtkWidget *PortionDiagram::getDrawingArea() const
     return Builder::getBuilder()->getWidget("DiagramDrawingarea");
     }
 
+static PortionDiagram *sPortionDiagram;
+
+static void portionGraphDisplayContextMenu(guint button, guint32 acttime, gpointer data)
+    {
+    GtkMenu *menu = Builder::getBuilder()->getMenu("DrawPortionPopupMenu");
+    gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
+    }
+
 void PortionDiagram::graphButtonPressEvent(const GdkEventButton *event)
     {
     sStartPosInfo.set(event->x, event->y);
+    sPortionDiagram = this;
     }
 
 void PortionDiagram::graphButtonReleaseEvent(const GdkEventButton *event)
@@ -84,6 +94,35 @@ void PortionDiagram::graphButtonReleaseEvent(const GdkEventButton *event)
 	}
     else
 	{
-	// Display context menu.
+	portionGraphDisplayContextMenu(event->button, event->time, (gpointer)event);
 	}
     }
+
+void PortionDiagram::viewClassSource()
+    {
+    const ModelClassifier *classifier = nullptr;
+    ModelType const *type = mModelData->getTypeRef(mCurrentClassName);
+    if(type)
+	{
+	classifier = type->getClass();
+	}
+    if(classifier && classifier->getModule())
+	{
+	viewSource(classifier->getModule()->getModulePath(),
+	classifier->getLineNum());
+	}
+    }
+
+
+extern "C" G_MODULE_EXPORT void on_PortionViewSourceMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    sPortionDiagram->viewClassSource();
+    }
+
+extern "C" G_MODULE_EXPORT void on_PortionRelayoutMenuitem_activate(
+	GtkWidget *widget, gpointer data)
+    {
+    sPortionDiagram->relayout();
+    }
+

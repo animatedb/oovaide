@@ -58,6 +58,8 @@ OovString ZoneNode::getMappedComponentName(ZonePathMap const &map) const
     return compName;
     }
 
+static const size_t NO_INDEX = static_cast<size_t>(-1);
+
 class ReverseIndexLookup
     {
     public:
@@ -70,10 +72,10 @@ class ReverseIndexLookup
 		}
 	    }
 
-	// Returns -1 for class not found;
-	int getClassIndex(const ModelClassifier *classifier) const
+	// Returns NO_INDEX for class not found;
+	size_t getClassIndex(const ModelClassifier *classifier) const
 	    {
-	    int index = -1;
+	    size_t index = NO_INDEX;
 	    for(size_t i=0; i<mClasses.size(); i++)
 		{
 		if(mClasses[i] == classifier)
@@ -90,13 +92,13 @@ class ReverseIndexLookup
 	std::vector<const ModelClassifier*> mClasses;
     };
 
-void ZoneConnections::insertConnection(int nodeIndex1, int nodeIndex2,
+void ZoneConnections::insertConnection(size_t nodeIndex1, size_t nodeIndex2,
 	eZoneDependencyDirections zdd)
     {
     if(nodeIndex1 != nodeIndex2)
 	{
-	int firstIndex = nodeIndex1;
-	int secondIndex = nodeIndex2;
+	size_t firstIndex = nodeIndex1;
+        size_t secondIndex = nodeIndex2;
 	/// Make it so the first index is always highest.
 	if(nodeIndex1 < nodeIndex2)
 	    {
@@ -111,11 +113,12 @@ void ZoneConnections::insertConnection(int nodeIndex1, int nodeIndex2,
 	}
     }
 
-void ZoneConnections::insertConnection(int nodeIndex, const ModelClassifier *classifier,
-	ReverseIndexLookup const &indexLookup, eZoneDependencyDirections zdd)
+void ZoneConnections::insertConnection(size_t nodeIndex,
+    const ModelClassifier *classifier,
+    ReverseIndexLookup const &indexLookup, eZoneDependencyDirections zdd)
     {
-    int secondIndex = indexLookup.getClassIndex(classifier);
-    if(secondIndex != -1)	// -1 is not a class, or is not in the list of indexed classes.
+    size_t secondIndex = indexLookup.getClassIndex(classifier);
+    if(secondIndex != NO_INDEX)	// NO_INDEX is not a class, or is not in the list of indexed classes.
 	{
 	if(nodeIndex != secondIndex)
 	    {
@@ -264,8 +267,8 @@ void ZoneGraph::updateConnections()
 	    // Go through associations, and get related classes.
 	    for(const auto &assoc : mModel->mAssociations)
 		{
-		int n1Index = -1;
-		int n2Index = -1;
+		size_t n1Index = NO_INDEX;
+                size_t n2Index = NO_INDEX;
 		if(assoc->getChild() == classifier)
 		    {
 		    n1Index = indexLookup.getClassIndex(assoc->getParent());
@@ -276,7 +279,7 @@ void ZoneGraph::updateConnections()
 		    n2Index = indexLookup.getClassIndex(assoc->getChild());
 		    n1Index = indexLookup.getClassIndex(classifier);
 		    }
-		if(n1Index != -1 && n2Index != -1)
+		if(n1Index != NO_INDEX && n2Index != NO_INDEX)
 		    {
 		    mConnections.insertConnection(n1Index, n2Index, ZDD_SecondIsClient);
 		    }

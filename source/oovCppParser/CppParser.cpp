@@ -26,7 +26,6 @@
 // setModule is called for every operation defined in the current TU.
 
 #define DEBUG_HASH 0
-#define DEBUG_PARSE 0
 #if(DEBUG_PARSE)
 static DebugFile sLog("DebugCppParse.txt", false);
 #endif
@@ -484,11 +483,19 @@ CXChildVisitResult CppParser::visitFunctionAddDupHashes(CXCursor cursor,
     return res;
     }
 
+static bool isBaseClass(ParserModelData const &modelData,
+	ModelClassifier *classifier, CXCursor memberRefCursor)
+    {
+    CXCursor attrCursor = clang_getCursorReferenced(memberRefCursor);
+    CXCursor attrClassCursor = clang_getCursorSemanticParent(attrCursor);
+    CXStringDisposer classTypeName = clang_getCursorDisplayName(attrClassCursor);
+    return modelData.isBaseClass(classifier, classTypeName);
+    }
 
 // Takes a CXType_FunctionProto cursor, and finds conditional statements and
 // calls to functions.
 CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
-    CXCursor /*parent*/)
+    CXCursor parent)
     {
 #if(DEBUG_PARSE)
     mStatementRecurseLevel++;
@@ -514,12 +521,14 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 
 	case CXCursor_DoStmt:
 	    addCondStatement(cursor, 1, 0);
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 //	case CXCursor_GotoStmt, break, continue, return, CXCursor_DefaultStmt
 	/// Conditional statements
 	case CXCursor_WhileStmt:	//   enum { VAR, COND, BODY, END_EXPR };
 	    addCondStatement(cursor, 0, 1);	// cond body
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	case CXCursor_CaseStmt:
@@ -554,86 +563,84 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 
 	case CXCursor_CXXForRangeStmt:
 	    addCondStatement(cursor, 1, 5);
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	case CXCursor_ForStmt:
 	    addCondStatement(cursor, 1, 3);
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	case CXCursor_IfStmt:	    	//    enum { VAR, COND, THEN, ELSE, END_EXPR };
 	    addCondStatement(cursor, 0, 1);	// cond=0, ifbody=1, [elsebody]=2
 	    addElseStatement(cursor, 2);
+	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
+	// When a call expression is like member.func(), the first child is a
+	// member ref expression.  The visitChildren call will add the member
+	// ref expression as a new type ref in the model.
 	case CXCursor_CallExpr:
 	    {
+//debugDumpCursor(stdout, parent);
 //debugDumpCursor(stdout, cursor);
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    CXStringDisposer functionName = clang_getCursorDisplayName(cursor);
-		// This returns CXCursor_MemberRefExpr, and does not have
-		// a child for an implicit this reference.  Method parameters and globals
-		// do have a child cursor.
-// This code does not work. The call is not the right place to find an implicit
-// variable reference through inherited classes.
-// A constructor call to a parent class will be a CallExpr, but does not have
-// any info to indicate it is a this reference from the libclang CIndex interface.
-#if(NonMemberVariables)
-	    CXCursor memberRefCursor = getCursorChildKind(cursor, CXCursor_MemberRefExpr);
-	    if(memberRefCursor.kind == CXCursor_MemberRefExpr)
+	    if(functionName.length() != 0)
 		{
-		CXCursor child = getNthChildCursor(memberRefCursor, 0);
+#if(NonMemberVariables)
+		// For portion diagrams, it is important to display any
+		// references to the class. This includes references to
+		// base classes.  Some base class references will not have
+		// a member expression (instead of "mAttr.call()", it will just
+		// be "call()").
+		//
+		// Global functions calls look similar to base member calls in
+		// source code, but they do not have a grandchild of a
+		// CXCursor_MemberRefExpr.
+		//
+		// Conversion constructors also look similar, but they have
+		// a parent of CXCursor_VarDecl.
+		//
+		// Method parameters and globals references do have a
+		// CXCursor_MemberRefExpr grandchild cursor.
+
+		// A constructor call to a parent class will be a CallExpr, but
+		// does not have any info to indicate it is a this reference
+		// from the libclang CIndex interface.
+
 		// This is a bit of a kludge since this is an undocumented way
-		// to check if the this pointer is used.
+		// to check if a base class reference is being used.
 		//
-		//				memberRefCursor		child
-		// Call to parent:		CXCursor_MemberRefExpr	CXCursor_FirstInvalid
-		// Call to function:		CXCursor_FirstExpr	CXCursor_DeclRefExpr
-		// Call to implicit:		memberRefCursor		CXCursor_FirstInvalid
-		// Call to parameter:		CXCursor_MemberRefExpr	CXCursor_FirstExpr
-		// Call to member:		CXCursor_MemberRefExpr	CXCursor_FirstExpr
-		// call to global:		CXCursor_MemberRefExpr	CXCursor_DeclRefExpr
+		//				first child		first grandchild
+		// Call to base class:
+		// Call to function:		CXCursor_UnexposedExpr	CXCursor_DeclRefExpr
+		// Call to implicit:		first arg cursor?
+		// Call through parameter:	CXCursor_MemberRefExpr	UnexposedExpr
+		// Call through member:		CXCursor_MemberRefExpr	CXCursor_MemberRefExpr<bound member...>
+		// call through global:		CXCursor_MemberRefExpr	CXCursor_DeclRefExpr
 		//
-		// Only the call to the parent class not have a child cursor.
-		// We distinguish calls to the parent classes using "::", so that
-		// all references to the class data is displayed in portion diagrams.
-		if(clang_Cursor_isNull(child))
+		// A call to the parent class does not have a child cursor of the memberRefExpr.
+		bool haveMemberRef = false;
+		CXCursor child = getNthChildCursor(cursor, 0);
+		// Global functions and constructors do not have a child member ref expr.
+		if(child.kind == CXCursor_MemberRefExpr)
 		    {
-		    // The type spelling of CXCursor_CallExpr and CXCursor_MemberRefExpr is the same.
-		    // Spelling is return type of function call:		clang_getCursorType(cursor);
-		    // Spelling is function def:				clang_getCursorReferenced(memberRefCursor)
-		    // Returns CXCursor_CXXMethod, Spelling is function def:	clang_getCursorDefinition(memberRefCursor)
-		    // Returns CXCursor_FirstInvalid:				clang_getCursorSemanticParent(memberRefCursor);
-		    CXCursor cursorDef = clang_getCursorDefinition(cursor);
-//		    if(cursorDef.kind == CXCursor_FirstInvalid)
-//			cursorDef = clang_getCursorReferenced(cursor);
-		    CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
-		    CXStringDisposer attrName = clang_getCursorDisplayName(classCursor);
-		    if(attrName.length() == 0)
+		    CXCursor grandChild = getNthChildCursor(child, 0);
+		    // member calls to a base class or this class do have a
+		    // child member ref expr, but do not have a grandchild
+		    // member ref expr.
+		    if(grandChild.kind == CXCursor_MemberRefExpr ||
+			grandChild.kind == CXCursor_DeclRefExpr)
 			{
-			attrName.insert(0, "this ");
+			haveMemberRef = true;
 			}
-		    if(clang_CXXMethod_isStatic(cursorDef))
-			{
-			attrName.insert(0, "static ");
-			}
-OovString diagName;
-appendCursorTokenString(cursor, diagName);
-size_t pos = getFunctionNameFromMemberRefExpr(diagName);
-if(pos != std::string::npos)
-    {
-    diagName.erase(pos);
-    diagName.replaceStrs(" ", "");
-    }
-attrName += " " + diagName;
-CXStringDisposer kindName = clang_getCursorKindSpelling(cursorDef.kind);
-attrName += " " + kindName;
-		    attrName += ModelStatement::getNonMemberVarSep();
-		    // This results in:		thisattrname.funcname
-		    functionName.insert(0, attrName);
 		    }
-		else
+		bool haveConstructor = (parent.kind == CXCursor_VarDecl);
+		if(haveMemberRef)
 		    {
 		    OovString attrName;
+		    CXCursor memberRefCursor = getCursorChildKind(cursor, CXCursor_MemberRefExpr);
 		    appendCursorTokenString(memberRefCursor, attrName);
 		    size_t pos = getFunctionNameFromMemberRefExpr(attrName);
 		    if(pos != std::string::npos)
@@ -644,15 +651,23 @@ attrName += " " + kindName;
 			functionName.insert(0, attrName);
 			}
 		    }
-		}
+		else if(!haveConstructor)
+		    {
+		    if(isBaseClass(mParserModelData, mClassifier, cursor))
+			{
+			// The type of the class that the call is a member of is stored
+			// below using clang_getCursorSemanticParent.
+			// The calls to parent classes are distinguished using a symbol, so that
+			// all references to the class data is displayed in portion diagrams.
+			functionName.insert(0, ModelStatement::getBaseClassMemberCallSep());
+			}
+		    }
 #endif
 
-	    // This returns the CXCursor_CXXMethod cursor
-	    CXCursor cursorDef = clang_getCursorDefinition(cursor);
-	    if(cursorDef.kind == CXCursor_FirstInvalid)
-		cursorDef = clang_getCursorReferenced(cursor);
-	    if(functionName.length() != 0)
-		{
+		// This returns the CXCursor_CXXMethod cursor
+		CXCursor cursorDef = clang_getCursorDefinition(cursor);
+		if(cursorDef.kind == CXCursor_FirstInvalid)
+		    cursorDef = clang_getCursorReferenced(cursor);
 		/// @todo - fix to support class1.class2.call(). This is tricky because
 		/// the sequence diagram needs to know the type of class2 for class2.call,
 		/// but complexity or class relations know the type of the class1 relation.
@@ -717,6 +732,8 @@ attrName += " " + kindName;
 	// An expression that refers to a member of a struct, union, class, etc.
 	// If first child of CXCursor_BinaryOperator, it is read only.
 	// If child of CXCursor_UnaryOperator, it may be write or read.
+	// This saves multiple type references to things like "class1.class2.member".
+	// This works because of the recursive call to clang_visitChildren.
 	case CXCursor_MemberRefExpr:
 	case CXCursor_MemberRef:
 	    {
@@ -726,7 +743,23 @@ attrName += " " + kindName;
 	    CXCursor cursorDef = clang_getCursorDefinition(cursor);
 	    if(cursorDef.kind == CXCursor_FieldDecl)
 		{
-		/// @todo - fix to support class1.class2.member
+#if(NonMemberVariables)
+		CXCursor child = getNthChildCursor(cursor, 0);
+		bool haveMemberRef = (child.kind == CXCursor_MemberRefExpr);
+		bool haveConstructor = (parent.kind == CXCursor_VarDecl ||
+			parent.kind == CXCursor_Constructor);
+		if(!haveMemberRef && !haveConstructor)
+		    {
+		    if(isBaseClass(mParserModelData, mClassifier, cursor))
+			{
+			// The type of the class that the call is a member of is stored
+			// below using clang_getCursorSemanticParent.
+			// The calls to parent classes are distinguished using a symbol, so that
+			// all references to the class data is displayed in portion diagrams.
+			name.insert(0, ModelStatement::getBaseClassMemberRefSep());
+			}
+		    }
+#endif
 		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
 		if(classCursor.kind == CXCursor_ClassDecl || classCursor.kind == CXCursor_StructDecl)
 		    {
@@ -749,7 +782,8 @@ attrName += " " + kindName;
 	    else if(cursorDef.kind != CXCursor_CXXMethod && cursorDef.kind != CXCursor_FirstInvalid &&
 		    cursorDef.kind != CXCursor_ConversionFunction)
 		{
-		LogAssertFile(__FILE__, __LINE__);
+		LogAssertFile(__FILE__, __LINE__,
+			mParserModelData.getParsedModule()->getName().getStr());
 		}
 	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    }
@@ -981,7 +1015,8 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor,
 			}
 		    else
 			{
-			LogAssertFile(__FILE__, __LINE__);
+			LogAssertFile(__FILE__, __LINE__,
+				mParserModelData.getParsedModule()->getName().getStr());
 			}
 		    }
 		}
@@ -1169,7 +1204,7 @@ CppParser::eErrorTypes CppParser::parse(bool lineHashes, char const * const srcF
 
 #if(DEBUG_PARSE)
 	fprintf(sLog.mFp, "DUMP TYPES\n");
-	for(const auto & tp: mModelData.mTypes)
+	for(const auto & tp: mParserModelData.DebugGetModelData().mTypes)
 	    {
 	    fprintf(sLog.mFp, "%s %p\n", tp.get()->getName().c_str(), tp.get());
 	    }

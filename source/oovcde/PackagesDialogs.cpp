@@ -330,19 +330,22 @@ void ProjectPackagesDialog::winScanDirectories()
 
 ///////////////////
 
-extern "C" G_MODULE_EXPORT void on_PackageAddButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_PackageAddButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sProjectPackagesDialog)
 	sProjectPackagesDialog->displayAddPackageDialog();
     }
 
-extern "C" G_MODULE_EXPORT void on_PackageRemoveButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_PackageRemoveButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sProjectPackagesDialog)
 	sProjectPackagesDialog->removePackage();
     }
 
-extern "C" G_MODULE_EXPORT void on_ProjectPackagesTreeview_cursor_changed(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_ProjectPackagesTreeview_cursor_changed(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sProjectPackagesDialog)
 	sProjectPackagesDialog->selectPackage();
@@ -350,13 +353,15 @@ extern "C" G_MODULE_EXPORT void on_ProjectPackagesTreeview_cursor_changed(GtkWid
 
 //////////////
 
-extern "C" G_MODULE_EXPORT void on_AllPackagesTreeview_cursor_changed(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_AllPackagesTreeview_cursor_changed(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sAddPackageDialog)
 	sAddPackageDialog->selectPackage();
     }
 
-extern "C" G_MODULE_EXPORT void on_ScanDirectoriesButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_ScanDirectoriesButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
 #ifndef __linux__
     if(sProjectPackagesDialog)
@@ -364,7 +369,8 @@ extern "C" G_MODULE_EXPORT void on_ScanDirectoriesButton_clicked(GtkWidget *butt
 #endif
     }
 
-extern "C" G_MODULE_EXPORT void on_PackageRootDirEntry_changed(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_PackageRootDirEntry_changed(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
 #ifndef __linux__
     if(sProjectPackagesDialog)

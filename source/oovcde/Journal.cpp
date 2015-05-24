@@ -10,6 +10,14 @@
 static Journal *gJournal;
 
 
+JournalListener::~JournalListener()
+    {
+    }
+
+JournalRecord::~JournalRecord()
+    {
+    }
+
 std::string JournalRecord::getFullName(bool addSpace) const
     {
     std::string fullName = getRecordTypeName();
@@ -24,6 +32,10 @@ Journal::Journal():
     mJournalListener(nullptr), mTaskStatusListener(nullptr)
     {
     gJournal = this;
+    }
+
+Journal::~Journal()
+    {
     }
 
 Journal *Journal::getJournal()
@@ -43,8 +55,8 @@ void Journal::clear()
 void Journal::displayClass(OovStringRef const className)
     {
     JournalRecordClassDiagram *rec;
-    int recordIndex = findRecord(RT_Class, className);
-    if(recordIndex == -1)
+    size_t recordIndex = findRecord(RT_Class, className);
+    if(recordIndex == NO_INDEX)
 	{
 	rec = new JournalRecordClassDiagram(*mBuilder, *mModel,
 		*mJournalListener, *mTaskStatusListener);
@@ -67,7 +79,7 @@ void Journal::addClass(OovStringRef const className)
 	{
 	JournalRecordClassDiagram *recClass =
 		reinterpret_cast<JournalRecordClassDiagram*>(rec);
-	recClass->mClassDiagram.addClass(className);
+	recClass->mClassDiagram.addClass(className, ClassGraph::AN_AllStandard);
 	}
     }
 
@@ -78,8 +90,8 @@ void Journal::displayOperation(OovStringRef const className,
     OovString fullOperName = operName;
     fullOperName += ' ';
     fullOperName += className;
-    int recordIndex = findRecord(RT_Sequence, fullOperName);
-    if(recordIndex == -1)
+    size_t recordIndex = findRecord(RT_Sequence, fullOperName);
+    if(recordIndex == NO_INDEX)
 	{
 	rec = new JournalRecordOperationDiagram(*mBuilder, *mModel,
 		*mJournalListener);
@@ -99,9 +111,9 @@ void Journal::displayComponents()
     if(mBuilder)
 	{
 	OovStringRef const componentName = "<Components>";
-	int recordIndex = findRecord(RT_Component, componentName);
+	size_t recordIndex = findRecord(RT_Component, componentName);
 	JournalRecordComponentDiagram *rec;
-	if(recordIndex == -1)
+	if(recordIndex == NO_INDEX)
 	    {
 	    rec = new JournalRecordComponentDiagram(*mBuilder, *mJournalListener);
 	    rec->mComponentDiagram.drawToDrawingArea();
@@ -121,9 +133,9 @@ void Journal::displayWorldZone()
     if(mBuilder)
 	{
 	OovStringRef const zoneName = "<WorldZone>";
-	int recordIndex = findRecord(RT_Zone, zoneName);
+	size_t recordIndex = findRecord(RT_Zone, zoneName);
 	JournalRecordZoneDiagram *rec;
-	if(recordIndex == -1)
+	if(recordIndex == NO_INDEX)
 	    {
 	    rec = new JournalRecordZoneDiagram(*mBuilder, *mModel, *mJournalListener);
 	    rec->mZoneDiagram.drawToDrawingArea();
@@ -143,9 +155,9 @@ void Journal::displayPortion(OovStringRef const className)
     {
     if(mBuilder)
 	{
-	int recordIndex = findRecord(RT_Portion, className);
+	size_t recordIndex = findRecord(RT_Portion, className);
 	JournalRecordPortionDiagram *rec;
-	if(recordIndex == -1)
+	if(recordIndex == NO_INDEX)
 	    {
 	    rec = new JournalRecordPortionDiagram(*mBuilder, *mModel, *mJournalListener);
 	    rec->mPortionDiagram.clearGraphAndAddClass(className);
@@ -169,9 +181,9 @@ void Journal::addRecord(JournalRecord *record, OovStringRef const name)
     setCurrentRecord(mRecords.size()-1);
     }
 
-int Journal::findRecord(eRecordTypes rt, OovStringRef const name)
+size_t Journal::findRecord(eRecordTypes rt, OovStringRef const name)
     {
-    int index = -1;
+    size_t index = NO_INDEX;
     for(size_t i=0; i<mRecords.size(); i++)
 	{
 	if(mRecords[i]->getRecordType() == rt &&
@@ -196,7 +208,7 @@ void Journal::removeUnmodifiedRecords()
 	}
     }
 
-void Journal::removeRecord(int index)
+void Journal::removeRecord(size_t index)
     {
     delete mRecords[index];
     mRecords.erase(mRecords.begin() + index);
@@ -218,9 +230,30 @@ void Journal::cppArgOptionsChangedUpdateDrawings()
 	rec->cppArgOptionsChangedUpdateDrawings();
     }
 
+JournalRecordClassDiagram::~JournalRecordClassDiagram()
+    {
+    }
 
-extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_draw(GtkWidget *widget,
-	GdkEventExpose *event, gpointer user_data)
+JournalRecordOperationDiagram::~JournalRecordOperationDiagram()
+    {
+    }
+
+JournalRecordComponentDiagram::~JournalRecordComponentDiagram()
+    {
+    }
+
+JournalRecordZoneDiagram::~JournalRecordZoneDiagram()
+    {
+    }
+
+JournalRecordPortionDiagram::~JournalRecordPortionDiagram()
+    {
+    }
+
+
+extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_draw(
+    GtkWidget * /*widget*/,
+	GdkEventExpose * /*event*/, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
@@ -235,16 +268,18 @@ extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_draw(GtkWidget *widget,
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_press_event(GtkWidget *widget,
-	GdkEventExpose *event, gpointer user_data)
+extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_press_event(
+    GtkWidget * /*widget*/,
+	GdkEventExpose *event, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
 	rec->drawingAreaButtonPressEvent(reinterpret_cast<GdkEventButton*>(event));
     }
 
-extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_release_event(GtkWidget *widget,
-	GdkEventExpose *event, gpointer user_data)
+extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_release_event(
+    GtkWidget * /*widget*/,
+	GdkEventExpose *event, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
@@ -252,8 +287,9 @@ extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_release_event(GtkWi
     }
 
 // "Focus Change" must be set in Glade Events for this to work.
-extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_focus_out_event(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
+extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_focus_out_event(
+    GtkWidget * /*widget*/,
+	GdkEvent * /*event*/, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
@@ -262,8 +298,9 @@ extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_focus_out_event(GtkWidget 
     }
 
 // "Pointer Motion" must be set in Glade Events for this to work.
-extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_motion_notify_event(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
+extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_motion_notify_event(
+    GtkWidget * /*widget*/,
+	GdkEvent *event, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)

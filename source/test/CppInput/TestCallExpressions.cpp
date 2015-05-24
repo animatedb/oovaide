@@ -7,111 +7,136 @@ namespace TestCallExpressions
 {
 
 class parent
-	{
-	public:
-		parent()
-			{}
-		parent(int x)
-			{}
-		void parentFunc(int x)
-			{}
-	};
+    {
+    public:
+        parent()
+            {}
+        parent(int x)
+            {}
+        int parentFunc(int x)
+            { return x; }
+    };
 
 void globalFunc1()
-	{
-	}
+    {
+    }
 
 void globalFunc2(parent c)
-	{
-	}
+    {
+    }
 
 static parent gparent;
 
 class otherClass
-	{
-	public:
-		otherClass(int x):
-			mInt(x)
-			{
-			}
-	private:
-		int mInt;
-	};
+    {
+    public:
+        otherClass(int x):
+            mInt(x)
+            {
+            }
+    private:
+        int mInt;
+    };
 
 // AST is different than children from the CIndex interface.
 class child:public parent
-	{
-	public:						// AccesssSpecDecl
-		child():
-			parent(3)
-			{}
-		void childFunc(parent *p)	// CXXMethodDecl
-			{					//   CompoundStmt
-			// Call to parent class.
-			// First child is:			CXCursor_MemberRefExpr, "parentFunc".
-			// First grandchild is:		CXCursor_FirstInvalid
-			parentFunc(0);		//     CXXMemberCallExpr
-								//		 MemberExpr
-								//		   ImplicitCastExpr
-								//		     CXXThisExpr
-								//     Params start here...
+    {
+    public:						// AccesssSpecDecl
+        child():
+            parent(3)	// non this member ref constructor
+            {}
 
-			// Call to function.
-			// First child is:			CXCursor_FirstExpr, "parentFunc".
-			// First grandchild is:		CXCursor_DeclRefExpr, "parentFunc".
-			globalFunc1();
+        void childFuncNonThisMemberRef()
+            {
+            // Call to parent class.
+            // First child is:			CXCursor_MemberRefExpr, "parentFunc".
+            // First grandchild is:		CXCursor_FirstInvalid
+            parentFunc(-1);		//     CXXMemberCallExpr
+				    //		 MemberExpr
+				    //		   ImplicitCastExpr
+				    //		     CXXThisExpr
+				    //     Params start here...
+            }
 
-			// Call to implicit conversion
-			// First child is:			CXCursor_IntegerLiteral
-			// First grandchild is:		CXCursor_FirstInvalid
-			// Then should be same as function call.
-			globalFunc2(5);		// Implicit conversion
+        void childFuncGlobal(parent *p)		// CXXMethodDecl
+            {					//   CompoundStmt
+            // Call to function.
+            // First child is:			CXCursor_FirstExpr, "parentFunc".
+            // First grandchild is:		CXCursor_DeclRefExpr, "parentFunc".
+            globalFunc1();
+            }
 
-			// Call to parameter method.
-								// Has MemberExpr/ImplicitCastExpr/CXXThisExpr
-			// KEY IS CXXMemberCallExpr has child "ImplicitCastExpr/CXXThisExpr"
-
-			// First child is:			CXCursor_MemberRefExpr, "parentFunc".
-			// First grandchild is:		CXCursor_DeclRefExpr, "p".
-			p->parentFunc(1);	// Has MemberExpr/ImplicitCastExpr/DeclRefExpr
-
-			// Call to member method.
-								// Note that the mAttr is part of the CXXMemberCallExpr
-			mAttr.parentFunc(2);	// Has MemberExpr/MemberExpr/CXXThisExpr
-
-			// Call to global method.
-			gparent.parentFunc(3);
-
-			child::parentFunc(4);
-
-			otherClass other(5);
-			}
-		void childFunc2()
+		void childFuncGlobalImplicit(parent *p)	// CXXMethodDecl
 			{
-			mAttr.parentFunc(0);
+            // Call to implicit conversion
+            // First child is:			CXCursor_IntegerLiteral
+            // First grandchild is:		CXCursor_FirstInvalid
+            // Then should be same as function call.
+            globalFunc2(0);		// Implicit conversion
 			}
-	public:
-		parent mAttr;
-	};
+
+        void childFuncMemberRefs(parent *p)	// CXXMethodDecl
+            {
+            // Call to parameter method.
+            // Has MemberExpr/ImplicitCastExpr/CXXThisExpr
+            // KEY IS CXXMemberCallExpr has child "ImplicitCastExpr/CXXThisExpr"
+
+            // First child is:			CXCursor_MemberRefExpr, "parentFunc".
+            // First grandchild is:		CXCursor_DeclRefExpr, "p".
+            p->parentFunc(1);	// Has MemberExpr/ImplicitCastExpr/DeclRefExpr
+
+            // Call to member method.
+            // Note that the mAttr is part of the CXXMemberCallExpr
+            mAttr.parentFunc(2);	// Has MemberExpr/MemberExpr/CXXThisExpr
+
+            // Call to global method.
+            gparent.parentFunc(3);
+
+            child::parentFunc(4);
+
+            otherClass other(5);
+            }
+
+        void childFuncNonMembers()
+            {
+            parent parentDef;
+            parentDef.parentFunc(parentDef.parentFunc(6));
+            }
+
+        void childFuncChild()
+            {
+            childFuncChild();
+            }
+
+    public:
+        parent mAttr;
+    };
 
 class grandChild:public child
-	{
-	public:
-		void grandChildFunc()
-			{
-			childFunc2();
-			mAttr.parentFunc(0);
-			mChild.mAttr.parentFunc(1);
-			getChild().mAttr.parentFunc(1);
-			}
-		child &getChild()
-			{ return mChild; }
-	private:
-		child mChild;
-	};
+    {
+    public:
+        void grandChildFunc()
+            {
+            childFuncNonThisMemberRef();
+            mAttr.parentFunc(0);
+            getChild().mAttr.parentFunc(1);
+            }
+
+        void grandChildFuncNested()
+            {
+            mChild.mAttr.parentFunc(1);
+            }
+
+        child &getChild()
+            { return mChild; }
+
+    private:
+        child mChild;
+    };
 
 
 };
+
 /*
 TranslationUnitDecl 0xc29df0 <<invalid sloc>> <invalid sloc>
 |-TypedefDecl 0xc2a0e0 <<invalid sloc>> <invalid sloc> implicit __builtin_va_list 'char *'

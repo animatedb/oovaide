@@ -32,16 +32,9 @@ static CXChildVisitResult debugDumpCursorVisitor(CXCursor cursor,
 	tokStr += "...";
 	}
     FILE *fp = static_cast<FILE *>(clientData);
-    if(depth == 1)
-	{
-	fprintf(fp, "\n");
-	}
-    else if(depth > 1)
-	{
-	fprintf(fp, "  ");
-	}
-    fprintf(fp, "%d@%s@%s@%s@%s@\n", depth, kindSp.c_str(), typeSp.c_str(),
-	dispName.c_str(), tokStr.c_str());
+    std::string spaces(depth * 2, ' ');
+    fprintf(fp, "%s@kind=%s@disp=%s@type=%s@tok=%s\n", spaces.c_str(),
+	    kindSp.c_str(), typeSp.c_str(), dispName.c_str(), tokStr.c_str());
     fflush(fp);
 
     clang_visitChildren(cursor, ::debugDumpCursorVisitor, clientData);

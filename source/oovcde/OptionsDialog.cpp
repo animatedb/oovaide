@@ -27,8 +27,7 @@ class Option
 	Option(OovStringRef const optionName, OovStringRef const widgetName):
 	    mOptionName(optionName), mWidgetName(widgetName)
 	    {}
-	virtual ~Option()
-	    {}
+	virtual ~Option();
 	virtual void optionToScreen(NameValueFile const &file) const = 0;
 	virtual void screenToOption(NameValueFile &file) const = 0;
     protected:
@@ -36,17 +35,23 @@ class Option
 	OovString mWidgetName;
     };
 
+Option::~Option()
+    {}
+
 class EntryOption:public Option
     {
     public:
 	EntryOption(OovStringRef const optionName, OovStringRef const widgetName):
 	    Option(optionName, widgetName)
 	    {}
-	virtual ~EntryOption()
-	    {}
+	virtual ~EntryOption();
 	virtual void optionToScreen(NameValueFile const &file) const override;
 	virtual void screenToOption(NameValueFile &file) const override;
     };
+
+EntryOption::~EntryOption()
+    {
+    }
 
 void EntryOption::optionToScreen(NameValueFile const &file) const
     {
@@ -66,11 +71,14 @@ class CheckOption:public Option
 	CheckOption(char const * const optionName, char const * const widgetName):
 	    Option(optionName, widgetName)
 	    {}
-	virtual ~CheckOption()
-	    {}
+	virtual ~CheckOption();
 	virtual void optionToScreen(NameValueFile const &file) const override;
 	virtual void screenToOption(NameValueFile &file) const override;
     };
+
+CheckOption::~CheckOption()
+    {
+    }
 
 void CheckOption::optionToScreen(NameValueFile const &file) const
     {
@@ -92,11 +100,14 @@ class TextViewOption:public Option
 	TextViewOption(OovStringRef const optionName, OovStringRef const widgetName):
 	    Option(optionName, widgetName)
 	    {}
-	virtual ~TextViewOption()
-	    {}
+	virtual ~TextViewOption();
 	virtual void optionToScreen(NameValueFile const &file) const override;
 	virtual void screenToOption(NameValueFile &file) const override;
     };
+
+TextViewOption::~TextViewOption()
+    {
+    }
 
 void TextViewOption::optionToScreen(NameValueFile const &file) const
     {
@@ -386,25 +397,29 @@ extern "C" G_MODULE_EXPORT void on_EditOptionsmenuitem_activate()
 	gOptionsDlg->showScreen();
     }
 
-extern "C" G_MODULE_EXPORT void on_OptionsOkButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_OptionsOkButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
 	gOptionsDlg->saveScreen();
     gtk_widget_hide(Builder::getBuilder()->getWidget("OptionsDialog"));
     }
 
-extern "C" G_MODULE_EXPORT void on_OptionsCancelButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_OptionsCancelButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     gtk_widget_hide(Builder::getBuilder()->getWidget("OptionsDialog"));
     }
 
-extern "C" G_MODULE_EXPORT void on_BuildConfigTreeview_cursor_changed(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_BuildConfigTreeview_cursor_changed(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
 	gOptionsDlg->setBuildConfig();
     }
 
-extern "C" G_MODULE_EXPORT void on_ExternalPackagesButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_ExternalPackagesButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
 	gOptionsDlg->runPackagesDialog();
@@ -412,7 +427,8 @@ extern "C" G_MODULE_EXPORT void on_ExternalPackagesButton_clicked(GtkWidget *but
 
 /////////////// New config //////////////
 
-extern "C" G_MODULE_EXPORT void on_BuildConfigNewButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_BuildConfigNewButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
 	{
@@ -420,7 +436,8 @@ extern "C" G_MODULE_EXPORT void on_BuildConfigNewButton_clicked(GtkWidget *butto
 	}
     }
 
-extern "C" G_MODULE_EXPORT void on_NewBuildConfigOKButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_NewBuildConfigOKButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
 	{
@@ -429,7 +446,8 @@ extern "C" G_MODULE_EXPORT void on_NewBuildConfigOKButton_clicked(GtkWidget *but
     gtk_widget_hide(Builder::getBuilder()->getWidget("NewBuildConfigDialog"));
     }
 
-extern "C" G_MODULE_EXPORT void on_NewBuildConfigCancelButton_clicked(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT void on_NewBuildConfigCancelButton_clicked(
+    GtkWidget * /*button*/, gpointer /*data*/)
     {
     gtk_widget_hide(Builder::getBuilder()->getWidget("NewBuildConfigDialog"));
     }

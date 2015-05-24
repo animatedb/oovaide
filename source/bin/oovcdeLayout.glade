@@ -524,6 +524,15 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="RelayoutMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Relayout</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RelayoutMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkSeparatorMenuItem" id="menuitem6">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -830,6 +839,26 @@ Use this dialog to set up component definitions.</property>
         <property name="label" translatable="yes">Remove All</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_OperRemoveAllMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
+  <object class="GtkMenu" id="DrawPortionPopupMenu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="PortionViewSourceMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">View Source</property>
+        <signal name="activate" handler="on_PortionViewSourceMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="PortionRelayoutMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Relayout</property>
+        <signal name="activate" handler="on_PortionRelayoutMenuitem_activate" swapped="no"/>
       </object>
     </child>
   </object>
@@ -1588,11 +1617,13 @@ This should normally not be under the Root Source Directory.</property>
                             <property name="can_focus">True</property>
                             <property name="has_tooltip">True</property>
                             <property name="tooltip_text" translatable="yes">Common arguments for all build configurations.
-Missing arguments may cause build errors, but
-may not be important for analysis.
+Missing arguments may cause build errors, but may not be
+important for analysis.
 
-Use the External Project Packages to specify some
-include and library files.
+Use the External Project Packages to specify some include
+and library files.  Enter a superset since Oovcde will figure
+out which includes and libraries are needed for each
+subdirectory.
 
 Arguments are passed to the compiler and linker.
 Special arguments are:
@@ -3046,6 +3077,9 @@ These arguments are specific to the selected configuration.
                       </object>
                     </child>
                   </object>
+                  <packing>
+                    <property name="menu_label">Components</property>
+                  </packing>
                 </child>
                 <child type="tab">
                   <object class="GtkLabel" id="ComponentLabel">
@@ -3076,6 +3110,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
+                    <property name="menu_label">Zone</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -3108,6 +3143,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
+                    <property name="menu_label">Classes</property>
                     <property name="position">2</property>
                   </packing>
                 </child>
@@ -3132,6 +3168,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
+                    <property name="menu_label">Portion</property>
                     <property name="position">3</property>
                   </packing>
                 </child>
@@ -3163,6 +3200,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
+                    <property name="menu_label">Operations</property>
                     <property name="position">4</property>
                   </packing>
                 </child>
@@ -3194,6 +3232,7 @@ These arguments are specific to the selected configuration.
                     </child>
                   </object>
                   <packing>
+                    <property name="menu_label">Journal</property>
                     <property name="position">5</property>
                   </packing>
                 </child>

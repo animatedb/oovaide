@@ -22,6 +22,10 @@ ProjectSettingsDialog::ProjectSettingsDialog(GtkWindow *parentWindow,
     sParentWindow = parentWindow;
     }
 
+ProjectSettingsDialog::~ProjectSettingsDialog()
+    {
+    }
+
 bool ProjectSettingsDialog::runDialog()
     {
     GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(

@@ -180,12 +180,15 @@ class DummyOperationCall:public OperationCall
 	DummyOperationCall(size_t operClassIndex, const std::string &name, bool isConst):
 	    OperationCall(operClassIndex, *(mDo=new DummyOperation(name, isConst)))
 	    {}
-	~DummyOperationCall()
-	    { delete mDo; }
+	virtual ~DummyOperationCall();
     private:
 	DummyOperation *mDo;
     };
 
+DummyOperationCall::~DummyOperationCall()
+    {
+    delete mDo;
+    }
 
 static bool hasCall(const ModelStatements &stmts, size_t stmtIndex)
     {
@@ -380,13 +383,13 @@ void OperationGraph::clearGraphAndAddOperation(const ModelData &model,
 void OperationGraph::removeOperation(size_t index)
     {
     delete mOperations[index];
-    mOperations.erase(mOperations.begin() + index);
+    mOperations.erase(mOperations.begin() + static_cast<int>(index));
     mModified = true;
     }
 
 void OperationGraph::removeClass(size_t index)
     {
-    mOpClasses.erase(mOpClasses.begin() + index);
+    mOpClasses.erase(mOpClasses.begin() + static_cast<int>(index));
 //    removeUnusedClasses();
     mModified = true;
     }

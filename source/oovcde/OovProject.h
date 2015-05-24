@@ -75,6 +75,7 @@ class OovProject:public ThreadedWorkBackgroundQueue<OovProject, ProjectBackgroun
 	OovProject():
 	    mStatusListener(nullptr)
 	    {}
+        virtual ~OovProject();
 
 	void setBackgroundProcessListener(OovProcessListener *listener)
 	    { mBackgroundProc.setListener(listener); }

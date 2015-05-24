@@ -37,6 +37,7 @@ class OperationDrawer
 	GraphSize drawDiagram(OperationGraph &graph, const OperationDrawOptions &options);
 
     private:
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
 	DiagramDrawer &mDrawer;
 	int mPad;
 	int mCharHeight;

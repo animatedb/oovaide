@@ -151,6 +151,34 @@ void ParserModelData::addAssociation(ModelClassifier const *parent,
 	}
     }
 
+bool ParserModelData::isBaseClass(ModelClassifier const *child,
+	OovStringRef const name) const
+    {
+    bool isBase = false;
+    ConstModelClassifierVector classes;
+    mModelData.getBaseClasses(*child, classes);
+    for(auto const &cls : classes)
+	{
+	OovString const &baseName = cls->getName();
+	// The caller class may have a namespace, so discard and compare.
+	size_t pos = baseName.rfind(':');
+	if(pos != std::string::npos)
+	    {
+	    pos++;
+	    }
+	else
+	    {
+	    pos = 0;
+	    }
+	if(baseName.compare(pos, std::string::npos, name) == 0)
+	    {
+	    isBase = true;
+	    break;
+	    }
+	}
+    return isBase;
+    }
+
 void ParserModelData::setLineStats(ModelModuleLineStats const &lineStats)
     {
     mModelData.mModules[0].get()->mLineStats = lineStats;

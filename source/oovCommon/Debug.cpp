@@ -5,15 +5,22 @@
  *  \copyright 2014 DCBlaha.  Distributed under the GPL.
  */
 #include "Debug.h"
+#include <string>
 
 
-void LogAssertFile(OovStringRef const file, int line)
+void LogAssertFile(OovStringRef const file, int line, char const *diagStr)
     {
     DebugFile debugAssertFile("OovAsserts.txt", true);
-    debugAssertFile.printflush("%s %d\n", file.getStr(), line);
+    std::string str;
+    if(diagStr)
+	{
+	str = ' ';
+	str += diagStr;
+	}
+    debugAssertFile.printflush("%s %d%s\n", file.getStr(), line, diagStr);
     }
 
-DebugFile::DebugFile(OovStringRef const fn, bool append):
+DebugFile::DebugFile(char const *fn, bool append):
     mOwnFile(true)
     {
     if(fn)

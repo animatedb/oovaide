@@ -111,7 +111,7 @@ const class ModelClassifier *ModelDeclarator::getDeclClassType() const
 
 
 /// @todo - code copied from ParseBase.cpp
-static size_t getFunctionPosFromMemberRefExpr(std::string &expr, bool afterSep)
+static size_t getRightSidePosFromMemberRefExpr(std::string &expr, bool afterSep)
     {
     size_t pos = expr.rfind('.');
     if(pos == std::string::npos)
@@ -138,7 +138,7 @@ OovString ModelStatement::getFuncName() const
     {
     OovString opName = getName();
 
-    size_t pos = getFunctionPosFromMemberRefExpr(opName, true);
+    size_t pos = getRightSidePosFromMemberRefExpr(opName, true);
     if(pos != std::string::npos)
 	opName.erase(0, pos);
     return opName;
@@ -149,7 +149,7 @@ OovString ModelStatement::getAttrName() const
     OovString attrName = getName();
     if(mStatementType == ST_Call)
 	{
-	size_t pos = getFunctionPosFromMemberRefExpr(attrName, false);
+	size_t pos = getRightSidePosFromMemberRefExpr(attrName, false);
 	if(pos != std::string::npos)
 	    attrName.erase(pos);
 	else
@@ -159,11 +159,11 @@ OovString ModelStatement::getAttrName() const
     }
 
 #if(NonMemberVariables)
-bool ModelStatement::hasNonMemberVar() const
+bool ModelStatement::hasBaseClassMemberRef() const
     {
     OovString attrName = getName();
-    size_t pos = getFunctionPosFromMemberRefExpr(attrName, false);
-    return(attrName[pos] == getNonMemberVarSep()[0]);
+    size_t pos = getRightSidePosFromMemberRefExpr(attrName, false);
+    return(attrName[pos] == '+');
     }
 #endif
 
@@ -1161,6 +1161,23 @@ void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
 		    declClasses.push_back(ModelDeclClass(stmt.getAttrName(),
 			    stmt.getClassDecl().getDeclType()));
 		    }
+		}
+	    }
+	}
+    }
+
+void ModelData::getBaseClasses(ModelClassifier const &type,
+	ConstModelClassifierVector &classes) const
+    {
+    for(auto const &assoc : mAssociations)
+	{
+	if(assoc.get()->getChild() == &type)
+	    {
+	    ModelClassifier const *parent = assoc.get()->getParent();
+	    if(std::find(classes.begin(), classes.end(), parent) == classes.end())
+		{
+		classes.push_back(parent);
+		getBaseClasses(*parent, classes);
 		}
 	    }
 	}

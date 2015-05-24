@@ -16,7 +16,7 @@ void OperationDrawer::setDiagramSize(GraphSize size)
 GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
 	const OperationDrawOptions &options)
     {
-    mCharHeight = mDrawer.getTextExtentHeight("W");
+    mCharHeight = static_cast<int>(mDrawer.getTextExtentHeight("W"));
     int pad = mCharHeight / 3;
     if(pad < 1)
 	pad = 1;
@@ -33,8 +33,8 @@ GraphSize OperationDrawer::drawDiagram(OperationGraph &graph,
 	OperationClass &opClass = graph.mOpClasses[i];
 	opClass.setPosition(pos);
 	size = drawClass(opClass, options);
-	int condDepth = graph.getNestDepth(i);
-	size.x += condDepth * mPad;
+	size_t condDepth = graph.getNestDepth(i);
+	size.x += static_cast<int>(condDepth) * mPad;
 	opClass.setSize(size);
 	pos.x += size.x + mCharHeight;
 	classEndY.push_back(startpos.y + size.y);
@@ -75,7 +75,7 @@ void OperationDrawer::drawLifeLines(const std::vector<OperationClass> &classes,
     }
 
 GraphSize OperationDrawer::drawClass(const OperationClass &node,
-	const OperationDrawOptions &options)
+	const OperationDrawOptions & /*options*/)
     {
     GraphPoint startpos = node.getPosition();
     const ModelType *type = node.getType();
@@ -95,7 +95,7 @@ GraphSize OperationDrawer::drawClass(const OperationClass &node,
 	    {
 	    recty += mCharHeight + mPad;
 	    positions.push_back(GraphPoint(startpos.x+mPad, startpos.y + recty - mPad));
-	    int curx = mDrawer.getTextExtentWidth(str) + mPad*2;
+	    int curx = static_cast<int>(mDrawer.getTextExtentWidth(str)) + mPad*2;
 	    if(curx > rectx)
 		rectx = curx;
 	    }
@@ -131,7 +131,8 @@ class BlockPolygon:public OovPolygon
 	    int rightSize = static_cast<int>(size());
 	    for(int i=rightSize-1; i>=0; i--)
 		{
-		push_back(GraphPoint(mCenterLineX - (at(i).x - mCenterLineX), at(i).y));
+		push_back(GraphPoint(mCenterLineX - (at(static_cast<size_t>(i)).x -
+                    mCenterLineX), at(static_cast<size_t>(i)).y));
 		}
 	    }
 	void startChildBlock(int depth, int y)
@@ -171,7 +172,7 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
     GraphPoint startpos = pos;
     int starty = startpos.y+mPad;
     int y=starty;
-    int sourceIndex = operDef.getOperClassIndex();
+    size_t sourceIndex = operDef.getOperClassIndex();
     int arrowLen = mCharHeight * 7 / 10;
     int condDepth = 0;
     std::vector<int> condStartPosY;
@@ -201,13 +202,13 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 		{
 		OperationCall *call = stmt->getCall();
 
-		int targetIndex = call->getOperClassIndex();
+		size_t targetIndex = call->getOperClassIndex();
 		int lineY = y + mCharHeight + mPad*2;
 		int sourcex = cls.getLifelinePosX();
 		sourcex += condOffset;
 		const OperationClass &targetCls = graph.getClass(targetIndex);
 		int targetx = targetCls.getLifelinePosX();
-		if(targetIndex == -1)
+		if(targetIndex == NO_INDEX)
 		    {
 		    // Handle [else]
 //		    int len = mCharHeight*3;
@@ -267,13 +268,13 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 		{
 		OperationVarRef *ref = stmt->getVarRef();
 
-		int targetIndex = ref->getOperClassIndex();
+		size_t targetIndex = ref->getOperClassIndex();
 		int lineY = y + mCharHeight + mPad*2;
 		int sourcex = cls.getLifelinePosX();
 		sourcex += condOffset;
 		const OperationClass &targetCls = graph.getClass(targetIndex);
 		int targetx = targetCls.getLifelinePosX();
-		if(targetIndex == -1)
+		if(targetIndex == NO_INDEX)
 		    {
 		    int len = mCharHeight*3;
 		    mDrawer.drawLine(GraphPoint(sourcex, lineY),
@@ -309,10 +310,10 @@ GraphSize OperationDrawer::drawOperationNoText(GraphPoint pos,
 
 	    case ST_OpenNest:
 		{
-		GraphPoint pos(cls.getLifelinePosX()+condOffset+
+		GraphPoint lifePos(cls.getLifelinePosX()+condOffset+
 			mPad, y+mCharHeight);
 		const OperationNestStart *cond = stmt->getNestStart();
-		drawStrings.push_back(DrawString(pos, cond->getExpr()));
+		drawStrings.push_back(DrawString(lifePos, cond->getExpr()));
 		condStartPosY.push_back(y);
 		y += mCharHeight*2;
 

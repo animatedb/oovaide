@@ -10,12 +10,8 @@
 
 #include <gtk/gtk.h>
 #include "Builder.h"
-#include "ClassList.h"
-#include "ComponentList.h"
-#include "OperationList.h"
-#include "JournalList.h"
-#include "Journal.h"
 #include "OovProject.h"
+#include "Contexts.h"
 #include <atomic>
 
 class WindowBuildListener:public OovProcessListener
@@ -24,13 +20,12 @@ class WindowBuildListener:public OovProcessListener
 	WindowBuildListener():
 	    mStatusTextView(nullptr), mComplete(false)
 	    {}
+	virtual ~WindowBuildListener();
 	void initListener(Builder &builder);
 	GtkTextBuffer *getBuffer()
 	    { return GuiTextBuffer::getBuffer(mStatusTextView); }
 	void clearStatusTextView(Builder &builder)
 	    { initListener(builder); }
-	virtual ~WindowBuildListener()
-	    {}
 	virtual void onStdOut(OovStringRef const out, size_t len) override
 	    {
 	    LockGuard guard(mMutex);
@@ -63,6 +58,7 @@ class WindowProjectStatusListener: public OovTaskStatusListener
 	WindowProjectStatusListener():
 	    mProgressIteration(0), mState(TS_Stopped)
 	    {}
+        ~WindowProjectStatusListener();
 	virtual OovTaskStatusListenerId startTask(OovStringRef const &text, size_t i) override
 	    {
 	    mState = TS_Running;
@@ -118,12 +114,15 @@ class WindowProjectStatusListener: public OovTaskStatusListener
 	BackgroundDialog mBackDlg;
     };
 
-class oovGui:public JournalListener
+class oovGui
     {
     friend class Menu;
     public:
-	void init();
+	oovGui():
+	    mContexts(mProject)
+	    {}
 	~oovGui();
+	void init();
 	void clearAnalysis();
 	bool canStartAnalysis();
 	static gboolean onIdle(gpointer data)
@@ -136,21 +135,10 @@ class oovGui:public JournalListener
 	void stopSrcManager()
 	    { mProject.stopSrcManager(); }
 
-	void addClass(OovStringRef const className);
-	virtual void displayClass(OovStringRef const className) override;
-	virtual void displayOperation(OovStringRef const className,
-		OovStringRef const operName, bool isConst) override;
-
 	void updateGuiForAnalysis();
 	void updateGuiForProjectChange();
 
 	void updateMenuEnables(ProjectStatus const &projStat);
-	/// Reads from the journal and updates the GUI journal list.
-	void updateJournalList();
-	void updateComponentList()
-	    { mComponentList.updateComponentList(); }
-	void updateOperationList(const ModelData &modelData, OovStringRef const className);
-	void updateClassList(OovStringRef const className);
 
 	void makeComplexityFile();
 	void makeMemberUseFile();
@@ -166,33 +154,15 @@ class oovGui:public JournalListener
 		mLastSavedPath = getDefaultDiagramName();
 	    return mLastSavedPath;
 	    }
+	void saveFile(FILE *fp)
+	    { mContexts.saveFile(fp); }
+	void cppArgOptionsChangedUpdateDrawings()
+	    { mContexts.cppArgOptionsChangedUpdateDrawings(); }
 	std::string getDefaultDiagramName();
-	std::string getSelectedClass() const
-	    {
-	    return mClassList.getSelected();
-	    }
-	std::string getSelectedComponent() const
-	    {
-	    return mComponentList.getSelectedFileName();
-	    }
-	void clearSelectedComponent()
-	    {
-	    mComponentList.clearSelection();
-	    }
-	std::string getSelectedOperation() const
-	    {
-	    return mOperationList.getSelected();
-	    }
-	int getSelectedJournalIndex() const
-	    { return mJournalList.getSelectedIndex(); }
 	Builder &getBuilder()
 	    { return mBuilder; }
 	OovProject &getProject()
 	    { return mProject; }
-	Journal &getJournal()
-	    { return mJournal; }
-	ZoneDiagramList &getZoneList()
-	    { return(mZoneList); }
 	// fn is only filled if a fn, colons, and line number are found.
 	int getStatusSourceFile(std::string &fn);
 	GtkWindow *getWindow()
@@ -203,16 +173,10 @@ class oovGui:public JournalListener
 	    { return mLastProjectStatus; }
 
     private:
-	ClassList mClassList;
-	// This is the list of components (directories), not modules (source files).
-	ComponentList mComponentList;
-	OperationList mOperationList;
-	ZoneDiagramList mZoneList;
-	JournalList mJournalList;
 	Builder mBuilder;
 	OovProject mProject;
+	Contexts mContexts;
 	ProjectStatus mLastProjectStatus;
-	Journal mJournal;
 	std::string mLastSavedPath;
 	WindowBuildListener mWindowBuildListener;
 	WindowProjectStatusListener mProjectStatusListener;

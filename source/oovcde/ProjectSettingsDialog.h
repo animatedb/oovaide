@@ -16,6 +16,7 @@ class ProjectSettingsDialog: public Dialog
     {
     public:
 	ProjectSettingsDialog(GtkWindow *parentWindow, bool newProject);
+        virtual ~ProjectSettingsDialog();
 	bool runDialog();
 	CompoundValue const &getExcludeDirs() const
 	    { return mExcludeDirs; }

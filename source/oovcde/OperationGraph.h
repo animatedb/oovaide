@@ -128,12 +128,12 @@ class OperationVarRef:public OperationStatement
     {
     public:
 	/// operClassIndex is the class of the operation that is referred to.
-	OperationVarRef(int operClassIndex, const ModelAttribute &attr):
+	OperationVarRef(size_t operClassIndex, const ModelAttribute &attr):
 	    OperationStatement(ST_VarRef), mOperClassIndex(operClassIndex),
 	    mAttribute(attr)
 	    {}
         virtual ~OperationVarRef();
-	int getOperClassIndex() const
+	size_t getOperClassIndex() const
 	    { return mOperClassIndex; }
 	OovString const &getName() const
 	    { return mAttribute.getName(); }
@@ -153,7 +153,7 @@ class OperationVarRef:public OperationStatement
 	    { mOperClassIndex--; }
 
     private:
-	int mOperClassIndex;
+	size_t mOperClassIndex;
 	const ModelAttribute &mAttribute;
 	GraphRect rect;
     };
@@ -218,7 +218,7 @@ class OperationGraph
 	enum eAddOperationTypes
 	    {
 	    AO_AddCallers=0x01, AO_AddCalled=0x02,
-	    AO_All=0xFF,
+	    AO_All=0xFF
 	    };
 	/// Adds operations to a graph.
 	/// @param operClass Used to look up related classes.

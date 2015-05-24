@@ -744,7 +744,7 @@ BackgroundDialog::~BackgroundDialog()
     showDialog(false);
     }
 
-void BackgroundDialog::startTask(char const *str, int totalIters)
+void BackgroundDialog::startTask(char const *str, size_t totalIters)
     {
     mDialogText = str;
     mTotalIters = totalIters;
@@ -787,7 +787,7 @@ void BackgroundDialog::showDialog(bool show)
 	}
     }
 
-bool BackgroundDialog::updateProgressIteration(int currentIter,
+bool BackgroundDialog::updateProgressIteration(size_t currentIter,
 	OovStringRef text, bool allowRecurse)
     {
     if(!mBuilder)
@@ -826,7 +826,7 @@ bool BackgroundDialog::updateProgressIteration(int currentIter,
 		{
 		// Allow progress update to display.
 		// For some reason, gtk_events_pending never quits.
-		for(int i=0; i<50 && gtk_events_pending(); i++)
+		for(size_t i=0; i<50 && gtk_events_pending(); i++)
 		    {
 		    gtk_main_iteration();
 		    }

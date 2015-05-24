@@ -21,10 +21,21 @@ and Objective C languages.
 - The analysis system searches directories for source code and uses CLang.
 	- Dependencies are generated automatically between files and components.
 	- Object relationships and sequence information is saved for diagrams.
-	- Diagrams (zone, class, sequence, and dependency) can be dynamically
-	  generated allowing quick navigation
+	- Diagrams can be dynamically generated allowing quick navigation
 	  between objects. Diagrams can be edited in Oovcde, then saved as
 	  SVG and edited using tools such as Inkscape.
+		- Component dependency diagrams
+		- Zone diagrams (view thousands of classes)
+		- Class diagrams
+		- Portion diagrams (view class attribute/member relations)
+		- Sequence diagrams 
+	- Analysis statistics
+		- Code coverage
+		- Code complexity
+		- Duplicate code
+		- Class member usage
+		- Line counts
+		- Project statistics
 - The multithreaded build system uses analysis information for easy setup.
 - The code editor has syntax highlighting, and a debugger.
 - Code test coverage instruments the code and produces coverage information.

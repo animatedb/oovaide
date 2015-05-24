@@ -21,8 +21,7 @@ enum eRecordTypes { RT_Component, RT_Zone, RT_Class, RT_Portion, RT_Sequence  };
 class JournalListener
     {
     public:
-	virtual ~JournalListener()
-	    {}
+	virtual ~JournalListener();
 	virtual void displayClass(OovStringRef const className) = 0;
 	virtual void displayOperation(OovStringRef const className,
 		OovStringRef const operName, bool isConst) = 0;
@@ -34,8 +33,7 @@ class JournalRecord
 	JournalRecord(eRecordTypes type, JournalListener &listener):
 	    mRecordType(type), mListener(listener)
 	    {}
-	virtual ~JournalRecord()
-	    {}
+	virtual ~JournalRecord();
 	virtual char const *getRecordTypeName() const = 0;
 	virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) = 0;
 	virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) = 0;
@@ -75,6 +73,7 @@ class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListene
 	    {
 	    mClassDiagram.initialize(builder, model, this, &taskStatusListener);
 	    }
+        virtual ~JournalRecordClassDiagram();
 	ClassDiagram mClassDiagram;
 
     private:
@@ -105,6 +104,7 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
 	    {
 	    mOperationDiagram.initialize(builder, model, this);
 	    }
+        virtual ~JournalRecordOperationDiagram();
 	OperationDiagram mOperationDiagram;
 
     private:
@@ -132,6 +132,7 @@ class JournalRecordComponentDiagram:public JournalRecord
 	    {
 	    mComponentDiagram.initialize(builder);
 	    }
+        ~JournalRecordComponentDiagram();
 	ComponentDiagram mComponentDiagram;
 
     private:
@@ -160,6 +161,7 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 	    {
 	    mZoneDiagram.initialize(model, this);
 	    }
+        virtual ~JournalRecordZoneDiagram();
 	ZoneDiagram mZoneDiagram;
 
     private:
@@ -197,6 +199,7 @@ class JournalRecordPortionDiagram:public JournalRecord
 	    {
 	    mPortionDiagram.initialize(model);
 	    }
+        ~JournalRecordPortionDiagram();
 	PortionDiagram mPortionDiagram;
 
     private:
@@ -220,8 +223,7 @@ class Journal
     {
     public:
 	Journal();
-	virtual ~Journal()
-	    {}
+	virtual ~Journal();
 	static Journal *getJournal();
 	void init(Builder &builder, const ModelData &model,
 		JournalListener &journalListener,
@@ -283,8 +285,9 @@ class Journal
 	const JournalRecord *getCurrentRecord() const
 	    { return (mRecords.size() > 0) ? mRecords[mRecords.size()-1] : NULL; }
 	void addRecord(JournalRecord *record,	OovStringRef const name);
-	void removeRecord(int index);
-	int findRecord(eRecordTypes rt, OovStringRef const name);
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
+	void removeRecord(size_t index);
+	size_t findRecord(eRecordTypes rt, OovStringRef const name);
     };
 
 #endif /* JOURNAL_H_ */

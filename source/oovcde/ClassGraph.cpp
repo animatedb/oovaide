@@ -94,9 +94,9 @@ void ClassGraph::updateGenes(const ModelData &modelData,
     redraw();
     }
 
-int ClassGraph::getNodeIndex(const ModelType *type) const
+size_t ClassGraph::getNodeIndex(const ModelType *type) const
     {
-    int nodeIndex = -1;
+    size_t nodeIndex = NO_INDEX;
     for(size_t i=0; i<mNodes.size(); i++)
 	{
 	if(mNodes[i].getType() == type)
@@ -404,8 +404,8 @@ void ClassGraph::insertConnection(int node1, const ModelType *type,
     {
     if(type)
 	{
-	int n2Index = getNodeIndex(type);
-	if(n2Index != -1)
+	size_t n2Index = getNodeIndex(type);
+	if(n2Index != NO_INDEX)
 	    {
 	    insertConnection(node1, n2Index, connectItem);
 	    }
@@ -473,8 +473,8 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 		// Go through associations, and get related classes.
 		for(const auto &assoc : modelData.mAssociations)
 		    {
-		    int n1Index = -1;
-		    int n2Index = -1;
+		    size_t n1Index = NO_INDEX;
+		    size_t n2Index = NO_INDEX;
 		    if(assoc->getChild() == classifier)
 			{
 			n1Index = getNodeIndex(assoc->getParent());
@@ -485,7 +485,7 @@ void ClassGraph::updateConnections(const ModelData &modelData, const ClassRelati
 			n1Index = ni;
 			n2Index = getNodeIndex(assoc->getChild());
 			}
-		    if(n1Index != -1 && n2Index != -1)
+		    if(n1Index != NO_INDEX && n2Index != NO_INDEX)
 			{
 			insertConnection(n1Index, n2Index,
 				ClassConnectItem(ctIneritance, assoc->getAccess()));

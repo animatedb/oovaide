@@ -25,15 +25,10 @@ static void logProj(char const *str)
 #define logProj(str);
 #endif
 
-/*
- * @todo:
- * 	listeners
- *
- * 	update on_NewProjectOkButton_clicked to call newProject.
- *
- * 	Remove includes from oovcde.cpp/h that are included in this file
- */
 
+OovProject::~OovProject()
+    {
+    }
 
 bool OovProject::newProject(OovString projectDir, CompoundValue const &excludeDirs,
 	OovProject::eNewProjectStatus &projStat)

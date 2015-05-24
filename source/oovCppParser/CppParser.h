@@ -13,6 +13,8 @@
 #include <set>
 #include "OovString.h"
 
+#define DEBUG_PARSE 0
+
 // This contains context while parsing a switch statement. Case statements are
 // kind of interesting to graph in a sequence diagram since cases without breaks
 // are actually ored together.

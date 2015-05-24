@@ -44,6 +44,7 @@ class PortionDrawer
 	    { return mGraph->getConnections()[index]; }
 
     private:
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
         PortionGraph const *mGraph;
 	DiagramDrawer *mDrawer;
 	std::vector<GraphPoint> mNodePositions;
@@ -51,10 +52,12 @@ class PortionDrawer
         void drawNodes();
         void drawConnections();
         void drawNodeText();
-        GraphRect getNodeRect(int nodeIndex) const;
+        GraphRect getNodeRect(size_t nodeIndex) const;
 	void updateNodePositions();
-	void findCallDepths(std::vector<int> &depths) const;
-	bool attemptTofillDepth(size_t nodeIndex, std::vector<int> &depths) const;
+	std::vector<size_t> getCallDepths() const;
+	/// This returns positions without the margin.
+	std::vector<int> getColumnPositions(std::vector<size_t> const &depths) const;
+	bool fillDepths(size_t nodeIndex, std::vector<size_t> &depths) const;
     };
 
 

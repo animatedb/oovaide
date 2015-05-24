@@ -374,14 +374,14 @@ class BackgroundDialog:public Dialog
 	/// This resets the mKeepGoing flag and start time
 	/// @param str		Some text to display about the task that is running.
 	/// @param totalIters	The total number of iterations that will be run.
-	void startTask(char const *str, int totalIters);
+	void startTask(char const *str, size_t totalIters);
 
 	// Return is false when a cancel is performed.
 	// This is a GUI function, must be on the GUI thread
 	/// @todo allowRecurse should be removed eventually.
 	/// @param text		Some text that will be updated and displayed
 	///			to the user periodically.
-	bool updateProgressIteration(int currentIter, OovStringRef text,
+	bool updateProgressIteration(size_t currentIter, OovStringRef text,
 		bool allowRecurse = true);
 
 	/// This is only needed if the destructor is not used to close the dialog.
@@ -398,7 +398,7 @@ class BackgroundDialog:public Dialog
 	Builder *mBuilder;
 	GtkWindow *mParent;
 	bool mKeepGoing;
-	int mTotalIters;
+	size_t mTotalIters;
 	time_t mStartTime;
 	void showDialog(bool show);
     };

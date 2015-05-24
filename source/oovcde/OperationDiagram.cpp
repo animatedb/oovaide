@@ -9,6 +9,9 @@
 #include "ClassDrawer.h"
 #include "Svg.h"
 
+OperationDiagramListener::~OperationDiagramListener()
+    {}
+
 void OperationDiagram::initialize(Builder &builder, const ModelData &modelData,
 	OperationDiagramListener *listener)
     {
@@ -95,13 +98,14 @@ static GraphPoint gStartPosInfo;
 void OperationDiagram::buttonPressEvent(const GdkEventButton *event)
     {
     gOperationDiagram = this;
-    gStartPosInfo.set(event->x, event->y);
+    gStartPosInfo.set(static_cast<int>(event->x), static_cast<int>(event->y));
     }
 
 static void displayContextMenu(guint button, guint32 acttime, gpointer data)
     {
     GdkEventButton *event = static_cast<GdkEventButton*>(data);
-    const OperationClass *node = gOperationDiagram->getOpGraph().getNode(event->x, event->y);
+    const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
+        static_cast<int>(event->x), static_cast<int>(event->y));
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
 	    gStartPosInfo.x, gStartPosInfo.y);
     OovStringRef const nodeitems[] =
@@ -131,7 +135,7 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
 
     GtkMenu *menu = gOperationDiagram->getBuilder().getMenu("DrawOperationPopupMenu");
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
-    gStartPosInfo.set(event->x, event->y);
+    gStartPosInfo.set(static_cast<int>(event->x), static_cast<int>(event->y));
     }
 
 void OperationDiagram::buttonReleaseEvent(const GdkEventButton *event)
@@ -161,7 +165,7 @@ void OperationDiagram::buttonReleaseEvent(const GdkEventButton *event)
     }
 
 extern "C" G_MODULE_EXPORT void on_OperGotoOperationmenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -175,7 +179,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoOperationmenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_OperGotoClassMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -186,7 +190,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoClassMenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_RemoveOperClassMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationClass *node = gOperationDiagram->getOpGraph().getNode(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -198,7 +202,7 @@ extern "C" G_MODULE_EXPORT void on_RemoveOperClassMenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_AddCallsMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -210,7 +214,7 @@ extern "C" G_MODULE_EXPORT void on_AddCallsMenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_RemoveCallsMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -222,7 +226,7 @@ extern "C" G_MODULE_EXPORT void on_RemoveCallsMenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_AddCallersMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -235,7 +239,7 @@ extern "C" G_MODULE_EXPORT void on_AddCallersMenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationCall *opcall = gOperationDiagram->getOpGraph().getOperation(
 	    gStartPosInfo.x, gStartPosInfo.y);
@@ -256,13 +260,13 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
     }
 
 extern "C" G_MODULE_EXPORT void on_RestartOperationsMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gOperationDiagram->restart();
     }
 
 extern "C" G_MODULE_EXPORT void on_OperRemoveAllMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+	GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gOperationDiagram->getOpGraph().clearGraph();
     gOperationDiagram->updateDiagram();

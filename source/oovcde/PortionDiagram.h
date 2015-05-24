@@ -20,6 +20,11 @@ class PortionDiagram
 	void initialize(const ModelData &modelData);
 	void clearGraphAndAddClass(OovStringRef className);
 	void redraw();
+	void relayout()
+	    {
+	    mPortionDrawer.updateGraph(mPortionGraph);
+	    redraw();
+	    }
 
 	// For use by extern functions.
 	void graphButtonPressEvent(const GdkEventButton *event);
@@ -29,6 +34,7 @@ class PortionDiagram
 	void drawToDrawingArea();
 	void drawSvgDiagram(FILE *fp);
 	GtkWidget *getDrawingArea() const;
+	void viewClassSource();
 
     private:
 	const ModelData *mModelData;
@@ -38,6 +44,7 @@ class PortionDiagram
 	CairoDrawer mCairoDrawer;
 	PortionGraph mPortionGraph;
 	PortionDrawer mPortionDrawer;
+	OovString mCurrentClassName;
     };
 
 #endif

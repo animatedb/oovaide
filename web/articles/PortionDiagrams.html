@@ -13,9 +13,11 @@
 	some cases, it can be difficult to determine what will result in a
 	clean separation of multiple classes.
 	<p/>
-	The Oovcde program can parse C++ code and create diagrams automatically.
-	The following shows an example of a class portion diagram in the
-	Oovcde program, and shows the "Package" class.  The data members are
+	The Oovcde program can display all of the data members and functions of
+	a class and show how they are related.  The C++ code is parsed and
+	the diagrams are created automatically.
+	The following shows a class portion diagram in the Oovcde program, and
+	shows an example "Package" class.  The data members are
 	shown in rectangles, and the member functions are shown in ellipses.
 	The arrows show the direction of the dependency.
 	<p/>
@@ -23,43 +25,74 @@
 	<p/>
 	Some notes about this example:
 	<ul>
+	<li>The RootDirPackage class is a base class that is accessed by
+	    setCompileInfo, one of the constructors and the setLinkInfo methods.</li>
 	<li>One of the constructors and the destructor are empty, and
 	    could be deleted.</li>
-	<li>The second constructor calls the constructor in an inherited class.</li>
-	<li>The set link and get link functions reference the link arguments,
-	    but don't reference the compile arguments.</li>
+	<li>The set link and get link functions reference the link argument
+	    data member,
+	    but don't reference the compile argument data member.</li>
 	<li>The load map and save map functions reference both the
-	    compile and link arguments.</li>
+	    compile and link argument daa members.</li>
+	</ul>
+	<p/>
+	Run the following to view these diagrams.
+	<ul>
+	    <li>Download the Oovcde Windows or Linux binaries from Sourceforge or
+		download the source from 
+		    <a href="http://sourceforge.net/projects/oovcde/">SourceForge</a>
+		    or <a href="https://github.com/animatedb/oovcde">GitHub</a></li>
+	    <li>Extract the downloaded file to any location</li>
+	    <li>Run the oovcde program from the bin directory</li>
+	    <li>Run File/New Project from the menu and browse to a C++ project
+		of your choice. To view the Oovcde source, run File/Open Project
+		from the menu and browse to the	trunk/test directory and select
+		the trunk-oovcde-... file for linux or windows and press the
+		Open button</li>
+	    <li>Wait for the analysis to complete.</li>
+	    <li>Click on the Portion tab and select a class to display a
+		portion diagram</li>
 	</ul>
     <h2>CppParser Example</h2>
 	<p/>
 	Now we move on to an example of a class that needs to be refactored.
-	This class is used in the Oovcde .cpp parser.  It is not the cleanest
-	class to analyze since it uses function pointers called by the 
-	clang visitor functions, but since this class was the inspiration for the
-	portion diagrams, it seems like a worthy example.
+	This class is used in the Oovcde .cpp parser.  The Oovcde program
+	shows that it is in the module with the highest number of lines in
+	all of the Oovcde source code, although the complexity is not the highest.
+	This class is not the cleanest
+	class to analyze since it uses function pointers to global functions called
+	by the clang visitor functions, but since this class was the inspiration
+	for the portion diagrams, it seems like a worthy example.
+	<p/>
         <embed src="PortionImages/PortionParserOrig.svg" type="image/svg+xml">
 	<p/>
 	For this refactoring, it is useful to think about how functions can
 	be rearranged based on the data members.
 	<ul>
-	<li>For example, the mModelData
-	    member is only used by functions in the top half of the graph for
-	    creation of classes and data types.</li>
+	<li>For example, the mModelData member is only used by functions
+	    in the top half of the graph for creation of classes and data
+	    types.</li>
 	<li>Another example is that there looks	like a bit of statement code
 	    related to the mStatements and mSwitchContexts members.</li>
 	</ul>
 	<p/>
-	Another important aspect is to think about the lifetimes of the
+	An important aspect is to think about the lifetimes of the
 	data members. The mOperation and mClassifier members are only used while
 	parsing classes and operations.
-    <h2>CppParser Example - Refactor Phase 1</h2>
+
+
+    <h2>CppParser Example - Post Refactor</h2>
 	For the first refactoring, the model data was moved into a new class called
 	ParserModelData.
 	<p/>
         <embed src="PortionImages/PortionParserModelData.svg" type="image/svg+xml">
 	<p/>
-	The remaining CppParser class is:
+	The portion diagram shows a bit more than a class diagram since a typical
+	class diagram would only show the following.
+	<p/>
+        <embed src="PortionImages/PortionParserModelDataClass.svg" type="image/svg+xml">
+	<p/>
+	The remaining CppParser class is shown below.
 	<p/>
         <embed src="PortionImages/PortionParserPhase1.svg" type="image/svg+xml">
 	<p/>
@@ -90,11 +123,10 @@
     <h2>Other Notes</h2>
 	Some other notes about portion diagrams:
 	<ul>
-	<li>An attribute only used once could mean it is not used.</li>
+	<li>An attribute only used once could mean it could be eliminated. A counter
+	   example would be some data that is retained between calls.</li>
 	<li>A method that doesn't use an attribute could be made static if
 	it does not call other non-static methods.</li>
-	<li>A group of attributes used by a group of methods could mean
-	the class should be refactored into multiple classes.</li>
 	</ul>
 	Other notes about the Oovcde program:
 	<ul>

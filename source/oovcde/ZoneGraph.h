@@ -77,7 +77,7 @@ class ZoneNode
             if(pos != std::string::npos)
         	{
         	// Insert a low character so shorter paths go first
-        	str.insert(pos+1, 1, (char)0x1);
+        	str.insert(pos+1, 1, static_cast<char>(0x1));
         	}
             return str;
             }
@@ -91,17 +91,17 @@ enum eZoneDependencyDirections { ZDD_FirstIsClient=0x1, ZDD_SecondIsClient=0x2,
 
 struct ZoneConnectIndices
     {
-    ZoneConnectIndices(int index1=0, int index2=0):
+    ZoneConnectIndices(size_t index1=0, size_t index2=0):
 	mFirstIndex(index1), mSecondIndex(index2)
 	{}
-    uint32_t getAsInt() const
+    uint32_t getAsUInt() const
 	{ return (static_cast<uint32_t>(mFirstIndex<<16)) + mSecondIndex; }
     bool operator<(ZoneConnectIndices const &item) const
 	{
-	return(getAsInt() < item.getAsInt());
+	return(getAsUInt() < item.getAsUInt());
 	}
-    int mFirstIndex;
-    int mSecondIndex;
+    size_t mFirstIndex;
+    size_t mSecondIndex;
     };
 
 typedef std::pair<ZoneConnectIndices, eZoneDependencyDirections> ZoneConnection;
@@ -110,9 +110,9 @@ class ZoneConnections:public std::map<ZoneConnectIndices, eZoneDependencyDirecti
     public:
 	/// This inserts the indices sorted so that a connection is never listed
 	/// twice, and only a single lookup is required.
-	void insertConnection(int nodeIndex1, int nodeIndex2,
+	void insertConnection(size_t nodeIndex1, size_t nodeIndex2,
 		eZoneDependencyDirections zdd);
-	void insertConnection(int nodeIndex, const ModelClassifier *classifier,
+	void insertConnection(size_t nodeIndex, const ModelClassifier *classifier,
 		class ReverseIndexLookup const &indexLookup,
 		eZoneDependencyDirections zdd);
     };

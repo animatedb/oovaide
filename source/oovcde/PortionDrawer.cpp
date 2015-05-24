@@ -8,33 +8,34 @@
 #include "PortionGenes.h"
 
 
-bool PortionDrawer::attemptTofillDepth(size_t nodeIndex, std::vector<int> &depths) const
+bool PortionDrawer::fillDepths(size_t nodeIndex, std::vector<size_t> &depths) const
     {
-    int depth = 0;
+    size_t depth = 0;
     bool resolved = true;
     for(size_t i=0; i<mGraph->getConnections().size(); i++)
 	{
 	PortionConnection const &conn = mGraph->getConnections()[i];
 	if(nodeIndex == conn.mConsumerNodeIndex)
 	    {
-	    if(mGraph->getNodes()[conn.mSupplierNodeIndex].getNodeType() == PNT_Operation)
-		{
-		int opDepth = depths[conn.mSupplierNodeIndex];
-		if(opDepth > 0)
+	    size_t supIndex = conn.mSupplierNodeIndex;
+		if(mGraph->getNodes()[supIndex].getNodeType() == PNT_Operation)
 		    {
-		    if(opDepth > depth)
+		    size_t opDepth = depths[supIndex];
+		    if(opDepth > 0)
 			{
-			depth = opDepth;
+			if(opDepth > depth)
+			    {
+			    depth = opDepth;
+			    }
 			}
-		    }
-		else
-		    {
-		    resolved = false;
-		    break;
+		    else
+			{
+			resolved = false;
+			break;
+			}
 		    }
 		}
 	    }
-	}
     if(resolved)
 	{
 	depths[nodeIndex] = depth + 1;
@@ -42,24 +43,50 @@ bool PortionDrawer::attemptTofillDepth(size_t nodeIndex, std::vector<int> &depth
     return resolved;
     }
 
-void PortionDrawer::findCallDepths(std::vector<int> &depths) const
+std::vector<size_t> PortionDrawer::getCallDepths() const
     {
+    std::vector<size_t> depths(mGraph->getNodes().size());
     bool resolved = false;
     /// @todo - need max nesting depth to limit loop time
-    for(int i=0; i<100 && !resolved; i++)
+    for(int limi=0; limi<100 && !resolved; limi++)
 	{
-	for(size_t i=0; i<mGraph->getNodes().size(); i++)
+	for(size_t ni=0; ni<mGraph->getNodes().size(); ni++)
 	    {
-	    if(depths[i] == 0 &&
-		    mGraph->getNodes()[i].getNodeType() == PNT_Operation)
+	    if(depths[ni] == 0 &&
+		    mGraph->getNodes()[ni].getNodeType() == PNT_Operation)
 		{
-		if(!attemptTofillDepth(i, depths))
+		if(!fillDepths(ni, depths))
 		    {
 		    resolved = false;
 		    }
 		}
 	    }
 	}
+    return depths;
+    }
+
+std::vector<int> PortionDrawer::getColumnPositions(std::vector<size_t> const &depths) const
+    {
+    std::vector<int> columnSpacing(depths.size());
+    // first get the width required for each column.
+    for(size_t ni=0; ni<mNodePositions.size(); ni++)
+	{
+	int &columnWidth = columnSpacing[depths[ni]];
+	int nodeWidth = static_cast<int>(getNodeRect(ni).size.x * 1.5);
+	if(nodeWidth > columnWidth)
+	    {
+	    columnWidth = nodeWidth;
+	    }
+	}
+    // Now convert to positions.
+    int pos = 0;
+    for(size_t ci=0; ci<columnSpacing.size(); ci++)
+	{
+	int space = columnSpacing[ci];
+	columnSpacing[ci] = pos;
+	pos += space;
+	}
+    return columnSpacing;
     }
 
 void PortionDrawer::updateNodePositions()
@@ -70,29 +97,18 @@ void PortionDrawer::updateNodePositions()
 	    {
 	    mNodePositions.resize(mGraph->getNodes().size());
 	    }
-	std::vector<int> depths;
-	depths.resize(mGraph->getNodes().size());
-	findCallDepths(depths);
-
-	const int margin = 20;
-	int pad = mDrawer->getTextExtentHeight("W");
-	int xColumnSpacing = 0;
-	for(size_t i=0; i<mNodePositions.size(); i++)
-	    {
-	    if(getNodeRect(i).size.x > xColumnSpacing)
-		{
-		xColumnSpacing = getNodeRect(i).size.x;
-		}
-	    }
-	xColumnSpacing = xColumnSpacing * 1.5;
+	std::vector<size_t> depths = getCallDepths();
+	std::vector<int> columnPositions = getColumnPositions(depths);
 	int yOffset = 0;
+	const int margin = 20;
+	int pad = static_cast<int>(mDrawer->getTextExtentHeight("W"));
 	for(size_t i=0; i<mNodePositions.size(); i++)
 	    {
 	    GraphRect rect = getNodeRect(i);
 	    rect.start.y = yOffset;
 	    yOffset += pad + rect.size.y;
 	    rect.start.y += margin;
-	    rect.start.x = margin + xColumnSpacing * depths[i];
+	    rect.start.x = margin + columnPositions[depths[i]];
 	    mNodePositions[i] = rect.start;
 	    }
 	}
@@ -102,7 +118,7 @@ void PortionDrawer::updateNodePositions()
 	{
 	PortionGenes genes;
 	GraphRect rect = getNodeRect(0);
-	genes.initialize(*this, rect.size.y);
+	genes.initialize(*this, static_cast<size_t>(rect.size.y));
 	genes.updatePositionsInDrawer();
 	}
 #endif
@@ -146,20 +162,21 @@ GraphSize PortionDrawer::getDrawingSize() const
     return graphRect.size;
     }
 
-GraphRect PortionDrawer::getNodeRect(int nodeIndex) const
+GraphRect PortionDrawer::getNodeRect(size_t nodeIndex) const
     {
     GraphPoint nodePos = mNodePositions[nodeIndex];
     OovString name = mGraph->getNodes()[nodeIndex].getName();
-    int textWidth = mDrawer->getTextExtentWidth(name);
+    int textWidth = static_cast<int>(mDrawer->getTextExtentWidth(name));
     float textHeight = mDrawer->getTextExtentHeight(name);
     /// @todo - fix pad here and in drawNodeText
-    int pad2 = (textHeight / 7.f) * 4;
-    return GraphRect(nodePos.x, nodePos.y, textWidth + pad2, textHeight + pad2);
+    int pad2 = static_cast<int>((textHeight / 7.f) * 4);
+    return GraphRect(nodePos.x, nodePos.y, textWidth + pad2,
+        static_cast<int>(textHeight) + pad2);
     }
 
 size_t PortionDrawer::getNodeIndex(GraphPoint p)
     {
-    size_t nodeIndex = -1;
+    size_t nodeIndex = NO_INDEX;
     if(mGraph)
 	{
 	for(size_t i=0; i<mGraph->getNodes().size(); i++)
@@ -177,7 +194,7 @@ size_t PortionDrawer::getNodeIndex(GraphPoint p)
 
 void PortionDrawer::setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPoint newPoint)
     {
-    if(nodeIndex != -1)
+    if(nodeIndex != NO_INDEX)
 	{
 	mNodePositions[nodeIndex].add(newPoint - startPoint);
 	}
@@ -213,7 +230,7 @@ void PortionDrawer::drawNodes()
 
 void PortionDrawer::drawConnections()
     {
-    int lastColorIndex = -1;
+    size_t lastColorIndex = NO_INDEX;
     for(auto const &conn : mGraph->getConnections())
 	{
 	GraphRect suppRect = getNodeRect(conn.mSupplierNodeIndex);
@@ -248,10 +265,10 @@ void PortionDrawer::drawConnections()
 		suppPoint.y += suppRect.size.y/2;
 		}
 	    }
-	int colorIndex = conn.mSupplierNodeIndex;
+	size_t colorIndex = conn.mSupplierNodeIndex;
 	if(colorIndex != lastColorIndex)
 	    {
-	    if(lastColorIndex != -1)
+	    if(lastColorIndex != NO_INDEX)
 		{
 		mDrawer->groupShapes(false, 0, 0);
 		}
@@ -264,7 +281,7 @@ void PortionDrawer::drawConnections()
 	mDrawer->drawLine(suppPoint, suppPoint + arrow.getLeftArrowPosition());
 	mDrawer->drawLine(suppPoint, suppPoint + arrow.getRightArrowPosition());
 	}
-    if(lastColorIndex != -1)
+    if(lastColorIndex != NO_INDEX)
 	{
 	mDrawer->groupShapes(false, 0, 0);
 	}
@@ -273,8 +290,8 @@ void PortionDrawer::drawConnections()
 void PortionDrawer::drawNodeText()
     {
     float textHeight = mDrawer->getTextExtentHeight("W");
-    int pad = (textHeight / 7.f * 2);
-    int yTextOffset = textHeight + pad;
+    int pad = static_cast<int>(textHeight / 7.f * 2);
+    int yTextOffset = static_cast<int>(textHeight) + pad;
     for(size_t i=0; i<mGraph->getNodes().size(); i++)
 	{
 	GraphRect rect = getNodeRect(i);

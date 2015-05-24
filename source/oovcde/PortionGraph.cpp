@@ -37,27 +37,42 @@ void PortionGraph::clearAndAddClass(const ModelData &model, OovStringRef classna
             for(auto const &oper : cls->getOperations())
                 {
                 mNodes.push_back(PortionNode(oper->getName(), PNT_Operation));
+                }
 #if(NonMemberVariables)
+            for(auto const &oper : cls->getOperations())
+        	{
                 ModelStatements const &statements = oper->getStatements();
                 for(auto const &stmt : statements)
                     {
-                    if(stmt.getStatementType() == ST_Call)
-                	{
-                	if(stmt.hasNonMemberVar())
-                	    {
-			    OovString attrName = stmt.getAttrName();
-			    if(attrName.length() > 0 && !getNode(attrName, PNT_NonMemberVariable))
+		    if(stmt.hasBaseClassMemberRef())
+			{
+			OovString operName = stmt.getFuncName();
+			/// @todo - this doesn't work in the case of overloading a
+			/// method in the base class of the same name.
+			if(!getNode(operName, PNT_Operation))
+			    {
+			    ModelClassifier const *calledClass =
+                                stmt.getClassDecl().getDeclType()->getClass();
+			    OovString className = calledClass->getName();
+			    if(className.length() > 0)
 				{
-				mNodes.push_back(PortionNode(attrName, PNT_NonMemberVariable));
+				if(!getNode(className, PNT_NonMemberVariable))
+				    {
+				    mNodes.push_back(PortionNode(className,
+                                        PNT_NonMemberVariable));
+				    }
+				size_t supIndex = getNodeIndex(getNode(
+                                    className, PNT_NonMemberVariable));
+				size_t consIndex = getNodeIndex(getNode(
+                                    oper->getName(), PNT_Operation));
+				PortionConnection conn(supIndex, consIndex);
+				mConnections.push_back(conn);
 				}
-		            PortionConnection conn(getNodeIndex(getNode(attrName, PNT_NonMemberVariable)),
-		            	getNodeIndex(getNode(oper->getName(), PNT_Operation)));
-		            mConnections.push_back(conn);
-                	    }
+			    }
                 	}
                     }
+        	}
 #endif
-                }
             addConnections(cls);
             }
         }

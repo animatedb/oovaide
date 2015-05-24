@@ -116,25 +116,28 @@ QualityType PortionGenes::calculateSingleGeneQuality(size_t geneIndex) const
     {
     int maxQual = std::numeric_limits<QualityType>::max() / 3;
 
-    int nodesOverlapCount = getNodeOverlapCount(geneIndex);
-    int overlapQ = (int)((1.0f - ((float)nodesOverlapCount / mMaxOverlapQ)) * maxQual);
+    size_t nodesOverlapCount = getNodeOverlapCount(geneIndex);
+    size_t overlapQ = static_cast<size_t>((1.0f - (
+        static_cast<float>(nodesOverlapCount) / mMaxOverlapQ)) * maxQual);
 
-    int distQ = 0;
+    size_t distQ = 0;
 #define PORT_DIST 1
 #if(PORT_DIST)
     // Minimize distance between connected nodes.
-    int distance = getNodeYDistances(geneIndex);
-    distQ = (int)((1.0f - ((float)distance / mMaxDistanceQ)) * maxQual) * .5;
+    size_t distance = getNodeYDistances(geneIndex);
+    distQ = static_cast<size_t>(((1.0f - (
+        static_cast<float>(distance) / mMaxDistanceQ)) * maxQual) * .5);
 #endif
 
-    int sizeQ = 0;
+    size_t sizeQ = 0;
 #define PORT_SIZE 1
 #if(PORT_SIZE)
     // Minimize total drawing height.
-    int geneHeight = getDrawingHeight(geneIndex);
-    sizeQ = (int)((1.0f - ((float)geneHeight / mMaxHeightQ)) * maxQual) * .25;
+    size_t geneHeight = getDrawingHeight(geneIndex);
+    sizeQ = static_cast<size_t>(((1.0f - (
+        static_cast<float>(geneHeight) / mMaxHeightQ)) * maxQual) * .25);
 #endif
-    QualityType q = overlapQ + distQ + sizeQ;
+    QualityType q = static_cast<QualityType>(overlapQ + distQ + sizeQ);
 //printf("%d ", geneIndex);
 //printf("%d ", distance);
 //printf("   Q lap %d dist %d size %d total %d\n", overlapQ, distQ, sizeQ, q);
@@ -144,12 +147,13 @@ QualityType PortionGenes::calculateSingleGeneQuality(size_t geneIndex) const
 
 size_t PortionGenes::getNodeYDistances(size_t geneIndex) const
     {
-    int distance = 0;
+    size_t distance = 0;
     for(size_t ci=0; ci<mDrawer->getNumConnections(); ci++)
 	{
 	PortionConnection const &conn = mDrawer->getConnection(ci);
-	distance += abs((getYPosition(geneIndex, conn.mConsumerNodeIndex) -
-		getYPosition(geneIndex, conn.mSupplierNodeIndex)));
+	distance += static_cast<size_t>(
+                abs((getYPosition(geneIndex, conn.mConsumerNodeIndex) -
+		getYPosition(geneIndex, conn.mSupplierNodeIndex))));
 	}
     return distance;
     }
@@ -173,12 +177,12 @@ size_t PortionGenes::getNodeOverlapCount(size_t geneIndex) const
 bool PortionGenes::nodesOverlap(size_t geneIndex, size_t node1, size_t node2) const
     {
     // Add some space between nodes
-    int nodeHeight = mNodeHeight * 2;
+    size_t nodeHeight = mNodeHeight * 2;
 
     int p1Y = getYPosition(geneIndex, node1);
     int p2Y = getYPosition(geneIndex, node2);
     // X positions are in columns, so exact match works to check for overlap.
-    bool overlap = ((abs(p1Y-p2Y) < nodeHeight) &&
+    bool overlap = ((static_cast<size_t>(abs(p1Y-p2Y)) < nodeHeight) &&
 	    (mDrawer->getPosition(node1).x == mDrawer->getPosition(node2).x));
     return overlap;
     }

@@ -89,6 +89,10 @@ void ZoneDiagramList::update()
     }
 
 
+ZoneDiagramListener::~ZoneDiagramListener()
+    {
+    }
+
 void ZoneDiagram::initialize(const ModelData &modelData,
 	ZoneDiagramListener *listener)
     {

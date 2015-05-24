@@ -107,7 +107,7 @@ enum eDiagramConnectType
     ctFuncParam = 0x10, ctFuncVar = 0x20,
 
     ctObjectRelationMask = 0x0F,
-    ctFuncReferenceMask = 0xF0,
+    ctFuncReferenceMask = 0xF0
     };
 
 /// Defines a connection between two class nodes
@@ -166,7 +166,7 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
 	    AN_FuncBodyUsing=0x40, AN_FuncBodyUsers=0x80,
 	    AN_All=0xFF,
 	    AN_AllStandard=AN_Superclass | AN_Subclass | AN_MemberChildren | AN_MemberUsers,
-	    AN_ClassesAndChildren=AN_Superclass | AN_Subclass | AN_MemberChildren,
+	    AN_ClassesAndChildren=AN_Superclass | AN_Subclass | AN_MemberChildren
 	};
 
 	/// This relayouts the graph nodes.
@@ -282,8 +282,9 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
 	void updateNodeSizes(GtkWidget *widget, const ClassDrawOptions &options);
 	int getAvgNodeSize() const;
 
+	static const size_t NO_INDEX = static_cast<size_t>(-1);
 	/// Get the index to the class.
-	int getNodeIndex(const ModelType *type) const;
+	size_t getNodeIndex(const ModelType *type) const;
 
 	void redraw()
 	    {

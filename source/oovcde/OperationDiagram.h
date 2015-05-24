@@ -15,8 +15,7 @@
 class OperationDiagramListener
     {
     public:
-	virtual ~OperationDiagramListener()
-	    {}
+	virtual ~OperationDiagramListener();
 	virtual void gotoClass(OovStringRef const className) = 0;
     };
 

@@ -60,11 +60,8 @@ void ClassDiagram::updateDrawingAreaSize()
 
 void ClassDiagram::restart()
     {
-    if(mClassGraph.getNodes().size() == 0)
-	{
-	clearGraphAndAddClass(getLastSelectedClassName(),
-		ClassGraph::AN_ClassesAndChildren);
-	}
+    clearGraphAndAddClass(getLastSelectedClassName(),
+	    ClassGraph::AN_ClassesAndChildren);
     updateGraph();
     }
 
@@ -224,6 +221,12 @@ extern "C" G_MODULE_EXPORT void on_RestartMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gClassDiagram->restart();
+    }
+
+extern "C" G_MODULE_EXPORT void on_RelayoutMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    gClassDiagram->updateGraph();
     }
 
 void handlePopup(ClassGraph::eAddNodeTypes addType)
