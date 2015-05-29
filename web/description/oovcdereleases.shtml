@@ -28,6 +28,8 @@ This version contains:
 <ul>
   <li>Added class list for portion diagrams</li>
   <li>Added right click for portion diagrams</li>
+  <li>Added boost and gtkmm as packages in Windows</li>
+  <li>Fixed external reference exclude directories</li>
 </ul>
 
 <h2>2015-5</h2>

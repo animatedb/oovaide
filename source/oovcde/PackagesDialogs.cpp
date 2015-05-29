@@ -318,6 +318,8 @@ void ProjectPackagesDialog::winScanDirectories()
 	if(dir.length())
 	    {
 	    pkg.setRootDir(dir);
+	    // move to project packages.
+	    mProjectPackages.insertPackage(pkg);
 	    }
 	setEntry("PackageRootDirEntry", pkg.getRootDir());
 	}

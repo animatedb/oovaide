@@ -47,12 +47,27 @@ static std::string makeRelative(std::string const &rootDir, OovStringRef const a
 	eFilePathTypes fpt)
     {
     FilePath fp(absPath, fpt);
+
+    // Remove the exclusion directories.
+    std::string baseRootDir = rootDir;
+    size_t pos = baseRootDir.find('!');
+    if(pos != std::string::npos)
+	{
+	baseRootDir.erase(pos);
+	}
+    // Remove any relative directory info.
+    pos = baseRootDir.find('.');
+    if(pos != std::string::npos)
+	{
+	baseRootDir.erase(pos);
+	}
+
     // Don't make relative directories higher than root.
     if(rootDir.length() > fp.length())
 	{
 	fp.clear();
 	}
-    else if(fp.compare(0, rootDir.length(), rootDir) == 0)
+    else if(fp.compare(0, baseRootDir.length(), baseRootDir) == 0)
 	{
 	fp.erase(0, rootDir.length());
 	}

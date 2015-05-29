@@ -89,6 +89,9 @@ OovString FilePathGetFileName(OovStringRef const path);
 OovString FilePathGetFileNameExt(OovStringRef const path);
 OovString FilePathGetFileExt(OovStringRef const path);
 OovString FilePathGetWithoutEndPathSep(OovStringRef const path);
+#ifndef __linux__
+OovString FilePathGetAsWindowsPath(OovStringRef const path);
+#endif
 
 //***** modifying path functions
 void FilePathEnsureLastPathSep(std::string &path);
@@ -139,6 +142,10 @@ template<typename T_Str> class FilePathRefInterface
 	    { return FilePathGetFileExt(getThisStr()); }
 	OovString getWithoutEndPathSep() const
 	    { return FilePathGetWithoutEndPathSep(getThisStr()); }
+#ifndef __linux__
+	OovString getAsWindowsPath() const
+	    { return FilePathGetAsWindowsPath(getThisStr()); }
+#endif
 
 	bool matchExtension(OovStringRef const path) const
 	    { return FilePathMatchExtension(getThisStr(), path); }

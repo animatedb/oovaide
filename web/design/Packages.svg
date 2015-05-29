@@ -1,381 +1,2041 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1035" height="1073">
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="901" y="929" width="133" height="143" />
-<line x1="901" y1="942" x2="1034" y2="942" />
-<polygon points="1014,950 1026,955 1026,945 1014,950 " style="fill:#ffffff" />
-<polygon points="1014,964 1021,968 1028,964 1021,960 1014,964 " style="fill:#ffffff" />
-<polygon points="1014,978 1021,982 1028,978 1021,974 1014,978 " style="fill:#000000" />
-<polygon points="1014,992 1022,997 1018,992 1022,987 1014,992 " style="fill:#ffffff" />
-<circle cx="1014" cy="1006" r="5" style="fill:#ffffff" />
-<circle cx="1014" cy="1020" r="5" style="fill:#ffffff" />
-<circle cx="1021" cy="1020" r="2" style="fill:#ffffff" />
-<circle cx="1014" cy="1034" r="5" style="fill:#ffffff" />
-<circle cx="1014" cy="1034" r="2" style="fill:#ffffff" />
-<circle cx="1014" cy="1048" r="5" style="fill:#ffffff" />
-<circle cx="1014" cy="1048" r="2" style="fill:#000000" />
-<circle cx="1014" cy="1062" r="5" style="fill:#000000" />
-<circle cx="1014" cy="1062" r="2" style="fill:#000000" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="902" y="938">Relations Key</text>
-<text x="902" y="952">Generalization</text>
-<text x="902" y="966">Aggregation(reference)</text>
-<text x="902" y="980">Composition(owned)</text>
-<text x="902" y="994">Const</text>
-<text x="902" y="1008">Method Variable</text>
-<text x="902" y="1022">Method Parameter</text>
-<text x="902" y="1036">Public</text>
-<text x="902" y="1050">Protected</text>
-<text x="902" y="1064">Private</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="675" y="406" width="238" height="89" />
-<line x1="675" y1="427" x2="913" y2="427" />
-<line x1="675" y1="439" x2="913" y2="439" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="676" y="415">Packages</text>
-<text x="676" y="424">/oovCommon/</text>
-<text x="676" y="436">#NameValueFile mFile</text>
-<text x="676" y="448">+Package getPackage(OovStringRef name)</text>
-<text x="676" y="457">+void removePackage(OovString name)</text>
-<text x="676" y="466">+std::vector&lt;Package&gt; getPackages()</text>
-<text x="676" y="475">+void read(OovStringRef fn)</text>
-<text x="676" y="484">+void insertPackage(Package pkg)</text>
-<text x="676" y="493">-bool addUndefinedPackage(OovStringRef name)</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="501" y="333" width="77" height="26" />
-<line x1="501" y1="354" x2="578" y2="354" />
-<line x1="501" y1="357" x2="578" y2="357" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="502" y="342">NameValueFile</text>
-<text x="502" y="351">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="645" y="552" width="182" height="53" />
-<line x1="645" y1="573" x2="827" y2="573" />
-<line x1="645" y1="576" x2="827" y2="576" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="646" y="561">ProjectPackages</text>
-<text x="646" y="570">/oovCommon/</text>
-<text x="646" y="585">+void ProjectPackages(bool readNow)</text>
-<text x="646" y="594">+bool read()</text>
-<text x="646" y="603">+void savePackages()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="729" y="236" width="208" height="62" />
-<line x1="729" y1="257" x2="937" y2="257" />
-<line x1="729" y1="269" x2="937" y2="269" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="730" y="245">AvailablePackages</text>
-<text x="730" y="254">/oovCommon/</text>
-<text x="730" y="266">+Packages mPackages</text>
-<text x="730" y="278">+void AvailablePackages()</text>
-<text x="730" y="287">+OovStringVec getAvailablePackages()</text>
-<text x="730" y="296">+Package getPackage(OovStringRef name)</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="483" y="66" width="201" height="188" />
-<line x1="483" y1="87" x2="684" y2="87" />
-<line x1="483" y1="108" x2="684" y2="108" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="484" y="75">Package</text>
-<text x="484" y="84">/oovCommon/</text>
-<text x="484" y="96">-OovString mCompileArgs</text>
-<text x="484" y="105">-OovString mLinkArgs</text>
-<text x="484" y="117">+OovStringVec getCompileArgs()</text>
-<text x="484" y="126">+OovStringVec getLinkArgs()</text>
-<text x="484" y="135">+void loadFromMap(OovStringRef name</text>
-<text x="484" y="144">   , NameValueFile file)</text>
-<text x="484" y="153">+void saveToMap(NameValueFile file)</text>
-<text x="484" y="162">+void Package()</text>
-<text x="484" y="171">+void Package(OovStringRef pkgName, </text>
-<text x="484" y="180">   OovStringRef rootDir)</text>
-<text x="484" y="189">+void ~Package()</text>
-<text x="484" y="198">+void setCompileInfo(OovStringRef incDir</text>
-<text x="484" y="207">   , OovStringRef compileArgs)</text>
-<text x="484" y="216">+void setLinkInfo(OovStringRef libDir</text>
-<text x="484" y="225">   , OovStringRef libNames, OovStringRef </text>
-<text x="484" y="234">   linkArgs)</text>
-<text x="484" y="243">+OovStringRef getCompileArgsAsStr()</text>
-<text x="484" y="252">+OovStringRef getLinkArgsAsStr()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="503" y="433" width="83" height="26" />
-<line x1="503" y1="454" x2="586" y2="454" />
-<line x1="503" y1="457" x2="586" y2="457" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="504" y="442">CompoundValue</text>
-<text x="504" y="451">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="763" y="691" width="177" height="80" />
-<line x1="763" y1="712" x2="940" y2="712" />
-<line x1="763" y1="733" x2="940" y2="733" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="764" y="700">AddPackageDialog</text>
-<text x="764" y="709">/oovcde/</text>
-<text x="764" y="721">-GuiList mAllPackagesList</text>
-<text x="764" y="730">-AvailablePackages mAvailPackages</text>
-<text x="764" y="742">+void AddPackageDialog()</text>
-<text x="764" y="751">+Package getPackage()</text>
-<text x="764" y="760">+void selectPackage()</text>
-<text x="764" y="769">+void ~AddPackageDialog()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="459" y="548" width="151" height="44" />
-<line x1="459" y1="569" x2="610" y2="569" />
-<line x1="459" y1="572" x2="610" y2="572" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="460" y="557">OovStringVec</text>
-<text x="460" y="566">/oovCommon/</text>
-<text x="460" y="581">+OovString getStr(size_t index)</text>
-<text x="460" y="590">+void deleteEmptyStrings()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="106" y="415" width="208" height="89" />
-<line x1="106" y1="436" x2="314" y2="436" />
-<line x1="106" y1="448" x2="314" y2="448" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="107" y="424">BuildPackages</text>
-<text x="107" y="433">/oovCommon/</text>
-<text x="107" y="445">#NameValueFile mFile</text>
-<text x="107" y="457">+void BuildPackages(bool readNow)</text>
-<text x="107" y="466">+bool read()</text>
-<text x="107" y="475">+Package getPackage(OovStringRef name)</text>
-<text x="107" y="484">+std::vector&lt;Package&gt; getPackages()</text>
-<text x="107" y="493">+void insertPackage(Package pkg)</text>
-<text x="107" y="502">+void savePackages()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="481" y="705" width="243" height="179" />
-<line x1="481" y1="726" x2="724" y2="726" />
-<line x1="481" y1="774" x2="724" y2="774" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="482" y="714">ProjectPackagesDialog</text>
-<text x="482" y="723">/oovcde/</text>
-<text x="482" y="735">-GuiList mProjectPackagesList</text>
-<text x="482" y="744">-ProjectPackages mProjectPackages</text>
-<text x="482" y="753">-string mBaseBuildArgs</text>
-<text x="482" y="762">-string mLastSelectedPackage</text>
-<text x="482" y="771">-bool mAllowSelection</text>
-<text x="482" y="783">+void ProjectPackagesDialog(string baseBuildArgs)</text>
-<text x="482" y="792">+void selectPackage()</text>
-<text x="482" y="801">+void displayAddPackageDialog()</text>
-<text x="482" y="810">+void removePackage()</text>
-<text x="482" y="819">+void winScanDirectories()</text>
-<text x="482" y="828">+void winSetEnableScanning()</text>
-<text x="482" y="837">-void beforeRun()</text>
-<text x="482" y="846">-void afterRun(bool ok)</text>
-<text x="482" y="855">-void savePackage(string pkgName)</text>
-<text x="482" y="864">-void updatePackageList()</text>
-<text x="482" y="873">-void clearPackageDisplay()</text>
-<text x="482" y="882">+void ~ProjectPackagesDialog()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="35" y="589" width="398" height="332" />
-<line x1="35" y1="610" x2="433" y2="610" />
-<line x1="35" y1="703" x2="433" y2="703" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="36" y="598">ProjectReader</text>
-<text x="36" y="607">/oovCommon/</text>
-<text x="36" y="619">-OovStringVec mCompileArgs</text>
-<text x="36" y="628">-IndexedStringVec mLinkArgs</text>
-<text x="36" y="637">-OovStringVec mExternalRootArgs</text>
-<text x="36" y="646">-IndexedStringVec mExternalPackageNames</text>
-<text x="36" y="655">-OovStringVec mPackageCrcCompileArgs</text>
-<text x="36" y="664">-OovStringVec mPackageCrcLinkArgs</text>
-<text x="36" y="673">-OovStringVec mPackageCrcNames</text>
-<text x="36" y="682">-ProjectPackages mProjectPackages</text>
-<text x="36" y="691">-BuildPackages mBuildPackages</text>
-<text x="36" y="700">-bool mVerbose</text>
-<text x="36" y="712">+bool miniReadOovProject(OovStringRef oovProjectDir)</text>
-<text x="36" y="721">+bool readOovProject(OovStringRef oovProjectDir, OovStringRef buildConfigName)</text>
-<text x="36" y="730">+int getExternalPackageLinkOrder(OovStringRef pkgName)</text>
-<text x="36" y="739">+OovStringVec getAllCrcCompileArgs()</text>
-<text x="36" y="748">+OovStringVec getAllCrcLinkArgs()</text>
-<text x="36" y="757">+CompoundValue getProjectExcludeDirs()</text>
-<text x="36" y="766">-void parseArgs(OovStringVec strs)</text>
-<text x="36" y="775">-void handleExternalPackage(OovStringRef pkgName)</text>
-<text x="36" y="784">+void ProjectReader()</text>
-<text x="36" y="793">+ProjectPackages getProjectPackages()</text>
-<text x="36" y="802">+BuildPackages getBuildPackages()</text>
-<text x="36" y="811">+BuildPackages getBuildPackages()</text>
-<text x="36" y="820">+OovStringVec getCompileArgs()</text>
-<text x="36" y="829">+IndexedStringVec getLinkArgs()</text>
-<text x="36" y="838">+OovStringVec getExternalArgs()</text>
-<text x="36" y="847">+OovStringRef getSrcRootDirectory()</text>
-<text x="36" y="856">+bool getVerbose()</text>
-<text x="36" y="865">-void addCompileArg(OovStringRef str)</text>
-<text x="36" y="874">-void addLinkArg(int linkOrderIndex, OovStringRef str)</text>
-<text x="36" y="883">-void addExternalArg(OovStringRef str)</text>
-<text x="36" y="892">-void addExternalPackageName(int linkOrderIndex, OovStringRef str)</text>
-<text x="36" y="901">-void addPackageCrcName(OovStringRef pkgName)</text>
-<text x="36" y="910">-void addPackageCrcCompileArg(OovStringRef str)</text>
-<text x="36" y="919">-void addPackageCrcLinkArg(OovStringRef str)</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="486" y="26" width="221" height="17" />
-<line x1="486" y1="38" x2="707" y2="38" />
-<line x1="486" y1="41" x2="707" y2="41" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="487" y="35">std::vector&lt;Package,std::allocator&lt;Package&gt; &gt;</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="714" y="101" width="103" height="17" />
-<line x1="714" y1="113" x2="817" y2="113" />
-<line x1="714" y1="116" x2="817" y2="116" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="715" y="110">std::vector&lt;Package&gt;</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="24" y="20" width="404" height="314" />
-<line x1="24" y1="41" x2="428" y2="41" />
-<line x1="24" y1="107" x2="428" y2="107" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="25" y="29">RootDirPackage</text>
-<text x="25" y="38">/oovCommon/</text>
-<text x="25" y="50">#OovString mName</text>
-<text x="25" y="59">#FilePath mRootDir</text>
-<text x="25" y="68">#OovString mLibDir</text>
-<text x="25" y="77">#OovString mLibNames</text>
-<text x="25" y="86">#OovString mIncludeDir</text>
-<text x="25" y="95">#OovString mExternalReferenceDir</text>
-<text x="25" y="104">#OovString mScannedLibFilePaths</text>
-<text x="25" y="116">+bool addUndefinedPackage(OovString pkgName, NameValueFile file)</text>
-<text x="25" y="125">+void appendAbsoluteIncDir(OovStringRef dir)</text>
-<text x="25" y="134">+void appendAbsoluteLibName(OovStringRef fn)</text>
-<text x="25" y="143">+void setOrderedLibs(OovStringVec libDirs, OovStringVec libNames)</text>
-<text x="25" y="152">+void setRootDirPackage(OovStringRef rootDir)</text>
-<text x="25" y="161">+OovStringVec getExtRefDirs()</text>
-<text x="25" y="170">+OovStringVec getLibraryNames()</text>
-<text x="25" y="179">+OovStringVec getScannedLibraryFilePaths()</text>
-<text x="25" y="188">+OovStringVec getIncludeDirs()</text>
-<text x="25" y="197">+OovStringVec getLibraryDirs()</text>
-<text x="25" y="206">+void loadFromMap(OovStringRef pkgName, NameValueFile file)</text>
-<text x="25" y="215">+void saveToMap(NameValueFile file)</text>
-<text x="25" y="224">#OovStringVec getValAddRootToVector(OovStringRef tagName, eFilePathTypes fpt)</text>
-<text x="25" y="233">+void RootDirPackage()</text>
-<text x="25" y="242">+void RootDirPackage(OovStringRef pkgName, OovStringRef rootDir)</text>
-<text x="25" y="251">+void setRootDir(OovStringRef rootDir)</text>
-<text x="25" y="260">+void setExternalReferenceDir(OovString extRefDir)</text>
-<text x="25" y="269">+OovString getPkgName()</text>
-<text x="25" y="278">+FilePath getRootDir()</text>
-<text x="25" y="287">+OovString getIncludeDirsAsString()</text>
-<text x="25" y="296">+OovString getLibraryDirsAsString()</text>
-<text x="25" y="305">+OovString getLibraryNamesAsString()</text>
-<text x="25" y="314">+OovString getExtRefDirsAsString()</text>
-<text x="25" y="323">+bool needDirScan()</text>
-<text x="25" y="332">+bool areLibraryNamesOrdered()</text>
-</g>
-<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="687" y1="406" x2="570" y2="359" />
-<circle cx="659" cy="394" r="5" style="fill:#ffffff" />
-<circle cx="659" cy="394" r="2" style="fill:#000000" />
-<polygon points="687,406 682,399 675,401 679,407 687,406 " style="fill:#000000" />
-<line x1="775" y1="494" x2="747" y2="552" />
-<circle cx="761" cy="521" r="5" style="fill:#ffffff" />
-<circle cx="761" cy="521" r="2" style="fill:#ffffff" />
-<polygon points="775,494 765,503 775,507 775,494 " style="fill:#ffffff" />
-<line x1="803" y1="406" x2="827" y2="298" />
-<circle cx="820" cy="327" r="5" style="fill:#ffffff" />
-<circle cx="820" cy="327" r="2" style="fill:#ffffff" />
-<polygon points="827,298 821,304 824,311 829,306 827,298 " style="fill:#000000" />
-<line x1="762" y1="406" x2="651" y2="254" />
-<polygon points="762,406 762,397 760,403 753,403 762,406 " style="fill:#ffffff" />
-<circle cx="753" cy="394" r="5" style="fill:#ffffff" />
-<circle cx="744" cy="381" r="5" style="fill:#000000" />
-<circle cx="744" cy="381" r="2" style="fill:#000000" />
-<line x1="675" y1="449" x2="585" y2="446" />
-<circle cx="661" cy="448" r="5" style="fill:#ffffff" />
-<line x1="542" y1="333" x2="561" y2="254" />
-<polygon points="561,254 554,260 561,257 564,263 561,254 " style="fill:#ffffff" />
-<circle cx="557" cy="267" r="5" style="fill:#ffffff" />
-<circle cx="556" cy="274" r="2" style="fill:#ffffff" />
-<line x1="502" y1="359" x2="314" y2="424" />
-<circle cx="342" cy="414" r="5" style="fill:#ffffff" />
-<circle cx="342" cy="414" r="2" style="fill:#000000" />
-<polygon points="314,424 322,425 327,420 319,418 314,424 " style="fill:#000000" />
-<line x1="530" y1="359" x2="357" y2="589" />
-<circle cx="511" cy="382" r="5" style="fill:#ffffff" />
-<circle cx="511" cy="382" r="2" style="fill:#ffffff" />
-<polygon points="530,359 518,366 527,372 530,359 " style="fill:#ffffff" />
-<line x1="515" y1="333" x2="428" y2="286" />
-<circle cx="440" cy="292" r="5" style="fill:#ffffff" />
-<circle cx="446" cy="295" r="2" style="fill:#ffffff" />
-<line x1="720" y1="604" x2="657" y2="705" />
-<circle cx="672" cy="679" r="5" style="fill:#000000" />
-<circle cx="672" cy="679" r="2" style="fill:#000000" />
-<polygon points="657,705 664,701 664,694 657,697 657,705 " style="fill:#000000" />
-<line x1="663" y1="604" x2="433" y2="685" />
-<circle cx="461" cy="675" r="5" style="fill:#000000" />
-<circle cx="461" cy="675" r="2" style="fill:#000000" />
-<polygon points="433,685 441,686 446,681 438,679 433,685 " style="fill:#000000" />
-<line x1="834" y1="298" x2="850" y2="691" />
-<circle cx="848" cy="661" r="5" style="fill:#000000" />
-<circle cx="848" cy="661" r="2" style="fill:#000000" />
-<polygon points="850,691 854,684 850,678 846,684 850,691 " style="fill:#000000" />
-<line x1="803" y1="298" x2="555" y2="548" />
-<circle cx="793" cy="307" r="5" style="fill:#ffffff" />
-<line x1="483" y1="240" x2="264" y2="415" />
-<polygon points="264,415 273,415 267,413 266,406 264,415 " style="fill:#ffffff" />
-<circle cx="274" cy="406" r="5" style="fill:#ffffff" />
-<circle cx="287" cy="396" r="5" style="fill:#000000" />
-<circle cx="287" cy="396" r="2" style="fill:#000000" />
-<line x1="585" y1="254" x2="600" y2="705" />
-<circle cx="599" cy="691" r="5" style="fill:#ffffff" />
-<line x1="528" y1="254" x2="331" y2="589" />
-<circle cx="338" cy="576" r="5" style="fill:#ffffff" />
-<line x1="592" y1="66" x2="596" y2="42" />
-<line x1="683" y1="132" x2="737" y2="117" />
-<line x1="483" y1="164" x2="428" y2="168" />
-<circle cx="457" cy="165" r="5" style="fill:#ffffff" />
-<circle cx="457" cy="165" r="2" style="fill:#ffffff" />
-<polygon points="428,168 441,172 440,162 428,168 " style="fill:#ffffff" />
-<line x1="543" y1="459" x2="535" y2="548" />
-<polygon points="543,459 537,466 543,462 548,467 543,459 " style="fill:#ffffff" />
-<circle cx="541" cy="472" r="5" style="fill:#ffffff" />
-<circle cx="541" cy="479" r="2" style="fill:#ffffff" />
-<circle cx="537" cy="518" r="5" style="fill:#ffffff" />
-<circle cx="537" cy="518" r="2" style="fill:#ffffff" />
-<polygon points="535,548 541,536 531,535 535,548 " style="fill:#ffffff" />
-<line x1="503" y1="447" x2="314" y2="455" />
-<circle cx="327" cy="454" r="5" style="fill:#ffffff" />
-<line x1="531" y1="459" x2="400" y2="589" />
-<circle cx="409" cy="579" r="5" style="fill:#ffffff" />
-<line x1="529" y1="433" x2="411" y2="334" />
-<circle cx="421" cy="342" r="5" style="fill:#ffffff" />
-<line x1="763" y1="753" x2="723" y2="764" />
-<circle cx="736" cy="760" r="5" style="fill:#ffffff" />
-<line x1="540" y1="592" x2="575" y2="705" />
-<circle cx="570" cy="691" r="5" style="fill:#ffffff" />
-<line x1="499" y1="592" x2="433" y2="633" />
-<circle cx="444" cy="625" r="5" style="fill:#ffffff" />
-<circle cx="458" cy="617" r="5" style="fill:#000000" />
-<circle cx="458" cy="617" r="2" style="fill:#000000" />
-<polygon points="433,633 441,633 444,626 437,626 433,633 " style="fill:#000000" />
-<line x1="517" y1="548" x2="349" y2="334" />
-<polygon points="349,334 349,343 351,337 358,336 349,334 " style="fill:#ffffff" />
-<circle cx="357" cy="345" r="5" style="fill:#ffffff" />
-<circle cx="367" cy="357" r="5" style="fill:#000000" />
-<circle cx="367" cy="357" r="2" style="fill:#000000" />
-<line x1="213" y1="503" x2="221" y2="589" />
-<circle cx="218" cy="559" r="5" style="fill:#000000" />
-<circle cx="218" cy="559" r="2" style="fill:#000000" />
-<polygon points="221,589 224,581 220,576 216,582 221,589 " style="fill:#000000" />
-</g>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   version="1.1"
+   width="917"
+   height="915"
+   id="svg2"
+   inkscape:version="0.48.1 "
+   sodipodi:docname="Packages.svg">
+  <metadata
+     id="metadata704">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs702" />
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="816"
+     inkscape:window-height="773"
+     id="namedview700"
+     showgrid="false"
+     fit-margin-top="0"
+     fit-margin-left="0"
+     fit-margin-right="0"
+     fit-margin-bottom="0"
+     inkscape:zoom="0.5"
+     inkscape:cx="494"
+     inkscape:cy="398"
+     inkscape:window-x="383"
+     inkscape:window-y="177"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg2" />
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g4"
+     transform="translate(-167.5,-157.5)">
+    <rect
+       x="901"
+       y="929"
+       width="133"
+       height="143"
+       id="rect6" />
+    <line
+       x1="901"
+       y1="942"
+       x2="1034"
+       y2="942"
+       id="line8" />
+    <polygon
+       points="1014,950 1026,955 1026,945 1014,950 "
+       style="fill:#ffffff"
+       id="polygon10" />
+    <polygon
+       points="1014,964 1014,964 1021,968 1028,964 1021,960 "
+       style="fill:#ffffff"
+       id="polygon12" />
+    <polygon
+       points="1014,978 1014,978 1021,982 1028,978 1021,974 "
+       style="fill:#000000"
+       id="polygon14" />
+    <polygon
+       points="1014,992 1014,992 1022,997 1018,992 1022,987 "
+       style="fill:#ffffff"
+       id="polygon16" />
+    <circle
+       cx="1014"
+       cy="1006"
+       r="5"
+       style="fill:#ffffff"
+       id="circle18"
+       d="m 1019,1006 c 0,2.7614 -2.2386,5 -5,5 -2.7614,0 -5,-2.2386 -5,-5 0,-2.7614 2.2386,-5 5,-5 2.7614,0 5,2.2386 5,5 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1006"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <circle
+       cx="1014"
+       cy="1020"
+       r="5"
+       style="fill:#ffffff"
+       id="circle20"
+       d="m 1019,1020 c 0,2.7614 -2.2386,5 -5,5 -2.7614,0 -5,-2.2386 -5,-5 0,-2.7614 2.2386,-5 5,-5 2.7614,0 5,2.2386 5,5 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1020"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <circle
+       cx="1021"
+       cy="1020"
+       r="2"
+       style="fill:#ffffff"
+       id="circle22"
+       d="m 1023,1020 c 0,1.1046 -0.8954,2 -2,2 -1.1046,0 -2,-0.8954 -2,-2 0,-1.1046 0.8954,-2 2,-2 1.1046,0 2,0.8954 2,2 z"
+       sodipodi:cx="1021"
+       sodipodi:cy="1020"
+       sodipodi:rx="2"
+       sodipodi:ry="2" />
+    <circle
+       cx="1014"
+       cy="1034"
+       r="5"
+       style="fill:#ffffff"
+       id="circle24"
+       d="m 1019,1034 c 0,2.7614 -2.2386,5 -5,5 -2.7614,0 -5,-2.2386 -5,-5 0,-2.7614 2.2386,-5 5,-5 2.7614,0 5,2.2386 5,5 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1034"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <circle
+       cx="1014"
+       cy="1034"
+       r="2"
+       style="fill:#ffffff"
+       id="circle26"
+       d="m 1016,1034 c 0,1.1046 -0.8954,2 -2,2 -1.1046,0 -2,-0.8954 -2,-2 0,-1.1046 0.8954,-2 2,-2 1.1046,0 2,0.8954 2,2 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1034"
+       sodipodi:rx="2"
+       sodipodi:ry="2" />
+    <circle
+       cx="1014"
+       cy="1048"
+       r="5"
+       style="fill:#ffffff"
+       id="circle28"
+       d="m 1019,1048 c 0,2.7614 -2.2386,5 -5,5 -2.7614,0 -5,-2.2386 -5,-5 0,-2.7614 2.2386,-5 5,-5 2.7614,0 5,2.2386 5,5 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1048"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <circle
+       cx="1014"
+       cy="1048"
+       r="2"
+       style="fill:#000000"
+       id="circle30"
+       d="m 1016,1048 c 0,1.1046 -0.8954,2 -2,2 -1.1046,0 -2,-0.8954 -2,-2 0,-1.1046 0.8954,-2 2,-2 1.1046,0 2,0.8954 2,2 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1048"
+       sodipodi:rx="2"
+       sodipodi:ry="2" />
+    <circle
+       cx="1014"
+       cy="1062"
+       r="5"
+       style="fill:#000000"
+       id="circle32"
+       d="m 1019,1062 c 0,2.7614 -2.2386,5 -5,5 -2.7614,0 -5,-2.2386 -5,-5 0,-2.7614 2.2386,-5 5,-5 2.7614,0 5,2.2386 5,5 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1062"
+       sodipodi:rx="5"
+       sodipodi:ry="5" />
+    <circle
+       cx="1014"
+       cy="1062"
+       r="2"
+       style="fill:#000000"
+       id="circle34"
+       d="m 1016,1062 c 0,1.1046 -0.8954,2 -2,2 -1.1046,0 -2,-0.8954 -2,-2 0,-1.1046 0.8954,-2 2,-2 1.1046,0 2,0.8954 2,2 z"
+       sodipodi:cx="1014"
+       sodipodi:cy="1062"
+       sodipodi:rx="2"
+       sodipodi:ry="2" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g36"
+     transform="translate(-167.5,-157.5)"
+     style="font-size:10px;stroke:none">
+    <text
+       x="902"
+       y="938"
+       id="text38">Relations Key</text>
+    <text
+       x="902"
+       y="952"
+       id="text40">Generalization</text>
+    <text
+       x="902"
+       y="966"
+       id="text42">Aggregation(reference)</text>
+    <text
+       x="902"
+       y="980"
+       id="text44">Composition(owned)</text>
+    <text
+       x="902"
+       y="994"
+       id="text46">Const</text>
+    <text
+       x="902"
+       y="1008"
+       id="text48">Method Variable</text>
+    <text
+       x="902"
+       y="1022"
+       id="text50">Method Parameter</text>
+    <text
+       x="902"
+       y="1036"
+       id="text52">Public</text>
+    <text
+       x="902"
+       y="1050"
+       id="text54">Protected</text>
+    <text
+       x="902"
+       y="1064"
+       id="text56">Private</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g58"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="675"
+       y="406"
+       width="238"
+       height="89"
+       id="rect60" />
+    <line
+       x1="675"
+       y1="427"
+       x2="913"
+       y2="427"
+       id="line62" />
+    <line
+       x1="675"
+       y1="439"
+       x2="913"
+       y2="439"
+       id="line64" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g66"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="676"
+       y="415"
+       id="text68">Packages</text>
+    <text
+       x="676"
+       y="424"
+       id="text70">/oovCommon/</text>
+    <text
+       x="676"
+       y="436"
+       id="text72">#NameValueFile mFile</text>
+    <text
+       x="676"
+       y="448"
+       id="text74">+Package getPackage(OovStringRef name)</text>
+    <text
+       x="676"
+       y="457"
+       id="text76">+void removePackage(OovString name)</text>
+    <text
+       x="676"
+       y="466"
+       id="text78">+std::vector&lt;Package&gt; getPackages()</text>
+    <text
+       x="676"
+       y="475"
+       id="text80">+void read(OovStringRef fn)</text>
+    <text
+       x="676"
+       y="484"
+       id="text82">+void insertPackage(Package pkg)</text>
+    <text
+       x="676"
+       y="493"
+       id="text84">-bool addUndefinedPackage(OovStringRef name)</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g86"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="501"
+       y="333"
+       width="77"
+       height="26"
+       id="rect88" />
+    <line
+       x1="501"
+       y1="354"
+       x2="578"
+       y2="354"
+       id="line90" />
+    <line
+       x1="501"
+       y1="357"
+       x2="578"
+       y2="357"
+       id="line92" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g94"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="502"
+       y="342"
+       id="text96">NameValueFile</text>
+    <text
+       x="502"
+       y="351"
+       id="text98">/oovCommon/</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g100"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="645"
+       y="552"
+       width="182"
+       height="53"
+       id="rect102" />
+    <line
+       x1="645"
+       y1="573"
+       x2="827"
+       y2="573"
+       id="line104" />
+    <line
+       x1="645"
+       y1="576"
+       x2="827"
+       y2="576"
+       id="line106" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g108"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="646"
+       y="561"
+       id="text110">ProjectPackages</text>
+    <text
+       x="646"
+       y="570"
+       id="text112">/oovCommon/</text>
+    <text
+       x="646"
+       y="585"
+       id="text114">+void ProjectPackages(bool readNow)</text>
+    <text
+       x="646"
+       y="594"
+       id="text116">+bool read()</text>
+    <text
+       x="646"
+       y="603"
+       id="text118">+void savePackages()</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g120"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="729"
+       y="236"
+       width="208"
+       height="62"
+       id="rect122" />
+    <line
+       x1="729"
+       y1="257"
+       x2="937"
+       y2="257"
+       id="line124" />
+    <line
+       x1="729"
+       y1="269"
+       x2="937"
+       y2="269"
+       id="line126" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g128"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="730"
+       y="245"
+       id="text130">AvailablePackages</text>
+    <text
+       x="730"
+       y="254"
+       id="text132">/oovCommon/</text>
+    <text
+       x="730"
+       y="266"
+       id="text134">+Packages mPackages</text>
+    <text
+       x="730"
+       y="278"
+       id="text136">+void AvailablePackages()</text>
+    <text
+       x="730"
+       y="287"
+       id="text138">+OovStringVec getAvailablePackages()</text>
+    <text
+       x="730"
+       y="296"
+       id="text140">+Package getPackage(OovStringRef name)</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g142"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="483"
+       y="66"
+       width="201"
+       height="188"
+       id="rect144" />
+    <line
+       x1="483"
+       y1="87"
+       x2="684"
+       y2="87"
+       id="line146" />
+    <line
+       x1="483"
+       y1="108"
+       x2="684"
+       y2="108"
+       id="line148" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g150"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="484"
+       y="75"
+       id="text152">Package</text>
+    <text
+       x="484"
+       y="84"
+       id="text154">/oovCommon/</text>
+    <text
+       x="484"
+       y="96"
+       id="text156">-OovString mCompileArgs</text>
+    <text
+       x="484"
+       y="105"
+       id="text158">-OovString mLinkArgs</text>
+    <text
+       x="484"
+       y="117"
+       id="text160">+OovStringVec getCompileArgs()</text>
+    <text
+       x="484"
+       y="126"
+       id="text162">+OovStringVec getLinkArgs()</text>
+    <text
+       x="484"
+       y="135"
+       id="text164">+void loadFromMap(OovStringRef name</text>
+    <text
+       x="484"
+       y="144"
+       id="text166">, NameValueFile file)</text>
+    <text
+       x="484"
+       y="153"
+       id="text168">+void saveToMap(NameValueFile file)</text>
+    <text
+       x="484"
+       y="162"
+       id="text170">+void Package()</text>
+    <text
+       x="484"
+       y="171"
+       id="text172">+void Package(OovStringRef pkgName,</text>
+    <text
+       x="484"
+       y="180"
+       id="text174">OovStringRef rootDir)</text>
+    <text
+       x="484"
+       y="189"
+       id="text176">+void ~Package()</text>
+    <text
+       x="484"
+       y="198"
+       id="text178">+void setCompileInfo(OovStringRef incDir</text>
+    <text
+       x="484"
+       y="207"
+       id="text180">, OovStringRef compileArgs)</text>
+    <text
+       x="484"
+       y="216"
+       id="text182">+void setLinkInfo(OovStringRef libDir</text>
+    <text
+       x="484"
+       y="225"
+       id="text184">, OovStringRef libNames, OovStringRef</text>
+    <text
+       x="484"
+       y="234"
+       id="text186">linkArgs)</text>
+    <text
+       x="484"
+       y="243"
+       id="text188">+OovStringRef getCompileArgsAsStr()</text>
+    <text
+       x="484"
+       y="252"
+       id="text190">+OovStringRef getLinkArgsAsStr()</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g192"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="503"
+       y="433"
+       width="83"
+       height="26"
+       id="rect194" />
+    <line
+       x1="503"
+       y1="454"
+       x2="586"
+       y2="454"
+       id="line196" />
+    <line
+       x1="503"
+       y1="457"
+       x2="586"
+       y2="457"
+       id="line198" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g200"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="504"
+       y="442"
+       id="text202">CompoundValue</text>
+    <text
+       x="504"
+       y="451"
+       id="text204">/oovCommon/</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g206"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="763"
+       y="691"
+       width="177"
+       height="80"
+       id="rect208" />
+    <line
+       x1="763"
+       y1="712"
+       x2="940"
+       y2="712"
+       id="line210" />
+    <line
+       x1="763"
+       y1="733"
+       x2="940"
+       y2="733"
+       id="line212" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g214"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="764"
+       y="700"
+       id="text216">AddPackageDialog</text>
+    <text
+       x="764"
+       y="709"
+       id="text218">/oovcde/</text>
+    <text
+       x="764"
+       y="721"
+       id="text220">-GuiList mAllPackagesList</text>
+    <text
+       x="764"
+       y="730"
+       id="text222">-AvailablePackages mAvailPackages</text>
+    <text
+       x="764"
+       y="742"
+       id="text224">+void AddPackageDialog()</text>
+    <text
+       x="764"
+       y="751"
+       id="text226">+Package getPackage()</text>
+    <text
+       x="764"
+       y="760"
+       id="text228">+void selectPackage()</text>
+    <text
+       x="764"
+       y="769"
+       id="text230">+void ~AddPackageDialog()</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g232"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="459"
+       y="548"
+       width="151"
+       height="44"
+       id="rect234" />
+    <line
+       x1="459"
+       y1="569"
+       x2="610"
+       y2="569"
+       id="line236" />
+    <line
+       x1="459"
+       y1="572"
+       x2="610"
+       y2="572"
+       id="line238" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g240"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="460"
+       y="557"
+       id="text242">OovStringVec</text>
+    <text
+       x="460"
+       y="566"
+       id="text244">/oovCommon/</text>
+    <text
+       x="460"
+       y="581"
+       id="text246">+OovString getStr(size_t index)</text>
+    <text
+       x="460"
+       y="590"
+       id="text248">+void deleteEmptyStrings()</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g250"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="106"
+       y="415"
+       width="208"
+       height="89"
+       id="rect252" />
+    <line
+       x1="106"
+       y1="436"
+       x2="314"
+       y2="436"
+       id="line254" />
+    <line
+       x1="106"
+       y1="448"
+       x2="314"
+       y2="448"
+       id="line256" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g258"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="107"
+       y="424"
+       id="text260">BuildPackages</text>
+    <text
+       x="107"
+       y="433"
+       id="text262">/oovCommon/</text>
+    <text
+       x="107"
+       y="445"
+       id="text264">#NameValueFile mFile</text>
+    <text
+       x="107"
+       y="457"
+       id="text266">+void BuildPackages(bool readNow)</text>
+    <text
+       x="107"
+       y="466"
+       id="text268">+bool read()</text>
+    <text
+       x="107"
+       y="475"
+       id="text270">+Package getPackage(OovStringRef name)</text>
+    <text
+       x="107"
+       y="484"
+       id="text272">+std::vector&lt;Package&gt; getPackages()</text>
+    <text
+       x="107"
+       y="493"
+       id="text274">+void insertPackage(Package pkg)</text>
+    <text
+       x="107"
+       y="502"
+       id="text276">+void savePackages()</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g278"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="481"
+       y="705"
+       width="243"
+       height="179"
+       id="rect280" />
+    <line
+       x1="481"
+       y1="726"
+       x2="724"
+       y2="726"
+       id="line282" />
+    <line
+       x1="481"
+       y1="774"
+       x2="724"
+       y2="774"
+       id="line284" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g286"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="482"
+       y="714"
+       id="text288">ProjectPackagesDialog</text>
+    <text
+       x="482"
+       y="723"
+       id="text290">/oovcde/</text>
+    <text
+       x="482"
+       y="735"
+       id="text292">-GuiList mProjectPackagesList</text>
+    <text
+       x="482"
+       y="744"
+       id="text294">-ProjectPackages mProjectPackages</text>
+    <text
+       x="482"
+       y="753"
+       id="text296">-string mBaseBuildArgs</text>
+    <text
+       x="482"
+       y="762"
+       id="text298">-string mLastSelectedPackage</text>
+    <text
+       x="482"
+       y="771"
+       id="text300">-bool mAllowSelection</text>
+    <text
+       x="482"
+       y="783"
+       id="text302">+void ProjectPackagesDialog(string baseBuildArgs)</text>
+    <text
+       x="482"
+       y="792"
+       id="text304">+void selectPackage()</text>
+    <text
+       x="482"
+       y="801"
+       id="text306">+void displayAddPackageDialog()</text>
+    <text
+       x="482"
+       y="810"
+       id="text308">+void removePackage()</text>
+    <text
+       x="482"
+       y="819"
+       id="text310">+void winScanDirectories()</text>
+    <text
+       x="482"
+       y="828"
+       id="text312">+void winSetEnableScanning()</text>
+    <text
+       x="482"
+       y="837"
+       id="text314">-void beforeRun()</text>
+    <text
+       x="482"
+       y="846"
+       id="text316">-void afterRun(bool ok)</text>
+    <text
+       x="482"
+       y="855"
+       id="text318">-void savePackage(string pkgName)</text>
+    <text
+       x="482"
+       y="864"
+       id="text320">-void updatePackageList()</text>
+    <text
+       x="482"
+       y="873"
+       id="text322">-void clearPackageDisplay()</text>
+    <text
+       x="482"
+       y="882"
+       id="text324">+void ~ProjectPackagesDialog()</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g326"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="35"
+       y="589"
+       width="398"
+       height="332"
+       id="rect328" />
+    <line
+       x1="35"
+       y1="610"
+       x2="433"
+       y2="610"
+       id="line330" />
+    <line
+       x1="35"
+       y1="703"
+       x2="433"
+       y2="703"
+       id="line332" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g334"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="36"
+       y="598"
+       id="text336">ProjectReader</text>
+    <text
+       x="36"
+       y="607"
+       id="text338">/oovCommon/</text>
+    <text
+       x="36"
+       y="619"
+       id="text340">-OovStringVec mCompileArgs</text>
+    <text
+       x="36"
+       y="628"
+       id="text342">-IndexedStringVec mLinkArgs</text>
+    <text
+       x="36"
+       y="637"
+       id="text344">-OovStringVec mExternalRootArgs</text>
+    <text
+       x="36"
+       y="646"
+       id="text346">-IndexedStringVec mExternalPackageNames</text>
+    <text
+       x="36"
+       y="655"
+       id="text348">-OovStringVec mPackageCrcCompileArgs</text>
+    <text
+       x="36"
+       y="664"
+       id="text350">-OovStringVec mPackageCrcLinkArgs</text>
+    <text
+       x="36"
+       y="673"
+       id="text352">-OovStringVec mPackageCrcNames</text>
+    <text
+       x="36"
+       y="682"
+       id="text354">-ProjectPackages mProjectPackages</text>
+    <text
+       x="36"
+       y="691"
+       id="text356">-BuildPackages mBuildPackages</text>
+    <text
+       x="36"
+       y="700"
+       id="text358">-bool mVerbose</text>
+    <text
+       x="36"
+       y="712"
+       id="text360">+bool miniReadOovProject(OovStringRef oovProjectDir)</text>
+    <text
+       x="36"
+       y="721"
+       id="text362">+bool readOovProject(OovStringRef oovProjectDir, OovStringRef buildConfigName)</text>
+    <text
+       x="36"
+       y="730"
+       id="text364">+int getExternalPackageLinkOrder(OovStringRef pkgName)</text>
+    <text
+       x="36"
+       y="739"
+       id="text366">+OovStringVec getAllCrcCompileArgs()</text>
+    <text
+       x="36"
+       y="748"
+       id="text368">+OovStringVec getAllCrcLinkArgs()</text>
+    <text
+       x="36"
+       y="757"
+       id="text370">+CompoundValue getProjectExcludeDirs()</text>
+    <text
+       x="36"
+       y="766"
+       id="text372">-void parseArgs(OovStringVec strs)</text>
+    <text
+       x="36"
+       y="775"
+       id="text374">-void handleExternalPackage(OovStringRef pkgName)</text>
+    <text
+       x="36"
+       y="784"
+       id="text376">+void ProjectReader()</text>
+    <text
+       x="36"
+       y="793"
+       id="text378">+ProjectPackages getProjectPackages()</text>
+    <text
+       x="36"
+       y="802"
+       id="text380">+BuildPackages getBuildPackages()</text>
+    <text
+       x="36"
+       y="811"
+       id="text382">+BuildPackages getBuildPackages()</text>
+    <text
+       x="36"
+       y="820"
+       id="text384">+OovStringVec getCompileArgs()</text>
+    <text
+       x="36"
+       y="829"
+       id="text386">+IndexedStringVec getLinkArgs()</text>
+    <text
+       x="36"
+       y="838"
+       id="text388">+OovStringVec getExternalArgs()</text>
+    <text
+       x="36"
+       y="847"
+       id="text390">+OovStringRef getSrcRootDirectory()</text>
+    <text
+       x="36"
+       y="856"
+       id="text392">+bool getVerbose()</text>
+    <text
+       x="36"
+       y="865"
+       id="text394">-void addCompileArg(OovStringRef str)</text>
+    <text
+       x="36"
+       y="874"
+       id="text396">-void addLinkArg(int linkOrderIndex, OovStringRef str)</text>
+    <text
+       x="36"
+       y="883"
+       id="text398">-void addExternalArg(OovStringRef str)</text>
+    <text
+       x="36"
+       y="892"
+       id="text400">-void addExternalPackageName(int linkOrderIndex, OovStringRef str)</text>
+    <text
+       x="36"
+       y="901"
+       id="text402">-void addPackageCrcName(OovStringRef pkgName)</text>
+    <text
+       x="36"
+       y="910"
+       id="text404">-void addPackageCrcCompileArg(OovStringRef str)</text>
+    <text
+       x="36"
+       y="919"
+       id="text406">-void addPackageCrcLinkArg(OovStringRef str)</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g408"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="486"
+       y="26"
+       width="221"
+       height="17"
+       id="rect410" />
+    <line
+       x1="486"
+       y1="38"
+       x2="707"
+       y2="38"
+       id="line412" />
+    <line
+       x1="486"
+       y1="41"
+       x2="707"
+       y2="41"
+       id="line414" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g416"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="487"
+       y="35"
+       id="text418">std::vector&lt;Package,std::allocator&lt;Package&gt; &gt;</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g420"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="714"
+       y="101"
+       width="103"
+       height="17"
+       id="rect422" />
+    <line
+       x1="714"
+       y1="113"
+       x2="817"
+       y2="113"
+       id="line424" />
+    <line
+       x1="714"
+       y1="116"
+       x2="817"
+       y2="116"
+       id="line426" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g428"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="715"
+       y="110"
+       id="text430">std::vector&lt;Package&gt;</text>
+  </g>
+  <g
+     style="fill:#f5fff5;stroke:#000000;stroke-width:1"
+     id="g432"
+     transform="translate(-23.5,-19.5)">
+    <rect
+       x="24"
+       y="20"
+       width="404"
+       height="314"
+       id="rect434" />
+    <line
+       x1="24"
+       y1="41"
+       x2="428"
+       y2="41"
+       id="line436" />
+    <line
+       x1="24"
+       y1="107"
+       x2="428"
+       y2="107"
+       id="line438" />
+  </g>
+  <g
+     font-size="10.000000"
+     id="g440"
+     style="font-size:10px;stroke:none"
+     transform="translate(-23.5,-19.5)">
+    <text
+       x="25"
+       y="29"
+       id="text442">RootDirPackage</text>
+    <text
+       x="25"
+       y="38"
+       id="text444">/oovCommon/</text>
+    <text
+       x="25"
+       y="50"
+       id="text446">#OovString mName</text>
+    <text
+       x="25"
+       y="59"
+       id="text448">#FilePath mRootDir</text>
+    <text
+       x="25"
+       y="68"
+       id="text450">#OovString mLibDir</text>
+    <text
+       x="25"
+       y="77"
+       id="text452">#OovString mLibNames</text>
+    <text
+       x="25"
+       y="86"
+       id="text454">#OovString mIncludeDir</text>
+    <text
+       x="25"
+       y="95"
+       id="text456">#OovString mExternalReferenceDir</text>
+    <text
+       x="25"
+       y="104"
+       id="text458">#OovString mScannedLibFilePaths</text>
+    <text
+       x="25"
+       y="116"
+       id="text460">+bool addUndefinedPackage(OovString pkgName, NameValueFile file)</text>
+    <text
+       x="25"
+       y="125"
+       id="text462">+void appendAbsoluteIncDir(OovStringRef dir)</text>
+    <text
+       x="25"
+       y="134"
+       id="text464">+void appendAbsoluteLibName(OovStringRef fn)</text>
+    <text
+       x="25"
+       y="143"
+       id="text466">+void setOrderedLibs(OovStringVec libDirs, OovStringVec libNames)</text>
+    <text
+       x="25"
+       y="152"
+       id="text468">+void setRootDirPackage(OovStringRef rootDir)</text>
+    <text
+       x="25"
+       y="161"
+       id="text470">+OovStringVec getExtRefDirs()</text>
+    <text
+       x="25"
+       y="170"
+       id="text472">+OovStringVec getLibraryNames()</text>
+    <text
+       x="25"
+       y="179"
+       id="text474">+OovStringVec getScannedLibraryFilePaths()</text>
+    <text
+       x="25"
+       y="188"
+       id="text476">+OovStringVec getIncludeDirs()</text>
+    <text
+       x="25"
+       y="197"
+       id="text478">+OovStringVec getLibraryDirs()</text>
+    <text
+       x="25"
+       y="206"
+       id="text480">+void loadFromMap(OovStringRef pkgName, NameValueFile file)</text>
+    <text
+       x="25"
+       y="215"
+       id="text482">+void saveToMap(NameValueFile file)</text>
+    <text
+       x="25"
+       y="224"
+       id="text484">#OovStringVec getValAddRootToVector(OovStringRef tagName, eFilePathTypes fpt)</text>
+    <text
+       x="25"
+       y="233"
+       id="text486">+void RootDirPackage()</text>
+    <text
+       x="25"
+       y="242"
+       id="text488">+void RootDirPackage(OovStringRef pkgName, OovStringRef rootDir)</text>
+    <text
+       x="25"
+       y="251"
+       id="text490">+void setRootDir(OovStringRef rootDir)</text>
+    <text
+       x="25"
+       y="260"
+       id="text492">+void setExternalReferenceDir(OovString extRefDir)</text>
+    <text
+       x="25"
+       y="269"
+       id="text494">+OovString getPkgName()</text>
+    <text
+       x="25"
+       y="278"
+       id="text496">+FilePath getRootDir()</text>
+    <text
+       x="25"
+       y="287"
+       id="text498">+OovString getIncludeDirsAsString()</text>
+    <text
+       x="25"
+       y="296"
+       id="text500">+OovString getLibraryDirsAsString()</text>
+    <text
+       x="25"
+       y="305"
+       id="text502">+OovString getLibraryNamesAsString()</text>
+    <text
+       x="25"
+       y="314"
+       id="text504">+OovString getExtRefDirsAsString()</text>
+    <text
+       x="25"
+       y="323"
+       id="text506">+bool needDirScan()</text>
+    <text
+       x="25"
+       y="332"
+       id="text508">+bool areLibraryNamesOrdered()</text>
+  </g>
+  <g
+     style="fill:#f5f5ff;stroke:#000000;stroke-width:1"
+     id="g510"
+     transform="translate(-23.5,-19.5)">
+    <line
+       x1="687"
+       y1="406"
+       x2="570"
+       y2="359"
+       id="line512" />
+    <circle
+       cx="659"
+       cy="394"
+       r="5"
+       style="fill:#ffffff"
+       id="circle514"
+       sodipodi:cx="659"
+       sodipodi:cy="394"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 664,394 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="659"
+       cy="394"
+       r="2"
+       style="fill:#000000"
+       id="circle516"
+       sodipodi:cx="659"
+       sodipodi:cy="394"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 661,394 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="679,407 687,406 687,406 682,399 675,401 "
+       style="fill:#000000"
+       id="polygon518" />
+    <line
+       x1="775"
+       y1="494"
+       x2="747"
+       y2="552"
+       id="line520" />
+    <circle
+       cx="761"
+       cy="521"
+       r="5"
+       style="fill:#ffffff"
+       id="circle522"
+       sodipodi:cx="761"
+       sodipodi:cy="521"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 766,521 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="761"
+       cy="521"
+       r="2"
+       style="fill:#ffffff"
+       id="circle524"
+       sodipodi:cx="761"
+       sodipodi:cy="521"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 763,521 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="775,494 775,494 765,503 775,507 "
+       style="fill:#ffffff"
+       id="polygon526" />
+    <line
+       x1="803"
+       y1="406"
+       x2="827"
+       y2="298"
+       id="line528" />
+    <circle
+       cx="820"
+       cy="327"
+       r="5"
+       style="fill:#ffffff"
+       id="circle530"
+       sodipodi:cx="820"
+       sodipodi:cy="327"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 825,327 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="820"
+       cy="327"
+       r="2"
+       style="fill:#ffffff"
+       id="circle532"
+       sodipodi:cx="820"
+       sodipodi:cy="327"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 822,327 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="829,306 827,298 827,298 821,304 824,311 "
+       style="fill:#000000"
+       id="polygon534" />
+    <line
+       x1="762"
+       y1="406"
+       x2="651"
+       y2="254"
+       id="line536" />
+    <polygon
+       points="753,403 762,406 762,406 762,397 760,403 "
+       style="fill:#ffffff"
+       id="polygon538" />
+    <circle
+       cx="753"
+       cy="394"
+       r="5"
+       style="fill:#ffffff"
+       id="circle540"
+       sodipodi:cx="753"
+       sodipodi:cy="394"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 758,394 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="744"
+       cy="381"
+       r="5"
+       style="fill:#000000"
+       id="circle542"
+       sodipodi:cx="744"
+       sodipodi:cy="381"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 749,381 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="744"
+       cy="381"
+       r="2"
+       style="fill:#000000"
+       id="circle544"
+       sodipodi:cx="744"
+       sodipodi:cy="381"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 746,381 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <line
+       x1="675"
+       y1="449"
+       x2="585"
+       y2="446"
+       id="line546" />
+    <circle
+       cx="661"
+       cy="448"
+       r="5"
+       style="fill:#ffffff"
+       id="circle548"
+       sodipodi:cx="661"
+       sodipodi:cy="448"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 666,448 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="542"
+       y1="333"
+       x2="561"
+       y2="254"
+       id="line550" />
+    <polygon
+       points="564,263 561,254 561,254 554,260 561,257 "
+       style="fill:#ffffff"
+       id="polygon552" />
+    <circle
+       cx="557"
+       cy="267"
+       r="5"
+       style="fill:#ffffff"
+       id="circle554"
+       sodipodi:cx="557"
+       sodipodi:cy="267"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 562,267 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="556"
+       cy="274"
+       r="2"
+       style="fill:#ffffff"
+       id="circle556"
+       sodipodi:cx="556"
+       sodipodi:cy="274"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 558,274 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <line
+       x1="502"
+       y1="359"
+       x2="314"
+       y2="424"
+       id="line558" />
+    <circle
+       cx="342"
+       cy="414"
+       r="5"
+       style="fill:#ffffff"
+       id="circle560"
+       sodipodi:cx="342"
+       sodipodi:cy="414"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 347,414 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="342"
+       cy="414"
+       r="2"
+       style="fill:#000000"
+       id="circle562"
+       sodipodi:cx="342"
+       sodipodi:cy="414"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 344,414 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="319,418 314,424 314,424 322,425 327,420 "
+       style="fill:#000000"
+       id="polygon564" />
+    <line
+       x1="530"
+       y1="359"
+       x2="357"
+       y2="589"
+       id="line566" />
+    <circle
+       cx="511"
+       cy="382"
+       r="5"
+       style="fill:#ffffff"
+       id="circle568"
+       sodipodi:cx="511"
+       sodipodi:cy="382"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 516,382 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="511"
+       cy="382"
+       r="2"
+       style="fill:#ffffff"
+       id="circle570"
+       sodipodi:cx="511"
+       sodipodi:cy="382"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 513,382 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="530,359 530,359 518,366 527,372 "
+       style="fill:#ffffff"
+       id="polygon572" />
+    <line
+       x1="515"
+       y1="333"
+       x2="428"
+       y2="286"
+       id="line574" />
+    <circle
+       cx="440"
+       cy="292"
+       r="5"
+       style="fill:#ffffff"
+       id="circle576"
+       sodipodi:cx="440"
+       sodipodi:cy="292"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 445,292 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="446"
+       cy="295"
+       r="2"
+       style="fill:#ffffff"
+       id="circle578"
+       sodipodi:cx="446"
+       sodipodi:cy="295"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 448,295 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <line
+       x1="720"
+       y1="604"
+       x2="657"
+       y2="705"
+       id="line580" />
+    <circle
+       cx="672"
+       cy="679"
+       r="5"
+       style="fill:#000000"
+       id="circle582"
+       sodipodi:cx="672"
+       sodipodi:cy="679"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 677,679 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="672"
+       cy="679"
+       r="2"
+       style="fill:#000000"
+       id="circle584"
+       sodipodi:cx="672"
+       sodipodi:cy="679"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 674,679 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="657,697 657,705 657,705 664,701 664,694 "
+       style="fill:#000000"
+       id="polygon586" />
+    <line
+       x1="663"
+       y1="604"
+       x2="433"
+       y2="685"
+       id="line588" />
+    <circle
+       cx="461"
+       cy="675"
+       r="5"
+       style="fill:#000000"
+       id="circle590"
+       sodipodi:cx="461"
+       sodipodi:cy="675"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 466,675 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="461"
+       cy="675"
+       r="2"
+       style="fill:#000000"
+       id="circle592"
+       sodipodi:cx="461"
+       sodipodi:cy="675"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 463,675 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="438,679 433,685 433,685 441,686 446,681 "
+       style="fill:#000000"
+       id="polygon594" />
+    <line
+       x1="834"
+       y1="298"
+       x2="850"
+       y2="691"
+       id="line596" />
+    <circle
+       cx="848"
+       cy="661"
+       r="5"
+       style="fill:#000000"
+       id="circle598"
+       sodipodi:cx="848"
+       sodipodi:cy="661"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 853,661 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="848"
+       cy="661"
+       r="2"
+       style="fill:#000000"
+       id="circle600"
+       sodipodi:cx="848"
+       sodipodi:cy="661"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 850,661 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="846,684 850,691 850,691 854,684 850,678 "
+       style="fill:#000000"
+       id="polygon602" />
+    <line
+       x1="803"
+       y1="298"
+       x2="555"
+       y2="548"
+       id="line604" />
+    <circle
+       cx="793"
+       cy="307"
+       r="5"
+       style="fill:#ffffff"
+       id="circle606"
+       sodipodi:cx="793"
+       sodipodi:cy="307"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 798,307 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="483"
+       y1="240"
+       x2="264"
+       y2="415"
+       id="line608" />
+    <polygon
+       points="266,406 264,415 264,415 273,415 267,413 "
+       style="fill:#ffffff"
+       id="polygon610" />
+    <circle
+       cx="274"
+       cy="406"
+       r="5"
+       style="fill:#ffffff"
+       id="circle612"
+       sodipodi:cx="274"
+       sodipodi:cy="406"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 279,406 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="287"
+       cy="396"
+       r="5"
+       style="fill:#000000"
+       id="circle614"
+       sodipodi:cx="287"
+       sodipodi:cy="396"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 292,396 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="287"
+       cy="396"
+       r="2"
+       style="fill:#000000"
+       id="circle616"
+       sodipodi:cx="287"
+       sodipodi:cy="396"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 289,396 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <line
+       x1="585"
+       y1="254"
+       x2="600"
+       y2="705"
+       id="line618" />
+    <circle
+       cx="599"
+       cy="691"
+       r="5"
+       style="fill:#ffffff"
+       id="circle620"
+       sodipodi:cx="599"
+       sodipodi:cy="691"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 604,691 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="528"
+       y1="254"
+       x2="331"
+       y2="589"
+       id="line622" />
+    <circle
+       cx="338"
+       cy="576"
+       r="5"
+       style="fill:#ffffff"
+       id="circle624"
+       sodipodi:cx="338"
+       sodipodi:cy="576"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 343,576 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="592"
+       y1="66"
+       x2="596"
+       y2="42"
+       id="line626" />
+    <line
+       x1="683"
+       y1="132"
+       x2="737"
+       y2="117"
+       id="line628" />
+    <line
+       x1="483"
+       y1="164"
+       x2="428"
+       y2="168"
+       id="line630" />
+    <circle
+       cx="457"
+       cy="165"
+       r="5"
+       style="fill:#ffffff"
+       id="circle632"
+       sodipodi:cx="457"
+       sodipodi:cy="165"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 462,165 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="457"
+       cy="165"
+       r="2"
+       style="fill:#ffffff"
+       id="circle634"
+       sodipodi:cx="457"
+       sodipodi:cy="165"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 459,165 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="428,168 428,168 441,172 440,162 "
+       style="fill:#ffffff"
+       id="polygon636" />
+    <line
+       x1="543"
+       y1="459"
+       x2="535"
+       y2="548"
+       id="line638" />
+    <polygon
+       points="548,467 543,459 543,459 537,466 543,462 "
+       style="fill:#ffffff"
+       id="polygon640" />
+    <circle
+       cx="541"
+       cy="472"
+       r="5"
+       style="fill:#ffffff"
+       id="circle642"
+       sodipodi:cx="541"
+       sodipodi:cy="472"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 546,472 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="541"
+       cy="479"
+       r="2"
+       style="fill:#ffffff"
+       id="circle644"
+       sodipodi:cx="541"
+       sodipodi:cy="479"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 543,479 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <circle
+       cx="537"
+       cy="518"
+       r="5"
+       style="fill:#ffffff"
+       id="circle646"
+       sodipodi:cx="537"
+       sodipodi:cy="518"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 542,518 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="537"
+       cy="518"
+       r="2"
+       style="fill:#ffffff"
+       id="circle648"
+       sodipodi:cx="537"
+       sodipodi:cy="518"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 539,518 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="535,548 535,548 541,536 531,535 "
+       style="fill:#ffffff"
+       id="polygon650" />
+    <line
+       x1="503"
+       y1="447"
+       x2="314"
+       y2="455"
+       id="line652" />
+    <circle
+       cx="327"
+       cy="454"
+       r="5"
+       style="fill:#ffffff"
+       id="circle654"
+       sodipodi:cx="327"
+       sodipodi:cy="454"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 332,454 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="531"
+       y1="459"
+       x2="400"
+       y2="589"
+       id="line656" />
+    <circle
+       cx="409"
+       cy="579"
+       r="5"
+       style="fill:#ffffff"
+       id="circle658"
+       sodipodi:cx="409"
+       sodipodi:cy="579"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 414,579 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="529"
+       y1="433"
+       x2="411"
+       y2="334"
+       id="line660" />
+    <circle
+       cx="421"
+       cy="342"
+       r="5"
+       style="fill:#ffffff"
+       id="circle662"
+       sodipodi:cx="421"
+       sodipodi:cy="342"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 426,342 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="763"
+       y1="753"
+       x2="723"
+       y2="764"
+       id="line664" />
+    <circle
+       cx="736"
+       cy="760"
+       r="5"
+       style="fill:#ffffff"
+       id="circle666"
+       sodipodi:cx="736"
+       sodipodi:cy="760"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 741,760 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="540"
+       y1="592"
+       x2="575"
+       y2="705"
+       id="line668" />
+    <circle
+       cx="570"
+       cy="691"
+       r="5"
+       style="fill:#ffffff"
+       id="circle670"
+       sodipodi:cx="570"
+       sodipodi:cy="691"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 575,691 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <line
+       x1="499"
+       y1="592"
+       x2="433"
+       y2="633"
+       id="line672" />
+    <circle
+       cx="444"
+       cy="625"
+       r="5"
+       style="fill:#ffffff"
+       id="circle674"
+       sodipodi:cx="444"
+       sodipodi:cy="625"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 449,625 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="458"
+       cy="617"
+       r="5"
+       style="fill:#000000"
+       id="circle676"
+       sodipodi:cx="458"
+       sodipodi:cy="617"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 463,617 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="458"
+       cy="617"
+       r="2"
+       style="fill:#000000"
+       id="circle678"
+       sodipodi:cx="458"
+       sodipodi:cy="617"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 460,617 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="437,626 433,633 433,633 441,633 444,626 "
+       style="fill:#000000"
+       id="polygon680" />
+    <line
+       x1="517"
+       y1="548"
+       x2="349"
+       y2="334"
+       id="line682" />
+    <polygon
+       points="358,336 349,334 349,334 349,343 351,337 "
+       style="fill:#ffffff"
+       id="polygon684" />
+    <circle
+       cx="357"
+       cy="345"
+       r="5"
+       style="fill:#ffffff"
+       id="circle686"
+       sodipodi:cx="357"
+       sodipodi:cy="345"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 362,345 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="367"
+       cy="357"
+       r="5"
+       style="fill:#000000"
+       id="circle688"
+       sodipodi:cx="367"
+       sodipodi:cy="357"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 372,357 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="367"
+       cy="357"
+       r="2"
+       style="fill:#000000"
+       id="circle690"
+       sodipodi:cx="367"
+       sodipodi:cy="357"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 369,357 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <line
+       x1="213"
+       y1="503"
+       x2="221"
+       y2="589"
+       id="line692" />
+    <circle
+       cx="218"
+       cy="559"
+       r="5"
+       style="fill:#000000"
+       id="circle694"
+       sodipodi:cx="218"
+       sodipodi:cy="559"
+       sodipodi:rx="5"
+       sodipodi:ry="5"
+       d="m 223,559 c 0,2.76142 -2.23858,5 -5,5 -2.76142,0 -5,-2.23858 -5,-5 0,-2.76142 2.23858,-5 5,-5 2.76142,0 5,2.23858 5,5 z" />
+    <circle
+       cx="218"
+       cy="559"
+       r="2"
+       style="fill:#000000"
+       id="circle696"
+       sodipodi:cx="218"
+       sodipodi:cy="559"
+       sodipodi:rx="2"
+       sodipodi:ry="2"
+       d="m 220,559 c 0,1.10457 -0.89543,2 -2,2 -1.10457,0 -2,-0.89543 -2,-2 0,-1.10457 0.89543,-2 2,-2 1.10457,0 2,0.89543 2,2 z" />
+    <polygon
+       points="216,582 221,589 221,589 224,581 220,576 "
+       style="fill:#000000"
+       id="polygon698" />
+  </g>
 </svg>

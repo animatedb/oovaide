@@ -323,7 +323,11 @@ void ComponentsFile::parseProjRefs(OovStringRef const arg, OovString &rootDir,
     OovStringVec tokens = StringSplit(arg, '!');
     if(rootDir.size() == 0)
 	rootDir = tokens[0];
-    std::copy(tokens.begin()+1, tokens.end(), excludes.begin());
+    if(tokens.size() > 1)
+	{
+	excludes.resize(tokens.size()-1);
+	std::copy(tokens.begin()+1, tokens.end(), excludes.begin());
+	}
     }
 
 OovString ComponentsFile::getProjectIncludeDirsStr() const

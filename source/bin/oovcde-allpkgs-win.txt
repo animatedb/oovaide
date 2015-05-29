@@ -1,5 +1,8 @@
-PkgNames|gtk+-3.0;llvm;Qt;mingw-w64;wxWidgets;VisualStudio;MicrosoftSDK
+PkgNames|boost;gtk+-3.0;gtkmm;llvm;Qt;mingw-w64;wxWidgets;VisualStudio;MicrosoftSDK
+Pkg-boost-Root|/boost*
+Pkg-boost-I|.
 Pkg-gtk+-3.0-Root|/GTK*
+Pkg-gtkmm-Root|/gtkmm*
 Pkg-llvm-Root|/Program Files/LLVM
 Pkg-llvm-I|include
 Pkg-llvm-l|libclang.lib

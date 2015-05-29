@@ -386,7 +386,53 @@
       </tbody>
     </table>
     <br>
-    <br>
+    <h3> Packages</h3>
+    <p> Packages are definitions of include and library paths that are external
+      to the project.</p>
+    <p> <img alt="" src="Packages.svg"></p>
+    <p> </p>
+    <table border="1">
+      <tbody>
+        <tr>
+          <th>Class Name</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>AvailablePackages</td>
+          <td>Lists available packages on the machine. Stored in
+            bin/oovcde-allpkgs-win.txt for windows, pkg-config for Linux. The
+            Root directory may have wildcards in Windows, and are resolved in
+            the package dialogs in the Oovcde program. On Linux, the pkg-config
+            program already contains full path, include, and library file paths
+            and names.</td>
+        </tr>
+        <tr>
+          <td>ProjectPackages</td>
+          <td>Packages used by the project. Stored in oovcde-pkg.txt in the
+            project directory. This file is the same format as the AvailablePackages,
+            except that the Root directory wildcards have been previously
+            resolved, and only the packages specified in the project are
+            present.</td>
+        </tr>
+        <tr>
+          <td>BuildPackages</td>
+          <td>Stored in oovcde-tmp-buildpkg.txt in the project directory.
+            Oovbuilder creates these files, and adds all paths that contain
+            include and library files that are found from the search paths.</td>
+        </tr>
+        <tr>
+          <td>AddPackageDialog</td>
+          <td>List all available packages, and allows selecting one to add to
+            the project.</td>
+        </tr>
+        <tr>
+          <td>ProjectPackagesDialog</td>
+          <td>Lists all project packages, and allows adding or removing
+            packages, and allows editing paths and args for each package.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h3> </h3>
     <h2><a class="mozTocH2" name="mozTocId514779"></a>Oovcde</h2>
     The Oovcde program can display class and sequence diagrams.<br>
     <br>
@@ -434,8 +480,8 @@
         </tr>
         <tr>
           <td>OovTaskStatusListener</td>
-          <td>The background processing can update progress. This is an interface
-            class.</td>
+          <td>The background processing can update progress. This is an
+            interface class.</td>
         </tr>
         <tr>
           <td>WindowProjectStatusListener</td>
@@ -464,8 +510,8 @@
         <tr>
           <td style="vertical-align: top;">...List<br>
           </td>
-          <td style="vertical-align: top;">There are lists for classes, operations,
-            zone diagrams, etc.<br>
+          <td style="vertical-align: top;">There are lists for classes,
+            operations, zone diagrams, etc.<br>
           </td>
         </tr>
         <tr>

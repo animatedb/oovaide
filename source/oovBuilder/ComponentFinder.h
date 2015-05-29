@@ -126,6 +126,7 @@ class ComponentFinder:public dirRecurser
 	/// Recursively scan a directory for source and include files.
 	void scanProject();
 
+	/// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
 	void scanExternalProject(OovStringRef const externalRootSrch,
 		Package const *pkg=nullptr);
 

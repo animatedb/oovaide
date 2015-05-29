@@ -160,7 +160,7 @@ bool srcFileParser::processItem(CppChildArgs const &item)
 	    tempStr += " ";
 	    tempStr.appendInt(exitCode);
 	    }
-	if(!pipeProc.isArgLengthOk(static_cast<int>(tempStr.length())))
+	if(!pipeProc.isArgLengthOk(static_cast<int>(tempStr.length() + item.getArgsAsStr().length())))
 	    {
 	    tempStr += "\nToo long of command arguments.";
 	    }

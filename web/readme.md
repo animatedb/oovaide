@@ -67,8 +67,8 @@ required.
 
 The quickest way to get started is to download the program, then run the examples.
 The explanation of the examples is here.
-[oovcde.sourceforge.net/userguide/examples.shtml]
-(http://oovcde.sourceforge.net/userguide/examples.shtml)
+[oovcde.sourceforge.net/userguide/examples.html]
+(http://oovcde.sourceforge.net/userguide/examples.html)
 
 
 ## Project Goals

@@ -371,32 +371,45 @@ int oovGui::getStatusSourceFile(std::string &fn)
 
 static void displayBrowserFile(OovStringRef const fileName)
     {
-    char const *fn = fileName;
-#ifdef __linux__
-    FilePath fpTest(fn, FP_File);
-    if(!FileIsFileOnDisk(fpTest))
-#else
-    if(!FileIsFileOnDisk(fn))
-#endif
-	{
-	fn = "..\\web\\userguide\\oovcdeuserguide.shtml";
-	}
 #ifdef __linux__
     pid_t pid=fork();
     if(!pid)
 	{
-	FilePath fp(fn, FP_File);
 	char const *prog = "/usr/bin/xdg-open";
 	char const *args[3];
 	args[0] = prog;
-	args[1] = fp.c_str();
+	args[1] = fileName.getStr();
 	args[2] = nullptr;
 //printf("FF %s\n", fp.c_str());
         execvp(prog, const_cast<char**>(args));
 	}
 #else
-    ShellExecute(NULL, "open", fn, NULL, NULL, SW_SHOWNORMAL);
+    FilePath fpTest(fileName, FP_File);
+    ShellExecute(NULL, "open", fpTest.getAsWindowsPath().getStr(),
+	NULL, NULL, SW_SHOWNORMAL);
 #endif
+    }
+
+///
+static void displayHelpFile(OovStringRef const fileName)
+    {
+    FilePath fullFn;
+    static char const *dirs[] = { "help", "..\\..\\web\\userguide" };
+    for(auto const dir : dirs)
+	{
+	fullFn.setPath(dir, FP_Dir);
+	fullFn.appendFile(fileName);
+	if(FileIsFileOnDisk(fullFn))
+	    {
+	    break;
+	    }
+	}
+    if(!FileIsFileOnDisk(fullFn))
+	{
+	fullFn.setPath("http://oovcde.sourceforge.net/userguide", FP_Dir);
+	fullFn.appendFile(fileName);
+	}
+    displayBrowserFile(fullFn);
     }
 
 void oovGui::makeComplexityFile()
@@ -836,6 +849,11 @@ extern "C" G_MODULE_EXPORT void on_HelpAboutmenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_HelpContentsMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {
-    const char *fn = "..\\..\\web\\userguide\\oovcdeuserguide.shtml";
-    displayBrowserFile(fn);
+    displayHelpFile("oovcdeuserguide.html");
+    }
+
+extern "C" G_MODULE_EXPORT void on_BuildArgsHelp_clicked(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    displayHelpFile("oovcdebuildhelp.html");
     }

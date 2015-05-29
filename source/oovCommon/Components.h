@@ -111,7 +111,9 @@ class ComponentsFile:public NameValueFile
 	    return CompoundValueRef::parseString(
 		    getValue("Components-init-ext-roots"));
 	    }
-	static void parseProjRefs(OovStringRef const arg, OovString &rootDir,
+	/// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
+	/// This splits the root search dir into a root dir and exclude directories.
+	static void parseProjRefs(OovStringRef const rootSrch, OovString &rootDir,
 		OovStringVec &excludes);
 	static bool excludesMatch(OovStringRef const filePath,
 		OovStringVec const &excludes);

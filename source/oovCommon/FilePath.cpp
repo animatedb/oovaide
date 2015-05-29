@@ -244,6 +244,15 @@ OovString FilePathGetFileExt(OovStringRef const path)
     return ext;
     }
 
+#ifndef __linux__
+OovString FilePathGetAsWindowsPath(OovStringRef const path)
+    {
+    OovString windowsPath = path;
+    windowsPath.replaceStrs("/", "\\");
+    return windowsPath;
+    }
+#endif
+
 //////////////
 
 
