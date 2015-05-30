@@ -5,6 +5,7 @@ An object oriented analysis and code development platform that automatically
 generates build, class, sequence, and component diagrams for C++
 and Objective C languages.
 
+[Oovcde Home Page](http://oovcde.sourceforge.net/)
 
 ## Contents
 
@@ -68,7 +69,7 @@ required.
 The quickest way to get started is to download the program, then run the examples.
 The explanation of the examples is here.
 [oovcde.sourceforge.net/userguide/examples.shtml]
-(http://oovcde.sourceforge.net/userguide/examples.shtml)
+(http://oovcde.sourceforge.net/userguide/examples.html)
 
 
 ## Project Goals
