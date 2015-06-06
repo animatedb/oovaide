@@ -1,0 +1,430 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha  -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <!-- DC Blaha - 1/1/2014 -->
+    <title>Oovcde Examples</title>
+  </head>
+  <body>
+    <font size="+3">Oovcde Examples<br>
+    </font>
+    <hr style="width: 100%; height: 3px;">
+    Last updated: Sept 23, 2014<br>
+    <br>
+    <img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
+    <div class="content">
+    </div>
+    <h1>Contents</h1>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId985581">Example Notes</a></li>
+      <li><a href="#mozTocId81887">Simple Example
+        </a>
+        <ol>
+          <li><a href="#mozTocId87333">Classes</a></li>
+          <li><a href="#mozTocId748070">Sequences</a></li>
+          <li><a href="#mozTocId525410">Code Test Coverage</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId621873">StaticLib Example
+        </a>
+        <ol>
+          <li><a href="#mozTocId632627">Components</a></li>
+          <li><a href="#mozTocId416335">Classes</a></li>
+          <li><a href="#mozTocId212466">Sequences</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId621873">SharedLib GTK Example</a>
+        <ol>
+          <li><a href="#mozTocId576588">Components</a></li>
+          <li><a href="#mozTocId723251">Classes</a></li>
+          <li><a href="#mozTocId212466">Sequences</a></li>
+        </ol>
+      </li>
+      <li><a href="#mozTocId382189">Oovcde Example</a></li>
+    </ol>
+    <h1><a class="mozTocH2" name="mozTocId985581"></a>Example Notes</h1>
+    It should be fairly simple to analyze the samples with the downloadable
+    Oovcde packages.&nbsp; The Build may take more setup depending on the
+    configuration. If the builds fail, the build configuration can be set
+    up in the Analysis/Settings menu.<br>
+    <h1><a class="mozTocH2" name="mozTocId81887"></a>Simple Example<br>
+    </h1>
+    This example creates a single executable file. It only has two source files,
+    and has a dependency on STL.<br>
+    <br>
+    <ol>
+      <li>Start Oovcde</li>
+      <li>Select File/New Project from the menu.</li>
+      <li>Select trunk/examples/simple using the "..." button. The project
+        directory will default to "simple-oovcde".</li>
+      <li>Wait for the drawing analysis to complete.</li>
+      <li>View the "Class" tab, and click on "Lamb". The class diagram will
+        display.</li>
+      <li>Depending on the compiler and libraries installed on the system, it
+        may be required that the Analysis/Settings must be used to set "External
+        Project Packages that define other include paths. For example, mingw-w64
+        may be needed on Windows for stdio.h.</li>
+      <li>Select Build/Settings from the menu. Select the Component Type of
+        Program/Executable.</li>
+      <li>Select Build/Build Debug to create a debug version of the program. The
+        program will build if the clang or mingw compiler is available on the
+        system. See the user guide if there are any build configuration
+        problems.<br>
+      </li>
+      <li>The executable will be in trunk/examples/simple-oovcde/out-Debug.</li>
+    </ol>
+    Additional files can be added to the component, and are automatically built
+    into the executable.<br>
+    <h2><a class="mozTocH3" name="mozTocId87333"></a>Classes</h2>
+    The class diagram looks like the following.<br>
+    <embed src="Example1Classes.svg" type="image/svg+xml"> <br>
+    <br>
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Relation Between<br>
+          </th>
+          <th style="vertical-align: top;">Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">World and Mary<br>
+          </td>
+          <td style="vertical-align: top;">The filled aggregation symbol
+            (diamond) is a standard UML symbol, and means that the World owns or
+            contains (controls the lifetime of) the Mary class. This relation is
+            also sometimes called a "has-a" relationship. The filled circle
+            indicates that the Mary object is private in scope.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Mary and Lamb<br>
+          </td>
+          <td style="vertical-align: top;">The Mary object owns the Lamb object,
+            and the Lamb object is public. In other words, Mary has a Lamb.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Mary and Mammal<br>
+          </td>
+          <td style="vertical-align: top;">The
+            inheritance symbol (triangle) is a standard UML symbol, and means
+            that
+            the Mary object inherits from the Mammal object.&nbsp; The Mammal
+            object is a superclass of Mary, and has public inheritance, as shown
+            by the visibility symbol (nested circles).<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Lamb and Mammal<br>
+          </td>
+          <td style="vertical-align: top;">The function parameter symbol
+            (big circle with little circle) means that a function parameter
+            refers to the Mammal
+            object, and the V symbol means that this is a const reference.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h2><a class="mozTocH3" name="mozTocId748070"></a>Sequences</h2>
+    The Sequence diagram looks like the following.<br>
+    <embed src="Example1Seq.svg" type="image/svg+xml"><br>
+    <br>
+    <br>
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Operation<br>
+          </th>
+          <th style="vertical-align: top;">Operation Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">World::World</td>
+          <td style="vertical-align: top;">The World object provides a World
+            method constructor. The constructor
+            constructs a Location object, then the move method is called to set
+            the
+            location of the MoveableThing. In this case, Mary is the
+            MoveableThing that is moved.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Lamb::follows<br>
+          </td>
+          <td style="vertical-align: top;">The
+            World object then calls the Lamb follows method, which gets the
+            location of the Mary object, and sets the location of the Lamb
+            object.
+            The getLocation operation is shown as a dashed line, since it is a
+            const operation, and will not modify the MoveableThing object.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Mary::showLocation<br>
+          </td>
+          <td style="vertical-align: top;">The World object calls showLocation
+            for the Mary object.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Lamb::showLocation<br>
+          </td>
+          <td style="vertical-align: top;">The World object calls showLocation
+            for the Lamb object, which shows the location for the Lamb, and the
+            Fleece.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h2><a class="mozTocH3" name="mozTocId525410"></a>Code Test Coverage</h2>
+    The Oovcde program contains tools to support flow path test coverage
+    analysis. This shows the percentage of paths that have <br>
+    been tested in each source file and shows the number of times that each
+    instrumented line was executed. See <a href="../articles/TestCoverage.html">Test
+      Coverage</a> for more details.<br>
+    <br>
+    <ol>
+      <li>Start Oovcde if it is not already running and open the simple-oovcde
+        example.<br>
+      </li>
+      <li>Select Coverage/Instrument from the menu. This adds instrumented lines
+        to the source code.<br>
+      </li>
+      <li>Select Coverage/Build from the menu. This creates a new sub-project
+        and builds it.</li>
+      <li>Run the output program in oov-cov-oovcde/out-Debug. This runs the
+        program and generates a file that contains the number of times each
+        instrumented line was executed.<br>
+      </li>
+      <li>Select
+        Coverage/Statistics from the command line. The
+        oov-cov-oovcde/oovCovStats.txt file contains the percentage of coverage
+        for each file. In addition, theoov-cov-oovcde directory contains all
+        source code with indications of which lines have been executed.
+        Search for "//&lt;space&gt;" to find lines that have not been executed.
+      </li>
+    </ol>
+    <br>
+    <h1><a class="mozTocH2" name="mozTocId621873"></a>StaticLib Example<br>
+    </h1>
+    This example creates an executable file with a static library.<br>
+    <br>
+    <ol>
+      <li>Start Oovcde</li>
+      <li>Select File/New Project from the menu.</li>
+      <li>Select trunk/examples/staticlib using the "..." button. The project
+        directory will default to "staticlib-oovcde".</li>
+      <li>Wait for the analysis to complete.</li>
+      <li>View the "Class" tab, and click on "BlackSheep". The class diagram
+        will display.</li>
+      <li>Depending on the compiler and libraries installed on the system, it
+        may be required that the Analysis/Settings must be used to set "External
+        Project Packages that define other include paths. For example, mingw-w64
+        may be needed on Windows for stdio.h and vector.</li>
+      <li>Select Build/Build Settings from the menu.</li>
+      <ol>
+        <li>Select the Component Type of Static/Compile-time Library for the
+          BlackSheep component.<br>
+        </li>
+        <li>Select the Component Type of Program/Executable for the MainClients
+          component.</li>
+      </ol>
+      <li>Select Build/Build Debug to create a debug version of the program.<br>
+      </li>
+      <li>The executable and static library will be in
+        trunk/examples/simple-oovcde/out-Debug.</li>
+    </ol>
+    <h2><a class="mozTocH3" name="mozTocId632627"></a>Components</h2>
+    <embed src="Example2Comps.svg" type="image/svg+xml"><br>
+    <ul>
+      <li>The BlackSheep component is a library that supplies classes for the
+        MainClients component.<br>
+      </li>
+      <li>The MainClients component is&nbsp; an executable program that is
+        statically dependent on the BlackSheep component. <br>
+      </li>
+    </ul>
+    <h2><a class="mozTocH3" name="mozTocId416335"></a>Classes</h2>
+    The class diagram looks like the following.<br>
+    <embed src="Example2Classes.svg" type="image/svg+xml"> <br>
+    <br>
+    The BlackSheep and the WoolBag classes are in the BlackSheep Component. The
+    other classes are in the MainClients component.<br>
+    <h2><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h2>
+    The Sequence diagram looks like the following.
+    <br>
+    <embed src="Example2Seq.svg" type="image/svg+xml"> <br>
+    <br>
+    The lower takeBag operations are shown with square boxes to indicate that
+    the definition has already been shown above.<br>
+    <br>
+    <br>
+    <h1><a class="mozTocH2" name="mozTocId621873"></a>SharedLib GTK Example</h1>
+    This example shows a more complex directory structure and contains shared
+    libraries. (Known in Windows as DLL's).<br>
+    <br>
+    <ol>
+      <li>Start Oovcde</li>
+      <li>Select File/New Project from the menu.</li>
+      <li>Select trunk/examples/shardlibgtk using the "..." button. The project
+        directory will default to "sharedlibgtk-oovcde".</li>
+      <li>Wait for the analysis to complete.</li>
+      <li>View the "Class" tab, and click on "Kingdom". The class diagram will
+        display.</li>
+      <li>Right click on the ResourceClient, and select "Add All Relations".
+        This will add one more class.</li>
+      <li>To prevent __builtin_... errors, add "-Iclang/3.6.0/include" so that
+        it is on a line before any -EP arguments.</li>
+      <li>Depending on the compiler and libraries installed on the system, it
+        may be required that the Analysis/Settings must be used to set "External
+        Project Packages that define other include paths. For example, mingw-w64
+        may be needed on Windows for stdio.h and vector.</li>
+      <li>Select Analysis/Settings in the Build Arguments tab, and click on
+        Extern
+        Project Packages. Press the Add button to add packages. Be
+        sure to download the packages if they do not exist on your machine.
+        Include paths are scanned in the order that packages and external
+        references are specified. During the link, the libraries are scanned in
+        opposite order. Project package order is determined by the builder.<br>
+      </li>
+      <ol>
+        <li>On Windows select gtk+-3.0.&nbsp; View the packages to check if the
+          directories and
+          settings are correct. Remember that external references are recursive.
+        </li>
+        <li>In
+          Linux
+          add gmodule-2.0. Add the -fPIC and -lnk-rdynamic flags also to the
+          build arguments.<br>
+        </li>
+      </ol>
+      <li>If the External Project Packages method does not work, the Linux
+        settings can be set to something like this:</li>
+      <ol>
+        <li>-ER/usr/include/gtk-3.0</li>
+        <li>-ER/usr/include/glib-2.0</li>
+        <li>-I/usr/Include/linux</li>
+        <li>-ER/usr/lib/x86_64-linux-gnu/glib-2.0/include</li>
+        <li>-ER/usr/lib/x86_64-linux-gnu!libmcheck!libieee</li>
+        <li>-lnk-rdynamic</li>
+        <li>-fPIC<br>
+        </li>
+      </ol>
+      <li>Select Build/Build Settings from the menu.</li>
+      <ol>
+        <li>Select the Component Type of Shared/Run-time Library for the horses
+          and men components.<br>
+        </li>
+        <li>Select the Component Type of Program/Executable for the kingdom
+          component.</li>
+      </ol>
+      <li>Select Build/Build Debug to create a debug version of the program.<br>
+      </li>
+      <li>The executable and static library will be in
+        trunk/examples/simple-oovcde/out-Debug.</li>
+    </ol>
+    <h2><a class="mozTocH3" name="mozTocId576588"></a>Components</h2>
+    The components only show relationships to the external GTK package
+    since they only
+    have dynamic relationships between themselves. This dependency is on
+    Windows where the GTK package includes the gmodule package. The two
+    shared libraries are loaded by one
+    program.<br>
+    <embed src="Example3Comps.svg" type="image/svg+xml"><br>
+    <br>
+    On Linux, the dependencies look like the following:<br>
+    <br>
+    <embed src="Example3Comps-linux.svg" type="image/svg+xml"><br>
+    <br>
+    <br>
+    This project directory structure looks like the following:<br>
+    <pre>	sharedlibgtk<br>		kingdom<br>			kingdom.cpp<br>			kingdom.h<br>		resources<br>			horses<br>				horses.cpp<br>				horses.h<br>			men<br>				men.cpp<br>				men.h</pre>
+    <br>
+    <h2><a class="mozTocH3" name="mozTocId723251"></a>Classes</h2>
+    The following is the class diagram. Only the main executable class diagram
+    is shown here.<br>
+    <br>
+    <embed src="Example3Classes.svg" type="image/svg+xml"> <br>
+    <h2><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h2>
+    <embed src="Example3Seq.svg" type="image/svg+xml"><br>
+    <br>
+    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+      <tbody>
+        <tr>
+          <th style="vertical-align: top;">Operation<br>
+          </th>
+          <th style="vertical-align: top;">Operation Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">Kingdom::open<br>
+          </td>
+          <td style="vertical-align: top;">Before
+            the open, the *[:resources] is the C++ range-based for loop
+            indication.
+            The increasing lifeline width is showing the nesting of
+            conditionals.
+            This shows that if putTogether returns false, that then
+            getResourceName
+            is called.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ResourceClientInterface::putTogether<br>
+          </td>
+          <td style="vertical-align: top;">This function calls the function
+            pointer in the shared library that was set up by the Kingdom::open
+            call.<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">ResourceClient::loadSymbols<br>
+          </td>
+          <td style="vertical-align: top;">This symbol shows that the
+            ResourceClient::open function called the ResourceClient::loadSymbols
+            function.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h1><a class="mozTocH2" name="mozTocId382189"></a>Oovcde Example</h1>
+    The Oovcde example will build all of the Oovcde programs, which
+    includes multiple libraries and executables. This example has multiple
+    processes and threads, graphics, and many other features.<br>
+    This example is under the test directory, and there is a version for Windows
+    and one for Linux.<br>
+    <br>
+    Open either project, and use Analysis/Settings and run "External Project
+    Packages".&nbsp; On Linux, it may be required to remove and add the gtk
+    +-3 package so that it is updated for your machine. Linux uses
+    pkg-config, which should be on many distributions of Linux. On Windows,
+    the Scan button may find the correct location, otherwise enter the
+    directory manually.<br>
+    <br>
+    To set the component types, use Build/Settings, and set the oovBuilder,
+    oovCMaker, oovCppParser, and oovEdit to Program/Executable, and set the
+    oovCommon and oovGuiCommon to static libraries.<br>
+    <br>
+    Explanations of the classes and components is in the Oovcde Design document.<br>
+    <br>
+    Some extra points:<br>
+    <ul>
+      <li>Under Linux, add "-lnk-Wl,-rpath=./" to the Build Arguments
+        so that the
+        executables will first search the local directory for shared libraries.
+        For the Oovcde project, this is only needed if CLang is not installed,
+        and the local version of libclang.so will be used.<br>
+      </li>
+      <li>Add "-lnk-mwindows" to the Build Arguments in Microsoft Windows to
+        that graphical applications do not start a command window.</li>
+    </ul>
+    <br>
+  </body>
+</html>

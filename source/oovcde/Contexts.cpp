@@ -6,13 +6,15 @@
 
 #include "Contexts.h"
 #include "Gui.h"
+#include "BuildConfigReader.h"
+#include "IncludeMap.h"
 
 static bool sDisplayClassViewRightClick = false;
 static Contexts *sContexts;
 
 
 Contexts::Contexts(OovProject &proj):
-    mProject(proj), mCurrentPage(PI_Component)
+    mProject(proj), mCurrentContext(C_BinaryComponent)
     {
     sContexts = this;
     }
@@ -20,19 +22,23 @@ Contexts::Contexts(OovProject &proj):
 void Contexts::init(OovTaskStatusListener &taskStatusListener)
     {
     Builder *builder = Builder::getBuilder();
-    mClassList.init(*builder);
     mComponentList.init(*builder, "ModuleTreeview", "Module List");
+    mIncludeList.init(*builder);
+    mClassList.init(*builder);
     mOperationList.init(*builder);
     mZoneList.init();
     mJournalList.init(*builder);
-    mJournal.init(*builder, mProject.getModelData(), *this, taskStatusListener);
+    mJournal.init(*builder, mProject.getModelData(), mProject.getIncMap(),
+            *this, taskStatusListener);
     }
 
 void Contexts::clear()
     {
+    mProject.clearAnalysis();
     mJournal.clear();
-    mClassList.clear();
     mComponentList.clear();
+    mIncludeList.clear();
+    mClassList.clear();
     clearSelectedComponent();
     mJournalList.clear();
     mOperationList.clear();
@@ -40,12 +46,12 @@ void Contexts::clear()
     }
 
 
-void Contexts::classTreeViewCursorChanged()
+void Contexts::displayClassDiagram()
     {
     if(mProject.isAnalysisReady())
 	{
 	std::string className = getSelectedClass();
-	if(mCurrentPage == Contexts::PI_Class)
+	if(mCurrentContext == C_Class)
 	    {
 	    if(sDisplayClassViewRightClick)
 		{
@@ -57,23 +63,23 @@ void Contexts::classTreeViewCursorChanged()
 		displayClass(className);
 		}
 	    }
-	else if(mCurrentPage == Contexts::PI_Portion)
+	else if(mCurrentContext == C_Portion)
 	    {
 	    if(std::string(className).length() > 0)
 		{
-		mJournal.displayPortion(className);
-		updateOperationList(mProject.getModelData(), className);
+	        updateOperationList(mProject.getModelData(), className);
+                mJournal.displayPortion(className);
 		updateJournalList();
 		}
 	    }
 	}
     }
 
-void Contexts::operationsTreeviewCursorChanged()
+void Contexts::displayOperationsDiagram()
     {
 
     std::string className = getSelectedClass();;
-    std::string operName = getSelectedOperation();
+    std::string operName = mOperationList.getSelected();
     size_t spacePos = operName.find(' ');
     bool isConst = false;
     if(spacePos != std::string::npos)
@@ -84,22 +90,22 @@ void Contexts::operationsTreeviewCursorChanged()
     displayOperation(className, operName, isConst);
     }
 
-void Contexts::journalTreeviewCursorChanged()
+void Contexts::displayJournal()
     {
-    if(mCurrentPage == Contexts::PI_Journal)
+    if(mCurrentContext == C_Journal)
 	{
-	mJournal.setCurrentRecord(getSelectedJournalIndex());
+	mJournal.setCurrentRecord(mJournalList.getSelectedIndex());
 	gtk_widget_queue_draw(Builder::getBuilder()->getWidget("DiagramDrawingarea"));
 	}
     }
 
-void Contexts::moduleTreeviewCursorChanged()
+void Contexts::displayComponentDiagram()
     {
     // The component list should be available all the time as long as a
     // component can be selected.
 //    if(mProject.isAnalysisReady())
 	{
-	std::string fn = getSelectedComponent();
+	std::string fn = mComponentList.getSelectedFileName();
 	if(fn.length() > 0)
 	    {
 	    viewSource(fn, 1);
@@ -107,18 +113,28 @@ void Contexts::moduleTreeviewCursorChanged()
 	}
     }
 
-void Contexts::zoneTreeviewCursorChanged()
+void Contexts::displayIncludeDiagram()
+    {
+    if(mProject.isAnalysisReady())
+        {
+        // While the graph is initialized or destructed, there is no name.
+        OovString incName = mIncludeList.getSelected();
+        if(std::string(incName).length() > 0)
+            mJournal.displayInclude(incName);
+        }
+    }
+
+void Contexts::displayZoneDiagram()
     {
     if(mProject.isAnalysisReady())
 	{
 	ZoneDiagram *zoneDiagram = mJournal.getCurrentZoneDiagram();
 	if(zoneDiagram)
 	    {
-	    bool show = false;
-	    std::string comp = getZoneList().getComponentTree().getSelected('/');
+	    std::string comp = mZoneList.getComponentTree().getSelected('/');
 	    if(comp.length() > 0)
 		{
-		show = getZoneList().getComponentTree().toggleSelectedCheckbox();
+		bool show = mZoneList.getComponentTree().toggleSelectedCheckbox();
 		zoneDiagram->setFilter(comp, !show);
 		zoneDiagram->updateDiagram();
 		}
@@ -138,56 +154,78 @@ void Contexts::zoneTreeviewButtonRelease(const GdkEventButton *event)
 	}
     }
 
-void Contexts::listNotebookSwitchPage(int pageNum)
+void Contexts::setContext(eContexts context)
     {
-    mCurrentPage = static_cast<ePageIndices>(pageNum);
-    Builder *builder = Builder::getBuilder();
-    switch(pageNum)
+    enum ePageIndices { PI_Module, PI_Zone, PI_Class, PI_Include, PI_Seq, PI_Journal };
+    ePageIndices page = PI_Module;
+
+    mCurrentContext = context;
+    switch(context)
 	{
-	case PI_Component:
+	case C_BinaryComponent:
 	    clearSelectedComponent();;
 	    mJournal.displayComponents();
 	    updateJournalList();
+	    page = PI_Module;
 	    break;
 
-	case PI_Zone:
+	case C_Include:
+            if(mProject.isAnalysisReady())
+                {
+                page = PI_Include;
+                displayIncludeDiagram();
+                }
+	    break;
+
+	case C_Zone:
 	    if(mProject.isAnalysisReady())
 		{
 		mJournal.displayWorldZone();
 		updateJournalList();
+                page = PI_Zone;
 		}
 	    break;
 
-	case PI_Class:
-	    {
-	    classTreeViewCursorChanged();
-
-	    GtkWidget *childWidget = builder->getWidget("ClassTreeview");
-	    GtkWidget *parentWidget = builder->getWidget("ClassScrolledwindow");
-	    Gui::reparentWidget(childWidget, GTK_CONTAINER(parentWidget));
-	    }
+	case C_Class:
+	    displayClassDiagram();
+            page = PI_Class;
 	    break;
 
-	case PI_Portion:
-	    {
-	    classTreeViewCursorChanged();
-
-	    GtkWidget *childWidget = builder->getWidget("ClassTreeview");
-	    GtkWidget *parentWidget = builder->getWidget("PortionScrolledwindow");
-	    Gui::reparentWidget(childWidget, GTK_CONTAINER(parentWidget));
-	    }
+	case C_Portion:
+	    displayClassDiagram();
+            page = PI_Class;
 	    break;
 
 	// Operation is always related to class, so it must be initialized
 	// to first operation of class.
-	case PI_Seq:
-	    operationsTreeviewCursorChanged();
+	case C_Operation:
+	    displayOperationsDiagram();
+            page = PI_Seq;
 	    break;
 
-	case PI_Journal:
-	    journalTreeviewCursorChanged();
+	case C_Journal:
+	    displayJournal();
+            page = PI_Journal;
 	    break;
 	}
+    GtkNotebook *notebook = GTK_NOTEBOOK(Builder::getBuilder()->getWidget("ListNotebook"));
+    gtk_notebook_set_current_page(notebook, page);
+    }
+
+
+void Contexts::updateContextAfterAnalysisCompletes()
+    {
+    mComponentList.updateComponentList();
+    mProject.loadAnalysisFiles();
+    }
+
+void Contexts::updateContextAfterProjectLoaded()
+    {
+    mComponentList.updateComponentList();
+    updateIncludeList();
+    updateClassList();
+    mZoneList.update();
+    Gui::setCurrentPage(GTK_NOTEBOOK(Builder::getBuilder()->getWidget("ListNotebook")), 0);
     }
 
 void Contexts::updateJournalList()
@@ -199,9 +237,25 @@ void Contexts::updateJournalList()
 	}
     }
 
-void Contexts::updateClassList(OovStringRef const className)
+void Contexts::updateClassList()
     {
-    mClassList.setSelected(className);
+    mClassList.clear();
+    ModelData &modelData = mProject.getModelData();
+    for(size_t i=0; i<modelData.mTypes.size(); i++)
+        {
+        if(modelData.mTypes[i]->getDataType() == DT_Class)
+            mClassList.appendText(modelData.mTypes[i]->getName());
+        }
+    mClassList.sort();
+    }
+
+void Contexts::updateIncludeList()
+    {
+    std::set<IncludedPath> files = mProject.getIncMap().getAllIncludeFiles();
+    for(auto const &file : files)
+        {
+        mIncludeList.appendText(file.getFullPath().getStr());
+        }
     }
 
 void Contexts::updateOperationList(const ModelData &modelData,
@@ -228,10 +282,10 @@ void Contexts::updateOperationList(const ModelData &modelData,
 
 void Contexts::displayClass(OovStringRef const className)
     {
-    // While the graph is initialized, there is no name.
+    // While the graph is initialized or destructed, there is no name.
     if(std::string(className).length() > 0)
 	{
-	updateClassList(className);
+        mClassList.setSelected(className);
 	updateOperationList(mProject.getModelData(), className);
 	mJournal.displayClass(className);
 	updateJournalList();
@@ -241,7 +295,7 @@ void Contexts::displayClass(OovStringRef const className)
 void Contexts::displayOperation(OovStringRef const className,
 	OovStringRef const operName, bool isConst)
     {
-    // While the graph is initialized, there is no name.
+    // While the graph is initialized or destructed, there is no name.
     if(std::string(className).length() > 0)
 	{
 	if(std::string(operName).length() > 0)
@@ -259,7 +313,7 @@ void Contexts::displayOperation(OovStringRef const className,
 extern "C" G_MODULE_EXPORT void on_ClassTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    sContexts->classTreeViewCursorChanged();
+    sContexts->displayClassDiagram();
     }
 
 extern "C" G_MODULE_EXPORT bool on_ClassTreeview_button_press_event(
@@ -276,26 +330,32 @@ extern "C" G_MODULE_EXPORT bool on_ClassTreeview_button_press_event(
 extern "C" G_MODULE_EXPORT void on_OperationsTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    sContexts->operationsTreeviewCursorChanged();
+    sContexts->displayOperationsDiagram();
     }
 
 
 extern "C" G_MODULE_EXPORT void on_JournalTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    sContexts->journalTreeviewCursorChanged();
+    sContexts->displayJournal();
     }
 
 extern "C" G_MODULE_EXPORT void on_ModuleTreeview_cursor_changed(
 	GtkWidget *button, gpointer data)
     {
-    sContexts->moduleTreeviewCursorChanged();
+    sContexts->displayComponentDiagram();
     }
 
 extern "C" G_MODULE_EXPORT void on_ZoneTreeview_cursor_changed(
 	GtkWidget *widget, gpointer data)
     {
-    sContexts->zoneTreeviewCursorChanged();
+    sContexts->displayZoneDiagram();
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeTreeview_cursor_changed(
+        GtkWidget *widget, gpointer data)
+    {
+    sContexts->displayIncludeDiagram();
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_press_event(
@@ -318,9 +378,45 @@ extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_release_event(
     }
 
 
-extern "C" G_MODULE_EXPORT void on_ListNotebook_switch_page(GtkNotebook *notebook,
-	GtkWidget *page, guint page_num, gpointer user_data)
+extern "C" G_MODULE_EXPORT void on_BinaryComponentToolbutton_clicked(
+        GtkWidget * /*widget*/, gpointer /*user_data*/)
     {
-    sContexts->listNotebookSwitchPage(page_num);
+    sContexts->setContext(Contexts::C_BinaryComponent);
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeDiagramToolbutton_clicked(
+        GtkWidget * /*widget*/, gpointer /*user_data*/)
+    {
+    sContexts->setContext(Contexts::C_Include);
+    }
+
+extern "C" G_MODULE_EXPORT void on_ZoneDiagramToolbutton_clicked(
+        GtkWidget * /*widget*/, gpointer /*user_data*/)
+    {
+    sContexts->setContext(Contexts::C_Zone);
+    }
+
+extern "C" G_MODULE_EXPORT void on_ClassDiagramToolbutton_clicked(
+        GtkWidget * /*widget*/, gpointer /*user_data*/)
+    {
+    sContexts->setContext(Contexts::C_Class);
+    }
+
+extern "C" G_MODULE_EXPORT void on_PortionDiagramToolbutton_clicked(GtkWidget *widget,
+        gpointer user_data)
+    {
+    sContexts->setContext(Contexts::C_Portion);
+    }
+
+extern "C" G_MODULE_EXPORT void on_OperationDiagramToolbutton_clicked(
+        GtkWidget * /*widget*/, gpointer /*user_data*/)
+    {
+    sContexts->setContext(Contexts::C_Operation);
+    }
+
+extern "C" G_MODULE_EXPORT void on_JournalToolbutton_clicked(
+        GtkWidget * /*widget*/, gpointer /*user_data*/)
+    {
+    sContexts->setContext(Contexts::C_Journal);
     }
 

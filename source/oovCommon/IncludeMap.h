@@ -36,7 +36,7 @@ struct IncludedPath
 	const OovString &getFullPath() const
 	    { return mFullPath; }
 	bool operator<(IncludedPath const &incPath) const
-	    { return(mFullPath < incPath.mFullPath);}
+	    { return(mFullPath < incPath.mFullPath); }
     // This saves the included path such as "gtk/gtk.h" and the directory to
     // get to the included path.
     OovString mFullPath;
@@ -56,6 +56,7 @@ class IncDirDependencyMapReader:public NameValueFile
 	// interface or implementation source file name.
 	void getNestedIncludeFilesUsedBySourceFile(
 		OovStringRef const srcName, std::set<IncludedPath> &incFiles) const;
+	std::set<IncludedPath> getAllIncludeFiles() const;
 	// This only matches exact directories, not nested trees.
 	OovStringVec getIncludeFilesDefinedInDirectory(
 		OovStringRef const dirName) const;

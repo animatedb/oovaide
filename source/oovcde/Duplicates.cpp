@@ -99,7 +99,7 @@ bool HashFile::readHashFile(OovStringRef const filePath)
             HashItem item;
             if(strlen(buf) > 0)
                 {
-                sscanf(buf, "%x %u", &item.mHash, &item.mLineNum);
+                sscanf(buf, "%lx %lu", &item.mHash, &item.mLineNum);
                 }
             /// @todo - This could be more efficient if we new the
             /// file size.
@@ -136,7 +136,7 @@ void HashFile::compareHashFiles(HashFile const &refFile,
                         {
                         outHashIndices.markAlreadyOutput(i1, inc, i2);
                         size_t totalLines = (mHashItems[i1+inc-1].mLineNum - mHashItems[i1].mLineNum) + 1;
-                        fprintf(outFile.getFp(), "lines %u  :  %s %u  :  %s %u\n",
+                        fprintf(outFile.getFp(), "lines %lu  :  %s %lu  :  %s %lu\n",
                             totalLines,
                             getRelativeFileName().getStr(), mHashItems[i1].mLineNum,
                             refFile.getRelativeFileName().getStr(),

@@ -17,24 +17,35 @@ void PortionDiagram::initialize(const ModelData &modelData)
     mCairoDrawer.setGraphicsLib(mCairoContext.getCairo());
     mPortionDrawer.setDrawer(&mCairoDrawer);
     mModelData = &modelData;
+    mPortionGraph.setGraphDataSource(modelData);
     }
 
 void PortionDiagram::clearGraphAndAddClass(OovStringRef className)
     {
     mCurrentClassName = className;
-    mPortionGraph.clearAndAddClass(*mModelData, className);
+    mPortionGraph.clearAndAddClass(className);
     mPortionDrawer.updateGraph(mPortionGraph);
     }
 
 void PortionDiagram::redraw()
     {
-    GraphSize size = mPortionDrawer.getDrawingSize();
     gtk_widget_queue_draw(getDrawingArea());
+    }
+
+void PortionDiagram::updateDrawingAreaSize()
+    {
+    GraphSize size = mPortionDrawer.getDrawingSize();
     gtk_widget_set_size_request(getDrawingArea(), size.x, size.y);
     }
 
 void PortionDiagram::drawToDrawingArea()
     {
+    /// @todo - Telling the widget to change size inside of the repaint
+    /// function is probably not a great idea, but the size must be set
+    /// whenever a different diagram is displayed.  This seems to work
+    /// ok, but I am not sure if it causes a double paint.
+    updateDrawingAreaSize();
+
     /// @todo - Context must be set every time it needs to draw.
     mCairoContext.setContext(getDrawingArea());
     mCairoDrawer.setGraphicsLib(mCairoContext.getCairo());
@@ -85,7 +96,7 @@ void PortionDiagram::graphButtonReleaseEvent(const GdkEventButton *event)
     if(event->button == 1)
 	{
 	size_t nodeIndex = mPortionDrawer.getNodeIndex(sStartPosInfo);
-	if(nodeIndex != -1)
+	if(nodeIndex != PortionDrawer::NO_INDEX)
 	    {
 	    mPortionDrawer.setPosition(nodeIndex, sStartPosInfo,
 		    GraphPoint(event->x, event->y));

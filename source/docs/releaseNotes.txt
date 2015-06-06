@@ -16,7 +16,15 @@ Explanations
 Missing Features
 ----------------
 - General
-	- BUG: not killing oovcppparser while building with Inkscape compile errors?
+	- unable to open project second time
+	- remove dup journal code
+	- graph selection icons should be gray if project isn't loaded.
+	- Add new project icon?
+	- reference design guidelines?
+	  http://gernotklingler.com/blog/care-include-dependencies-cpp-keep-minimum/
+	  http://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies
+	- combine class/portion tabs and add include diagrams to components
+	- link to https://rawgit.com/animatedb/oovcde/master/web/articles/PortionDiagrams.html
 	- BUG: Project Settings dialog should clear exclude directories when creating project.
 	- BUG: New project with Simple attempts to delete .../bld-Analyze/.
 		deleteDirs.push_back() wrong in OovBuilder
@@ -50,6 +58,7 @@ Missing Features
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
 	- BUG: component text offsets
+	- allow zone diag map path to rename any arbitrary string? getMappedComponentName
 	- Add zoom buttons, and zoom in based on cursor position
 	- Show unused classes - for visible drawing?
 	- Show related classes for a selected class

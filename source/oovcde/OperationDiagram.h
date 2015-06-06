@@ -77,6 +77,8 @@ class OperationDiagram
 	Builder *mBuilder;
 	OperationDiagramListener *mListener;
 	OperationDiagramParams mLastOperDiagramParams;
+
+	void updateDrawingAreaSize(GtkWidget *drawingArea, OperationDrawer &opDrawer);
     };
 
 

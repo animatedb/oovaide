@@ -5,6 +5,7 @@
  */
 #include "File.h"
 #include "FilePath.h"
+#include "Debug.h"
 //#include <io.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -36,7 +37,10 @@ static void sleepMs(int ms)
 void File::truncate(int size)
     {
 #ifdef __linux__
-    ftruncate(fileno(mFp), size);
+    if(ftruncate(fileno(mFp), size) != 0)
+	{
+	DebugAssert(__FILE__, __LINE__);
+	}
 #else
     _chsize(fileno(mFp), size);
 #endif
@@ -167,7 +171,10 @@ void BaseSimpleFile::close()
 void BaseSimpleFile::truncate(int size)
     {
 #ifdef __linux__
-    ftruncate(mFd, size);
+    if(ftruncate(mFd, size) != 0)
+	{
+	DebugAssert(__FILE__, __LINE__);
+	}
 #else
     _chsize(mFd, size);
 #endif

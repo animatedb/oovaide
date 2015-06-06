@@ -115,7 +115,8 @@ void Journal::displayComponents()
 	JournalRecordComponentDiagram *rec;
 	if(recordIndex == NO_INDEX)
 	    {
-	    rec = new JournalRecordComponentDiagram(*mBuilder, *mJournalListener);
+	    rec = new JournalRecordComponentDiagram(*mBuilder, *mIncludeMap,
+	            *mJournalListener);
 	    rec->mComponentDiagram.drawToDrawingArea();
 	    addRecord(rec, componentName);
 	    }
@@ -171,6 +172,29 @@ void Journal::displayPortion(OovStringRef const className)
 	    rec->mPortionDiagram.drawToDrawingArea();
 	    }
 	}
+    }
+
+void Journal::displayInclude(OovStringRef const incName)
+    {
+    if(mBuilder)
+        {
+        size_t recordIndex = findRecord(RT_Include, incName);
+        JournalRecordIncludeDiagram *rec;
+        if(recordIndex == NO_INDEX)
+            {
+            rec = new JournalRecordIncludeDiagram(*mBuilder, *mIncludeMap,
+                    *mJournalListener);
+            rec->mIncludeDiagram.clearGraphAndAddInclude(incName);
+            rec->mIncludeDiagram.drawToDrawingArea();
+            addRecord(rec, incName);
+            }
+        else
+            {
+            setCurrentRecord(recordIndex);
+            rec = reinterpret_cast<JournalRecordIncludeDiagram*>(getCurrentRecord());
+            rec->mIncludeDiagram.drawToDrawingArea();
+            }
+        }
     }
 
 void Journal::addRecord(JournalRecord *record, OovStringRef const name)
@@ -247,6 +271,10 @@ JournalRecordZoneDiagram::~JournalRecordZoneDiagram()
     }
 
 JournalRecordPortionDiagram::~JournalRecordPortionDiagram()
+    {
+    }
+
+JournalRecordIncludeDiagram::~JournalRecordIncludeDiagram()
     {
     }
 

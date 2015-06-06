@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="354" height="243">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="12" y="17" width="341" height="152" />
+<line x1="12" y1="38" x2="353" y2="38" />
+<line x1="12" y1="50" x2="353" y2="50" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="13" y="26">ParserModelData</text>
+<text x="13" y="35">/oovCppParser/</text>
+<text x="13" y="47">-ModelData mModelData</text>
+<text x="13" y="59">+addParsedModule(OovStringRef fileName)</text>
+<text x="13" y="68">+getParsedModule()</text>
+<text x="13" y="77">+createOrGetClassRef(OovStringRef name)</text>
+<text x="13" y="86">+createOrGetBaseTypeRef(&lt;&lt;typedef&gt;&gt;CXCursor cursor, RefType rt)</text>
+<text x="13" y="95">+createOrGetDataTypeRef(&lt;&lt;typedef&gt;&gt;CXType type, RefType rt)</text>
+<text x="13" y="104">+createOrGetDataTypeRef(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
+<text x="13" y="113">+createOrGetTypedef(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
+<text x="13" y="122">+isBaseClass(ModelClassifier child, OovStringRef name)</text>
+<text x="13" y="131">+addAssociation(ModelClassifier parent, ModelClassifier child, Visibility </text>
+<text x="13" y="140">   access)</text>
+<text x="13" y="149">+setLineStats(ModelModuleLineStats lineStats)</text>
+<text x="13" y="158">+writeModel(OovStringRef fileName)</text>
+<text x="13" y="167">+DebugGetModelData()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="227" y="216" width="71" height="26" />
+<line x1="227" y1="237" x2="298" y2="237" />
+<line x1="227" y1="240" x2="298" y2="240" />
+</g>
+<g font-size="10.000000" stroke="none">
+<text x="228" y="225">ModelData</text>
+<text x="228" y="234">/oovCommon/</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="226" y1="169" x2="255" y2="216" />
+<circle cx="233" cy="180" r="5" style="fill:#ffffff" />
+<circle cx="241" cy="194" r="5" style="fill:#000000" />
+<circle cx="241" cy="194" r="2" style="fill:#000000" />
+<polygon points="226,169 226,177 233,180 233,173 226,169 " style="fill:#000000" />
+</g>
+</svg>

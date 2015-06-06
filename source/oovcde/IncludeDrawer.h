@@ -1,20 +1,20 @@
 /*
- * PortionDrawer.h
- * Created on: April 23, 2015
+ * IncludeDrawer.h
+ * Created on: June 5, 2015
  * \copyright 2015 DCBlaha.  Distributed under the GPL.
  */
 
-#ifndef PORTION_DRAWER_H
-#define PORTION_DRAWER_H
+#ifndef INCLUDE_DRAWER_H
+#define INCLUDE_DRAWER_H
 
-#include "PortionGraph.h"
+#include "IncludeGraph.h"
 #include "DiagramDrawer.h"
 
 
-class PortionDrawer
+class IncludeDrawer
     {
     public:
-	PortionDrawer(DiagramDrawer *drawer=nullptr):
+	IncludeDrawer(DiagramDrawer *drawer=nullptr):
 	    mGraph(nullptr)
             {
             setDrawer(drawer);
@@ -26,7 +26,7 @@ class PortionDrawer
 		mDrawer = drawer;
 		}
 	    }
-	void updateGraph(PortionGraph const &graph);
+	void updateGraph(IncludeGraph const &graph);
         GraphSize getDrawingSize() const;
 	void drawGraph();
 	size_t getNodeIndex(GraphPoint p);
@@ -40,12 +40,12 @@ class PortionDrawer
 	    { return mNodePositions.size(); }
 	size_t getNumConnections() const
 	    { return mGraph->getConnections().size(); }
-	PortionConnection getConnection(size_t index) const
+	IncludeConnection getConnection(size_t index) const
 	    { return mGraph->getConnections()[index]; }
         static const size_t NO_INDEX = static_cast<size_t>(-1);
 
     private:
-        PortionGraph const *mGraph;
+        IncludeGraph const *mGraph;
 	DiagramDrawer *mDrawer;
 	std::vector<GraphPoint> mNodePositions;
 

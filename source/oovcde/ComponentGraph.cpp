@@ -38,10 +38,6 @@ void ComponentGraph::updateGraph(const ComponentDrawOptions &options)
 void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 	const ComponentDrawOptions &options)
     {
-    IncDirDependencyMapReader incMap;
-    BuildConfigReader buildConfig;
-    std::string incDepsFilePath = buildConfig.getIncDepsFilePath(BuildConfigAnalysis);
-    incMap.read(incDepsFilePath);
     BuildPackages buildPkgs(true);
     std::vector<Package> packages = buildPkgs.getPackages();
     mConnections.clear();
@@ -68,7 +64,7 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 		FilePath fp;
 		fp.getAbsolutePath(srcFile, FP_File);
 		OovStringVec incDirs =
-			incMap.getNestedIncludeDirsUsedBySourceFile(fp);
+			mIncludeMap->getNestedIncludeDirsUsedBySourceFile(fp);
 		for(auto const &incDir : incDirs)
 		    {
 		    size_t supplierIndex = getComponentIndex(compPaths, incDir);
@@ -93,7 +89,7 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
 		    if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
 			{
 			OovStringVec incRoots = (*supplierIt).getIncludeDirs();
-			if(incMap.anyRootDirsMatch(incRoots, compPaths[consumerIndex]))
+			if(mIncludeMap->anyRootDirsMatch(incRoots, compPaths[consumerIndex]))
 			    {
 			    mConnections.insert(ComponentConnection(consumerIndex, supplierIndex));
 			    }

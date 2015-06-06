@@ -19,7 +19,7 @@ class ComponentDiagram
 	ComponentDiagram():
 	    mDrawingArea(nullptr)
 	    {}
-	void initialize(Builder &builder);
+	void initialize(Builder &builder, IncDirDependencyMapReader const &incMap);
 	void updateGraph();
 	void drawSvgDiagram(FILE *fp);
 	void drawToDrawingArea();
@@ -40,10 +40,12 @@ class ComponentDiagram
     private:
 	GtkWidget *mDrawingArea;
 	ComponentGraph mComponentGraph;
+
 	void updatePositionsInGraph();
 	void displayContextMenu(guint button, guint32 acttime, gpointer data);
 	void redraw()
 	    { gtk_widget_queue_draw(mDrawingArea); }
+        void updateDrawingAreaSize();
     };
 
 

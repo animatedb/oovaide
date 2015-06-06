@@ -22,10 +22,8 @@ class PortionDrawOptions
 enum PortionNodeTypes
     {
     PNT_Attribute,
-    PNT_Operation
-#if(NonMemberVariables)
-    , PNT_NonMemberVariable
-#endif
+    PNT_Operation,
+    PNT_NonMemberVariable
     };
 
 class PortionNode
@@ -66,8 +64,10 @@ class PortionGraph
 	    mNodes.clear();
 	    mConnections.clear();
 	    }
-	// The model must exist for the lifetime of the graph.
-        void clearAndAddClass(const ModelData &model, OovStringRef classname);
+	// The source must exist for the lifetime of the graph.
+        void setGraphDataSource(const ModelData &model)
+            { mModel = &model; }
+        void clearAndAddClass(OovStringRef classname);
         PortionNode const *getNode(OovStringRef name, PortionNodeTypes nt) const;
         size_t getNodeIndex(PortionNode const *node) const
             { return(static_cast<size_t>(node - &mNodes[0])); }

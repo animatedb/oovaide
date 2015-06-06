@@ -30,8 +30,7 @@ struct Token
 class TokenRange:public std::vector<Token>
     {
     public:
-	void tokenize(CXTranslationUnit transUnit/* , CXFile srcFile,
-		int startLine, int endLine*/);
+	    void tokenize(CXTranslationUnit transUnit);
     };
 
 enum eFindTokenTypes { FT_FindDecl, FT_FindDef };
@@ -39,39 +38,39 @@ enum eFindTokenTypes { FT_FindDecl, FT_FindDef };
 class Tokenizer
     {
     public:
-	Tokenizer():
-	    mTransUnit(0), mSourceFile(nullptr)
-	    {}
-	~Tokenizer();
-	void parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
-		char const * const clang_args[], size_t num_clang_args);
-	// line numbers are 1 based.
-	void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
-	bool findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
-            size_t &offset);
+        Tokenizer():
+            mTransUnit(0), mSourceFile(nullptr)
+            {}
+        ~Tokenizer();
+        void parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
+            char const * const clang_args[], size_t num_clang_args);
+        // line numbers are 1 based.
+        void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
+        bool findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
+                size_t &offset);
 #if(CODE_COMPLETE)
-	OovStringVec codeComplete(size_t offset);
+        OovStringVec codeComplete(size_t offset);
 #else
-	OovStringVec getMembers(size_t offset);
+        OovStringVec getMembers(size_t offset);
 #endif
 
     private:
-	CXTranslationUnit mTransUnit;
-	std::mutex mTransUnitMutex;
-	CXFile mSourceFile;
-	OovString mSourceFilename;
-	void getLineColumn(size_t charOffset, unsigned int &line, unsigned int &column);
+        CXTranslationUnit mTransUnit;
+        std::mutex mTransUnitMutex;
+        CXFile mSourceFile;
+        OovString mSourceFilename;
+        void getLineColumn(size_t charOffset, unsigned int &line, unsigned int &column);
     };
 
 class HighlightTags
     {
     public:
-	void initTags(GtkTextBuffer *textBuffer);
-	GtkTextTag *getTag(int tagIndex)
-	    { return mTags[tagIndex].getTextTag(); }
+        void initTags(GtkTextBuffer *textBuffer);
+        GtkTextTag *getTag(int tagIndex)
+            { return mTags[tagIndex].getTextTag(); }
 
     private:
-	GuiHighlightTag mTags[5];
+        GuiHighlightTag mTags[5];
     };
 
 
@@ -96,7 +95,7 @@ class HighlightTaskItem
         HighlightTaskItem(class Highlighter *highlighter=nullptr):
             mHighlighter(highlighter),
 #else
-	HighlightTaskItem():
+        HighlightTaskItem():
 #endif
             mTask(HT_None), mOffset(0), mFindTokenFt(FT_FindDecl)
             {}
@@ -125,8 +124,8 @@ class HighlightTaskItem
 #endif
         eHighlightTask mTask;
 
-	// Parameters needed for background thread parsing
-	OovString mParseSourceBuffer;
+        // Parameters needed for background thread parsing
+        OovString mParseSourceBuffer;
 
         size_t mOffset;
 
@@ -153,53 +152,68 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
     class HighlighterBackgroundThreadData, HighlightTaskItem>
     {
     public:
-	HighlighterBackgroundThreadData():
-	    mParseRequestCounter(0), mParseFinishedCounter(0),
-	    mTaskResults(HT_None), mFindTokenResultOffset(0)
-	{}
-	virtual ~HighlighterBackgroundThreadData();
-	void initArgs(OovStringRef const filename,
-		char const * const clang_args[], int num_clang_args);
-	void makeParseRequest()
-	    { mParseRequestCounter++; }
-	bool isParseNeeded() const
-	    { return(mParseRequestCounter != mParseFinishedCounter); }
-	TokenRange getParseResults();
-	OovStringVec getShowMembersResults();
-	void getFindTokenResults(std::string &fn, size_t &offset);
-	eHighlightTask getTaskResults() const
-	    { return mTaskResults; }
-	// Called by HighlighterSharedQueue on background thread.
-	void processItem(HighlightTaskItem const &item);
+        HighlighterBackgroundThreadData():
+            mParseRequestCounter(0), mParseFinishedCounter(0),
+            mTaskResults(HT_None), mFindTokenResultOffset(0)
+            {}
+        virtual ~HighlighterBackgroundThreadData();
+        void initArgs(OovStringRef const filename,
+            char const * const clang_args[], int num_clang_args);
+        void makeParseRequest()
+            { mParseRequestCounter++; }
+        bool isParseNeeded() const
+            { return(mParseRequestCounter != mParseFinishedCounter); }
+        TokenRange getParseResults();
+        OovStringVec getShowMembersResults();
+        void getFindTokenResults(std::string &fn, size_t &offset);
+        eHighlightTask getTaskResults() const
+            { return mTaskResults; }
+        // Called by HighlighterSharedQueue on background thread.
+        void processItem(HighlightTaskItem const &item);
 
     private:
-	OovString mFilename;
-	OovProcessChildArgs mClang_args;
-	Tokenizer mTokenizer;
-	int mParseRequestCounter;
-	int mParseFinishedCounter;
+        OovString mFilename;
+        OovProcessChildArgs mClang_args;
+        Tokenizer mTokenizer;
+        int mParseRequestCounter;
+        int mParseFinishedCounter;
         std::mutex mResultsLock;
 
         // All results must be protected with mResultsLock.
         eHighlightTask mTaskResults;
-	TokenRange mTokenResults;
+        TokenRange mTokenResults;
         OovStringVec mShowMemberResults;
         OovString mFindTokenResultFilename;
         size_t mFindTokenResultOffset;
     };
 
 
+// The GTK code takes more CPU processing time when more tags are applied.
+// For this reason, the tags are only applied to the visible viewing
+// area.  This makes a huge difference in how much processing time the
+// editor takes.  When about 10 files of size of 10K were viewed,  a
+// substantial amount of CPU power was taken (perhaps something like 50%)
 class Highlighter
     {
     public:
-	/// @todo - this interface requires that no parameters change during
-	/// the lifetime of this class.
-	void highlightRequest(OovStringRef const filename,
-		char const * const clang_args[], int num_clang_args);
-        // Return is OR'ed values that show available task results.
-        //      HT_Parse is handled internally.
-        //      HT_ShowMembers, call getShowMembers().
-	eHighlightTask highlightUpdate(GtkTextView *textView, OovStringRef const buffer,
+        /// This interface requires that no parameters change during
+        /// the lifetime of this class.
+        Highlighter():
+            mTokenState(TS_AppliedTokens)
+            {}
+        /// This can be called whenever the buffer for the file has changed.
+        /// It will reparse the buffer.  It will initiate a parse of the
+        /// file on the background thread.
+        void highlightRequest(OovStringRef const filename,
+            char const * const clang_args[], int num_clang_args);
+
+        /// This should be periodically called from something like an idle function.
+        /// Return is OR'ed values that show available task results.  This checks
+        /// whether the background thread is complete and saves the tokens so
+        /// they can be applied on tags whenever a draw is required.
+        ///      HT_Parse is handled internally.
+        ///      HT_ShowMembers, call getShowMembers().
+        eHighlightTask highlightUpdate(GtkTextView *textView, OovStringRef const buffer,
             size_t bufLen);
         void showMembers(size_t offset);
         OovStringVec getShowMembers()
@@ -208,14 +222,22 @@ class Highlighter
         void getFindTokenResults(std::string &fn, size_t &offset)
             { return mBackgroundThreadData.getFindTokenResults(fn, offset); }
 
+        /// This should be called from the draw function.  It applies
+        /// the tokens to the tags in the viewable area of the buffer.
+        /// The viewable area is defined by topOffset and botOffset.
+        bool applyTags(GtkTextBuffer *textBuffer, int topOffset, int botOffset);
+
     private:
         HighlighterBackgroundThreadData mBackgroundThreadData;
-	HighlightTags mHighlightTags;
+        HighlightTags mHighlightTags;
+        TokenRange mHighlightTokens;
+        enum TokenStates { TS_HighlightRequest, TS_GotTokens,
+            TS_AppliedTokens };
+        TokenStates mTokenState;
 
 #if(SHARED_QUEUE)
         static HighlighterSharedQueue sSharedQueue;
 #endif
-	void applyTags(GtkTextBuffer *textBuffer, const TokenRange &tokens);
     };
 
 #endif /* HIGHLIGHTER_H_ */

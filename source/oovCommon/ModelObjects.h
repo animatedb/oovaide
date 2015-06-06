@@ -157,7 +157,6 @@ public:
 
 enum eModelStatementTypes { ST_OpenNest, ST_CloseNest, ST_Call, ST_VarRef };
 
-#define NonMemberVariables 1
 
 
 /// These aren't really statements. These are important things in a function
@@ -207,7 +206,6 @@ class ModelStatement:private ModelObject
 	    { mVarAccessWrite = write; }
 	bool getVarAccessWrite() const
 	    { return mVarAccessWrite; }
-#if(NonMemberVariables)
 	// Just stick a symbol in the name to indicate it is
 	// a base class member reference.
 	bool hasBaseClassMemberRef() const;
@@ -215,7 +213,6 @@ class ModelStatement:private ModelObject
 	    { return "+:"; }
 	static char const *getBaseClassMemberCallSep()
 	    { return "+:"; }
-#endif
 
     private:
 	eModelStatementTypes mStatementType;

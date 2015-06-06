@@ -13,6 +13,7 @@
 #include "Graph.h"	// For GraphRect
 #include "Components.h"
 #include "Packages.h"
+#include "IncludeMap.h"
 
 struct ComponentDrawOptions
     {
@@ -87,8 +88,11 @@ class ComponentGraph
     {
     public:
 	ComponentGraph():
-	    mModified(false)
+	    mIncludeMap(nullptr), mModified(false)
 	    {}
+        // The source must exist for the lifetime of the graph.
+        void setGraphDataSource(IncDirDependencyMapReader const &incMap)
+            { mIncludeMap = &incMap; }
 	void updateGraph(const ComponentDrawOptions &options);
 	GraphSize getGraphSize() const;
 	const std::vector<ComponentNode> &getNodes() const
@@ -105,6 +109,7 @@ class ComponentGraph
 	    { mModified = true; }
 
     private:
+	IncDirDependencyMapReader const *mIncludeMap;
 	std::vector<ComponentNode> mNodes;
 	std::set<ComponentConnection> mConnections;
 	bool mModified;

@@ -195,6 +195,7 @@ class ProjectPackages:public Packages
 	bool read();
 	void savePackages()
 	    { mFile.writeFile(); }
+	static OovString getFilename();
     };
 
 #endif /* PACKAGES_H_ */

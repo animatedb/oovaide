@@ -158,14 +158,12 @@ OovString ModelStatement::getAttrName() const
     return attrName;
     }
 
-#if(NonMemberVariables)
 bool ModelStatement::hasBaseClassMemberRef() const
     {
     OovString attrName = getName();
     size_t pos = getRightSidePosFromMemberRefExpr(attrName, false);
     return(attrName[pos] == '+');
     }
-#endif
 
 bool ModelStatements::checkAttrUsed(OovStringRef attrName) const
     {

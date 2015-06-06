@@ -24,9 +24,9 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     proj.readOovProject(Project::getProjectDirectory(), BuildConfigAnalysis);
     OovStringVec cppArgs = proj.getCompileArgs();
     for(auto const &arg : cppArgs)
-	{
-	args.addArg(arg);
-	}
+        {
+        args.addArg(arg);
+        }
 
     BuildConfigReader cfg;
     std::string incDepsPath = cfg.getIncDepsFilePath(BuildConfigAnalysis);
@@ -34,11 +34,11 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     incDirMap.read(incDepsPath);
     OovStringVec incDirs = incDirMap.getNestedIncludeDirsUsedBySourceFile(srcName);
     for(auto const &dir : incDirs)
-	{
-	std::string arg = "-I";
-	arg += dir;
-	args.addArg(arg);
-	}
+        {
+        std::string arg = "-I";
+        arg += dir;
+        args.addArg(arg);
+        }
     }
 
 
@@ -47,9 +47,6 @@ void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
         gchar *text, gint len, gpointer user_data);
 void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
         GtkTextIter *end, gpointer user_data);
-
-//static void scrollChild(GtkWidget *widget, GdkEvent *event, gpointer user_data);
-//gboolean draw(GtkWidget *widget, void *cr, gpointer user_data);
 
 
 void CompletionList::init(GtkTextBuffer *textBuffer)
@@ -99,36 +96,36 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
     if((key == '.' || (mLastNonModifierKey == '-' && key == '>')) ||
 	(key == ' ' && isControlKey(mLastKey))
 	    )
-	{
-	getCompletionData = true;
-	mCompletionTriggerPointOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
+        {
+        getCompletionData = true;
+        mCompletionTriggerPointOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
 
-	if(key == ' ')
-	    {
-	    mStartIdentifierOffset = mCompletionTriggerPointOffset;
-	    GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
-	    while(GuiTextBuffer::decIter(&iter))
-		{
-		int offset = GuiTextBuffer::getIterOffset(iter);
-		char c = GuiTextBuffer::getChar(mTextBuffer, offset);
-		if(!isIdentC(c))
-		    break;
-		mStartIdentifierOffset = offset;
-		}
-	    }
-	else
-	    {
-	    mCompletionTriggerPointOffset++;
-	    mStartIdentifierOffset = mCompletionTriggerPointOffset;
-	    }
+        if(key == ' ')
+            {
+            mStartIdentifierOffset = mCompletionTriggerPointOffset;
+            GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
+            while(GuiTextBuffer::decIter(&iter))
+                {
+                int offset = GuiTextBuffer::getIterOffset(iter);
+                char c = GuiTextBuffer::getChar(mTextBuffer, offset);
+                if(!isIdentC(c))
+                    break;
+                mStartIdentifierOffset = offset;
+                }
+            }
+        else
+            {
+            mCompletionTriggerPointOffset++;
+            mStartIdentifierOffset = mCompletionTriggerPointOffset;
+            }
 
-	mGuiList.clear();
-	Gui::setVisible(mTopWidget, true);
-	}
+        mGuiList.clear();
+        Gui::setVisible(mTopWidget, true);
+        }
     if(!isModifierKey(key))
-	{
-	mLastNonModifierKey = key;
-	}
+        {
+        mLastNonModifierKey = key;
+        }
     mLastKey = key;
     return getCompletionData;
     }
@@ -151,50 +148,50 @@ bool CompletionList::handleListKey(int key, int modKeys)
     bool doneList = true;
 
     if(key == GDK_KEY_BackSpace)
-	{
-	GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
-	gtk_text_buffer_backspace(mTextBuffer, &iter, true, true);
-	doneList = (GuiTextBuffer::getCursorOffset(mTextBuffer) ==
-		mCompletionTriggerPointOffset);
-	}
+        {
+        GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
+        gtk_text_buffer_backspace(mTextBuffer, &iter, true, true);
+        doneList = (GuiTextBuffer::getCursorOffset(mTextBuffer) ==
+            mCompletionTriggerPointOffset);
+        }
     else if(key == GDK_KEY_Delete || key == GDK_KEY_KP_Delete)
-	{
-	GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
-	GtkTextIter endIter = iter;
-	if(gtk_text_iter_forward_char(&endIter))
-	    {
-	    gtk_text_buffer_delete(mTextBuffer, &iter, &endIter);
-	    }
-	}
+        {
+        GtkTextIter iter = GuiTextBuffer::getCursorIter(mTextBuffer);
+        GtkTextIter endIter = iter;
+        if(gtk_text_iter_forward_char(&endIter))
+            {
+            gtk_text_buffer_delete(mTextBuffer, &iter, &endIter);
+            }
+        }
     else if(isListKey(key) || isModifierKey(key))
-	{
-	handled = false;
-	doneList = false;
-	}
+        {
+        handled = false;
+        doneList = false;
+        }
     /// @todo - Ctrl-Z does should get sent to the editor instead of discarding
     /// and quitting the list.
     else if(isInsertableC(key) && !(modKeys & GDK_CONTROL_MASK))
-	{
-	// Punctuation and other things need to be inserted.
-	char keyStr[1];
-	keyStr[0] = key;
-	gtk_text_buffer_insert_at_cursor(mTextBuffer, keyStr, 1);
-	if(isIdentC(key))
-	    {
-	    doneList = false;
-	    }
-	}
+        {
+        // Punctuation and other things need to be inserted.
+        char keyStr[1];
+        keyStr[0] = key;
+        gtk_text_buffer_insert_at_cursor(mTextBuffer, keyStr, 1);
+        if(isIdentC(key))
+            {
+            doneList = false;
+            }
+        }
     if(Gui::isVisible(mTopWidget) && handled)
-	{
-	int cursOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
-	OovString str = GuiTextBuffer::getText(mTextBuffer,
-		mStartIdentifierOffset, cursOffset);
-	mGuiList.setSelected(mGuiList.findLongestMatch(str));
-	}
+        {
+        int cursOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
+        OovString str = GuiTextBuffer::getText(mTextBuffer,
+            mStartIdentifierOffset, cursOffset);
+        mGuiList.setSelected(mGuiList.findLongestMatch(str));
+        }
     if(doneList)
-	{
-	Gui::setVisible(mTopWidget, false);
-	}
+        {
+        Gui::setVisible(mTopWidget, false);
+        }
     return handled;
     }
 
@@ -214,25 +211,25 @@ void CompletionList::setList(FileEditView *view, OovStringVec const &strs)
     // the identifier is before the completion trigger point.
     OovString prefix;
     if(mStartIdentifierOffset < mCompletionTriggerPointOffset)
-	{
-	prefix = GuiTextBuffer::getText(mTextBuffer,
-	    mStartIdentifierOffset, mCompletionTriggerPointOffset);
-	}
+        {
+        prefix = GuiTextBuffer::getText(mTextBuffer,
+            mStartIdentifierOffset, mCompletionTriggerPointOffset);
+        }
     for(auto const &str : strs)
-	{
-	if(prefix.compare(0, prefix.length(), str, 0, prefix.length()) == 0)
-	    {
-	    mGuiList.appendText(str);
-	    }
-	}
+        {
+        if(prefix.compare(0, prefix.length(), str, 0, prefix.length()) == 0)
+            {
+            mGuiList.appendText(str);
+            }
+        }
     if(strs.size())
-	{
-	mGuiList.setSelected(strs[0]);
-	}
+        {
+        mGuiList.setSelected(strs[0]);
+        }
     else
-	{
-	Gui::setVisible(mTopWidget, false);
-	}
+        {
+        Gui::setVisible(mTopWidget, false);
+        }
     }
 
 void CompletionList::setWindowPosition(GdkWindow *compWin, int screenWidth)
@@ -240,31 +237,31 @@ void CompletionList::setWindowPosition(GdkWindow *compWin, int screenWidth)
     // Place the completion window on the opposite side of the screen as
     // the editor cursor.
     if(mEditView)
-	{
-	GtkTextIter cursIter = GuiTextBuffer::getCursorIter(
-		mEditView->getTextBuffer());
-	GdkRectangle cursRect;
-	gtk_text_view_get_iter_location(mEditView->getTextView(), &cursIter,
-		&cursRect);
-	GdkWindow *win = gtk_text_view_get_window(mEditView->getTextView(),
-		GTK_TEXT_WINDOW_WIDGET);
-	int winX;
-	int winY;
-	gdk_window_get_origin(win, &winX, &winY);
-	int cursPosX;
-	int cursPosY;
-	gtk_text_view_buffer_to_window_coords(mEditView->getTextView(),
-		GTK_TEXT_WINDOW_WIDGET,
-		cursRect.x, cursRect.y, &cursPosX, &cursPosY);
-	if(cursPosX + winX > screenWidth / 2)
-	    {
-	    gdk_window_move(compWin, 0, 0);
-	    }
-	else
-	    {
-	    gdk_window_move(compWin, screenWidth / 2, 0);
-	    }
-	}
+        {
+        GtkTextIter cursIter = GuiTextBuffer::getCursorIter(
+            mEditView->getTextBuffer());
+        GdkRectangle cursRect;
+        gtk_text_view_get_iter_location(mEditView->getTextView(), &cursIter,
+            &cursRect);
+        GdkWindow *win = gtk_text_view_get_window(mEditView->getTextView(),
+            GTK_TEXT_WINDOW_WIDGET);
+        int winX;
+        int winY;
+        gdk_window_get_origin(win, &winX, &winY);
+        int cursPosX;
+        int cursPosY;
+        gtk_text_view_buffer_to_window_coords(mEditView->getTextView(),
+            GTK_TEXT_WINDOW_WIDGET,
+            cursRect.x, cursRect.y, &cursPosX, &cursPosY);
+        if(cursPosX + winX > screenWidth / 2)
+            {
+            gdk_window_move(compWin, 0, 0);
+            }
+        else
+            {
+            gdk_window_move(compWin, screenWidth / 2, 0);
+            }
+        }
     }
 
 void CompletionList::positionCompletionWindow()
@@ -284,17 +281,17 @@ void CompletionList::positionCompletionWindow()
     int winHeight = screenHeight * .9;
     int winWidth = screenWidth * .9;
     if(nat.height > winHeight)
-	{
-	nat.height = winHeight;
-	}
+        {
+        nat.height = winHeight;
+        }
     else
-	{
-	nat.height += 10; //gtk_container_get_border_height(GTK_CONTAINER(sw));
-	}
+        {
+        nat.height += 10; //gtk_container_get_border_height(GTK_CONTAINER(sw));
+        }
     if(nat.width > winWidth / 2)
-	{
-	nat.width = winWidth / 2;
-	}
+        {
+        nat.width = winWidth / 2;
+        }
     gdk_window_resize(compWin, nat.width, nat.height);
     }
 
@@ -302,19 +299,49 @@ void CompletionList::activateSelectedItem()
     {
     int cursOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
     if(mStartIdentifierOffset < cursOffset)
-	{
-	GuiTextBuffer::erase(mTextBuffer, mStartIdentifierOffset, cursOffset);
-	}
+        {
+        GuiTextBuffer::erase(mTextBuffer, mStartIdentifierOffset, cursOffset);
+        }
     OovString str = mGuiList.getSelected();
     size_t spacePos = str.find(' ');
     if(spacePos != std::string::npos)
-	{
-	str.resize(spacePos);
-	}
+        {
+        str.resize(spacePos);
+        }
     gtk_text_buffer_insert_at_cursor(mTextBuffer, str.getStr(), str.length());
     Gui::setVisible(mTopWidget, false);
     }
 
+static int textViewWindowToBufferOffset(GtkTextView *textView, int winX, int winY)
+    {
+    int bufX;
+    int bufY;
+    gtk_text_view_window_to_buffer_coords(textView, GTK_TEXT_WINDOW_WIDGET,
+            winX, winY, &bufX, &bufY);
+    GtkTextIter iter;
+    gtk_text_view_get_iter_at_location(textView, &iter, bufX, bufY);
+    return gtk_text_iter_get_offset(&iter);
+    }
+
+//static void scrollChild(GtkWidget *widget, GdkEvent *event, gpointer user_data);
+
+gboolean draw(GtkWidget *widget, void *cr, gpointer user_data)
+    {
+    bool handled = false;
+    FileEditView *view = static_cast<FileEditView*>(user_data);
+    int topOffset;
+    int botOffset;
+    if(view->viewChange(topOffset, botOffset))
+        {
+        GtkTextBuffer *textBuf = view->getTextBuffer();
+        if(view->getHighlighter().applyTags(textBuf, topOffset, botOffset))
+            {
+            handled = true;
+            view->highlightedContent();
+            }
+        }
+    return handled;
+    }
 
 
 void FileEditView::init(GtkTextView *textView)
@@ -330,7 +357,7 @@ void FileEditView::init(GtkTextView *textView)
           G_CALLBACK(signalBufferDeleteRange), NULL);
 //	    g_signal_connect(G_OBJECT(mBuilder.getWidget("EditTextScrolledwindow")),
 //		    "scroll-child", G_CALLBACK(scrollChild), NULL);
-//    g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), NULL);
+    g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), this);
     }
 
 bool FileEditView::openTextFile(OovStringRef const fn)
@@ -338,20 +365,20 @@ bool FileEditView::openTextFile(OovStringRef const fn)
     setFileName(fn);
     File file(fn, "rb");
     if(file.isOpen())
-	{
-	fseek(file.getFp(), 0, SEEK_END);
-	long fileSize = ftell(file.getFp());
-	fseek(file.getFp(), 0, SEEK_SET);
-	std::vector<char> buf(fileSize);
-	// actualCount can be less than fileSize on Windows due to /r/n
-	int actualCount = fread(&buf.front(), 1, fileSize, file.getFp());
-	if(actualCount > 0)
-	    {
-	    gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
-	    gtk_text_buffer_set_modified(mTextBuffer, FALSE);
-	    }
-	highlightRequest();
-	}
+        {
+        fseek(file.getFp(), 0, SEEK_END);
+        long fileSize = ftell(file.getFp());
+        fseek(file.getFp(), 0, SEEK_SET);
+        std::vector<char> buf(fileSize);
+        // actualCount can be less than fileSize on Windows due to /r/n
+        int actualCount = fread(&buf.front(), 1, fileSize, file.getFp());
+        if(actualCount > 0)
+            {
+            gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
+            gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+            }
+        highlightRequest();
+        }
     return(file.isOpen());
     }
 
@@ -359,14 +386,40 @@ bool FileEditView::saveTextFile()
     {
     bool success = false;
     if(mFileName.length() == 0)
-	{
-	success = saveAsTextFileWithDialog();
-	}
+        {
+        success = saveAsTextFileWithDialog();
+        }
     else
-	success = true;
+        {
+        success = true;
+        }
     if(success)
-	success = saveAsTextFile(mFileName);
+        {
+        success = saveAsTextFile(mFileName);
+        }
     return success;
+    }
+
+bool FileEditView::viewChange(int &topOffset, int &botOffset)
+    {
+    GtkTextView *textView = getTextView();
+    GdkWindow *textWindow = gtk_text_view_get_window(textView, GTK_TEXT_WINDOW_WIDGET);
+    int winX;
+    int winY;
+    gdk_window_get_position(textWindow, &winX, &winY);
+    topOffset = textViewWindowToBufferOffset(textView, winX, winY);
+
+    int width = gdk_window_get_width(textWindow);
+    int height = gdk_window_get_height(textWindow);
+    botOffset = textViewWindowToBufferOffset(textView, winX+width, winY+height);
+    bool changed = (mLastViewTopOffset != topOffset ||
+            mLastViewBotOffset != botOffset || mHighlightTextContentChange);
+    if(changed)
+        {
+        mLastViewTopOffset = topOffset;
+        mLastViewBotOffset = botOffset;
+        }
+    return changed;
     }
 
 GuiText FileEditView::getBuffer()
@@ -380,16 +433,17 @@ GuiText FileEditView::getBuffer()
 void FileEditView::highlightRequest()
     {
     if(mFileName.length())
-	{
-//	int numArgs = 0;
-//	char const * cppArgv[40];
-	OovProcessChildArgs cppArgs;
-	getCppArgs(mFileName, cppArgs);
+        {
+    //	int numArgs = 0;
+    //	char const * cppArgv[40];
+        OovProcessChildArgs cppArgs;
+        getCppArgs(mFileName, cppArgs);
 
-	FilePath path;
-	path.getAbsolutePath(mFileName, FP_File);
-	mHighlighter.highlightRequest(path, cppArgs.getArgv(), cppArgs.getArgc());
-	}
+        FilePath path;
+        path.getAbsolutePath(mFileName, FP_File);
+        mHighlighter.highlightRequest(path, cppArgs.getArgv(), cppArgs.getArgc());
+        mHighlightTextContentChange = true;
+        }
     }
 
 void FileEditView::gotoLine(int lineNum)
@@ -405,7 +459,7 @@ void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
     {
     GtkTextMark *mark = gtk_text_buffer_get_insert(mTextBuffer);
     if(mark)
-	{
+        {
 //		The solution involves creating an idle proc (which is a procedure which
 //		GTK will call when it has nothing else to do until told otherwise by the
 //		return value of this procedure). In that idle proc the source view is
@@ -416,14 +470,14 @@ void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
 //		    gtk_intersect to check whether the cursor is in the visible rectangle.
 //		gtk_text_buffer_get_iter_at_mark(mTextBuffer, &iter, mark);
 
-	GtkTextIter tempEndIter = startIter;
-	if(endIter)
-	    tempEndIter = *endIter;
-	gtk_text_buffer_select_range(mTextBuffer, &startIter, &tempEndIter);
-	gtk_text_buffer_move_mark(mTextBuffer, mark, &startIter);
-	Gui::scrollToCursor(mTextView);
-//	gtk_text_view_scroll_to_mark(mTextView, mark, 0, TRUE, 0, 0.5);
-	}
+        GtkTextIter tempEndIter = startIter;
+        if(endIter)
+            tempEndIter = *endIter;
+        gtk_text_buffer_select_range(mTextBuffer, &startIter, &tempEndIter);
+        gtk_text_buffer_move_mark(mTextBuffer, mark, &startIter);
+        Gui::scrollToCursor(mTextView);
+//      gtk_text_view_scroll_to_mark(mTextView, mark, 0, TRUE, 0, 0.5);
+        }
     }
 
 bool FileEditView::saveAsTextFileWithDialog()
@@ -436,9 +490,9 @@ bool FileEditView::saveAsTextFileWithDialog()
     prompt += " As";
     if(ch.ChoosePath(GTK_WINDOW(mTextView), prompt,
 	    GTK_FILE_CHOOSER_ACTION_SAVE, filename))
-	{
-	saved = saveAsTextFile(filename);
-	}
+        {
+        saved = saveAsTextFile(filename);
+        }
     return saved;
     }
 
@@ -450,15 +504,15 @@ bool FileEditView::saveAsTextFile(OovStringRef const fn)
     tempFn += ".tmp";
     File file(tempFn, "wb");
     if(file.isOpen())
-	{
-	int size = gtk_text_buffer_get_char_count(mTextBuffer);
-	GuiText buf = getBuffer();
-	writeSize = fwrite(buf.c_str(), 1, size, file.getFp());
-	file.close();
-	FileDelete(fn);
-	FileRename(tempFn, fn);
-	gtk_text_buffer_set_modified(mTextBuffer, FALSE);
-	}
+        {
+        int size = gtk_text_buffer_get_char_count(mTextBuffer);
+        GuiText buf = getBuffer();
+        writeSize = fwrite(buf.c_str(), 1, size, file.getFp());
+        file.close();
+        FileDelete(fn);
+        FileRename(tempFn, fn);
+        gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+        }
     return(writeSize > 0);
     }
 
@@ -466,30 +520,34 @@ bool FileEditView::checkExitSave()
     {
     bool exitOk = true;
     if(gtk_text_buffer_get_modified(mTextBuffer))
-	{
-	std::string prompt = "Save ";
-	prompt += mFileName;
-	GtkDialog *dlg = GTK_DIALOG(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
-		GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", prompt.c_str()));
-	gtk_dialog_add_button(dlg, GUI_CANCEL, GTK_RESPONSE_CANCEL);
-	gint result = gtk_dialog_run(dlg);
-	if(result == GTK_RESPONSE_YES)
-	    {
-	    if(mFileName.length() > 0)
-		{
-		exitOk = saveTextFile();
-		}
-	    else
-		{
-		exitOk = saveAsTextFileWithDialog();
-		}
-	    }
-	else if(result == GTK_RESPONSE_NO)
-	    exitOk = true;
-	else
-	    exitOk = false;
-	gtk_widget_destroy(GTK_WIDGET(dlg));
-	}
+        {
+        std::string prompt = "Save ";
+        prompt += mFileName;
+        GtkDialog *dlg = GTK_DIALOG(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
+            GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", prompt.c_str()));
+        gtk_dialog_add_button(dlg, GUI_CANCEL, GTK_RESPONSE_CANCEL);
+        gint result = gtk_dialog_run(dlg);
+        if(result == GTK_RESPONSE_YES)
+            {
+            if(mFileName.length() > 0)
+                {
+                exitOk = saveTextFile();
+                }
+            else
+                {
+                exitOk = saveAsTextFileWithDialog();
+                }
+            }
+        else if(result == GTK_RESPONSE_NO)
+            {
+            exitOk = true;
+            }
+        else
+            {
+            exitOk = false;
+            }
+        gtk_widget_destroy(GTK_WIDGET(dlg));
+        }
     return exitOk;
     }
 
@@ -503,24 +561,26 @@ bool FileEditView::find(char const * const findStr, bool forward, bool caseSensi
     GtkTextSearchFlags flags = static_cast<GtkTextSearchFlags>(GTK_TEXT_SEARCH_TEXT_ONLY |
 		GTK_TEXT_SEARCH_VISIBLE_ONLY);
     if(!caseSensitive)
-	{
-	flags = static_cast<GtkTextSearchFlags>(flags | GTK_TEXT_SEARCH_CASE_INSENSITIVE);
-	}
+        {
+        flags = static_cast<GtkTextSearchFlags>(flags | GTK_TEXT_SEARCH_CASE_INSENSITIVE);
+        }
     bool found = false;
     if(forward)
-	{
-	gtk_text_iter_forward_char(&startFind);
-	found = gtk_text_iter_forward_search(&startFind, findStr, flags,
-		&startMatch, &endMatch, NULL);
-	}
+        {
+        gtk_text_iter_forward_char(&startFind);
+        found = gtk_text_iter_forward_search(&startFind, findStr, flags,
+            &startMatch, &endMatch, NULL);
+        }
     else
-	{
-	gtk_text_iter_backward_char(&startFind);
-	found = gtk_text_iter_backward_search(&startFind, findStr, flags,
-		&startMatch, &endMatch, NULL);
-	}
+        {
+        gtk_text_iter_backward_char(&startFind);
+        found = gtk_text_iter_backward_search(&startFind, findStr, flags,
+            &startMatch, &endMatch, NULL);
+        }
     if(found)
-	moveToIter(startMatch, &endMatch);
+        {
+        moveToIter(startMatch, &endMatch);
+        }
     return found;
     }
 
@@ -531,10 +591,10 @@ std::string FileEditView::getSelectedText()
     std::string text;
     bool haveSel = gtk_text_buffer_get_selection_bounds(mTextBuffer, &startSel, &endSel);
     if(haveSel)
-	{
-	GuiText gText = gtk_text_buffer_get_text(mTextBuffer, &startSel, &endSel, true);
-	text = gText;
-	}
+        {
+        GuiText gText = gtk_text_buffer_get_text(mTextBuffer, &startSel, &endSel, true);
+        text = gText;
+        }
     return text;
     }
 
@@ -545,24 +605,24 @@ bool FileEditView::findAndReplace(char const * const findStr, bool forward,
     GtkTextIter endSel;
     bool haveSel = gtk_text_buffer_get_selection_bounds(mTextBuffer, &startSel, &endSel);
     if(haveSel)
-	{
-	bool match;
-	GuiText text = gtk_text_buffer_get_text(mTextBuffer, &startSel, &endSel, true);
-	if(caseSensitive)
-	    {
-	    match = (strcmp(text.c_str(), findStr) == 0);
-	    }
-	else
-	    {
-	    match = (StringCompareNoCase(text.c_str(), findStr) == 0);
-	    }
-	if(match)
-	    {
-	    gtk_text_buffer_delete_selection(mTextBuffer, true, true);
-	    gtk_text_buffer_insert_at_cursor(mTextBuffer, replaceStr,
-		    strlen(replaceStr));
-	    }
-	}
+        {
+        bool match;
+        GuiText text = gtk_text_buffer_get_text(mTextBuffer, &startSel, &endSel, true);
+        if(caseSensitive)
+            {
+            match = (strcmp(text.c_str(), findStr) == 0);
+            }
+        else
+            {
+            match = (StringCompareNoCase(text.c_str(), findStr) == 0);
+            }
+        if(match)
+            {
+            gtk_text_buffer_delete_selection(mTextBuffer, true, true);
+            gtk_text_buffer_insert_at_cursor(mTextBuffer, replaceStr,
+                strlen(replaceStr));
+            }
+        }
     return find(findStr, forward, caseSensitive);
     }
 
@@ -570,10 +630,10 @@ void FileEditView::bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *loca
         gchar *text, gint len)
     {
     if(!doingHistory())
-	{
-	int offset = HistoryItem::getOffset(location);
-	addHistoryItem(HistoryItem(true, offset, text, len));
-	}
+        {
+        int offset = HistoryItem::getOffset(location);
+        addHistoryItem(HistoryItem(true, offset, text, len));
+        }
     highlightRequest();
     }
 
@@ -581,11 +641,11 @@ void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *sta
         GtkTextIter *end)
     {
     if(!doingHistory())
-	{
-	int offset = HistoryItem::getOffset(start);
-	GuiText str(gtk_text_buffer_get_text(textbuffer, start, end, false));
-	addHistoryItem(HistoryItem(false, offset, str, str.length()));
-	}
+        {
+        int offset = HistoryItem::getOffset(start);
+        GuiText str(gtk_text_buffer_get_text(textbuffer, start, end, false));
+        addHistoryItem(HistoryItem(false, offset, str, str.length()));
+        }
     highlightRequest();
     }
 
@@ -610,78 +670,78 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
     {
     bool handled = false;
     int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
-    if(mCompleteList.handleEditorKey(event->key.keyval, modKeys))
-	{
+        if(mCompleteList.handleEditorKey(event->key.keyval, modKeys))
+        {
 #if(CODE_COMPLETE)
-	mHighlighter.showMembers(mCompleteList.getCompletionTriggerPointOffset());
+        mHighlighter.showMembers(mCompleteList.getCompletionTriggerPointOffset());
 #endif
-	}
+        }
     switch(event->key.keyval)
-	{
-	case '>':	// Checking for "->"
-	case '.':
-	    {
+        {
+        case '>':	// Checking for "->"
+        case '.':
+            {
 #if(!CODE_COMPLETE)
-	    GtkTextIter cursorIter = GuiTextBuffer::getCursorIter(mTextBuffer);
-	    int offset = GuiTextBuffer::getCursorOffset(mTextBuffer);
-	    offset--;
-	    if(event->key.keyval == '>')
-		{
-		GtkTextIter prevCharIter = cursorIter;
-		gtk_text_iter_backward_char(&prevCharIter);
-		GuiText str(gtk_text_buffer_get_text(mTextBuffer,
-			&prevCharIter, &cursorIter, false));
-		if(str[0] == '-')
-		    offset--;
-		else
-		    offset = -1;
-		}
-	    if(offset != -1)
-		{
-		mHighlighter.showMembers(offset);
-		}
+            GtkTextIter cursorIter = GuiTextBuffer::getCursorIter(mTextBuffer);
+            int offset = GuiTextBuffer::getCursorOffset(mTextBuffer);
+            offset--;
+            if(event->key.keyval == '>')
+            {
+            GtkTextIter prevCharIter = cursorIter;
+            gtk_text_iter_backward_char(&prevCharIter);
+            GuiText str(gtk_text_buffer_get_text(mTextBuffer,
+                &prevCharIter, &cursorIter, false));
+            if(str[0] == '-')
+                offset--;
+            else
+                offset = -1;
+            }
+            if(offset != -1)
+            {
+            mHighlighter.showMembers(offset);
+            }
 #endif
-	    }
-	    break;
+            }
+            break;
 
-	case GDK_KEY_ISO_Left_Tab:	// This is shift tab on PC
-	    // On Windows, modKeys==0, on Linux, modKeys==GDK_SHIFT_MASK
-	    if(event->key.state == GDK_SHIFT_MASK || modKeys == 0 ||
-		    modKeys == GDK_SHIFT_MASK)
-		{
-		if(mIndenter.shiftTabPressed())
-		    handled = true;
-		}
-	    break;
+        case GDK_KEY_ISO_Left_Tab:	// This is shift tab on PC
+            // On Windows, modKeys==0, on Linux, modKeys==GDK_SHIFT_MASK
+            if(event->key.state == GDK_SHIFT_MASK || modKeys == 0 ||
+                modKeys == GDK_SHIFT_MASK)
+            {
+            if(mIndenter.shiftTabPressed())
+                handled = true;
+            }
+            break;
 
-	case GDK_KEY_BackSpace:
-	    if(modKeys == 0)
-		{
-		if(mIndenter.backspacePressed())
-		    handled = true;
-		}
-	    break;
+        case GDK_KEY_BackSpace:
+            if(modKeys == 0)
+            {
+            if(mIndenter.backspacePressed())
+                handled = true;
+            }
+            break;
 
-	case GDK_KEY_Tab:
-	    if(modKeys == 0)
-		{
-		if(mIndenter.tabPressed())
-		    handled = true;
-		}
-	    break;
+        case GDK_KEY_Tab:
+            if(modKeys == 0)
+            {
+            if(mIndenter.tabPressed())
+                handled = true;
+            }
+            break;
 
-	case GDK_KEY_KP_Home:
-	case GDK_KEY_Home:
-	    if(modKeys == 0)
-		{
-		if(mIndenter.homePressed())
-		    {
-		    Gui::scrollToCursor(getTextView());
-		    handled = true;
-		    }
-		}
-	    break;
-	}
+        case GDK_KEY_KP_Home:
+        case GDK_KEY_Home:
+            if(modKeys == 0)
+            {
+            if(mIndenter.homePressed())
+                {
+                Gui::scrollToCursor(getTextView());
+                handled = true;
+                }
+            }
+            break;
+        }
     return handled;
     }
 

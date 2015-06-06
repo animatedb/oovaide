@@ -33,64 +33,82 @@ static bool readProject(ComponentFinder &compFinder, OovStringRef const buildCon
     {
     bool success = compFinder.readProject(oovProjDir, buildConfigName);
     if(success)
-	{
-	if(compFinder.getProject().getVerbose() || verbose)
-	    {
-	    sVerboseDump.open(oovProjDir);
-	    }
-	}
+        {
+        if(compFinder.getProject().getVerbose() || verbose)
+            {
+            sVerboseDump.open(oovProjDir);
+            }
+        }
     else
-	{
-	fprintf(stderr, "oovBuilder: Oov project file must exist in %s\n",
-		oovProjDir.getStr());
-	}
+        {
+        fprintf(stderr, "oovBuilder: Oov project file must exist in %s\n",
+            oovProjDir.getStr());
+        }
     return success;
     }
 
 static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 	 OovStringRef const buildConfigName, OovStringRef const srcRootDir)
     {
+    // @todo - This should probably check the oovcde-pkg.txt include crc to
+    // see if it is different than what was used to generate the
+    // oovcde-tmp-buildpkg.txt.  This cheat may be ok, but seems to
+    // work a bit strange that sometimes the buildpkg file is not recreated
+    // immediately after the oovcde-pkg.txt file is updated.  Also, the
+    // analysis directory should probably be deleted if the include
+    // paths have changed.
+    OovString bldPkgFilename = Project::getBuildPackagesFilePath();
+    if(FileIsFileOnDisk(bldPkgFilename))
+        {
+        if(FileStat::isOutputOld(bldPkgFilename, ProjectPackages::getFilename()))
+            {
+            printf("Deleting build config\n");
+            FileDelete(bldPkgFilename.getStr());
+            FileDelete(cfg.getBuildConfigFilename().c_str());
+            }
+        }
+
     cfg.setInitialConfig(buildConfigName,
-	    compFinder.getProject().getExternalArgs(),
-	    compFinder.getProject().getAllCrcCompileArgs(),
-	    compFinder.getProject().getAllCrcLinkArgs());
+        compFinder.getProject().getExternalArgs(),
+        compFinder.getProject().getAllCrcCompileArgs(),
+        compFinder.getProject().getAllCrcLinkArgs());
 
     if(cfg.isConfigDifferent(buildConfigName,
 	    BuildConfig::CT_ExtPathArgsCrc))
-	{
-	// This is for the -ER switch.
-	for(auto const &arg : compFinder.getProject().getExternalArgs())
-	    {
-	    printf("Scanning %s\n", &arg[3]);
-	    fflush(stdout);
-	    compFinder.scanExternalProject(&arg[3]);
-	    }
-	for(auto const &pkg : compFinder.getProject().getProjectPackages().
-		getPackages())
-	    {
-	    if(pkg.needDirScan())
-		{
-		printf("Scanning %s\n", pkg.getPkgName().getStr());
-		fflush(stdout);
-		/// @todo - only one ext root dir per package currently.
-		if(pkg.getExtRefDirs().size() > 0)
-		    {
-		    if(pkg.getIncludeDirs().size() == 0)
-			{
-			compFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
-			}
-		    else
-			{
-			compFinder.addBuildPackage(pkg);
-			}
-		    }
-		}
-	    else
-		{
-		compFinder.addBuildPackage(pkg);
-		}
-	    }
-	}
+        {
+        // This is for the -ER switch.
+        for(auto const &arg : compFinder.getProject().getExternalArgs())
+            {
+            printf("Scanning %s\n", &arg[3]);
+            fflush(stdout);
+            compFinder.scanExternalProject(&arg[3]);
+            }
+        for(auto const &pkg : compFinder.getProject().getProjectPackages().
+            getPackages())
+            {
+            if(pkg.needDirScan())
+                {
+                printf("Scanning %s\n", pkg.getPkgName().getStr());
+                fflush(stdout);
+                /// @todo - only one ext root dir per package currently.
+                if(pkg.getExtRefDirs().size() > 0)
+                    {
+                    if(pkg.getIncludeDirs().size() == 0)
+                        {
+                        compFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
+                        }
+                    else
+                        {
+                        compFinder.addBuildPackage(pkg);
+                        }
+                    }
+                }
+            else
+                {
+                compFinder.addBuildPackage(pkg);
+                }
+            }
+        }
     srcFileParser sfp(compFinder);
     printf("Scanning %s\n", srcRootDir.getStr());
     compFinder.scanProject();
@@ -99,37 +117,39 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
     cfg.setProjectConfig(compFinder.getScannedInfo().getProjectIncludeDirs());
     // Is anything different in the current build configuration?
     if(cfg.isAnyConfigDifferent(buildConfigName))
-	{
-	// Find CRC's that are not used by any build configuration.
-	OovStringVec unusedCrcs;
-	OovStringVec deleteDirs;
-	cfg.getUnusedCrcs(unusedCrcs);
-	for(auto const &crcStr : unusedCrcs)
-	    {
-	    deleteDirs.push_back(cfg.getAnalysisPath(buildConfigName, crcStr));
-	    }
-	if(cfg.isConfigDifferent(buildConfigName,
-		BuildConfig::CT_ExtPathArgsCrc) ||
-	    cfg.isConfigDifferent(buildConfigName,
-		BuildConfig::CT_ProjPathArgsCrc) ||
-	    cfg.isConfigDifferent(buildConfigName,
-		BuildConfig::CT_OtherArgsCrc))
-	    {
-	    deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
-	    }
-	else	// Must be only link arguments.
-	    {
-	    deleteDirs.push_back(Project::getOutputDir(buildConfigName));
-	    }
-	for(auto const &dir : deleteDirs)
-	    {
-	    printf("Deleting %s\n", dir.getStr());
-	    if(dir.length() > 5)	// Reduce chance of deleting root
-		recursiveDeleteDir(dir);
-	    }
-	fflush(stdout);
-	cfg.saveConfig(buildConfigName);
-	}
+        {
+        // Find CRC's that are not used by any build configuration.
+        OovStringVec unusedCrcs;
+        OovStringVec deleteDirs;
+        cfg.getUnusedCrcs(unusedCrcs);
+        for(auto const &crcStr : unusedCrcs)
+            {
+            deleteDirs.push_back(cfg.getAnalysisPath(buildConfigName, crcStr));
+            }
+        if(cfg.isConfigDifferent(buildConfigName,
+            BuildConfig::CT_ExtPathArgsCrc) ||
+            cfg.isConfigDifferent(buildConfigName,
+            BuildConfig::CT_ProjPathArgsCrc) ||
+            cfg.isConfigDifferent(buildConfigName,
+            BuildConfig::CT_OtherArgsCrc))
+            {
+            deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
+            }
+        else	// Must be only link arguments.
+            {
+            deleteDirs.push_back(Project::getOutputDir(buildConfigName));
+            }
+        for(auto const &dir : deleteDirs)
+            {
+            printf("Deleting %s\n", dir.getStr());
+            if(dir.length() > 5)	// Reduce chance of deleting root
+                {
+                recursiveDeleteDir(dir);
+                }
+            }
+        fflush(stdout);
+        cfg.saveConfig(buildConfigName);
+        }
 
     OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
     FileEnsurePathExists(analysisPath);
@@ -152,105 +172,105 @@ int main(int argc, char const * const argv[])
     bool verbose = false;
     bool success = (argc >= 2);
     if(success)
-	{
-	oovProjDir = argv[1];
-	for(int i=2; i<argc; i++)
-	    {
-	    std::string testArg = argv[i];
-	    if(testArg.find("-cfg-", 0, 5) == 0)
-		{
-		buildConfigName = testArg.substr(5);	// skip "-cfg-"
-		}
-	    else if(testArg.find("-mode-", 0, 5) == 0)
-		{
-		OovString mode;
-		mode.setLowerCase(testArg.substr(6));
-		if(mode.find("analyze") == 0)
-		    {
-		    processMode = PM_Analyze;
-		    }
-		else if(mode.find("cov-instr") == 0)
-		    {
-		    processMode = PM_CovInstr;
-		    }
-		else if(mode.find("cov-build") == 0)
-		    {
-		    processMode = PM_CovBuild;
-		    }
-		else if(mode.find("cov-stat") == 0)
-		    {
-		    processMode = PM_CovStats;
-		    }
-		else if(mode.find("build") == 0)
-		    {
-		    processMode = PM_Build;
-		    }
-		}
-	    else if(testArg.compare("-bv") == 0)
-		{
-		verbose = true;
-		}
-	    }
-	}
+        {
+        oovProjDir = argv[1];
+        for(int i=2; i<argc; i++)
+            {
+            std::string testArg = argv[i];
+            if(testArg.find("-cfg-", 0, 5) == 0)
+                {
+                buildConfigName = testArg.substr(5);	// skip "-cfg-"
+                }
+            else if(testArg.find("-mode-", 0, 5) == 0)
+                {
+                OovString mode;
+                mode.setLowerCase(testArg.substr(6));
+                if(mode.find("analyze") == 0)
+                    {
+                    processMode = PM_Analyze;
+                    }
+                else if(mode.find("cov-instr") == 0)
+                    {
+                    processMode = PM_CovInstr;
+                    }
+                else if(mode.find("cov-build") == 0)
+                    {
+                    processMode = PM_CovBuild;
+                    }
+                else if(mode.find("cov-stat") == 0)
+                    {
+                    processMode = PM_CovStats;
+                    }
+                else if(mode.find("build") == 0)
+                    {
+                    processMode = PM_Build;
+                    }
+                }
+            else if(testArg.compare("-bv") == 0)
+                {
+                verbose = true;
+                }
+            }
+        }
     else
-	{
-	fprintf(stderr, "OovBuilder version %s\n", OOV_VERSION);
-        fprintf(stderr, "Command format:    <oovProjectDir> [args]...\n");
-        fprintf(stderr, "  The oovProjectDir can have exclusion paths using <oovProjectDir>!<path> \n");
-        fprintf(stderr, "  The args are:\n");
-        fprintf(stderr, "    -cfg-<buildconfig>\n");
-        fprintf(stderr, "               buildconfig is Debug, Release or any custom name\n");
-        fprintf(stderr, "    -mode-<analyze|build|cov-instr|cov-build|cov-stats>\n");
-        fprintf(stderr, "               Analyze, build or coverage\n");
-        fprintf(stderr, "    -bv         builder verbose - OovBuilder.txt file\n");
-	}
+        {
+        fprintf(stderr, "OovBuilder version %s\n", OOV_VERSION);
+            fprintf(stderr, "Command format:    <oovProjectDir> [args]...\n");
+            fprintf(stderr, "  The oovProjectDir can have exclusion paths using <oovProjectDir>!<path> \n");
+            fprintf(stderr, "  The args are:\n");
+            fprintf(stderr, "    -cfg-<buildconfig>\n");
+            fprintf(stderr, "               buildconfig is Debug, Release or any custom name\n");
+            fprintf(stderr, "    -mode-<analyze|build|cov-instr|cov-build|cov-stats>\n");
+            fprintf(stderr, "               Analyze, build or coverage\n");
+            fprintf(stderr, "    -bv         builder verbose - OovBuilder.txt file\n");
+        }
 
     if(success)
-	{
-	Project::setProjectDirectory(oovProjDir);
-	if(processMode == PM_CovBuild)
-	    {
-	    success = makeCoverageBuildProject();
-	    }
-	}
+        {
+        Project::setProjectDirectory(oovProjDir);
+        if(processMode == PM_CovBuild)
+            {
+            success = makeCoverageBuildProject();
+            }
+        }
     if(success)
-	{
-	success = readProject(compFinder, buildConfigName,
-		Project::getProjectDirectory(), verbose);
-	}
+        {
+        success = readProject(compFinder, buildConfigName,
+            Project::getProjectDirectory(), verbose);
+        }
     if(success)
-	{
-	if(processMode == PM_CovStats)
-	    {
-	    if(makeCoverageStats())
-		{
-		printf("Coverage output: %s",
-			Project::getCoverageProjectDirectory().getStr());
-		}
-	    }
-	else
-	    {
-	    BuildConfigWriter cfg;
-	    analyze(compFinder, cfg, buildConfigName, Project::getSrcRootDirectory());
+        {
+        if(processMode == PM_CovStats)
+            {
+            if(makeCoverageStats())
+                {
+                printf("Coverage output: %s",
+                    Project::getCoverageProjectDirectory().getStr());
+                }
+            }
+        else
+            {
+            BuildConfigWriter cfg;
+            analyze(compFinder, cfg, buildConfigName, Project::getSrcRootDirectory());
 
-	    std::string configStr = "Configuration: ";
-	    configStr += buildConfigName;
-	    sVerboseDump.logProgress(configStr);
-	    switch(processMode)
-		{
-		case PM_Analyze:
-		    break;
+            std::string configStr = "Configuration: ";
+            configStr += buildConfigName;
+            sVerboseDump.logProgress(configStr);
+            switch(processMode)
+                {
+                case PM_Analyze:
+                    break;
 
-		default:
-		    {
-		    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName);
-		    ComponentBuilder builder(compFinder);
-		    builder.build(processMode, incDepsPath, buildConfigName);
-		    }
-		    break;
-		}
-	    }
-	}
+                default:
+                    {
+                    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName);
+                    ComponentBuilder builder(compFinder);
+                    builder.build(processMode, incDepsPath, buildConfigName);
+                    }
+                    break;
+                }
+            }
+        }
     return 0;
     }
 

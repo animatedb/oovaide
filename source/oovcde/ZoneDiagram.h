@@ -59,6 +59,8 @@ class ZoneScreenDrawer
 	CairoDrawer mCairoDrawer;
 	ZoneDrawer &mZoneDrawer;
 	cairo_t *getCairo();
+
+        void updateDrawingAreaSize();
     };
 
 class ZoneClassInfoToolTipWindow

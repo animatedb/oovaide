@@ -1,49 +1,49 @@
 /*
- * PortionDrawer.cpp
- * Created on: April 23, 2015
+ * IncludeDrawer.cpp
+ * Created on: June 5, 2015
  * \copyright 2015 DCBlaha.  Distributed under the GPL.
  */
 
-#include "PortionDrawer.h"
-#include "PortionGenes.h"
+#include "IncludeDrawer.h"
+#include "IncludeGenes.h"
 
 
-bool PortionDrawer::fillDepths(size_t nodeIndex, std::vector<size_t> &depths) const
+bool IncludeDrawer::fillDepths(size_t nodeIndex, std::vector<size_t> &depths) const
     {
     size_t depth = 0;
     bool resolved = true;
+    /*
     for(size_t i=0; i<mGraph->getConnections().size(); i++)
 	{
-	PortionConnection const &conn = mGraph->getConnections()[i];
+	IncludeConnection const &conn = mGraph->getConnections()[i];
 	if(nodeIndex == conn.mConsumerNodeIndex)
 	    {
 	    size_t supIndex = conn.mSupplierNodeIndex;
-		if(mGraph->getNodes()[supIndex].getNodeType() == PNT_Operation)
-		    {
-		    size_t opDepth = depths[supIndex];
-		    if(opDepth > 0)
-			{
-			if(opDepth > depth)
-			    {
-			    depth = opDepth;
-			    }
-			}
-		    else
-			{
-			resolved = false;
-			break;
-			}
-		    }
-		}
-	    }
+            size_t opDepth = depths[supIndex];
+            if(opDepth > 0)
+                {
+                if(opDepth > depth)
+                    {
+                    depth = opDepth;
+                    }
+                }
+            else
+                {
+                resolved = false;
+                break;
+                }
+            }
+        }
     if(resolved)
 	{
 	depths[nodeIndex] = depth + 1;
 	}
+*/
+    depths[nodeIndex] = depth;
     return resolved;
     }
 
-std::vector<size_t> PortionDrawer::getCallDepths() const
+std::vector<size_t> IncludeDrawer::getCallDepths() const
     {
     std::vector<size_t> depths(mGraph->getNodes().size());
     bool resolved = false;
@@ -52,8 +52,7 @@ std::vector<size_t> PortionDrawer::getCallDepths() const
 	{
 	for(size_t ni=0; ni<mGraph->getNodes().size(); ni++)
 	    {
-	    if(depths[ni] == 0 &&
-		    mGraph->getNodes()[ni].getNodeType() == PNT_Operation)
+	    if(depths[ni] == 0)
 		{
 		if(!fillDepths(ni, depths))
 		    {
@@ -65,7 +64,7 @@ std::vector<size_t> PortionDrawer::getCallDepths() const
     return depths;
     }
 
-std::vector<int> PortionDrawer::getColumnPositions(std::vector<size_t> const &depths) const
+std::vector<int> IncludeDrawer::getColumnPositions(std::vector<size_t> const &depths) const
     {
     std::vector<int> columnSpacing(depths.size());
     // first get the width required for each column.
@@ -89,7 +88,7 @@ std::vector<int> PortionDrawer::getColumnPositions(std::vector<size_t> const &de
     return columnSpacing;
     }
 
-void PortionDrawer::updateNodePositions()
+void IncludeDrawer::updateNodePositions()
     {
     if(mDrawer && mGraph)
 	{
@@ -112,26 +111,23 @@ void PortionDrawer::updateNodePositions()
 	    mNodePositions[i] = rect.start;
 	    }
 	}
-#define PORTION_GENES 1
-#if(PORTION_GENES)
     if(mNodePositions.size() > 0)
 	{
-	PortionGenes genes;
+	IncludeGenes genes;
 	GraphRect rect = getNodeRect(0);
 	genes.initialize(*this, static_cast<size_t>(rect.size.y));
-	genes.updatePositionsInDrawer();
+//	genes.updatePositionsInDrawer();
 	}
-#endif
     }
 
-void PortionDrawer::updateGraph(PortionGraph const &graph)
+void IncludeDrawer::updateGraph(IncludeGraph const &graph)
     {
     mGraph = &graph;
 
     updateNodePositions();
     }
 
-void PortionDrawer::drawGraph()
+void IncludeDrawer::drawGraph()
     {
     if(mDrawer && mGraph)
 	{
@@ -149,7 +145,7 @@ void PortionDrawer::drawGraph()
 	}
     }
 
-GraphSize PortionDrawer::getDrawingSize() const
+GraphSize IncludeDrawer::getDrawingSize() const
     {
     GraphRect graphRect;
     for(size_t i=0; i<mGraph->getNodes().size(); i++)
@@ -162,7 +158,7 @@ GraphSize PortionDrawer::getDrawingSize() const
     return graphRect.size;
     }
 
-GraphRect PortionDrawer::getNodeRect(size_t nodeIndex) const
+GraphRect IncludeDrawer::getNodeRect(size_t nodeIndex) const
     {
     GraphPoint nodePos = mNodePositions[nodeIndex];
     OovString name = mGraph->getNodes()[nodeIndex].getName();
@@ -174,7 +170,7 @@ GraphRect PortionDrawer::getNodeRect(size_t nodeIndex) const
         static_cast<int>(textHeight) + pad2);
     }
 
-size_t PortionDrawer::getNodeIndex(GraphPoint p)
+size_t IncludeDrawer::getNodeIndex(GraphPoint p)
     {
     size_t nodeIndex = NO_INDEX;
     if(mGraph)
@@ -192,7 +188,7 @@ size_t PortionDrawer::getNodeIndex(GraphPoint p)
     return nodeIndex;
     }
 
-void PortionDrawer::setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPoint newPoint)
+void IncludeDrawer::setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPoint newPoint)
     {
     if(nodeIndex != NO_INDEX)
 	{
@@ -200,33 +196,23 @@ void PortionDrawer::setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPo
 	}
     }
 
-void PortionDrawer::drawNodes()
+void IncludeDrawer::drawNodes()
     {
     mDrawer->groupShapes(true, Color(0,0,0), Color(245,245,255));
     for(size_t i=0; i<mNodePositions.size(); i++)
         {
-	if(mGraph->getNodes()[i].getNodeType() == PNT_Attribute)
-	    {
-	    mDrawer->drawRect(getNodeRect(i));
-	    }
-	else
-	    {
-	    mDrawer->drawEllipse(getNodeRect(i));
-	    }
+        mDrawer->drawRect(getNodeRect(i));
         }
     mDrawer->groupShapes(false, 0, 0);
     mDrawer->groupShapes(true, Color(0,0,255), Color(245,245,255));
     for(size_t i=0; i<mNodePositions.size(); i++)
 	{
-	if(mGraph->getNodes()[i].getNodeType() == PNT_NonMemberVariable)
-	    {
-	    mDrawer->drawRect(getNodeRect(i));
-	    }
+        mDrawer->drawRect(getNodeRect(i));
 	}
     mDrawer->groupShapes(false, 0, 0);
     }
 
-void PortionDrawer::drawConnections()
+void IncludeDrawer::drawConnections()
     {
     size_t lastColorIndex = NO_INDEX;
     for(auto const &conn : mGraph->getConnections())
@@ -285,7 +271,7 @@ void PortionDrawer::drawConnections()
 	}
     }
 
-void PortionDrawer::drawNodeText()
+void IncludeDrawer::drawNodeText()
     {
     float textHeight = mDrawer->getTextExtentHeight("W");
     int pad = static_cast<int>(textHeight / 7.f * 2);

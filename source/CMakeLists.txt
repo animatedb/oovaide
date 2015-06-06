@@ -103,6 +103,7 @@ install(FILES
    "${PROJECT_SOURCE_DIR}/bin/oovcde-allpkgs-win.txt"
    "${PROJECT_SOURCE_DIR}/bin/OovLogo.png"
    "${PROJECT_SOURCE_DIR}/bin/OovEditLogo.png"
+   "${PROJECT_SOURCE_DIR}/bin/data/*.png"
 DESTINATION "${INSTALL_BIN_DIR}" COMPONENT dev)
 
 # Install the export set for use with the install-tree

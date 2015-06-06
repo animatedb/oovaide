@@ -46,7 +46,7 @@ and Objective C languages.
 
 ## Download
 
-Download the Oovcde binaries from [Sourceforge]
+Download the Oovcde binaries from the releases or from [Sourceforge]
 (http://sourceforge.net/projects/oovcde/files/). There is a version for Linux,
 and one for Windows.
 

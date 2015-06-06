@@ -91,8 +91,7 @@ static void dump(char const * const str, int val)
 #endif
 
 
-void TokenRange::tokenize(CXTranslationUnit transUnit/*, CXFile srcFile ,
-	int startLine, int endLine*/)
+void TokenRange::tokenize(CXTranslationUnit transUnit)
     {
     CXCursor cursor = clang_getTranslationUnitCursor(transUnit);
     CXSourceRange range = clang_getCursorExtent(cursor);
@@ -102,14 +101,14 @@ void TokenRange::tokenize(CXTranslationUnit transUnit/*, CXFile srcFile ,
     clang_tokenize(transUnit, range, &tokens, &numTokens);
     resize(numTokens);
     for (size_t i = 0; i < numTokens-1; i++)
-	{
-	at(i).mTokenKind = clang_getTokenKind(tokens[i]);
-	CXSourceRange tokRange = clang_getTokenExtent(transUnit, tokens[i]);
-	clang_getExpansionLocation(clang_getRangeStart(tokRange), NULL, NULL,
-		NULL, &at(i).mStartOffset);
-	clang_getExpansionLocation(clang_getRangeEnd(tokRange), NULL, NULL,
-		NULL, &at(i).mEndOffset);
-	}
+        {
+        at(i).mTokenKind = clang_getTokenKind(tokens[i]);
+        CXSourceRange tokRange = clang_getTokenExtent(transUnit, tokens[i]);
+        clang_getExpansionLocation(clang_getRangeStart(tokRange), NULL, NULL,
+            NULL, &at(i).mStartOffset);
+        clang_getExpansionLocation(clang_getRangeEnd(tokRange), NULL, NULL,
+            NULL, &at(i).mEndOffset);
+        }
     clang_disposeTokens(transUnit, tokens, numTokens);
     }
 
@@ -118,71 +117,78 @@ Tokenizer::~Tokenizer()
     // There is a bug somewhere that the wrong tokenizer is deleted.
     // Probably related to EditFiles::removeNotebookPage(GtkWidget *pageWidget)
     if(mTransUnit)
-	clang_disposeTranslationUnit(mTransUnit);
+        {
+        clang_disposeTranslationUnit(mTransUnit);
+        }
     }
 
 void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
 	char const * const clang_args[], size_t num_clang_args)
     {
-    try {
+    try
+        {
 //    unsigned options = clang_defaultEditingTranslationUnitOptions();
     // This is needed to support include directives.
 //    options |= CXTranslationUnit_DetailedPreprocessingRecord;
 // These options are not for the parse function, they are for the code complete at func.
 //    unsigned options = clang_defaultCodeCompleteOptions();
-    unsigned options = clang_defaultEditingTranslationUnitOptions();
-    if(!mSourceFile)
-	{
-	mSourceFilename = fileName;
-	CXIndex index = clang_createIndex(1, 1);
-	mTransUnitMutex.lock();
-	mTransUnit = clang_parseTranslationUnit(index, fileName,
-	    clang_args, static_cast<int>(num_clang_args), 0, 0, options);
-	mTransUnitMutex.unlock();
+        unsigned options = clang_defaultEditingTranslationUnitOptions();
+        // This is required to allow go to definition to work with #include.
+        options |= CXTranslationUnit_DetailedPreprocessingRecord;
+        if(!mSourceFile)
+            {
+            mSourceFilename = fileName;
+            CXIndex index = clang_createIndex(1, 1);
+            mTransUnitMutex.lock();
+            mTransUnit = clang_parseTranslationUnit(index, fileName,
+                clang_args, static_cast<int>(num_clang_args), 0, 0, options);
+            mTransUnitMutex.unlock();
 
 #if(0)
-	printf("%s\n", fileName);
-	int numDiags = clang_getNumDiagnostics(mTransUnit);
-	for (int i = 0; i<numDiags; i++)
-	    {
-	    CXDiagnostic diag = clang_getDiagnostic(mTransUnit, i);
-//	    CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
-//	    if(sev >= CXDiagnostic_Error)
-	    CXStringDisposer diagStr = clang_formatDiagnostic(diag,
-		clang_defaultDiagnosticDisplayOptions());
-		printf("%s\n", diagStr.c_str());
-	    }
-	fflush(stdout);
+            printf("%s\n", fileName);
+            int numDiags = clang_getNumDiagnostics(mTransUnit);
+            for (int i = 0; i<numDiags; i++)
+                {
+                CXDiagnostic diag = clang_getDiagnostic(mTransUnit, i);
+        //	    CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
+        //	    if(sev >= CXDiagnostic_Error)
+                CXStringDisposer diagStr = clang_formatDiagnostic(diag,
+                clang_defaultDiagnosticDisplayOptions());
+                printf("%s\n", diagStr.c_str());
+                }
+            fflush(stdout);
 #endif
-	}
-    else
-	{
-	CXUnsavedFile file;
-	file.Filename = mSourceFilename.c_str();
-	file.Contents = buffer;
-	file.Length = bufLen;
-	mTransUnitMutex.lock();
-	int stat = clang_reparseTranslationUnit(mTransUnit, 1, &file, options);
-	if(stat != 0)
-	    {
-	    clang_disposeTranslationUnit(mTransUnit);
-	    mTransUnit = nullptr;
-	    }
-	mTransUnitMutex.unlock();
-	}
-    mSourceFile = clang_getFile(mTransUnit, fileName);
-	}
+            }
+        else
+            {
+            CXUnsavedFile file;
+            file.Filename = mSourceFilename.c_str();
+            file.Contents = buffer;
+            file.Length = bufLen;
+            mTransUnitMutex.lock();
+            int stat = clang_reparseTranslationUnit(mTransUnit, 1, &file, options);
+            if(stat != 0)
+                {
+                clang_disposeTranslationUnit(mTransUnit);
+                mTransUnit = nullptr;
+                }
+            mTransUnitMutex.unlock();
+            }
+        mSourceFile = clang_getFile(mTransUnit, fileName);
+        }
     catch(...)
-	{
-	DUMP_PARSE_INT("Tokenizer::parse - CRASHED", 0);
-	}
+        {
+        DUMP_PARSE_INT("Tokenizer::parse - CRASHED", 0);
+        }
     }
 
 void Tokenizer::tokenize(/*int startLine, int endLine, */TokenRange &tokens)
     {
     mTransUnitMutex.lock();
     if(mTransUnit)
-	tokens.tokenize(mTransUnit/*, mSourceFile, startLine, endLine*/);
+        {
+        tokens.tokenize(mTransUnit/*, mSourceFile, startLine, endLine*/);
+        }
     mTransUnitMutex.unlock();
     }
 
@@ -200,17 +206,17 @@ static CXCursor getCursorUsingTokens(CXTranslationUnit tu, CXCursor cursor,
     clang_tokenize(tu, range, &tokens, &numTokens);
     unsigned int closestOffset = 0;
     for(unsigned int i=0; i<numTokens; i++)
-	{
-	CXSourceLocation loc = clang_getTokenLocation(tu, tokens[i]);
-	unsigned int offset;
-	CXFile file;
-	clang_getSpellingLocation(loc, &file, nullptr, nullptr, &offset);
-	if(offset < desiredOffset && offset > closestOffset)
-	    {
-	    closestOffset = offset;
-	    cursor = clang_getCursor(tu, loc);
-	    }
-	}
+        {
+        CXSourceLocation loc = clang_getTokenLocation(tu, tokens[i]);
+        unsigned int offset;
+        CXFile file;
+        clang_getSpellingLocation(loc, &file, nullptr, nullptr, &offset);
+        if(offset < desiredOffset && offset > closestOffset)
+            {
+            closestOffset = offset;
+            cursor = clang_getCursor(tu, loc);
+            }
+        }
     clang_disposeTokens(tu, tokens, numTokens);
     return cursor;
     }
@@ -220,8 +226,8 @@ static CXCursor getCursorUsingTokens(CXTranslationUnit tu, CXCursor cursor,
 struct visitTranslationUnitData
     {
     visitTranslationUnitData(CXFile file, unsigned offset):
-	mFile(file), mDesiredOffset(offset), mSize(INT_MAX)
-	{}
+        mFile(file), mDesiredOffset(offset), mSize(INT_MAX)
+        {}
     CXFile mFile;
     unsigned mDesiredOffset;
     unsigned mSize;
@@ -236,9 +242,9 @@ static bool clangFilesEqual(CXFile f1, CXFile f2)
     CXFileUniqueID f1id;
     CXFileUniqueID f2id;
     if(f1)
-	clang_getFileUniqueID(f1, &f1id);
+        clang_getFileUniqueID(f1, &f1id);
     if(f2)
-	clang_getFileUniqueID(f2, &f2id);
+        clang_getFileUniqueID(f2, &f2id);
     return(memcmp(&f1id.data, &f2id.data, sizeof(f1id.data)) == 0);
     }
 
@@ -334,66 +340,67 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
     //		clang_getCursorSemanticParent returns method
     //		clang_getCursorDefinition returns invalid
     if(startCursor.kind == CXCursor_InclusionDirective)
-	{
-	CXFile file = clang_getIncludedFile(startCursor);
-	if(file)
-	    {
-	    CXStringDisposer cfn = clang_getFileName(file);
-	    fn = cfn;
-	    line = 1;
-	    }
-	else
-	    {
-	    /// @todo - need to get the full path.
-//	    CXStringDisposer cfn = clang_getCursorSpelling(cursor);
-//	    fn = cfn;
-	    line = 1;
-	    }
-	}
+        {
+        CXFile file = clang_getIncludedFile(startCursor);
+        if(file)
+            {
+            CXStringDisposer cfn = clang_getFileName(file);
+            fn = cfn;
+            line = 1;
+            }
+        else
+            {
+            /// @todo - need to get the full path.
+    //	    CXStringDisposer cfn = clang_getCursorSpelling(cursor);
+    //	    fn = cfn;
+            line = 1;
+            }
+        }
     else
-	{
-	CXCursor cursor = startCursor;
-	switch(ft)
-	    {
-	    case FT_FindDecl:
-		cursor = clang_getCursorReferenced(startCursor);
-		DUMP_PARSE("find:decl", cursor);
-		break;
+        {
+        CXCursor cursor = startCursor;
+        switch(ft)
+            {
+            case FT_FindDecl:
+                cursor = clang_getCursorReferenced(startCursor);
+                DUMP_PARSE("find:decl", cursor);
+                break;
 
-	    case FT_FindDef:
-		// If instantiating a type (CXCursor_TypeRef), this goes to the type declaration.
-		cursor = clang_getCursorDefinition(startCursor);
-		// Method call can return invalid file when the definition is not in this
-		// translation unit.  This really needs to load the file with the definition.
-		if(clang_getCursorKind(cursor) == CXCursor_InvalidFile)
-		    {
-		    DUMP_PARSE("find:def-invalid", cursor);
-		    cursor = clang_getCursorReferenced(startCursor);
-		    }
-		DUMP_PARSE("find:def", cursor);
-    //	    cursor = clang_getCursor(mTransUnit, clang_getCursorLocation(cursor));
-    //	    cursor = clang_getCursorDefinition(cursor);
-		break;
-    //    	cursor = clang_getCursorReferenced(cursor);
-    //	cursor = clang_getCanonicalCursor(cursor);
-    //	cursor = clang_getCursorSemanticParent(cursor);
-    //	cursor = clang_getCursorLexicalParent(cursor);
-	    }
-	if(!clang_Cursor_isNull(cursor))
-	    {
-	    CXSourceLocation loc = clang_getCursorLocation(cursor);
+            case FT_FindDef:
+                // If instantiating a type (CXCursor_TypeRef), this goes to the type declaration.
+                cursor = clang_getCursorDefinition(startCursor);
+                // Method call can return invalid file when the definition is not in this
+                // translation unit.  This really needs to load the file with the definition.
+                if(clang_getCursorKind(cursor) == CXCursor_InvalidFile)
+                    {
+                    DUMP_PARSE("find:def-invalid", cursor);
+                    cursor = clang_getCursorReferenced(startCursor);
+                    }
+                DUMP_PARSE("find:def", cursor);
+            //	    cursor = clang_getCursor(mTransUnit, clang_getCursorLocation(cursor));
+            //	    cursor = clang_getCursorDefinition(cursor);
+                break;
 
-	    CXFile file;
-	    unsigned int uline;
-	    clang_getFileLocation(loc, &file, &uline, nullptr, nullptr);
-	    if(file)
-		{
-		line = uline;
-		CXStringDisposer cfn = clang_getFileName(file);
-		fn = cfn;
-		}
-	    }
-	}
+            //    	cursor = clang_getCursorReferenced(cursor);
+            //	cursor = clang_getCanonicalCursor(cursor);
+            //	cursor = clang_getCursorSemanticParent(cursor);
+            //	cursor = clang_getCursorLexicalParent(cursor);
+            }
+        if(!clang_Cursor_isNull(cursor))
+            {
+            CXSourceLocation loc = clang_getCursorLocation(cursor);
+
+            CXFile file;
+            unsigned int uline;
+            clang_getFileLocation(loc, &file, &uline, nullptr, nullptr);
+            if(file)
+                {
+                line = uline;
+                CXStringDisposer cfn = clang_getFileName(file);
+                fn = cfn;
+                }
+            }
+        }
     mTransUnitMutex.unlock();
     return(fn.size() > 0);
     }
@@ -460,32 +467,32 @@ OovStringVec Tokenizer::codeComplete(size_t offset)
 	    mSourceFilename.getStr(), line, column,
 	    nullptr, 0, options);
     if(results)
-	{
-	clang_sortCodeCompletionResults(&results->Results[0], results->NumResults);
-	for(size_t ri=0; ri<results->NumResults /*&& ri < 50*/; ri++)
-	    {
-	    OovString str;
-	    CXCompletionString compStr = results->Results[ri].CompletionString;
-	    size_t numChunks = clang_getNumCompletionChunks(compStr);
-	    for(size_t ci=0; ci<numChunks && ci < 30; ci++)
-		{
-		CXCompletionChunkKind chunkKind = clang_getCompletionChunkKind(compStr, ci);
-		// We will discard return values from functions, so the first
-		// chunk returned will be the identifier or function name.  Function
-		// arguments will be returned after a space, so they can be
-		// discarded easily.
-		if(chunkKind == CXCompletionChunk_TypedText || str.length())
-		    {
-		    CXStringDisposer chunkStr = clang_getCompletionChunkText(compStr, ci);
-		    if(str.length() != 0)
-			str += ' ';
-		    str += chunkStr;
-		    }
-		}
-	    strs.push_back(str);
-	    }
-	clang_disposeCodeCompleteResults(results);
-	}
+        {
+        clang_sortCodeCompletionResults(&results->Results[0], results->NumResults);
+        for(size_t ri=0; ri<results->NumResults /*&& ri < 50*/; ri++)
+            {
+            OovString str;
+            CXCompletionString compStr = results->Results[ri].CompletionString;
+            size_t numChunks = clang_getNumCompletionChunks(compStr);
+            for(size_t ci=0; ci<numChunks && ci < 30; ci++)
+                {
+                CXCompletionChunkKind chunkKind = clang_getCompletionChunkKind(compStr, ci);
+                // We will discard return values from functions, so the first
+                // chunk returned will be the identifier or function name.  Function
+                // arguments will be returned after a space, so they can be
+                // discarded easily.
+                if(chunkKind == CXCompletionChunk_TypedText || str.length())
+                    {
+                    CXStringDisposer chunkStr = clang_getCompletionChunkText(compStr, ci);
+                    if(str.length() != 0)
+                    str += ' ';
+                    str += chunkStr;
+                    }
+                }
+            strs.push_back(str);
+            }
+        clang_disposeCodeCompleteResults(results);
+        }
     return strs;
     }
 
@@ -527,13 +534,13 @@ OovStringVec Tokenizer::getMembers(int offset)
 void HighlightTags::initTags(GtkTextBuffer *textBuffer)
     {
     if(!mTags[CXToken_Punctuation].isInitialized())
-	{
-	mTags[CXToken_Punctuation].setForegroundColor(textBuffer, "punc", "black");
-	mTags[CXToken_Keyword].setForegroundColor(textBuffer, "key", "blue");
-	mTags[CXToken_Identifier].setForegroundColor(textBuffer, "iden", "black");
-	mTags[CXToken_Literal].setForegroundColor(textBuffer, "lit", "red");
-	mTags[CXToken_Comment].setForegroundColor(textBuffer, "comm", "dark green");
-	}
+        {
+        mTags[CXToken_Punctuation].setForegroundColor(textBuffer, "punc", "black");
+        mTags[CXToken_Keyword].setForegroundColor(textBuffer, "key", "blue");
+        mTags[CXToken_Identifier].setForegroundColor(textBuffer, "iden", "black");
+        mTags[CXToken_Literal].setForegroundColor(textBuffer, "lit", "red");
+        mTags[CXToken_Comment].setForegroundColor(textBuffer, "comm", "dark green");
+        }
     }
 
 
@@ -552,14 +559,14 @@ void HighlighterBackgroundThreadData::initArgs(OovStringRef const filename,
 	char const * const clang_args[], int num_clang_args)
     {
     if(mClang_args.getArgc() == 0)
-	{
-	mFilename = filename;
-	mClang_args.clearArgs();
-	for(int i=0; i<num_clang_args; i++)
-	    {
-	    mClang_args.addArg(clang_args[i]);
-	    }
-	}
+        {
+        mFilename = filename;
+        mClang_args.clearArgs();
+        for(int i=0; i<num_clang_args; i++)
+            {
+            mClang_args.addArg(clang_args[i]);
+            }
+        }
     }
 
 OovStringVec HighlighterBackgroundThreadData::getShowMembersResults()
@@ -575,10 +582,10 @@ TokenRange HighlighterBackgroundThreadData::getParseResults()
     TokenRange retTokens;
     std::lock_guard<std::mutex> lock(mResultsLock);
     if(mTaskResults & HT_Parse)
-	{
-	retTokens = std::move(mTokenResults);
-	mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_Parse);
-	}
+        {
+        retTokens = std::move(mTokenResults);
+        mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_Parse);
+        }
     return retTokens;
     }
 
@@ -678,6 +685,7 @@ void Highlighter::highlightRequest(
 //    if(startLineY < 1)
 //	startLineY = 1;
 
+    mTokenState = TS_HighlightRequest;
     mBackgroundThreadData.initArgs(filename, clang_args, num_clang_args);
     mBackgroundThreadData.makeParseRequest();
     DUMP_THREAD("highlightRequest-end");
@@ -688,32 +696,37 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
     {
     DUMP_THREAD("highlightUpdate");
     if(mBackgroundThreadData.isParseNeeded())
-	{
+        {
 #if(SHARED_QUEUE)
-	if(!sSharedQueue.isQueueBusy())
+        if(!sSharedQueue.isQueueBusy())
 #else
-	if(!mBackgroundThreadData.isQueueBusy())
+        if(!mBackgroundThreadData.isQueueBusy())
 #endif
-	    {
-	    DUMP_THREAD("highlightUpdate - set parse task");
+            {
+            DUMP_THREAD("highlightUpdate - set parse task");
 #if(SHARED_QUEUE)
-	    HighlightTaskItem task(this);
+            HighlightTaskItem task(this);
 #else
-	    HighlightTaskItem task;
+            HighlightTaskItem task;
 #endif
-	    task.setParseTask(buffer, bufLen);
+            task.setParseTask(buffer, bufLen);
 #if(SHARED_QUEUE)
-	    sSharedQueue.addTask(task);
+            sSharedQueue.addTask(task);
 #else
-	    mBackgroundThreadData.addTask(task);
+            mBackgroundThreadData.addTask(task);
 #endif
-	    }
-	}
+            }
+        }
+
     if(!mBackgroundThreadData.isParseNeeded() &&
 	    mBackgroundThreadData.getTaskResults() & HT_Parse)
-	{
-	applyTags(gtk_text_view_get_buffer(textView), mBackgroundThreadData.getParseResults());
-	}
+        {
+        mHighlightTokens = mBackgroundThreadData.getParseResults();
+        mTokenState = TS_GotTokens;
+        gtk_widget_queue_draw(GTK_WIDGET(textView));
+//      applyTags(gtk_text_view_get_buffer(textView), );
+        }
+
     DUMP_THREAD("highlightUpdate-end");
     return mBackgroundThreadData.getTaskResults();
     }
@@ -751,29 +764,49 @@ void Highlighter::findToken(eFindTokenTypes ft, size_t origOffset)
 #endif
     }
 
+static bool isBetween(int offset, int top, int bot)
+    {
+    return(offset > top && offset < bot);
+    }
+
 // On Windows, when tags are applied, 38% of CPU time is used for
 // seven oovBuilder source modules open.  This is true even though the
 // applyTags function is not normally running while idle. When only half
 // the tags for each file is applied, then it drops to 25% usage.
-void Highlighter::applyTags(GtkTextBuffer *textBuffer, const TokenRange &tokens)
+bool Highlighter::applyTags(GtkTextBuffer *textBuffer,
+        int topOffset, int botOffset)
     {
     DUMP_THREAD("applyTags");
     mHighlightTags.initTags(textBuffer);
+    const TokenRange &tokens = mHighlightTokens;
 
-    GtkTextIter start;
-    GtkTextIter end;
-    gtk_text_buffer_get_bounds(textBuffer, &start, &end);
-    gtk_text_buffer_remove_all_tags(textBuffer, &start, &end);
-    for(size_t i=0; i<tokens.size(); i++)
-	{
-	gtk_text_buffer_get_iter_at_offset(textBuffer, &start, 
-            static_cast<gint>(tokens[i].mStartOffset));
-	gtk_text_buffer_get_iter_at_offset(textBuffer, &end,
-            static_cast<gint>(tokens[i].mEndOffset));
-	gtk_text_buffer_apply_tag(textBuffer,
-		mHighlightTags.getTag(tokens[i].mTokenKind), &start, &end);
-	}
+    if(mTokenState != TS_HighlightRequest)
+        {
+        if(mTokenState == TS_GotTokens)
+            {
+            mTokenState = TS_AppliedTokens;
+            }
+        GtkTextIter start;
+        GtkTextIter end;
+        gtk_text_buffer_get_bounds(textBuffer, &start, &end);
+        gtk_text_buffer_remove_all_tags(textBuffer, &start, &end);
+        for(size_t i=0; i<tokens.size(); i++)
+            {
+            if(isBetween(tokens[i].mStartOffset, topOffset, botOffset) ||
+                isBetween(tokens[i].mEndOffset, topOffset, botOffset) ||
+                isBetween(topOffset, tokens[i].mStartOffset, tokens[i].mEndOffset))
+                {
+                gtk_text_buffer_get_iter_at_offset(textBuffer, &start,
+                    static_cast<gint>(tokens[i].mStartOffset));
+                gtk_text_buffer_get_iter_at_offset(textBuffer, &end,
+                    static_cast<gint>(tokens[i].mEndOffset));
+                gtk_text_buffer_apply_tag(textBuffer,
+                    mHighlightTags.getTag(tokens[i].mTokenKind), &start, &end);
+                }
+            }
+        }
     DUMP_THREAD("applyTags-end");
+    return(mTokenState == TS_AppliedTokens);
     }
 
 #if(SHARED_QUEUE)

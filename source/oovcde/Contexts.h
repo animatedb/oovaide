@@ -14,6 +14,16 @@
 #include "ComponentList.h"
 #include "OperationList.h"
 
+
+class IncludeList:public GuiList
+    {
+    public:
+        void init(Builder &builder)
+            {
+            GuiList::init(builder, "IncludeTreeview", "Include List");
+            }
+    };
+
 // A context is related to a task that the programmer is performing.
 // There is usually a diagram associated with things that affect the diagram.
 // It handles the routing of user functions (callbacks) depending on context.
@@ -31,32 +41,30 @@
 class Contexts:public JournalListener
     {
     public:
-	enum ePageIndices { PI_Component, PI_Zone, PI_Class, PI_Portion, PI_Seq, PI_Journal };
+	enum eContexts
+	    {
+	    C_BinaryComponent, C_Include, C_Zone, C_Class, C_Portion,
+	    C_Operation, C_Journal
+	    };
 
 	Contexts(OovProject &proj);
 	void init(OovTaskStatusListener &taskStatusListener);
 	void stopAndWaitForBackgroundComplete()
 	    { mJournal.stopAndWaitForBackgroundComplete(); }
-	void clear();
 
-	/// Reads from the journal and updates the GUI journal list.
-	void updateJournalList();
-	void updateComponentList()
-	    { mComponentList.updateComponentList(); }
-	void updateOperationList(const ModelData &modelData, OovStringRef const className);
-	void updateClassList(OovStringRef const className);
-	Journal &getJournal()
-	    { return mJournal; }
-	ZoneDiagramList &getZoneList()
-	    { return mZoneList; }
-	ClassList &getClassList()
-	    { return mClassList; }
-	const JournalRecord *getCurrentJournalRecord()
-	    { return mJournal.getCurrentRecord(); }
+	void clear();
+	/// Oovcde performs the analysis, then calls this after analysis completes.
+	/// Then this updates the component list, and starts loading the project files.
+        void updateContextAfterAnalysisCompletes();
+        /// Once the project files are loaded, then the lists that depend on the
+        /// project can be updated.
+	void updateContextAfterProjectLoaded();
 	void saveFile(FILE *fp)
 	    { mJournal.saveFile(fp); }
 	void cppArgOptionsChangedUpdateDrawings()
 	    { mJournal.cppArgOptionsChangedUpdateDrawings(); }
+        const JournalRecord *getCurrentJournalRecord()
+            { return mJournal.getCurrentRecord(); }
 
 	// JournalListener callbacks
 	virtual void displayClass(OovStringRef const className) override;
@@ -64,22 +72,24 @@ class Contexts:public JournalListener
 		OovStringRef const operName, bool isConst) override;
 
 	// Called from callbacks
-	void classTreeViewCursorChanged();
-	void operationsTreeviewCursorChanged();
-	void journalTreeviewCursorChanged();
-	void moduleTreeviewCursorChanged();
-	void zoneTreeviewCursorChanged();
+	void displayClassDiagram();
+	void displayOperationsDiagram();
+	void displayJournal();
+	void displayComponentDiagram();
+        void displayIncludeDiagram();
+	void displayZoneDiagram();
 	void zoneTreeviewButtonRelease(const GdkEventButton *event);
-	void listNotebookSwitchPage(int pageNum);
+	void setContext(eContexts context);
 
     private:
 	OovProject &mProject;
-	ePageIndices mCurrentPage;
+	eContexts mCurrentContext;
 
 	Journal mJournal;
+        // This is the list of components (directories), not modules (source files).
+        ComponentList mComponentList;
+        IncludeList mIncludeList;
 	ClassList mClassList;
-	// This is the list of components (directories), not modules (source files).
-	ComponentList mComponentList;
 	OperationList mOperationList;
 	ZoneDiagramList mZoneList;
 	JournalList mJournalList;
@@ -89,22 +99,15 @@ class Contexts:public JournalListener
 	    {
 	    return mClassList.getSelected();
 	    }
-	std::string getSelectedComponent() const
-	    {
-	    return mComponentList.getSelectedFileName();
-	    }
 	void clearSelectedComponent()
 	    {
 	    mComponentList.clearSelection();
 	    }
-	std::string getSelectedOperation() const
-	    {
-	    return mOperationList.getSelected();
-	    }
-	int getSelectedJournalIndex() const
-	    {
-	    return mJournalList.getSelectedIndex();
-	    }
+        /// Reads from the journal and updates the GUI journal list.
+        void updateJournalList();
+        void updateIncludeList();
+        void updateClassList();
+        void updateOperationList(const ModelData &modelData, OovStringRef const className);
     };
 
 #endif /* CONTEXTS_H_ */

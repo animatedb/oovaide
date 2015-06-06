@@ -66,10 +66,18 @@ void OperationDiagram::updateDiagram()
 	{
 	NullDrawer nulDrawer(cairo.getCairo());
 	OperationDrawer opDrawer(nulDrawer);
-	GraphSize size = opDrawer.drawDiagram(getOpGraph(), getOptions());
-	gtk_widget_queue_draw(drawingArea);
-	gtk_widget_set_size_request(drawingArea, size.x, size.y);
+        gtk_widget_queue_draw(drawingArea);
+
+        // At the moment, this works to set the drawing area size because
+        // this is called whenever an operation diagram is displayed.
+        updateDrawingAreaSize(drawingArea, opDrawer);
 	}
+    }
+
+void OperationDiagram::updateDrawingAreaSize(GtkWidget *drawingArea, OperationDrawer &opDrawer)
+    {
+    GraphSize size = opDrawer.drawDiagram(getOpGraph(), getOptions());
+    gtk_widget_set_size_request(drawingArea, size.x, size.y);
     }
 
 void OperationDiagram::drawToDrawingArea()

@@ -1,28 +1,28 @@
 /*
- * PortionDiagram.h
- * Created on: April 23, 2015
+ * IncludeDiagram.h
+ * Created on: June 5, 2015
  * \copyright 2015 DCBlaha.  Distributed under the GPL.
  */
 
-#ifndef PORTION_DIAGRAM_H
-#define PORTION_DIAGRAM_H
+#ifndef INCLUDE_DIAGRAM_H
+#define INCLUDE_DIAGRAM_H
 
-#include "PortionDrawer.h"
+#include "IncludeDrawer.h"
 #include "CairoDrawer.h"
 #include "Gui.h"
 
-class PortionDiagram
+class IncludeDiagram
     {
     public:
-        PortionDiagram():
-	    mModelData(nullptr), mCairoDrawer(nullptr)
+        IncludeDiagram():
+	    mIncludeMap(nullptr), mCairoDrawer(nullptr)
             {}
-	void initialize(const ModelData &modelData);
-	void clearGraphAndAddClass(OovStringRef className);
+	void initialize(const IncDirDependencyMapReader &includeMap);
+	void clearGraphAndAddInclude(OovStringRef incName);
 	void redraw();
 	void relayout()
 	    {
-	    mPortionDrawer.updateGraph(mPortionGraph);
+	    mIncludeDrawer.updateGraph(mIncludeGraph);
 	    redraw();
 	    }
 
@@ -34,17 +34,16 @@ class PortionDiagram
 	void drawToDrawingArea();
 	void drawSvgDiagram(FILE *fp);
 	GtkWidget *getDrawingArea() const;
-	void viewClassSource();
+	void viewFileSource();
 
     private:
-	const ModelData *mModelData;
+	const IncDirDependencyMapReader *mIncludeMap;
 	GtkCairoContext mCairoContext;
 	/// @todo - the drawer should only be needed during drawing and not for positions?
 	// The drawer only needs to be a member to get font sizes for positions.
 	CairoDrawer mCairoDrawer;
-	PortionGraph mPortionGraph;
-	PortionDrawer mPortionDrawer;
-	OovString mCurrentClassName;
+        IncludeGraph mIncludeGraph;
+        IncludeDrawer mIncludeDrawer;
 
         void updateDrawingAreaSize();
     };

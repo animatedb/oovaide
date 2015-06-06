@@ -13,10 +13,11 @@
 #include "ClassDiagram.h"
 #include "OperationDiagram.h"
 #include "ComponentDiagram.h"
+#include "IncludeDiagram.h"
 #include "ZoneDiagram.h"
 #include "PortionDiagram.h"
 
-enum eRecordTypes { RT_Component, RT_Zone, RT_Class, RT_Portion, RT_Sequence  };
+enum eRecordTypes { RT_Component, RT_Include, RT_Zone, RT_Class, RT_Portion, RT_Sequence  };
 
 class JournalListener
     {
@@ -127,10 +128,11 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
 class JournalRecordComponentDiagram:public JournalRecord
     {
     public:
-	JournalRecordComponentDiagram(Builder &builder, JournalListener &listener):
+	JournalRecordComponentDiagram(Builder &builder,
+	    IncDirDependencyMapReader const &incMap, JournalListener &listener):
 	    JournalRecord(RT_Component, listener)
 	    {
-	    mComponentDiagram.initialize(builder);
+	    mComponentDiagram.initialize(builder, incMap);
 	    }
         ~JournalRecordComponentDiagram();
 	ComponentDiagram mComponentDiagram;
@@ -218,6 +220,37 @@ class JournalRecordPortionDiagram:public JournalRecord
 	    { return true; }
 //	    { return mZoneDiagram.getZoneGraph().isModified(); }
     };
+
+class JournalRecordIncludeDiagram:public JournalRecord
+    {
+    public:
+        JournalRecordIncludeDiagram(Builder & /*builder*/,
+                const IncDirDependencyMapReader &incMap,
+                JournalListener &listener):
+            JournalRecord(RT_Include, listener)
+            {
+            mIncludeDiagram.initialize(incMap);
+            }
+        ~JournalRecordIncludeDiagram();
+        IncludeDiagram mIncludeDiagram;
+
+    private:
+        virtual char const *getRecordTypeName() const override
+            { return "Portion"; }
+        virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
+            { mIncludeDiagram.graphButtonPressEvent(event); }
+        virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override
+            { mIncludeDiagram.graphButtonReleaseEvent(event); }
+        virtual void drawingAreaDrawEvent() override
+            { mIncludeDiagram.drawToDrawingArea(); }
+        virtual void saveFile(FILE *fp) override
+            { mIncludeDiagram.drawSvgDiagram(fp); }
+        // Indicate it is always modified so the single diagram is kept around.
+        virtual bool isModified() const override
+            { return true; }
+//          { return mZoneDiagram.getZoneGraph().isModified(); }
+    };
+
 /// This class provides a non-volatile history of diagrams.
 class Journal
     {
@@ -226,11 +259,13 @@ class Journal
 	virtual ~Journal();
 	static Journal *getJournal();
 	void init(Builder &builder, const ModelData &model,
+	        const IncDirDependencyMapReader &incMap,
 		JournalListener &journalListener,
 		OovTaskStatusListener &taskStatusListener)
 	    {
 	    mBuilder = &builder;
 	    mModel = &model;
+	    mIncludeMap = &incMap;
 	    mJournalListener = &journalListener;
 	    mTaskStatusListener = &taskStatusListener;
 	    }
@@ -248,6 +283,7 @@ class Journal
 	void displayComponents();
 	void displayWorldZone();
 	void displayPortion(OovStringRef const className);
+        void displayInclude(OovStringRef const incName);
 	void saveFile(FILE *fp);
 	void cppArgOptionsChangedUpdateDrawings();
 	void setCurrentRecord(size_t index)
@@ -280,6 +316,7 @@ class Journal
 	size_t mCurrentRecord;
 	Builder *mBuilder;
 	const ModelData *mModel;
+        const IncDirDependencyMapReader *mIncludeMap;
 	JournalListener *mJournalListener;
 	OovTaskStatusListener *mTaskStatusListener;
 	const JournalRecord *getCurrentRecord() const

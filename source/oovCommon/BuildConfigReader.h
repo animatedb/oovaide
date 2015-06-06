@@ -60,13 +60,11 @@ class BuildConfig
 	std::string getIncDepsFilePath(OovStringRef const buildType) const;
 	std::string getComponentsFilePath(OovStringRef const buildType) const;
 	std::string getCrcAsStr(OovStringRef const buildType, CrcTypes crcType) const;
+        std::string getBuildConfigFilename() const;
 
     protected:
 	NameValueFile mConfigFile;
 	BuildConfig();
-
-    private:
-	std::string getBuildConfigFilename() const;
     };
 
 class BuildConfigReader:public BuildConfig

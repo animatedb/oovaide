@@ -521,14 +521,16 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 
 	case CXCursor_DoStmt:
 	    addCondStatement(cursor, 1, 0);
-	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+	    // @todo - No need to recurse?
+	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 //	case CXCursor_GotoStmt, break, continue, return, CXCursor_DefaultStmt
 	/// Conditional statements
 	case CXCursor_WhileStmt:	//   enum { VAR, COND, BODY, END_EXPR };
 	    addCondStatement(cursor, 0, 1);	// cond body
-	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+	    // @todo - No need to recurse?
+	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	case CXCursor_CaseStmt:
@@ -563,18 +565,21 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 
 	case CXCursor_CXXForRangeStmt:
 	    addCondStatement(cursor, 1, 5);
-	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+	    // @todo - No need to recurse?
+	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	case CXCursor_ForStmt:
 	    addCondStatement(cursor, 1, 3);
-	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+	    // @todo - No need to recurse?
+	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	case CXCursor_IfStmt:	    	//    enum { VAR, COND, THEN, ELSE, END_EXPR };
 	    addCondStatement(cursor, 0, 1);	// cond=0, ifbody=1, [elsebody]=2
 	    addElseStatement(cursor, 2);
-	    clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+	    // @todo - No need to recurse?
+	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	// When a call expression is like member.func(), the first child is a
@@ -588,7 +593,6 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 	    CXStringDisposer functionName = clang_getCursorDisplayName(cursor);
 	    if(functionName.length() != 0)
 		{
-#if(NonMemberVariables)
 		// For portion diagrams, it is important to display any
 		// references to the class. This includes references to
 		// base classes.  Some base class references will not have
@@ -662,7 +666,6 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 			functionName.insert(0, ModelStatement::getBaseClassMemberCallSep());
 			}
 		    }
-#endif
 
 		// This returns the CXCursor_CXXMethod cursor
 		CXCursor cursorDef = clang_getCursorDefinition(cursor);
@@ -743,7 +746,6 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 	    CXCursor cursorDef = clang_getCursorDefinition(cursor);
 	    if(cursorDef.kind == CXCursor_FieldDecl)
 		{
-#if(NonMemberVariables)
 		CXCursor child = getNthChildCursor(cursor, 0);
 		bool haveMemberRef = (child.kind == CXCursor_MemberRefExpr);
 		bool haveConstructor = (parent.kind == CXCursor_VarDecl ||
@@ -759,7 +761,6 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 			name.insert(0, ModelStatement::getBaseClassMemberRefSep());
 			}
 		    }
-#endif
 		CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
 		if(classCursor.kind == CXCursor_ClassDecl || classCursor.kind == CXCursor_StructDecl)
 		    {
@@ -1180,7 +1181,7 @@ CppParser::eErrorTypes CppParser::parse(bool lineHashes, char const * const srcF
 	{
 	errCode = clang_parseTranslationUnit2(index, srcFn,
 		clang_args, num_clang_args, 0, 0, options, &tu);
-	}
+    }
     catch(...)
 	{
 

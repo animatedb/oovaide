@@ -167,14 +167,19 @@ void ZoneScreenDrawer::requestDraw(ZoneGraph const &graph, double zoom, bool res
 	{
 	mZoneDrawer.setZoom(zoom);
 	mZoneDrawer.updateGraph(graph, resetPositions);
-	GraphSize size = mZoneDrawer.getDrawingSize();
 	gtk_widget_queue_draw(getDrawingArea());
-	gtk_widget_set_size_request(getDrawingArea(), size.x, size.y);
 	}
+    }
+
+void ZoneScreenDrawer::updateDrawingAreaSize()
+    {
+    GraphSize size = mZoneDrawer.getDrawingSize();
+    gtk_widget_set_size_request(getDrawingArea(), size.x, size.y);
     }
 
 void ZoneScreenDrawer::drawToDrawingArea()
     {
+    updateDrawingAreaSize();
     if(getCairo())	// Drawing area is not constructed initially.
 	{
 	ZoneGraph const *graph = mZoneDrawer.getGraph();

@@ -329,11 +329,16 @@ ProjectPackages::ProjectPackages(bool readNow)
 	read();
     }
 
-bool ProjectPackages::read()
+OovString ProjectPackages::getFilename()
     {
     FilePath fn(Project::getProjectDirectory(), FP_Dir);
     fn.appendFile("oovcde-pkg.txt");
-    mFile.setFilename(fn);
+    return fn;
+    }
+
+bool ProjectPackages::read()
+    {
+    mFile.setFilename(getFilename());
     return mFile.readFile();
     }
 

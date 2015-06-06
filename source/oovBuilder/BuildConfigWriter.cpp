@@ -59,11 +59,11 @@ static unsigned short computeCRC(unsigned char const * const dataPtr, int numByt
     unsigned char const * localDataPtr = dataPtr;
     uint16_t crc = 0xFFFF;
     for(int i = numBytes; i>0; i--)
-	{
-	unsigned char val = ((crc >> 8) ^ swapUInt8Bits(*localDataPtr));
-	localDataPtr++;
-	crc = static_cast<uint16_t>((static_cast<unsigned int>(crc) << 8) ^ CRC16Table[val]);
-	}
+        {
+        unsigned char val = ((crc >> 8) ^ swapUInt8Bits(*localDataPtr));
+        localDataPtr++;
+        crc = static_cast<uint16_t>((static_cast<unsigned int>(crc) << 8) ^ CRC16Table[val]);
+        }
     return crc;
     }
 
@@ -79,27 +79,27 @@ OovString BuildConfigStrings::getCrcAsStr(BuildConfig::CrcTypes crcType) const
     {
     std::string str;
     switch(crcType)
-	{
-	case BuildConfig::CT_AnalysisArgsCrc:
-	    str = mExternalConfig + mProjectConfig;
-	    break;
+        {
+        case BuildConfig::CT_AnalysisArgsCrc:
+            str = mExternalConfig + mProjectConfig;
+            break;
 
-	case BuildConfig::CT_ExtPathArgsCrc:
-	    str = mExternalConfig;
-	    break;
+        case BuildConfig::CT_ExtPathArgsCrc:
+            str = mExternalConfig;
+            break;
 
-	case BuildConfig::CT_ProjPathArgsCrc:
-	    str = mProjectConfig;
-	    break;
+        case BuildConfig::CT_ProjPathArgsCrc:
+            str = mProjectConfig;
+            break;
 
-	case BuildConfig::CT_LinkArgsCrc:
-	    str = mLinkArgsConfig;
-	    break;
+        case BuildConfig::CT_LinkArgsCrc:
+            str = mLinkArgsConfig;
+            break;
 
-	case BuildConfig::CT_OtherArgsCrc:
-	    str = mOtherArgsConfig;
-	    break;
-	}
+        case BuildConfig::CT_OtherArgsCrc:
+            str = mOtherArgsConfig;
+            break;
+        }
     char buf[40];
     snprintf(buf, sizeof(buf), "%d", computeCRC(str));
     return std::string(buf);
@@ -113,37 +113,41 @@ static std::string normalizeArgPath(std::string argpath)
     for(size_t i=0; i<argpath.size(); i++)
 	    {
 	    if(!isspace(argpath[i]))
-		{
-		starti = i;
-		break;
-		}
+            {
+            starti = i;
+            break;
+            }
 	    }
     // Consolidate spaces and normalize path separators
     for(size_t i=starti; i<argpath.size(); i++)
 	    {
 	    char c = argpath[i];
 	    if(c == '\\')
-		str += '/';
+	        {
+	        str += '/';
+	        }
 	    else if(isspace(c))
-		{
-		if(i == 0 || !isspace(argpath[i-1]))
-		    str += ' ';
-		}
+            {
+            if(i == 0 || !isspace(argpath[i-1]))
+                str += ' ';
+            }
 	    else
-		str += c;
+	        {
+	        str += c;
+	        }
 	    }
 
     // Remove trailing spaces
     if(str.size() > 1)
 	    {
 	    for(int i=static_cast<int>(str.size()-1); i>=0; i--)
-		{
-		if(!isspace(str[static_cast<size_t>(i)]))
-		    {
-		    str.resize(static_cast<size_t>(i+1));
-		    break;
-		    }
-		}
+            {
+            if(!isspace(str[static_cast<size_t>(i)]))
+                {
+                str.resize(static_cast<size_t>(i+1));
+                break;
+                }
+            }
 	    }
     return str;
     }
@@ -156,50 +160,56 @@ void BuildConfigWriter::setInitialConfig(OovStringRef const buildConfigType,
     {
     mBuildConfigType = buildConfigType;
     static OovStringRef const extPathArgs[] =
-	{
-	"-I", "-D", "-L", "-EP"
-	};
+        {
+        "-I", "-D", "-L", "-EP"
+        };
     for(auto const &str : extArgs)
-	{
-	mNewBuildConfigStrings.mExternalConfig += normalizeArgPath(str) + ' ';
-	}
+        {
+        mNewBuildConfigStrings.mExternalConfig += normalizeArgPath(str) + ' ';
+        }
     for(auto const &str : cppArgs)
-	{
-	bool found = false;
-	bool linkArg = false;
-	for(auto &extArg : extPathArgs)
-	    {
-	    OovString extArgStr = extArg;
-	    if(str.compare(0, extArgStr.length(), extArgStr) == 0)
-		{
-		found = true;
-		if(std::string(extArg).compare("-L") == 0)
-		    linkArg = true;
-		break;
-		}
-	    }
-	if(found)
-	    {
-	    if(linkArg)
-		mNewBuildConfigStrings.mLinkArgsConfig += normalizeArgPath(str) + ' ';
-	    else
-		mNewBuildConfigStrings.mExternalConfig += normalizeArgPath(str) + ' ';
-	    }
-	else
-	    mNewBuildConfigStrings.mOtherArgsConfig += normalizeArgPath(str) + ' ';
-	}
+        {
+        bool found = false;
+        bool linkArg = false;
+        for(auto &extArg : extPathArgs)
+            {
+            OovString extArgStr = extArg;
+            if(str.compare(0, extArgStr.length(), extArgStr) == 0)
+                {
+                found = true;
+                if(std::string(extArg).compare("-L") == 0)
+                    linkArg = true;
+                break;
+                }
+            }
+        if(found)
+            {
+            if(linkArg)
+                {
+                mNewBuildConfigStrings.mLinkArgsConfig += normalizeArgPath(str) + ' ';
+                }
+            else
+                {
+                mNewBuildConfigStrings.mExternalConfig += normalizeArgPath(str) + ' ';
+                }
+            }
+        else
+            {
+            mNewBuildConfigStrings.mOtherArgsConfig += normalizeArgPath(str) + ' ';
+            }
+        }
     for(auto const &str : linkArgs)
-	{
-	mNewBuildConfigStrings.mLinkArgsConfig += normalizeArgPath(str) + ' ';
-	}
+        {
+        mNewBuildConfigStrings.mLinkArgsConfig += normalizeArgPath(str) + ' ';
+        }
     }
 
 void BuildConfigWriter::setProjectConfig(OovStringVec const &projIncs)
     {
     for(auto const &str : projIncs)
-	{
-	mNewBuildConfigStrings.mProjectConfig += normalizeArgPath(str) + ' ';
-	}
+        {
+        mNewBuildConfigStrings.mProjectConfig += normalizeArgPath(str) + ' ';
+        }
     }
 
 bool BuildConfigWriter::isConfigDifferent(OovStringRef const buildType,
@@ -213,12 +223,12 @@ bool BuildConfigWriter::isAnyConfigDifferent(OovStringRef const buildType) const
     {
     bool diff = false;
     for(int i=BuildConfig::CT_FirstCrc; i<=BuildConfig::CT_LastCrc; i++)
-	{
-	BuildConfig::CrcTypes ctype = static_cast<BuildConfig::CrcTypes>(i);
-	diff = isConfigDifferent(buildType, ctype);
-	if(diff)
-	    break;
-	}
+        {
+        BuildConfig::CrcTypes ctype = static_cast<BuildConfig::CrcTypes>(i);
+        diff = isConfigDifferent(buildType, ctype);
+        if(diff)
+            break;
+        }
     return diff;
     }
 
@@ -231,31 +241,31 @@ void BuildConfigWriter::getUnusedCrcs(OovStringVec &unusedCrcs) const
 void BuildConfigWriter::saveConfig(OovStringRef const buildType)
     {
     if(isAnyConfigDifferent(buildType))
-	{
-	unsigned int extCrc = computeCRC(mNewBuildConfigStrings.mExternalConfig);
-	unsigned int projCrc = computeCRC(mNewBuildConfigStrings.mProjectConfig);
-	unsigned int linkCrc = computeCRC(mNewBuildConfigStrings.mLinkArgsConfig);
-	unsigned int otherCrc = computeCRC(mNewBuildConfigStrings.mOtherArgsConfig);
-	std::string analysisStr = mNewBuildConfigStrings.mExternalConfig + ";" +
-		mNewBuildConfigStrings.mProjectConfig;
-	unsigned int analysisCrc = computeCRC(analysisStr);
+        {
+        unsigned int extCrc = computeCRC(mNewBuildConfigStrings.mExternalConfig);
+        unsigned int projCrc = computeCRC(mNewBuildConfigStrings.mProjectConfig);
+        unsigned int linkCrc = computeCRC(mNewBuildConfigStrings.mLinkArgsConfig);
+        unsigned int otherCrc = computeCRC(mNewBuildConfigStrings.mOtherArgsConfig);
+        std::string analysisStr = mNewBuildConfigStrings.mExternalConfig + ";" +
+            mNewBuildConfigStrings.mProjectConfig;
+        unsigned int analysisCrc = computeCRC(analysisStr);
 
-	char tempStr[40];
-	snprintf(tempStr, sizeof(tempStr), "%u;%u;%u;%u;%u", analysisCrc,
-		extCrc, projCrc, linkCrc, otherCrc);
-	mConfigFile.setNameValue(mBuildConfigType, tempStr);
+        char tempStr[40];
+        snprintf(tempStr, sizeof(tempStr), "%u;%u;%u;%u;%u", analysisCrc,
+            extCrc, projCrc, linkCrc, otherCrc);
+        mConfigFile.setNameValue(mBuildConfigType, tempStr);
 
-	snprintf(tempStr, sizeof(tempStr), "%u", analysisCrc);
-	mConfigFile.setNameValue(tempStr, analysisStr);
-	snprintf(tempStr, sizeof(tempStr), "%u", extCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mExternalConfig);
-	snprintf(tempStr, sizeof(tempStr), "%u", projCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mProjectConfig);
-	snprintf(tempStr, sizeof(tempStr), "%u", linkCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mLinkArgsConfig);
-	snprintf(tempStr, sizeof(tempStr), "%u", otherCrc);
-	mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mOtherArgsConfig);
+        snprintf(tempStr, sizeof(tempStr), "%u", analysisCrc);
+        mConfigFile.setNameValue(tempStr, analysisStr);
+        snprintf(tempStr, sizeof(tempStr), "%u", extCrc);
+        mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mExternalConfig);
+        snprintf(tempStr, sizeof(tempStr), "%u", projCrc);
+        mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mProjectConfig);
+        snprintf(tempStr, sizeof(tempStr), "%u", linkCrc);
+        mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mLinkArgsConfig);
+        snprintf(tempStr, sizeof(tempStr), "%u", otherCrc);
+        mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mOtherArgsConfig);
 
-	mConfigFile.writeFile();
-	}
+        mConfigFile.writeFile();
+        }
     }

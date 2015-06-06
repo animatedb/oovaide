@@ -18,11 +18,17 @@ static const ComponentDrawOptions &getDrawOptions()
     return dopts;
     }
 
-void ComponentDiagram::initialize(Builder &builder)
+void ComponentDiagram::initialize(Builder &builder,
+        IncDirDependencyMapReader const &includeMap)
     {
+    mComponentGraph.setGraphDataSource(includeMap);
     mDrawingArea = builder.getWidget("DiagramDrawingarea");
     updateGraph();
 
+    }
+
+void ComponentDiagram::updateDrawingAreaSize()
+    {
     GraphSize size = mComponentGraph.getGraphSize();
     gtk_widget_set_size_request(mDrawingArea, size.x, size.y);
     }
@@ -111,6 +117,8 @@ void ComponentDiagram::drawSvgDiagram(FILE *fp)
 
 void ComponentDiagram::drawToDrawingArea()
     {
+    updateDrawingAreaSize();
+
     GtkCairoContext cairo(mDrawingArea);
     cairo_t *cr = cairo.getCairo();
     if(cr)

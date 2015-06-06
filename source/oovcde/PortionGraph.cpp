@@ -22,9 +22,9 @@ PortionNode const *PortionGraph::getNode(OovStringRef name, PortionNodeTypes nt)
     return retNode;
     }
 
-void PortionGraph::clearAndAddClass(const ModelData &model, OovStringRef classname)
+void PortionGraph::clearAndAddClass(OovStringRef classname)
     {
-    const ModelType *type = model.findType(classname);
+    const ModelType *type = mModel->findType(classname);
     if(type)
         {
         ModelClassifier const *cls = type->getClass();
@@ -38,7 +38,6 @@ void PortionGraph::clearAndAddClass(const ModelData &model, OovStringRef classna
                 {
                 mNodes.push_back(PortionNode(oper->getName(), PNT_Operation));
                 }
-#if(NonMemberVariables)
             for(auto const &oper : cls->getOperations())
         	{
                 ModelStatements const &statements = oper->getStatements();
@@ -72,7 +71,6 @@ void PortionGraph::clearAndAddClass(const ModelData &model, OovStringRef classna
                 	}
                     }
         	}
-#endif
             addConnections(cls);
             }
         }

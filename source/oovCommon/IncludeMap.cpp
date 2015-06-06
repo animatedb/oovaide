@@ -53,67 +53,75 @@ OovStringVec IncDirDependencyMapReader::getFilesDefinedInDirectory(
     return incFiles;
     }
 
+static void dispMapItemErr(OovStringRef fileMapStr)
+    {
+    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n",
+            fileMapStr.getStr());
+    DebugAssert(__FILE__, __LINE__);
+
+    }
+
+template <typename Func> void processIncPath(OovString const fileMapStr,
+        std::set<IncludedPath> &incFiles, Func procFunc)
+    {
+    CompoundValue compVal;
+    if(fileMapStr.length() > 0)
+        {
+        compVal.parseString(fileMapStr);
+        // There are two time values followed by directory/filename pairs.
+        if(compVal.size() > 2 && (compVal.size() % 2 == 0))
+            {
+            // Skip first two time values.
+            for(size_t i=2; i<compVal.size(); i+=2)
+                {
+                IncludedPath incPath(compVal[i], compVal[i+1]);
+                const auto &ret = incFiles.insert(incPath);
+                // Check if this is the first insertion of this value.
+                // Prevents infinite recursion and duplicates.
+                if(ret.second == true)
+                    {
+                    procFunc(incPath);
+                    }
+                }
+            }
+        else
+            {
+            dispMapItemErr(fileMapStr);
+            }
+        }
+    };
+
+std::set<IncludedPath> IncDirDependencyMapReader::getAllIncludeFiles() const
+    {
+    std::set<IncludedPath> incFiles;
+    auto const &nameVals = getNameValues();
+    for(auto const &val : nameVals)
+        {
+        getImmediateIncludeFilesUsedBySourceFile(val.first,
+                incFiles);
+        }
+    return incFiles;
+    }
+
 void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
 	OovStringRef const srcName, std::set<IncludedPath> &incFiles) const
     {
-    // First check if the includer filename exists in the dependency file.
     FilePath fp(srcName, FP_File);
     OovString val = getValue(fp);
-    if(val.size() > 0)
-	{
-	CompoundValue compVal;
-	compVal.parseString(val);
-	// There are two time values followed by directory/filename pairs.
-	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
-	    {
-	    // Skip first two time values.
-	    for(size_t i=2; i<compVal.size(); i+=2)
-		{
-		IncludedPath incPath(compVal[i], compVal[i+1]);
-		incFiles.insert(incPath);
-		}
-	    }
-	else
-	    {
-	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.getStr());
-	    DebugAssert(__FILE__, __LINE__);
-	    }
-	}
+    processIncPath(val, incFiles, [](IncludedPath &){});
     }
 
 /// This is recursive.
 void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
 	OovStringRef const srcName, std::set<IncludedPath> &incFiles) const
     {
-    // First check if the includer filename exists in the dependency file.
     FilePath fp(srcName, FP_File);
     OovString val = getValue(fp);
-    if(val.size() > 0)
-	{
-	CompoundValue compVal;
-	compVal.parseString(val);
-	// There are two time values followed by directory/filename pairs.
-	if(compVal.size() > 2 && (compVal.size() % 2 == 0))
-	    {
-	    // Skip first two time values.
-	    for(size_t i=2; i<compVal.size(); i+=2)
-		{
-		IncludedPath incPath(compVal[i], compVal[i+1]);
-		const auto &ret = incFiles.insert(incPath);
-		// Check if this is the first insertion of this value.
-		// Prevents infinite recursion and duplicates.
-		if(ret.second == true)
-		    {
-		    getNestedIncludeFilesUsedBySourceFile(incPath.getFullPath(), incFiles);
-		    }
-		}
-	    }
-	else
-	    {
-	    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n", val.getStr());
-	    DebugAssert(__FILE__, __LINE__);
-	    }
-	}
+    processIncPath(val, incFiles,
+            [this, &incFiles](IncludedPath const &incPath) mutable
+        {
+        getNestedIncludeFilesUsedBySourceFile(incPath.getFullPath(), incFiles);
+        });
     }
 
 /// This is recursive

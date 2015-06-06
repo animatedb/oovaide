@@ -2,7 +2,8 @@
 add_executable(oovcde BuildSettingsDialog.cpp CairoDrawer.cpp ClassDiagram.cpp 
   ClassDrawer.cpp ClassGenes.cpp ClassGraph.cpp Complexity.cpp ComponentDiagram.cpp 
   ComponentDrawer.cpp ComponentGraph.cpp ComponentList.cpp Contexts.cpp DiagramDrawer.cpp 
-  Duplicates.cpp FastGene.cpp Graph.cpp Journal.cpp oovcde.cpp OovProject.cpp 
+  Duplicates.cpp FastGene.cpp Graph.cpp IncludeDiagram.cpp IncludeDrawer.cpp
+  IncludeGraph.cpp IncludeGenes.cpp Journal.cpp oovcde.cpp OovProject.cpp 
   OperationDiagram.cpp OperationDrawer.cpp OperationGraph.cpp OptionsDialog.cpp 
   PackagesDialogs.cpp PortionDiagram.cpp PortionDrawer.cpp PortionGenes.cpp 
   PortionGraph.cpp ProjectSettingsDialog.cpp StaticAnalysis.cpp Svg.cpp 

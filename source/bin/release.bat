@@ -11,10 +11,11 @@ mkdir %dst%
 
 xcopy /s %trnk%\..\web\*.* %dst%\web\
 xcopy /s %trnk%\bin\*.* %dst%\bin\
+xcopy /s /Y %trnk%\bin\data\*.* %dst%\bin\data\
 xcopy /s %trnk%\*.cpp %dst%
-xcopy /s %trnk%\*.h %dst%
+xcopy /s /Y %trnk%\*.h %dst%
 xcopy /s %trnk%\*.html %dst%
-xcopy /s %trnk%\*.txt %dst%
+xcopy /s /Y %trnk%\*.txt %dst%
 xcopy /s %trnk%\*.py %dst%
 xcopy /s %trnk%\*.in %dst%
 xcopy /s %trnk%\*.cproject %dst%
@@ -23,13 +24,13 @@ rd /s /q %dst%\.metadata
 rd /s /q %dst%\RemoteSystemsTempFiles
 
 xcopy /s "%gtk%\share\glib-2.0\schemas" %dst%\share\glib-2.0\schemas\
-xcopy /s "%clang%\bin\libclang.dll" %dst%\bin\
-xcopy /s "%clang%\lib\*.*" %dst%\bin\
+xcopy /s /Y "%clang%\bin\libclang.dll" %dst%\bin\
+xcopy /s /Y "%clang%\lib\*.*" %dst%\bin\
 
 ; rem also copy to non-release build directory
 rd /s /q .\clang
-xcopy /s "%clang%\bin\libclang.dll" .\
-xcopy /s /i "%clang%\lib\*.*" .\
+xcopy /s /Y "%clang%\bin\libclang.dll" .\
+xcopy /s /Y /i "%clang%\lib\*.*" .\
 
 copy "%gtk%\bin\libatk-1.0-0.dll" %dst%\bin
 copy "%gtk%\bin\libcairo-2.dll" %dst%\bin

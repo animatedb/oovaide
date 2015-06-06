@@ -126,7 +126,6 @@ oovGui::~oovGui()
 
 void oovGui::clearAnalysis()
     {
-    mProject.clearAnalysis();
     mContexts.clear();
     updateGuiForProjectChange();
     }
@@ -173,20 +172,9 @@ void oovGui::updateGuiForAnalysis()
     if(gBuildOptions.read())
 	{
 	gGuiOptions.read();
-	ModelData &modelData = mProject.getModelData();
-	ClassList &classList = mContexts.getClassList();
-	classList.clear();
-	for(size_t i=0; i<modelData.mTypes.size(); i++)
-	    {
-	    if(modelData.mTypes[i]->getDataType() == DT_Class)
-		classList.appendText(modelData.mTypes[i]->getName());
-	    }
-	mContexts.updateComponentList();
-	classList.sort();
+	mContexts.updateContextAfterProjectLoaded();
 	if(sOptionsDialog)
 	    sOptionsDialog->updateBuildConfig();
-	mContexts.getZoneList().update();
-	Gui::setCurrentPage(GTK_NOTEBOOK(mBuilder.getWidget("ListNotebook")), 0);
 	}
     }
 
@@ -196,9 +184,8 @@ gboolean oovGui::onBackgroundIdle(gpointer data)
     bool didSomething = mWindowBuildListener.onBackgroundProcessIdle(complete);
     if(complete)
 	{
-	clearAnalysis();
-	mContexts.updateComponentList();
-	mProject.loadAnalysisFiles();
+        clearAnalysis();
+        mContexts.updateContextAfterAnalysisCompletes();
 	didSomething = true;
 	}
     // This must be after running analysis functions.

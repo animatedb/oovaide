@@ -109,10 +109,18 @@ bool OovProject::loadAnalysisFiles()
 	{
 	logProj("+loadAnalysisFiles");
 	stopAndWaitForBackgroundComplete();
+	loadIncludeMap();
 	addTask(ProjectBackgroundItem());
 	logProj("-loadAnalysisFiles");
 	}
     return started;
+    }
+
+void OovProject::loadIncludeMap()
+    {
+    BuildConfigReader buildConfig;
+    std::string incDepsFilePath = buildConfig.getIncDepsFilePath(BuildConfigAnalysis);
+    mIncludeMap.read(incDepsFilePath);
     }
 
 void OovProject::stopAndWaitForBackgroundComplete()

@@ -28,7 +28,7 @@ bool PathChooser::ChoosePath(GtkWindow *parent, OovStringRef const dlgName,
     char const * openButtonFlag =
 	    (action == GTK_FILE_CHOOSER_ACTION_OPEN ||
 		    action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) ?
-			    GTK_STOCK_OPEN: GTK_STOCK_SAVE;
+			    "_Open": "_Save";
     mDialog = gtk_file_chooser_dialog_new(dlgName, parent,
 	action, GUI_CANCEL, GTK_RESPONSE_CANCEL,
 	openButtonFlag, GTK_RESPONSE_ACCEPT, nullptr);
