@@ -110,7 +110,7 @@ install(FILES
    "${PROJECT_SOURCE_DIR}/bin/data/ClassDiagramButton.png"
    "${PROJECT_SOURCE_DIR}/bin/data/IncludeDiagramButton.png"
    "${PROJECT_SOURCE_DIR}/bin/data/OperationDiagramButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/PortionDigramButton.png"
+   "${PROJECT_SOURCE_DIR}/bin/data/PortionDiagramButton.png"
    "${PROJECT_SOURCE_DIR}/bin/data/ZoneDiagramButton.png"
 DESTINATION "${INSTALL_BIN_DIR}/data" COMPONENT dev)
 
