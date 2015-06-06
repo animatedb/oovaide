@@ -138,6 +138,11 @@ static std::vector<LineInfo> getLinesInfo(GtkTextView* textView, int height)
     return linesInfo;
     }
 
+static inline guint16 convertGdkColorToPango(double color)
+    {
+    return color * 65536;
+    }
+
 void EditFiles::drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &pixPerChar)
     {
     GtkTextView *textView = GTK_TEXT_VIEW(widget);
@@ -174,66 +179,91 @@ void EditFiles::drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &
     pango_layout_set_width(layout, layoutWidth);
     pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
 
+#define STYLE 3
+#if(STYLE == 1)
     GtkStyle *widgetStyle = gtk_widget_get_style(widget);
-    PangoAttrList *attrList = pango_attr_list_new();
     PangoAttribute *attr = pango_attr_foreground_new(
 	    widgetStyle->text_aa->red, widgetStyle->text_aa->green,
 	    widgetStyle->text_aa->blue);
-    attr->start_index = 0;
-    attr->end_index = G_MAXUINT;
-    pango_attr_list_insert(attrList, attr);
-    pango_layout_set_attributes(layout, attrList);
-
-    DebuggerLocation dbgLoc = mDebugger.getStoppedLocation();
-    auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
-	    [textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
-		{ return(fv->getTextView() == textView); });
-    if(fvIter != mFileViews.end())
+#elif(STYLE == 2)
+    GtkStyleContext *widgetStyle = gtk_widget_get_style_context(widget);
+    GdkRGBA color;
+    gtk_style_context_get(widgetStyle, GTK_STATE_FLAG_NORMAL,
+	    GTK_STYLE_PROPERTY_COLOR, &color, NULL);
+    PangoAttribute *attr = pango_attr_foreground_new(convertGdkColorToPango(color.red),
+	    convertGdkColorToPango(color.green), convertGdkColorToPango(color.blue));
+#else
+    GtkStyleContext *widgetStyle = gtk_widget_get_style_context(widget);
+    GdkRGBA color;
+    gtk_style_context_get_color(widgetStyle, GTK_STATE_FLAG_NORMAL, &color);
+    PangoAttribute *attr = pango_attr_foreground_new(convertGdkColorToPango(color.red),
+	    convertGdkColorToPango(color.green), convertGdkColorToPango(color.blue));
+#endif
+    /// @todo - fix memory leaks.
+    if(attr)
 	{
-	DebuggerLocation thisFileLoc((*fvIter)->getFilename());
-	int full = lineHeight*.8;
-	int half = full/2;
-	for(auto const & lineInfo : linesInfo)
+	PangoAttrList *attrList = pango_attr_list_new();
+	if(attrList)
 	    {
-	    int pos;
-	    thisFileLoc.setLine(lineInfo.lineNum);
-	    gtk_text_view_buffer_to_window_coords (textView,
-		GTK_TEXT_WINDOW_LEFT, 0, lineInfo.yPos, NULL, &pos);
-	    snprintf(str, sizeof(str), "%d", lineInfo.lineNum);
-	    pango_layout_set_text(layout, str, -1);
-	    gtk_render_layout(gtk_widget_get_style_context(widget), cr,
-		    layoutWidth + beforeLineSepWidth, pos, layout);
+	    attr->start_index = 0;
+	    attr->end_index = G_MAXUINT;
+	    pango_attr_list_insert(attrList, attr);
+	    pango_layout_set_attributes(layout, attrList);
 
-	    int centerY = pos + lineHeight/2;
-	    if(mDebugger.getBreakpoints().anyLocationsMatch(thisFileLoc))
+	    DebuggerLocation dbgLoc = mDebugger.getStoppedLocation();
+	    auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
+		    [textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+			{ return(fv->getTextView() == textView); });
+	    if(fvIter != mFileViews.end())
 		{
-		cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
-		cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
+		DebuggerLocation thisFileLoc((*fvIter)->getFilename());
+		int full = lineHeight*.8;
+		int half = full/2;
+		for(auto const & lineInfo : linesInfo)
+		    {
+		    int pos;
+		    thisFileLoc.setLine(lineInfo.lineNum);
+		    gtk_text_view_buffer_to_window_coords (textView,
+			GTK_TEXT_WINDOW_LEFT, 0, lineInfo.yPos, NULL, &pos);
+		    snprintf(str, sizeof(str), "%d", lineInfo.lineNum);
+		    pango_layout_set_text(layout, str, -1);
+		    gtk_render_layout(gtk_widget_get_style_context(widget), cr,
+			    layoutWidth + beforeLineSepWidth, pos, layout);
+
+		    int centerY = pos + lineHeight/2;
+		    if(mDebugger.getBreakpoints().anyLocationsMatch(thisFileLoc))
+			{
+			cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
+			cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
+			cairo_fill(cr);
+			}
+		    if(dbgLoc == thisFileLoc)
+			{
+			cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 255.0/255.0);
+			cairo_move_to(cr, 0, centerY);
+			cairo_line_to(cr, full, centerY);
+
+			cairo_move_to(cr, full, centerY);
+			cairo_line_to(cr, half, centerY-half);
+
+			cairo_move_to(cr, full, centerY);
+			cairo_line_to(cr, half, centerY+half);
+
+			cairo_stroke(cr);
+			}
+		    }
+		cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 0/255.0);
+		cairo_rectangle(cr, layoutWidth + beforeLineSepWidth, 0,
+			marginLineWidth, marginWindowHeight);
 		cairo_fill(cr);
+		g_object_unref (G_OBJECT (layout));
 		}
-	    if(dbgLoc == thisFileLoc)
-		{
-		cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 255.0/255.0);
-		cairo_move_to(cr, 0, centerY);
-		cairo_line_to(cr, full, centerY);
-
-		cairo_move_to(cr, full, centerY);
-		cairo_line_to(cr, half, centerY-half);
-
-		cairo_move_to(cr, full, centerY);
-		cairo_line_to(cr, half, centerY+half);
-
-		cairo_stroke(cr);
-		}
+	    else
+		width = 0;
+//	    pango_attr_list_unref(attrList);
 	    }
-	cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 0/255.0);
-	cairo_rectangle(cr, layoutWidth + beforeLineSepWidth, 0,
-		marginLineWidth, marginWindowHeight);
-	cairo_fill(cr);
-	g_object_unref (G_OBJECT (layout));
+//	pango_attribute_destroy(attr);
 	}
-    else
-	width = 0;
     }
 
 void EditFiles::drawRightMargin(GtkWidget *widget, cairo_t *cr, int leftMargin, int pixPerChar)

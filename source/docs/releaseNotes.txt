@@ -16,6 +16,8 @@ Explanations
 Missing Features
 ----------------
 - General
+	- margins in editor aren't displaying on linux?
+	- editor idle crash in linux with text buffers and highlighting on startup and shutdown
 	- unable to open project second time
 	- remove dup journal code
 	- graph selection icons should be gray if project isn't loaded.

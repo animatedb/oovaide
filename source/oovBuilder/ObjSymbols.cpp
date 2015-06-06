@@ -110,7 +110,7 @@ bool FileSymbols::writeSymbols(OovStringRef const symFileName)
 	{
 	for(const auto &symbol : *this)
 	    {
-	    fprintf(outFp, "%s %d\n", symbol.mSymbolName.getStr(), symbol.mFileIndex);
+	    fprintf(outFp, "%s %ld\n", symbol.mSymbolName.getStr(), symbol.mFileIndex);
 	    }
 	fclose(outFp);
 	}
@@ -197,17 +197,17 @@ static bool writeDepFileInfo(OovStringRef const symFileName, const FileList &fil
 	fileIndices.writeFile(outFp);
 	for(const auto &dep : fileDeps)
 	    {
-	    fprintf(outFp, "d:%d ", dep.first);
+	    fprintf(outFp, "d:%ld ", dep.first);
 	    for(const auto &sup : dep.second)
 		{
-		fprintf(outFp, "%d ", sup);
+		fprintf(outFp, "%ld ", sup);
 		}
 	    fprintf(outFp, "\n");
 	    }
 	fprintf(outFp, "o:");
 	for(const auto &dep : orderedDeps)
 	    {
-	    fprintf(outFp, "%d ", dep);
+	    fprintf(outFp, "%ld ", dep);
 	    }
 	fprintf(outFp, "\n");
 	fclose(outFp);
@@ -510,7 +510,7 @@ void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
 		    if(isdigit(*p))
 			{
 			size_t num;
-			if(sscanf(p, "%u", &num) == 1)
+			if(sscanf(p, "%lu", &num) == 1)
 			    {
 			    indices.push_back(num);
 			    while(isdigit(*p))
