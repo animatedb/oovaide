@@ -17,6 +17,7 @@ class Editor:public DebuggerListener
     public:
 	Editor();
 	void init();
+	void shutdown();
 	void loadSettings();
 	void saveSettings();
 	static gboolean onIdle(gpointer data);

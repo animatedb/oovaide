@@ -30,6 +30,7 @@ and Objective C languages.
 		- Class diagrams
 		- Portion diagrams (view class attribute/member relations)
 		- Sequence diagrams 
+		- Include dependency diagrams
 	- Analysis statistics
 		- Code coverage
 		- Code complexity

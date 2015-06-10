@@ -26,9 +26,30 @@ static EditFiles *sEditFiles;
 EditFiles::EditFiles(Debugger &debugger, EditOptions &editOptions):
     mEditOptions(editOptions),
     mHeaderBook(nullptr), mSourceBook(nullptr), mBuilder(nullptr),
-    mFocusEditViewIndex(-1), mDebugger(debugger)
+    mFocusEditViewIndex(-1), mDebugger(debugger),
+    mMarginLayout(nullptr), mMarginAttr(nullptr), mMarginAttrList(nullptr)
     {
     sEditFiles = this;
+    }
+
+EditFiles::~EditFiles()
+    {
+    if(mMarginLayout)
+        {
+        g_object_unref(mMarginLayout);
+        }
+    // Freeing the remaining margin stuff causes a crash. Maybe if is freed
+    // when the layout is freed?
+/*
+    if(mMarginAttrList)
+        {
+        pango_attr_list_unref(mMarginAttrList);
+        }
+    if(mMarginAttr)
+        {
+//        pango_attribute_destroy(mMarginAttr);
+        }
+*/
     }
 
 void EditFiles::init(Builder &builder)
@@ -158,111 +179,102 @@ void EditFiles::drawLeftMargin(GtkWidget *widget, cairo_t *cr, int &width, int &
     std::vector<LineInfo> linesInfo = getLinesInfo(textView, marginWindowHeight);
     int lineHeight = linesInfo[1].yPos - linesInfo[0].yPos;
 
-    PangoLayout *layout = gtk_widget_create_pango_layout(widget, "");
-    char str[8];
-    snprintf(str, sizeof(str), "%d",
-	    gtk_text_buffer_get_line_count(gtk_text_view_get_buffer(textView)));
-    pango_layout_set_text(layout, str, -1);
+    if(!mMarginLayout)
+        {
+        mMarginLayout = gtk_widget_create_pango_layout(widget, "");
+        }
     gint layoutWidth = 0;
-    pango_layout_get_pixel_size(layout, &layoutWidth, NULL);
-    int len = strlen(str);
-    if(len > 0)
-	pixPerChar = layoutWidth / len;
-    else
-	pixPerChar = 10;
+    if(mMarginLayout)
+        {
+        char str[8];
+        snprintf(str, sizeof(str), "%d",
+                gtk_text_buffer_get_line_count(gtk_text_view_get_buffer(textView)));
+        pango_layout_set_text(mMarginLayout, str, -1);
+        pango_layout_get_pixel_size(mMarginLayout, &layoutWidth, NULL);
+        int len = strlen(str);
+        if(len > 0)
+            pixPerChar = layoutWidth / len;
+        else
+            pixPerChar = 10;
 
-    gtk_text_view_set_border_window_size(textView,
-	    GTK_TEXT_WINDOW_LEFT,
-	    layoutWidth + beforeLineSepWidth + marginLineWidth + afterLineSepWidth);
-    width = layoutWidth;
+        gtk_text_view_set_border_window_size(textView,
+                GTK_TEXT_WINDOW_LEFT,
+                layoutWidth + beforeLineSepWidth + marginLineWidth + afterLineSepWidth);
+        width = layoutWidth;
 
-    pango_layout_set_width(layout, layoutWidth);
-    pango_layout_set_alignment(layout, PANGO_ALIGN_RIGHT);
+        pango_layout_set_width(mMarginLayout, layoutWidth);
+        pango_layout_set_alignment(mMarginLayout, PANGO_ALIGN_RIGHT);
+        }
 
-#define STYLE 3
-#if(STYLE == 1)
-    GtkStyle *widgetStyle = gtk_widget_get_style(widget);
-    PangoAttribute *attr = pango_attr_foreground_new(
-	    widgetStyle->text_aa->red, widgetStyle->text_aa->green,
-	    widgetStyle->text_aa->blue);
-#elif(STYLE == 2)
-    GtkStyleContext *widgetStyle = gtk_widget_get_style_context(widget);
-    GdkRGBA color;
-    gtk_style_context_get(widgetStyle, GTK_STATE_FLAG_NORMAL,
-	    GTK_STYLE_PROPERTY_COLOR, &color, NULL);
-    PangoAttribute *attr = pango_attr_foreground_new(convertGdkColorToPango(color.red),
-	    convertGdkColorToPango(color.green), convertGdkColorToPango(color.blue));
-#else
-    GtkStyleContext *widgetStyle = gtk_widget_get_style_context(widget);
-    GdkRGBA color;
-    gtk_style_context_get_color(widgetStyle, GTK_STATE_FLAG_NORMAL, &color);
-    PangoAttribute *attr = pango_attr_foreground_new(convertGdkColorToPango(color.red),
-	    convertGdkColorToPango(color.green), convertGdkColorToPango(color.blue));
-#endif
-    /// @todo - fix memory leaks.
-    if(attr)
+    if(!mMarginAttr)
+        {
+        GtkStyleContext *widgetStyle = gtk_widget_get_style_context(widget);
+        GdkRGBA color;
+        gtk_style_context_get_color(widgetStyle, GTK_STATE_FLAG_NORMAL, &color);
+        mMarginAttr = pango_attr_foreground_new(convertGdkColorToPango(color.red),
+                convertGdkColorToPango(color.green), convertGdkColorToPango(color.blue));
+        mMarginAttrList = pango_attr_list_new();
+        }
+    if(mMarginLayout && mMarginAttr && mMarginAttrList)
 	{
-	PangoAttrList *attrList = pango_attr_list_new();
-	if(attrList)
-	    {
-	    attr->start_index = 0;
-	    attr->end_index = G_MAXUINT;
-	    pango_attr_list_insert(attrList, attr);
-	    pango_layout_set_attributes(layout, attrList);
+        mMarginAttr->start_index = 0;
+        mMarginAttr->end_index = G_MAXUINT;
+        pango_attr_list_insert(mMarginAttrList, mMarginAttr);
+        pango_layout_set_attributes(mMarginLayout, mMarginAttrList);
 
-	    DebuggerLocation dbgLoc = mDebugger.getStoppedLocation();
-	    auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
-		    [textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
-			{ return(fv->getTextView() == textView); });
-	    if(fvIter != mFileViews.end())
-		{
-		DebuggerLocation thisFileLoc((*fvIter)->getFilename());
-		int full = lineHeight*.8;
-		int half = full/2;
-		for(auto const & lineInfo : linesInfo)
-		    {
-		    int pos;
-		    thisFileLoc.setLine(lineInfo.lineNum);
-		    gtk_text_view_buffer_to_window_coords (textView,
-			GTK_TEXT_WINDOW_LEFT, 0, lineInfo.yPos, NULL, &pos);
-		    snprintf(str, sizeof(str), "%d", lineInfo.lineNum);
-		    pango_layout_set_text(layout, str, -1);
-		    gtk_render_layout(gtk_widget_get_style_context(widget), cr,
-			    layoutWidth + beforeLineSepWidth, pos, layout);
+        DebuggerLocation dbgLoc = mDebugger.getStoppedLocation();
+        auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
+                [textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+                    { return(fv->getTextView() == textView); });
+        if(fvIter != mFileViews.end())
+            {
+            DebuggerLocation thisFileLoc((*fvIter)->getFilename());
+            int full = lineHeight*.8;
+            int half = full/2;
+            for(auto const & lineInfo : linesInfo)
+                {
+                int pos;
+                thisFileLoc.setLine(lineInfo.lineNum);
+                gtk_text_view_buffer_to_window_coords (textView,
+                    GTK_TEXT_WINDOW_LEFT, 0, lineInfo.yPos, NULL, &pos);
+                char str[8];
+                snprintf(str, sizeof(str), "%d", lineInfo.lineNum);
+                pango_layout_set_text(mMarginLayout, str, -1);
+                gtk_render_layout(gtk_widget_get_style_context(widget), cr,
+                        layoutWidth + beforeLineSepWidth, pos, mMarginLayout);
 
-		    int centerY = pos + lineHeight/2;
-		    if(mDebugger.getBreakpoints().anyLocationsMatch(thisFileLoc))
-			{
-			cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
-			cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
-			cairo_fill(cr);
-			}
-		    if(dbgLoc == thisFileLoc)
-			{
-			cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 255.0/255.0);
-			cairo_move_to(cr, 0, centerY);
-			cairo_line_to(cr, full, centerY);
+                int centerY = pos + lineHeight/2;
+                if(mDebugger.getBreakpoints().anyLocationsMatch(thisFileLoc))
+                    {
+                    cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 0/255.0);
+                    cairo_arc(cr, half+1, centerY, half, 0, 2*M_PI);
+                    cairo_fill(cr);
+                    }
+                if(dbgLoc == thisFileLoc)
+                    {
+                    cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 255.0/255.0);
+                    cairo_move_to(cr, 0, centerY);
+                    cairo_line_to(cr, full, centerY);
 
-			cairo_move_to(cr, full, centerY);
-			cairo_line_to(cr, half, centerY-half);
+                    cairo_move_to(cr, full, centerY);
+                    cairo_line_to(cr, half, centerY-half);
 
-			cairo_move_to(cr, full, centerY);
-			cairo_line_to(cr, half, centerY+half);
+                    cairo_move_to(cr, full, centerY);
+                    cairo_line_to(cr, half, centerY+half);
 
-			cairo_stroke(cr);
-			}
-		    }
-		cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 0/255.0);
-		cairo_rectangle(cr, layoutWidth + beforeLineSepWidth, 0,
-			marginLineWidth, marginWindowHeight);
-		cairo_fill(cr);
-		g_object_unref (G_OBJECT (layout));
-		}
-	    else
-		width = 0;
-//	    pango_attr_list_unref(attrList);
-	    }
-//	pango_attribute_destroy(attr);
+                    cairo_stroke(cr);
+                    }
+                }
+/*
+            cairo_set_source_rgb(cr, 0/255.0, 0/255.0, 0/255.0);
+            cairo_rectangle(cr, layoutWidth + beforeLineSepWidth, 0,
+                    marginLineWidth, marginWindowHeight);
+*/
+            cairo_fill(cr);
+//            g_object_unref (G_OBJECT (layout));
+            }
+        else
+            width = 0;
 	}
     }
 
@@ -277,8 +289,6 @@ void EditFiles::drawRightMargin(GtkWidget *widget, cairo_t *cr, int leftMargin, 
 	    gtk_widget_get_parent(GTK_WIDGET(textView)));
     GtkAdjustment *adjust = gtk_scrolled_window_get_hadjustment(scrolledWindow);
     int scrollAdjust = (int)gtk_adjustment_get_value(adjust);
-//    cairo_text_extents_t extents;
-//    cairo_text_extents(cr, "5555555555", &extents);
 
     cairo_set_source_rgb(cr, 128/255.0, 128/255.0, 128/255.0);
     const int marginLineWidth = 1;
@@ -329,14 +339,33 @@ extern "C" G_MODULE_EXPORT gboolean on_EditFiles_key_press_event(GtkWidget *widg
 extern "C" G_MODULE_EXPORT gboolean onMarginDraw(GtkWidget *widget,
 	cairo_t *cr, gpointer user_data)
     {
+    // https://developer.gnome.org/gtk3/stable/chap-drawing-model.html
     if(sEditFiles)
 	{
 	int width;
 	int pixPerChar;
-	sEditFiles->drawLeftMargin(widget, cr, width, pixPerChar);
-	sEditFiles->drawRightMargin(widget, cr, width, pixPerChar);
+/*
+//#if(GTK_MAJOR_VERSION >= 3)
+	// https://developer.gnome.org/gtk3/stable/ch25s02.html#id1574386
+	// expose event
+	// https://github.com/jerryd/gtk-fortran/wiki/Gtk3-fixed-problems
+	// GTK3 drawing model
+	// https://developer.gnome.org/gtk3/stable/chap-drawing-model.html
+        #include "gtk/gtkwidget.h"
+	if(gtk_cairo_should_draw_window(widget->window1))
+	    {
+//	    sEditFiles->drawLeftMargin(widget, cr, width, pixPerChar);
+	    }
+	// gtk_widget_queue_draw_area ()
+	// gtk_widget_queue_draw_region ()
+*/
+
+	// This works on Windows with GTK 3.6.
+	// It does not work on Ubuntu.
+        sEditFiles->drawLeftMargin(widget, cr, width, pixPerChar);
+        sEditFiles->drawRightMargin(widget, cr, width, pixPerChar);
 	}
-    return false;
+    return false;		// Indicate not handled, so normal draw is performed.
     }
 
 void EditFiles::removeNotebookPage(GtkWidget *pageWidget)
@@ -423,6 +452,8 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
 	    {
 	    GtkWidget *scrolled = gtk_scrolled_window_new(nullptr, nullptr);
 	    GtkWidget *editView = gtk_text_view_new();
+// This is ignored for text view?
+//	    gtk_widget_set_app_paintable(editView, true);
 
 	    /// @todo - use make_unique when supported.
 	    ScrolledFileView *scrolledView = new ScrolledFileView();
@@ -437,7 +468,22 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
 	    gtk_widget_show_all(scrolled);
 	    gtk_text_view_set_border_window_size(GTK_TEXT_VIEW(editView),
 		    GTK_TEXT_WINDOW_LEFT, 10);	// need to get text size
+//g_signal_connect(G_OBJECT(source), "expose-event", G_CALLBACK(gldb_shader_pane_source_expose), NULL);
+//GdkWindow *marginWindow = gtk_text_view_get_window(textView, GTK_TEXT_WINDOW_LEFT);
+//g_signal_connect(marginWindow, "draw", G_CALLBACK(onMarginDraw), NULL);
+//gtk_widget_set_app_paintable(editView, true);
+//gtk_widget_set_double_buffered(editView, false);
+// expose event
+//http://stackoverflow.com/questions/2027379/draw-lines-on-gtk-textview
+// draw_layer ()
+// 	    The draw_layer vfunc is called before and after the text view is drawing its own text.
+//Applications can override this vfunc in a subclass to draw customized content underneath or above the text. Since: 3.14
+//	    gtk_widget_realize(editView);
+//    GdkWindow *marginWindow = gtk_text_view_get_window(
+//	    GTK_TEXT_VIEW(editView), GTK_TEXT_WINDOW_LEFT);
+//    self.drawable=viewer.get_window(gtk.TEXT_WINDOW_TEXT)
 	    g_signal_connect(editView, "draw", G_CALLBACK(onMarginDraw), NULL);
+//	    g_signal_connect(marginWindow, "expose-event", G_CALLBACK(onExposeEvent), NULL);
 
 	    g_signal_connect(editView, "focus_in_event",
 		    G_CALLBACK(on_EditFiles_focus_in_event), NULL);

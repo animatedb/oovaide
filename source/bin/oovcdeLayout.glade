@@ -763,6 +763,44 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
   </object>
+  <object class="GtkMenu" id="DrawIncludePopupMenu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="IncludeViewSourceMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">View Source</property>
+        <signal name="activate" handler="on_IncludeViewSourceMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="IncludeRelayoutMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Relayout</property>
+        <signal name="activate" handler="on_IncludeRelayoutMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="IncludeRestartMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_IncludeRestartMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="IncludeAddSuppliersMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Add Suppliers</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_IncludeAddSuppliersMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="DrawOperationPopupMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>

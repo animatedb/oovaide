@@ -67,6 +67,7 @@ class IncludeGraph
 	void setGraphDataSource(const IncDirDependencyMapReader &incMap)
 	    { mIncludeMap = &incMap; }
         void clearAndAddInclude(OovStringRef incName);
+        void addSuppliers(OovStringRef incName);
         IncludeNode const *getNode(OovStringRef name, IncludeNodeTypes nt) const;
         size_t getNodeIndex(IncludeNode const *node) const
             { return(static_cast<size_t>(node - &mNodes[0])); }
@@ -84,7 +85,6 @@ class IncludeGraph
 	IncludeConnections mConnections;
 	const IncDirDependencyMapReader *mIncludeMap;
 	IncludeDrawOptions mDrawOptions;
-	void addSuppliers(OovStringRef incName);
     };
 
 #endif

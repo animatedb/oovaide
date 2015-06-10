@@ -22,6 +22,7 @@ void IncludeDiagram::initialize(IncDirDependencyMapReader const &includeMap)
 
 void IncludeDiagram::clearGraphAndAddInclude(OovStringRef incName)
     {
+    mLastIncName = incName;
     mIncludeGraph.clearAndAddInclude(incName);
     mIncludeDrawer.updateGraph(mIncludeGraph);
     }
@@ -79,8 +80,8 @@ static IncludeDiagram *sIncludeDiagram;
 
 static void portionGraphDisplayContextMenu(guint button, guint32 acttime, gpointer data)
     {
-//    GtkMenu *menu = Builder::getBuilder()->getMenu("DrawIncludePopupMenu");
-//    gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
+    GtkMenu *menu = Builder::getBuilder()->getMenu("DrawIncludePopupMenu");
+    gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
     }
 
 void IncludeDiagram::graphButtonPressEvent(const GdkEventButton *event)
@@ -107,16 +108,43 @@ void IncludeDiagram::graphButtonReleaseEvent(const GdkEventButton *event)
 	}
     }
 
-void IncludeDiagram::viewFileSource()
+void IncludeDiagram::addSuppliers()
     {
-//	viewSource(fn);
+    size_t index = mIncludeDrawer.getNodeIndex(sStartPosInfo);
+    if(index != IncludeDrawer::NO_INDEX)
+        {
+        IncludeNode const &node = mIncludeGraph.getNodes()[index];
+        mIncludeGraph.addSuppliers(node.getName());
+        relayout();
+        }
     }
 
+void IncludeDiagram::viewFileSource()
+    {
+    size_t index = mIncludeDrawer.getNodeIndex(sStartPosInfo);
+    if(index != IncludeDrawer::NO_INDEX)
+        {
+        IncludeNode const &node = mIncludeGraph.getNodes()[index];
+        viewSource(node.getName(), 0);
+        }
+    }
 
-extern "C" G_MODULE_EXPORT void on_IncludeViewFileMenuitem_activate(
+extern "C" G_MODULE_EXPORT void on_IncludeAddSuppliersMenuitem_activate(
+        GtkWidget *widget, gpointer data)
+    {
+    sIncludeDiagram->addSuppliers();
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeViewSourceMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
     sIncludeDiagram->viewFileSource();
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeRestartMenuitem_activate(
+        GtkWidget *widget, gpointer data)
+    {
+    sIncludeDiagram->restart();
     }
 
 extern "C" G_MODULE_EXPORT void on_IncludeRelayoutMenuitem_activate(

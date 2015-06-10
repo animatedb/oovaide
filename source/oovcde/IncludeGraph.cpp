@@ -25,6 +25,7 @@ IncludeNode const *IncludeGraph::getNode(OovStringRef name, IncludeNodeTypes nt)
 
 void IncludeGraph::clearAndAddInclude(OovStringRef incName)
     {
+    clearGraph();
     addSuppliers(incName);
     }
 

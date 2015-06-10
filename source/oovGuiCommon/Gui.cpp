@@ -817,7 +817,7 @@ bool BackgroundDialog::updateProgressIteration(size_t currentIter,
 		Gui::setText(textLabel, text);
 		mStartTime = curTime;
 		}
-	    if(mBuilder && currentIter >= 0)
+	    if(mBuilder)
 		{
 		GtkProgressBar *bar = GTK_PROGRESS_BAR(mBuilder->getWidget("BackgroundProgressbar"));
 		gtk_progress_bar_set_fraction(bar, (double)currentIter/mTotalIters);

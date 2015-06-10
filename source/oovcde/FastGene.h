@@ -8,6 +8,9 @@
 * pools. Mathematically this should be equivalent to other genetic algorithms.
 */
 
+#ifndef FASTGENE_H
+#define FASTGENE_H
+
 #include <vector>
 #include <stdint.h>
 #include <memory.h>
@@ -106,3 +109,5 @@ class GenePool
 	void getQualityHistogram(QualityHistogram &qualities) const;
 	size_t getBestGeneIndex();
     };
+
+#endif

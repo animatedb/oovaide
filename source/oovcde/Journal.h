@@ -236,7 +236,7 @@ class JournalRecordIncludeDiagram:public JournalRecord
 
     private:
         virtual char const *getRecordTypeName() const override
-            { return "Portion"; }
+            { return "Include"; }
         virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
             { mIncludeDiagram.graphButtonPressEvent(event); }
         virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override

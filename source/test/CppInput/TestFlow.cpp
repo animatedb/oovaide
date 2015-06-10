@@ -1,4 +1,4 @@
-// This file is for testing the c++ parser for differnt code flow constructs.
+// This file is for testing the c++ parser for different code flow constructs.
 // This can be used for complexity calculations or for sequence diagrams.
 
 class Funcs
@@ -19,15 +19,18 @@ class Funcs
 class FlowTest
     {
     void flowIfEmpty(int a, int b);
-	void flowIfExprEmpty(int a, int b);
+    void flowIfExprEmpty(int a, int b);
     void flowIfEmptyFunc(int a, int b, Funcs &funcs);
     void flowIfCompound(int a, int b, Funcs &funcs);
     
-	void flowLoopsEmpty(int a, int b);
+    void flowLoopsEmpty(int a, int b);
     void flowLoopsCompound(int a, int b, Funcs &funcs);
 
-	void flowSwitch(int a, int b);
+    void flowSwitch(int a, int b);
     void flowSwitchFunc(int a, int b, Funcs &funcs);
+    void statementNested();
+    int intStatement(int x)
+        { return x; }
     };
 
 void FlowTest::flowIfEmpty(int a, int b)
@@ -275,4 +278,20 @@ void FlowTest::flowSwitchFunc(int a, int b, Funcs &funcs)
     	    funcs.funcCase();
 			return;
 		}
+    }
+
+// Test statements in the expressions of loops.
+void FlowTest::statementNested()
+    {
+    do
+        {
+        while(intStatement(1) >= 1)
+            {
+            char vec[5];
+            for(int i=0; i<intStatement(2); i++)
+                {
+                vec[i] = 0;
+                }
+            }
+        } while(intStatement(3) >= 3);
     }

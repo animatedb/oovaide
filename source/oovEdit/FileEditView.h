@@ -54,6 +54,8 @@ class FileEditView
             mDoingHistory(false), mLastViewTopOffset(0), mLastViewBotOffset(0),
             mHighlightTextContentChange(false)
             {}
+        ~FileEditView()
+            {}
         void init(GtkTextView *textView);
         bool openTextFile(OovStringRef const fn);
         bool saveTextFile();

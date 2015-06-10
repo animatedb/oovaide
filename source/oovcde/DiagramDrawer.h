@@ -11,6 +11,7 @@
 #include <vector>
 #include "OovString.h"
 #include "Graph.h"
+#include "FastGene.h"
 
 
 typedef std::vector<GraphPoint> OovPolygon;
@@ -62,9 +63,44 @@ class DiagramDrawer
 	virtual void groupText(bool /*start*/)
 	    {}
 	int getPad(int div=10);
+	static void getConnectionPoints(GraphRect const &consumerRect,
+	        GraphRect const &supplierRect,
+	        GraphPoint &consumerPoint, GraphPoint &supplierPoint);
 
     private:
 	double mFontSize;
+    };
+
+class DiagramDependencyDrawer
+    {
+    public:
+        DiagramDependencyDrawer(DiagramDrawer *drawer):
+            mDrawer(drawer)
+            {}
+        void setDrawer(DiagramDrawer *drawer)
+            { mDrawer = drawer; }
+        virtual size_t getNumNodes() const = 0;
+        virtual void setNodePosition(size_t nodeIndex, GraphPoint pos) = 0;
+        virtual GraphPoint getNodePosition(size_t nodeIndex) const = 0;
+        virtual OovString const &getNodeName(size_t nodeIndex) const = 0;
+        virtual size_t getNumConnections() const = 0;
+        virtual void getConnection(size_t ci, size_t &consumerIndex,
+                size_t &supplierIndex) const = 0;
+        virtual ~DiagramDependencyDrawer()
+            {}
+
+        GraphRect getNodeRect(size_t nodeIndex) const;
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
+
+    protected:
+        DiagramDrawer *mDrawer;
+
+        size_t getNodeIndex(GraphPoint p, size_t numNodes) const;
+        /// This returns a column position for each depth.
+        /// This returns positions without the margin.
+        std::vector<int> getColumnPositions(std::vector<size_t> const &depths) const;
+        void drawArrowDependency(GraphPoint &consumerPoint,
+                GraphPoint &supplierPoint);
     };
 
 class DistinctColors
@@ -77,5 +113,36 @@ class DistinctColors
 // This launches an editor to view source code at a certain line number in
 // the source code.
 void viewSource(OovStringRef const module, unsigned int lineNum);
+
+
+/// This defines functionality to use a genetic algorithm used to layout the
+/// node positions for the include diagram. The genetic algorithm will place
+/// the objects with minimally overlapping lines.
+/// @todo - and nodes that have more relations are closer to each other?
+class DiagramDependencyGenes:public GenePool
+    {
+    public:
+        void initialize(DiagramDependencyDrawer &drawer, size_t nodeHeight);
+        // Do some iterations, and move the positions from the gene pool into
+        // the drawer.
+        void updatePositionsInDrawer();
+
+    private:
+        DiagramDependencyDrawer *mDrawer;
+        size_t mNodeHeight;
+        size_t mMaxDrawingHeight;
+        size_t mMaxDistanceQ;
+        size_t mMaxOverlapQ;
+        size_t mMaxHeightQ;
+        void setupQualityEachGeneration() override;
+        QualityType calculateSingleGeneQuality(size_t geneIndex) const override;
+        GeneValue getYPosition(size_t geneIndex, size_t nodeIndex) const;
+        void setYPosition(size_t geneIndex, size_t nodeIndex, GeneValue val);
+        size_t getDrawingHeight(size_t geneIndex) const;
+        size_t getNodeOverlapCount(size_t geneIndex) const;
+        size_t getNodeYDistances(size_t geneIndex) const;
+        size_t getMaxNodesInColumn() const;
+        bool nodesOverlap(size_t geneIndex, size_t node1, size_t node2) const;
+    };
 
 #endif /* DIAGRAMDRAWER_H_ */

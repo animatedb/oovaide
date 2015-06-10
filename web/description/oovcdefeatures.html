@@ -15,8 +15,7 @@
 <h2>OOVCDE Features</h2>
 <hr style="width: 100%; height: 3px;">
 
-Created: July 13, 2013
-Last update: May 16, 2014
+Last update: June 8, 2015
 
 <p>
 <img src="OovLogo.png" style="height:16mm; width:30mm">
@@ -24,19 +23,15 @@ Last update: May 16, 2014
 </p><h2>Features</h2>
 <h3>General</h3>
 <ul>
-	<li>C++ build system, editor, debugger and diagram tool.<br>
+	<li>C++ build system, editor, debugger, diagram tool, code coverage,
+	complexity, and other analysis tools.<br>
 </li>
-  <li>Generates class, function relationship and component diagrams automatically for C++ files.</li>
-  <li>The build and analysis tools are command line utilities that are invoked from the GUI.<br>
-  </li>
-
-
-	<li>Works under Windows or Linux.</li>
-	<li>Uses LLVM/CLang to parse C++ source files.</li>
-  <li>Uses GDB to debug.<br>
-  </li>
-
-	<li>Uses GTK to display.</li>
+  <li>Generates SVG diagrams automatically from C++ files.</li>
+  <li>The build and analysis tools are command line utilities that are invoked from the GUI.</li>
+  <li>Works under Windows or Linux.</li>
+  <li>Uses LLVM/CLang to parse C++ source files.</li>
+  <li>Uses GDB to debug.</li>
+  <li>Uses GTK to display.</li>
 </ul>
 
 <h3>Projects</h3>
@@ -56,8 +51,8 @@ Last update: May 16, 2014
 <ul>
 	<li>The source directory is recursively parsed for all source and header
 	files.</li>
-	<li>The external include paths can be specified using external package references. Project include paths are found automatically.<br>
-</li>
+	<li>The external include paths can be specified using external package references.
+	 Project include paths are found automatically.</li>
 	<li>The compilation runs in the background ant the error results are displayed in a window.</li>
 	<li>The output files contain</li>
 		<ul>
@@ -70,68 +65,28 @@ Last update: May 16, 2014
 		</ul>
 </ul>
 
-<h3>Class Diagram Modification</h3>
+<h3>Diagrams</h3>
+The following diagrams are available.
 	<ul>
-	<li>Selecting a class from the class list adds the class to the display
-	with related classes to a preset depth. The classes are arranged using a
-	genetic algorithm.</li>
-	<li>The classes can be manually moved after the initial placement.</li>
-	<li>New classes can be added by right clicking on a class, and a menu is
-	displayed that allows adding classes that are related in various ways
-	(child members, subclasses, etc.)</li>
-	
-  <li>The Edit/Preferences menu item can access drawing options to change
-	the displayed information.</li>
-
-	<li>Selecting the right click on a class, and choosing the Properties menu
-	item can be used to change drawing properties for the selected class</li>
+	<li>Component dependency diagrams</li>
+	<li>Zone diagrams (view thousands of classes)</li>
+	<li>Class diagrams</li>
+	<li>Portion diagrams (view class attribute/member relations)</li>
+	<li>Sequence diagrams </li>
 	</ul>
 
-<h3>Class Diagram Display</h3>
+<h3>Analysis Statistics</h3>
+	The following analysis can be performed.
 	<ul>
-	<li>Displays relations between classes.</li>
-	<li>Optimizes drawings for the following</li>
-		<ul>
-		<li>preventing overlapping classes</li>
-		<li>nodes with relations are closer</li>
-		</ul>
-	<li>Drawing options for the following</li>
-		<ul>
-		<li>display attributes</li>
-		<li>display operations, operation parameters</li>
-		<li>display types for attributes, function parameters</li>
-		</ul>
-	<li>Right clicking on a class allows viewing the source code using notepad
-	on Windows.</li>
-	<li>The drawing can be saved to SVG for futrher editing in a tool such
-	as Inkscape.</li>
+	<li>Code coverage</li>
+	<li>Code complexity</li>
+	<li>Duplicate code</li>
+	<li>Class member usage</li>
+	<li>Line counts</li>
+	<li>Project statistics</li>
 	</ul>
 
-<h3>Sequence Diagram Modification</h3>
-	<ul>
-	<li>Right clicking on an operation allows expanding or collapsing function
-	calls.</li>
-	<li>Right clicking on a class allows removing the class and related
-	operations.</li>
-	</ul>
-
-<h3>Sequence Diagram Display</h3>
-
-	<ul>
-	<li>When a class is selected in the class list, the operations will be updated
-	in the operation list.</li>
-	<li>Selecting an operation will create a new sequence diagram that will show
-	relations between classes and functions.</li>
-	</ul>
-
-<h3>Component Diagram Display</h3>
-<ul>
-  <li>The component diagrams display the static relations between programs and libraries.<br>
-  </li>
-</ul>
-
-
-	<h3>Journal</h3>
+<h3>Journal</h3>
 	<ul>
 	<li>Modified drawings are saved in a journal list.</li>
 	<li>Selecting a record in the journal will display the diagram, and the
@@ -143,9 +98,10 @@ Last update: May 16, 2014
 	The goal of the build system is to have a simple and easy to use build system
 	that uses GNU or Clang (Not MSVC) to build projects for Windows or Linux.
 	See the user guide for a complete description of the build system.<br>
+
 <h3>Editor</h3>
-C++ code editor with syntax highlighting and debugger.<br>
-<br>
+	C++ code editor with syntax highlighting and debugger.
 
 
-</div></body></html>
+</div></body>
+</html>

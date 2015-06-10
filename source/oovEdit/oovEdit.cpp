@@ -14,10 +14,15 @@
 #include <string.h>
 #include <vector>
 
+
+Editor *gEditor;
+
+
 Editor::Editor():
     mEditFiles(mDebugger, mEditOptions), mLastSearchCaseSensitive(false)
     {
     mDebugger.setListener(*this);
+    gEditor = this;
     }
 
 void Editor::init()
@@ -26,6 +31,11 @@ void Editor::init()
     mVarView.init(mBuilder, "DataTreeview", nullptr);
     setStyle();
     g_idle_add(onIdle, this);
+    }
+
+void Editor::shutdown()
+    {
+    gEditor = nullptr;
     }
 
 void Editor::openTextFile(OovStringRef const fn)
@@ -350,25 +360,26 @@ void Editor::findAndReplace(OovStringRef const findStr, bool forward, bool caseS
     }
 
 
-Editor gEditor;
-
 gboolean Editor::onIdle(gpointer data)
     {
-    if(gEditor.mDebugOut.length())
+    if(gEditor)
 	{
-	GtkTextView *view = GTK_TEXT_VIEW(gEditor.getBuilder().
-		getWidget("ControlTextview"));
-	Gui::appendText(view, gEditor.mDebugOut);
-	Gui::scrollToCursor(view);
-	gEditor.mDebugOut.clear();
+	if(gEditor->mDebugOut.length())
+	    {
+	    GtkTextView *view = GTK_TEXT_VIEW(gEditor->getBuilder().
+		    getWidget("ControlTextview"));
+	    Gui::appendText(view, gEditor->mDebugOut);
+	    Gui::scrollToCursor(view);
+	    gEditor->mDebugOut.clear();
+	    }
+	eDebuggerChangeStatus dbgStatus = gEditor->mDebugger.getChangeStatus();
+	if(dbgStatus != DCS_None)
+	    {
+	    gEditor->idleDebugStatusChange(dbgStatus);
+	    }
+	gEditor->getEditFiles().onIdle();
+	sleepMs(5);
 	}
-    eDebuggerChangeStatus dbgStatus = gEditor.mDebugger.getChangeStatus();
-    if(dbgStatus != DCS_None)
-	{
-	gEditor.idleDebugStatusChange(dbgStatus);
-	}
-    gEditor.getEditFiles().onIdle();
-    sleepMs(5);
     return true;
     }
 
@@ -403,13 +414,19 @@ void Editor::debugSetStackFrame(OovStringRef const frameLine)
 void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
         gchar *text, gint len, gpointer user_data)
     {
-    gEditor.bufferInsertText(textbuffer, location, text, len);
+    if(gEditor)
+	{
+	gEditor->bufferInsertText(textbuffer, location, text, len);
+	}
     }
 
 void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
         GtkTextIter *end, gpointer user_data)
     {
-    gEditor.bufferDeleteRange(textbuffer, start, end);
+    if(gEditor)
+	{
+	gEditor->bufferDeleteRange(textbuffer, start, end);
+	}
     }
 
 /*
@@ -535,8 +552,11 @@ void Editor::setPreferencesWorkingDir()
 static void activateApp(GApplication *gapp)
     {
     GtkApplication *app = GTK_APPLICATION (gapp);
-    GtkWidget *window = gEditor.getBuilder().getWidget("MainWindow");
-    gEditor.loadSettings();
+    GtkWidget *window = Builder::getBuilder()->getWidget("MainWindow");
+    if(gEditor)
+	{
+	gEditor->loadSettings();
+	}
     gtk_widget_show_all(window);
     gtk_application_add_window(app, GTK_WINDOW(window));
     }
@@ -550,39 +570,42 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
     int argc;
     gchar **argv = g_application_command_line_get_arguments(cmdline, &argc);
     bool goodArgs = true;
-    for(gint i = 0; i < argc && goodArgs; i++)
+    if(gEditor)
 	{
-	char const * fn = nullptr;
-	int line = 1;
-	for(int argi=1; argi<argc; argi++)
+	for(gint i = 0; i < argc && goodArgs; i++)
 	    {
-	    if(argv[argi][0] == '+')
+	    char const * fn = nullptr;
+	    int line = 1;
+	    for(int argi=1; argi<argc; argi++)
 		{
-		if(argv[argi][1] == 'p')
+		if(argv[argi][0] == '+')
 		    {
-		    OovString fname = FilePathFixFilePath(&argv[argi][2]);
-		    gEditor.setProjectDir(fname);
+		    if(argv[argi][1] == 'p')
+			{
+			OovString fname = FilePathFixFilePath(&argv[argi][2]);
+			gEditor->setProjectDir(fname);
+			}
+		    else
+			sscanf(&argv[argi][1], "%d", &line);
+		    }
+		else if(argv[argi][0] == '-')
+		    {
+		    if(argv[argi][1] == 'p')
+			{
+			OovString fname = FilePathFixFilePath(&argv[argi][2]);
+			gEditor->setProjectDir(fname);
+			}
+		    else
+			goodArgs = false;
 		    }
 		else
-		    sscanf(&argv[argi][1], "%d", &line);
+		    fn = argv[argi];
 		}
-	    else if(argv[argi][0] == '-')
+	    if(fn)
 		{
-		if(argv[argi][1] == 'p')
-		    {
-		    OovString fname = FilePathFixFilePath(&argv[argi][2]);
-		    gEditor.setProjectDir(fname);
-		    }
-		else
-		    goodArgs = false;
+		activateApp(gapp);
+		gEditor->getEditFiles().viewModule(FilePathFixFilePath(fn), line);
 		}
-	    else
-		fn = argv[argi];
-	    }
-	if(fn)
-	    {
-	    activateApp(gapp);
-	    gEditor.getEditFiles().viewModule(FilePathFixFilePath(fn), line);
 	    }
 	}
     if(goodArgs)
@@ -606,15 +629,19 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
 
 static void startupApp(GApplication *gapp)
     {
-    if(gEditor.getBuilder().addFromFile("oovEdit.glade"))
+    if(gEditor)
 	{
-	gEditor.init();
-	gEditor.getBuilder().connectSignals();
+	if(gEditor->getBuilder().addFromFile("oovEdit.glade"))
+	    {
+	    gEditor->init();
+	    gEditor->getBuilder().connectSignals();
+	    }
 	}
     }
 
 int main(int argc, char **argv)
     {
+    Editor editor;
     GtkApplication *app = gtk_application_new("org.oovcde.oovEdit",
 	    G_APPLICATION_HANDLES_COMMAND_LINE);
     GApplication *gapp = G_APPLICATION(app);
@@ -635,6 +662,7 @@ int main(int argc, char **argv)
 	}
 #endif
     int status = g_application_run(gapp, argc, argv);
+    editor.shutdown();	// This doesn't work to prevent editor buffer crash.
     g_object_unref(app);
     return status;
     }
@@ -691,28 +719,49 @@ int main(int argc, char *argv[])
 
 extern "C" G_MODULE_EXPORT void on_FileOpenImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.openTextFile();
+    if(gEditor)
+	{
+	gEditor->openTextFile();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_FileSaveImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.saveTextFile();
+    if(gEditor)
+	{
+	gEditor->saveTextFile();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_FileSaveAsImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.saveAsTextFileWithDialog();
+    if(gEditor)
+	{
+	gEditor->saveAsTextFileWithDialog();
+	}
     }
 
 extern "C" G_MODULE_EXPORT bool on_FileQuitImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    return !gEditor.checkExitSave();
+    if(gEditor)
+	{
+	return !gEditor->checkExitSave();
+	}
+    else
+	{
+	return false;
+	}
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_MainWindow_delete_event(GtkWidget *button, gpointer data)
     {
-    gEditor.saveSettings();
-    return !gEditor.checkExitSave();
+    if(gEditor)
+	{
+	gEditor->saveSettings();
+	return !gEditor->checkExitSave();
+	}
+    else
+	return false;
     }
 
 extern "C" G_MODULE_EXPORT void on_HelpAboutImagemenuitem_activate(GtkWidget *widget, gpointer data)
@@ -725,23 +774,32 @@ extern "C" G_MODULE_EXPORT void on_HelpAboutImagemenuitem_activate(GtkWidget *wi
 
 extern "C" G_MODULE_EXPORT void on_FindImagemenuitem_activate(GtkWidget *widget, gpointer data)
     {
-    gEditor.findDialog();
+    if(gEditor)
+	{
+	gEditor->findDialog();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_FindNextMenuItem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.findAgain(true);
+    if(gEditor)
+	{
+	gEditor->findAgain(true);
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_FindPreviousMenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.findAgain(false);
+    if(gEditor)
+	{
+	gEditor->findAgain(false);
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_FindEntry_activate(GtkEditable *editable,
         gpointer user_data)
     {
-    GtkWidget *dlg = gEditor.getBuilder().getWidget("FindDialog");
+    GtkWidget *dlg = Builder::getBuilder()->getWidget("FindDialog");
     gtk_widget_hide(dlg);
     g_signal_emit_by_name(dlg, "response", GTK_RESPONSE_OK);
     }
@@ -749,23 +807,29 @@ extern "C" G_MODULE_EXPORT void on_FindEntry_activate(GtkEditable *editable,
 extern "C" G_MODULE_EXPORT void on_FindInFilesMenuitem_activate(
 	GtkWidget *widget, gpointer data)
     {
-    gEditor.findInFilesDialog();
+    if(gEditor)
+	{
+	gEditor->findInFilesDialog();
+	}
     }
 
 extern "C" G_MODULE_EXPORT bool on_FindTextview_button_press_event(
 	GtkWidget *widget, GdkEvent *event, gpointer data)
     {
-    GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
-    if(buttEvent->type == GDK_2BUTTON_PRESS)
+    if(gEditor)
 	{
-	GtkWidget *widget = gEditor.getBuilder().getWidget("FindTextview");
-	std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-	size_t pos = line.find(' ');
-	if(pos != std::string::npos)
+	GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
+	if(buttEvent->type == GDK_2BUTTON_PRESS)
 	    {
-	    line.resize(pos);
+	    GtkWidget *widget = Builder::getBuilder()->getWidget("FindTextview");
+	    std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+	    size_t pos = line.find(' ');
+	    if(pos != std::string::npos)
+		{
+		line.resize(pos);
+		}
+	    gEditor->gotoFileLine(line);
 	    }
-	gEditor.gotoFileLine(line);
 	}
     return FALSE;
     }
@@ -773,19 +837,22 @@ extern "C" G_MODULE_EXPORT bool on_FindTextview_button_press_event(
 extern "C" G_MODULE_EXPORT gboolean on_StackTextview_button_press_event(GtkWidget *widget,
 	GdkEvent *event, gpointer user_data)
     {
-    GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
-    if(buttEvent->type == GDK_2BUTTON_PRESS)
+    if(gEditor)
 	{
-	GtkWidget *widget = gEditor.getBuilder().getWidget("StackTextview");
-	OovString line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-	gEditor.debugSetStackFrame(line);
-	size_t pos = line.rfind(' ');
-	if(pos != std::string::npos)
+	GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
+	if(buttEvent->type == GDK_2BUTTON_PRESS)
 	    {
-	    pos++;
-	    line.erase(0, pos);
+	    GtkWidget *widget = Builder::getBuilder()->getWidget("StackTextview");
+	    OovString line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+	    gEditor->debugSetStackFrame(line);
+	    size_t pos = line.rfind(' ');
+	    if(pos != std::string::npos)
+		{
+		pos++;
+		line.erase(0, pos);
+		}
+	    gEditor->gotoFileLine(line);
 	    }
-	gEditor.gotoFileLine(line);
 	}
     return false;
     }
@@ -793,14 +860,17 @@ extern "C" G_MODULE_EXPORT gboolean on_StackTextview_button_press_event(GtkWidge
 extern "C" G_MODULE_EXPORT gboolean on_ControlTextview_key_press_event(GtkWidget *widget,
 	GdkEvent *event, gpointer data)
     {
-    switch(event->key.keyval)
+    if(gEditor)
 	{
-	case GDK_KEY_Return:
+	switch(event->key.keyval)
 	    {
-	    std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-	    gEditor.getDebugger().sendCommand(str);
+	    case GDK_KEY_Return:
+		{
+		std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+		gEditor->getDebugger().sendCommand(str);
+		}
+		break;
 	    }
-	    break;
 	}
     return false;
     }
@@ -808,64 +878,97 @@ extern "C" G_MODULE_EXPORT gboolean on_ControlTextview_key_press_event(GtkWidget
 extern "C" G_MODULE_EXPORT void on_CutImagemenuitem_activate(GtkWidget *button,
 	gpointer data)
     {
-    gEditor.cut();
+    if(gEditor)
+	{
+	gEditor->cut();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_CopyImagemenuitem_activate(GtkWidget *button,
 	gpointer data)
     {
-    gEditor.copy();
+    if(gEditor)
+	{
+	gEditor->copy();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_PasteImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.paste();
+    if(gEditor)
+	{
+	gEditor->paste();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_DeleteImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.deleteSel();
+    if(gEditor)
+	{
+	gEditor->deleteSel();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_UndoImageMenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.undo();
+    if(gEditor)
+	{
+	gEditor->undo();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_RedoImageMenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.redo();
+    if(gEditor)
+	{
+	gEditor->redo();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_EditPreferences_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.editPreferences();
+    if(gEditor)
+	{
+	gEditor->editPreferences();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_DebugWorkingDirButton_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.setPreferencesWorkingDir();
+    if(gEditor)
+	{
+	gEditor->setPreferencesWorkingDir();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_GoToDeclMenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.gotoDeclaration();
+    if(gEditor)
+	{
+	gEditor->gotoDeclaration();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_GoToDefMenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.gotoDefinition();
+    if(gEditor)
+	{
+	gEditor->gotoDefinition();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_GoToLineMenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor.gotoLineDialog();
+    if(gEditor)
+	{
+	gEditor->gotoLineDialog();
+	}
     }
 
 extern "C" G_MODULE_EXPORT void on_LineNumberEntry_activate(GtkEditable *editable,
         gpointer user_data)
     {
-    GtkWidget *dlg = gEditor.getBuilder().getWidget("GoToLineDialog");
+    GtkWidget *dlg = Builder::getBuilder()->getWidget("GoToLineDialog");
     gtk_widget_hide(dlg);
     g_signal_emit_by_name(dlg, "response", GTK_RESPONSE_OK);
     }

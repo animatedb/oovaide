@@ -9,18 +9,18 @@
 #include "FilePath.h"
 #include "Project.h"
 
-static Builder *gBuilder;
+static Builder *sBuilder;
 
 void Builder::init()
     {
-    if(!gBuilder)
+    if(!sBuilder)
 	mGtkBuilder = gtk_builder_new();
-    gBuilder = this;
+    sBuilder = this;
     }
 
 Builder *Builder::getBuilder()
     {
-    return gBuilder;
+    return sBuilder;
     }
 
 bool Builder::addFromFile(OovStringRef const fn)

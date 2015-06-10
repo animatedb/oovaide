@@ -5,73 +5,62 @@
  */
 
 #include "IncludeDrawer.h"
-#include "IncludeGenes.h"
 
 
-bool IncludeDrawer::fillDepths(size_t nodeIndex, std::vector<size_t> &depths) const
+void IncludeDrawer::fillDepths(size_t nodeIndex, std::vector<size_t> &depths) const
     {
-    size_t depth = 0;
-    bool resolved = true;
-    /*
-    for(size_t i=0; i<mGraph->getConnections().size(); i++)
-	{
-	IncludeConnection const &conn = mGraph->getConnections()[i];
-	if(nodeIndex == conn.mConsumerNodeIndex)
-	    {
-	    size_t supIndex = conn.mSupplierNodeIndex;
-            size_t opDepth = depths[supIndex];
-            if(opDepth > 0)
+    // Use the depths container to figure out if the depth for some index
+    // has already been calculated.  This prevents recursion.
+    if(mGraph->getConnections().size() == 0)
+        depths[nodeIndex] = 0;
+    else
+        {
+        size_t maxDepth = 0;
+        for(size_t i=0; i<mGraph->getConnections().size(); i++)
+            {
+            IncludeConnection const &conn = mGraph->getConnections()[i];
+            if(nodeIndex == conn.mConsumerNodeIndex)
                 {
-                if(opDepth > depth)
+                size_t supIndex = conn.mSupplierNodeIndex;
+                size_t depth = depths[supIndex];
+                if(depth == NO_INDEX)
                     {
-                    depth = opDepth;
+                    depths[supIndex] = maxDepth;        // Prevent recursion
+                    fillDepths(supIndex, depths);
+                    depth = depths[supIndex];
+                    }
+                if(depth > maxDepth)
+                    {
+                    maxDepth = depth;
                     }
                 }
-            else
-                {
-                resolved = false;
-                break;
-                }
             }
+        depths[nodeIndex] = maxDepth + 1;
         }
-    if(resolved)
-	{
-	depths[nodeIndex] = depth + 1;
-	}
-*/
-    depths[nodeIndex] = depth;
-    return resolved;
     }
 
 std::vector<size_t> IncludeDrawer::getCallDepths() const
     {
     std::vector<size_t> depths(mGraph->getNodes().size());
-    bool resolved = false;
-    /// @todo - need max nesting depth to limit loop time
-    for(int limi=0; limi<100 && !resolved; limi++)
-	{
-	for(size_t ni=0; ni<mGraph->getNodes().size(); ni++)
-	    {
-	    if(depths[ni] == 0)
-		{
-		if(!fillDepths(ni, depths))
-		    {
-		    resolved = false;
-		    }
-		}
-	    }
-	}
+    size_t initIndex = NO_INDEX;
+    std::fill(depths.begin(), depths.end(), initIndex);
+    for(size_t ni=0; ni<mGraph->getNodes().size(); ni++)
+        {
+        fillDepths(ni, depths);
+        }
     return depths;
     }
 
 std::vector<int> IncludeDrawer::getColumnPositions(std::vector<size_t> const &depths) const
     {
-    std::vector<int> columnSpacing(depths.size());
+    // Add 1 so there is a spacing column one beyond the last column.
+    std::vector<int> columnSpacing(depths.size() + 1);
+    int pad = static_cast<int>(mDrawer->getTextExtentWidth("W"));
     // first get the width required for each column.
     for(size_t ni=0; ni<mNodePositions.size(); ni++)
 	{
 	int &columnWidth = columnSpacing[depths[ni]];
-	int nodeWidth = static_cast<int>(getNodeRect(ni).size.x * 1.5);
+	int nodeWidth = static_cast<int>(getNodeRect(ni).size.x + pad * 5);
 	if(nodeWidth > columnWidth)
 	    {
 	    columnWidth = nodeWidth;
@@ -113,10 +102,10 @@ void IncludeDrawer::updateNodePositions()
 	}
     if(mNodePositions.size() > 0)
 	{
-	IncludeGenes genes;
+        DiagramDependencyGenes genes;
 	GraphRect rect = getNodeRect(0);
 	genes.initialize(*this, static_cast<size_t>(rect.size.y));
-//	genes.updatePositionsInDrawer();
+	genes.updatePositionsInDrawer();
 	}
     }
 
@@ -158,36 +147,6 @@ GraphSize IncludeDrawer::getDrawingSize() const
     return graphRect.size;
     }
 
-GraphRect IncludeDrawer::getNodeRect(size_t nodeIndex) const
-    {
-    GraphPoint nodePos = mNodePositions[nodeIndex];
-    OovString name = mGraph->getNodes()[nodeIndex].getName();
-    int textWidth = static_cast<int>(mDrawer->getTextExtentWidth(name));
-    float textHeight = mDrawer->getTextExtentHeight(name);
-    /// @todo - fix pad here and in drawNodeText
-    int pad2 = static_cast<int>((textHeight / 7.f) * 4);
-    return GraphRect(nodePos.x, nodePos.y, textWidth + pad2,
-        static_cast<int>(textHeight) + pad2);
-    }
-
-size_t IncludeDrawer::getNodeIndex(GraphPoint p)
-    {
-    size_t nodeIndex = NO_INDEX;
-    if(mGraph)
-	{
-	for(size_t i=0; i<mGraph->getNodes().size(); i++)
-	    {
-	    GraphRect rect = getNodeRect(i);
-	    if(rect.isPointIn(p))
-		{
-		nodeIndex = i;
-		break;
-		}
-	    }
-	}
-    return nodeIndex;
-    }
-
 void IncludeDrawer::setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPoint newPoint)
     {
     if(nodeIndex != NO_INDEX)
@@ -219,36 +178,9 @@ void IncludeDrawer::drawConnections()
 	{
 	GraphRect suppRect = getNodeRect(conn.mSupplierNodeIndex);
 	GraphRect consRect = getNodeRect(conn.mConsumerNodeIndex);
-	GraphPoint suppPoint = suppRect.getCenter();
-	GraphPoint consPoint = consRect.getCenter();
-	if(abs(suppPoint.x - consPoint.x) > abs(suppPoint.y - consPoint.y))
-	    {
-	    // Horizontal distance is larger, so place connection at ends
-	    if(suppPoint.x > consPoint.x)
-		{
-		consPoint.x += consRect.size.x/2;
-		suppPoint.x -= suppRect.size.x/2;
-		}
-	    else
-		{
-		consPoint.x -= consRect.size.x/2;
-		suppPoint.x += suppRect.size.x/2;
-		}
-	    }
-	else
-	    {
-	    // Place connection at top or bottom
-	    if(suppPoint.y > consPoint.y)
-		{
-		consPoint.y += consRect.size.y/2;
-		suppPoint.y -= suppRect.size.y/2;
-		}
-	    else
-		{
-		consPoint.y -= consRect.size.y/2;
-		suppPoint.y += suppRect.size.y/2;
-		}
-	    }
+	GraphPoint suppPoint;
+        GraphPoint consPoint;
+	mDrawer->getConnectionPoints(consRect, suppRect, consPoint, suppPoint);
 	size_t colorIndex = conn.mSupplierNodeIndex;
 	if(colorIndex != lastColorIndex)
 	    {
@@ -260,10 +192,7 @@ void IncludeDrawer::drawConnections()
 	    mDrawer->groupShapes(true, lineColor, Color(245,245,255));
 	    lastColorIndex = colorIndex;
 	    }
-	mDrawer->drawLine(suppPoint, consPoint);
-	DiagramArrow arrow(suppPoint, consPoint, 10);
-	mDrawer->drawLine(suppPoint, suppPoint + arrow.getLeftArrowPosition());
-	mDrawer->drawLine(suppPoint, suppPoint + arrow.getRightArrowPosition());
+	drawArrowDependency(consPoint, suppPoint);
 	}
     if(lastColorIndex != NO_INDEX)
 	{

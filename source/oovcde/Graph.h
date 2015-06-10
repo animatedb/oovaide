@@ -14,6 +14,8 @@
 #define M_PI 3.14159265
 #endif
 
+inline bool isBetween(int ref, int v1, int v2)
+    { return ref >= v1 && ref <= v2; }
 
 class Color
     {
@@ -98,11 +100,8 @@ class GraphRect
 	    { return start.x+(size.x/2); }
 	int centery() const
 	    { return start.y+(size.y/2); }
-	bool isPointIn(GraphPoint point) const
-	    {
-	    return(point.x >= start.x && point.x <= endx() &&
-		    point.y >= start.y && point.y <= endy());
-	    }
+        bool isPointIn(GraphPoint point) const;
+        bool isXOverlapped(GraphRect const &rect) const;
 	GraphPoint getCenter() const
 	    { return GraphPoint(start.x+size.x/2, start.y+size.y/2); }
 	// Given two rectangles, find the points at the edges of the rectangles
@@ -110,14 +109,7 @@ class GraphRect
 	void findConnectPoints(GraphRect const &rect2, GraphPoint &p1e,
 		GraphPoint &p2e) const;
 	void unionRect(GraphRect const &rect2);
-	GraphRect getZoomed(double zoomX, double zoomY) const
-	    {
-	    GraphRect rect;
-	    rect.start = start.getZoomed(zoomX, zoomY);
-	    rect.size = size.getZoomed(zoomX, zoomY);
-	    return rect;
-	    }
-
+        GraphRect getZoomed(double zoomX, double zoomY) const;
 
     public:
 	GraphPoint start;

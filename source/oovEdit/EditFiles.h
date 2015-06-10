@@ -50,6 +50,7 @@ class EditFiles
     {
     public:
 	EditFiles(Debugger &debugger, EditOptions &editOptions);
+	~EditFiles();
 	void init(Builder &builder);
 	void onIdle();
 	void updateDebugMenu();
@@ -95,6 +96,9 @@ class EditFiles
 	size_t mFocusEditViewIndex;
 	Debugger &mDebugger;
 	timeval mLastHightlightIdleUpdate;
+        PangoLayout *mMarginLayout;
+	PangoAttribute *mMarginAttr;
+	PangoAttrList *mMarginAttrList;
 	void idleHighlight();
 	int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
 	ScrolledFileView *getScrolledFileView()

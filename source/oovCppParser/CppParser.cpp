@@ -521,7 +521,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 
 	case CXCursor_DoStmt:
 	    addCondStatement(cursor, 1, 0);
-	    // @todo - No need to recurse?
+	    // No need to recurse - tested that do/while expression can have calls.
 	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
@@ -529,7 +529,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 	/// Conditional statements
 	case CXCursor_WhileStmt:	//   enum { VAR, COND, BODY, END_EXPR };
 	    addCondStatement(cursor, 0, 1);	// cond body
-	    // @todo - No need to recurse?
+            // No need to recurse - tested that while expression can have calls.
 	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
@@ -565,13 +565,12 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
 
 	case CXCursor_CXXForRangeStmt:
 	    addCondStatement(cursor, 1, 5);
-	    // @todo - No need to recurse?
 	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 
 	case CXCursor_ForStmt:
 	    addCondStatement(cursor, 1, 3);
-	    // @todo - No need to recurse?
+            // No need to recurse - tested that for expression can have calls.
 	    // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
 	    break;
 

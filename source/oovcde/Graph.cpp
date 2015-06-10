@@ -67,3 +67,24 @@ void GraphRect::unionRect(GraphRect const &rect2)
     if(rect2.endy() > rect1.endy())
 	rect1.size.y = rect2.endy() - rect1.start.y;
     }
+
+bool GraphRect::isPointIn(GraphPoint point) const
+    {
+    return(point.x >= start.x && point.x <= endx() &&
+            point.y >= start.y && point.y <= endy());
+    }
+
+bool GraphRect::isXOverlapped(GraphRect const &rect) const
+    {
+    return(isBetween(start.x, rect.start.x, rect.endx()) ||
+            isBetween(endx(), rect.start.x, rect.endx()) ||
+            isBetween(rect.start.x, start.x, endx()));
+    }
+
+GraphRect GraphRect::getZoomed(double zoomX, double zoomY) const
+    {
+    GraphRect rect;
+    rect.start = start.getZoomed(zoomX, zoomY);
+    rect.size = size.getZoomed(zoomX, zoomY);
+    return rect;
+    }

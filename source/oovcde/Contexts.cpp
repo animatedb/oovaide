@@ -174,6 +174,7 @@ void Contexts::setContext(eContexts context)
                 {
                 page = PI_Include;
                 displayIncludeDiagram();
+                updateJournalList();
                 }
 	    break;
 
