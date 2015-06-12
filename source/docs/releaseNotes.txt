@@ -17,7 +17,6 @@ Explanations
 Missing Features
 ----------------
 - General
-	- margins in editor aren't displaying on linux?
 	- editor idle crash in linux with text buffers and highlighting on startup and shutdown
 	- remove dup journal code
 	- remove dup graph code

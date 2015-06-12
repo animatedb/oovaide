@@ -223,7 +223,7 @@ void ZoneGraph::sortNodes()
 	    node.clearMappedName();
 	    }
 	}
-    std::sort(mNodes.begin(), mNodes.end(), [](ZoneNode &n1, ZoneNode &n2)
+    std::sort(mNodes.begin(), mNodes.end(), [](ZoneNode const &n1, ZoneNode const &n2)
 		{ return(n1.getMappedNameForSorting() < n2.getMappedNameForSorting()); }
 	);
     }

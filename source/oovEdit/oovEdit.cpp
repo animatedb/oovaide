@@ -334,9 +334,10 @@ void Editor::setStyle()
     GdkDisplay *display = gdk_display_get_default();
     GdkScreen *screen = gdk_display_get_default_screen(display);
 
-    const gchar *styleFile = "OovEdit.css";
+    OovString path = Project::getBinDirectory();
+    path += "OovEdit.css";
     GError *err = 0;
-    gtk_css_provider_load_from_path(provider, styleFile, &err);
+    gtk_css_provider_load_from_path(provider, path.getStr(), &err);
     gtk_style_context_add_provider_for_screen (screen,
 	GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     g_object_unref(provider);

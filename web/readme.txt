@@ -1,4 +1,5 @@
-The Oovcde web site is at http://oovcde.sourceforge.net.
+The Oovcde web site is at http://oovcde.sourceforge.net or
+	https://github.com/animatedb/oovcde.
 	The User Guide contains Examples that show the use of Oovcde.
 	The Releases list the features added in each version.
 	The Features shows a current list of functionality.
@@ -63,11 +64,12 @@ Building - Windows Versions:
 Building - Linux Versions:
 	Either the Gnu or CLang compiler is required for building.
 
-Building Oovcde:
+	The easiest way to build is using git and is described
+	at https://github.com/animatedb/oovcde.
 	Eclipse or CMake is supported for building Oovcde.
 
-	On ubuntu, external packages gtk+-3.0 and
-	gmodule-2.0 should be linked in order to build Oovcde.
+	On ubuntu, external packages gtk+-3.0 and libclang-dev
+	are required in order to build Oovcde.
 
 	To build oovcde on Linux using CMake (Debian/Ubuntu):
 		- Run "sudo apt-get install libgtk-3-dev clang libclang-dev"
