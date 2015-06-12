@@ -59,6 +59,11 @@ If you would like to build from source:
 - make
 - sudo make install
 
+The following dependencies are required:
+- libclang-dev   (If there are compile error for clang-c/Index.h, change
+  oovcde/source/CMakelists.txt so llvm-x.x matches the version on your system.)
+- lib-gtk-3-dev
+
 Depending on the version of LLVM on your system, it may be required that
 the CMakeLists.txt file is modified to use a different version. GTK3 is also
 required.
