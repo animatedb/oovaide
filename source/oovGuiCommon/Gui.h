@@ -128,6 +128,8 @@ namespace Gui
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
 	inline void setEnabled(GtkLabel *w, bool enabled)
 	    { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
+        inline void setEnabled(GtkMenuItem *w, bool enabled)
+            { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
 
 	inline bool hasFocus(GtkWidget *w)
 	    { return(gtk_widget_is_focus(w)); }

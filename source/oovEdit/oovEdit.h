@@ -17,7 +17,6 @@ class Editor:public DebuggerListener
     public:
 	Editor();
 	void init();
-	void shutdown();
 	void loadSettings();
 	void saveSettings();
 	static gboolean onIdle(gpointer data);
@@ -62,10 +61,7 @@ class Editor:public DebuggerListener
 	    if(mEditFiles.getEditView())
 		mEditFiles.getEditView()->redo();
 	    }
-	bool checkExitSave()
-	    {
-	    return mEditFiles.checkExitSave();
-	    }
+        bool checkExitSave();
 	void gotoToken(eFindTokenTypes ft)
 	    {
 	    if(mEditFiles.getEditView())

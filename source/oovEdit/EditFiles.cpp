@@ -138,7 +138,7 @@ void LeftMargin::drawMarginLine(GtkTextView *textView, cairo_t *cr)
 EditFiles::EditFiles(Debugger &debugger, EditOptions &editOptions):
     mEditOptions(editOptions),
     mHeaderBook(nullptr), mSourceBook(nullptr), mBuilder(nullptr),
-    mFocusEditViewIndex(-1), mDebugger(debugger)
+    mLastFocusGtkTextView(nullptr), mDebugger(debugger)
     {
     sEditFiles = this;
     }
@@ -149,6 +149,11 @@ void EditFiles::init(Builder &builder)
     mHeaderBook = GTK_NOTEBOOK(builder.getWidget("EditNotebook1"));
     mSourceBook = GTK_NOTEBOOK(builder.getWidget("EditNotebook2"));
     updateDebugMenu();
+    }
+
+void EditFiles::closeAll()
+    {
+    mFileViews.clear();
     }
 
 void EditFiles::onIdle()
@@ -167,10 +172,13 @@ void EditFiles::onIdle()
 
 FileEditView *EditFiles::getEditView()
     {
-    if(mFocusEditViewIndex < mFileViews.size())
-	return &mFileViews[mFocusEditViewIndex]->mFileView;
-    else
-	return nullptr;
+    FileEditView *view = nullptr;
+    if(mLastFocusGtkTextView)
+        {
+        ScrolledFileView *scrollView = getScrolledFileView(mLastFocusGtkTextView);
+        view = &scrollView->getFileEditView();
+        }
+    return view;
     }
 
 std::string EditFiles::getEditViewSelectedText()
@@ -187,26 +195,29 @@ std::string EditFiles::getEditViewSelectedText()
 void EditFiles::updateDebugMenu()
     {
     DebuggerChildStates state = mDebugger.getChildState();
-    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugGo")),
+    Gui::setEnabled(GTK_MENU_ITEM(mBuilder->getWidget("DebugGo")),
 	    state != DCS_ChildRunning);
-    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStepOver")),
+    Gui::setEnabled(GTK_MENU_ITEM(mBuilder->getWidget("DebugStepOver")),
 	    state != DCS_ChildRunning);
-    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStepInto")),
+    Gui::setEnabled(GTK_MENU_ITEM(mBuilder->getWidget("DebugStepInto")),
 	    state != DCS_ChildRunning);
-    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugPause")),
+    Gui::setEnabled(GTK_MENU_ITEM(mBuilder->getWidget("DebugPause")),
 	    state == DCS_ChildRunning);
-    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugStop")), true);
-    Gui::setEnabled(GTK_BUTTON(mBuilder->getWidget("DebugViewVariable")),
+    Gui::setEnabled(GTK_MENU_ITEM(mBuilder->getWidget("DebugStop")), true);
+    Gui::setEnabled(GTK_MENU_ITEM(mBuilder->getWidget("DebugViewVariable")),
 	    state != DCS_ChildRunning);
     }
 
 void EditFiles::gotoLine(int lineNum)
     {
-    ScrolledFileView *fv = getScrolledFileView();
-    if(fv)
-	{
-	fv->mDesiredLine = lineNum;
-	}
+    if(mLastFocusGtkTextView)
+        {
+        ScrolledFileView *fv = getScrolledFileView(mLastFocusGtkTextView);
+        if(fv)
+            {
+            fv->mDesiredLine = lineNum;
+            }
+        }
     }
 
 struct LineInfo
@@ -362,23 +373,17 @@ extern "C" G_MODULE_EXPORT gboolean onMarginDraw(GtkTextView *textView,
     }
 typedef void (*drawLayerFuncType)(GtkTextView *textView, GtkTextViewLayer layer,
         cairo_t *cr);
-static drawLayerFuncType sOrigDrawLayerFunc;
 static void textView_draw_layer(GtkTextView *textView, GtkTextViewLayer layer,
         cairo_t *cr)
     {
-    if(sOrigDrawLayerFunc)
-        {
-        sOrigDrawLayerFunc(textView, layer, cr);
-        }
     if(layer == GTK_TEXT_VIEW_LAYER_ABOVE)
         {
         onMarginDraw(textView, cr, nullptr);
         }
     }
-static void overrideDrawLayer(GtkTextView *textView)
+static void overrideDrawLayer(GtkWidget *widget)
     {
-    GtkTextViewClass *textViewClass = GTK_TEXT_VIEW_CLASS(textView);
-    sOrigDrawLayerFunc = textViewClass->draw_layer;
+    GtkTextViewClass *textViewClass = GTK_TEXT_VIEW_GET_CLASS(widget);
     textViewClass->draw_layer = textView_draw_layer;
     }
 #else
@@ -426,6 +431,7 @@ extern "C" G_MODULE_EXPORT gboolean on_EditFiles_key_press_event(GtkWidget *widg
 
 void EditFiles::removeNotebookPage(GtkWidget *pageWidget)
     {
+    mLastFocusGtkTextView = nullptr;
     GtkNotebook *book = mHeaderBook;
     int page = gtk_notebook_page_num(book, pageWidget);
     if(page == -1)
@@ -528,9 +534,7 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
 	    // This is not allowed for a text view
             //          gtk_widget_set_app_paintable(editView, true);
 #if(USE_DRAW_LAYER)
-            overrideDrawLayer(GTK_TEXT_VIEW(editView));
-            GtkTextViewClass *textViewClass = GTK_TEXT_VIEW_GET_CLASS(editView);
-            textViewClass->draw_layer = textView_draw_layer;
+            overrideDrawLayer(editView);
             // If the left window is not created, errors display, "Attempt to
             // convert text buffer coordinates to coordinates for a nonexistent
             // buffer or private child window of GtkTextView". So create a
@@ -646,15 +650,7 @@ void EditFiles::viewModule(OovStringRef const fn, int lineNum)
 
 void EditFiles::setFocusEditTextView(GtkTextView *editTextView)
     {
-    mFocusEditViewIndex = -1;
-    for(size_t i=0; i<mFileViews.size(); i++)
-	{
-	if(mFileViews[i]->mFileView.getTextView() == editTextView)
-	    {
-	    mFocusEditViewIndex = i;
-	    break;
-	    }
-	}
+    mLastFocusGtkTextView = editTextView;
     }
 
 bool EditFiles::handleKeyPress(GdkEvent *event)

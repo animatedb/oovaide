@@ -114,8 +114,6 @@ void TokenRange::tokenize(CXTranslationUnit transUnit)
 
 Tokenizer::~Tokenizer()
     {
-    // There is a bug somewhere that the wrong tokenizer is deleted.
-    // Probably related to EditFiles::removeNotebookPage(GtkWidget *pageWidget)
     if(mTransUnit)
         {
         clang_disposeTranslationUnit(mTransUnit);

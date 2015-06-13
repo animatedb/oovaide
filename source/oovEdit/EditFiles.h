@@ -91,6 +91,9 @@ class EditFiles
     public:
 	EditFiles(Debugger &debugger, EditOptions &editOptions);
 	void init(Builder &builder);
+	// This prevents a crash if called before the windows
+	// are shut down. See Tokenizer::~Tokenizer().
+	void closeAll();
 	void onIdle();
 	void updateDebugMenu();
 	/// Opens the specified file, along with the companion file. Ex: If a
@@ -129,18 +132,11 @@ class EditFiles
 	GtkNotebook *mSourceBook;
 	Builder *mBuilder;
 	std::vector<std::unique_ptr<ScrolledFileView>> mFileViews;
-	size_t mFocusEditViewIndex;
+	GtkTextView *mLastFocusGtkTextView;
 	Debugger &mDebugger;
 	timeval mLastHightlightIdleUpdate;
 	void idleHighlight();
 	int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
-	ScrolledFileView *getScrolledFileView()
-	    {
-	    if(mFocusEditViewIndex < mFileViews.size())
-		return mFileViews[mFocusEditViewIndex].get();
-	    else
-		return nullptr;
-	    }
     };
 
 

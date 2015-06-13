@@ -6,6 +6,7 @@ Features
 Explanations
 ------------
 	- If operations aren't shown for classes, use -x c++ for Clang.
+	- clean up compile warnings for %d/%ld and size_t
 	- If float.h is or intrinics are missing, make sure clang dir is under exec dir (bin).
 	- If classes aren't showing relation to std::vector<>, use "-x c++" for Clang.
 	- Analysis will run again if there are include path errors
@@ -17,7 +18,6 @@ Explanations
 Missing Features
 ----------------
 - General
-	- editor idle crash in linux with text buffers and highlighting on startup and shutdown
 	- remove dup journal code
 	- remove dup graph code
 	- graph selection icons should be gray if project isn't loaded.

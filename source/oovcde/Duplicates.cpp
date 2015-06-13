@@ -99,11 +99,11 @@ bool HashFile::readHashFile(OovStringRef const filePath)
             HashItem item;
             if(strlen(buf) > 0)
                 {
-#ifdef __linux__
-                sscanf(buf, "%lx %lu", &item.mHash, &item.mLineNum);
-#else
-                sscanf(buf, "%x %u", &item.mHash, &item.mLineNum);
-#endif
+                int iHash;
+                int iLineNum;
+                sscanf(buf, "%x %u", &iHash, &iLineNum);
+                item.mHash = iHash;
+                item.mLineNum = iLineNum;
                 }
             /// @todo - This could be more efficient if we new the
             /// file size.
@@ -140,19 +140,12 @@ void HashFile::compareHashFiles(HashFile const &refFile,
                         {
                         outHashIndices.markAlreadyOutput(i1, inc, i2);
                         size_t totalLines = (mHashItems[i1+inc-1].mLineNum - mHashItems[i1].mLineNum) + 1;
-#ifdef __linux__
-                        fprintf(outFile.getFp(), "lines %lu  :  %s %lu  :  %s %lu\n",
-                            totalLines,
-                            getRelativeFileName().getStr(), mHashItems[i1].mLineNum,
-                            refFile.getRelativeFileName().getStr(),
-                            refFile.mHashItems[i2].mLineNum);
-#else
                         fprintf(outFile.getFp(), "lines %u  :  %s %u  :  %s %u\n",
-                            totalLines,
-                            getRelativeFileName().getStr(), mHashItems[i1].mLineNum,
+                            static_cast<int>(totalLines),
+                            getRelativeFileName().getStr(),
+                            static_cast<int>(mHashItems[i1].mLineNum),
                             refFile.getRelativeFileName().getStr(),
-                            refFile.mHashItems[i2].mLineNum);
-#endif
+                            static_cast<int>(refFile.mHashItems[i2].mLineNum));
                         }
 		    }
 		else
