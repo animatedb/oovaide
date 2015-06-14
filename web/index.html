@@ -1,24 +1,50 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
 <html><head>
 
-
-<link rel="stylesheet" type="text/css" href="style.css"><!--#include virtual="menu.html" --></head><body><div class="content">
-
-<style>
-  #example
+<style type="text/css">
+    body { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
+    div.example
 	{
-	padding-left: 2em;
-	background-color: #F0F0F0
+	padding-left:2em;
+	background-color:#F0F0F0;
 	}
+    div.menu ul
+	{
+	background-color:gray;
+	padding:6px;
+	text-align:center;
+	}
+    div.menu a { padding:6px; }
+    div.menu li { display:inline }
+    div.menu a:link { color:white; background-color:gray; text-decoration:none }
+    div.menu a:hover { background-color:black }
 </style>
+
+<div class="menu">
+  <ul>
+  <li><a href="/description/oovcdereleases.html">Releases</a></li>
+  <li><a href="/description/oovcdefeatures.html">Features</a></li>
+  <li><a href="/userguide/oovcdeuserguide.html">User Guide</a></li>
+  <li><a href="/userguide/examples.html">Examples</a></li>
+  <li><a href="/design/OovcdeDesign.html">Design</a></li>
+  <li><a href="/articles/OovcdeArticles.html">Articles</a></li>
+  <li><a href="http://sourceforge.net/project/screenshots.php?group_id=263829">Screenshots</a></li>
+  </ul>
+</div>
+
+</head>
+
+<body>
+<div class="content">
 
 May 5, 2015
 <p/>
 The oovcde project searches subdirectories and parses C++ code to
-automatically create object oriented static class, zone, component, and
-sequence diagrams, which allow easy navigation between diagrams and code.
+automatically create object oriented static class, component, zone, 
+portion, and sequence diagrams, which allow easy navigation between
+diagrams and code.
 <p/>
-    <div id="example">
+    <div class="example">
     The following diagram shows <a href="articles/ZoneDiagrams.html">zone diagrams</a>
     where each point in a circle is a class.  This shows hundreds of classes and their
     relations to each other.
@@ -28,14 +54,14 @@ sequence diagrams, which allow easy navigation between diagrams and code.
 <p/>
 Many of the created diagrams are similar to UML, but have optional additional
 features. The diagrams can be edited manually and saved as .SVG files.
-    <div id="example">
+    <div class="example">
     The following diagram shows a class diagram that shows inheritance,
     aggregation, and class methods that use other classes.
     <br/>
         <img src="design/CppParser.svg" width="600">
     </div>
 <p/>
-    <div id="example">
+    <div class="example">
     The following diagram shows a <a href="articles/PortionDiagrams.html">portion</a>
     diagram that shows the composition of a class.  It shows which methods use
     which member variables.
@@ -43,7 +69,7 @@ features. The diagrams can be edited manually and saved as .SVG files.
         <img src="articles/PortionImages/PortionSimpleExample.svg" width="300">
     </div>
 <p/>
-    <div id="example">
+    <div class="example">
     The following diagram shows a sequence diagram that shows conditionals
     and method calls in classes.
     <br/>
@@ -53,7 +79,7 @@ features. The diagrams can be edited manually and saved as .SVG files.
 Oovcde has a <a href="design/OovcdeBuildDesign.html">multithreaded build system</a>
     that uses dependency information from the analysis for easy setup, and also
     supports cross compiling.
-    <div id="example">
+    <div class="example">
     The following shows the build settings dialog.
     <br/>
         <img src="pics/Screenshot-CrossCompile.png" width="600">
@@ -62,7 +88,7 @@ Oovcde has a <a href="design/OovcdeBuildDesign.html">multithreaded build system<
 There are other documents including Component diagrams and Include diagrams.
 <p/>
 The code editor has syntax highlighting, code completion, and a debugger.
-    <div id="example">
+    <div class="example">
     The following shows the code editor.
     <br/>
         <img src="pics/Screenshot-Editor.png" width="600">
@@ -70,7 +96,7 @@ The code editor has syntax highlighting, code completion, and a debugger.
 <p/>
 <a href="articles/Complexity.html">Complexity measurements</a> are provided for
 each method of a class.
-    <div id="example">
+    <div class="example">
     The following shows the complexity analysis results.
     <br/>
         <img src="pics/Screenshot-Complexity.png" width="600">
@@ -78,7 +104,7 @@ each method of a class.
 <p/>
 Code <a href="articles/TestCoverage.html">test coverage</a> instruments the
 code and produces coverage information.
-    <div id="example">
+    <div class="example">
     The following shows the output from test coverage, and
 	shows the number percentage of the file that was covered.
 	In addition, it is possible to view how many times each
@@ -88,7 +114,7 @@ code and produces coverage information.
     </div>
 <p/>
 <a href="articles/DuplicateCode.html">Duplicate code</a> is found and listed.
-    <div id="example">
+    <div class="example">
     The following shows the output from duplicate code detection and
 	shows the number of lines that match.
     <br/>
