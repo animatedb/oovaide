@@ -193,6 +193,11 @@ size_t StringNumChars(char const * const str)
     return len;
     }
 
+size_t StringNumBytes(char const * const str)
+    {
+    return strlen(str);
+    }
+
 bool StringIsAscii(char const * const str)
     {
     char const *p = str;
@@ -258,11 +263,6 @@ OovString StringMakeXml(char const * const text)
     }
 
 //////////////
-
-size_t OovStringRef::length() const
-    {
-    return strlen(mStr);
-    }
 
 void OovString::setUpperCase(OovStringRef const str)
     {

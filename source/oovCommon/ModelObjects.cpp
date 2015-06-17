@@ -16,36 +16,6 @@
 
 #define DEBUG_TYPES 0
 
-/*
-static void strReplace(OovStringRef const origPatt, OovStringRef const newPatt, OovString &str)
-    {
-    std::string::size_type pos = 0;
-    while ((pos = str.find(origPatt, pos)) != std::string::npos)
-	str.replace(pos, origPatt.numChars(), newPatt);
-    }
-*/
-/*
-static void strRemoveSpaceAround(OovStringRef const c, OovString &str)
-    {
-    strReplace(OovString(c) + " ", c, str);
-    strReplace(OovString(" ") + OovString(c), c, str);
-    }
-*/
-
-/*
-OovStringRef const Visibility::asStr() const
-{
-    char const *str = "";
-    switch(vis)
-        {
-        case Visibility::Public:        str = "public";       break;
-        case Visibility::Protected:     str = "protected";    break;
-        case Visibility::Private:       str = "private";      break;
-        default:        break;
-        }
-    return str;
-}
-*/
 
 OovStringRef const Visibility::asUmlStr() const
     {

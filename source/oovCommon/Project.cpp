@@ -130,7 +130,7 @@ OovString Project::getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileNa
     size_t pos = relSrcFileName.find(srcRootDir.getStr());
     if(pos != std::string::npos)
 	{
-	relSrcFileName.erase(pos, srcRootDir.numChars());
+	relSrcFileName.erase(pos, srcRootDir.numBytes());
 	FilePathRemovePathSep(relSrcFileName, 0);
 	}
     return relSrcFileName;
@@ -143,7 +143,7 @@ OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcFileNam
     size_t pos = relSrcFileDir.find(srcRootDir);
     if(pos != std::string::npos)
 	{
-	relSrcFileDir.erase(pos, srcRootDir.numChars());
+	relSrcFileDir.erase(pos, srcRootDir.numBytes());
 	FilePathRemovePathSep(relSrcFileDir, 0);
 	}
     return relSrcFileDir;

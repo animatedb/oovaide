@@ -444,7 +444,7 @@ static unsigned int makeHash(OovStringRef const text)
 
 void cDupHashFile::append(OovStringRef const text, unsigned int line)
     {
-    if(text.length() > 0)
+    if(text.numBytes() > 0)
 	{
 #if(DEBUG_HASH)
 	fprintf(mFile.getFp(), "%x %u %s\n", makeHash(text), line, text.getStr());

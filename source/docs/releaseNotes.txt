@@ -194,7 +194,6 @@ Missing Features
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
 - Future
-	- include mingw include files in package?
 	- Statistics / Quality measurement
 		amount of const, number of raw pointers, minimal use of new/delete/malloc/...
 		interface complexity, amount of encapsulation, size of exposed interface

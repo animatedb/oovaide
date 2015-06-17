@@ -76,7 +76,7 @@ size_t FilePathGetPosEndDir(OovStringRef const path)
     size_t pos;
     if(FilePathIsEndPathSep(path))
 	{
-	pos = path.numChars() - 1;
+	pos = path.numBytes() - 1;
 	}
     else
 	{
@@ -118,7 +118,7 @@ size_t FilePathGetPosLeftPathSep(OovStringRef const path, size_t pos, eReturnPos
 
 size_t FilePathGetPosRightPathSep(OovStringRef const path, size_t pos, eReturnPosition rp)
     {
-    if(FilePathIsPathSep(path, pos) && pos < path.numChars())
+    if(FilePathIsPathSep(path, pos) && pos < path.numBytes())
 	pos++;
     pos = findPathSep(path, pos);
     if(pos == std::string::npos)

@@ -22,7 +22,7 @@ static bool compareNoCase(const std::string& first, const std::string& second)
 
 void CMaker::writeFile(OovStringRef const destName, OovStringRef const str)
     {
-    if(str.numChars() > 0)
+    if(str.numBytes() > 0)
         {
         FILE *fp = fopen(destName, "w");
         if(fp)

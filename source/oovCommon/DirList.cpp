@@ -246,7 +246,7 @@ OovString const findMatchingDir(FilePaths const &startingDirs, OovStringRef cons
 		    }
 		}
 	    }
-	if(pos == wildCardPattern.numChars()-1)
+	if(pos == wildCardPattern.numBytes()-1)
 	    {
 	    break;
 	    }

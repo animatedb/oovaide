@@ -79,7 +79,7 @@ void Gui::appendText(GtkTextView *textview, OovStringRef const text)
     GtkTextBuffer *textbuf = gtk_text_view_get_buffer(textview);
     GtkTextIter iter;
     gtk_text_buffer_get_end_iter(textbuf, &iter);
-    gtk_text_buffer_insert(textbuf, &iter, text, text.numChars());
+    gtk_text_buffer_insert(textbuf, &iter, text, text.numBytes());
     }
 
 void Gui::scrollToCursor(GtkTextView *textview)

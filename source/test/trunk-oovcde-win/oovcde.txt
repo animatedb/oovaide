@@ -3,7 +3,7 @@ BuildArgsExtra-Analyze|-dups;
 BuildArgsExtra-Debug|-O0;-g3;-Wno-c++98-compat;-Weverything;
 BuildArgsExtra-Release|-O3;
 ExcludeDirs|bin/;.metadata/;test/trunk-oovcde-win/;test/trunk-oovcde-linux/;test/python/;
-SourceRootDir|C:/Dave/Mine/software/oovcde/svn/trunk/
+SourceRootDir|C:/Dave/Mine/software/oovcde/code/trunk/
 Tool-CompilerPath-Analyze|clang++.exe
 Tool-CompilerPath-Debug|clang++.exe
 Tool-CompilerPath-Release|clang++.exe

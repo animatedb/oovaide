@@ -20,8 +20,11 @@ bool StringToInt(char const * const str, int min, int max, int &val);
 bool StringToUnsignedInt(char const * const str, unsigned int min,
 	unsigned int max, unsigned int &val);
 size_t StringNumChars(char const * const str);
+size_t StringNumBytes(char const * const str);
 bool StringIsAscii(char const * const str);
+// WARNING - these only work for ASCII
 int StringCompareNoCase(char const * const str1, char const * const str2);
+// Returns the number of characters that match.
 int StringCompareNoCaseNumCharsMatch(char const * const str1, char const * const str2);
 size_t StringFindSpace(char const * const str, size_t startPos);
 size_t StringFindNonSpace(char const * const str, size_t startPos);
@@ -62,8 +65,12 @@ template<typename T_Str> class OovStringRefInterface
 	    { return StringToUnsignedInt(getThisStr(), min, max, val); }
 	size_t findSpace(size_t startPos=0) const
 	    { return StringFindSpace(getThisStr(), startPos);}
+        size_t findNonSpace(size_t startPos=0) const
+            { return StringFindNonSpace(getThisStr(), startPos);}
 	size_t numChars() const
 	    { return StringNumChars(getThisStr()); }
+        size_t numBytes() const
+            { return StringNumBytes(getThisStr()); }
 	bool isAscii() const
 	    { return StringIsAscii(getThisStr()); }
 	OovStringVec split(char delim) const
@@ -100,9 +107,9 @@ class OovStringRef:public OovStringRefInterface<OovStringRef>
 	OovStringRef(std::string const &str):
 	    mStr(str.c_str())
 	    {}
+	// For common string functions, see OovStringRefInterface
 	char operator[] (int index) const
 	    { return mStr[index]; }
-	size_t length() const;
 	char const * getStr() const
 	    { return mStr; }
 	operator char const * const() const
@@ -117,27 +124,38 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
     public:
 	OovString()
 	    {}
-	OovString(char const * const str):
-	    std::string(str)
-	    {}
-	OovString(OovStringRef const &str):
-	    std::string(str.getStr())
-	    {}
-	OovString(std::string const &str):
-	    std::string(str.c_str())
-	    {}
+        OovString(char const * const str):
+            std::string(str)
+            {}
+        OovString(OovStringRef const &str):
+            std::string(str.getStr())
+            {}
+        OovString(std::string const &str):
+            std::string(str.c_str())
+            {}
 	OovString(std::string const &str, size_t pos, size_t len = npos):
 	    std::string(str, pos, len)
 	    {}
 	OovString(char const * const str, size_t n):
 	    std::string(str, n)
 	    {}
+	/// These can prevent temporary OovStrings from being created.
+	void operator=(char const * const str)
+	    { std::string::operator=(str); }
+        void operator=(std::string const &str)
+            { std::string::operator=(str); }
+        void operator=(OovString const &str)
+            { std::string::operator=(str); }
+        void operator=(OovStringRef const &str)
+            { std::string::operator=(str); }
 	void setUpperCase(OovStringRef const str);
 	void setLowerCase(OovStringRef const str);
 	void appendInt(int val, int radix=10);
 	void appendFloat(float val);
 	void join(OovStringVec const &tokens, char delim)
 	    { *this = StringJoin(tokens, delim); }
+	// Convert some characters in a string so they can be encoded into XML.
+	// For example, "<" is converted to "lt;"
 	OovString makeXml() const
 	    { return StringMakeXml(getStr()); }
 	bool replaceStrs(OovStringRef const srchStr, OovStringRef const repStr);
