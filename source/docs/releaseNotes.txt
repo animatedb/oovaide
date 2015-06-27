@@ -131,6 +131,7 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - CMaker
+	- Add extra include directories (such as BLL)
 	- Add include directories that are not components
 	- BUG: discards directories in CMaker::getCompSources
 	- Allow debug/release and cross compile in cmake
@@ -260,5 +261,5 @@ Missing Features
 	  	http://gernotklingler.com/blog/care-include-dependencies-cpp-keep-minimum/
 	  	http://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies
 	- create minimal code guidelines, ex:
-	  "The Power of Ten – Rules for Developing Safety Critical Code"
+	  "The Power of Ten \96 Rules for Developing Safety Critical Code"
 
