@@ -18,36 +18,21 @@ Explanations
 Missing Features
 ----------------
 - General
-	- remove dup journal code
-	- remove dup graph code
+	- BUG: OovStringRef has pointer changed if set into OovString/FilePath?
+	- need to clean up analysis dir when files are deleted.
 	- graph selection icons should be gray if project isn't loaded.
 	- Add new project icon?
-	- reference design guidelines?
-	  http://gernotklingler.com/blog/care-include-dependencies-cpp-keep-minimum/
-	  http://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies
 	- combine class/portion tabs and add include diagrams to components
 	- link to https://rawgit.com/animatedb/oovcde/master/web/articles/PortionDiagrams.html
-	- BUG: Project Settings dialog should clear exclude directories when creating project.
-	- BUG: New project with Simple attempts to delete .../bld-Analyze/.
-		deleteDirs.push_back() wrong in OovBuilder
-	- BUG: New proj with Shared example requires deleting analysis dir. UPDATE WEB SITE ALSO
-		to include gtk/mingw (in proper order?)
-	- BUG: Goto class doesn't change tab to class tab
-	- Add UML notes to diagrams
-	- Remove duplicate connections for getRelatedBodyVarClasses, etc.
-	- create minimal code guidelines, ex:
-	  "The Power of Ten – Rules for Developing Safety Critical Code"
+	- BUG: doing File/New on an existing project doesn't delete package config.
+	- Add UML notes to diagrams, allow color/font selection
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
 	  are the same?
 - Gui
 	- Add improved open recent files
-	- Add toolbar buttons
 	- Add External Directories button for Build Arguments dialog.
-	- BUG: Sometimes in Linux, Stop Build, doesn't change state, but builder
-	  is not running. Happens when resizing output window while building?
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
 		- window might be busy and is not responding (oovCommon/PackagesProcess?)
-	- Clicking on warnings doesn't display editor.
 	- Changing preferences should update drawings
 - Source/project management
 	- Make it clear which files must be saved to save project settings. (add clean)
@@ -59,6 +44,8 @@ Missing Features
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
+	- BUG: tool tip window doesn't go away when changing to other screen
+	- Remove all and hide all children can leave remnant component text
 	- BUG: component text offsets
 	- allow zone diag map path to rename any arbitrary string? getMappedComponentName
 	- Add zoom buttons, and zoom in based on cursor position
@@ -66,26 +53,24 @@ Missing Features
 	- Show related classes for a selected class
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams/List
+	- Allow adding nodes without  repositioning
+	- Saved drawings don't save preferences for each class
+	- Need either show classes that will be added, or undo, or multiple drawing copies
 	- BUG: forward class definitions mess up source line numbers
-	- Non-class types are not shown (even templated types)
+	- Non-class types are not shown (templated types)
+	- graph doesn't display types through templates, typedefs (DiagramRect in DiagramGraph.h)
 	- Show parameter reference/pointer/const in methods
 	- find way to reduce strlen: std::allocator, std::less, std::basic_string<char> etc.
 	  see ComponentBuilder
 	- When class members are not shown, should be easy way to view members
-	- Set each class drawing preferences by whether component is the same.
-	- Need either show classes that will be added, or undo, or multiple drawing copies
 	- Add go to operation (callbacks to journal)
-	- Allow saving editable drawings (save name and position of all classes, options)
 	- Relation options should be per diagram.
 	- reparenting preference options window messes up draw node options page.
 	- Improve drawing, optimize graph for reduced line crosses
-	- graph doesn't display types through typedefs (DiagramRect in DiagramGraph.h)
 	- Add more diagram options (add depth=2, more generations)
 	- Pointers/references/const not shown as part of types as text
 	- Filter class list by component/dir
 	- Allow zone selections to set filter on class list
-	- Add class list context menu to allow adding single nodes/multiple nodes
-		(two mouse buttons?, class properties?)
 	- Allow multiple selection to add relations, remove, properties
 	- Grid for class placement, option for grid size
 	- Add filter for class list (GTK search feature exists)
@@ -98,7 +83,6 @@ Missing Features
 	- Find top level function in diagram, may not be first class.
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
-	- Add option to wrap long class names for denser diagrams
 	- Diagram width not correct in svg diagrams for long operation names
 	- Const calls aren't shown correctly for overloaded functions?
 	- Add depth
@@ -107,6 +91,7 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Build of components within/under component directories doesn't work.
 	- Scan CMake files to find external pkg-config package dependencies
 	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
 	- analysis - doesn't work on filenames with spaces
@@ -147,11 +132,13 @@ Missing Features
 	- For linux, don't getPackage if not in available list.
 - CMaker
 	- Add include directories that are not components
+	- BUG: discards directories in CMaker::getCompSources
 	- Allow debug/release and cross compile in cmake
 		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
 		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Editor
+	- Add toolbar buttons
 	- find declaration/definition (also in other translation units)
 	- Hover over tab should display full file path
 	- tab name should change with file rename/save as.
@@ -193,6 +180,28 @@ Missing Features
 	- When build starts, should stop debugger
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 
+- Cleanup
+	- separate gui from backend - humble dialog
+		- domain/presentation, business, backend, Business Logic Layer, Domain Logic
+	- redesign:
+		which drawer when:drawers are defined in view, all other class functions have
+			explicit references (no set drawer)
+		initialize does not draw in non-view classes
+		draw / queue draw (remove all drawing from business, only for size)
+		remove cairo initialization from initialize functions.
+		remove/rename all updateGraph functions (reposition, etc.)
+		safer to get pointer from journal instead of static pointer initialized when.
+	- test:
+		preferences
+		switching drawer - svg
+
+	- remove dup journal code
+	- remove dup graph code
+	- Remove duplicate connections for getRelatedBodyVarClasses, etc.
+
+- Closed
+	- BUG: Goto class doesn't change tab to class tab - journal requires this
+
 - Future
 	- Statistics / Quality measurement
 		amount of const, number of raw pointers, minimal use of new/delete/malloc/...
@@ -204,6 +213,12 @@ Missing Features
 		class - number of classes related to a class
 		class - complexity of a class
 		number of unused classes, methods, etc.
+	- State machines
+		difficult(impossible) to do function pointer style
+		http://www.cl.cam.ac.uk/~pes20/cpp/popl085ap-sewell.pdf
+		http://stackoverflow.com/questions/1422480/graphical-finite-state-machine-editor
+		yakindu
+		http://fsme.sourceforge.net/
 	- more component stats - lines, classes, etc.
 	- Cohesion in a class (how methods use attributes)
 		http://www.bth.se/fou/cuppsats.nsf/all/86e880ce9d0b94aec1256f0e004778e5/
@@ -241,4 +256,9 @@ Missing Features
 		https://github.com/jordansissel/fpm, http://www.exemsi.com/, Wix(.Net only)
 		http://ubuntuforums.org/showthread.php?t=910717
 		http://unix.stackexchange.com/questions/30303/how-to-create-a-deb-file-manually
+	- reference design guidelines?
+	  	http://gernotklingler.com/blog/care-include-dependencies-cpp-keep-minimum/
+	  	http://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies
+	- create minimal code guidelines, ex:
+	  "The Power of Ten – Rules for Developing Safety Critical Code"
 

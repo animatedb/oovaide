@@ -18,11 +18,11 @@ HighlighterSharedQueue Highlighter::sSharedQueue;
 class CXStringDisposer:public std::string
     {
     public:
-	CXStringDisposer(const CXString &xstr):
-	    std::string(clang_getCString(xstr))
-	    {
-	    clang_disposeString(xstr);
-	    }
+        CXStringDisposer(const CXString &xstr):
+            std::string(clang_getCString(xstr))
+            {
+            clang_disposeString(xstr);
+            }
     };
 
 #define DEBUG_PARSE 0
@@ -38,16 +38,16 @@ void appendCursorTokenString(CXCursor cursor, std::string &str)
     CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
     clang_tokenize(tu, range, &tokens, &nTokens);
     for (size_t i = 0; i < nTokens; i++)
-	{
-	CXTokenKind kind = clang_getTokenKind(tokens[i]);
-	if(kind != CXToken_Comment)
-	    {
-	    if(str.length() != 0)
-		str += " ";
-	    CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
-	    str += spelling;
-	    }
-	}
+        {
+        CXTokenKind kind = clang_getTokenKind(tokens[i]);
+        if(kind != CXToken_Comment)
+            {
+            if(str.length() != 0)
+                str += " ";
+            CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
+            str += spelling;
+            }
+        }
     clang_disposeTokens(tu, tokens, nTokens);
     }
 static void dumpCursor(char const * const str, CXCursor cursor)
@@ -57,10 +57,10 @@ static void dumpCursor(char const * const str, CXCursor cursor)
     std::string tokenStr;
     appendCursorTokenString(cursor, tokenStr);
     if(tokenStr.length() > 100)
-	{
-	tokenStr.resize(100);
-	tokenStr += "...";
-	}
+        {
+        tokenStr.resize(100);
+        tokenStr += "...";
+        }
 
     fprintf(sLog.mFp, "%s: %s %s   %s\n", str, spstr.c_str(), name.c_str(), tokenStr.c_str());
     fflush(sLog.mFp);
@@ -121,7 +121,7 @@ Tokenizer::~Tokenizer()
     }
 
 void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
-	char const * const clang_args[], size_t num_clang_args)
+        char const * const clang_args[], size_t num_clang_args)
     {
     try
         {
@@ -148,8 +148,8 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             for (int i = 0; i<numDiags; i++)
                 {
                 CXDiagnostic diag = clang_getDiagnostic(mTransUnit, i);
-        //	    CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
-        //	    if(sev >= CXDiagnostic_Error)
+        //          CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
+        //          if(sev >= CXDiagnostic_Error)
                 CXStringDisposer diagStr = clang_formatDiagnostic(diag,
                 clang_defaultDiagnosticDisplayOptions());
                 printf("%s\n", diagStr.c_str());
@@ -193,7 +193,7 @@ void Tokenizer::tokenize(/*int startLine, int endLine, */TokenRange &tokens)
 
 #if(0)
 static CXCursor getCursorUsingTokens(CXTranslationUnit tu, CXCursor cursor,
-	unsigned int desiredOffset)
+        unsigned int desiredOffset)
     {
     // The following does not return a more definitive cursor.
     // For example, if a compound statement is returned, this does not find
@@ -247,7 +247,7 @@ static bool clangFilesEqual(CXFile f1, CXFile f2)
     }
 
 static CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent,
-	CXClientData client_data)
+        CXClientData client_data)
     {
     visitTranslationUnitData *data = static_cast<visitTranslationUnitData*>(client_data);
     CXSourceRange range = clang_getCursorExtent(cursor);
@@ -261,27 +261,27 @@ static CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent,
     // Use the smallest cursor that surrounds the desired location.
     unsigned size = endOffset - startOffset;
     if(clangFilesEqual(file, data->mFile) &&
-	    startOffset < data->mDesiredOffset && endOffset > data->mDesiredOffset)
-	{
-	if(size < data->mSize)
-	    {
-	    data->mCursor = cursor;
-	    data->mSize = size;
+            startOffset < data->mDesiredOffset && endOffset > data->mDesiredOffset)
+        {
+        if(size < data->mSize)
+            {
+            data->mCursor = cursor;
+            data->mSize = size;
 
-	    fprintf(sLog.mFp, "GOOD:\n   ");
-	    }
-	}
+            fprintf(sLog.mFp, "GOOD:\n   ");
+            }
+        }
     CXStringDisposer sp = clang_getCursorSpelling(cursor);
     CXStringDisposer kind = clang_getCursorKindSpelling(cursor.kind);
     std::string fn;
     if(file)
-	{
-	CXStringDisposer s = clang_getFileName(file);
-	fn = s;
-	}
+        {
+        CXStringDisposer s = clang_getFileName(file);
+        fn = s;
+        }
     fprintf(sLog.mFp, "%s %s off %d size %d des offset %d file %s\n",
-	    kind.c_str(), sp.c_str(), startOffset,
-	    size, data->mDesiredOffset, fn.c_str());
+            kind.c_str(), sp.c_str(), startOffset,
+            size, data->mDesiredOffset, fn.c_str());
     DUMP_PARSE("visitTU", cursor);
 //    clang_visitChildren(cursor, ::visitTranslationUnit, client_data);
 //    return CXChildVisit_Continue;
@@ -305,7 +305,7 @@ static CXCursor myGetCursorAtOffset(CXTranslationUnit tu, CXFile file, unsigned 
 // If it returns CXCursor_NoDeclFound on an include directive, then the options for
 // clang_parseTranslationUnit do not support it.
 static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
-	unsigned desiredOffset)
+        unsigned desiredOffset)
     {
     CXSourceLocation loc = clang_getLocationForOffset(tu, file, desiredOffset);
     CXCursor cursor = clang_getCursor(tu, loc);
@@ -322,10 +322,10 @@ void Tokenizer::getLineColumn(size_t charOffset, unsigned int &line, unsigned in
 
 
 // Desired functions:
-//	Go to definition of variable/function
-//	Go to declaration of function/class
+//      Go to definition of variable/function
+//      Go to declaration of function/class
 bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
-	size_t &line)
+        size_t &line)
     {
     mTransUnitMutex.lock();
     CXCursor startCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
@@ -335,8 +335,8 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
     // Method definition - <class>::<method>(){} - CXCursor_CXXMethod
     // Class/method usage - <class>.<method>()
     // Instance usage - method(){ int v = typename[4]; } - CXCursor_DeclStmt
-    //		clang_getCursorSemanticParent returns method
-    //		clang_getCursorDefinition returns invalid
+    //          clang_getCursorSemanticParent returns method
+    //          clang_getCursorDefinition returns invalid
     if(startCursor.kind == CXCursor_InclusionDirective)
         {
         CXFile file = clang_getIncludedFile(startCursor);
@@ -349,8 +349,8 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
         else
             {
             /// @todo - need to get the full path.
-    //	    CXStringDisposer cfn = clang_getCursorSpelling(cursor);
-    //	    fn = cfn;
+    //      CXStringDisposer cfn = clang_getCursorSpelling(cursor);
+    //      fn = cfn;
             line = 1;
             }
         }
@@ -375,14 +375,14 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
                     cursor = clang_getCursorReferenced(startCursor);
                     }
                 DUMP_PARSE("find:def", cursor);
-            //	    cursor = clang_getCursor(mTransUnit, clang_getCursorLocation(cursor));
-            //	    cursor = clang_getCursorDefinition(cursor);
+            //      cursor = clang_getCursor(mTransUnit, clang_getCursorLocation(cursor));
+            //      cursor = clang_getCursorDefinition(cursor);
                 break;
 
-            //    	cursor = clang_getCursorReferenced(cursor);
-            //	cursor = clang_getCanonicalCursor(cursor);
-            //	cursor = clang_getCursorSemanticParent(cursor);
-            //	cursor = clang_getCursorLexicalParent(cursor);
+            //          cursor = clang_getCursorReferenced(cursor);
+            //  cursor = clang_getCanonicalCursor(cursor);
+            //  cursor = clang_getCursorSemanticParent(cursor);
+            //  cursor = clang_getCursorLexicalParent(cursor);
             }
         if(!clang_Cursor_isNull(cursor))
             {
@@ -409,43 +409,43 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
 struct visitClassData
     {
     visitClassData(OovStringVec &members):
-	mMembers(members)
-	{}
+        mMembers(members)
+        {}
     OovStringVec &mMembers;
     };
 
 static CXChildVisitResult visitClass(CXCursor cursor, CXCursor /*parent*/,
-	CXClientData client_data)
+        CXClientData client_data)
     {
     visitClassData *data = static_cast<visitClassData*>(client_data);
     DUMP_PARSE("visitClass", cursor);
     switch(cursor.kind)
-	{
-	case CXCursor_ClassDecl:
-	    clang_visitChildren(cursor, ::visitClass, &data);
-	    break;
+        {
+        case CXCursor_ClassDecl:
+            clang_visitChildren(cursor, ::visitClass, &data);
+            break;
 
 /* Prevent infinite recursion
-	case CXCursor_CXXBaseSpecifier:
-	    {
-	    CXType classCursorType = clang_getCursorType(cursor);
-	    CXCursor classCursor = clang_getTypeDeclaration(classCursorType);
-	    clang_visitChildren(classCursor, ::visitClass, &data);
-	    }
-	    break;
+        case CXCursor_CXXBaseSpecifier:
+            {
+            CXType classCursorType = clang_getCursorType(cursor);
+            CXCursor classCursor = clang_getTypeDeclaration(classCursorType);
+            clang_visitChildren(classCursor, ::visitClass, &data);
+            }
+            break;
 */
 
-	case CXCursor_CXXMethod:
-	case CXCursor_FieldDecl:
-	    {
-	    CXStringDisposer name(clang_getCursorSpelling(cursor));
-	    data->mMembers.push_back(name);
-	    }
-	    break;
+        case CXCursor_CXXMethod:
+        case CXCursor_FieldDecl:
+            {
+            CXStringDisposer name(clang_getCursorSpelling(cursor));
+            data->mMembers.push_back(name);
+            }
+            break;
 
-	default:
-	    break;
-	}
+        default:
+            break;
+        }
     return CXChildVisit_Continue;
     // return CXChildVisit_Recurse;
     }
@@ -462,8 +462,8 @@ OovStringVec Tokenizer::codeComplete(size_t offset)
     unsigned int column;
     getLineColumn(offset, line, column);
     CXCodeCompleteResults *results = clang_codeCompleteAt(mTransUnit,
-	    mSourceFilename.getStr(), line, column,
-	    nullptr, 0, options);
+            mSourceFilename.getStr(), line, column,
+            nullptr, 0, options);
     if(results)
         {
         clang_sortCodeCompletionResults(&results->Results[0], results->NumResults);
@@ -506,23 +506,23 @@ OovStringVec Tokenizer::getMembers(int offset)
     DUMP_PARSE_INT("getMembers", offset);
     DUMP_PARSE("getMembers:memberref", memberRefCursor);
     if(memberRefCursor.kind == CXCursor_MemberRefExpr ||
-	memberRefCursor.kind == CXCursor_DeclRefExpr)
-	{
-	CXType classCursorType = clang_getCursorType(memberRefCursor);
-	CXCursor classCursor = clang_getTypeDeclaration(classCursorType);
-	DUMP_PARSE("getMembers:classref", classCursor);
-	if(classCursor.kind == CXCursor_ClassDecl || classCursor.kind == CXCursor_StructDecl ||
-		classCursor.kind == CXCursor_UnionDecl)
-	    {
-	    // CXCursor classCursor = clang_getCursorReferenced(startCursor);
-	    // classCursor = clang_getCursorDefinition(classCursor);
-	    clang_visitChildren(classCursor, ::visitClass, &data);
-	    }
-	}
+        memberRefCursor.kind == CXCursor_DeclRefExpr)
+        {
+        CXType classCursorType = clang_getCursorType(memberRefCursor);
+        CXCursor classCursor = clang_getTypeDeclaration(classCursorType);
+        DUMP_PARSE("getMembers:classref", classCursor);
+        if(classCursor.kind == CXCursor_ClassDecl || classCursor.kind == CXCursor_StructDecl ||
+                classCursor.kind == CXCursor_UnionDecl)
+            {
+            // CXCursor classCursor = clang_getCursorReferenced(startCursor);
+            // classCursor = clang_getCursorDefinition(classCursor);
+            clang_visitChildren(classCursor, ::visitClass, &data);
+            }
+        }
     else
-	{
-//	myGetCursorAtOffset(mTransUnit, mSourceFile, offset);
-	}
+        {
+//      myGetCursorAtOffset(mTransUnit, mSourceFile, offset);
+        }
     mTransUnitMutex.unlock();
     return members;
     }
@@ -554,7 +554,7 @@ HighlighterBackgroundThreadData::~HighlighterBackgroundThreadData()
     }
 
 void HighlighterBackgroundThreadData::initArgs(OovStringRef const filename,
-	char const * const clang_args[], int num_clang_args)
+        char const * const clang_args[], int num_clang_args)
     {
     if(mClang_args.getArgc() == 0)
         {
@@ -624,7 +624,7 @@ void HighlighterBackgroundThreadData::processItem(HighlightTaskItem const &item)
             if(mTokenizer.findToken(item.mFindTokenFt, item.mOffset,
                 fn, offset))
                 {
-		std::lock_guard<std::mutex> lock(mResultsLock);
+                std::lock_guard<std::mutex> lock(mResultsLock);
                 mFindTokenResultFilename = fn;
                 mFindTokenResultOffset = offset;
                 mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_FindToken);
@@ -658,8 +658,8 @@ void HighlighterBackgroundThreadData::processItem(HighlightTaskItem const &item)
 //////////////
 
 void Highlighter::highlightRequest(
-	OovStringRef const filename,
-	char const * const clang_args[], int num_clang_args)
+        OovStringRef const filename,
+        char const * const clang_args[], int num_clang_args)
     {
     DUMP_THREAD("highlightRequest");
 /*
@@ -668,9 +668,9 @@ void Highlighter::highlightRequest(
     int startBufY;
     int endBufY;
     gtk_text_view_window_to_buffer_coords(textView, GTK_TEXT_WINDOW_WIDGET,
-	    0, rect.y, NULL, &startBufY);
+            0, rect.y, NULL, &startBufY);
     gtk_text_view_window_to_buffer_coords(textView, GTK_TEXT_WINDOW_WIDGET,
-	    0, rect.y+rect.height, NULL, &endBufY);
+            0, rect.y+rect.height, NULL, &endBufY);
 
     // Get iterators
     GtkTextIter startIter;
@@ -681,7 +681,7 @@ void Highlighter::highlightRequest(
 //    int startLineY = gtk_text_iter_get_line(&startIter);
 //    int endLineY = gtk_text_iter_get_line(&endIter);
 //    if(startLineY < 1)
-//	startLineY = 1;
+//      startLineY = 1;
 
     mTokenState = TS_HighlightRequest;
     mBackgroundThreadData.initArgs(filename, clang_args, num_clang_args);
@@ -690,7 +690,7 @@ void Highlighter::highlightRequest(
     }
 
 eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
-	OovStringRef const buffer, size_t bufLen)
+        OovStringRef const buffer, size_t bufLen)
     {
     DUMP_THREAD("highlightUpdate");
     if(mBackgroundThreadData.isParseNeeded())
@@ -717,7 +717,7 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
         }
 
     if(!mBackgroundThreadData.isParseNeeded() &&
-	    mBackgroundThreadData.getTaskResults() & HT_Parse)
+            mBackgroundThreadData.getTaskResults() & HT_Parse)
         {
         mHighlightTokens = mBackgroundThreadData.getParseResults();
         mTokenState = TS_GotTokens;

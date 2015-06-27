@@ -98,17 +98,17 @@ template<typename T_ThreadQueueItem>
         virtual void pushBack(void const *item) override
             { mQueue.push_back(*static_cast<T_ThreadQueueItem const*>(item)); }
         virtual void getFront(void *item) override
-	    {
+            {
             *static_cast<T_ThreadQueueItem*>(item) = mQueue.front();
             mQueue.pop_front();
-	    }
+            }
     };
 
 // This class reduces template code bloat.
 class ThreadedWorkWaitPrivate
     {
     public:
-	static void joinThreads(std::vector<std::thread> &workerThreads);
+        static void joinThreads(std::vector<std::thread> &workerThreads);
     };
 
 /// This uses a producer consumer model where a single producer places items in
@@ -125,8 +125,8 @@ class ThreadedWorkWaitPrivate
 ///
 /// @param T_ThreadQueueItem The type of item that will be in the queue.
 /// @param T_ProcessItem A type derived from ThreadedWorkQueue that contains a
-/// 	function that returns true to continue processing:
-/// 	bool processItem(T_ThreadQueueItem const &item)
+///     function that returns true to continue processing:
+///     bool processItem(T_ThreadQueueItem const &item)
 ///
 /// A usage example:
 /// class ThreadedQueue:public ThreadedWorkQueue<std::string, class ThreadedQueue>
@@ -160,7 +160,7 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
         // setupQueue must be called each time after waitForCompletion.
         void waitForCompletion()
             {
-	    mTaskQueue.quitPops();
+            mTaskQueue.quitPops();
             ThreadedWorkWaitPrivate::joinThreads(mWorkerThreads);
             }
 
@@ -179,15 +179,15 @@ template<typename T_ThreadQueueItem, typename T_ProcessItem>
         void setupThreads(size_t numThreads)
             {
             if(mWorkerThreads.size() == 0)
-        	{
-		for(size_t i=0; i<numThreads; i++)
-		    {
-		    mWorkerThreads.push_back(std::thread(workerThreadProc, this));
-		    }
-        	}
+                {
+                for(size_t i=0; i<numThreads; i++)
+                    {
+                    mWorkerThreads.push_back(std::thread(workerThreadProc, this));
+                    }
+                }
             }
         static void workerThreadProc(
-        	ThreadedWorkWaitQueue<T_ThreadQueueItem, T_ProcessItem> *workQueue)
+                ThreadedWorkWaitQueue<T_ThreadQueueItem, T_ProcessItem> *workQueue)
             {
             T_ThreadQueueItem item;
             while(workQueue->mTaskQueue.waitPop(item))

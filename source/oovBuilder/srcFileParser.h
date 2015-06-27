@@ -14,12 +14,12 @@
 class VerboseDumper
     {
     public:
-	void open(OovStringRef const outPath);
-	void logOutputOld(OovStringRef const fn);
-	void logProcess(OovStringRef const srcFile,  char const * const *argv, int argc);
-	void logProgress(OovStringRef const progress);
+        void open(OovStringRef const outPath);
+        void logOutputOld(OovStringRef const fn);
+        void logProcess(OovStringRef const srcFile,  char const * const *argv, int argc);
+        void logProgress(OovStringRef const progress);
     private:
-	FILE *mFp;
+        FILE *mFp;
     };
 extern VerboseDumper sVerboseDump;
 
@@ -30,10 +30,10 @@ class srcFileParser:public dirRecurser, public ThreadedWorkWaitQueue<CppChildArg
 {
 public:
     srcFileParser(const ComponentFinder &compFinder):
-	mSrcRootDir(nullptr), mAnalysisDir(nullptr), mComponentFinder(compFinder)
-	{}
+        mSrcRootDir(nullptr), mAnalysisDir(nullptr), mComponentFinder(compFinder)
+        {}
     virtual ~srcFileParser()
-	{}
+        {}
     bool analyzeSrcFiles(OovStringRef const srcRootDir, OovStringRef const analysisDir);
 
     // Called by ThreadedWorkQueue

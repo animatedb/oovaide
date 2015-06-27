@@ -30,10 +30,10 @@
 class cDebugResult
     {
     public:
-	void setVarName(char const *str, size_t len)
-	    { mVarName.assign(str, len); }
+        void setVarName(char const *str, size_t len)
+            { mVarName.assign(str, len); }
         char const *parseResult(OovStringRef const resultStr);
-	std::string getAsString(int level=0) const;
+        std::string getAsString(int level=0) const;
 
     private:
         std::string mVarName;
@@ -46,13 +46,13 @@ class cDebugResult
         char const *parseValue(char const *resultStr);
         char const *parseList(char const *resultStr);
         char const *parseConst(char const *resultStr);
-	cDebugResult &addResult()
-	    {
+        cDebugResult &addResult()
+            {
             cDebugResult *newRes = new cDebugResult();
-	   /// @todo - use make_unique when supported.
+           /// @todo - use make_unique when supported.
             mChildResults.push_back(std::unique_ptr<cDebugResult>(newRes));
-	    return *newRes;
-	    }
+            return *newRes;
+            }
     };
 
 

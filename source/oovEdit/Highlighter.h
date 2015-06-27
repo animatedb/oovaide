@@ -30,7 +30,7 @@ struct Token
 class TokenRange:public std::vector<Token>
     {
     public:
-	    void tokenize(CXTranslationUnit transUnit);
+            void tokenize(CXTranslationUnit transUnit);
     };
 
 enum eFindTokenTypes { FT_FindDecl, FT_FindDef };
@@ -102,7 +102,7 @@ class HighlightTaskItem
         void setParseTask(OovStringRef const buffer, size_t bufLen)
             {
             mTask = HT_Parse;
-	    mParseSourceBuffer.assign(buffer, bufLen);
+            mParseSourceBuffer.assign(buffer, bufLen);
             }
         void setShowMembersTask(size_t offset)
             {

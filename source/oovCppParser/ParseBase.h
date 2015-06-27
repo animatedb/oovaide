@@ -15,18 +15,18 @@
 class CXStringDisposer:public std::string
     {
     public:
-	CXStringDisposer(const CXString &xstr):
-	    std::string(clang_getCString(xstr))
-	    {
-	    clang_disposeString(xstr);
-	    }
+        CXStringDisposer(const CXString &xstr):
+            std::string(clang_getCString(xstr))
+            {
+            clang_disposeString(xstr);
+            }
     };
 
 struct RefType
     {
     RefType():
-	isConst(false), isRef(false)
-	{}
+        isConst(false), isRef(false)
+        {}
     bool isConst;
     bool isRef;
     };
@@ -34,9 +34,9 @@ struct RefType
 CXCursor getNthChildCursor(CXCursor cursor, int nth);
 CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind);
 CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
-	const char *type);
+        const char *type);
 CXCursor getCursorChildKindAndNotTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
-	const char *type);
+        const char *type);
 void debugDumpCursor(FILE *fp, CXCursor cursor);
 void removeLastNonIdentChar(std::string &name);
 void appendConditionString(CXCursor cursor, std::string &str);

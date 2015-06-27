@@ -9,14 +9,14 @@
 #include "Options.h"
 #include "Gui.h"
 #include <gtk/gtk.h>
-#include <memory>	// For unique_ptr
+#include <memory>       // For unique_ptr
 #include <algorithm>
 #include "Project.h"
 // Prevent "error: 'off64_t' does not name a type"
 #define __NO_MINGW_LFS 1
 // Prevent "error: 'off_t' has not been declared"
 #define off_t _off_t
-#include <unistd.h>		// for unlink
+#include <unistd.h>             // for unlink
 
 static OptionsDialog *gOptionsDlg;
 
@@ -24,15 +24,15 @@ static OptionsDialog *gOptionsDlg;
 class Option
     {
     public:
-	Option(OovStringRef const optionName, OovStringRef const widgetName):
-	    mOptionName(optionName), mWidgetName(widgetName)
-	    {}
-	virtual ~Option();
-	virtual void optionToScreen(NameValueFile const &file) const = 0;
-	virtual void screenToOption(NameValueFile &file) const = 0;
+        Option(OovStringRef const optionName, OovStringRef const widgetName):
+            mOptionName(optionName), mWidgetName(widgetName)
+            {}
+        virtual ~Option();
+        virtual void optionToScreen(NameValueFile const &file) const = 0;
+        virtual void screenToOption(NameValueFile &file) const = 0;
     protected:
-	OovString mOptionName;
-	OovString mWidgetName;
+        OovString mOptionName;
+        OovString mWidgetName;
     };
 
 Option::~Option()
@@ -41,12 +41,12 @@ Option::~Option()
 class EntryOption:public Option
     {
     public:
-	EntryOption(OovStringRef const optionName, OovStringRef const widgetName):
-	    Option(optionName, widgetName)
-	    {}
-	virtual ~EntryOption();
-	virtual void optionToScreen(NameValueFile const &file) const override;
-	virtual void screenToOption(NameValueFile &file) const override;
+        EntryOption(OovStringRef const optionName, OovStringRef const widgetName):
+            Option(optionName, widgetName)
+            {}
+        virtual ~EntryOption();
+        virtual void optionToScreen(NameValueFile const &file) const override;
+        virtual void screenToOption(NameValueFile &file) const override;
     };
 
 EntryOption::~EntryOption()
@@ -68,12 +68,12 @@ void EntryOption::screenToOption(NameValueFile &file) const
 class CheckOption:public Option
     {
     public:
-	CheckOption(char const * const optionName, char const * const widgetName):
-	    Option(optionName, widgetName)
-	    {}
-	virtual ~CheckOption();
-	virtual void optionToScreen(NameValueFile const &file) const override;
-	virtual void screenToOption(NameValueFile &file) const override;
+        CheckOption(char const * const optionName, char const * const widgetName):
+            Option(optionName, widgetName)
+            {}
+        virtual ~CheckOption();
+        virtual void optionToScreen(NameValueFile const &file) const override;
+        virtual void screenToOption(NameValueFile &file) const override;
     };
 
 CheckOption::~CheckOption()
@@ -84,25 +84,25 @@ void CheckOption::optionToScreen(NameValueFile const &file) const
     {
     bool active = file.getValueBool(mOptionName);
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
-	    Builder::getBuilder()->getWidget(mWidgetName)), active);
+            Builder::getBuilder()->getWidget(mWidgetName)), active);
     }
 
 void CheckOption::screenToOption(NameValueFile &file) const
     {
     bool active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(
-	    Builder::getBuilder()->getWidget(mWidgetName)));
+            Builder::getBuilder()->getWidget(mWidgetName)));
     file.setNameValueBool(mOptionName, active);
     }
 
 class TextViewOption:public Option
     {
     public:
-	TextViewOption(OovStringRef const optionName, OovStringRef const widgetName):
-	    Option(optionName, widgetName)
-	    {}
-	virtual ~TextViewOption();
-	virtual void optionToScreen(NameValueFile const &file) const override;
-	virtual void screenToOption(NameValueFile &file) const override;
+        TextViewOption(OovStringRef const optionName, OovStringRef const widgetName):
+            Option(optionName, widgetName)
+            {}
+        virtual ~TextViewOption();
+        virtual void optionToScreen(NameValueFile const &file) const override;
+        virtual void screenToOption(NameValueFile &file) const override;
     };
 
 TextViewOption::~TextViewOption()
@@ -134,94 +134,94 @@ void TextViewOption::screenToOption(NameValueFile &file) const
 class ScreenOptions
     {
     public:
-	ScreenOptions(OovStringRef const buildConfig);
-	void optionsToScreen() const;
-	void screenToOptions() const;
+        ScreenOptions(OovStringRef const buildConfig);
+        void optionsToScreen() const;
+        void screenToOptions() const;
 
     private:
-	std::vector<std::unique_ptr<Option>> mBuildOptions;
-	std::vector<std::unique_ptr<Option>> mGuiOptions;
+        std::vector<std::unique_ptr<Option>> mBuildOptions;
+        std::vector<std::unique_ptr<Option>> mGuiOptions;
     };
 
 ScreenOptions::ScreenOptions(OovStringRef const buildConfig)
     {
     std::string optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
     mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    optStr, "CompilerPathEntry")));
+            optStr, "CompilerPathEntry")));
 
     optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
     mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    optStr, "LibraryPathEntry")));
+            optStr, "LibraryPathEntry")));
 
     optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
     mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    optStr, "SymbolPathEntry")));
+            optStr, "SymbolPathEntry")));
 
 
     mBuildOptions.push_back(std::unique_ptr<Option>(new TextViewOption(OptBaseArgs,
-	    "CppArgumentsTextview")));
+            "CppArgumentsTextview")));
 
     mBuildOptions.push_back(std::unique_ptr<Option>(new TextViewOption(
-	    makeBuildConfigArgName(OptExtraBuildArgs, buildConfig),
-	    "ExtraBuildArgsTextview")));
+            makeBuildConfigArgName(OptExtraBuildArgs, buildConfig),
+            "ExtraBuildArgsTextview")));
 
     // Editor
     mGuiOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    OptGuiEditorPath, "EditorPathEntry")));
+            OptGuiEditorPath, "EditorPathEntry")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    OptGuiEditorLineArg, "EditorLineArgEntry")));
+            OptGuiEditorLineArg, "EditorLineArgEntry")));
     mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-	    OptToolDebuggerPath, "DebuggerPathEntry")));
+            OptToolDebuggerPath, "DebuggerPathEntry")));
 
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowAttributes, "ShowAttributesCheckbutton")));
+            OptGuiShowAttributes, "ShowAttributesCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowOperations, "ShowOperationsCheckbutton")));
+            OptGuiShowOperations, "ShowOperationsCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowOperParams, "ShowOperParamsCheckbutton")));
+            OptGuiShowOperParams, "ShowOperParamsCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowOperReturn, "ShowOperReturnCheckbutton")));
+            OptGuiShowOperReturn, "ShowOperReturnCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowAttrTypes, "ShowAttrTypesCheckbutton")));
+            OptGuiShowAttrTypes, "ShowAttrTypesCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowOperTypes, "ShowOperTypesCheckbutton")));
+            OptGuiShowOperTypes, "ShowOperTypesCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowPackageName, "ShowPackageNameCheckbutton")));
+            OptGuiShowPackageName, "ShowPackageNameCheckbutton")));
 
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowOovSymbols, "ShowOovSymbolsCheckbutton")));
+            OptGuiShowOovSymbols, "ShowOovSymbolsCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowOperParamRelations, "ShowOperParamRelationsCheckbutton")));
+            OptGuiShowOperParamRelations, "ShowOperParamRelationsCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowOperBodyVarRelations, "ShowOperBodyVarRelationsCheckbutton")));
+            OptGuiShowOperBodyVarRelations, "ShowOperBodyVarRelationsCheckbutton")));
     mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-	    OptGuiShowRelationKey, "ShowRelationKeyCheckbutton")));
+            OptGuiShowRelationKey, "ShowRelationKeyCheckbutton")));
     }
 
 void ScreenOptions::optionsToScreen() const
     {
     for(auto const &opt : mBuildOptions)
-	opt->optionToScreen(gBuildOptions);
+        opt->optionToScreen(gBuildOptions);
     for(auto const &opt : mGuiOptions)
-	opt->optionToScreen(gGuiOptions);
+        opt->optionToScreen(gGuiOptions);
     }
 
 void ScreenOptions::screenToOptions() const
     {
     for(auto const &opt : mBuildOptions)
-	opt->screenToOption(gBuildOptions);
+        opt->screenToOption(gBuildOptions);
     for(auto const &opt : mGuiOptions)
-	opt->screenToOption(gGuiOptions);
+        opt->screenToOption(gGuiOptions);
     }
 
 static void enableBuildWidgets(bool enable)
     {
     gtk_widget_set_sensitive(Builder::getBuilder()->getWidget("CompilerPathEntry"),
-	    enable);
+            enable);
     gtk_widget_set_sensitive(Builder::getBuilder()->getWidget("LibraryPathEntry"),
-	    enable);
+            enable);
     gtk_widget_set_sensitive(Builder::getBuilder()->getWidget("SymbolPathEntry"),
-	    enable);
+            enable);
     }
 
 ///////////////////
@@ -240,59 +240,59 @@ OptionsDialog::~OptionsDialog()
 void OptionsDialog::setBuildConfig()
     {
     if(mDialogRunning && Builder::getBuilder())
-	{
-	    {
-	    ScreenOptions options(mCurrentBuildConfig);
-	    options.screenToOptions();
-	    }
-	mCurrentBuildConfig = mBuildConfigList.getSelected();
-	    {
-	    ScreenOptions options(mCurrentBuildConfig);
-	    options.optionsToScreen();
-	    }
-	enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
-	gtk_widget_queue_draw(Builder::getBuilder()->getWidget("BuildArgumentsViewport"));
-	}
+        {
+            {
+            ScreenOptions options(mCurrentBuildConfig);
+            options.screenToOptions();
+            }
+        mCurrentBuildConfig = mBuildConfigList.getSelected();
+            {
+            ScreenOptions options(mCurrentBuildConfig);
+            options.optionsToScreen();
+            }
+        enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
+        gtk_widget_queue_draw(Builder::getBuilder()->getWidget("BuildArgumentsViewport"));
+        }
     }
 
 extern "C" G_MODULE_EXPORT void menuItemCallback(GtkWidget *button, gpointer data)
     {
     if(gOptionsDlg)
-	{
-	char const * const label = gtk_menu_item_get_label(GTK_MENU_ITEM(button));
-	char const * p = strchr(label, ' ');
-	if(p)
-	    p++;
-	gOptionsDlg->buildConfig(reinterpret_cast<char const * const>(p));
-	}
+        {
+        char const * const label = gtk_menu_item_get_label(GTK_MENU_ITEM(button));
+        char const * p = strchr(label, ' ');
+        if(p)
+            p++;
+        gOptionsDlg->buildConfig(reinterpret_cast<char const * const>(p));
+        }
     }
 
 void OptionsDialog::updateBuildMenu(OovStringVec &names)
     {
     for(auto const &item : mMenuItems)
-	{
-	gtk_widget_destroy(item);
-	}
+        {
+        gtk_widget_destroy(item);
+        }
     mMenuItems.clear();
     GtkMenu *buildMenu = GTK_MENU(Builder::getBuilder()->getWidget("BuildMenu"));
     for(auto const &name : names)
-	{
-	OovString menuName = std::string("Build ") + name;
-	GtkWidget *newItem = gtk_menu_item_new_with_label(menuName.c_str());
-	mMenuItems.push_back(newItem);
-	gtk_menu_shell_append(GTK_MENU_SHELL(buildMenu), newItem);
-	g_signal_connect(newItem, "activate", G_CALLBACK(menuItemCallback), nullptr);
-	gtk_widget_show(newItem);
-	}
+        {
+        OovString menuName = std::string("Build ") + name;
+        GtkWidget *newItem = gtk_menu_item_new_with_label(menuName.c_str());
+        mMenuItems.push_back(newItem);
+        gtk_menu_shell_append(GTK_MENU_SHELL(buildMenu), newItem);
+        g_signal_connect(newItem, "activate", G_CALLBACK(menuItemCallback), nullptr);
+        gtk_widget_show(newItem);
+        }
     }
 
 void OptionsDialog::updateBuildConfig()
     {
     if(mBuildConfigList.getSelected().length() == 0)
-	{
-	mCurrentBuildConfig = BuildConfigAnalysis;
-	mBuildConfigList.setSelected(BuildConfigAnalysis);
-	}
+        {
+        mCurrentBuildConfig = BuildConfigAnalysis;
+        mBuildConfigList.setSelected(BuildConfigAnalysis);
+        }
 
     mBuildConfigList.clear();
     mBuildConfigList.appendText(BuildConfigAnalysis);
@@ -303,16 +303,16 @@ void OptionsDialog::updateBuildConfig()
     CompoundValue configVals;
     configVals.parseString(confStr);
     for(const auto &config:configVals)
-	{
-	mBuildConfigList.appendText(config);
-	}
+        {
+        mBuildConfigList.appendText(config);
+        }
     updateBuildMenu(configVals);
     }
 
 void OptionsDialog::showScreen()
     {
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")),
-	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     updateBuildConfig();
     ScreenOptions options(mCurrentBuildConfig);
     mBuildConfigList.setSelected(mCurrentBuildConfig);
@@ -326,12 +326,12 @@ void OptionsDialog::showScreen()
 void OptionsDialog::newConfig()
     {
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("NewBuildConfigDialog")),
-	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     GtkEntry *oldNameEntry = GTK_ENTRY(Builder::getBuilder()->getWidget("OldConfigNameEntry"));
     Gui::setText(oldNameEntry, mBuildConfigList.getSelected());
     if(dlg.run())
-	{
-	}
+        {
+        }
     }
 
 void OptionsDialog::addConfig()
@@ -350,20 +350,20 @@ void OptionsDialog::addConfig()
     cfgs.push_back(BuildConfigRelease);
     bool found = std::find(cfgs.begin(), cfgs.end(), newName) != cfgs.end();
     if(!found)
-	{
-	compVal.addArg(newName);
-	gBuildOptions.setNameValue(OptBuildConfigs, compVal.getAsString());
+        {
+        compVal.addArg(newName);
+        gBuildOptions.setNameValue(OptBuildConfigs, compVal.getAsString());
 
-	// Leave what is on the screen, and change the config name.Save the
-	// screen data to the new config.
-	mCurrentBuildConfig = newName;
+        // Leave what is on the screen, and change the config name.Save the
+        // screen data to the new config.
+        mCurrentBuildConfig = newName;
     //    ScreenOptions options(mCurrentBuildConfig);
      //   options.screenToOptions();
 
-	updateBuildConfig();
-	}
+        updateBuildConfig();
+        }
     else
-	Gui::messageBox("Configuration already exists", GTK_MESSAGE_INFO);
+        Gui::messageBox("Configuration already exists", GTK_MESSAGE_INFO);
     }
 
 void OptionsDialog::saveScreen()
@@ -382,9 +382,9 @@ void OptionsDialog::runPackagesDialog()
     std::string str = Gui::getText(view);
     ProjectPackagesDialog dlg(str);
     if(dlg.run(true))
-	{
-	Gui::setText(view, str);
-	}
+        {
+        Gui::setText(view, str);
+        }
     }
 
 
@@ -394,14 +394,14 @@ void OptionsDialog::runPackagesDialog()
 extern "C" G_MODULE_EXPORT void on_EditOptionsmenuitem_activate()
     {
     if(gOptionsDlg)
-	gOptionsDlg->showScreen();
+        gOptionsDlg->showScreen();
     }
 
 extern "C" G_MODULE_EXPORT void on_OptionsOkButton_clicked(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
-	gOptionsDlg->saveScreen();
+        gOptionsDlg->saveScreen();
     gtk_widget_hide(Builder::getBuilder()->getWidget("OptionsDialog"));
     }
 
@@ -415,14 +415,14 @@ extern "C" G_MODULE_EXPORT void on_BuildConfigTreeview_cursor_changed(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
-	gOptionsDlg->setBuildConfig();
+        gOptionsDlg->setBuildConfig();
     }
 
 extern "C" G_MODULE_EXPORT void on_ExternalPackagesButton_clicked(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
-	gOptionsDlg->runPackagesDialog();
+        gOptionsDlg->runPackagesDialog();
     }
 
 /////////////// New config //////////////
@@ -431,18 +431,18 @@ extern "C" G_MODULE_EXPORT void on_BuildConfigNewButton_clicked(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
-	{
-	gOptionsDlg->newConfig();
-	}
+        {
+        gOptionsDlg->newConfig();
+        }
     }
 
 extern "C" G_MODULE_EXPORT void on_NewBuildConfigOKButton_clicked(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(gOptionsDlg)
-	{
-	gOptionsDlg->addConfig();
-	}
+        {
+        gOptionsDlg->addConfig();
+        }
     gtk_widget_hide(Builder::getBuilder()->getWidget("NewBuildConfigDialog"));
     }
 
@@ -475,7 +475,7 @@ static PrefOption PrefOptions[] =
 bool ClassPreferencesDialog::run(Builder &builder, ClassNodeDrawOptions &options)
     {
     Dialog dlg(GTK_DIALOG(gtk_dialog_new()),
-	    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     dlg.addButton(GUI_CANCEL, GTK_RESPONSE_CANCEL);
     dlg.addButton(GUI_OK, GTK_RESPONSE_OK);
 
@@ -484,22 +484,22 @@ bool ClassPreferencesDialog::run(Builder &builder, ClassNodeDrawOptions &options
     Gui::reparentWidget(optionsBox, GTK_CONTAINER(dlg.getContentArea()));
 
     for(auto const &opt : PrefOptions)
-	{
-	bool active = *(reinterpret_cast<unsigned char *>(&options) + (opt.offset));
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
-		Builder::getBuilder()->getWidget(opt.widgetName)), active);
-	}
+        {
+        bool active = *(reinterpret_cast<unsigned char *>(&options) + (opt.offset));
+        gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(
+                Builder::getBuilder()->getWidget(opt.widgetName)), active);
+        }
 
     bool ok = dlg.run();
     if(ok)
-	{
-	for(auto const &opt : PrefOptions)
-	    {
-	    bool active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(
-		    Builder::getBuilder()->getWidget(opt.widgetName)));
-	    *(reinterpret_cast<unsigned char *>(&options) + (opt.offset)) = active;
-	    }
-	}
+        {
+        for(auto const &opt : PrefOptions)
+            {
+            bool active = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(
+                    Builder::getBuilder()->getWidget(opt.widgetName)));
+            *(reinterpret_cast<unsigned char *>(&options) + (opt.offset)) = active;
+            }
+        }
     Gui::reparentWidget(optionsBox, GTK_CONTAINER(builder.getWidget("OptionsNotebook")));
     dlg.destroy();
     return ok;

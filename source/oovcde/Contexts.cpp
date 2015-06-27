@@ -9,7 +9,8 @@
 #include "BuildConfigReader.h"
 #include "IncludeMap.h"
 
-static bool sDisplayClassViewRightClick = false;
+static bool sTreeViewRightClick = false;
+static GdkEventButton sTreeViewRightClickButton;
 static Contexts *sContexts;
 
 
@@ -49,30 +50,32 @@ void Contexts::clear()
 void Contexts::displayClassDiagram()
     {
     if(mProject.isAnalysisReady())
-	{
-	std::string className = getSelectedClass();
-	if(mCurrentContext == C_Class)
-	    {
-	    if(sDisplayClassViewRightClick)
-		{
-		mJournal.addClass(className);
-		sDisplayClassViewRightClick = false;
-		}
-	    else
-		{
-		displayClass(className);
-		}
-	    }
-	else if(mCurrentContext == C_Portion)
-	    {
-	    if(std::string(className).length() > 0)
-		{
-	        updateOperationList(mProject.getModelData(), className);
+        {
+        std::string className = getSelectedClass();
+        if(mCurrentContext == C_Class)
+            {
+            if(sTreeViewRightClick)
+                {
+                ClassDiagramView *classDiagram = mJournal.getCurrentClassDiagram();
+                classDiagram->displayListContextMenu(sTreeViewRightClickButton.button,
+                        sTreeViewRightClickButton.time, nullptr);
+                sTreeViewRightClick = false;
+                }
+            else
+                {
+                displayClass(className);
+                }
+            }
+        else if(mCurrentContext == C_Portion)
+            {
+            if(std::string(className).length() > 0)
+                {
+                updateOperationList(mProject.getModelData(), className);
                 mJournal.displayPortion(className);
-		updateJournalList();
-		}
-	    }
-	}
+                updateJournalList();
+                }
+            }
+        }
     }
 
 void Contexts::displayOperationsDiagram()
@@ -83,20 +86,20 @@ void Contexts::displayOperationsDiagram()
     size_t spacePos = operName.find(' ');
     bool isConst = false;
     if(spacePos != std::string::npos)
-	{
-	operName.resize(spacePos);
-	isConst = true;
-	}
+        {
+        operName.resize(spacePos);
+        isConst = true;
+        }
     displayOperation(className, operName, isConst);
     }
 
 void Contexts::displayJournal()
     {
     if(mCurrentContext == C_Journal)
-	{
-	mJournal.setCurrentRecord(mJournalList.getSelectedIndex());
-	gtk_widget_queue_draw(Builder::getBuilder()->getWidget("DiagramDrawingarea"));
-	}
+        {
+        mJournal.setCurrentRecord(mJournalList.getSelectedIndex());
+        gtk_widget_queue_draw(Builder::getBuilder()->getWidget("DiagramDrawingarea"));
+        }
     }
 
 void Contexts::displayComponentDiagram()
@@ -104,13 +107,13 @@ void Contexts::displayComponentDiagram()
     // The component list should be available all the time as long as a
     // component can be selected.
 //    if(mProject.isAnalysisReady())
-	{
-	std::string fn = mComponentList.getSelectedFileName();
-	if(fn.length() > 0)
-	    {
-	    viewSource(fn, 1);
-	    }
-	}
+        {
+        std::string fn = mComponentList.getSelectedFileName();
+        if(fn.length() > 0)
+            {
+            viewSource(fn, 1);
+            }
+        }
     }
 
 void Contexts::displayIncludeDiagram()
@@ -127,31 +130,31 @@ void Contexts::displayIncludeDiagram()
 void Contexts::displayZoneDiagram()
     {
     if(mProject.isAnalysisReady())
-	{
-	ZoneDiagram *zoneDiagram = mJournal.getCurrentZoneDiagram();
-	if(zoneDiagram)
-	    {
-	    std::string comp = mZoneList.getComponentTree().getSelected('/');
-	    if(comp.length() > 0)
-		{
-		bool show = mZoneList.getComponentTree().toggleSelectedCheckbox();
-		zoneDiagram->setFilter(comp, !show);
-		zoneDiagram->updateDiagram();
-		}
-	    }
-	}
+        {
+        ZoneDiagramView *zoneDiagramView = mJournal.getCurrentZoneDiagram();
+        if(zoneDiagramView)
+            {
+            std::string comp = mZoneList.getComponentTree().getSelected('/');
+            if(comp.length() > 0)
+                {
+                bool show = mZoneList.getComponentTree().toggleSelectedCheckbox();
+                zoneDiagramView->setFilter(comp, !show);
+                zoneDiagramView->updateGraphAndRequestRedraw();
+                }
+            }
+        }
     }
 
 void Contexts::zoneTreeviewButtonRelease(const GdkEventButton *event)
     {
     if(mProject.isAnalysisReady())
-	{
-	ZoneDiagram *zoneDiagram = Journal::getJournal()->getCurrentZoneDiagram();
-	if(zoneDiagram)
-	    {
-	    zoneDiagram->listDisplayContextMenu(event);
-	    }
-	}
+        {
+        ZoneDiagramView *zoneDiagramView = Journal::getJournal()->getCurrentZoneDiagram();
+        if(zoneDiagramView)
+            {
+            zoneDiagramView->listDisplayContextMenu(event);
+            }
+        }
     }
 
 void Contexts::setContext(eContexts context)
@@ -161,54 +164,54 @@ void Contexts::setContext(eContexts context)
 
     mCurrentContext = context;
     switch(context)
-	{
-	case C_BinaryComponent:
-	    clearSelectedComponent();;
-	    mJournal.displayComponents();
-	    updateJournalList();
-	    page = PI_Module;
-	    break;
+        {
+        case C_BinaryComponent:
+            clearSelectedComponent();;
+            mJournal.displayComponents();
+            updateJournalList();
+            page = PI_Module;
+            break;
 
-	case C_Include:
+        case C_Include:
             if(mProject.isAnalysisReady())
                 {
                 page = PI_Include;
                 displayIncludeDiagram();
                 updateJournalList();
                 }
-	    break;
+            break;
 
-	case C_Zone:
-	    if(mProject.isAnalysisReady())
-		{
-		mJournal.displayWorldZone();
-		updateJournalList();
+        case C_Zone:
+            if(mProject.isAnalysisReady())
+                {
+                mJournal.displayWorldZone();
+                updateJournalList();
                 page = PI_Zone;
-		}
-	    break;
+                }
+            break;
 
-	case C_Class:
-	    displayClassDiagram();
+        case C_Class:
+            displayClassDiagram();
             page = PI_Class;
-	    break;
+            break;
 
-	case C_Portion:
-	    displayClassDiagram();
+        case C_Portion:
+            displayClassDiagram();
             page = PI_Class;
-	    break;
+            break;
 
-	// Operation is always related to class, so it must be initialized
-	// to first operation of class.
-	case C_Operation:
-	    displayOperationsDiagram();
+        // Operation is always related to class, so it must be initialized
+        // to first operation of class.
+        case C_Operation:
+            displayOperationsDiagram();
             page = PI_Seq;
-	    break;
+            break;
 
-	case C_Journal:
-	    displayJournal();
+        case C_Journal:
+            displayJournal();
             page = PI_Journal;
-	    break;
-	}
+            break;
+        }
     GtkNotebook *notebook = GTK_NOTEBOOK(Builder::getBuilder()->getWidget("ListNotebook"));
     gtk_notebook_set_current_page(notebook, page);
     }
@@ -233,9 +236,9 @@ void Contexts::updateJournalList()
     {
     mJournalList.clear();
     for(const auto &rec : mJournal.getRecords())
-	{
-	mJournalList.appendText(rec->getFullName(true));
-	}
+        {
+        mJournalList.appendText(rec->getFullName(true));
+        }
     }
 
 void Contexts::updateClassList()
@@ -260,51 +263,51 @@ void Contexts::updateIncludeList()
     }
 
 void Contexts::updateOperationList(const ModelData &modelData,
-	OovStringRef const className)
+        OovStringRef const className)
     {
     mOperationList.clear();
     const ModelClassifier *cls = modelData.getTypeRef(className)->getClass();
     if(cls)
-	{
-	for(size_t i=0; i<cls->getOperations().size(); i++)
-	    {
-	    const ModelOperation *oper = cls->getOperations()[i].get();
-	    std::string opStr = oper->getName();
-	    if(oper->isConst())
-		{
-		opStr += ' ';
-		opStr += "const";
-		}
-	    mOperationList.appendText(opStr);
-	    }
-	mOperationList.sort();
-	}
+        {
+        for(size_t i=0; i<cls->getOperations().size(); i++)
+            {
+            const ModelOperation *oper = cls->getOperations()[i].get();
+            std::string opStr = oper->getName();
+            if(oper->isConst())
+                {
+                opStr += ' ';
+                opStr += "const";
+                }
+            mOperationList.appendText(opStr);
+            }
+        mOperationList.sort();
+        }
     }
 
 void Contexts::displayClass(OovStringRef const className)
     {
     // While the graph is initialized or destructed, there is no name.
     if(std::string(className).length() > 0)
-	{
+        {
         mClassList.setSelected(className);
-	updateOperationList(mProject.getModelData(), className);
-	mJournal.displayClass(className);
-	updateJournalList();
-	}
+        updateOperationList(mProject.getModelData(), className);
+        mJournal.displayClass(className);
+        updateJournalList();
+        }
     }
 
 void Contexts::displayOperation(OovStringRef const className,
-	OovStringRef const operName, bool isConst)
+        OovStringRef const operName, bool isConst)
     {
     // While the graph is initialized or destructed, there is no name.
     if(std::string(className).length() > 0)
-	{
-	if(std::string(operName).length() > 0)
-	    {
-	    mJournal.displayOperation(className, operName, isConst);
-	    updateJournalList();
-	    }
-	}
+        {
+        if(std::string(operName).length() > 0)
+            {
+            mJournal.displayOperation(className, operName, isConst);
+            updateJournalList();
+            }
+        }
     }
 
 
@@ -312,43 +315,44 @@ void Contexts::displayOperation(OovStringRef const className,
 
 
 extern "C" G_MODULE_EXPORT void on_ClassTreeview_cursor_changed(
-	GtkWidget *button, gpointer data)
+        GtkWidget *button, gpointer data)
     {
     sContexts->displayClassDiagram();
     }
 
 extern "C" G_MODULE_EXPORT bool on_ClassTreeview_button_press_event(
-	GtkWidget *button, GdkEvent *event, gpointer data)
+        GtkWidget *button, GdkEvent *event, gpointer data)
     {
     GdkEventButton *eventBut = reinterpret_cast<GdkEventButton*>(event);
-    if(eventBut->button == 3)	// Right button
-    	{
-    	sDisplayClassViewRightClick = true;
-    	}
-    return false;	// Not handled - continue processing
+    if(eventBut->button == 3)   // Right button
+        {
+        sTreeViewRightClickButton = *eventBut;
+        sTreeViewRightClick = true;
+        }
+    return false;       // Not handled - continue processing
     }
 
 extern "C" G_MODULE_EXPORT void on_OperationsTreeview_cursor_changed(
-	GtkWidget *button, gpointer data)
+        GtkWidget *button, gpointer data)
     {
     sContexts->displayOperationsDiagram();
     }
 
 
 extern "C" G_MODULE_EXPORT void on_JournalTreeview_cursor_changed(
-	GtkWidget *button, gpointer data)
+        GtkWidget *button, gpointer data)
     {
     sContexts->displayJournal();
     }
 
 extern "C" G_MODULE_EXPORT void on_ModuleTreeview_cursor_changed(
-	GtkWidget *button, gpointer data)
+        GtkWidget *button, gpointer data)
     {
     sContexts->displayComponentDiagram();
     }
 
 extern "C" G_MODULE_EXPORT void on_ZoneTreeview_cursor_changed(
-	GtkWidget *widget, gpointer data)
+        GtkWidget *widget, gpointer data)
     {
     sContexts->displayZoneDiagram();
     }
@@ -360,21 +364,21 @@ extern "C" G_MODULE_EXPORT void on_IncludeTreeview_cursor_changed(
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_press_event(
-	GtkWidget *widget, const GdkEventButton *event)
+        GtkWidget *widget, const GdkEventButton *event)
     {
     // This prevents the right click display of popup from changing a checkbox.
     return(event->button != 1);
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_ZoneTreeview_button_release_event(
-	GtkWidget *widget, const GdkEventButton *event)
+        GtkWidget *widget, const GdkEventButton *event)
     {
     bool handled = false;
     if(event->button != 1)
-    	{
-	sContexts->zoneTreeviewButtonRelease(event);
-    	handled = true;
-    	}
+        {
+        sContexts->zoneTreeviewButtonRelease(event);
+        handled = true;
+        }
     return handled;
     }
 

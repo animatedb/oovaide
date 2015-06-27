@@ -29,7 +29,7 @@
 #include <stdio.h>
 
 static bool readProject(ComponentFinder &compFinder, OovStringRef const buildConfigName,
-	OovStringRef const oovProjDir, bool verbose)
+        OovStringRef const oovProjDir, bool verbose)
     {
     bool success = compFinder.readProject(oovProjDir, buildConfigName);
     if(success)
@@ -48,7 +48,8 @@ static bool readProject(ComponentFinder &compFinder, OovStringRef const buildCon
     }
 
 static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
-	 OovStringRef const buildConfigName, OovStringRef const srcRootDir)
+        eProcessModes procMode, OovStringRef const buildConfigName,
+        OovStringRef const srcRootDir)
     {
     // @todo - This should probably check the oovcde-pkg.txt include crc to
     // see if it is different than what was used to generate the
@@ -74,7 +75,7 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
         compFinder.getProject().getAllCrcLinkArgs());
 
     if(cfg.isConfigDifferent(buildConfigName,
-	    BuildConfig::CT_ExtPathArgsCrc))
+            BuildConfig::CT_ExtPathArgsCrc))
         {
         // This is for the -ER switch.
         for(auto const &arg : compFinder.getProject().getExternalArgs())
@@ -121,6 +122,7 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
         // Find CRC's that are not used by any build configuration.
         OovStringVec unusedCrcs;
         OovStringVec deleteDirs;
+        bool deleteAnalysis = false;
         cfg.getUnusedCrcs(unusedCrcs);
         for(auto const &crcStr : unusedCrcs)
             {
@@ -133,22 +135,34 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
             cfg.isConfigDifferent(buildConfigName,
             BuildConfig::CT_OtherArgsCrc))
             {
-            deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
+            if(procMode == PM_Analyze)
+                {
+                deleteAnalysis = true;
+                }
+            else
+                {
+                deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
+                }
             }
-        else	// Must be only link arguments.
+        else    // Must be only link arguments.
             {
             deleteDirs.push_back(Project::getOutputDir(buildConfigName));
+            }
+        cfg.saveConfig(buildConfigName);
+        if(deleteAnalysis)
+            {
+            OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
+            deleteDirs.push_back(analysisPath);
             }
         for(auto const &dir : deleteDirs)
             {
             printf("Deleting %s\n", dir.getStr());
-            if(dir.length() > 5)	// Reduce chance of deleting root
+            if(dir.length() > 5)        // Reduce chance of deleting root
                 {
                 recursiveDeleteDir(dir);
                 }
             }
         fflush(stdout);
-        cfg.saveConfig(buildConfigName);
         }
 
     OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
@@ -162,12 +176,12 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
     }
 
 // Example test args:
-//	../examples/staticlib ../examples/staticlib-oovcde -bld-Debug
+//      ../examples/staticlib ../examples/staticlib-oovcde -bld-Debug
 int main(int argc, char const * const argv[])
     {
     ComponentFinder compFinder;
     char const *oovProjDir = NULL;
-    std::string buildConfigName = BuildConfigAnalysis;	// analysis is default.
+    std::string buildConfigName = BuildConfigAnalysis;  // analysis is default.
     eProcessModes processMode = PM_Analyze;
     bool verbose = false;
     bool success = (argc >= 2);
@@ -179,7 +193,7 @@ int main(int argc, char const * const argv[])
             std::string testArg = argv[i];
             if(testArg.find("-cfg-", 0, 5) == 0)
                 {
-                buildConfigName = testArg.substr(5);	// skip "-cfg-"
+                buildConfigName = testArg.substr(5);    // skip "-cfg-"
                 }
             else if(testArg.find("-mode-", 0, 5) == 0)
                 {
@@ -251,7 +265,8 @@ int main(int argc, char const * const argv[])
         else
             {
             BuildConfigWriter cfg;
-            analyze(compFinder, cfg, buildConfigName, Project::getSrcRootDirectory());
+            analyze(compFinder, cfg, processMode, buildConfigName,
+                    Project::getSrcRootDirectory());
 
             std::string configStr = "Configuration: ";
             configStr += buildConfigName;

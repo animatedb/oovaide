@@ -147,8 +147,11 @@
     </table>
     <br>
     <h2><a class="mozTocH2" name="mozTocId89151"></a>OovCppParser</h2>
-    The OovCppParser is based on the CLang LLVM C++ parser. It is used to parse
-    the C++ source files and save drawing information in XMI files.<br>
+    The OovCppParser is a command line tool based on the CLang LLVM C++ parser.
+    It is used to parse the C++ source files and saves drawing information in
+    one XMI file for each C++ source file.&nbsp; The include dependencies are
+    saved in a single file for all source files in a project. There is optional
+    duplicate code detection that is saved in a file for each C++ source file.<br>
     <br>
     <embed src="CppParser.svg" type="image/svg+xml"> <br>
     <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
@@ -166,6 +169,12 @@
           <td style="vertical-align: top;">This class parses a single source
             file and saves data in the ModelData.<br>
           </td>
+        </tr>
+        <tr>
+          <td>ParserModelData</td>
+          <td>Provides the interface to the object model, which is the representation
+            of the class and method relationships, and other information kept in
+            the model.</td>
         </tr>
         <tr>
           <td style="vertical-align: top;">ModelWriter<br>
@@ -189,7 +198,8 @@
         </tr>
         <tr>
           <td>SharedFile</td>
-          <td>Synchronizes access to a file shared by multiple processes.</td>
+          <td>Provides synchronization for&nbsp;the include file that can be
+            updated and read by multiple processes.</td>
         </tr>
         <tr>
           <td style="vertical-align: top;">CXStringDisposer<br>
@@ -409,10 +419,10 @@
         <tr>
           <td>ProjectPackages</td>
           <td>Packages used by the project. Stored in oovcde-pkg.txt in the
-            project directory. This file is the same format as the AvailablePackages,
-            except that the Root directory wildcards have been previously
-            resolved, and only the packages specified in the project are
-            present.</td>
+            project directory. This file is the same format as the
+            AvailablePackages, except that the Root directory wildcards have
+            been previously resolved, and only the packages specified in the
+            project are present.</td>
         </tr>
         <tr>
           <td>BuildPackages</td>

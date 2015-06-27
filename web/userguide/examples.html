@@ -63,9 +63,9 @@
       <li>Wait for the drawing analysis to complete.</li>
       <li>View the "Class" tab, and click on "Lamb". The class diagram will
         display.</li>
-      <li>Depending on the compiler and libraries installed on the system, it
-        may be required that the Analysis/Settings must be used to set "External
-        Project Packages that define other include paths. For example, mingw-w64
+      <li>Depending on the compiler and libraries installed on the system, performing
+        a full analysis can be set up by using Analysis/Settings and using "External
+        Project Packages" to define other include paths. For example, mingw-w64
         may be needed on Windows for stdio.h.</li>
       <li>Select Build/Settings from the menu. Select the Component Type of
         Program/Executable.</li>
@@ -281,10 +281,10 @@
         This will add one more class.</li>
       <li>To prevent __builtin_... errors, add "-Iclang/3.6.0/include" so that
         it is on a line before any -EP arguments.</li>
-      <li>Depending on the compiler and libraries installed on the system, it
-        may be required that the Analysis/Settings must be used to set "External
-        Project Packages that define other include paths. For example, mingw-w64
-        may be needed on Windows for stdio.h and vector.</li>
+      <li>Depending on the compiler and libraries installed on the system,
+	performing a full analysis can be set up by using Analysis/Settings and
+	selecting "External Project Packages" to define other include paths.
+	For example, GTK3 may be needed on Windows for gmodule.h.</li>
       <li>Select Analysis/Settings in the Build Arguments tab, and click on
         Extern
         Project Packages. Press the Add button to add packages. Be

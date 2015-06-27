@@ -9,38 +9,31 @@
 #include <string.h>
 #include <algorithm>
 
-PathChooser::~PathChooser()
-    {
-    if(mDialog)
-	{
-	gtk_widget_destroy(mDialog);
-	}
-    }
 
 bool PathChooser::ChoosePath(GtkWindow *parent, OovStringRef const dlgName,
-	GtkFileChooserAction action, OovString &path)
+        GtkFileChooserAction action, OovString &path)
     {
-    if(mDialog)
-	{
-	gtk_widget_destroy(mDialog);
-//	delete mDialog;
-	}
     char const * openButtonFlag =
-	    (action == GTK_FILE_CHOOSER_ACTION_OPEN ||
-		    action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) ?
-			    "_Open": "_Save";
-    mDialog = gtk_file_chooser_dialog_new(dlgName, parent,
-	action, GUI_CANCEL, GTK_RESPONSE_CANCEL,
-	openButtonFlag, GTK_RESPONSE_ACCEPT, nullptr);
-    if(mDefaultPath.length())
-	gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(mDialog), mDefaultPath.c_str());
-    bool success = (gtk_dialog_run(GTK_DIALOG (mDialog)) == GTK_RESPONSE_ACCEPT);
-    if (success)
-	{
-	char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(mDialog));
-	path = filename;
-	g_free(filename);
-	}
+            (action == GTK_FILE_CHOOSER_ACTION_OPEN ||
+                    action == GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER) ?
+                            "_Open": "_Save";
+    GtkWidget *dialog = gtk_file_chooser_dialog_new(dlgName, parent,
+        action, GUI_CANCEL, GTK_RESPONSE_CANCEL,
+        openButtonFlag, GTK_RESPONSE_ACCEPT, nullptr);
+    bool success = false;
+    if(dialog)
+        {
+        if(mDefaultPath.length())
+            gtk_file_chooser_set_filename(GTK_FILE_CHOOSER(dialog), mDefaultPath.c_str());
+        success = (gtk_dialog_run(GTK_DIALOG (dialog)) == GTK_RESPONSE_ACCEPT);
+        if (success)
+            {
+            char *filename = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(dialog));
+            path = filename;
+            g_free(filename);
+            }
+        gtk_widget_destroy(dialog);
+        }
     return success;
     }
 
@@ -53,7 +46,7 @@ int Dialog::runHideCancel()
     int ret = gtk_dialog_run(mDialog);
     afterRun(ret == GTK_RESPONSE_OK);
     if(ret == GTK_RESPONSE_CANCEL)
-	gtk_widget_hide(GTK_WIDGET(getDialog()));
+        gtk_widget_hide(GTK_WIDGET(getDialog()));
     return ret;
     }
 
@@ -63,7 +56,7 @@ bool Dialog::run(bool hideDialogAfterButtonPress)
     bool ok = (gtk_dialog_run(mDialog) == GTK_RESPONSE_OK);
     afterRun(ok);
     if(hideDialogAfterButtonPress)
-	gtk_widget_hide(GTK_WIDGET(getDialog()));
+        gtk_widget_hide(GTK_WIDGET(getDialog()));
     return ok;
     }
 
@@ -88,18 +81,18 @@ void Gui::scrollToCursor(GtkTextView *textview)
     GtkTextMark *mark = gtk_text_buffer_get_insert(textbuf);
 /*
     if(mark)
-	{
-	// Move to beginning of line.
-	GtkTextIter startFind;
-	gtk_text_buffer_get_iter_at_mark(textbuf, &startFind, mark);
-	gtk_text_iter_backward_line(&startFind);
-	gtk_text_buffer_move_mark(textbuf, mark, &startFind);
-	}
+        {
+        // Move to beginning of line.
+        GtkTextIter startFind;
+        gtk_text_buffer_get_iter_at_mark(textbuf, &startFind, mark);
+        gtk_text_iter_backward_line(&startFind);
+        gtk_text_buffer_move_mark(textbuf, mark, &startFind);
+        }
 */
     if(mark)
-	{
-	gtk_text_view_scroll_mark_onscreen(textview, mark);
-	}
+        {
+        gtk_text_view_scroll_mark_onscreen(textview, mark);
+        }
     }
 
 GuiText Gui::getText(GtkTextView *textview)
@@ -162,16 +155,16 @@ void Gui::reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent)
     g_object_ref(GTK_WIDGET(windowToMove));
     GtkWidget *old_parent = gtk_widget_get_parent(GTK_WIDGET(windowToMove));
     if(old_parent)
-    	gtk_container_remove(GTK_CONTAINER(old_parent), GTK_WIDGET(windowToMove));
+        gtk_container_remove(GTK_CONTAINER(old_parent), GTK_WIDGET(windowToMove));
     gtk_container_add(GTK_CONTAINER(newParent), GTK_WIDGET(windowToMove));
     g_object_unref(GTK_WIDGET(windowToMove));
     }
 
 bool Gui::messageBox(OovStringRef const msg, GtkMessageType msgType,
-	GtkButtonsType buttons)
+        GtkButtonsType buttons)
     {
     GtkWidget *widget = gtk_message_dialog_new(nullptr, GTK_DIALOG_MODAL,
-	msgType, buttons, "%s", msg.getStr());
+        msgType, buttons, "%s", msg.getStr());
     int resp = gtk_dialog_run(GTK_DIALOG(widget));
     gtk_widget_destroy(widget);
     return(resp == GTK_RESPONSE_OK || resp == GTK_RESPONSE_YES);
@@ -204,7 +197,7 @@ char GuiTextBuffer::getChar(GtkTextBuffer *buf, int offset)
     OovString str = getText(buf, offset, offset+1);
     char c = '\0';
     if(str.length())
-	c = str[0];
+        c = str[0];
     return c;
     }
 
@@ -239,33 +232,33 @@ void GuiTreeView::clear()
     removeSelected();
     GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
     if(GTK_IS_LIST_STORE(model))
-	{
-	GtkListStore *store = GTK_LIST_STORE(model);
-	GtkTreeIter iter;
-	if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(
-		gtk_tree_view_get_model(mTreeView)), &iter))
-	    {
-	    while(gtk_list_store_remove(store, &iter))
-		{
-		}
-	    }
-	}
+        {
+        GtkListStore *store = GTK_LIST_STORE(model);
+        GtkTreeIter iter;
+        if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(
+                gtk_tree_view_get_model(mTreeView)), &iter))
+            {
+            while(gtk_list_store_remove(store, &iter))
+                {
+                }
+            }
+        }
     else
-	{
-	GtkTreeStore *store = GTK_TREE_STORE(model);
-	GtkTreeIter iter;
-	GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
-	if(model)
-	    {
-	    if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(
-		    model), &iter))
-		{
-		while(gtk_tree_store_remove(store, &iter))
-		    {
-		    }
-		}
-	    }
-	}
+        {
+        GtkTreeStore *store = GTK_TREE_STORE(model);
+        GtkTreeIter iter;
+        GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+        if(model)
+            {
+            if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(
+                    model), &iter))
+                {
+                while(gtk_tree_store_remove(store, &iter))
+                    {
+                    }
+                }
+            }
+        }
     }
 
 void GuiTreeView::removeSelected()
@@ -275,36 +268,36 @@ void GuiTreeView::removeSelected()
 
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     if(sel)
-	{
-	if (gtk_tree_selection_get_selected(sel, &model, &iter))
-	    {
-	    if(GTK_IS_LIST_STORE(model))
-		{
-		gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
-		}
-	    else
-		{
-		gtk_tree_store_remove(GTK_TREE_STORE(model), &iter);
-		}
-	    }
-	}
+        {
+        if (gtk_tree_selection_get_selected(sel, &model, &iter))
+            {
+            if(GTK_IS_LIST_STORE(model))
+                {
+                gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+                }
+            else
+                {
+                gtk_tree_store_remove(GTK_TREE_STORE(model), &iter);
+                }
+            }
+        }
     }
 
 void GuiList::init(Builder &builder, OovStringRef const widgetName,
-	OovStringRef const title)
+        OovStringRef const title)
     {
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
     if(!gtk_tree_view_get_column(mTreeView, 0))
-	{
-	GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
-	GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(
-	    title, renderer, "text", LIST_ITEM, nullptr);
-	gtk_tree_view_append_column(GTK_TREE_VIEW(mTreeView), column);
+        {
+        GtkCellRenderer *renderer = gtk_cell_renderer_text_new();
+        GtkTreeViewColumn *column = gtk_tree_view_column_new_with_attributes(
+            title, renderer, "text", LIST_ITEM, nullptr);
+        gtk_tree_view_append_column(GTK_TREE_VIEW(mTreeView), column);
 
-	GtkListStore *store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING);
-	gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
-	g_object_unref(store);
-	}
+        GtkListStore *store = gtk_list_store_new(N_COLUMNS, G_TYPE_STRING);
+        gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
+        g_object_unref(store);
+        }
     }
 
 void GuiList::appendText(OovStringRef const str)
@@ -327,15 +320,15 @@ OovStringVec GuiList::getText() const
     GtkTreeIter iter;
     GtkTreeModel *model = GTK_TREE_MODEL(gtk_tree_view_get_model(mTreeView));
     if(gtk_tree_model_get_iter_first(model, &iter))
-	{
-	do
-	    {
-	    GuiListStringValue val;
-	    char const *v = val.getStringFromModel(model, &iter);
-	    if(v)
-		text.push_back(v);
-	    } while(gtk_tree_model_iter_next(model, &iter));
-	}
+        {
+        do
+            {
+            GuiListStringValue val;
+            char const *v = val.getStringFromModel(model, &iter);
+            if(v)
+                text.push_back(v);
+            } while(gtk_tree_model_iter_next(model, &iter));
+        }
     return text;
     }
 
@@ -347,15 +340,15 @@ OovString GuiList::getSelected() const
 
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     if(sel)
-	{
-	if (gtk_tree_selection_get_selected(sel, &model, &iter))
-	    {
-	    char *value;
-	    gtk_tree_model_get(model, &iter, LIST_ITEM, &value,  -1);
-	    selectedStr = value;
-	    g_free(value);
-	    }
-	}
+        {
+        if (gtk_tree_selection_get_selected(sel, &model, &iter))
+            {
+            char *value;
+            gtk_tree_model_get(model, &iter, LIST_ITEM, &value,  -1);
+            selectedStr = value;
+            g_free(value);
+            }
+        }
     return selectedStr;
     }
 
@@ -366,46 +359,46 @@ int GuiList::getSelectedIndex() const
 
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     if(sel)
-	{
-	GList *listOfPaths = gtk_tree_selection_get_selected_rows(sel, &model);
-	if (listOfPaths)
-	    {
-	    gint *p = gtk_tree_path_get_indices((GtkTreePath*)g_list_nth_data(listOfPaths, 0));
-	    if(p)
-		index = *p;
-	    g_list_free(listOfPaths);
-	    }
-	}
+        {
+        GList *listOfPaths = gtk_tree_selection_get_selected_rows(sel, &model);
+        if (listOfPaths)
+            {
+            gint *p = gtk_tree_path_get_indices((GtkTreePath*)g_list_nth_data(listOfPaths, 0));
+            if(p)
+                index = *p;
+            g_list_free(listOfPaths);
+            }
+        }
     return index;
     }
 
 void GuiList::setSelected(OovStringRef const str)
     {
     if(getSelected().compare(str) != 0)
-	{
-	GtkTreeIter iter;
-	GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
-	if(gtk_tree_model_get_iter_first(model, &iter))
-	    {
-	    do
-		{
-		gchar *value;
-		gtk_tree_model_get(model, &iter, LIST_ITEM, &value, -1);
-		if(std::string(str).compare(value) == 0)
-		    {
-		    GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
-		    if(path)
-			{
-			gtk_tree_view_scroll_to_cell(mTreeView, path, NULL, false, 0, 0);
-			gtk_tree_view_set_cursor(mTreeView, path, NULL, false);
-			gtk_tree_path_free(path);
-			}
-		    break;
-		    }
-		g_free(value);
-		} while(gtk_tree_model_iter_next(model, &iter));
-	    }
-	}
+        {
+        GtkTreeIter iter;
+        GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+        if(gtk_tree_model_get_iter_first(model, &iter))
+            {
+            do
+                {
+                gchar *value;
+                gtk_tree_model_get(model, &iter, LIST_ITEM, &value, -1);
+                if(std::string(str).compare(value) == 0)
+                    {
+                    GtkTreePath *path = gtk_tree_model_get_path(model, &iter);
+                    if(path)
+                        {
+                        gtk_tree_view_scroll_to_cell(mTreeView, path, NULL, false, 0, 0);
+                        gtk_tree_view_set_cursor(mTreeView, path, NULL, false);
+                        gtk_tree_path_free(path);
+                        }
+                    break;
+                    }
+                g_free(value);
+                } while(gtk_tree_model_iter_next(model, &iter));
+            }
+        }
     }
 
 OovString GuiList::findLongestMatch(OovStringRef const str)
@@ -414,30 +407,30 @@ OovString GuiList::findLongestMatch(OovStringRef const str)
     GtkTreeIter iter;
     OovString bestStr;
     if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model), &iter))
-	{
-	int bestMatchCount = 0;
-	do
-	    {
-	    GuiListStringValue val;
-	    char const *v = val.getStringFromModel(model, &iter);
-	    if(v)
-		{
-		int count = StringCompareNoCaseNumCharsMatch(str, v);
-		if(count > bestMatchCount)
-		    {
-		    bestStr = v;
-		    bestMatchCount = count;
-		    }
-		}
-	    } while(gtk_tree_model_iter_next(model, &iter));
-	}
+        {
+        int bestMatchCount = 0;
+        do
+            {
+            GuiListStringValue val;
+            char const *v = val.getStringFromModel(model, &iter);
+            if(v)
+                {
+                int count = StringCompareNoCaseNumCharsMatch(str, v);
+                if(count > bestMatchCount)
+                    {
+                    bestStr = v;
+                    bestMatchCount = count;
+                    }
+                }
+            } while(gtk_tree_model_iter_next(model, &iter));
+        }
     return bestStr;
     }
 
 
 
 void GuiTree::init(Builder &builder, OovStringRef const widgetName,
-	OovStringRef const title, ColumnTypes columnType)
+        OovStringRef const title, ColumnTypes columnType)
     {
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
 
@@ -449,17 +442,17 @@ void GuiTree::init(Builder &builder, OovStringRef const widgetName,
 
     GtkTreeStore *store;
     if(columnType == CT_String)
-	store = gtk_tree_store_new(N_StringColumns, G_TYPE_STRING);
+        store = gtk_tree_store_new(N_StringColumns, G_TYPE_STRING);
     else
-	{
-	store = gtk_tree_store_new(N_StringBoolColumns, G_TYPE_STRING, G_TYPE_BOOLEAN);
+        {
+        store = gtk_tree_store_new(N_StringBoolColumns, G_TYPE_STRING, G_TYPE_BOOLEAN);
 
-	// Add a boolean checkbox column
-	GtkCellRenderer *toggleRenderer = gtk_cell_renderer_toggle_new();
-	GtkTreeViewColumn *toggleColumn = gtk_tree_view_column_new_with_attributes
-		("Show", toggleRenderer, "active", GuiTree::TV_BoolIndex, NULL);
-	gtk_tree_view_append_column(mTreeView, toggleColumn);
-	}
+        // Add a boolean checkbox column
+        GtkCellRenderer *toggleRenderer = gtk_cell_renderer_toggle_new();
+        GtkTreeViewColumn *toggleColumn = gtk_tree_view_column_new_with_attributes
+                ("Show", toggleRenderer, "active", GuiTree::TV_BoolIndex, NULL);
+        gtk_tree_view_append_column(mTreeView, toggleColumn);
+        }
     gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
     g_object_unref(store);
     }
@@ -469,17 +462,17 @@ GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, OovStringRef const str)
     GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
     GuiTreeItem item(false);
     if(GTK_IS_LIST_STORE(model))
-	{
-	GtkListStore *store = GTK_LIST_STORE(model);
-	gtk_list_store_append(store, &item.mIter);
-	gtk_list_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
-	}
+        {
+        GtkListStore *store = GTK_LIST_STORE(model);
+        gtk_list_store_append(store, &item.mIter);
+        gtk_list_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
+        }
     else
-	{
-	GtkTreeStore *store = GTK_TREE_STORE(model);
-	gtk_tree_store_append(store, &item.mIter, parentItem.getPtr());
-	gtk_tree_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
-	}
+        {
+        GtkTreeStore *store = GTK_TREE_STORE(model);
+        gtk_tree_store_append(store, &item.mIter, parentItem.getPtr());
+        gtk_tree_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
+        }
     return item;
     }
 
@@ -488,10 +481,10 @@ bool GuiTree::getSelectedIter(GtkTreeIter *childIter) const
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     bool haveSel = false;
     if(sel)
-	{
-	GtkTreeModel *model;
-	haveSel = gtk_tree_selection_get_selected(sel, &model, childIter);
-	}
+        {
+        GtkTreeModel *model;
+        haveSel = gtk_tree_selection_get_selected(sel, &model, childIter);
+        }
     return haveSel;
     }
 
@@ -511,7 +504,7 @@ OovString const GuiTree::getSelected(char delimiter) const
     OovString name;
     if(getSelectedIter(&iter))
         {
-	name = getNodeName(iter, delimiter);
+        name = getNodeName(iter, delimiter);
         }
     return name;
     }
@@ -522,9 +515,9 @@ OovStringVec const GuiTree::getSelected() const
     GtkTreeIter iter;
     OovStringVec names;
     if(getSelectedIter(&iter))
-	{
-	names = getNodeVec(iter);
-	}
+        {
+        names = getNodeVec(iter);
+        }
     return names;
     }
 
@@ -540,11 +533,11 @@ OovStringVec const GuiTree::getNodeVec(GtkTreeIter iter) const
     // Walk up the tree to the root.
     while(gtk_tree_model_iter_parent(model, &parent, &iter))
         {
-	char *value;
-	gtk_tree_model_get(model, &parent, TV_StringIndex, &value, -1);
-	names.push_back(value);
-	g_free(value);
-	iter = parent;
+        char *value;
+        gtk_tree_model_get(model, &parent, TV_StringIndex, &value, -1);
+        names.push_back(value);
+        g_free(value);
+        iter = parent;
         }
     std::reverse(names.begin(), names.end());
     return names;
@@ -563,13 +556,13 @@ void GuiTree::setChildCheckboxes(GtkTreeIter *iter, bool set)
     GtkTreeIter child;
     int numChilds = gtk_tree_model_iter_n_children(getModel(), iter);
     for(int i=0; i<numChilds; i++)
-	{
-	if(gtk_tree_model_iter_nth_child(getModel(), &child, iter, i))
-	    {
-	    gtk_tree_store_set(getTreeStore(), &child, GuiTree::TV_BoolIndex, set, -1);
-	    setChildCheckboxes(&child, set);
-	    }
-	}
+        {
+        if(gtk_tree_model_iter_nth_child(getModel(), &child, iter, i))
+            {
+            gtk_tree_store_set(getTreeStore(), &child, GuiTree::TV_BoolIndex, set, -1);
+            setChildCheckboxes(&child, set);
+            }
+        }
     }
 
 OovStringVec GuiTree::getSelectedChildNodeNames(char delimiter)
@@ -577,9 +570,9 @@ OovStringVec GuiTree::getSelectedChildNodeNames(char delimiter)
     GtkTreeIter iter;
     OovStringVec names;
     if(getSelectedIter(&iter))
-	{
-	names = getChildNodeNames(&iter, delimiter);
-	}
+        {
+        names = getChildNodeNames(&iter, delimiter);
+        }
     return names;
     }
 
@@ -590,17 +583,17 @@ OovStringVec const GuiTree::getChildNodeNames(GtkTreeIter *iter, char delimiter)
 
     int numChilds = gtk_tree_model_iter_n_children(getModel(), iter);
     for(int i=0; i<numChilds; i++)
-	{
-	if(gtk_tree_model_iter_nth_child(getModel(), &child, iter, i))
-	    {
-	    names.push_back(getNodeName(child, delimiter));
-	    OovStringVec newNames = getChildNodeNames(&child, delimiter);
-	    for(auto const &newName : newNames)
-		{
-		names.push_back(newName);
-		}
-	    }
-	}
+        {
+        if(gtk_tree_model_iter_nth_child(getModel(), &child, iter, i))
+            {
+            names.push_back(getNodeName(child, delimiter));
+            OovStringVec newNames = getChildNodeNames(&child, delimiter);
+            for(auto const &newName : newNames)
+                {
+                names.push_back(newName);
+                }
+            }
+        }
     return names;
     }
 
@@ -613,9 +606,9 @@ void GuiTree::setSelectedChildCheckboxes(bool set)
     {
     GtkTreeIter iter;
     if(getSelectedIter(&iter))
-	{
-	setChildCheckboxes(&iter, set);
-	}
+        {
+        setChildCheckboxes(&iter, set);
+        }
     }
 
 bool GuiTree::toggleSelectedCheckbox()
@@ -623,15 +616,15 @@ bool GuiTree::toggleSelectedCheckbox()
     GtkTreeIter iter;
     bool val = false;
     if(getSelectedIter(&iter))
-	{
-	GValue value = { 0, 0 };
-	gtk_tree_model_get_value(getModel(), &iter,
-		GuiTree::TV_BoolIndex, &value);
-	val = (g_value_get_boolean(&value) == TRUE);
-	g_value_unset(&value);
-	gtk_tree_store_set(getTreeStore(), &iter,
-		GuiTree::TV_BoolIndex, !val, -1);
-	}
+        {
+        GValue value = { 0, 0 };
+        gtk_tree_model_get_value(getModel(), &iter,
+                GuiTree::TV_BoolIndex, &value);
+        val = (g_value_get_boolean(&value) == TRUE);
+        g_value_unset(&value);
+        gtk_tree_store_set(getTreeStore(), &iter,
+                GuiTree::TV_BoolIndex, !val, -1);
+        }
     return !val;
     }
 
@@ -641,13 +634,13 @@ bool GuiTree::getSelectedCheckbox(bool &checked)
     checked = false;
     bool selected = getSelectedIter(&iter);
     if(selected)
-	{
-	GValue value = { 0, 0 };
-	gtk_tree_model_get_value(getModel(), &iter,
-		GuiTree::TV_BoolIndex, &value);
-	checked = (g_value_get_boolean(&value) == TRUE);
-	g_value_unset(&value);
-	}
+        {
+        GValue value = { 0, 0 };
+        gtk_tree_model_get_value(getModel(), &iter,
+                GuiTree::TV_BoolIndex, &value);
+        checked = (g_value_get_boolean(&value) == TRUE);
+        g_value_unset(&value);
+        }
     return selected;
     }
 
@@ -669,52 +662,52 @@ void GuiTree::setSelected(OovString const &name, char delimiter)
 class GuiTreeValue
     {
     public:
-	GuiTreeValue():
-	    mStr(nullptr)
-	    {}
-	~GuiTreeValue()
-	    {
-	    if(mStr)
-		g_free(mStr);
-	    }
+        GuiTreeValue():
+            mStr(nullptr)
+            {}
+        ~GuiTreeValue()
+            {
+            if(mStr)
+                g_free(mStr);
+            }
 
     char *mStr;
     };
 
 bool GuiTree::findNodeIter(GtkTreeIter *parent,
-	OovString const &name, char delimiter, GtkTreeIter *iter)
+        OovString const &name, char delimiter, GtkTreeIter *iter)
     {
     OovStringVec tokens = name.split(delimiter);
     bool found = false;
     if(tokens.size() > 0)
-	{
-	GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
-	bool success = gtk_tree_model_iter_children(model, iter, parent);
-	while(success && !found)
-	    {
-	    GuiTreeValue value;
-	    gtk_tree_model_get(model, iter, TV_StringIndex, &value.mStr, -1);
-	    if(tokens[0].compare(value.mStr) == 0)
-		{
-		if(tokens.size() > 1)
-		    {
-		    OovString childName;
-		    tokens.erase(tokens.begin());
-		    childName.join(tokens, delimiter);
-		    GtkTreeIter parentIter = *iter;
-		    found = findNodeIter(&parentIter, childName, delimiter, iter);
-		    }
-		else
-		    {
-		    found = true;
-		    }
-		}
-	    if(!found)
-		{
-		success = gtk_tree_model_iter_next(model, iter);
-		}
-	    }
-	}
+        {
+        GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+        bool success = gtk_tree_model_iter_children(model, iter, parent);
+        while(success && !found)
+            {
+            GuiTreeValue value;
+            gtk_tree_model_get(model, iter, TV_StringIndex, &value.mStr, -1);
+            if(tokens[0].compare(value.mStr) == 0)
+                {
+                if(tokens.size() > 1)
+                    {
+                    OovString childName;
+                    tokens.erase(tokens.begin());
+                    childName.join(tokens, delimiter);
+                    GtkTreeIter parentIter = *iter;
+                    found = findNodeIter(&parentIter, childName, delimiter, iter);
+                    }
+                else
+                    {
+                    found = true;
+                    }
+                }
+            if(!found)
+                {
+                success = gtk_tree_model_iter_next(model, iter);
+                }
+            }
+        }
     return found;
     }
 
@@ -722,29 +715,29 @@ GuiTreeItem GuiTree::getItem(OovString const &name, char delimiter)
     {
     GuiTreeItem item(false);
     if(name.length() > 0)
-	{
-	GtkTreeIter iter;
-	if(findNodeIter(nullptr, name, delimiter, &iter))
-	    item.mIter = iter;
-	else
-	    item.setRoot();
-	}
+        {
+        GtkTreeIter iter;
+        if(findNodeIter(nullptr, name, delimiter, &iter))
+            item.mIter = iter;
+        else
+            item.setRoot();
+        }
     return item;
     }
 
 
-BackgroundDialog::BackgroundDialog():
-	mBuilder(nullptr), mParent(nullptr),
-	mKeepGoing(true), mTotalIters(0), mStartTime(0)
+TaskBusyDialog::TaskBusyDialog():
+        mBuilder(nullptr), mParent(nullptr),
+        mKeepGoing(true), mTotalIters(0), mStartTime(0)
     {
     }
 
-BackgroundDialog::~BackgroundDialog()
+TaskBusyDialog::~TaskBusyDialog()
     {
     showDialog(false);
     }
 
-void BackgroundDialog::startTask(char const *str, size_t totalIters)
+void TaskBusyDialog::startTask(char const *str, size_t totalIters)
     {
     mDialogText = str;
     mTotalIters = totalIters;
@@ -753,86 +746,86 @@ void BackgroundDialog::startTask(char const *str, size_t totalIters)
     }
 
 static void BackgroundResponse(GtkDialog * /*dialog*/, gint response_id,
-	gpointer bkgDlg)
+        gpointer bkgDlg)
     {
     if(response_id == GTK_RESPONSE_CANCEL)
-	{
-	static_cast<BackgroundDialog*>(bkgDlg)->cancelButtonPressed();
-	}
+        {
+        static_cast<TaskBusyDialog*>(bkgDlg)->cancelButtonPressed();
+        }
     }
 
-void BackgroundDialog::showDialog(bool show)
+void TaskBusyDialog::showDialog(bool show)
     {
     if(!mBuilder)
-	{
-	mBuilder = Builder::getBuilder();
-	}
+        {
+        mBuilder = Builder::getBuilder();
+        }
     if(mBuilder)
-	{
-	GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
-	if(show != gtk_widget_get_visible(dlg))
-	    {
-	    if(show)
-		{
-		setDialog(GTK_DIALOG(dlg), mParent);
-		g_signal_connect(G_OBJECT(dlg), "response",
-		      G_CALLBACK(BackgroundResponse), this);
-		gtk_widget_show_all(dlg);
-		}
-	    else
-		{
-		gtk_widget_hide(dlg);
-		}
-	    }
-	}
+        {
+        GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
+        if(show != gtk_widget_get_visible(dlg))
+            {
+            if(show)
+                {
+                setDialog(GTK_DIALOG(dlg), mParent);
+                g_signal_connect(G_OBJECT(dlg), "response",
+                      G_CALLBACK(BackgroundResponse), this);
+                gtk_widget_show_all(dlg);
+                }
+            else
+                {
+                gtk_widget_hide(dlg);
+                }
+            }
+        }
     }
 
-bool BackgroundDialog::updateProgressIteration(size_t currentIter,
-	OovStringRef text, bool allowRecurse)
+bool TaskBusyDialog::updateProgressIteration(size_t currentIter,
+        OovStringRef text, bool allowRecurse)
     {
     if(!mBuilder)
-	{
-	mBuilder = Builder::getBuilder();
-	}
+        {
+        mBuilder = Builder::getBuilder();
+        }
     if(mDialogText.length())
-	{
-	std::string totalStr = mDialogText;
-	totalStr += "\nPress cancel to abort this operation.";
-	Gui::setText(GTK_LABEL(mBuilder->getWidget("ProgressDialogCancelLabel")), totalStr.c_str());
-	mDialogText.clear();
-	}
-    if(mKeepGoing)	// It appears that after a cancel, the widgets are not valid.
-	{
-	time_t curTime;
-	time(&curTime);
-	GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
-	bool visible = gtk_widget_get_visible(dlg);
-	if(!visible && mTotalIters > 0 && curTime > mStartTime+1)
-	    showDialog(true);
-	if(visible)
-	    {
-	    if(text && curTime != mStartTime)
-		{
-		GtkLabel *textLabel = GTK_LABEL(mBuilder->getWidget("ProgressTextLabel"));
-		Gui::setText(textLabel, text);
-		mStartTime = curTime;
-		}
-	    if(mBuilder)
-		{
-		GtkProgressBar *bar = GTK_PROGRESS_BAR(mBuilder->getWidget("BackgroundProgressbar"));
-		gtk_progress_bar_set_fraction(bar, (double)currentIter/mTotalIters);
-		}
-	    if(allowRecurse)
-		{
-		// Allow progress update to display.
-		// For some reason, gtk_events_pending never quits.
-		for(size_t i=0; i<50 && gtk_events_pending(); i++)
-		    {
-		    gtk_main_iteration();
-		    }
-		}
-	    }
-	}
+        {
+        std::string totalStr = mDialogText;
+        totalStr += "\nPress cancel to abort this operation.";
+        Gui::setText(GTK_LABEL(mBuilder->getWidget("ProgressDialogCancelLabel")), totalStr.c_str());
+        mDialogText.clear();
+        }
+    if(mKeepGoing)      // It appears that after a cancel, the widgets are not valid.
+        {
+        time_t curTime;
+        time(&curTime);
+        GtkWidget *dlg = mBuilder->getWidget("BackgroundProgressDialog");
+        bool visible = gtk_widget_get_visible(dlg);
+        if(!visible && mTotalIters > 0 && curTime > mStartTime+1)
+            showDialog(true);
+        if(visible)
+            {
+            if(text && curTime != mStartTime)
+                {
+                GtkLabel *textLabel = GTK_LABEL(mBuilder->getWidget("ProgressTextLabel"));
+                Gui::setText(textLabel, text);
+                mStartTime = curTime;
+                }
+            if(mBuilder)
+                {
+                GtkProgressBar *bar = GTK_PROGRESS_BAR(mBuilder->getWidget("BackgroundProgressbar"));
+                gtk_progress_bar_set_fraction(bar, (double)currentIter/mTotalIters);
+                }
+            if(allowRecurse)
+                {
+                // Allow progress update to display.
+                // For some reason, gtk_events_pending never quits.
+                for(size_t i=0; i<50 && gtk_events_pending(); i++)
+                    {
+                    gtk_main_iteration();
+                    }
+                }
+            }
+        }
     return mKeepGoing;
     }
 
@@ -840,27 +833,27 @@ int Gui::findTab(GtkNotebook *book, OovStringRef const tabName)
     {
     int tabIndex = -1;
     for(int i=0; i<gtk_notebook_get_n_pages(book); i++)
-	{
-	GtkWidget *child = gtk_notebook_get_nth_page(book, i);
-	GtkLabel *label = GTK_LABEL(gtk_notebook_get_tab_label(book, child));
-	if(strcmp(getText(label), tabName) == 0)
-	    {
-	    tabIndex = i;
-	    break;
-	    }
-	}
+        {
+        GtkWidget *child = gtk_notebook_get_nth_page(book, i);
+        GtkLabel *label = GTK_LABEL(gtk_notebook_get_tab_label(book, child));
+        if(strcmp(getText(label), tabName) == 0)
+            {
+            tabIndex = i;
+            break;
+            }
+        }
     return tabIndex;
     }
 
 GuiHighlightTag::GuiHighlightTag():
-	mTag(nullptr)
+        mTag(nullptr)
     {
     }
 
 void GuiHighlightTag::setForegroundColor(GtkTextBuffer *textBuffer,
-	char const * const name, char const * const color)
+        char const * const name, char const * const color)
     {
     if(!mTag)
-	mTag = gtk_text_buffer_create_tag(textBuffer, name, NULL);
+        mTag = gtk_text_buffer_create_tag(textBuffer, name, NULL);
     g_object_set(G_OBJECT(mTag), "foreground", color, "foreground-set", TRUE, NULL);
     }

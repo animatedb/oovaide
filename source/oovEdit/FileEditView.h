@@ -144,8 +144,8 @@ class FileEditView
         GtkTextView *mTextView;
         GtkTextBuffer *mTextBuffer;
         std::vector<HistoryItem> mHistoryItems;
-        size_t mCurHistoryPos;		// Range is 0 to size()-1.
-        bool mDoingHistory;		// Doing undo or redo.
+        size_t mCurHistoryPos;          // Range is 0 to size()-1.
+        bool mDoingHistory;             // Doing undo or redo.
         int mLastViewTopOffset;
         int mLastViewBotOffset;
         bool mHighlightTextContentChange;

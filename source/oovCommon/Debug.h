@@ -16,30 +16,30 @@
 class DebugFile
     {
     public:
-	DebugFile(FILE *fp):
+        DebugFile(FILE *fp):
             mOwnFile(false)
             { mFp = fp; }
-	// fn must not be OovStringRef for static strings since std::string
-	// has not been initialized yet.
-	DebugFile(char const *fn, bool append);
-	~DebugFile();
-	void printflush(OovStringRef const format, ...);
-	void open(OovStringRef const fn, OovStringRef const mode = "w")
-	    {
-	    if(!mFp)
-		mFp = fopen(fn, mode);
-	    }
-	bool isOpen() const
-	    { return(mFp != nullptr); }
-	FILE *getFp() const
-	    { return mFp; }
+        // fn must not be OovStringRef for static strings since std::string
+        // has not been initialized yet.
+        DebugFile(char const *fn, bool append);
+        ~DebugFile();
+        void printflush(OovStringRef const format, ...);
+        void open(OovStringRef const fn, OovStringRef const mode = "w")
+            {
+            if(!mFp)
+                mFp = fopen(fn, mode);
+            }
+        bool isOpen() const
+            { return(mFp != nullptr); }
+        FILE *getFp() const
+            { return mFp; }
     public:
-	FILE *mFp;
+        FILE *mFp;
         bool mOwnFile;
     };
 
 void LogAssertFile(OovStringRef const file, int line, char const *diagStr=nullptr);
 
-#define DebugAssert(file, line)		LogAssertFile(file, line);
+#define DebugAssert(file, line)         LogAssertFile(file, line);
 
 #endif /* DEBUG_H_ */

@@ -1,0 +1,17 @@
+Comp-args-oovEdit|-lnk-Wl,--subsystem,windows;
+Comp-args-oovcde|-lnk-Wl,--subsystem,windows;
+Comp-args-test/TestCpp|-lnk../test/trunk-oovcde-win/bld-Debug/oovEdit/DebugResult.o;
+Comp-type-examples|Unknown
+Comp-type-examples/sharedlibgtk/resources/horses|Unknown
+Comp-type-examples/sharedlibgtk/resources/men|Unknown
+Comp-type-oovBuilder|Program
+Comp-type-oovCMaker|Program
+Comp-type-oovCommon|StaticLib
+Comp-type-oovCovInstr|Program
+Comp-type-oovCppParser|Program
+Comp-type-oovEdit|Program
+Comp-type-oovGuiCommon|StaticLib
+Comp-type-oovcde|Program
+Comp-type-test|Unknown
+Comp-type-test/TestCpp|Program
+Components|examples;examples/names;examples/sharedlibgtk;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCovInstr;oovCppParser;oovEdit;oovGuiCommon;oovcde;oovcde/BLL;test;test/CppInput;test/TestCpp;

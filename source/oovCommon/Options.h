@@ -14,15 +14,15 @@
 class BuildOptions:public NameValueFile
     {
     public:
-	// Warning: project must be set up before calling this.
-	bool read()
-	    {
-	    setFilename(Project::getProjectFilePath());
-	    return NameValueFile::readFile();
-	    }
-	void setDefaultOptions();
+        // Warning: project must be set up before calling this.
+        bool read()
+            {
+            setFilename(Project::getProjectFilePath());
+            return NameValueFile::readFile();
+            }
+        void setDefaultOptions();
     private:
-	bool readFile();	// Prevent calling NameValueFile - Not defined
+        bool readFile();        // Prevent calling NameValueFile - Not defined
     };
 
 
@@ -49,12 +49,12 @@ class BuildOptions:public NameValueFile
 class GuiOptions:public NameValueFile
     {
     public:
-	void setDefaultOptions();
-	// Warning: project must be set up before calling this.
-	void read();
+        void setDefaultOptions();
+        // Warning: project must be set up before calling this.
+        void read();
 
     private:
-	bool readFile();	// Prevent calling NameValueFile - Not defined
+        bool readFile();        // Prevent calling NameValueFile - Not defined
     };
 
 extern BuildOptions gBuildOptions;

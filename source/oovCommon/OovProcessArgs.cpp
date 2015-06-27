@@ -16,10 +16,10 @@ char const * const *OovProcessChildArgs::getArgv() const
     {
     mArgv.clear();
     for(size_t i=0; i<mArgStrings.size(); i++)
-	{
-	mArgv.push_back(mArgStrings[i].getStr());
-	}
-    mArgv.push_back(nullptr);	// Add one for end null
+        {
+        mArgv.push_back(mArgStrings[i].getStr());
+        }
+    mArgv.push_back(nullptr);   // Add one for end null
     return const_cast<char const * const *>(&mArgv[0]);
     }
 
@@ -27,10 +27,10 @@ OovString OovProcessChildArgs::getArgsAsStr() const
     {
     OovString argStr;
     for(auto const &arg : mArgStrings)
-	{
-	argStr += arg;
-	argStr += ' ';
-	}
+        {
+        argStr += arg;
+        argStr += ' ';
+        }
     argStr += '\n';
     return argStr;
     }

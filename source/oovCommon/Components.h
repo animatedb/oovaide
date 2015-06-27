@@ -26,70 +26,64 @@ bool isLibrary(OovStringRef const file);
 class ComponentTypesFile
     {
     public:
-	enum eCompTypes
-	    {
-	    CT_Unknown,
-	    CT_StaticLib,	// .a or .lib
-	    CT_SharedLib,	// .so or .dll
-	    CT_Program		// no extension or .exe
-	    };
+        enum eCompTypes
+            {
+            CT_Unknown,
+            CT_StaticLib,       // .a or .lib
+            CT_SharedLib,       // .so or .dll
+            CT_Program          // no extension or .exe
+            };
 
-	bool read();
-	bool readTypesOnly(OovStringRef const fn);
-	void setComponentNames(OovStringRef const compNames)
-	    {
-	    mCompTypesFile.setNameValue("Components", compNames);
-	    }
-	OovStringVec getComponentNames() const
-	    {
-	    return CompoundValueRef::parseString(
-		    mCompTypesFile.getValue("Components"));
-	    }
-	static std::string getComponentChildName(std::string const &compName);
-	static std::string getComponentParentName(std::string const &compName);
+        bool read();
+        bool readTypesOnly(OovStringRef const fn);
+        void setComponentNames(OovStringRef const compNames)
+            { mCompTypesFile.setNameValue("Components", compNames); }
+        OovStringVec getComponentNames(bool definedComponentsOnly = false) const;
+        static std::string getComponentChildName(std::string const &compName);
+        static std::string getComponentParentName(std::string const &compName);
 
-	bool anyComponentsDefined() const;
-	enum eCompTypes getComponentType(OovStringRef const compName) const;
+        bool anyComponentsDefined() const;
+        enum eCompTypes getComponentType(OovStringRef const compName) const;
         void setComponentType(OovStringRef const compName, OovStringRef const typeName);
         void setComponentSources(OovStringRef const compName,
-        	OovStringSet const &srcs);
+                OovStringSet const &srcs);
         void setComponentIncludes(OovStringRef const compName,
             OovStringSet const &incs);
-	OovStringVec getComponentSources(OovStringRef const compName) const;
-	OovStringVec getComponentIncludes(OovStringRef const compName) const;
-	OovString getComponentBuildArgs(OovStringRef const compName) const;
-	void setComponentBuildArgs(OovStringRef const compName, OovStringRef const args);
+        OovStringVec getComponentSources(OovStringRef const compName) const;
+        OovStringVec getComponentIncludes(OovStringRef const compName) const;
+        OovString getComponentBuildArgs(OovStringRef const compName) const;
+        void setComponentBuildArgs(OovStringRef const compName, OovStringRef const args);
 
-	static OovStringRef const getLongComponentTypeName(eCompTypes ct);
-	static OovStringRef const getShortComponentTypeName(eCompTypes ct)
-	    { return getComponentTypeAsFileValue(ct); }
-	OovString getComponentAbsolutePath(OovStringRef const compName) const;
-	void writeFile()
-	    {
-	    mCompTypesFile.writeFile();
-	    mCompSourceListFile.writeFile();
-	    }
-	void writeTypesOnly(OovStringRef const fn)
-	    {
-	    mCompTypesFile.setFilename(fn);
-	    mCompTypesFile.writeFile();
-	    }
+        static OovStringRef const getLongComponentTypeName(eCompTypes ct);
+        static OovStringRef const getShortComponentTypeName(eCompTypes ct)
+            { return getComponentTypeAsFileValue(ct); }
+        OovString getComponentAbsolutePath(OovStringRef const compName) const;
+        void writeFile()
+            {
+            mCompTypesFile.writeFile();
+            mCompSourceListFile.writeFile();
+            }
+        void writeTypesOnly(OovStringRef const fn)
+            {
+            mCompTypesFile.setFilename(fn);
+            mCompTypesFile.writeFile();
+            }
 
     private:
-	NameValueFile mCompTypesFile;
-	NameValueFile mCompSourceListFile;
+        NameValueFile mCompTypesFile;
+        NameValueFile mCompSourceListFile;
 
-	OovStringVec getComponentFiles(OovStringRef const compName,
-		OovStringRef const tagStr) const;
+        OovStringVec getComponentFiles(OovStringRef const compName,
+                OovStringRef const tagStr) const;
         void setComponentType(OovStringRef const compName, eCompTypes ct);
         // Setting a component below some parent must make sure the parents are unknown
-	void coerceParentComponents(OovStringRef const compName);
-	// Setting a component above some child must make sure children are unknown
-	void coerceChildComponents(OovStringRef const compName);
-	static OovString getCompTagName(OovStringRef const compName, OovStringRef const tag);
-	static OovStringRef const getComponentTypeAsFileValue(eCompTypes ct);
-	static enum eCompTypes getComponentTypeFromTypeName(
-		OovStringRef const compTypeName);
+        void coerceParentComponents(OovStringRef const compName);
+        // Setting a component above some child must make sure children are unknown
+        void coerceChildComponents(OovStringRef const compName);
+        static OovString getCompTagName(OovStringRef const compName, OovStringRef const tag);
+        static OovStringRef const getComponentTypeAsFileValue(eCompTypes ct);
+        static enum eCompTypes getComponentTypeFromTypeName(
+                OovStringRef const compTypeName);
     };
 
 /// This file is stored in the analysis directory.
@@ -98,28 +92,28 @@ class ComponentTypesFile
 class ComponentsFile:public NameValueFile
     {
     public:
-	void read(OovStringRef const fn);
-	/// Get the include paths.
-	OovStringVec getProjectIncludeDirs() const
-	    {
-	    return CompoundValueRef::parseString(
-		    getProjectIncludeDirsStr());
-	    }
-	OovStringVec getAbsoluteIncludeDirs() const;
-	OovStringVec getExternalRootPaths() const
-	    {
-	    return CompoundValueRef::parseString(
-		    getValue("Components-init-ext-roots"));
-	    }
-	/// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
-	/// This splits the root search dir into a root dir and exclude directories.
-	static void parseProjRefs(OovStringRef const rootSrch, OovString &rootDir,
-		OovStringVec &excludes);
-	static bool excludesMatch(OovStringRef const filePath,
-		OovStringVec const &excludes);
+        void read(OovStringRef const fn);
+        /// Get the include paths.
+        OovStringVec getProjectIncludeDirs() const
+            {
+            return CompoundValueRef::parseString(
+                    getProjectIncludeDirsStr());
+            }
+        OovStringVec getAbsoluteIncludeDirs() const;
+        OovStringVec getExternalRootPaths() const
+            {
+            return CompoundValueRef::parseString(
+                    getValue("Components-init-ext-roots"));
+            }
+        /// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
+        /// This splits the root search dir into a root dir and exclude directories.
+        static void parseProjRefs(OovStringRef const rootSrch, OovString &rootDir,
+                OovStringVec &excludes);
+        static bool excludesMatch(OovStringRef const filePath,
+                OovStringVec const &excludes);
 
     private:
-	OovString getProjectIncludeDirsStr() const;
+        OovString getProjectIncludeDirsStr() const;
     };
 
 #endif /* COMPONENTS_H_ */

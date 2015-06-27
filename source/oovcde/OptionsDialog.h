@@ -18,31 +18,31 @@
 class OptionsDialog
     {
     public:
-	OptionsDialog();
-	virtual ~OptionsDialog();
-	void updateBuildConfig();
-	void showScreen();
-	void saveScreen();
-	void setBuildConfig();
-	void newConfig();
-	void addConfig();
-	void runPackagesDialog();
-	// This class calls this function after the options file is written.
-	virtual void updateOptions() = 0;
-	virtual void buildConfig(OovStringRef const name) = 0;
+        OptionsDialog();
+        virtual ~OptionsDialog();
+        void updateBuildConfig();
+        void showScreen();
+        void saveScreen();
+        void setBuildConfig();
+        void newConfig();
+        void addConfig();
+        void runPackagesDialog();
+        // This class calls this function after the options file is written.
+        virtual void updateOptions() = 0;
+        virtual void buildConfig(OovStringRef const name) = 0;
 
     private:
-	GuiList mBuildConfigList;
-	std::string mCurrentBuildConfig;
-	int mDialogRunning;
-	std::vector<GtkWidget *> mMenuItems;
-	void updateBuildMenu(OovStringVec &names);
+        GuiList mBuildConfigList;
+        std::string mCurrentBuildConfig;
+        int mDialogRunning;
+        std::vector<GtkWidget *> mMenuItems;
+        void updateBuildMenu(OovStringVec &names);
     };
 
 class ClassPreferencesDialog
     {
     public:
-	bool run(Builder &builder, ClassNodeDrawOptions &options);
+        bool run(Builder &builder, ClassNodeDrawOptions &options);
     };
 
 #endif /* OPTIONSDIALOG_H_ */

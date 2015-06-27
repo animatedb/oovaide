@@ -12,11 +12,11 @@
 void EditOptions::setProjectDir(std::string projDir)
     {
     if(projDir.length() > 0)
-	{
-	FilePath projName(projDir, FP_Dir);
-	projName.appendFile("oovEditConfig.txt");
-	setFilename(projName);
-	}
+        {
+        FilePath projName(projDir, FP_Dir);
+        projName.appendFile("oovEditConfig.txt");
+        setFilename(projName);
+        }
     }
 
 void EditOptions::setScreenCoord(char const * const tag, int val)
@@ -29,11 +29,11 @@ void EditOptions::setScreenCoord(char const * const tag, int val)
 void EditOptions::saveScreenSize(int width, int height)
     {
     if(getFilename().length() > 0)
-	{
-	setScreenCoord("ScreenWidth", width);
-	setScreenCoord("ScreenHeight", height);
-	writeFile();
-	}
+        {
+        setScreenCoord("ScreenWidth", width);
+        setScreenCoord("ScreenHeight", height);
+        writeFile();
+        }
     }
 
 bool EditOptions::getScreenCoord(char const * const tag, int &val)
@@ -41,12 +41,12 @@ bool EditOptions::getScreenCoord(char const * const tag, int &val)
     OovString str = getValue(tag);
     bool got = false;
     if(str.length() > 0)
-	{
-	if(str.getInt(0, 100000, val))
-	    {
-	    got = true;
-	    }
-	}
+        {
+        if(str.getInt(0, 100000, val))
+            {
+            got = true;
+            }
+        }
     return got;
     }
 
@@ -54,19 +54,19 @@ bool EditOptions::getScreenSize(int &width, int &height)
     {
     bool gotPos = false;
     if(readFile())
-	{
-	int tempWidth;
-	if(getScreenCoord("ScreenWidth", tempWidth))
-	    {
+        {
+        int tempWidth;
+        if(getScreenCoord("ScreenWidth", tempWidth))
+            {
             int tempHeight;
-	    if(getScreenCoord("ScreenHeight", tempHeight))
-		{
-		width = tempWidth;
-		height = tempHeight;
-		gotPos = true;
-		}
-	    }
-	}
+            if(getScreenCoord("ScreenHeight", tempHeight))
+                {
+                width = tempWidth;
+                height = tempHeight;
+                gotPos = true;
+                }
+            }
+        }
     return gotPos;
     }
 

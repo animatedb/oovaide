@@ -42,10 +42,10 @@ void CMaker::makeDefineName(OovStringRef const pkgName, OovString &defName)
     {
     OovString shortName;
     for(const char *p = pkgName; *p!='\0'; p++)
-	{
-	if(isalpha(*p))
-	    shortName += *p;
-	}
+        {
+        if(isalpha(*p))
+            shortName += *p;
+        }
     defName.setUpperCase(shortName);
     }
 
@@ -114,46 +114,46 @@ void CMaker::makeTopMakelistsFile(OovStringRef const destName)
     str += "# External Packages\n";
     str += "if(NOT WIN32)\n";
     for(auto const &pkg : mBuildPkgs.getPackages())
-	{
-	addPackageDefines(pkg.getPkgName(), str);
-	}
+        {
+        addPackageDefines(pkg.getPkgName(), str);
+        }
     str += "endif()\n\n";
 
     str += "# set up include directories\n";
     str += "include_directories(\n";
 
-    OovStringVec const compNames = mCompTypes.getComponentNames();
+    OovStringVec const compNames = mCompTypes.getComponentNames(true);
     for(auto const &name : compNames)
-	{
+        {
         ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(name);
         if(compType == ComponentTypesFile::CT_StaticLib)
-	    str += std::string("   \"${PROJECT_SOURCE_DIR}/") + name + "\"\n";
-	}
+            str += std::string("   \"${PROJECT_SOURCE_DIR}/") + name + "\"\n";
+        }
     str += "   )\n";
     str += "add_definitions(-std=c++11)\n\n";
 
     str += "# Add sub directories\n";
     for(auto const &name : compNames)
-	{
+        {
         ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(name);
         if(compType != ComponentTypesFile::CT_Unknown)
             {
             std::string compRelDir = name;
             str += std::string("add_subdirectory(") + compRelDir + ")\n";
             }
-	}
+        }
 
     str += "# Add all targets to the build-tree export set\n";
     str += "export(TARGETS ";
     for(auto const &name : compNames)
-	{
+        {
         ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(name);
         if(compType != ComponentTypesFile::CT_Unknown)
             {
-	    str += ' ';
-	    str += makeComponentNameFromDir(name);
+            str += ' ';
+            str += makeComponentNameFromDir(name);
             }
-	}
+        }
     str += "\n";
     str += "   FILE \"${PROJECT_BINARY_DIR}/" + mProjectName + "Targets.cmake\")\n\n";
 
@@ -162,7 +162,7 @@ void CMaker::makeTopMakelistsFile(OovStringRef const destName)
     str += std::string("export(PACKAGE ") + mProjectName + ")\n\n";
 
     str += std::string("# Create the ") +  mProjectName + "Config.cmake and " +
-	    mProjectName + "ConfigVersion files\n";
+            mProjectName + "ConfigVersion files\n";
     str += "file(RELATIVE_PATH REL_INCLUDE_DIR \"${INSTALL_CMAKE_DIR}\"\n";
     str += "   \"${INSTALL_INCLUDE_DIR}\")\n";
     str += "# for the build tree\n";
@@ -173,19 +173,19 @@ void CMaker::makeTopMakelistsFile(OovStringRef const destName)
     str += "set(CONF_INCLUDE_DIRS \"\\${" + projNameUpper + "_CMAKE_DIR}/${REL_INCLUDE_DIR}\")\n";
     str += std::string("configure_file(") + mProjectName + "Config.cmake.in\n";
     str += std::string("   \"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/") +
-	    mProjectName + "Config.cmake\" @ONLY)\n";
+            mProjectName + "Config.cmake\" @ONLY)\n";
     str += "# for both\n";
     str += std::string("configure_file(") + mProjectName + "ConfigVersion.cmake.in\n";
     str += std::string("   \"${PROJECT_BINARY_DIR}/") + mProjectName +
-	    "ConfigVersion.cmake\" @ONLY)\n\n";
+            "ConfigVersion.cmake\" @ONLY)\n\n";
 
     str += std::string("# Install the ") + mProjectName + "Config.cmake and " +
-	    mProjectName + "ConfigVersion.cmake\n";
+            mProjectName + "ConfigVersion.cmake\n";
     str += "install(FILES\n";
     str += std::string("   \"${PROJECT_BINARY_DIR}${CMAKE_FILES_DIRECTORY}/") +
-	    mProjectName + "Config.cmake\"\n";
+            mProjectName + "Config.cmake\"\n";
     str += std::string("   \"${PROJECT_BINARY_DIR}/") + mProjectName +
-	    "ConfigVersion.cmake\"\n";
+            "ConfigVersion.cmake\"\n";
     str += "DESTINATION \"${INSTALL_CMAKE_DIR}\" COMPONENT dev)\n\n";
 
     str += "# Install the export set for use with the install-tree\n";
@@ -198,44 +198,44 @@ void CMaker::makeTopInFile(OovStringRef const destName)
     {
     OovString projNameUpper;
     projNameUpper.setUpperCase(mProjectName);
-    OovStringVec const compNames = mCompTypes.getComponentNames();
+    OovStringVec const compNames = mCompTypes.getComponentNames(true);
 
     std::string str = std::string("# - Config file for the ") + mProjectName + " package\n";
 
     str += "# Compute paths\n";
     str += std::string("get_filename_component(") + projNameUpper +
-	    "_CMAKE_DIR \"${CMAKE_CURRENT_LIST_FILE}\" PATH)\n";
+            "_CMAKE_DIR \"${CMAKE_CURRENT_LIST_FILE}\" PATH)\n";
     str += std::string("set(") + projNameUpper + "_INCLUDE_DIRS \"@CONF_INCLUDE_DIRS@\")\n\n";
 
     str += "# Our library dependencies (contains definitions for IMPORTED targets)\n";
     str += std::string("if(NOT TARGET ") + mProjectName + "AND NOT " +
-	    projNameUpper + "_BINARY_DIR)\n";
+            projNameUpper + "_BINARY_DIR)\n";
     str += "   include(\"${FOOBAR_CMAKE_DIR}/" + mProjectName + "Targets.cmake\")\n";
     str += "endif()\n\n";
 
     str += std::string("# These are IMPORTED targets created by ") + mProjectName +
-	    "Targets.cmake\n";
+            "Targets.cmake\n";
     str += std::string("set(") + projNameUpper + "_LIBRARIES";
     for(auto const &name : compNames)
-	{
-	ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(name);
-	if(compType == ComponentTypesFile::CT_StaticLib)
-	    {
-	    str += ' ';
-	    str += name;
-	    }
-	}
+        {
+        ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(name);
+        if(compType == ComponentTypesFile::CT_StaticLib)
+            {
+            str += ' ';
+            str += name;
+            }
+        }
     str += ")\n";
     str += std::string("set(") + projNameUpper + "_EXECUTABLE";
     for(auto const &name : compNames)
-	{
-	ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(name);
-	if(compType == ComponentTypesFile::CT_Program)
-	    {
-	    str += ' ';
-	    str += name;
-	    }
-	}
+        {
+        ComponentTypesFile::eCompTypes compType = mCompTypes.getComponentType(name);
+        if(compType == ComponentTypesFile::CT_Program)
+            {
+            str += ' ';
+            str += name;
+            }
+        }
     str += ")\n";
     writeFile(destName, str);
     }
@@ -261,7 +261,7 @@ void CMaker::makeTopVerInFile(OovStringRef const destName)
     }
 
 void CMaker::makeToolchainFile(OovStringRef const compilePath,
-	OovStringRef const destFileName)
+        OovStringRef const destFileName)
     {
     std::string str;
     str += "SET(CMAKE_SYSTEM_NAME Linux)\n";
@@ -277,7 +277,7 @@ void CMaker::makeToolchainFile(OovStringRef const compilePath,
 
 
 void CMaker::appendNames(OovStringVec const &names,
-	char delim, std::string &str)
+        char delim, std::string &str)
     {
     for(auto const &name : names)
         {
@@ -301,49 +301,49 @@ enum eCommandTypes { CT_Exec, CT_Shared, CT_Static,
     CT_TargHeaders, CT_TargLinkLibs };
 
 static void appendCommandAndNames(eCommandTypes ct, char const *compName,
-	OovStringVec const &names, OovString &str)
+        OovStringVec const &names, OovString &str)
     {
     switch(ct)
-	{
-	case CT_Shared:
-	case CT_Static:
-	case CT_Interface:
-	    str += "add_library";
-	    break;
+        {
+        case CT_Shared:
+        case CT_Static:
+        case CT_Interface:
+            str += "add_library";
+            break;
 
-	case CT_Exec:		str += "add_executable";	break;
-	case CT_TargHeaders:	str += "set";			break;
-	case CT_TargLinkLibs:	str += "target_link_libraries";	break;
-	}
+        case CT_Exec:           str += "add_executable";        break;
+        case CT_TargHeaders:    str += "set";                   break;
+        case CT_TargLinkLibs:   str += "target_link_libraries"; break;
+        }
     str += "(";
     if(ct == CT_TargHeaders)
-	{
-	str += "HEADER_FILES ";
-	}
+        {
+        str += "HEADER_FILES ";
+        }
     else
-	{
-	str += compName;
-	}
+        {
+        str += compName;
+        }
     switch(ct)
-	{
-	case CT_Exec:		str += ' ';		break;
-	case CT_Shared:		str += " SHARED ";	break;
-	case CT_Static:		str += " STATIC ";	break;
-	// Using INTERFACE at this time gives:
-	// "Cannot find source file:", since CMake doesn't understand interface keyword.
-//	case CT_Interface:	str += " INTERFACE ";	break;
-	case CT_Interface:	str += " STATIC ";	break;
-	case CT_TargHeaders:	str += ' ';		break;
-	case CT_TargLinkLibs:	str += ' ';		break;
-	}
+        {
+        case CT_Exec:           str += ' ';             break;
+        case CT_Shared:         str += " SHARED ";      break;
+        case CT_Static:         str += " STATIC ";      break;
+        // Using INTERFACE at this time gives:
+        // "Cannot find source file:", since CMake doesn't understand interface keyword.
+//      case CT_Interface:      str += " INTERFACE ";   break;
+        case CT_Interface:      str += " STATIC ";      break;
+        case CT_TargHeaders:    str += ' ';             break;
+        case CT_TargLinkLibs:   str += ' ';             break;
+        }
     CMaker::appendNames(names, ' ', str);
     str += ")\n\n";
     if(ct == CT_TargHeaders)
-	{
-	str += "set_target_properties(";
-	str += compName;
-	str += " PROPERTIES PUBLIC_HEADER \"${HEADER_FILES}\")\n\n";
-	}
+        {
+        str += "set_target_properties(";
+        str += compName;
+        str += " PROPERTIES PUBLIC_HEADER \"${HEADER_FILES}\")\n\n";
+        }
     }
 
 void CMaker::makeComponentFile(OovStringRef const compName,
@@ -358,7 +358,7 @@ void CMaker::makeComponentFile(OovStringRef const compName,
         if(mVerbose)
             printf("  Executable\n");
 
-	appendCommandAndNames(CT_Exec, compName, sources, str);
+        appendCommandAndNames(CT_Exec, compName, sources, str);
 
         OovStringVec libs = getCompLibraries(compName);
         appendCommandAndNames(CT_TargLinkLibs, compName, libs, str);
@@ -371,7 +371,7 @@ void CMaker::makeComponentFile(OovStringRef const compName,
         str += "\n  RUNTIME DESTINATION \"${INSTALL_BIN_DIR}\" COMPONENT lib)\n";
         }
     else if(compType == ComponentTypesFile::CT_SharedLib)
-	{
+        {
         if(mVerbose)
             printf("  SharedLib\n");
         appendCommandAndNames(CT_Shared, compName, sources, str);
@@ -382,7 +382,7 @@ void CMaker::makeComponentFile(OovStringRef const compName,
         str += "install(TARGETS ";
         str += compName;
         str += "\n  LIBRARY DESTINATION \"${INSTALL_LIB_DIR}\" COMPONENT lib)\n";
-	}
+        }
     else if(compType == ComponentTypesFile::CT_StaticLib)
         {
         if(mVerbose)
@@ -397,8 +397,8 @@ void CMaker::makeComponentFile(OovStringRef const compName,
             {
             appendCommandAndNames(CT_Interface, compName, allFiles, str);
             str += "set_target_properties(";
-	    str += compName;
-	    str += " PROPERTIES LINKER_LANGUAGE CXX)\n";
+            str += compName;
+            str += " PROPERTIES LINKER_LANGUAGE CXX)\n";
             }
         else
             appendCommandAndNames(CT_Static, compName, allFiles, str);
@@ -422,11 +422,10 @@ void CMaker::makeComponentFile(OovStringRef const compName,
 OovStringVec CMaker::getCompSources(OovStringRef const compName)
     {
     OovStringVec sources = mCompTypes.getComponentSources(compName);
+    OovString compPath = mCompTypes.getComponentAbsolutePath(compName);
     for(auto &src : sources)
         {
-        FilePath file(src, FP_File);
-        file.discardDirectory();
-        src = file;
+        src.erase(0, compPath.length());
         }
     std::sort(sources.begin(), sources.end(), compareNoCase);
     return sources;
@@ -438,29 +437,36 @@ OovStringVec CMaker::getCompLibraries(OovStringRef const compName)
 /*
     OovStringVec projectLibFileNames;
     mObjSymbols.appendOrderedLibFileNames("ProjLibs", getSymbolBasePath(),
-	    projectLibFileNames);
+            projectLibFileNames);
 */
     /// @todo - this does not order the libraries.
     OovStringVec srcFiles = mCompTypes.getComponentSources(compName);
     OovStringSet projLibs;
+    OovStringVec compNames = mCompTypes.getComponentNames(true);
     for(auto const &srcFile : srcFiles)
         {
         FilePath fp;
         fp.getAbsolutePath(srcFile, FP_File);
         OovStringVec incDirs =
             mIncMap.getNestedIncludeDirsUsedBySourceFile(fp);
-        for(auto const &incDir : incDirs)
+        for(auto const &supplierCompName : compNames)
             {
-            OovStringVec compNames = mCompTypes.getComponentNames();
-            for(auto const &supCompName : compNames)
+            if(mCompTypes.getComponentType(supplierCompName) ==
+                    ComponentTypesFile::CT_StaticLib)
                 {
-                std::string compDir = mCompTypes.getComponentAbsolutePath(supCompName);
-                if(compDir.compare(incDir) == 0)
+                std::string compDir = mCompTypes.getComponentAbsolutePath(
+                        supplierCompName);
+                for(auto const &incDir : incDirs)
                     {
-                    if(supCompName.compare(compName) != 0)
-                	{
-                        projLibs.insert(makeComponentNameFromDir(supCompName));
-                	}
+                    if(compDir.compare(incDir) == 0)
+                        {
+                        if(supplierCompName.compare(compName) != 0)
+                            {
+                            projLibs.insert(makeComponentNameFromDir(
+                                    supplierCompName));
+                            break;
+                            }
+                        }
                     }
                 }
             }
@@ -474,13 +480,13 @@ OovStringVec CMaker::getCompLibraries(OovStringRef const compName)
         if(mIncMap.anyRootDirsMatch(incRoots, compDir))
             {
             if(pkg.getPkgName().compare(compName) != 0)
-        	{
-        	OovString pkgRef = "${";
-        	OovString pkgDefName;
-        	makeDefineName(pkg.getPkgName(), pkgDefName);
-        	pkgRef += pkgDefName + "_LIBRARIES}";
+                {
+                OovString pkgRef = "${";
+                OovString pkgDefName;
+                makeDefineName(pkg.getPkgName(), pkgDefName);
+                pkgRef += pkgDefName + "_LIBRARIES}";
                 libs.push_back(pkgRef);
-        	}
+                }
             }
         }
     return libs;
@@ -500,28 +506,28 @@ void CMaker::makeTopLevelFiles(OovStringRef const outDir)
 void CMaker::makeToolchainFiles(OovStringRef const outDir)
     {
     if(mBuildOptions.read())
-	{
-	std::string buildConfigStr = mBuildOptions.getValue(OptBuildConfigs);
-	if(buildConfigStr.length() > 0)
-	    {
-	    CompoundValue buildConfigs(buildConfigStr);
-	    for(auto const &config : buildConfigs)
-		{
-		OovString optStr = makeBuildConfigArgName(OptToolCompilePath, config);
-		OovString compilePath = mBuildOptions.getValue(optStr);
+        {
+        std::string buildConfigStr = mBuildOptions.getValue(OptBuildConfigs);
+        if(buildConfigStr.length() > 0)
+            {
+            CompoundValue buildConfigs(buildConfigStr);
+            for(auto const &config : buildConfigs)
+                {
+                OovString optStr = makeBuildConfigArgName(OptToolCompilePath, config);
+                OovString compilePath = mBuildOptions.getValue(optStr);
 
-		FilePath outFp(outDir, FP_Dir);
-		std::string fn = config + ".cmake";
-		outFp.appendFile(fn);
-		makeToolchainFile(compilePath, outFp);
-		}
-	    }
-	}
+                FilePath outFp(outDir, FP_Dir);
+                std::string fn = config + ".cmake";
+                outFp.appendFile(fn);
+                makeToolchainFile(compilePath, outFp);
+                }
+            }
+        }
     }
 
 // outDir ignored if writeToProject is true.
 void CMaker::makeComponentFiles(bool writeToProject, OovStringRef const outDir,
-	OovStringVec const &compNames)
+        OovStringVec const &compNames)
     {
     FilePath incMapFn(getAnalysisPath(), FP_Dir);
     incMapFn.appendFile(Project::getAnalysisIncDepsFilename());
@@ -531,30 +537,42 @@ void CMaker::makeComponentFiles(bool writeToProject, OovStringRef const outDir,
     for(auto const &compName : compNames)
         {
         ComponentTypesFile::eCompTypes compType =
-    	    mCompTypes.getComponentType(compName);
+            mCompTypes.getComponentType(compName);
         if(compType != ComponentTypesFile::CT_Unknown)
             {
             OovStringVec sources = getCompSources(compName);
-	    FilePath outFp;
-	    std::string fixedCompName = makeComponentNameFromDir(compName);
-	    if(writeToProject)
-		{
-		outFp.setPath(mCompTypes.getComponentAbsolutePath(
-			compName), FP_Dir);
-		outFp.appendFile("CMakeLists.txt");
-		}
-	    else
-		{
-		outFp.setPath(outDir, FP_File);
-		outFp.appendFile(std::string(fixedCompName + "-CMakeLists.txt"));
-		}
-	    // Using the filepath here gives:
-	    // "Error evaluating generator expression", and "Target name not supported"
-	    makeComponentFile(fixedCompName, compType,
-		    sources, outFp);
-    	    }
+            FilePath outFp;
+            std::string fixedCompName = makeComponentNameFromDir(compName);
+            if(writeToProject)
+                {
+                outFp.setPath(mCompTypes.getComponentAbsolutePath(
+                        compName), FP_Dir);
+                outFp.appendFile("CMakeLists.txt");
+                }
+            else
+                {
+                outFp.setPath(outDir, FP_File);
+                outFp.appendFile(std::string(fixedCompName + "-CMakeLists.txt"));
+                }
+            // Using the filepath here gives:
+            // "Error evaluating generator expression", and "Target name not supported"
+            makeComponentFile(fixedCompName, compType,
+                    sources, outFp);
+            }
         }
     }
+
+/*
+OovString CMaker::getComponentAbsolutePath(OovStringRef const compName)
+    {
+    auto const mapIter = mCachedComponentPaths.find(compName);
+    if(mapIter == mCachedComponentPaths.end())
+        {
+        mCachedComponentPaths[compName] = mCompTypes.getComponentAbsolutePath(compName);
+        }
+    return mCachedComponentPaths[compName];
+    }
+*/
 
 int main(int argc, char * argv[])
     {
@@ -565,27 +583,27 @@ int main(int argc, char * argv[])
     const char *projName = "PROJNAME";
 
     for(int argi=1; argi<argc; argi++)
-	{
-	if(argv[argi][0] == '-')
-	    {
-	    switch(argv[argi][1])
-		{
-		case 'v':
-		    verbose = true;
-		    break;
+        {
+        if(argv[argi][0] == '-')
+            {
+            switch(argv[argi][1])
+                {
+                case 'v':
+                    verbose = true;
+                    break;
 
-		case 'w':
-		    writeToProject = true;
-		    break;
+                case 'w':
+                    writeToProject = true;
+                    break;
 
-		case 'n':
-		    projName = &argv[argi][2];
-		    break;
-		}
-	    }
-	else
-	    projDir = argv[argi];
-	}
+                case 'n':
+                    projName = &argv[argi][2];
+                    break;
+                }
+            }
+        else
+            projDir = argv[argi];
+        }
     if(projDir)
         {
         Project::setProjectDirectory(projDir);
@@ -604,21 +622,22 @@ int main(int argc, char * argv[])
                 printf("Output directory %s\n", outDir.getStr());
             }
 
-        maker.makeToolchainFiles(outDir);
-        maker.makeTopLevelFiles(outDir);
-
         if(maker.mCompTypes.read())
             {
+            maker.makeToolchainFiles(outDir);
+            maker.makeTopLevelFiles(outDir);
+
             maker.mBuildPkgs.read();
 
             FilePath topMlFp(outDir, FP_File);
             topMlFp.appendFile("CMakeLists.txt");
             maker.makeTopMakelistsFile(topMlFp);
 
-            OovStringVec compNames = maker.mCompTypes.getComponentNames();
+            OovStringVec compNames = maker.mCompTypes.getComponentNames(true);
             if(compNames.size() > 0)
                 {
-        	maker.makeComponentFiles(writeToProject, outDir, compNames);
+                maker.makeComponentFiles(writeToProject, outDir, compNames);
+                ret = 0;
                 }
             else
                 fprintf(stderr, "Components must be defined\n");

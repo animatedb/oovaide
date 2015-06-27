@@ -37,11 +37,11 @@
 enum XmiElementTypes
     { ET_None, ET_Class, ET_DataType,
     ET_Attr,
-    ET_Function,	// Same as operation
+    ET_Function,        // Same as operation
     ET_FuncParams,
     ET_BodyVarDecl,
     ET_Statements,
-    ET_Generalization,	// Same as association
+    ET_Generalization,  // Same as association
     ET_Module,
     };
 
@@ -49,12 +49,12 @@ enum XmiElementTypes
 class XmiElement
     {
     public:
-	XmiElement(XmiElementTypes type=ET_None):
-	    mType(type),
-	    mModelObject(nullptr)
-	    {}
-	XmiElementTypes mType;
-	ModelObject *mModelObject;
+        XmiElement(XmiElementTypes type=ET_None):
+            mType(type),
+            mModelObject(nullptr)
+            {}
+        XmiElementTypes mType;
+        ModelObject *mModelObject;
     };
 
 /// Used to parse an XMI file. An XMI file is an XML format file that defines
@@ -69,19 +69,19 @@ class XmiParser:private XmlParser
             mEndingModuleTypeIndex(0)
             {}
     public:
-	bool parse(char const * const buf);
-	// Since each file only has indices relative to the file, they
-	// must be remapped to a global indices so that the references can be
-	// resolved later.  It is the responsibility of the caller to start the
-	// first file at zero, then get the next type index when the file is
-	// completed parsing and use that for the starting index of the next module.
-	void setStartingTypeIndex(int index)
-	    {
-	    mStartingModuleTypeIndex = index;
-	    mEndingModuleTypeIndex = index;
-	    }
-	int getNextTypeIndex() const
-	    { return mEndingModuleTypeIndex+1; }
+        bool parse(char const * const buf);
+        // Since each file only has indices relative to the file, they
+        // must be remapped to a global indices so that the references can be
+        // resolved later.  It is the responsibility of the caller to start the
+        // first file at zero, then get the next type index when the file is
+        // completed parsing and use that for the starting index of the next module.
+        void setStartingTypeIndex(int index)
+            {
+            mStartingModuleTypeIndex = index;
+            mEndingModuleTypeIndex = index;
+            }
+        int getNextTypeIndex() const
+            { return mEndingModuleTypeIndex+1; }
 
     private:
         ModelData &mModel;
@@ -101,18 +101,18 @@ class XmiParser:private XmlParser
         virtual void onOpenElem(char const * const name, int len) override;
         virtual void onCloseElem(char const * const /*name*/, int /*len*/) override;
         virtual void onAttr(char const * const name, int &nameLen,
-        	char const * const val, int &valLen) override;
+                char const * const val, int &valLen) override;
         void addClass(const ModelClassifier *obj);
         void addAttrs(const ModelClassifier *obj);
         void addOpers(const ModelClassifier *obj);
         void dumpTypeMap(char const * const str1, char const * const str2);
         ModelObject *findParentInStack(XmiElementTypes type, bool afterAddingSelf = true);
         void setDeclAttr(const std::string &attrName,
-        	const std::string &attrVal, ModelDeclarator &decl);
+                const std::string &attrVal, ModelDeclarator &decl);
         void addFuncParams(OovStringRef const &attrName,
-        	OovStringRef const &attrVal, ModelOperation &oper);
+                OovStringRef const &attrVal, ModelOperation &oper);
         void addFuncStatements(OovStringRef const &attrName,
-        	OovStringRef const &attrVal, ModelOperation &oper);
+                OovStringRef const &attrVal, ModelOperation &oper);
     };
 
 bool loadXmiFile(FILE *fp, ModelData &model, OovStringRef const fn, int &typeIndex);

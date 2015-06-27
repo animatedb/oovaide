@@ -6,6 +6,7 @@
  */
 
 #include "Journal.h"
+#include "DiagramStorage.h"
 
 static Journal *gJournal;
 
@@ -22,9 +23,23 @@ std::string JournalRecord::getFullName(bool addSpace) const
     {
     std::string fullName = getRecordTypeName();
     if(addSpace)
-	fullName += ' ';
+        fullName += ' ';
     fullName += getName();
     return fullName;
+    }
+
+OovString JournalRecord::getDiagramName() const
+    {
+    OovString name;
+    if(mDiagramName.length() == 0)
+        {
+        name = getFullName(false);
+        }
+    else
+        {
+        name = mDiagramName;
+        }
+    return name;
     }
 
 Journal::Journal():
@@ -46,10 +61,26 @@ Journal *Journal::getJournal()
 void Journal::clear()
     {
     for(auto &rec : mRecords)
-	{
-	delete rec;
-	}
+        {
+        delete rec;
+        }
     mRecords.clear();
+    }
+
+JournalRecordClassDiagram *Journal::newClassRecord(OovStringRef const className)
+    {
+    JournalRecordClassDiagram *rec = new JournalRecordClassDiagram(*mModel,
+            *mJournalListener, *mTaskStatusListener);
+    addRecord(rec, className);
+    return rec;
+    }
+
+JournalRecordPortionDiagram *Journal::newPortionRecord(OovStringRef portionName)
+    {
+    JournalRecordPortionDiagram *rec = new JournalRecordPortionDiagram(*mModel,
+            *mJournalListener);
+    addRecord(rec, portionName);
+    return rec;
     }
 
 void Journal::displayClass(OovStringRef const className)
@@ -57,34 +88,32 @@ void Journal::displayClass(OovStringRef const className)
     JournalRecordClassDiagram *rec;
     size_t recordIndex = findRecord(RT_Class, className);
     if(recordIndex == NO_INDEX)
-	{
-	rec = new JournalRecordClassDiagram(*mBuilder, *mModel,
-		*mJournalListener, *mTaskStatusListener);
-	addRecord(rec, className);
-	rec->mClassDiagram.clearGraphAndAddClass(className,
-		ClassGraph::AN_ClassesAndChildren);
-	}
+        {
+        rec = newClassRecord(className);
+        rec->mClassDiagram.clearGraphAndAddClass(className,
+                ClassGraph::AN_ClassesAndChildren);
+        }
     else
-	{
-	setCurrentRecord(recordIndex);
-	rec = reinterpret_cast<JournalRecordClassDiagram*>(getCurrentRecord());
-	rec->mClassDiagram.drawToDrawingArea();
-	}
+        {
+        setCurrentRecord(recordIndex);
+        rec = reinterpret_cast<JournalRecordClassDiagram*>(getCurrentRecord());
+        rec->mClassDiagram.drawToDrawingArea();
+        }
     }
 
 void Journal::addClass(OovStringRef const className)
     {
     JournalRecord *rec = getCurrentRecord();
     if(rec && rec->getRecordType() == RT_Class)
-	{
-	JournalRecordClassDiagram *recClass =
-		reinterpret_cast<JournalRecordClassDiagram*>(rec);
-	recClass->mClassDiagram.addClass(className, ClassGraph::AN_AllStandard);
-	}
+        {
+        JournalRecordClassDiagram *recClass =
+                reinterpret_cast<JournalRecordClassDiagram*>(rec);
+        recClass->mClassDiagram.addClass(className, ClassGraph::AN_AllStandard);
+        }
     }
 
 void Journal::displayOperation(OovStringRef const className,
-	OovStringRef const operName, bool isConst)
+        OovStringRef const operName, bool isConst)
     {
     JournalRecordOperationDiagram *rec;
     OovString fullOperName = operName;
@@ -92,86 +121,83 @@ void Journal::displayOperation(OovStringRef const className,
     fullOperName += className;
     size_t recordIndex = findRecord(RT_Sequence, fullOperName);
     if(recordIndex == NO_INDEX)
-	{
-	rec = new JournalRecordOperationDiagram(*mBuilder, *mModel,
-		*mJournalListener);
-	addRecord(rec, fullOperName);
-	rec->mOperationDiagram.clearGraphAndAddOperation(className, operName, isConst);
-	}
+        {
+        rec = new JournalRecordOperationDiagram(*mModel, *mJournalListener);
+        addRecord(rec, fullOperName);
+        rec->mOperationDiagram.clearGraphAndAddOperation(className, operName, isConst);
+        }
     else
-	{
-	setCurrentRecord(recordIndex);
-	rec = reinterpret_cast<JournalRecordOperationDiagram*>(getCurrentRecord());
-	rec->mOperationDiagram.drawToDrawingArea();
-	}
+        {
+        setCurrentRecord(recordIndex);
+        rec = reinterpret_cast<JournalRecordOperationDiagram*>(getCurrentRecord());
+        rec->mOperationDiagram.drawToDrawingArea();
+        }
     }
 
 void Journal::displayComponents()
     {
     if(mBuilder)
-	{
-	OovStringRef const componentName = "<Components>";
-	size_t recordIndex = findRecord(RT_Component, componentName);
-	JournalRecordComponentDiagram *rec;
-	if(recordIndex == NO_INDEX)
-	    {
-	    rec = new JournalRecordComponentDiagram(*mBuilder, *mIncludeMap,
-	            *mJournalListener);
-	    rec->mComponentDiagram.drawToDrawingArea();
-	    addRecord(rec, componentName);
-	    }
-	else
-	    {
-	    setCurrentRecord(recordIndex);
-	    rec = reinterpret_cast<JournalRecordComponentDiagram*>(getCurrentRecord());
-	    rec->mComponentDiagram.drawToDrawingArea();
-	    }
-	}
+        {
+        OovStringRef const componentName = "<Components>";
+        size_t recordIndex = findRecord(RT_Component, componentName);
+        JournalRecordComponentDiagram *rec;
+        if(recordIndex == NO_INDEX)
+            {
+            rec = new JournalRecordComponentDiagram(*mIncludeMap, *mJournalListener);
+            rec->mComponentDiagram.drawToDrawingArea();
+            addRecord(rec, componentName);
+            }
+        else
+            {
+            setCurrentRecord(recordIndex);
+            rec = reinterpret_cast<JournalRecordComponentDiagram*>(getCurrentRecord());
+            rec->mComponentDiagram.drawToDrawingArea();
+            }
+        }
     }
 
 void Journal::displayWorldZone()
     {
     if(mBuilder)
-	{
-	OovStringRef const zoneName = "<WorldZone>";
-	size_t recordIndex = findRecord(RT_Zone, zoneName);
-	JournalRecordZoneDiagram *rec;
-	if(recordIndex == NO_INDEX)
-	    {
-	    rec = new JournalRecordZoneDiagram(*mBuilder, *mModel, *mJournalListener);
-	    rec->mZoneDiagram.drawToDrawingArea();
-	    addRecord(rec, zoneName);
-	    rec->mZoneDiagram.clearGraphAndAddWorldZone();
-	    }
-	else
-	    {
-	    setCurrentRecord(recordIndex);
-	    rec = reinterpret_cast<JournalRecordZoneDiagram*>(getCurrentRecord());
-	    rec->mZoneDiagram.drawToDrawingArea();
-	    }
-	}
+        {
+        OovStringRef const zoneName = "<WorldZone>";
+        size_t recordIndex = findRecord(RT_Zone, zoneName);
+        JournalRecordZoneDiagram *rec;
+        if(recordIndex == NO_INDEX)
+            {
+            rec = new JournalRecordZoneDiagram(*mModel, *mJournalListener);
+            rec->mZoneDiagram.drawToDrawingArea();
+            addRecord(rec, zoneName);
+            rec->mZoneDiagram.clearGraphAndAddWorldZone();
+            }
+        else
+            {
+            setCurrentRecord(recordIndex);
+            rec = reinterpret_cast<JournalRecordZoneDiagram*>(getCurrentRecord());
+            rec->mZoneDiagram.drawToDrawingArea();
+            }
+        }
     }
 
 void Journal::displayPortion(OovStringRef const className)
     {
     if(mBuilder)
-	{
-	size_t recordIndex = findRecord(RT_Portion, className);
-	JournalRecordPortionDiagram *rec;
-	if(recordIndex == NO_INDEX)
-	    {
-	    rec = new JournalRecordPortionDiagram(*mBuilder, *mModel, *mJournalListener);
-	    rec->mPortionDiagram.clearGraphAndAddClass(className);
-	    rec->mPortionDiagram.drawToDrawingArea();
-	    addRecord(rec, className);
-	    }
-	else
-	    {
-	    setCurrentRecord(recordIndex);
-	    rec = reinterpret_cast<JournalRecordPortionDiagram*>(getCurrentRecord());
-	    rec->mPortionDiagram.drawToDrawingArea();
-	    }
-	}
+        {
+        size_t recordIndex = findRecord(RT_Portion, className);
+        JournalRecordPortionDiagram *rec;
+        if(recordIndex == NO_INDEX)
+            {
+            rec = newPortionRecord(className);
+            rec->mPortionDiagram.clearGraphAndAddClass(className);
+            rec->mPortionDiagram.drawToDrawingArea();
+            }
+        else
+            {
+            setCurrentRecord(recordIndex);
+            rec = reinterpret_cast<JournalRecordPortionDiagram*>(getCurrentRecord());
+            rec->mPortionDiagram.drawToDrawingArea();
+            }
+        }
     }
 
 void Journal::displayInclude(OovStringRef const incName)
@@ -182,8 +208,7 @@ void Journal::displayInclude(OovStringRef const incName)
         JournalRecordIncludeDiagram *rec;
         if(recordIndex == NO_INDEX)
             {
-            rec = new JournalRecordIncludeDiagram(*mBuilder, *mIncludeMap,
-                    *mJournalListener);
+            rec = new JournalRecordIncludeDiagram(*mIncludeMap, *mJournalListener);
             rec->mIncludeDiagram.clearGraphAndAddInclude(incName);
             rec->mIncludeDiagram.drawToDrawingArea();
             addRecord(rec, incName);
@@ -209,27 +234,27 @@ size_t Journal::findRecord(eRecordTypes rt, OovStringRef const name)
     {
     size_t index = NO_INDEX;
     for(size_t i=0; i<mRecords.size(); i++)
-	{
-	if(mRecords[i]->getRecordType() == rt &&
-		std::string(mRecords[i]->getName()).compare(name) == 0)
-	    {
-	    index = i;
-	    break;
-	    }
-	}
+        {
+        if(mRecords[i]->getRecordType() == rt &&
+                std::string(mRecords[i]->getName()).compare(name) == 0)
+            {
+            index = i;
+            break;
+            }
+        }
     return index;
     }
 
 void Journal::removeUnmodifiedRecords()
     {
     for(size_t i=0; i<mRecords.size(); i++)
-	{
-	if(!mRecords[i]->isModified())
-	    {
-	    removeRecord(i);
-	    break;
-	    }
-	}
+        {
+        if(!mRecords[i]->isModified())
+            {
+            removeRecord(i);
+            break;
+            }
+        }
     }
 
 void Journal::removeRecord(size_t index)
@@ -238,20 +263,57 @@ void Journal::removeRecord(size_t index)
     mRecords.erase(mRecords.begin() + index);
     }
 
-void Journal::saveFile(FILE *fp)
+void Journal::loadFile(FILE *drawFp)
+    {
+    NameValueFile drawFile;
+    drawFile.read(drawFp);
+    eDiagramStorageTypes fileType;
+    OovString drawingName;
+    DiagramStorage::getDrawingHeader(drawFile, fileType, drawingName);
+    drawFile.seekStart(drawFp);
+    JournalRecord *rec = nullptr;
+    switch(fileType)
+        {
+        case DST_Class:
+            rec = newClassRecord(drawingName);
+            break;
+
+        case DST_Portion:
+            rec = newPortionRecord(drawingName);
+            break;
+
+        default:
+            break;
+        }
+    if(rec)
+        {
+        rec->loadFile(drawFp);
+        }
+    }
+
+void Journal::saveFile(FILE *drawFp)
     {
     JournalRecord *rec = getCurrentRecord();
     if(rec)
-	{
-	rec->saveFile(fp);
-	}
+        {
+        rec->saveFile(drawFp);
+        }
+    }
+
+void Journal::exportFile(FILE *svgFp)
+    {
+    JournalRecord *rec = getCurrentRecord();
+    if(rec)
+        {
+        rec->exportFile(svgFp);
+        }
     }
 
 void Journal::cppArgOptionsChangedUpdateDrawings()
     {
     JournalRecord *rec = getCurrentRecord();
     if(rec)
-	rec->cppArgOptionsChangedUpdateDrawings();
+        rec->cppArgOptionsChangedUpdateDrawings();
     }
 
 JournalRecordClassDiagram::~JournalRecordClassDiagram()
@@ -281,57 +343,57 @@ JournalRecordIncludeDiagram::~JournalRecordIncludeDiagram()
 
 extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_draw(
     GtkWidget * /*widget*/,
-	GdkEventExpose * /*event*/, gpointer /*user_data*/)
+        GdkEventExpose * /*event*/, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
-	rec->drawingAreaDrawEvent();
+        rec->drawingAreaDrawEvent();
     else
-	{
-	// Clear background if there are no records
-	GtkWidget *widget = Builder::getBuilder()->getWidget("DiagramDrawingarea");
-	GtkCairoContext cairo(widget);
-	cairo_set_source_rgb(cairo.getCairo(), 255,255,255);
-	cairo_paint(cairo.getCairo());
-	}
+        {
+        // Clear background if there are no records
+        GtkWidget *widget = Builder::getBuilder()->getWidget("DiagramDrawingarea");
+        GtkCairoContext cairo(widget);
+        cairo_set_source_rgb(cairo.getCairo(), 255,255,255);
+        cairo_paint(cairo.getCairo());
+        }
     }
 
 extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_press_event(
     GtkWidget * /*widget*/,
-	GdkEventExpose *event, gpointer /*user_data*/)
+        GdkEventExpose *event, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
-	rec->drawingAreaButtonPressEvent(reinterpret_cast<GdkEventButton*>(event));
+        rec->drawingAreaButtonPressEvent(reinterpret_cast<GdkEventButton*>(event));
     }
 
 extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_release_event(
     GtkWidget * /*widget*/,
-	GdkEventExpose *event, gpointer /*user_data*/)
+        GdkEventExpose *event, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
-	rec->drawingAreaButtonReleaseEvent(reinterpret_cast<GdkEventButton*>(event));
+        rec->drawingAreaButtonReleaseEvent(reinterpret_cast<GdkEventButton*>(event));
     }
 
 // "Focus Change" must be set in Glade Events for this to work.
 extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_focus_out_event(
     GtkWidget * /*widget*/,
-	GdkEvent * /*event*/, gpointer /*user_data*/)
+        GdkEvent * /*event*/, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
-	rec->drawingLoseFocusEvent();
+        rec->drawingLoseFocusEvent();
     return false;
     }
 
 // "Pointer Motion" must be set in Glade Events for this to work.
 extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_motion_notify_event(
     GtkWidget * /*widget*/,
-	GdkEvent *event, gpointer /*user_data*/)
+        GdkEvent *event, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
-	rec->drawingAreaMotionEvent(reinterpret_cast<GdkEventMotion*>(event));
+        rec->drawingAreaMotionEvent(reinterpret_cast<GdkEventMotion*>(event));
     return false;
     }

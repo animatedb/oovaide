@@ -8,7 +8,7 @@
 #include "BuildConfigReader.h"
 #include "Project.h"
 #include "OovString.h"
-#include <stdio.h>	// For snprintf
+#include <stdio.h>      // For snprintf
 
 
 BuildConfig::BuildConfig()
@@ -18,7 +18,7 @@ BuildConfig::BuildConfig()
     }
 
 std::string BuildConfig::getAnalysisPath(OovStringRef const /*buildType*/,
-	OovStringRef const crcStr) const
+        OovStringRef const crcStr) const
     {
     FilePath analysisCrcStr(Project::getProjectDirectory(), FP_Dir);
     OovString dirName = "analysis-";
@@ -52,9 +52,9 @@ std::string BuildConfig::getCrcAsStr(OovStringRef const buildType, CrcTypes crcT
     std::vector<OovString> crcStrs = buildStr.split(';');
     std::string crcStr;
     if(crcStrs.size() == CT_LastCrc+1)
-	{
-	crcStr = crcStrs[crcType];
-	}
+        {
+        crcStr = crcStrs[crcType];
+        }
     return crcStr;
     }
 

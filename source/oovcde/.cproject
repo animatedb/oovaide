@@ -53,6 +53,7 @@
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gdk-pixbuf-2.0&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/atk-1.0&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/gtk-3.0&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovcde/BLL}&quot;"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.other.other.1347953688" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -mwindows -std=c++0x" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.894344279" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
@@ -142,6 +143,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.127918663" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovcde/BLL}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/include/glib-2.0&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;C:/Program Files/GTK+-Bundle-3.6.4/lib/glib-2.0/include&quot;"/>
@@ -236,6 +238,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.2130697969" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovcde/BLL}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
@@ -350,6 +353,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1738146542" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovcde/BLL}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>
@@ -463,6 +467,7 @@
 								<option id="gnu.cpp.compiler.option.include.paths.1023437527" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovcde/BLL}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/include/gtk-3.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/glib-2.0"/>

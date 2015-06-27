@@ -32,15 +32,15 @@
 #endif
 
 // A path is made up of optional parts.
-//	The parts are drive, directory segments..., filename, extension.
+//      The parts are drive, directory segments..., filename, extension.
 // Example: "c:/dirseg1/dirseg2/name.ext"
 // A drive spec is considered to be anything up to the last colon.
 
 // See FilePath for rules on the paths when inside of a FilePath class.
 
 enum eReturnPosition {
-    RP_RetPosNatural,	// Return the most natural position in the path.
-    RP_RetPosFailure	// Return std::string::npos if the position is not in the path.
+    RP_RetPosNatural,   // Return the most natural position in the path.
+    RP_RetPosFailure    // Return std::string::npos if the position is not in the path.
 };
 
 //***** non-modifying path functions
@@ -112,55 +112,55 @@ void FileRename(OovStringRef const oldPath, OovStringRef const newPath);
 template<typename T_Str> class FilePathRefInterface
     {
     public:
-	size_t getPosStartDir() const
-	    { return FilePathGetPosStartDir(getThisStr()); }
-	size_t getPosEndDir() const
-	    { return FilePathGetPosEndDir(getThisStr()); }
-	size_t getPosExtension(eReturnPosition rp) const
-	    { return FilePathGetPosExtension(getThisStr(), rp); }
-	size_t getPosPathSegment(OovStringRef const seg) const
-	    { return FilePathGetPosSegment(getThisStr(), seg); }
-	size_t getPosLeftPathSep(size_t startPos, eReturnPosition rp) const
-	    { return FilePathGetPosLeftPathSep(getThisStr(), startPos, rp); }
-	size_t getPosRightPathSep(size_t startPos, eReturnPosition rp) const
-	    { return FilePathGetPosRightPathSep(getThisStr(), startPos, rp); }
+        size_t getPosStartDir() const
+            { return FilePathGetPosStartDir(getThisStr()); }
+        size_t getPosEndDir() const
+            { return FilePathGetPosEndDir(getThisStr()); }
+        size_t getPosExtension(eReturnPosition rp) const
+            { return FilePathGetPosExtension(getThisStr(), rp); }
+        size_t getPosPathSegment(OovStringRef const seg) const
+            { return FilePathGetPosSegment(getThisStr(), seg); }
+        size_t getPosLeftPathSep(size_t startPos, eReturnPosition rp) const
+            { return FilePathGetPosLeftPathSep(getThisStr(), startPos, rp); }
+        size_t getPosRightPathSep(size_t startPos, eReturnPosition rp) const
+            { return FilePathGetPosRightPathSep(getThisStr(), startPos, rp); }
 
-	OovString getHead(size_t startPos) const
-	    { return FilePathGetHead(getThisStr(), startPos); }
-	OovString getTail(size_t startPos) const
-	    { return FilePathGetTail(getThisStr(), startPos); }
-	// Return a part of the path, (not the full tail)
-	OovString getPathSegment(size_t startPos) const
-	    { return FilePathGetSegment(getThisStr(), startPos); }
-	OovString getDrivePath() const
-	    { return FilePathGetDrivePath(getThisStr()); }
-	OovString getName() const	// Without extension
-	    { return FilePathGetFileName(getThisStr()); }
-	OovString getNameExt() const
-	    { return FilePathGetFileNameExt(getThisStr()); }
-	OovString getExtension() const
-	    { return FilePathGetFileExt(getThisStr()); }
-	OovString getWithoutEndPathSep() const
-	    { return FilePathGetWithoutEndPathSep(getThisStr()); }
+        OovString getHead(size_t startPos) const
+            { return FilePathGetHead(getThisStr(), startPos); }
+        OovString getTail(size_t startPos) const
+            { return FilePathGetTail(getThisStr(), startPos); }
+        // Return a part of the path, (not the full tail)
+        OovString getPathSegment(size_t startPos) const
+            { return FilePathGetSegment(getThisStr(), startPos); }
+        OovString getDrivePath() const
+            { return FilePathGetDrivePath(getThisStr()); }
+        OovString getName() const       // Without extension
+            { return FilePathGetFileName(getThisStr()); }
+        OovString getNameExt() const
+            { return FilePathGetFileNameExt(getThisStr()); }
+        OovString getExtension() const
+            { return FilePathGetFileExt(getThisStr()); }
+        OovString getWithoutEndPathSep() const
+            { return FilePathGetWithoutEndPathSep(getThisStr()); }
 #ifndef __linux__
-	OovString getAsWindowsPath() const
-	    { return FilePathGetAsWindowsPath(getThisStr()); }
+        OovString getAsWindowsPath() const
+            { return FilePathGetAsWindowsPath(getThisStr()); }
 #endif
 
-	bool matchExtension(OovStringRef const path) const
-	    { return FilePathMatchExtension(getThisStr(), path); }
-	bool isDirOnDisk() const
-	    { return FileIsDirOnDisk(getThisStr()); }
-	bool isFileOnDisk() const
-	    { return FileIsFileOnDisk(getThisStr()); }
-	void deleteFile() const
-	    { FileDelete(getThisStr()); }
-	void ensurePathExists()
-	    { FileEnsurePathExists(getThisStr()); }
+        bool matchExtension(OovStringRef const path) const
+            { return FilePathMatchExtension(getThisStr(), path); }
+        bool isDirOnDisk() const
+            { return FileIsDirOnDisk(getThisStr()); }
+        bool isFileOnDisk() const
+            { return FileIsFileOnDisk(getThisStr()); }
+        void deleteFile() const
+            { FileDelete(getThisStr()); }
+        void ensurePathExists()
+            { FileEnsurePathExists(getThisStr()); }
 
     private:
-	char const * getThisStr() const
-	    { return static_cast<T_Str const *>(this)->getStr(); }
+        char const * getThisStr() const
+            { return static_cast<T_Str const *>(this)->getStr(); }
     };
 
 /// Provides functions for accessing an immutable path.
@@ -177,16 +177,16 @@ enum eFilePathTypes { FP_File, FP_Dir, FP_Ext };
 /// Also the path is normalized so that path separators are '/' on both
 /// linux and windows.
 /// Invalid paths when inside of a FilePath:
-///	".."	A directory will be indicated as "../"
+///     ".."    A directory will be indicated as "../"
 class FilePath:public FilePathRefInterface<FilePath>, public OovString
     {
     public:
-	FilePath()
-	    {}
-	FilePath(OovStringRef const filePath, eFilePathTypes fpt)
-	    { pathStdStr() = normalizePathType(filePath, fpt); }
-//	FilePath(std::string const &filePath, eFilePathTypes fpt)
-//	    { pathStdStr() = normalizePathType(filePath, fpt); }
+        FilePath()
+            {}
+        FilePath(OovStringRef const filePath, eFilePathTypes fpt)
+            { pathStdStr() = normalizePathType(filePath, fpt); }
+//      FilePath(std::string const &filePath, eFilePathTypes fpt)
+//          { pathStdStr() = normalizePathType(filePath, fpt); }
 /*
         // The default operator= works fine since the normalized path is copied.
         FilePath &operator=(FilePath const &filePath)
@@ -196,41 +196,41 @@ class FilePath:public FilePathRefInterface<FilePath>, public OovString
             return *this;
             }
 */
-	void setPath(OovStringRef const path, eFilePathTypes fpt)
-	    { pathStdStr() = normalizePathType(path, fpt); }
-	eFilePathTypes getType() const;
+        void setPath(OovStringRef const path, eFilePathTypes fpt)
+            { pathStdStr() = normalizePathType(path, fpt); }
+        eFilePathTypes getType() const;
 
-	// Currently stops at dir spec if it exists.
+        // Currently stops at dir spec if it exists.
         FilePath getParent() const;
-	int comparePaths(OovStringRef const path2) const
-	    { return FilePathComparePaths(getStr(), path2); }
+        int comparePaths(OovStringRef const path2) const
+            { return FilePathComparePaths(getStr(), path2); }
 
-	void appendPathAtPos(OovStringRef const pathPart, size_t pos);
-	void appendDirAtPos(OovStringRef const pathPart, size_t pos);
-	void appendPart(OovStringRef const pathPart, eFilePathTypes fpt);
-	void appendDir(OovStringRef const pathPart);
-	void appendFile(OovStringRef const fileName);
-	void appendExtension( OovStringRef const fileName);
-	void discardDirectory();
-	void discardFilename();
-	void discardExtension();
-	// Keeps the end sep so that this is still indicated as a directory.
-	void discardTail(size_t pos);
-	// Erases up to after the position (pos + 1).
-	void discardHead(size_t pos);
-	int discardLeadingRelSegments();
-	void discardMatchingHead(OovStringRef const pathPart);
-	void getWorkingDirectory();
-	void getAbsolutePath(OovStringRef const path, eFilePathTypes fpt);
-	static void normalizePathSeps(std::string &path);
+        void appendPathAtPos(OovStringRef const pathPart, size_t pos);
+        void appendDirAtPos(OovStringRef const pathPart, size_t pos);
+        void appendPart(OovStringRef const pathPart, eFilePathTypes fpt);
+        void appendDir(OovStringRef const pathPart);
+        void appendFile(OovStringRef const fileName);
+        void appendExtension( OovStringRef const fileName);
+        void discardDirectory();
+        void discardFilename();
+        void discardExtension();
+        // Keeps the end sep so that this is still indicated as a directory.
+        void discardTail(size_t pos);
+        // Erases up to after the position (pos + 1).
+        void discardHead(size_t pos);
+        int discardLeadingRelSegments();
+        void discardMatchingHead(OovStringRef const pathPart);
+        void getWorkingDirectory();
+        void getAbsolutePath(OovStringRef const path, eFilePathTypes fpt);
+        static void normalizePathSeps(std::string &path);
 
-	std::string &pathStdStr()
-	    { return *this; }
-	const std::string &pathStdStr() const
-	    { return *this; }
+        std::string &pathStdStr()
+            { return *this; }
+        const std::string &pathStdStr() const
+            { return *this; }
 
     protected:
-	static std::string normalizePathType(OovStringRef const path, eFilePathTypes fpt);
+        static std::string normalizePathType(OovStringRef const path, eFilePathTypes fpt);
     };
 
 

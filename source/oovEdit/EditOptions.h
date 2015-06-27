@@ -18,11 +18,11 @@
 class EditOptions:public NameValueFile
     {
     public:
-	void setProjectDir(std::string projDir);
-	void setScreenCoord(char const * const tag, int val);
-	void saveScreenSize(int width, int height);
-	bool getScreenCoord(char const * const tag, int &val);
-	bool getScreenSize(int &width, int &height);
+        void setProjectDir(std::string projDir);
+        void setScreenCoord(char const * const tag, int val);
+        void saveScreenSize(int width, int height);
+        bool getScreenCoord(char const * const tag, int &val);
+        bool getScreenSize(int &width, int &height);
     };
 
 

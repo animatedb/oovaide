@@ -6,7 +6,7 @@
  */
 
 #include "Options.h"
-#include <stdlib.h>	// for getenv
+#include <stdlib.h>     // for getenv
 #include "FilePath.h"
 #include "Project.h"
 #include "OovString.h"
@@ -25,37 +25,37 @@ static std::string getPathSegment(const std::string &path, OovStringRef const sr
     std::string seg;
     size_t pos = lowerPath.find(srch);
     if(pos != std::string::npos)
-	{
-	std::string arg = "-ER";
-	size_t startPos = path.rfind(';', pos);
-	if(startPos != std::string::npos)
-	    startPos++;
-	else
-	    startPos = 0;
-	size_t endPos = path.find(';', pos);
-	if(endPos == std::string::npos)
-	    endPos = path.length();
-	seg = path.substr(startPos, endPos-startPos);
-	}
+        {
+        std::string arg = "-ER";
+        size_t startPos = path.rfind(';', pos);
+        if(startPos != std::string::npos)
+            startPos++;
+        else
+            startPos = 0;
+        size_t endPos = path.find(';', pos);
+        if(endPos == std::string::npos)
+            endPos = path.length();
+        seg = path.substr(startPos, endPos-startPos);
+        }
     return seg;
     }
 
 static bool addExternalReference(const std::string &path, OovStringRef const srch,
-	CompoundValue &args)
+        CompoundValue &args)
     {
     std::string seg = getPathSegment(path, srch);
     size_t binPos = seg.find("bin", seg.length()-3);
     if(binPos != std::string::npos)
-	{
-	seg.resize(binPos);
-	removePathSep(seg, binPos-1);
-	}
+        {
+        seg.resize(binPos);
+        removePathSep(seg, binPos-1);
+        }
     if(seg.size() > 0)
-	{
-	std::string arg = "-ER";
-	arg += seg;
-	args.addArg(arg);
-	}
+        {
+        std::string arg = "-ER";
+        arg += seg;
+        args.addArg(arg);
+        }
     return seg.size() > 0;
     }
 */
@@ -69,15 +69,15 @@ static void addCLangArgs(CompoundValue &cv)
     }
 
 static void setBuildConfigurationPaths(NameValueFile &file,
-	OovStringRef const buildConfig, OovStringRef const extraArgs, bool useclang)
+        OovStringRef const buildConfig, OovStringRef const extraArgs, bool useclang)
     {
     std::string optStr = makeBuildConfigArgName(OptExtraBuildArgs, buildConfig);
     file.setNameValue(optStr, extraArgs);
 
     if(std::string(buildConfig).compare(BuildConfigAnalysis) == 0)
-	{
-	useclang = true;
-	}
+        {
+        useclang = true;
+        }
     // Assume the archiver is installed and on path.
     // llvm-ar gives link error.
     // setNameValue(makeExeFilename("llvm-ar"));
@@ -91,9 +91,9 @@ static void setBuildConfigurationPaths(NameValueFile &file,
 
     std::string compiler;
     if(useclang)
-	compiler = FilePathMakeExeFilename("clang++");
+        compiler = FilePathMakeExeFilename("clang++");
     else
-	compiler = FilePathMakeExeFilename("g++");
+        compiler = FilePathMakeExeFilename("g++");
     optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
     file.setNameValue(optStr, compiler);
     }
@@ -111,20 +111,20 @@ void BuildOptions::setDefaultOptions()
 //    baseArgs.addArg("-ER/usr/include/gtk-3.0");
 //    baseArgs.addArg("-ER/usr/lib/x86_64-linux-gnu/glib-2.0/include");
     if(FileIsFileOnDisk("/usr/bin/clang++"))
-	useCLangBuild = true;
+        useCLangBuild = true;
 #else
     std::string path = getenv("PATH");
     if(path.find("LLVM") != std::string::npos)
-	{
-	useCLangBuild = true;
-	}
+        {
+        useCLangBuild = true;
+        }
 /*
     // On Windows, GTK includes gmodule, glib, etc., so no reason to get mingw.
     bool success = addExternalReference(path, "gtk", baseArgs);
     if(!success)
-	{
-	addExternalReference(path, "mingw", baseArgs);
-	}
+        {
+        addExternalReference(path, "mingw", baseArgs);
+        }
     addExternalReference(path, "qt", baseArgs);
 */
 #endif
@@ -133,15 +133,15 @@ void BuildOptions::setDefaultOptions()
     // building, but CLang is used for XMI parsing.
     // These are important for xmi parsing to show template relations
     if(useCLangBuild)
-	{
-	addCLangArgs(baseArgs);
-	}
+        {
+        addCLangArgs(baseArgs);
+        }
     else
-	{
-	addCLangArgs(extraCppDocArgs);
-	extraCppDbgArgs.addArg("-std=c++0x");
-	extraCppRlsArgs.addArg("-std=c++0x");
-	}
+        {
+        addCLangArgs(extraCppDocArgs);
+        extraCppDbgArgs.addArg("-std=c++0x");
+        extraCppRlsArgs.addArg("-std=c++0x");
+        }
     extraCppDbgArgs.addArg("-O0");
     extraCppDbgArgs.addArg("-g3");
 
@@ -156,11 +156,11 @@ void BuildOptions::setDefaultOptions()
 #endif
 
     setBuildConfigurationPaths(*this, BuildConfigAnalysis,
-	    extraCppDocArgs.getAsString(), useCLangBuild);
+            extraCppDocArgs.getAsString(), useCLangBuild);
     setBuildConfigurationPaths(*this, BuildConfigDebug,
-	    extraCppDbgArgs.getAsString(), useCLangBuild);
+            extraCppDbgArgs.getAsString(), useCLangBuild);
     setBuildConfigurationPaths(*this, BuildConfigRelease,
-	    extraCppRlsArgs.getAsString(), useCLangBuild);
+            extraCppRlsArgs.getAsString(), useCLangBuild);
 
     setNameValue(OptBaseArgs, baseArgs.getAsString());
 
@@ -199,7 +199,7 @@ void GuiOptions::read()
     {
     setFilename(Project::getGuiOptionsFilePath());
     if(!NameValueFile::readFile())
-	{
-	setDefaultOptions();
-	}
+        {
+        setDefaultOptions();
+        }
     }

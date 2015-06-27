@@ -13,8 +13,8 @@ void logProc(char const *str, const void *ptr, int val)
     {
     sDebugQueue.printflush("%s %p %d\n", str, ptr, val);
     }
-#define LOG_PROC(str, ptr)	logProc(str, ptr, 0);
-#define LOG_PROC_INT(str, ptr, val)	logProc(str, ptr, val);
+#define LOG_PROC(str, ptr)      logProc(str, ptr, 0);
+#define LOG_PROC_INT(str, ptr, val)     logProc(str, ptr, val);
 #else
 #define LOG_PROC(str, ptr)
 #define LOG_PROC_INT(str, ptr, val)
@@ -64,7 +64,7 @@ bool OovThreadedWaitQueuePrivate::waitPopPrivate(void *item)
     LOG_PROC_INT("pop got item", this, gotItem);
     if(gotItem)
         {
-	getFront(item);
+        getFront(item);
         }
 
     LOG_PROC_INT("pop unlock", this, gotItem);

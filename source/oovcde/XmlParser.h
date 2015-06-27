@@ -32,10 +32,10 @@ enum XmlErrorType
 class XmlError
     {
     public:
-	XmlError():
+        XmlError():
             mError(ERROR_NONE)
             {}
-	XmlError(const XmlError &errCode):
+        XmlError(const XmlError &errCode):
             mError(errCode.mError)
             {}
         void operator=(const XmlError &errCode)
@@ -63,7 +63,7 @@ class XmlParser
         virtual void onOpenElem(char const * const name, int len)=0;
         virtual void onCloseElem(char const * const name, int len)=0;
         virtual void onAttr(char const * const name, int &nameLen,
-        	char const * const val, int &valLen)=0;
+                char const * const val, int &valLen)=0;
         virtual void onElemValue(char const * const /*val*/, int /*len*/)
             {}
 

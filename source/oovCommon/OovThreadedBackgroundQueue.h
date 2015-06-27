@@ -20,14 +20,14 @@
 #include <mutex>
 #include <atomic>
 #include <condition_variable>
-#include "OovProcess.h"		/// @todo - for sleepMs, and continueListener
+#include "OovProcess.h"         /// @todo - for sleepMs, and continueListener
 
 
 #define DEBUG_PROC_QUEUE 0
 #if(DEBUG_PROC_QUEUE)
 void logProc(char const *str, const void *ptr, int val=0);
-#define LOG_PROC(str, ptr)	logProc(str, ptr);
-#define LOG_PROC_INT(str, ptr, val)	logProc(str, ptr, val);
+#define LOG_PROC(str, ptr)      logProc(str, ptr);
+#define LOG_PROC_INT(str, ptr, val)     logProc(str, ptr, val);
 #else
 #define LOG_PROC(str, ptr)
 #define LOG_PROC_INT(str, ptr, val)
@@ -73,7 +73,7 @@ template<typename T_ThreadQueueItem>
     {
     public:
         OovThreadedBackgroundQueue():
-	    mGotItemFromQueue(false)
+            mGotItemFromQueue(false)
             {}
         virtual ~OovThreadedBackgroundQueue()
             {}
@@ -128,12 +128,12 @@ template<typename T_ThreadQueueItem>
         virtual void pushBack(void const *item) override
             { mQueue.push_back(*static_cast<T_ThreadQueueItem const*>(item)); }
         virtual void getFront(void *item) override
-	    {
+            {
             *static_cast<T_ThreadQueueItem*>(item) = mQueue.front();
             mGotItemFromQueue = true;
             LOG_PROC_INT("getFront", this, mGotItemFromQueue);
             mQueue.pop_front();
-	    }
+            }
         virtual void clear() override
             {
             mQueue.clear();
@@ -152,8 +152,8 @@ template<typename T_ThreadQueueItem>
 ///
 /// @param T_ThreadQueueItem The type of item that will be in the queue.
 /// @param T_ProcessItem A type derived from OovThreadedBackgroundQueue that contains a
-/// 	function to process items:
-/// 	void processItem(T_ThreadQueueItem const &item)
+///     function to process items:
+///     void processItem(T_ThreadQueueItem const &item)
 ///
 /// A usage example:
 /// class ThreadedQueue:public OovThreadedBackgroundQueue<class ThreadedQueue, std::string>
@@ -168,7 +168,7 @@ template<typename T_ProcessClass, typename T_ThreadQueueItem>
     public:
         ThreadedWorkBackgroundQueue(/*int numThreads = 1*/)
             {
-	    LOG_PROC("ThreadedWorkBackgroundQueue", this);
+            LOG_PROC("ThreadedWorkBackgroundQueue", this);
             }
         /// WARNING - The worker thread is NOT joined at destruction.  This is
         /// because the derived class contains the callback override, and it
@@ -176,7 +176,7 @@ template<typename T_ProcessClass, typename T_ThreadQueueItem>
         /// stopAndWaitForCompletion().
         virtual ~ThreadedWorkBackgroundQueue()
             {
-	    LOG_PROC("~ThreadedWorkBackgroundQueue", this);
+            LOG_PROC("~ThreadedWorkBackgroundQueue", this);
             }
 
         /// Starts the worker/consumer thread.
@@ -184,13 +184,13 @@ template<typename T_ProcessClass, typename T_ThreadQueueItem>
         /// @param item The item to push onto the queue to process.
         void addTask(T_ThreadQueueItem const &item)
             {
-	    LOG_PROC("addTask", this);
-	    mContinueProcessingItem = true;
-	    mTaskQueue.clearQuitPopping();
+            LOG_PROC("addTask", this);
+            mContinueProcessingItem = true;
+            mTaskQueue.clearQuitPopping();
             if(!mWorkerThread.joinable())
-        	{
-        	mWorkerThread = std::thread(workerThreadProc, this);
-        	}
+                {
+                mWorkerThread = std::thread(workerThreadProc, this);
+                }
             mTaskQueue.push(item);
             }
 
@@ -198,20 +198,20 @@ template<typename T_ProcessClass, typename T_ThreadQueueItem>
         /// processed.
         void stopAndWaitForCompletion()
             {
-	    LOG_PROC("stopAndWaitForCompletion", this);
-	    mContinueProcessingItem = false;
-	    mTaskQueue.quitPops();
-	    while(isQueueBusy())
-		{
-		sleepMs(100);		/// @todo - cleanup
-		}
+            LOG_PROC("stopAndWaitForCompletion", this);
+            mContinueProcessingItem = false;
+            mTaskQueue.quitPops();
+            while(isQueueBusy())
+                {
+                sleepMs(100);           /// @todo - cleanup
+                }
             LOG_PROC("stopAndWaitForCompletion - this", this);
             LOG_PROC_INT("stopAndWaitForCompletion - work", this, mTaskQueue.isWorkingOnItem());
             LOG_PROC_INT("stopAndWaitForCompletion - queue", this, mTaskQueue.isEmpty());
             if(mWorkerThread.joinable())
-        	{
-        	mWorkerThread.join();
-        	}
+                {
+                mWorkerThread.join();
+                }
             }
 
         /// Is there something in the queue, or is there some processing of the queue
@@ -228,19 +228,19 @@ template<typename T_ProcessClass, typename T_ThreadQueueItem>
     private:
         OovThreadedBackgroundQueue<T_ThreadQueueItem> mTaskQueue;
         std::thread mWorkerThread;
-	std::atomic_bool mContinueProcessingItem;
+        std::atomic_bool mContinueProcessingItem;
         static void workerThreadProc(
-        	ThreadedWorkBackgroundQueue<T_ProcessClass, T_ThreadQueueItem> *workQueue)
+                ThreadedWorkBackgroundQueue<T_ProcessClass, T_ThreadQueueItem> *workQueue)
             {
             LOG_PROC("start workerThreadProc", nullptr);
             T_ThreadQueueItem item;
             while(workQueue->mTaskQueue.waitPop(item))
                 {
                 LOG_PROC_INT("start processItem", static_cast<T_ProcessClass*>(workQueue),
-                	workQueue->mTaskQueue.isWorkingOnItem());
+                        workQueue->mTaskQueue.isWorkingOnItem());
                 static_cast<T_ProcessClass*>(workQueue)->processItem(item);
                 LOG_PROC_INT("done processItem", static_cast<T_ProcessClass*>(workQueue),
-                	workQueue->mTaskQueue.isWorkingOnItem());
+                        workQueue->mTaskQueue.isWorkingOnItem());
                 workQueue->mTaskQueue.workCompleted();
                 }
             LOG_PROC("done workerThreadProc", nullptr);

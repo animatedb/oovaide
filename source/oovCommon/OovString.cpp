@@ -14,28 +14,28 @@ OovString OovStringVec::getStr(size_t index)
     {
     OovString str;
     if(index < size())
-	str = at(index);
+        str = at(index);
     return str;
     }
 
 void OovStringVec::deleteEmptyStrings()
     {
     erase(std::remove_if(begin(), end(),
-	    [](const OovString &str){ return(str.length() == 0); }),
-	    end());
+            [](const OovString &str){ return(str.length() == 0); }),
+            end());
     }
 
 static bool isAsciiLenOk(OovStringRef const buf, size_t maxLen)
     {
     bool success = false;
     for(size_t i=0; i<maxLen; i++)
-	{
-	if(buf[static_cast<int>(i)] == '\0')
-	    {
-	    success = true;
-	    break;
-	    }
-	}
+        {
+        if(buf[static_cast<int>(i)] == '\0')
+            {
+            success = true;
+            break;
+            }
+        }
     return success;
     }
 
@@ -56,10 +56,10 @@ bool StringToFloat(char const * const mbStr, float min, float max, float &val)
     char dummyc = 0;
     int ret = sscanf(mbStr, "%f%c", &valNum, &dummyc);
     if(ret == 1 && (valNum >= min && valNum <= max))
-	{
-	val = valNum;
-	success = true;
-	}
+        {
+        val = valNum;
+        success = true;
+        }
     return success;
     }
 
@@ -70,34 +70,34 @@ bool StringToInt(char const * const mbStr, int min, int max, int &val)
     char dummyc = 0;
     int ret = sscanf(mbStr, "%d%c", &valNum, &dummyc);
     if(ret == 1 && (valNum >= min && valNum <= max))
-	{
-	val = valNum;
-	success = true;
-	}
+        {
+        val = valNum;
+        success = true;
+        }
     return success;
     }
 
 bool StringToUnsignedInt(char const * const mbStr, unsigned int min, unsigned int max,
-	unsigned int &val)
+        unsigned int &val)
     {
     bool success = false;
     unsigned int valNum = 0;
     char dummyc = 0;
     int ret = sscanf(mbStr, "%u%c", &valNum, &dummyc);
     if(ret == 1 && (valNum >= min && valNum <= max))
-	{
-	val = valNum;
-	success = true;
-	}
+        {
+        val = valNum;
+        success = true;
+        }
     return success;
     }
 
 void StringToLower(OovString &str)
     {
     for(size_t i=0; i<str.length(); ++i)
-	{
-	str.at(i) = static_cast<char>(tolower(str.at(i)));
-	}
+        {
+        str.at(i) = static_cast<char>(tolower(str.at(i)));
+        }
     }
 
 int StringCompareNoCase(char const * const str1, char const * const str2)
@@ -105,12 +105,12 @@ int StringCompareNoCase(char const * const str1, char const * const str2)
     char const * p1 = str1;
     char const * p2 = str2;
     while(*p1)
-	{
-	if(tolower(*p1) != tolower(*p2))
-	    break;
-	p1++;
-	p2++;
-	}
+        {
+        if(tolower(*p1) != tolower(*p2))
+            break;
+        p1++;
+        p2++;
+        }
     return(*p1-*p2);
     }
 
@@ -119,12 +119,12 @@ int StringCompareNoCaseNumCharsMatch(char const * const str1, char const * const
     char const * p1 = str1;
     char const * p2 = str2;
     while(*p1)
-	{
-	if(tolower(*p1) != tolower(*p2))
-	    break;
-	p1++;
-	p2++;
-	}
+        {
+        if(tolower(*p1) != tolower(*p2))
+            break;
+        p1++;
+        p2++;
+        }
     return(p1-str1);
     }
 
@@ -133,26 +133,26 @@ static bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInByt
     {
     bool success = false;
     if(dstSizeInBytes > 0)
-    	{
-	const size_t numBufSize = 30;
-    	char numBuf[numBufSize];
-	if(radix == 10)
-	    snprintf(numBuf, sizeof(numBuf), "%d", value);
-	else
-	    snprintf(numBuf, sizeof(numBuf), "%x", value);
-	if(isAsciiLenOk(numBuf, dstSizeInBytes))
-	    {
-	    copyString(buffer, dstSizeInBytes, numBuf, numBufSize);
-	    success = true;
-	    }
-	else if(dstSizeInBytes >= 2)
-	    {
-	    buffer[0] = '*';
-	    buffer[1] = '\0';
-	    }
-	else
-	    buffer[0] = '\0';
-    	}
+        {
+        const size_t numBufSize = 30;
+        char numBuf[numBufSize];
+        if(radix == 10)
+            snprintf(numBuf, sizeof(numBuf), "%d", value);
+        else
+            snprintf(numBuf, sizeof(numBuf), "%x", value);
+        if(isAsciiLenOk(numBuf, dstSizeInBytes))
+            {
+            copyString(buffer, dstSizeInBytes, numBuf, numBufSize);
+            success = true;
+            }
+        else if(dstSizeInBytes >= 2)
+            {
+            buffer[0] = '*';
+            buffer[1] = '\0';
+            }
+        else
+            buffer[0] = '\0';
+        }
     return success;
     }
 
@@ -160,23 +160,23 @@ static bool FloatToAsciiString(float value, char * const buffer, size_t dstSizeI
     {
     bool success = false;
     if(dstSizeInBytes > 0)
-    	{
-	const size_t numBufSize = 30;
-    	char numBuf[numBufSize];
-	snprintf(numBuf, sizeof(numBuf), "%f", value);
-	if(isAsciiLenOk(numBuf, dstSizeInBytes))
-	    {
-	    copyString(buffer, dstSizeInBytes, numBuf, numBufSize);
-	    success = true;
-	    }
-	else if(dstSizeInBytes >= 2)
-	    {
-	    buffer[0] = '*';
-	    buffer[1] = '\0';
-	    }
-	else
-	    buffer[0] = '\0';
-    	}
+        {
+        const size_t numBufSize = 30;
+        char numBuf[numBufSize];
+        snprintf(numBuf, sizeof(numBuf), "%f", value);
+        if(isAsciiLenOk(numBuf, dstSizeInBytes))
+            {
+            copyString(buffer, dstSizeInBytes, numBuf, numBufSize);
+            success = true;
+            }
+        else if(dstSizeInBytes >= 2)
+            {
+            buffer[0] = '*';
+            buffer[1] = '\0';
+            }
+        else
+            buffer[0] = '\0';
+        }
     return success;
     }
 
@@ -187,9 +187,9 @@ size_t StringNumChars(char const * const str)
     size_t len = 0;
     char const *p = str;
     while(*p)
-	    {
-	    len += ((*p++ & 0xc0) != 0x80);
-	    }
+            {
+            len += ((*p++ & 0xc0) != 0x80);
+            }
     return len;
     }
 
@@ -202,44 +202,44 @@ bool StringIsAscii(char const * const str)
     {
     char const *p = str;
     while(*p)
-	    {
-	    if(*p & 0x80)	// Stop on any character that is not ASCII
-		    break;
-	    p++;
-	    }
-    return *p == '\0';	// If at end, there is no non-ASCII character
+            {
+            if(*p & 0x80)       // Stop on any character that is not ASCII
+                    break;
+            p++;
+            }
+    return *p == '\0';  // If at end, there is no non-ASCII character
     }
 
 size_t StringFindSpace(char const * const str, size_t startPos)
     {
     char const * p = str + startPos;
     while(*p)
-	{
-	if(isspace(*p))
-	    break;
-	else
-	    p++;
-	}
+        {
+        if(isspace(*p))
+            break;
+        else
+            p++;
+        }
     if(*p == '\0')
-	return std::string::npos;
+        return std::string::npos;
     else
-	return static_cast<size_t>(p - str);
+        return static_cast<size_t>(p - str);
     }
 
 size_t StringFindNonSpace(char const * const str, size_t startPos)
     {
     char const * p = str + startPos;
     while(*p)
-	{
-	if(!isspace(*p))
-	    break;
-	else
-	    p++;
-	}
+        {
+        if(!isspace(*p))
+            break;
+        else
+            p++;
+        }
     if(*p == '\0')
-	return std::string::npos;
+        return std::string::npos;
     else
-	return static_cast<size_t>(p - str);
+        return static_cast<size_t>(p - str);
     }
 
 OovString StringMakeXml(char const * const text)
@@ -247,18 +247,18 @@ OovString StringMakeXml(char const * const text)
     OovString outStr;
     char const *p = text;
     while(*p)
-	{
-	switch(*p)
-	    {
-	    case '>': 	outStr += "&gt;";	break;
-	    case '<':	outStr += "&lt;";	break;
-	    case '&':	outStr += "&amp;";	break;
-	    case '\'':	outStr += "&apos;";	break;
-	    case '\"':	outStr += "&quot;";	break;
-	    default:	outStr += *p;		break;
-	    }
-	p++;
-	}
+        {
+        switch(*p)
+            {
+            case '>':   outStr += "&gt;";       break;
+            case '<':   outStr += "&lt;";       break;
+            case '&':   outStr += "&amp;";      break;
+            case '\'':  outStr += "&apos;";     break;
+            case '\"':  outStr += "&quot;";     break;
+            default:    outStr += *p;           break;
+            }
+        p++;
+        }
     return outStr;
     }
 
@@ -268,9 +268,9 @@ void OovString::setUpperCase(OovStringRef const str)
     {
     char const *p = str;
     while(*p)
-	{
-	*this += static_cast<char>(toupper(*p));
-	p++;
+        {
+        *this += static_cast<char>(toupper(*p));
+        p++;
         }
     }
 
@@ -307,14 +307,14 @@ OovStringVec StringSplit(char const * const str, char const * const delimiterStr
     size_t end = 0;
     const size_t delimLen = strlen(delimiterStr);
     while(end != std::string::npos)
-	{
+        {
         end = tempStr.find(delimiterStr, start);
         size_t len = (end == std::string::npos) ? std::string::npos : end - start;
         OovString splitStr = tempStr.substr(start, len);
         tokens.push_back(splitStr);
         start = (( end > (std::string::npos - delimLen)) ?
-        	std::string::npos : end + delimLen);
-	}
+                std::string::npos : end + delimLen);
+        }
     return tokens;
     }
 
@@ -326,25 +326,25 @@ OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters)
     size_t end = 0;
     size_t lowestEnd = 0;
     while(end != std::string::npos)
-	{
-	lowestEnd = std::string::npos;
-	size_t delimLen = std::string::npos;
-	for(auto const &delim : delimiters)
-	    {
-	    end = tempStr.find(delim, start);
-	    if(end < lowestEnd)
-		{
-		delimLen = strlen(delim.getStr());
-		lowestEnd = end;
-		}
-	    }
-	end = lowestEnd;
+        {
+        lowestEnd = std::string::npos;
+        size_t delimLen = std::string::npos;
+        for(auto const &delim : delimiters)
+            {
+            end = tempStr.find(delim, start);
+            if(end < lowestEnd)
+                {
+                delimLen = strlen(delim.getStr());
+                lowestEnd = end;
+                }
+            }
+        end = lowestEnd;
         size_t len = (end == std::string::npos) ? std::string::npos : end - start;
         OovString splitStr = tempStr.substr(start, len);
         tokens.push_back(splitStr);
         start = (( end > (std::string::npos - delimLen)) ?
-        	std::string::npos : end + delimLen);
-	}
+                std::string::npos : end + delimLen);
+        }
     return tokens;
     }
 
@@ -352,13 +352,13 @@ OovString StringJoin(OovStringVec const &tokens, char delimiter)
     {
     OovString str;
     for(size_t i=0; i<tokens.size(); i++)
-	{
-	str += tokens[i];
-	if(i < tokens.size()-1)
-	    {
-	    str += delimiter;
-	    }
-	}
+        {
+        str += tokens[i];
+        if(i < tokens.size()-1)
+            {
+            str += delimiter;
+            }
+        }
     return str;
     }
 
@@ -367,14 +367,14 @@ bool OovString::replaceStrs(OovStringRef const srchStr, OovStringRef const repSt
     size_t starti = 0;
     bool didReplace = false;
     do
-	{
-	starti = find(srchStr, starti);
-	if(starti != OovString::npos)
-	    {
-	    didReplace = true;
-	    std::string::replace(starti, strlen(srchStr), repStr);
-	    starti+=strlen(repStr.getStr());
-	    }
-	} while(starti != OovString::npos);
+        {
+        starti = find(srchStr, starti);
+        if(starti != OovString::npos)
+            {
+            didReplace = true;
+            std::string::replace(starti, strlen(srchStr), repStr);
+            starti+=strlen(repStr.getStr());
+            }
+        } while(starti != OovString::npos);
     return didReplace;
     }

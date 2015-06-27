@@ -15,11 +15,11 @@
 struct ComponentListItem
     {
     ComponentListItem()
-	{}
+        {}
     ComponentListItem(OovStringRef const compName, OovStringRef const modName,
-	    OovStringRef const path):
-	    mComponentName(compName), mModuleName(modName), mPathName(path)
-	{}
+            OovStringRef const path):
+            mComponentName(compName), mModuleName(modName), mPathName(path)
+        {}
     std::string mComponentName;
     std::string mModuleName;
     std::string mPathName;
@@ -29,23 +29,23 @@ struct ComponentListItem
 class ComponentList:public GuiTree
     {
     public:
-	void init(Builder &builder, OovStringRef const widgetName,
-		OovStringRef const title)
-	    {
-	    GuiTree::init(builder, widgetName, title);
-	    }
-	void clear()
-	    {
-	    mListMap.clear();
-	    GuiTree::clear();
-	    }
-	void updateComponentList();
-	std::string getSelectedFileName() const;
+        void init(Builder &builder, OovStringRef const widgetName,
+                OovStringRef const title)
+            {
+            GuiTree::init(builder, widgetName, title);
+            }
+        void clear()
+            {
+            mListMap.clear();
+            GuiTree::clear();
+            }
+        void updateComponentList();
+        std::string getSelectedFileName() const;
 
     private:
-	std::vector<ComponentListItem> mListMap;
+        std::vector<ComponentListItem> mListMap;
     };
 
 
 
-#endif /* CLASSLIST_H_ */
+#endif /* COMPONENTLIST_H_ */

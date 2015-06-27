@@ -30,21 +30,21 @@ static OovString makeTagName(OovStringRef const pkgName, OovStringRef const suff
     }
 
 static void setTagVal(NameValueFile &valFile, OovStringRef const name,
-	OovStringRef const suffix, OovStringRef const val)
+        OovStringRef const suffix, OovStringRef const val)
     {
     std::string tag = makeTagName(name, suffix);
     valFile.setNameValue(tag, val);
     }
 
 static OovString getTagVal(NameValueFile const &valFile, OovStringRef const name,
-	OovStringRef const suffix)
+        OovStringRef const suffix)
     {
     OovString tag = makeTagName(name, suffix);
     return valFile.getValue(tag);
     }
 
 static std::string makeRelative(std::string const &rootDir, OovStringRef const absPath,
-	eFilePathTypes fpt)
+        eFilePathTypes fpt)
     {
     FilePath fp(absPath, fpt);
 
@@ -52,25 +52,25 @@ static std::string makeRelative(std::string const &rootDir, OovStringRef const a
     std::string baseRootDir = rootDir;
     size_t pos = baseRootDir.find('!');
     if(pos != std::string::npos)
-	{
-	baseRootDir.erase(pos);
-	}
+        {
+        baseRootDir.erase(pos);
+        }
     // Remove any relative directory info.
     pos = baseRootDir.find('.');
     if(pos != std::string::npos)
-	{
-	baseRootDir.erase(pos);
-	}
+        {
+        baseRootDir.erase(pos);
+        }
 
     // Don't make relative directories higher than root.
     if(rootDir.length() > fp.length())
-	{
-	fp.clear();
-	}
+        {
+        fp.clear();
+        }
     else if(fp.compare(0, baseRootDir.length(), baseRootDir) == 0)
-	{
-	fp.erase(0, rootDir.length());
-	}
+        {
+        fp.erase(0, rootDir.length());
+        }
     return fp;
     }
 
@@ -78,27 +78,27 @@ static void appendStr(std::string &val, OovString const &str)
     {
     OovStringVec vec = CompoundValueRef::parseString(val);
     if(std::find(vec.begin(), vec.end(), str) == vec.end())
-	{
-	val += str;
-	val += ';';
-	}
+        {
+        val += str;
+        val += ';';
+        }
     }
 
 static OovString getPackageNameFromDir(OovStringRef const path)
     {
     FilePath clumpDir(path, FP_Dir);
     size_t pos = clumpDir.getPosLeftPathSep(clumpDir.getPosEndDir(),
-	    RP_RetPosNatural);
+            RP_RetPosNatural);
     std::string part = clumpDir.getPathSegment(pos);
     OovString clumpName;
 
     if(part.compare("lib") == 0)
-	{
-	pos = clumpDir.getPosLeftPathSep(pos, RP_RetPosNatural);
-	clumpName = clumpDir.getPathSegment(pos);
-	}
+        {
+        pos = clumpDir.getPosLeftPathSep(pos, RP_RetPosNatural);
+        clumpName = clumpDir.getPathSegment(pos);
+        }
     else
-	clumpName = part;
+        clumpName = part;
     return clumpName;
     }
 
@@ -108,9 +108,9 @@ static OovString getPackageNameFromDir(OovStringRef const path)
 void RootDirPackage::setRootDirPackage(OovStringRef const rootDir)
     {
     if(mName.length() == 0)
-	{
-	mName = getPackageNameFromDir(rootDir);
-	}
+        {
+        mName = getPackageNameFromDir(rootDir);
+        }
     mRootDir.setPath(rootDir, FP_Dir);
     }
 
@@ -119,12 +119,12 @@ bool RootDirPackage::addUndefinedPackage(OovString const &pkgName, NameValueFile
     CompoundValue pkgNames;
     pkgNames.parseString(file.getValue(TagPkgNames));
     bool add = std::find(pkgNames.begin(), pkgNames.end(), pkgName) ==
-	    pkgNames.end();
+            pkgNames.end();
     if(add)
-	{
-	pkgNames.push_back(pkgName);
-	file.setNameValue(TagPkgNames, pkgNames.getAsString());
-	}
+        {
+        pkgNames.push_back(pkgName);
+        file.setNameValue(TagPkgNames, pkgNames.getAsString());
+        }
     return add;
     }
 
@@ -166,31 +166,31 @@ void RootDirPackage::appendAbsoluteLibName(OovStringRef const fn)
     }
 
 void RootDirPackage::setOrderedLibs(OovStringVec const &libDirs,
-	OovStringVec const &libNames)
+        OovStringVec const &libNames)
     {
     mScannedLibFilePaths.clear();
     mLibDir.clear();
     for(auto const &dir : libDirs)
-	{
-	std::string fp = makeRelative(mRootDir, dir, FP_Dir);
-	appendStr(mLibDir, fp);
-	}
+        {
+        std::string fp = makeRelative(mRootDir, dir, FP_Dir);
+        appendStr(mLibDir, fp);
+        }
     mLibNames = CompoundValueRef::getAsString(libNames);
     }
 
 OovStringVec RootDirPackage::getValAddRootToVector(OovStringRef const val,
-	eFilePathTypes fpt) const
+        eFilePathTypes fpt) const
     {
     OovStringVec items;
     CompoundValue compVal;
     compVal.parseString(val);
     for(auto const &item : compVal)
-	{
-	FilePath fp(mRootDir, FP_Dir);
-	fp.appendPart(item, fpt);
-	FilePath::normalizePathSeps(fp);
-	items.push_back(fp);
-	}
+        {
+        FilePath fp(mRootDir, FP_Dir);
+        fp.appendPart(item, fpt);
+        FilePath::normalizePathSeps(fp);
+        items.push_back(fp);
+        }
     return items;
     }
 
@@ -208,9 +208,9 @@ OovStringVec RootDirPackage::getExtRefDirs() const
     {
     std::string extDir = mExternalReferenceDir;
     if(extDir.length() == 0 && needDirScan())
-	{
-	extDir = "./";
-	}
+        {
+        extDir = "./";
+        }
     return(getValAddRootToVector(extDir, FP_Dir));
     }
 
@@ -231,16 +231,16 @@ bool RootDirPackage::anyIncDirsMatch(std::set<std::string> const &incDirs) const
 
     std::vector<std::string> incRoots = getIncludeDirs();
     for(size_t ir=0; ir<incRoots.size() && !match; ir++)
-	{
-	for(auto const &incDir : incDirs)
-	    {
-	    if(incRoots[ir].compare(0, incRoots[ir].length(), incDir) == 0)
-		{
-		match = true;
-		break;
-		}
-	    }
-	}
+        {
+        for(auto const &incDir : incDirs)
+            {
+            if(incRoots[ir].compare(0, incRoots[ir].length(), incDir) == 0)
+                {
+                match = true;
+                break;
+                }
+            }
+        }
     return match;
     }
 */
@@ -293,10 +293,10 @@ void Packages::removePackage(OovString const &pkgName)
 
     auto const &pos = std::find(pkgNames.begin(), pkgNames.end(), pkgName);
     if(pos != pkgNames.end())
-	{
-	pkgNames.erase(pos);
-	mFile.setNameValue(TagPkgNames, pkgNames.getAsString());
-	}
+        {
+        pkgNames.erase(pos);
+        mFile.setNameValue(TagPkgNames, pkgNames.getAsString());
+        }
     /// @todo - this doesn't remove other junk related to the package.
     }
 
@@ -306,9 +306,9 @@ std::vector<Package> Packages::getPackages() const
     pkgNames.parseString(mFile.getValue(TagPkgNames));
     std::vector<Package> packages;
     for(std::string const &name : pkgNames)
-	{
-	packages.push_back(getPackage(name));
-	}
+        {
+        packages.push_back(getPackage(name));
+        }
     return packages;
     }
 
@@ -326,7 +326,7 @@ void Packages::read(OovStringRef const fn)
 ProjectPackages::ProjectPackages(bool readNow)
     {
     if(readNow)
-	read();
+        read();
     }
 
 OovString ProjectPackages::getFilename()
@@ -347,7 +347,7 @@ bool ProjectPackages::read()
 BuildPackages::BuildPackages(bool readNow)
     {
     if(readNow)
-	read();
+        read();
     }
 
 bool BuildPackages::read()
@@ -370,9 +370,9 @@ std::vector<Package> BuildPackages::getPackages() const
     pkgNames.parseString(mFile.getValue(TagPkgNames));
     std::vector<Package> packages;
     for(std::string const &name : pkgNames)
-	{
-	packages.push_back(getPackage(name));
-	}
+        {
+        packages.push_back(getPackage(name));
+        }
     return packages;
     }
 
@@ -391,7 +391,7 @@ OovStringVec AvailablePackages::getAvailablePackages()
     {
     OovStringVec strs;
     for(auto const &pkg : mPackages.getPackages())
-	strs.push_back(pkg.getPkgName());
+        strs.push_back(pkg.getPkgName());
     return strs;
     }
 

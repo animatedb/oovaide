@@ -89,54 +89,54 @@ class ScrolledFileView
 class EditFiles
     {
     public:
-	EditFiles(Debugger &debugger, EditOptions &editOptions);
-	void init(Builder &builder);
-	// This prevents a crash if called before the windows
-	// are shut down. See Tokenizer::~Tokenizer().
-	void closeAll();
-	void onIdle();
-	void updateDebugMenu();
-	/// Opens the specified file, along with the companion file. Ex: If a
-	/// source file is specified, then the header is also opened.
-	/// @param fn Full filename.
-	/// @param lineNum Line number of specified file.
-	void viewModule(OovStringRef const fn, int lineNum);
-	/// @param fn Full filename.
-	/// @param lineNum Line number of specified file.
-	void viewFile(OovStringRef const fn, int lineNum);
-	/// Go to the line number in the current view.
-	/// @param lineNum The line number to put the cursor on.
-	void gotoLine(int lineNum);
-	/// Displays a prompt if a buffer is modified.
-	/// return = true if it is ok to exit.
-	bool checkExitSave();
-	FileEditView *getEditView();
-	std::string getEditViewSelectedText();
-	// For signal handlers
-	void setFocusEditTextView(GtkTextView *editTextView);
-	/// Handles keys where the behavior is modified. The main keys are
-	/// related to indenting.
-	bool handleKeyPress(GdkEvent *event);
-	Debugger &getDebugger()
-	    { return mDebugger; }
-	/// Used by signal handler to close the page.
-	void removeNotebookPage(GtkWidget *pageWidget);
-	/// Displays an error if the debugger has not been setup in options.
-	bool checkDebugger();
-	void showInteractNotebookTab(char const * const tabName);
+        EditFiles(Debugger &debugger, EditOptions &editOptions);
+        void init(Builder &builder);
+        // This prevents a crash if called before the windows
+        // are shut down. See Tokenizer::~Tokenizer().
+        void closeAll();
+        void onIdle();
+        void updateDebugMenu();
+        /// Opens the specified file, along with the companion file. Ex: If a
+        /// source file is specified, then the header is also opened.
+        /// @param fn Full filename.
+        /// @param lineNum Line number of specified file.
+        void viewModule(OovStringRef const fn, int lineNum);
+        /// @param fn Full filename.
+        /// @param lineNum Line number of specified file.
+        void viewFile(OovStringRef const fn, int lineNum);
+        /// Go to the line number in the current view.
+        /// @param lineNum The line number to put the cursor on.
+        void gotoLine(int lineNum);
+        /// Displays a prompt if a buffer is modified.
+        /// return = true if it is ok to exit.
+        bool checkExitSave();
+        FileEditView *getEditView();
+        std::string getEditViewSelectedText();
+        // For signal handlers
+        void setFocusEditTextView(GtkTextView *editTextView);
+        /// Handles keys where the behavior is modified. The main keys are
+        /// related to indenting.
+        bool handleKeyPress(GdkEvent *event);
+        Debugger &getDebugger()
+            { return mDebugger; }
+        /// Used by signal handler to close the page.
+        void removeNotebookPage(GtkWidget *pageWidget);
+        /// Displays an error if the debugger has not been setup in options.
+        bool checkDebugger();
+        void showInteractNotebookTab(char const * const tabName);
         ScrolledFileView *getScrolledFileView(GtkTextView *textView);
 
     private:
-	EditOptions &mEditOptions;
-	GtkNotebook *mHeaderBook;
-	GtkNotebook *mSourceBook;
-	Builder *mBuilder;
-	std::vector<std::unique_ptr<ScrolledFileView>> mFileViews;
-	GtkTextView *mLastFocusGtkTextView;
-	Debugger &mDebugger;
-	timeval mLastHightlightIdleUpdate;
-	void idleHighlight();
-	int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
+        EditOptions &mEditOptions;
+        GtkNotebook *mHeaderBook;
+        GtkNotebook *mSourceBook;
+        Builder *mBuilder;
+        std::vector<std::unique_ptr<ScrolledFileView>> mFileViews;
+        GtkTextView *mLastFocusGtkTextView;
+        Debugger &mDebugger;
+        timeval mLastHightlightIdleUpdate;
+        void idleHighlight();
+        int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
     };
 
 

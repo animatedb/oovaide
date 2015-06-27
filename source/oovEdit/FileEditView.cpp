@@ -70,12 +70,12 @@ static bool isInsertableC(int key)
 static bool isListKey(int key)
     {
     return(key == GDK_KEY_Down || key == GDK_KEY_Up ||
-	    key == GDK_KEY_KP_Down || key == GDK_KEY_KP_Up ||
-	    key == GDK_KEY_Home || key == GDK_KEY_KP_Home ||
-	    key == GDK_KEY_End || key == GDK_KEY_KP_End ||
-	    key == GDK_KEY_Page_Up || key == GDK_KEY_KP_Page_Up ||
-	    key == GDK_KEY_Page_Down || key == GDK_KEY_KP_Page_Down ||
-	    key == GDK_KEY_Return);
+            key == GDK_KEY_KP_Down || key == GDK_KEY_KP_Up ||
+            key == GDK_KEY_Home || key == GDK_KEY_KP_Home ||
+            key == GDK_KEY_End || key == GDK_KEY_KP_End ||
+            key == GDK_KEY_Page_Up || key == GDK_KEY_KP_Page_Up ||
+            key == GDK_KEY_Page_Down || key == GDK_KEY_KP_Page_Down ||
+            key == GDK_KEY_Return);
     }
 
 static inline bool isControlKey(int key)
@@ -94,8 +94,8 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
     sCurrentCompleteList = this;
     bool getCompletionData = false;
     if((key == '.' || (mLastNonModifierKey == '-' && key == '>')) ||
-	(key == ' ' && isControlKey(mLastKey))
-	    )
+        (key == ' ' && isControlKey(mLastKey))
+            )
         {
         getCompletionData = true;
         mCompletionTriggerPointOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
@@ -133,12 +133,12 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
 
 /*
  * Classes of keys:
- * 	List control keys (arrows, return)	!quit list,	!modify editbuf,	list movement,
- * 	Modifier keys (shift)			!quit list,	!modify editbuf,
- * 	Delete/backspace			!quit list, 	modify editbuf
- * 	Non-insertable (esc)			quit list,	!modify editbuf
- * 	punctuation (parens, comma)		quit list,	modify editbuf
- *	identifiers				!quit list,	modify editbuf
+ *      List control keys (arrows, return)      !quit list,     !modify editbuf,        list movement,
+ *      Modifier keys (shift)                   !quit list,     !modify editbuf,
+ *      Delete/backspace                        !quit list,     modify editbuf
+ *      Non-insertable (esc)                    quit list,      !modify editbuf
+ *      punctuation (parens, comma)             quit list,      modify editbuf
+ *      identifiers                             !quit list,     modify editbuf
  */
 /// @todo - Need to handle searching list
 /// @todo - Need to position completion window
@@ -355,8 +355,8 @@ void FileEditView::init(GtkTextView *textView)
           G_CALLBACK(signalBufferInsertText), NULL);
     g_signal_connect(G_OBJECT(mTextBuffer), "delete-range",
           G_CALLBACK(signalBufferDeleteRange), NULL);
-//	    g_signal_connect(G_OBJECT(mBuilder.getWidget("EditTextScrolledwindow")),
-//		    "scroll-child", G_CALLBACK(scrollChild), NULL);
+//          g_signal_connect(G_OBJECT(mBuilder.getWidget("EditTextScrolledwindow")),
+//                  "scroll-child", G_CALLBACK(scrollChild), NULL);
     g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), this);
     }
 
@@ -434,8 +434,8 @@ void FileEditView::highlightRequest()
     {
     if(mFileName.length())
         {
-    //	int numArgs = 0;
-    //	char const * cppArgv[40];
+    //  int numArgs = 0;
+    //  char const * cppArgv[40];
         OovProcessChildArgs cppArgs;
         getCppArgs(mFileName, cppArgs);
 
@@ -460,15 +460,15 @@ void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
     GtkTextMark *mark = gtk_text_buffer_get_insert(mTextBuffer);
     if(mark)
         {
-//		The solution involves creating an idle proc (which is a procedure which
-//		GTK will call when it has nothing else to do until told otherwise by the
-//		return value of this procedure). In that idle proc the source view is
-//		scrolled constantly, until it is determined that the source view has in
-//		fact scrolled to the location desired. This was accomplished by using a couple of nice functions:
-//		    gtk_get_iter_location to get the location of the cursor.
-//		    gtk_text_view_get_visible_rect to get the rectangle of the visible part of the document in the source view.
-//		    gtk_intersect to check whether the cursor is in the visible rectangle.
-//		gtk_text_buffer_get_iter_at_mark(mTextBuffer, &iter, mark);
+//              The solution involves creating an idle proc (which is a procedure which
+//              GTK will call when it has nothing else to do until told otherwise by the
+//              return value of this procedure). In that idle proc the source view is
+//              scrolled constantly, until it is determined that the source view has in
+//              fact scrolled to the location desired. This was accomplished by using a couple of nice functions:
+//                  gtk_get_iter_location to get the location of the cursor.
+//                  gtk_text_view_get_visible_rect to get the rectangle of the visible part of the document in the source view.
+//                  gtk_intersect to check whether the cursor is in the visible rectangle.
+//              gtk_text_buffer_get_iter_at_mark(mTextBuffer, &iter, mark);
 
         GtkTextIter tempEndIter = startIter;
         if(endIter)
@@ -489,7 +489,7 @@ bool FileEditView::saveAsTextFileWithDialog()
     prompt += mFileName;
     prompt += " As";
     if(ch.ChoosePath(GTK_WINDOW(mTextView), prompt,
-	    GTK_FILE_CHOOSER_ACTION_SAVE, filename))
+            GTK_FILE_CHOOSER_ACTION_SAVE, filename))
         {
         saved = saveAsTextFile(filename);
         }
@@ -559,7 +559,7 @@ bool FileEditView::find(char const * const findStr, bool forward, bool caseSensi
     GtkTextIter startMatch;
     GtkTextIter endMatch;
     GtkTextSearchFlags flags = static_cast<GtkTextSearchFlags>(GTK_TEXT_SEARCH_TEXT_ONLY |
-		GTK_TEXT_SEARCH_VISIBLE_ONLY);
+                GTK_TEXT_SEARCH_VISIBLE_ONLY);
     if(!caseSensitive)
         {
         flags = static_cast<GtkTextSearchFlags>(flags | GTK_TEXT_SEARCH_CASE_INSENSITIVE);
@@ -599,7 +599,7 @@ std::string FileEditView::getSelectedText()
     }
 
 bool FileEditView::findAndReplace(char const * const findStr, bool forward,
-	bool caseSensitive, char const * const replaceStr)
+        bool caseSensitive, char const * const replaceStr)
     {
     GtkTextIter startSel;
     GtkTextIter endSel;
@@ -653,7 +653,7 @@ bool FileEditView::idleHighlight()
     {
     bool foundToken = false;
     eHighlightTask task = mHighlighter.highlightUpdate(mTextView, getBuffer(),
-		gtk_text_buffer_get_char_count(mTextBuffer));
+                gtk_text_buffer_get_char_count(mTextBuffer));
     if(task & HT_FindToken)
         {
         foundToken = true;
@@ -678,7 +678,7 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
         }
     switch(event->key.keyval)
         {
-        case '>':	// Checking for "->"
+        case '>':       // Checking for "->"
         case '.':
             {
 #if(!CODE_COMPLETE)
@@ -704,7 +704,7 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
             }
             break;
 
-        case GDK_KEY_ISO_Left_Tab:	// This is shift tab on PC
+        case GDK_KEY_ISO_Left_Tab:      // This is shift tab on PC
             // On Windows, modKeys==0, on Linux, modKeys==GDK_SHIFT_MASK
             if(event->key.state == GDK_SHIFT_MASK || modKeys == 0 ||
                 modKeys == GDK_SHIFT_MASK)
@@ -751,7 +751,7 @@ extern "C" G_MODULE_EXPORT void on_CompletionListTreeview_row_activated(GtkWidge
     }
 
 extern "C" G_MODULE_EXPORT bool on_CompletionListTreeview_key_press_event(
-	GtkWidget *widget, GdkEvent *event, gpointer user_data)
+        GtkWidget *widget, GdkEvent *event, gpointer user_data)
     {
     int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
     return sCurrentCompleteList->handleListKey(event->key.keyval, modKeys);

@@ -15,18 +15,18 @@
 class ProjectSettingsDialog: public Dialog
     {
     public:
-	ProjectSettingsDialog(GtkWindow *parentWindow, bool newProject);
+        ProjectSettingsDialog(GtkWindow *parentWindow, bool newProject);
         virtual ~ProjectSettingsDialog();
-	bool runDialog();
-	CompoundValue const &getExcludeDirs() const
-	    { return mExcludeDirs; }
-	OovString const &getProjectDir() const
-	    { return mProjectDir; }
+        bool runDialog();
+        CompoundValue const &getExcludeDirs() const
+            { return mExcludeDirs; }
+        OovString const &getProjectDir() const
+            { return mProjectDir; }
 
     private:
-	CompoundValue mExcludeDirs;
-	OovString mProjectDir;
-	bool mNewProject;
+        CompoundValue mExcludeDirs;
+        OovString mProjectDir;
+        bool mNewProject;
     };
 
 

@@ -43,9 +43,9 @@ bool OovThreadedBackgroundQueuePrivate::waitPopPrivate(void *item)
         }
 
     if(mQuitPopping)
-	{
-	clear();
-	}
+        {
+        clear();
+        }
 
     // In the normal case this will not be empty.
     // If it is empty, then there was a signal, but nothing was
@@ -54,7 +54,7 @@ bool OovThreadedBackgroundQueuePrivate::waitPopPrivate(void *item)
     LOG_PROC_INT("pop got item", this, gotItem);
     if(gotItem)
         {
-	getFront(item);
+        getFront(item);
         }
 
     LOG_PROC_INT("pop unlock", this, gotItem);

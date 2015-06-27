@@ -10,19 +10,19 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #ifdef __linux__
-#include <sys/file.h>	// for flock
+#include <sys/file.h>   // for flock
 #else
 #include <share.h>
-#include <io.h>		// For _sopen_s - in Windows, mingw-builds is required.
+#include <io.h>         // For _sopen_s - in Windows, mingw-builds is required.
 #endif
 #include <errno.h>
 
 
 // Can't include OovProcess because some projects don't use glib.
 #ifdef __linux__
-#include <unistd.h>	// for usleep
+#include <unistd.h>     // for usleep
 #else
-#include <windows.h>	// for Sleep
+#include <windows.h>    // for Sleep
 #endif
 static void sleepMs(int ms)
     {
@@ -38,9 +38,9 @@ void File::truncate(int size)
     {
 #ifdef __linux__
     if(ftruncate(fileno(mFp), size) != 0)
-	{
-	DebugAssert(__FILE__, __LINE__);
-	}
+        {
+        DebugAssert(__FILE__, __LINE__);
+        }
 #else
     _chsize(fileno(mFp), size);
 #endif
@@ -54,69 +54,69 @@ eOpenStatus BaseSimpleFile::open(OovStringRef const fn, eOpenModes mode, eOpenEn
     int lockStat;
     int flags;
     if(mode == M_ReadShared)
-	{
-	flags = O_RDONLY;
-	}
+        {
+        flags = O_RDONLY;
+        }
     else
-	{
-	flags = O_CREAT | O_RDWR;
-	if(mode == M_ReadWriteExclusiveAppend)
-	    flags |= O_APPEND;
-	}
+        {
+        flags = O_CREAT | O_RDWR;
+        if(mode == M_ReadWriteExclusiveAppend)
+            flags |= O_APPEND;
+        }
     // Set permissions for new file so that user/group/others have access for read/write/exec.
     mFd = ::open(fn, flags, S_IRWXU | S_IRWXG | S_IRWXO);
     if(mFd != -1)
-	lockStat = flock(mFd, LOCK_EX);
+        lockStat = flock(mFd, LOCK_EX);
     if(mFd == -1)
-	{
-	status = OS_NoFile;
-	}
+        {
+        status = OS_NoFile;
+        }
     else if(lockStat == 0)
-	{
-	status = OS_Opened;
-	}
+        {
+        status = OS_Opened;
+        }
 #else
 
     int openFlags = 0;
     int sharedFlags = 0;
     int permissionFlags = _S_IREAD | _S_IWRITE;
     if(mode == M_ReadShared)
-	{
-	openFlags = _O_RDONLY;
-	sharedFlags = _SH_DENYWR;
-	}
+        {
+        openFlags = _O_RDONLY;
+        sharedFlags = _SH_DENYWR;
+        }
     else if(mode == M_WriteExclusiveTrunc)
-	{
-	openFlags = _O_CREAT | _O_WRONLY | _O_TRUNC;
-	sharedFlags = _SH_DENYRW;
-	}
+        {
+        openFlags = _O_CREAT | _O_WRONLY | _O_TRUNC;
+        sharedFlags = _SH_DENYRW;
+        }
     else
-	{
-	// Creates if it doesn't exist.
-	openFlags = _O_CREAT | _O_RDWR;
-	sharedFlags = _SH_DENYRW;
-	if(mode == M_ReadWriteExclusiveAppend)
-	    openFlags |= _O_APPEND;
-	}
+        {
+        // Creates if it doesn't exist.
+        openFlags = _O_CREAT | _O_RDWR;
+        sharedFlags = _SH_DENYRW;
+        if(mode == M_ReadWriteExclusiveAppend)
+            openFlags |= _O_APPEND;
+        }
     if(oe == OE_Text)
-	openFlags |= _O_TEXT;
+        openFlags |= _O_TEXT;
     else
-	openFlags |= _O_BINARY;
+        openFlags |= _O_BINARY;
     _sopen_s(&mFd, fn, openFlags, sharedFlags, permissionFlags);
     if(mFd == -1)
-	{
-	switch(errno)
-	    {
-	    case ENOENT:	status = OS_NoFile;		break;
-//	    case EACCES:	status = OS_SharingProblem;	break;
-//	    default:		status = OS_OtherError;		break;
-	    default:		status = OS_SharingProblem;	break;
-	    }
-	}
+        {
+        switch(errno)
+            {
+            case ENOENT:        status = OS_NoFile;             break;
+//          case EACCES:        status = OS_SharingProblem;     break;
+//          default:            status = OS_OtherError;         break;
+            default:            status = OS_SharingProblem;     break;
+            }
+        }
     else
-	{
-	status = OS_Opened;
-	}
+        {
+        status = OS_Opened;
+        }
 #endif
     return status;
     }
@@ -172,23 +172,23 @@ void BaseSimpleFile::truncate(int size)
     {
 #ifdef __linux__
     if(ftruncate(mFd, size) != 0)
-	{
-	DebugAssert(__FILE__, __LINE__);
-	}
+        {
+        DebugAssert(__FILE__, __LINE__);
+        }
 #else
     _chsize(mFd, size);
 #endif
     }
 
 eOpenStatus SharedFile::open(OovStringRef const fn, eOpenModes mode,
-	eOpenEndings oe)
+        eOpenEndings oe)
     {
     eOpenStatus status = OS_SharingProblem;
     for(int i=0; i<50 && status == OS_SharingProblem; i++)
-	{
-	status = BaseSimpleFile::open(fn, mode, oe);
-	if(status == OS_SharingProblem)
-	    sleepMs(100);
-	}
+        {
+        status = BaseSimpleFile::open(fn, mode, oe);
+        if(status == OS_SharingProblem)
+            sleepMs(100);
+        }
     return status;
     }

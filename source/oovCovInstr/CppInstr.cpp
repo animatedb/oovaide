@@ -14,7 +14,7 @@
 #define __NO_MINGW_LFS 1
 // Prevent "error: 'off_t' has not been declared"
 #define off_t _off_t
-#include <unistd.h>		// for unlink
+#include <unistd.h>             // for unlink
 #include <limits.h>
 #include <algorithm>
 #include "clang-c/Index.h"
@@ -35,15 +35,15 @@ std::string getFirstNonCommentToken(CXCursor cursor)
     clang_tokenize(tu, range, &tokens, &nTokens);
     std::string str;
     for (size_t i = 0; i < nTokens; i++)
-	{
-	CXTokenKind kind = clang_getTokenKind(tokens[i]);
-	if(kind != CXToken_Comment)
-	    {
-	    CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
-	    str += spelling;
-	    break;
-	    }
-	}
+        {
+        CXTokenKind kind = clang_getTokenKind(tokens[i]);
+        if(kind != CXToken_Comment)
+            {
+            CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
+            str += spelling;
+            break;
+            }
+        }
     clang_disposeTokens(tu, tokens, nTokens);
     return str;
     }
@@ -57,46 +57,46 @@ void appendCursorTokenString(CXCursor cursor, std::string &str)
     CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
     clang_tokenize(tu, range, &tokens, &nTokens);
     for (size_t i = 0; i < nTokens; i++)
-	{
-	CXTokenKind kind = clang_getTokenKind(tokens[i]);
-	if(kind != CXToken_Comment)
-	    {
-	    if(str.length() != 0)
-		str += " ";
-	    CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
-	    str += spelling;
-	    }
-	}
+        {
+        CXTokenKind kind = clang_getTokenKind(tokens[i]);
+        if(kind != CXToken_Comment)
+            {
+            if(str.length() != 0)
+                str += " ";
+            CXStringDisposer spelling = clang_getTokenSpelling(tu, tokens[i]);
+            str += spelling;
+            }
+        }
     clang_disposeTokens(tu, tokens, nTokens);
     }
 
 static void dumpCursor(FILE *fp, char const * const str, CXCursor cursor)
     {
     if(fp)
-	{
-	CXStringDisposer name(clang_getCursorSpelling(cursor));
-	CXStringDisposer spstr = clang_getCursorKindSpelling(clang_getCursorKind(cursor));
-	std::string tokenStr;
-	appendCursorTokenString(cursor, tokenStr);
-	if(tokenStr.length() > 100)
-	    {
-	    tokenStr.resize(100);
-	    tokenStr += "...";
-	    }
+        {
+        CXStringDisposer name(clang_getCursorSpelling(cursor));
+        CXStringDisposer spstr = clang_getCursorKindSpelling(clang_getCursorKind(cursor));
+        std::string tokenStr;
+        appendCursorTokenString(cursor, tokenStr);
+        if(tokenStr.length() > 100)
+            {
+            tokenStr.resize(100);
+            tokenStr += "...";
+            }
 
-	fprintf(fp, "%s: %s %s   %s\n", str, spstr.c_str(), name.c_str(), tokenStr.c_str());
-	fflush(fp);
-	}
+        fprintf(fp, "%s: %s %s   %s\n", str, spstr.c_str(), name.c_str(), tokenStr.c_str());
+        fflush(fp);
+        }
     }
 
 #if(DEBUG_PARSE)
 void debugInstr(CXCursor cursor, char const * const str, int instrCount)
     {
     if(instrCount == 9)
-	{
-	printf("Found: %d\n", instrCount);
-	fprintf(sLog.mFp, "Found: %d\n", instrCount);
-	}
+        {
+        printf("Found: %d\n", instrCount);
+        fprintf(sLog.mFp, "Found: %d\n", instrCount);
+        }
     fprintf(sLog.mFp, "INSTR: ");
     dumpCursor(sLog.mFp, str, cursor);
     }
@@ -117,16 +117,16 @@ bool CppFileContents::read(char const *fn)
     bool success = false;
     SimpleFile file(fn, M_ReadWriteExclusive, OE_Binary);
     if(file.isOpen())
-	{
-	int size = file.getSize();
-	mFileContents.resize(size);
-	int actual = 0;
-	success = file.read(mFileContents.data(), size, actual);
-	}
+        {
+        int size = file.getSize();
+        mFileContents.resize(size);
+        int actual = 0;
+        success = file.read(mFileContents.data(), size, actual);
+        }
     if(!success)
-	{
-	fprintf(stderr, "Unable to read %s\n", fn);
-	}
+        {
+        fprintf(stderr, "Unable to read %s\n", fn);
+        }
     return success;
     }
 
@@ -135,18 +135,18 @@ bool CppFileContents::write(OovStringRef const fn)
     SimpleFile file(fn, M_WriteExclusiveTrunc, OE_Binary);
     bool success = false;
     if(file.isOpen())
-	{
-	OovString includeCov = "#include \"OovCoverage.h\"";
-	appendLineEnding(includeCov);
-	updateMemory();
-	file.write(includeCov.c_str(), includeCov.length());
-	success = file.write(mFileContents.data(), mFileContents.size());
-	}
+        {
+        OovString includeCov = "#include \"OovCoverage.h\"";
+        appendLineEnding(includeCov);
+        updateMemory();
+        file.write(includeCov.c_str(), includeCov.length());
+        success = file.write(mFileContents.data(), mFileContents.size());
+        }
     if(!success)
-	{
-	char const * const fnp = fn;
-	fprintf(stderr, "Unable to write %s\n", fnp);
-	}
+        {
+        char const * const fnp = fn;
+        fprintf(stderr, "Unable to write %s\n", fnp);
+        }
     return success;
     }
 
@@ -154,21 +154,21 @@ void CppFileContents::updateMemory()
     {
     int numInsertedBytes = 0;
     for(auto &mapIter : mInsertMap)
-	{
-	std::vector<char> strVec;
-	int strLen = mapIter.second.length();
-	for(int i=0; i<strLen; i++)
-	    {
-	    strVec.push_back(mapIter.second[i]);
-	    }
-	size_t offset = numInsertedBytes + mapIter.first;
-	if(offset < mFileContents.size())
-	    {
-	    mFileContents.insert(mFileContents.begin() + offset,
-		strVec.begin(), strVec.end());
-	    }
-	numInsertedBytes += strLen;
-	}
+        {
+        std::vector<char> strVec;
+        int strLen = mapIter.second.length();
+        for(int i=0; i<strLen; i++)
+            {
+            strVec.push_back(mapIter.second[i]);
+            }
+        size_t offset = numInsertedBytes + mapIter.first;
+        if(offset < mFileContents.size())
+            {
+            mFileContents.insert(mFileContents.begin() + offset,
+                strVec.begin(), strVec.end());
+            }
+        numInsertedBytes += strLen;
+        }
     }
 
 void CppFileContents::insert(OovStringRef const str, int origFileOffset)
@@ -181,52 +181,52 @@ void CppFileContents::insert(OovStringRef const str, int origFileOffset)
 class cCrashDiagnostics
     {
     public:
-	cCrashDiagnostics():
-	    mCrashed(false)
-	    {}
-	void saveMostRecentParseLocation(char const * const diagStr, CXCursor cursor)
-	    {
-	    mDiagStr = diagStr;
-	    mMostRecentCursor = cursor;
+        cCrashDiagnostics():
+            mCrashed(false)
+            {}
+        void saveMostRecentParseLocation(char const * const diagStr, CXCursor cursor)
+            {
+            mDiagStr = diagStr;
+            mMostRecentCursor = cursor;
 #if(DEBUG_DUMP_CURSORS)
-	    dumpCursor(sLog.mFp, diagStr, cursor);
+            dumpCursor(sLog.mFp, diagStr, cursor);
 #endif
-	    }
-	void setCrashed()
-	    { mCrashed = true; }
-	bool hasCrashed() const
-	    { return mCrashed; }
-	void dumpCrashed(FILE *fp)
-	    {
-	    if(mCrashed)
-		{
-		fprintf(fp, "CRASHED: %s\n", mDiagStr.c_str());
-		try
-		    {
-		    dumpCursor(fp, "", mMostRecentCursor);
-		    }
-		catch(...)
-		    {
-		    }
-		}
-	    }
+            }
+        void setCrashed()
+            { mCrashed = true; }
+        bool hasCrashed() const
+            { return mCrashed; }
+        void dumpCrashed(FILE *fp)
+            {
+            if(mCrashed)
+                {
+                fprintf(fp, "CRASHED: %s\n", mDiagStr.c_str());
+                try
+                    {
+                    dumpCursor(fp, "", mMostRecentCursor);
+                    }
+                catch(...)
+                    {
+                    }
+                }
+            }
     private:
-	bool mCrashed;
-	std::string mDiagStr;
-	CXCursor mMostRecentCursor;
+        bool mCrashed;
+        std::string mDiagStr;
+        CXCursor mMostRecentCursor;
     };
 static cCrashDiagnostics sCrashDiagnostics;
 
 
 static CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent,
-	CXClientData client_data)
+        CXClientData client_data)
     {
     CppInstr *parser = static_cast<CppInstr*>(client_data);
     return parser->visitTranslationUnit(cursor, parent);
     }
 
 static CXChildVisitResult visitFunctionAddInstr(CXCursor cursor, CXCursor parent,
-	CXClientData client_data)
+        CXClientData client_data)
     {
     CppInstr *parser = static_cast<CppInstr*>(client_data);
     return parser->visitFunctionAddInstr(cursor, parent);
@@ -290,25 +290,25 @@ bool CppInstr::isParseFile(CXFile const &file) const
 struct ChildCountVisitor
 {
     ChildCountVisitor(int count):
-	mCount(count)
-	{
-	mFoundCursor = clang_getNullCursor();
-	}
+        mCount(count)
+        {
+        mFoundCursor = clang_getNullCursor();
+        }
     int mCount;
     CXCursor mFoundCursor;
 };
 static CXChildVisitResult ChildNthVisitor(CXCursor cursor, CXCursor parent,
-	CXClientData client_data)
+        CXClientData client_data)
     {
     ChildCountVisitor *context = static_cast<ChildCountVisitor*>(client_data);
     CXChildVisitResult res = CXChildVisit_Continue;
     if(context->mCount == 0)
-	{
-	context->mFoundCursor = cursor;
-	res = CXChildVisit_Break;
-	}
+        {
+        context->mFoundCursor = cursor;
+        res = CXChildVisit_Break;
+        }
     else
-	context->mCount--;
+        context->mCount--;
     return res;
     }
 
@@ -318,19 +318,19 @@ static CXCursor getNthChildCursor(CXCursor cursor, int nth)
     clang_visitChildren(cursor, ChildNthVisitor, &visitorData);
     CXCursor childCursor = clang_getNullCursor();
     if(visitorData.mCount == 0)
-	childCursor = visitorData.mFoundCursor;
+        childCursor = visitorData.mFoundCursor;
     return childCursor;
     }
 /*
 static CXChildVisitResult ChildInstrNonCompoundVisitor(CXCursor cursor, CXCursor parent,
-	CXClientData client_data)
+        CXClientData client_data)
     {
     CppInstr *context = static_cast<CppInstr*>(client_data);
     CXCursorKind cursKind = clang_getCursorKind(cursor);
     if(clang_isStatement(cursKind))
-	{
-	context->insertNonCompoundInstr(cursor);
-	}
+        {
+        context->insertNonCompoundInstr(cursor);
+        }
     return CXChildVisit_Continue;
     }
 
@@ -343,42 +343,42 @@ void CppInstr::instrChildNonCompoundStatements(CXCursor cursor)
 void CppInstr::insertNonCompoundInstr(CXCursor cursor)
     {
     if(!clang_Cursor_isNull(cursor))
-	{
-	CXCursorKind cursKind = clang_getCursorKind(cursor);
+        {
+        CXCursorKind cursKind = clang_getCursorKind(cursor);
 // return statements that are children of if statements must be instrumented
 // if not in a compound statement.
-//	if(cursKind != CXCursor_CompoundStmt /*&& clang_isStatement(cursKind)*/)
+//      if(cursKind != CXCursor_CompoundStmt /*&& clang_isStatement(cursKind)*/)
 
-	// If this is a compound statement, then it will be instrumented anyway.
-	if(cursKind != CXCursor_CompoundStmt)
-	    {
-	    bool doInstr = true;
-	    // There is sometimes a parsing error where a null statement is returned.
-	    // This occurs when all headers are not included or defines are not proper?
-	    if(cursKind == CXCursor_NullStmt)
-		{
-		CXStringDisposer name(clang_getCursorSpelling(cursor));
-		if(name[0] != ';')
-		    {
-		    SourceLocation loc(cursor);
-		    fprintf(stderr, "Unable to instrument line %d\n", loc.getLine());
-		    doInstr = false;
-		    }
-		}
-	    if(doInstr)
-		{
+        // If this is a compound statement, then it will be instrumented anyway.
+        if(cursKind != CXCursor_CompoundStmt)
+            {
+            bool doInstr = true;
+            // There is sometimes a parsing error where a null statement is returned.
+            // This occurs when all headers are not included or defines are not proper?
+            if(cursKind == CXCursor_NullStmt)
+                {
+                CXStringDisposer name(clang_getCursorSpelling(cursor));
+                if(name[0] != ';')
+                    {
+                    SourceLocation loc(cursor);
+                    fprintf(stderr, "Unable to instrument line %d\n", loc.getLine());
+                    doInstr = false;
+                    }
+                }
+            if(doInstr)
+                {
 #if(DEBUG_PARSE)
-		debugInstr(cursor, "insertNCI", mInstrCount);
+                debugInstr(cursor, "insertNCI", mInstrCount);
 #endif
-		SourceRange range(cursor);
-		OovString covStr;
-		makeCovInstr(covStr);
-		covStr.insert(0, "{");
-		insertOutputText(covStr, range.getStartLocation().getOffset());
-		insertOutputText("\n}\n", range.getEndLocation().getOffset()+1);
-		}
-	    }
-	}
+                SourceRange range(cursor);
+                OovString covStr;
+                makeCovInstr(covStr);
+                covStr.insert(0, "{");
+                insertOutputText(covStr, range.getStartLocation().getOffset());
+                insertOutputText("\n}\n", range.getEndLocation().getOffset()+1);
+                }
+            }
+        }
     }
 
 
@@ -389,126 +389,126 @@ CXChildVisitResult CppInstr::visitFunctionAddInstr(CXCursor cursor, CXCursor par
     static int level = 0;
     level++;
     for(int i=0; i<level; i++)
-	fprintf(sLog.mFp, "  ");
+        fprintf(sLog.mFp, "  ");
 #endif
 
     sCrashDiagnostics.saveMostRecentParseLocation("FV", cursor);
     CXCursorKind cursKind = clang_getCursorKind(cursor);
     switch(cursKind)
-	{
-	case CXCursor_DoStmt:
-	    if(isParseFile(cursor))
-		{
-		insertNonCompoundInstr(getNthChildCursor(cursor, 0));
-		}
-	    break;
+        {
+        case CXCursor_DoStmt:
+            if(isParseFile(cursor))
+                {
+                insertNonCompoundInstr(getNthChildCursor(cursor, 0));
+                }
+            break;
 
-	case CXCursor_WhileStmt:
-	    if(isParseFile(cursor))
-		{
-		insertNonCompoundInstr(getNthChildCursor(cursor, 1));
-		}
-	    break;
+        case CXCursor_WhileStmt:
+            if(isParseFile(cursor))
+                {
+                insertNonCompoundInstr(getNthChildCursor(cursor, 1));
+                }
+            break;
 
-	case CXCursor_CXXForRangeStmt:
-	    if(isParseFile(cursor))
-		{
-		insertNonCompoundInstr(getNthChildCursor(cursor, 5));
-		}
-	    break;
+        case CXCursor_CXXForRangeStmt:
+            if(isParseFile(cursor))
+                {
+                insertNonCompoundInstr(getNthChildCursor(cursor, 5));
+                }
+            break;
 
-	case CXCursor_ForStmt:
-	    if(isParseFile(cursor))
-		{
-		insertNonCompoundInstr(getNthChildCursor(cursor, 3));
-		}
-	    break;
+        case CXCursor_ForStmt:
+            if(isParseFile(cursor))
+                {
+                insertNonCompoundInstr(getNthChildCursor(cursor, 3));
+                }
+            break;
 
-	case CXCursor_CaseStmt:
-	    if(isParseFile(cursor))
-		{
-		CXCursor childCursor = getNthChildCursor(cursor, 1);
-		CXCursorKind childCursKind = clang_getCursorKind(childCursor);
-		if(childCursKind != CXCursor_CaseStmt && childCursKind != CXCursor_DefaultStmt)
-		    {
-		    insertNonCompoundInstr(childCursor);
-		    }
-		}
-	    break;
+        case CXCursor_CaseStmt:
+            if(isParseFile(cursor))
+                {
+                CXCursor childCursor = getNthChildCursor(cursor, 1);
+                CXCursorKind childCursKind = clang_getCursorKind(childCursor);
+                if(childCursKind != CXCursor_CaseStmt && childCursKind != CXCursor_DefaultStmt)
+                    {
+                    insertNonCompoundInstr(childCursor);
+                    }
+                }
+            break;
 
-	case CXCursor_DefaultStmt:
-	    if(isParseFile(cursor))
-		{
-		CXCursor childCursor = getNthChildCursor(cursor, 0);
-		CXCursorKind childCursKind = clang_getCursorKind(childCursor);
-		if(childCursKind != CXCursor_CaseStmt && childCursKind != CXCursor_DefaultStmt)
-		    {
-		    insertNonCompoundInstr(childCursor);
-		    }
-		}
-	    break;
+        case CXCursor_DefaultStmt:
+            if(isParseFile(cursor))
+                {
+                CXCursor childCursor = getNthChildCursor(cursor, 0);
+                CXCursorKind childCursKind = clang_getCursorKind(childCursor);
+                if(childCursKind != CXCursor_CaseStmt && childCursKind != CXCursor_DefaultStmt)
+                    {
+                    insertNonCompoundInstr(childCursor);
+                    }
+                }
+            break;
 
-	case CXCursor_IfStmt:
-	    // An if statement has up to 3 children, test expr, if body, else body
-	    // The else body can be an if statement.
-	    if(isParseFile(cursor))
-		{
-		insertNonCompoundInstr(getNthChildCursor(cursor, 1));
-		CXCursor childCursor = getNthChildCursor(cursor, 2);
-		CXCursorKind childCursKind = clang_getCursorKind(childCursor);
-		if(childCursKind != CXCursor_IfStmt)
-		    insertNonCompoundInstr(childCursor);
-		}
-	    break;
+        case CXCursor_IfStmt:
+            // An if statement has up to 3 children, test expr, if body, else body
+            // The else body can be an if statement.
+            if(isParseFile(cursor))
+                {
+                insertNonCompoundInstr(getNthChildCursor(cursor, 1));
+                CXCursor childCursor = getNthChildCursor(cursor, 2);
+                CXCursorKind childCursKind = clang_getCursorKind(childCursor);
+                if(childCursKind != CXCursor_IfStmt)
+                    insertNonCompoundInstr(childCursor);
+                }
+            break;
 
-	case CXCursor_CompoundStmt:
-	    {
-	    CXCursorKind parentKind = clang_getCursorKind(parent);
-	    // Don't instrument braces after a switch.
-	    if(parentKind != CXCursor_SwitchStmt)
-		{
-		SourceLocation loc(cursor);
-		if(isParseFile(cursor))
-		    {
-		    // Avoid macros such as the following:
-		    // #define DECLARE_FOOID(libid) static void InitLibId() { int x = libid; }
-		    // None of the get...Location functions return the defined macro location
-		    // This doesn't work either:    if(clang_Location_isFromMainFile(loc.getLoc()))
-//		    if(isParseFile(file))
-		    std::string str = getFirstNonCommentToken(cursor);
-		    if(str.length() > 0 && str[0] == '{')
-			{
+        case CXCursor_CompoundStmt:
+            {
+            CXCursorKind parentKind = clang_getCursorKind(parent);
+            // Don't instrument braces after a switch.
+            if(parentKind != CXCursor_SwitchStmt)
+                {
+                SourceLocation loc(cursor);
+                if(isParseFile(cursor))
+                    {
+                    // Avoid macros such as the following:
+                    // #define DECLARE_FOOID(libid) static void InitLibId() { int x = libid; }
+                    // None of the get...Location functions return the defined macro location
+                    // This doesn't work either:    if(clang_Location_isFromMainFile(loc.getLoc()))
+//                  if(isParseFile(file))
+                    std::string str = getFirstNonCommentToken(cursor);
+                    if(str.length() > 0 && str[0] == '{')
+                        {
 #if(DEBUG_PARSE)
-			debugInstr(cursor, "insertCS", mInstrCount);
+                        debugInstr(cursor, "insertCS", mInstrCount);
 #endif
-			insertCovInstr(loc.getOffset()+1);
-			}
-		    }
-		}
-	    }
-	    break;
+                        insertCovInstr(loc.getOffset()+1);
+                        }
+                    }
+                }
+            }
+            break;
 
-	// case CXCursor_SwitchStmt
-	// case CXCursor_StmtExpr
-	// case CXCursor_FirstStmt
-	// case CXCursor_LabelStmt
-	// case CXCursor_UnexposedStmt
-	// case CXCursor_GotoStmt
-	// case CXCursor_IndirectStmt
-	// case CXCursor_ContinueStmt
-	// case CXCursor_BreakStmt
-	// case CXCursor_AsmStmt
-	// case CXCursor_TryStmt, finally, etc.
-	default:
-	    break;
-	}
+        // case CXCursor_SwitchStmt
+        // case CXCursor_StmtExpr
+        // case CXCursor_FirstStmt
+        // case CXCursor_LabelStmt
+        // case CXCursor_UnexposedStmt
+        // case CXCursor_GotoStmt
+        // case CXCursor_IndirectStmt
+        // case CXCursor_ContinueStmt
+        // case CXCursor_BreakStmt
+        // case CXCursor_AsmStmt
+        // case CXCursor_TryStmt, finally, etc.
+        default:
+            break;
+        }
     // The StmtExpr is a strange GNU extension that is present in things
     // like "if(GTK_IS_LIST_STORE(model))". If this is instrumented, the coverage macro
     // is inserted within the if expression part of the statement.
     if(cursKind != CXCursor_StmtExpr)
-	{
-	clang_visitChildren(cursor, ::visitFunctionAddInstr, this);
-	}
+        {
+        clang_visitChildren(cursor, ::visitFunctionAddInstr, this);
+        }
 //    return CXChildVisit_Recurse;
 #if(DEBUG_DUMP_CURSORS)
     level--;
@@ -522,106 +522,106 @@ CXChildVisitResult CppInstr::visitTranslationUnit(CXCursor cursor, CXCursor pare
     sCrashDiagnostics.saveMostRecentParseLocation("TU", cursor);
     CXCursorKind cursKind = clang_getCursorKind(cursor);
     switch(cursKind)
-	{
-	case CXCursor_CXXMethod:
-	case CXCursor_FunctionDecl:
-	case CXCursor_Constructor:
-	case CXCursor_Destructor:
-	case  CXCursor_ConversionFunction:
-	    visitFunctionAddInstr(cursor, parent);
-	    break;
+        {
+        case CXCursor_CXXMethod:
+        case CXCursor_FunctionDecl:
+        case CXCursor_Constructor:
+        case CXCursor_Destructor:
+        case  CXCursor_ConversionFunction:
+            visitFunctionAddInstr(cursor, parent);
+            break;
 
-	case CXCursor_InclusionDirective:
-	    result = CXChildVisit_Continue;	// Skip included files
-	    break;
+        case CXCursor_InclusionDirective:
+            result = CXChildVisit_Continue;     // Skip included files
+            break;
 
-	default:
-	    break;
-	}
+        default:
+            break;
+        }
     return result;
     }
 
 class CoverageHeader:public CoverageHeaderReader
     {
     public:
-	/// Updates the coverage instrumentation data. This includes how many
-	/// instrumentation coverage lines there are for each file, and makes
-	/// a base define for each file that is used to index into the
-	/// coverage array that is used for the hit counts for each instrumented
-	/// line.
-	void update(OovStringRef const outMapFn, OovStringRef const srcFn,
-		int numInstrLines);
+        /// Updates the coverage instrumentation data. This includes how many
+        /// instrumentation coverage lines there are for each file, and makes
+        /// a base define for each file that is used to index into the
+        /// coverage array that is used for the hit counts for each instrumented
+        /// line.
+        void update(OovStringRef const outMapFn, OovStringRef const srcFn,
+                int numInstrLines);
 
     private:
-	/// Writes the instr def map to the file
+        /// Writes the instr def map to the file
         /// @todo - srcFn isn't used.
-	void write(SharedFile &outDefFile, OovStringRef const srcFn,
-		int numInstrLines);
+        void write(SharedFile &outDefFile, OovStringRef const srcFn,
+                int numInstrLines);
     };
 
 void CoverageHeader::update(OovStringRef const outDefFn, OovStringRef const srcFn,
-	int numInstrLines)
+        int numInstrLines)
     {
     SharedFile outDefFile;
     eOpenStatus stat = outDefFile.open(outDefFn, M_ReadWriteExclusive, OE_Binary);
     if(stat == OS_Opened)
-	{
-	read(outDefFile);
-	write(outDefFile, srcFn, numInstrLines);
-	}
+        {
+        read(outDefFile);
+        write(outDefFile, srcFn, numInstrLines);
+        }
     }
 
 void CoverageHeader::write(SharedFile &outDefFile, OovStringRef const /*srcFn*/,
-	int numInstrLines)
+        int numInstrLines)
     {
     std::string fnDef = getFileDefine();
     mInstrDefineMap[fnDef] = numInstrLines;
 
     int totalCount = 0;
     for(auto const &defItem : mInstrDefineMap)
-	{
-	totalCount += defItem.second;
-	}
+        {
+        totalCount += defItem.second;
+        }
 
     if(outDefFile.isOpen())
-	{
-	OovString buf;
-	static char const *lines[] =
-	    {
-	    "// Automatically generated file by OovCovInstr\n",
-	    "// This file should not normally be edited manually.\n",
-	    "#define COV_IN(fileIndex, instrIndex) gCoverage[fileIndex+instrIndex]++;\n",
-	    };
-	for(size_t i=0; i<sizeof(lines)/sizeof(lines[0]); i++)
-	    {
-	    buf += lines[i];
-	    }
-	buf += "#define COV_TOTAL_INSTRS ";
-	buf.appendInt(totalCount);
-	buf += "\n";
-	buf += "extern unsigned short gCoverage[COV_TOTAL_INSTRS];\n";
+        {
+        OovString buf;
+        static char const *lines[] =
+            {
+            "// Automatically generated file by OovCovInstr\n",
+            "// This file should not normally be edited manually.\n",
+            "#define COV_IN(fileIndex, instrIndex) gCoverage[fileIndex+instrIndex]++;\n",
+            };
+        for(size_t i=0; i<sizeof(lines)/sizeof(lines[0]); i++)
+            {
+            buf += lines[i];
+            }
+        buf += "#define COV_TOTAL_INSTRS ";
+        buf.appendInt(totalCount);
+        buf += "\n";
+        buf += "extern unsigned short gCoverage[COV_TOTAL_INSTRS];\n";
 
-	int coverageCount = 0;
-	for(auto const &defItem : mInstrDefineMap)
-	    {
-	    OovString def = "#define ";
-	    def += defItem.first;
-	    def += " ";
-	    def.appendInt(coverageCount);
-	    coverageCount += defItem.second;
-	    def += " // ";
-	    def.appendInt(defItem.second);
-	    def += "\n";
-	    buf += def;
-	    }
-	outDefFile.truncate();
-	outDefFile.seekBegin();
-	outDefFile.write(&buf[0], static_cast<int>(buf.size()));
-	}
+        int coverageCount = 0;
+        for(auto const &defItem : mInstrDefineMap)
+            {
+            OovString def = "#define ";
+            def += defItem.first;
+            def += " ";
+            def.appendInt(coverageCount);
+            coverageCount += defItem.second;
+            def += " // ";
+            def.appendInt(defItem.second);
+            def += "\n";
+            buf += def;
+            }
+        outDefFile.truncate();
+        outDefFile.seekBegin();
+        outDefFile.write(&buf[0], static_cast<int>(buf.size()));
+        }
     }
 
 void CppInstr::updateCoverageHeader(OovStringRef const fn, OovStringRef const covDir,
-	int numInstrLines)
+        int numInstrLines)
     {
     CoverageHeader header;
     header.update(header.getFn(covDir), fn, numInstrLines);
@@ -635,96 +635,96 @@ void CppInstr::updateCoverageSource(OovStringRef const /*fn*/, OovStringRef cons
     outFn.appendFile("OovCoverage.cpp");
 
     if(!FileIsFileOnDisk(outFn))
-	{
-	File file(outFn, "w");
+        {
+        File file(outFn, "w");
 
-	static char const *lines[] = {
-	    "// Automatically generated file by OovCovInstr\n",
-	    "// This appends coverage data to either a new or existing file,\n"
-	    "// although the number of instrumented lines in the project must match.\n"
-	    "// This file must be compiled and linked into the project.\n",
-	    "#include <stdio.h>\n",
-	    "#include \"OovCoverage.h\"\n",
-	    "\n",
-	    "unsigned short gCoverage[COV_TOTAL_INSTRS];\n",
-	    "\n",
-	    "class cCoverageOutput\n",
-	    "  {\n",
-	    "  public:\n",
-	    "  cCoverageOutput()\n",
-	    "    {\n",
-	    "    // Initialize because some compilers may not initialize statics (TI)\n",
-	    "    for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
-	    "      gCoverage[i] = 0;\n",
-	    "    }\n",
-	    "  ~cCoverageOutput()\n",
-	    "    {\n",
-	    "      update();\n",
-	    "    }\n",
-	    "  void update()\n",
-	    "    {\n",
-	    "    read();\n",
-	    "    write();\n",
-	    "    }\n",
-	    "\n",
-	    "  private:\n",
-	    "  int getFirstIntFromLine(FILE *fp)\n",
-	    "    {\n",
-	    "	char buf[80];\n",
-	    "	fgets(buf, sizeof(buf), fp);\n",
-	    "	unsigned int tempInt = 0;\n",
-	    "   	sscanf(buf, \"%u\", &tempInt);\n",
-	    "	return tempInt;\n",
-	    "    }\n",
-	    "  void read()\n",
-	    "    {\n",
-	    "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"r\");\n",
-	    "    if(fp)\n",
-	    "      {\n",
-	    "      int numInstrs = getFirstIntFromLine(fp);\n",
-	    "      if(numInstrs == COV_TOTAL_INSTRS)\n",
-	    "        {\n",
-	    "        for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
-	    "          {\n",
-	    "          gCoverage[i] += getFirstIntFromLine(fp);\n",
-	    "          }\n",
-	    "        }\n",
-	    "      fclose(fp);\n",
-	    "      }\n",
-	    "    }\n",
-	    "  void write()\n",
-	    "    {\n",
-	    "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"w\");\n",
-	    "    if(fp)\n",
-	    "      {\n",
-	    "      fprintf(fp, \"%d   # Number of instrumented lines\\n\", COV_TOTAL_INSTRS);\n",
-	    "      for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
-	    "        {\n",
-	    "        fprintf(fp, \"%u\", gCoverage[i]);\n",
-	    "        gCoverage[i] = 0;\n",
-	    "        fprintf(fp, \"\\n\");\n",
-	    "        }\n",
-	    "      fclose(fp);\n",
-	    "      }\n",
-	    "    }\n",
-	    "  };\n",
-	    "\n",
-	    "cCoverageOutput coverageOutput;\n"
-	    "\n",
-	    "void updateCoverage()\n",
-	    "  { coverageOutput.update(); }\n"
+        static char const *lines[] = {
+            "// Automatically generated file by OovCovInstr\n",
+            "// This appends coverage data to either a new or existing file,\n"
+            "// although the number of instrumented lines in the project must match.\n"
+            "// This file must be compiled and linked into the project.\n",
+            "#include <stdio.h>\n",
+            "#include \"OovCoverage.h\"\n",
+            "\n",
+            "unsigned short gCoverage[COV_TOTAL_INSTRS];\n",
+            "\n",
+            "class cCoverageOutput\n",
+            "  {\n",
+            "  public:\n",
+            "  cCoverageOutput()\n",
+            "    {\n",
+            "    // Initialize because some compilers may not initialize statics (TI)\n",
+            "    for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
+            "      gCoverage[i] = 0;\n",
+            "    }\n",
+            "  ~cCoverageOutput()\n",
+            "    {\n",
+            "      update();\n",
+            "    }\n",
+            "  void update()\n",
+            "    {\n",
+            "    read();\n",
+            "    write();\n",
+            "    }\n",
+            "\n",
+            "  private:\n",
+            "  int getFirstIntFromLine(FILE *fp)\n",
+            "    {\n",
+            "   char buf[80];\n",
+            "   fgets(buf, sizeof(buf), fp);\n",
+            "   unsigned int tempInt = 0;\n",
+            "           sscanf(buf, \"%u\", &tempInt);\n",
+            "   return tempInt;\n",
+            "    }\n",
+            "  void read()\n",
+            "    {\n",
+            "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"r\");\n",
+            "    if(fp)\n",
+            "      {\n",
+            "      int numInstrs = getFirstIntFromLine(fp);\n",
+            "      if(numInstrs == COV_TOTAL_INSTRS)\n",
+            "        {\n",
+            "        for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
+            "          {\n",
+            "          gCoverage[i] += getFirstIntFromLine(fp);\n",
+            "          }\n",
+            "        }\n",
+            "      fclose(fp);\n",
+            "      }\n",
+            "    }\n",
+            "  void write()\n",
+            "    {\n",
+            "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"w\");\n",
+            "    if(fp)\n",
+            "      {\n",
+            "      fprintf(fp, \"%d   # Number of instrumented lines\\n\", COV_TOTAL_INSTRS);\n",
+            "      for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
+            "        {\n",
+            "        fprintf(fp, \"%u\", gCoverage[i]);\n",
+            "        gCoverage[i] = 0;\n",
+            "        fprintf(fp, \"\\n\");\n",
+            "        }\n",
+            "      fclose(fp);\n",
+            "      }\n",
+            "    }\n",
+            "  };\n",
+            "\n",
+            "cCoverageOutput coverageOutput;\n"
+            "\n",
+            "void updateCoverage()\n",
+            "  { coverageOutput.update(); }\n"
 
-	};
-	for(size_t i=0; i<sizeof(lines)/sizeof(lines[0]); i++)
-	    {
-	    fprintf(file.getFp(), "%s", lines[i]);
-	    }
-	}
+        };
+        for(size_t i=0; i<sizeof(lines)/sizeof(lines[0]); i++)
+            {
+            fprintf(file.getFp(), "%s", lines[i]);
+            }
+        }
     }
 
 CppInstr::eErrorTypes CppInstr::parse(OovStringRef const srcFn, OovStringRef const srcRootDir,
-	OovStringRef const outDir,
-	char const * const clang_args[], int num_clang_args)
+        OovStringRef const outDir,
+        char const * const clang_args[], int num_clang_args)
     {
     eErrorTypes errType = ET_None;
 
@@ -741,84 +741,84 @@ CppInstr::eErrorTypes CppInstr::parse(OovStringRef const srcFn, OovStringRef con
     unsigned options = 0;
     CXTranslationUnit tu;
     CXErrorCode errCode = clang_parseTranslationUnit2(index, srcFn,
-	clang_args, num_clang_args, 0, 0, options, &tu);
+        clang_args, num_clang_args, 0, 0, options, &tu);
     if(errCode == CXError_Success)
-	{
-	CXCursor rootCursor = clang_getTranslationUnitCursor(tu);
-	try
-	    {
-	    clang_visitChildren(rootCursor, ::visitTranslationUnit, this);
-	    }
-	catch(...)
-	    {
-	    errType = ET_ParseError;
-	    sCrashDiagnostics.setCrashed();
-	    }
+        {
+        CXCursor rootCursor = clang_getTranslationUnitCursor(tu);
+        try
+            {
+            clang_visitChildren(rootCursor, ::visitTranslationUnit, this);
+            }
+        catch(...)
+            {
+            errType = ET_ParseError;
+            sCrashDiagnostics.setCrashed();
+            }
 
-	std::string outFileName;
-	for(int i=0; i<num_clang_args; i++)
-	    {
-	    std::string testArg = clang_args[i];
-	    if(testArg.compare("-o") == 0)
-		{
-		if(i+1 < num_clang_args)
-		    outFileName = clang_args[i+1];
-		}
-	    }
-	try
-	    {
-	    mOutputFileContents.write(outFileName);
-	    }
-	catch(...)
-	    {
-	    errType = ET_ParseError;
-	    }
-	std::string outErrFileName = outFileName;
-	outErrFileName += "-err.txt";
-	size_t numDiags = clang_getNumDiagnostics(tu);
-	if(numDiags > 0 || sCrashDiagnostics.hasCrashed())
-	    {
-	    FILE *fp = fopen(outErrFileName.c_str(), "w");
-	    if(fp)
-		{
-		sCrashDiagnostics.dumpCrashed(fp);
-		for (size_t i = 0; i<numDiags; i++)
-		    {
-		    CXDiagnostic diag = clang_getDiagnostic(tu, i);
-		    CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
-		    if(errType == ET_None || errType == ET_CompileWarnings)
-			{
-			if(sev >= CXDiagnostic_Error)
-			    errType = ET_CompileErrors;
-			else
-			    errType = ET_CompileWarnings;
-			}
-		    CXStringDisposer diagStr = clang_formatDiagnostic(diag,
-			clang_defaultDiagnosticDisplayOptions());
-			fprintf(fp, "%s\n", diagStr.c_str());
-		    }
+        std::string outFileName;
+        for(int i=0; i<num_clang_args; i++)
+            {
+            std::string testArg = clang_args[i];
+            if(testArg.compare("-o") == 0)
+                {
+                if(i+1 < num_clang_args)
+                    outFileName = clang_args[i+1];
+                }
+            }
+        try
+            {
+            mOutputFileContents.write(outFileName);
+            }
+        catch(...)
+            {
+            errType = ET_ParseError;
+            }
+        std::string outErrFileName = outFileName;
+        outErrFileName += "-err.txt";
+        size_t numDiags = clang_getNumDiagnostics(tu);
+        if(numDiags > 0 || sCrashDiagnostics.hasCrashed())
+            {
+            FILE *fp = fopen(outErrFileName.c_str(), "w");
+            if(fp)
+                {
+                sCrashDiagnostics.dumpCrashed(fp);
+                for (size_t i = 0; i<numDiags; i++)
+                    {
+                    CXDiagnostic diag = clang_getDiagnostic(tu, i);
+                    CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
+                    if(errType == ET_None || errType == ET_CompileWarnings)
+                        {
+                        if(sev >= CXDiagnostic_Error)
+                            errType = ET_CompileErrors;
+                        else
+                            errType = ET_CompileWarnings;
+                        }
+                    CXStringDisposer diagStr = clang_formatDiagnostic(diag,
+                        clang_defaultDiagnosticDisplayOptions());
+                        fprintf(fp, "%s\n", diagStr.c_str());
+                    }
 
-		fprintf(fp, "Arguments: %s %s %s ", static_cast<char const *>(srcFn),
-			static_cast<char const *>(srcRootDir),
-			static_cast<char const *>(outDir));
-		for(int i=0 ; i<num_clang_args; i++)
-		    fprintf(fp, "%s ", clang_args[i]);
-		fprintf(fp, "\n");
+                fprintf(fp, "Arguments: %s %s %s ", static_cast<char const *>(srcFn),
+                        static_cast<char const *>(srcRootDir),
+                        static_cast<char const *>(outDir));
+                for(int i=0 ; i<num_clang_args; i++)
+                    fprintf(fp, "%s ", clang_args[i]);
+                fprintf(fp, "\n");
 
-		fclose(fp);
-		}
-	    }
-	else
-	    {
-	    unlink(outErrFileName.c_str());
-	    }
-	FilePath covDir(outDir, FP_Dir);
-	updateCoverageHeader(mTopParseFn, covDir, mInstrCount);
-	updateCoverageSource(mTopParseFn, covDir);
-	}
+                fclose(fp);
+                }
+            }
+        else
+            {
+            unlink(outErrFileName.c_str());
+            }
+        FilePath covDir(outDir, FP_Dir);
+        updateCoverageHeader(mTopParseFn, covDir, mInstrCount);
+        updateCoverageSource(mTopParseFn, covDir);
+        }
     else
-	{
-	errType = ET_CLangError;
-	}
+        {
+        errType = ET_CLangError;
+        }
     return errType;
     }

@@ -39,17 +39,17 @@ void Editor::openTextFile()
     OovString filename;
     PathChooser ch;
     if(ch.ChoosePath(GTK_WINDOW(mBuilder.getWidget("MainWindow")), "Open File",
-	    GTK_FILE_CHOOSER_ACTION_OPEN, filename))
-	{
-	openTextFile(filename);
-	}
+            GTK_FILE_CHOOSER_ACTION_OPEN, filename))
+        {
+        openTextFile(filename);
+        }
     }
 
 bool Editor::saveTextFile()
     {
     bool saved = false;
     if(mEditFiles.getEditView())
-	saved = mEditFiles.getEditView()->saveTextFile();
+        saved = mEditFiles.getEditView()->saveTextFile();
     return saved;
     }
 
@@ -57,31 +57,31 @@ bool Editor::saveAsTextFileWithDialog()
     {
     bool saved = false;
     if(mEditFiles.getEditView())
-	saved = mEditFiles.getEditView()->saveAsTextFileWithDialog();
+        saved = mEditFiles.getEditView()->saveAsTextFileWithDialog();
     return saved;
     }
 
 class FindDialog:public Dialog
     {
     public:
-	FindDialog(EditFiles &editFiles):
-	    Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("FindDialog")),
-		    Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")))
-	    {
-	    GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
-	    FileEditView *view = editFiles.getEditView();
-	    std::string viewText;
-	    if(view)
-		{
-		viewText = view->getSelectedText();
-		}
-	    if(viewText.length() > 0)
-		{
-		Gui::setText(entry, viewText);
-		}
-	    gtk_widget_grab_focus(GTK_WIDGET(entry));
-	    gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
-	    }
+        FindDialog(EditFiles &editFiles):
+            Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("FindDialog")),
+                    Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")))
+            {
+            GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
+            FileEditView *view = editFiles.getEditView();
+            std::string viewText;
+            if(view)
+                {
+                viewText = view->getSelectedText();
+                }
+            if(viewText.length() > 0)
+                {
+                Gui::setText(entry, viewText);
+                }
+            gtk_widget_grab_focus(GTK_WIDGET(entry));
+            gtk_editable_select_region(GTK_EDITABLE(entry), 0, -1);
+            }
     };
 
 void Editor::findDialog()
@@ -89,92 +89,92 @@ void Editor::findDialog()
     FindDialog dialog(mEditFiles);
     bool done = false;
     while(!done)
-	{
-	int ret = dialog.runHideCancel();
-	if(ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
-	    {
-	    done = true;
-	    }
-	else
-	    {
-	    GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-		    "FindDownCheckbutton"));
-	    GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-		    "CaseSensitiveCheckbutton"));
-	    GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
-	    if(ret == GTK_RESPONSE_OK)
-		{
-		find(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
-		    gtk_toggle_button_get_active(caseCheck));
-		}
-	    else
-		{
-		GtkEntry *replaceEntry = GTK_ENTRY(getBuilder().getWidget("ReplaceEntry"));
-		findAndReplace(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
-		    gtk_toggle_button_get_active(caseCheck), gtk_entry_get_text(replaceEntry));
-		}
-	    }
-	}
+        {
+        int ret = dialog.runHideCancel();
+        if(ret == GTK_RESPONSE_CANCEL || ret == GTK_RESPONSE_DELETE_EVENT)
+            {
+            done = true;
+            }
+        else
+            {
+            GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+                    "FindDownCheckbutton"));
+            GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+                    "CaseSensitiveCheckbutton"));
+            GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
+            if(ret == GTK_RESPONSE_OK)
+                {
+                find(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
+                    gtk_toggle_button_get_active(caseCheck));
+                }
+            else
+                {
+                GtkEntry *replaceEntry = GTK_ENTRY(getBuilder().getWidget("ReplaceEntry"));
+                findAndReplace(gtk_entry_get_text(entry), gtk_toggle_button_get_active(downCheck),
+                    gtk_toggle_button_get_active(caseCheck), gtk_entry_get_text(replaceEntry));
+                }
+            }
+        }
     }
 
 
 void Editor::gotoLineDialog()
     {
     Dialog dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("GoToLineDialog")),
-	    Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")));
+            Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")));
     int ret = dialog.run(true);
     if(ret)
-	{
-	FileEditView *view = mEditFiles.getEditView();
-	GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("LineNumberEntry"));
-	OovString lineNumStr = gtk_entry_get_text(entry);
-	int lineNum;
-	if(lineNumStr.getInt(0, INT_MAX, lineNum))
-	    {
-	    view->gotoLine(lineNum);
-	    }
-	Gui::setText(entry, "");
-	}
+        {
+        FileEditView *view = mEditFiles.getEditView();
+        GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("LineNumberEntry"));
+        OovString lineNumStr = gtk_entry_get_text(entry);
+        int lineNum;
+        if(lineNumStr.getInt(0, INT_MAX, lineNum))
+            {
+            view->gotoLine(lineNum);
+            }
+        Gui::setText(entry, "");
+        }
     }
 
 void Editor::findAgain(bool forward)
     {
     if(mLastSearch.length() == 0)
-	{
-	findDialog();
-	}
+        {
+        findDialog();
+        }
     else
-	{
-	find(mLastSearch, forward, mLastSearchCaseSensitive);
-	}
+        {
+        find(mLastSearch, forward, mLastSearchCaseSensitive);
+        }
     }
 
 
 class FindFiles:public dirRecurser
     {
     public:
-	~FindFiles()
-	    {}
-	FindFiles(char const *srchStr, bool caseSensitive, GtkTextView *view):
-	    mSrchStr(srchStr), mCaseSensitive(caseSensitive), mView(view),
-	    mNumMatches(0)
-	    {}
-	bool recurseDirs(char const * const srcDir)
-	    {
-	    mNumMatches = 0;
-	    return dirRecurser::recurseDirs(srcDir);
-	    }
-	int getNumMatches() const
-	    { return mNumMatches; }
+        ~FindFiles()
+            {}
+        FindFiles(char const *srchStr, bool caseSensitive, GtkTextView *view):
+            mSrchStr(srchStr), mCaseSensitive(caseSensitive), mView(view),
+            mNumMatches(0)
+            {}
+        bool recurseDirs(char const * const srcDir)
+            {
+            mNumMatches = 0;
+            return dirRecurser::recurseDirs(srcDir);
+            }
+        int getNumMatches() const
+            { return mNumMatches; }
 
     private:
-	virtual bool processFile(OovStringRef const filePath) override;
+        virtual bool processFile(OovStringRef const filePath) override;
 
     private:
-	std::string mSrchStr;
-	bool mCaseSensitive;
-	GtkTextView *mView;
-	int mNumMatches;
+        std::string mSrchStr;
+        bool mCaseSensitive;
+        GtkTextView *mView;
+        int mNumMatches;
     };
 
 #ifndef __linux__
@@ -182,11 +182,11 @@ static int my_strnicmp(char const *str1, char const *str2, int len)
     {
     int val = 0;
     for(int i=0; i<len; i++)
-	{
-	val = toupper(str1[i]) - toupper(str2[i]);
-	if(val != 0)
-	    break;
-	}
+        {
+        val = toupper(str1[i]) - toupper(str2[i]);
+        if(val != 0)
+            break;
+        }
     return val;
     }
 
@@ -195,15 +195,15 @@ static char const *strcasestr(char const *haystack, char const *needle)
     int needleLen = strlen(needle);
     char const *retp = nullptr;
     while(*haystack)
-	{
-	// strncasecmp, strnicmp, _strnicmp not working under mingw with some flags
-	if(my_strnicmp(haystack, needle, needleLen) == 0)
-	    {
-	    retp = haystack;
-	    break;
-	    }
-	haystack++;
-	}
+        {
+        // strncasecmp, strnicmp, _strnicmp not working under mingw with some flags
+        if(my_strnicmp(haystack, needle, needleLen) == 0)
+            {
+            retp = haystack;
+            break;
+            }
+        haystack++;
+        }
     return retp;
     }
 #endif
@@ -215,44 +215,44 @@ bool FindFiles::processFile(OovStringRef const filePath)
     FilePath ext(filePath, FP_File);
 
     if(isHeader(ext) || isSource(ext))
-	{
-	FILE *fp = fopen(filePath.getStr(), "r");
-	if(fp)
-	    {
-	    char buf[1000];
-	    int lineNum = 0;
-	    while(fgets(buf, sizeof(buf), fp))
-		{
-		lineNum++;
-		char const *match=NULL;
-		if(mCaseSensitive)
-		    {
-		    match = strstr(buf, mSrchStr.c_str());
-		    }
-		else
-		    {
-		    match = strcasestr(buf, mSrchStr.c_str());
-		    }
-		if(match)
-		    {
-		    mNumMatches++;
-		    OovString matchStr = filePath;
-		    matchStr += ':';
-		    matchStr.appendInt(lineNum);
-		    matchStr += "   ";
-		    matchStr += buf;
-//		    matchStr += '\n';
-		    Gui::appendText(mView, matchStr);
-		    }
-		}
-	    fclose(fp);
-	    }
-	}
+        {
+        FILE *fp = fopen(filePath.getStr(), "r");
+        if(fp)
+            {
+            char buf[1000];
+            int lineNum = 0;
+            while(fgets(buf, sizeof(buf), fp))
+                {
+                lineNum++;
+                char const *match=NULL;
+                if(mCaseSensitive)
+                    {
+                    match = strstr(buf, mSrchStr.c_str());
+                    }
+                else
+                    {
+                    match = strcasestr(buf, mSrchStr.c_str());
+                    }
+                if(match)
+                    {
+                    mNumMatches++;
+                    OovString matchStr = filePath;
+                    matchStr += ':';
+                    matchStr.appendInt(lineNum);
+                    matchStr += "   ";
+                    matchStr += buf;
+//                  matchStr += '\n';
+                    Gui::appendText(mView, matchStr);
+                    }
+                }
+            fclose(fp);
+            }
+        }
     return success;
     }
 
 void Editor::findInFiles(char const * const srchStr, char const * const path,
-	bool caseSensitive, GtkTextView *view)
+        bool caseSensitive, GtkTextView *view)
     {
     FindFiles findFiles(srchStr, caseSensitive, view);
     findFiles.recurseDirs(path);
@@ -266,18 +266,18 @@ void Editor::findInFilesDialog()
     {
     FindDialog dialog(mEditFiles);
     GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-	    "FindDownCheckbutton"));
+            "FindDownCheckbutton"));
     Gui::setVisible(GTK_WIDGET(downCheck), false);
     if(dialog.run(true))
         {
-	GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-		"CaseSensitiveCheckbutton"));
-	mEditFiles.showInteractNotebookTab("Find");
-	GtkTextView *findView = GTK_TEXT_VIEW(getBuilder().getWidget("FindTextview"));
-	Gui::clear(findView);
-	GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
-	findInFiles(gtk_entry_get_text(entry), Project::getSrcRootDirectory().getStr(),
-		gtk_toggle_button_get_active(caseCheck), findView);
+        GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+                "CaseSensitiveCheckbutton"));
+        mEditFiles.showInteractNotebookTab("Find");
+        GtkTextView *findView = GTK_TEXT_VIEW(getBuilder().getWidget("FindTextview"));
+        Gui::clear(findView);
+        GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
+        findInFiles(gtk_entry_get_text(entry), Project::getSrcRootDirectory().getStr(),
+                gtk_toggle_button_get_active(caseCheck), findView);
         }
     Gui::setVisible(GTK_WIDGET(downCheck), true);
     }
@@ -286,16 +286,16 @@ void Editor::gotoFileLine(std::string const &lineBuf)
     {
     size_t pos = lineBuf.rfind(':');
     if(pos != std::string::npos)
-	{
-	int lineNum;
-	OovString numStr(lineBuf.substr(pos+1, lineBuf.length()-pos));
-	if(numStr.getInt(0, INT_MAX, lineNum))
-	    {
-	    if(lineNum == 0)
-		lineNum = 1;
-	    mEditFiles.viewFile(lineBuf.substr(0, pos), lineNum);
-	    }
-	}
+        {
+        int lineNum;
+        OovString numStr(lineBuf.substr(pos+1, lineBuf.length()-pos));
+        if(numStr.getInt(0, INT_MAX, lineNum))
+            {
+            if(lineNum == 0)
+                lineNum = 1;
+            mEditFiles.viewFile(lineBuf.substr(0, pos), lineNum);
+            }
+        }
     }
 
 /*
@@ -312,9 +312,9 @@ void Editor::setTabs(int numSpaces)
     layout->FontDescription = font;
     layout.GetPixelSize(out charWidth, out charHeight);
     for (int i = 0; i < tabs.Size; i++)
-	{
-	tabs.SetTab(i, TabAlign.Left, i * charWidth * numSpaces);
-	}
+        {
+        tabs.SetTab(i, TabAlign.Left, i * charWidth * numSpaces);
+        }
     gtk_text_view_set_tabs(mTextView, tabs);
     }
 */
@@ -330,7 +330,7 @@ void Editor::setStyle()
     GError *err = 0;
     gtk_css_provider_load_from_path(provider, path.getStr(), &err);
     gtk_style_context_add_provider_for_screen (screen,
-	GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+        GTK_STYLE_PROVIDER(provider), GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
     g_object_unref(provider);
     }
 
@@ -339,16 +339,16 @@ void Editor::find(OovStringRef const findStr, bool forward, bool caseSensitive)
     mLastSearch = findStr;
     mLastSearchCaseSensitive = caseSensitive;
     if(mEditFiles.getEditView())
-	mEditFiles.getEditView()->find(findStr, forward, caseSensitive);
+        mEditFiles.getEditView()->find(findStr, forward, caseSensitive);
     }
 
 void Editor::findAndReplace(OovStringRef const findStr, bool forward, bool caseSensitive,
-	OovStringRef const replaceStr)
+        OovStringRef const replaceStr)
     {
     mLastSearch = findStr;
     mLastSearchCaseSensitive = caseSensitive;
     if(mEditFiles.getEditView())
-	mEditFiles.getEditView()->findAndReplace(findStr, forward, caseSensitive, replaceStr);
+        mEditFiles.getEditView()->findAndReplace(findStr, forward, caseSensitive, replaceStr);
     }
 
 
@@ -377,24 +377,24 @@ gboolean Editor::onIdle(gpointer data)
 void Editor::idleDebugStatusChange(eDebuggerChangeStatus st)
     {
     if(st == DCS_RunState)
-	{
-	getEditFiles().updateDebugMenu();
-	if(mDebugger.getChildState() == DCS_ChildPaused)
-	    {
-	    auto const &loc = mDebugger.getStoppedLocation();
-	    mEditFiles.viewModule(loc.getFilename(), loc.getLine());
-	    mDebugger.startGetStack();
-	    }
-	}
+        {
+        getEditFiles().updateDebugMenu();
+        if(mDebugger.getChildState() == DCS_ChildPaused)
+            {
+            auto const &loc = mDebugger.getStoppedLocation();
+            mEditFiles.viewModule(loc.getFilename(), loc.getLine());
+            mDebugger.startGetStack();
+            }
+        }
     else if(st == DCS_Stack)
-	{
-	GtkTextView *view = GTK_TEXT_VIEW(mBuilder.getWidget("StackTextview"));
-	Gui::setText(view, mDebugger.getStack());
-	}
+        {
+        GtkTextView *view = GTK_TEXT_VIEW(mBuilder.getWidget("StackTextview"));
+        Gui::setText(view, mDebugger.getStack());
+        }
     else if(st == DCS_Value)
-	{
-	mVarView.appendText(GuiTreeItem(), mDebugger.getVarValue());
-	}
+        {
+        mVarView.appendText(GuiTreeItem(), mDebugger.getVarValue());
+        }
     }
 
 void Editor::debugSetStackFrame(OovStringRef const frameLine)
@@ -435,9 +435,9 @@ void Editor::loadSettings()
     int width, height;
     mEditOptions.setProjectDir(mProjectDir);
     if(mEditOptions.getScreenSize(width, height))
-	{
-	gtk_window_resize(GTK_WINDOW(mBuilder.getWidget("MainWindow")), width, height);
-	}
+        {
+        gtk_window_resize(GTK_WINDOW(mBuilder.getWidget("MainWindow")), width, height);
+        }
     Project::setProjectDirectory(mProjectDir);
     }
 
@@ -461,56 +461,56 @@ void Editor::editPreferences()
     int compIndex = -1;
     int boxCount = 0;
     for(const std::string &name : compFile.getComponentNames())
-	{
-	if(compFile.getComponentType(name) == ComponentTypesFile::CT_Program)
-	    {
-	    FilePath fp(Project::getOutputDir(BuildConfigDebug), FP_Dir);
-	    OovString filename = name;
-	    if(strcmp(name.c_str(), Project::getRootComponentName()) == 0)
-		filename = Project::getRootComponentFileName();
-	    fp.appendFile(FilePathMakeExeFilename(filename));
-	    Gui::appendText(cb, fp);
-	    haveNames = true;
-	    if(fp.compare(dbgComponent) == 0)
-		{
-		compIndex = boxCount;
-		}
-	    boxCount++;
-	    }
-	}
+        {
+        if(compFile.getComponentType(name) == ComponentTypesFile::CT_Program)
+            {
+            FilePath fp(Project::getOutputDir(BuildConfigDebug), FP_Dir);
+            OovString filename = name;
+            if(strcmp(name.c_str(), Project::getRootComponentName()) == 0)
+                filename = Project::getRootComponentFileName();
+            fp.appendFile(FilePathMakeExeFilename(filename));
+            Gui::appendText(cb, fp);
+            haveNames = true;
+            if(fp.compare(dbgComponent) == 0)
+                {
+                compIndex = boxCount;
+                }
+            boxCount++;
+            }
+        }
     if(compIndex == -1)
-	{
-	if(dbgComponent.length() > 0)
-	    {
-	    Gui::appendText(cb, dbgComponent);
-	    compIndex = boxCount;
-	    }
-	}
+        {
+        if(dbgComponent.length() > 0)
+            {
+            Gui::appendText(cb, dbgComponent);
+            compIndex = boxCount;
+            }
+        }
     if(compIndex != -1)
-	{
-	Gui::setSelected(cb, compIndex);
-	}
+        {
+        Gui::setSelected(cb, compIndex);
+        }
     GtkEntry *debuggeeArgs = GTK_ENTRY(mBuilder.getWidget("CommandLineArgsEntry"));
     Gui::setText(debuggeeArgs, mEditOptions.getValue(OptEditDebuggeeArgs));
     GtkEntry *workDirEntry = GTK_ENTRY(mBuilder.getWidget("DebugWorkingDirEntry"));
     Gui::setText(workDirEntry, mEditOptions.getValue(OptEditDebuggerWorkingDir));
 
     Dialog dlg(GTK_DIALOG(mBuilder.getWidget("Preferences")),
-	    GTK_WINDOW(mBuilder.getWidget("MainWindow")));
+            GTK_WINDOW(mBuilder.getWidget("MainWindow")));
     if(dlg.run(true))
-	{
-	if(haveNames)
-	    {
-	    std::string text = Gui::getText(cb);
-	    mEditOptions.setNameValue(OptEditDebuggee, text);
-	    mEditOptions.setNameValue(OptEditDebuggeeArgs, Gui::getText(debuggeeArgs));
-	    mEditOptions.setNameValue(OptEditDebuggerWorkingDir, Gui::getText(workDirEntry));
-//	    mDebugger.setDebuggee(text);
-//	    mDebugger.setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs));
-	    }
-	else
-	    Gui::messageBox("Some components for the project must be defined as programs");
-	}
+        {
+        if(haveNames)
+            {
+            std::string text = Gui::getText(cb);
+            mEditOptions.setNameValue(OptEditDebuggee, text);
+            mEditOptions.setNameValue(OptEditDebuggeeArgs, Gui::getText(debuggeeArgs));
+            mEditOptions.setNameValue(OptEditDebuggerWorkingDir, Gui::getText(workDirEntry));
+//          mDebugger.setDebuggee(text);
+//          mDebugger.setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs));
+            }
+        else
+            Gui::messageBox("Some components for the project must be defined as programs");
+        }
     }
 
 void Editor::setPreferencesWorkingDir()
@@ -519,12 +519,12 @@ void Editor::setPreferencesWorkingDir()
     chooser.setDefaultPath(Project::getOutputDir(BuildConfigDebug));
     OovString dir;
     if(chooser.ChoosePath(GTK_WINDOW(mBuilder.getWidget("MainWindow")),
-	    "Select Working Directory",
-	    GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
-	{
-	GtkEntry *workDirEntry = GTK_ENTRY(mBuilder.getWidget("DebugWorkingDirEntry"));
-	Gui::setText(workDirEntry, dir);
-	}
+            "Select Working Directory",
+            GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
+        {
+        GtkEntry *workDirEntry = GTK_ENTRY(mBuilder.getWidget("DebugWorkingDirEntry"));
+        Gui::setText(workDirEntry, dir);
+        }
     }
 
 bool Editor::checkExitSave()
@@ -572,72 +572,77 @@ static void commandLine(GApplication *gapp, GApplicationCommandLine *cmdline,
     gchar **argv = g_application_command_line_get_arguments(cmdline, &argc);
     bool goodArgs = true;
     for(gint i = 0; i < argc && goodArgs; i++)
-	{
-	char const * fn = nullptr;
-	int line = 1;
-	for(int argi=1; argi<argc; argi++)
-	    {
-	    if(argv[argi][0] == '+')
-		{
-		if(argv[argi][1] == 'p')
-		    {
-		    OovString fname = FilePathFixFilePath(&argv[argi][2]);
-		    gEditor.setProjectDir(fname);
-		    }
-		else
-		    sscanf(&argv[argi][1], "%d", &line);
-		}
-	    else if(argv[argi][0] == '-')
-		{
-		if(argv[argi][1] == 'p')
-		    {
-		    OovString fname = FilePathFixFilePath(&argv[argi][2]);
-		    gEditor.setProjectDir(fname);
-		    }
-		else
-		    goodArgs = false;
-		}
-	    else
-		fn = argv[argi];
-	    }
-	if(fn)
-	    {
-	    activateApp(gapp);
-	    gEditor.getEditFiles().viewModule(FilePathFixFilePath(fn), line);
-	    }
-	}
+        {
+        char const * fn = nullptr;
+        int line = 1;
+        for(int argi=1; argi<argc; argi++)
+            {
+            if(argv[argi][0] == '+')
+                {
+                if(argv[argi][1] == 'p')
+                    {
+                    OovString fname = FilePathFixFilePath(&argv[argi][2]);
+                    gEditor.setProjectDir(fname);
+                    }
+                else
+                    sscanf(&argv[argi][1], "%d", &line);
+                }
+            else if(argv[argi][0] == '-')
+                {
+                if(argv[argi][1] == 'p')
+                    {
+                    OovString fname = FilePathFixFilePath(&argv[argi][2]);
+                    gEditor.setProjectDir(fname);
+                    }
+                else
+                    goodArgs = false;
+                }
+            else
+                fn = argv[argi];
+            }
+        if(fn)
+            {
+            activateApp(gapp);
+            gEditor.getEditFiles().viewModule(FilePathFixFilePath(fn), line);
+            }
+        }
     if(goodArgs)
-	{
-	activateApp(gapp);
-	}
+        {
+        activateApp(gapp);
+        }
     else
-	{
-	std::string str = "OovEdit version ";
-	str += OOV_VERSION;
-	str += "\n";
-	str += "oovEdit: Args are: filename [args]...\n";
-	str += "args are:\n";
-	str += "   +<line>            line number of opened file\n";
-	str += "   -p<projectDir>    directory of project files\n";
-	fprintf(stderr, "%s\n", str.c_str());
-	fflush(stderr);
-	Gui::messageBox(str);
-	}
+        {
+        std::string str = "OovEdit version ";
+        str += OOV_VERSION;
+        str += "\n";
+        str += "oovEdit: Args are: filename [args]...\n";
+        str += "args are:\n";
+        str += "   +<line>            line number of opened file\n";
+        str += "   -p<projectDir>    directory of project files\n";
+        fprintf(stderr, "%s\n", str.c_str());
+        fflush(stderr);
+        Gui::messageBox(str);
+        }
     }
 
 static void startupApp(GApplication *gapp)
     {
     if(gEditor.getBuilder().addFromFile("oovEdit.glade"))
-	{
-	gEditor.init();
-	gEditor.getBuilder().connectSignals();
-	}
+        {
+        gEditor.init();
+        gEditor.getBuilder().connectSignals();
+        }
+    else
+        {
+        Gui::messageBox("Unable to find oovEdit.glade.");
+        exit(1);
+        }
     }
 
 int main(int argc, char **argv)
     {
     GtkApplication *app = gtk_application_new("org.oovcde.oovEdit",
-	    G_APPLICATION_HANDLES_COMMAND_LINE);
+            G_APPLICATION_HANDLES_COMMAND_LINE);
     GApplication *gapp = G_APPLICATION(app);
 
     g_signal_connect(app, "activate", G_CALLBACK(activateApp), NULL);
@@ -650,10 +655,10 @@ int main(int argc, char **argv)
     // passed to main, but it seems to work.
 #ifdef __linux__
     for(int i=0; i<argc; i++)
-	{
-	if(argv[i][0] == '-')
-	    argv[i][0] = '+';
-	}
+        {
+        if(argv[i][0] == '-')
+            argv[i][0] = '+';
+        }
 #endif
     int status = g_application_run(gapp, argc, argv);
     g_object_unref(app);
@@ -667,45 +672,45 @@ int main(int argc, char *argv[])
     {
     gtk_init (&argc, &argv);
     if(gEditor.getBuilder().addFromFile("oovEdit.glade"))
-	{
-	gEditor.init();
-	gEditor.getBuilder().connectSignals();
-	GtkWidget *window = gEditor.getBuilder().getWidget("MainWindow");
-	char const * fn = nullptr;
+        {
+        gEditor.init();
+        gEditor.getBuilder().connectSignals();
+        GtkWidget *window = gEditor.getBuilder().getWidget("MainWindow");
+        char const * fn = nullptr;
         char const *proj = nullptr;
-	int line = 0;
-	for(int argi=1; argi<argc; argi++)
-	    {
-	    if(argv[argi][0] == '+')
-		{
-		sscanf(&argv[argi][1], "%d", &line);
-		}
-	    else if(argv[argi][0] == '-')
-		{
-		proj = &argv[argi][2];
-		}
-	    else
-		fn = argv[argi];
-	    }
-	if(fn)
-	    {
-	    gEditor.getEditFiles().viewModule(fn, line);
-	    }
-	else
-	    {
+        int line = 0;
+        for(int argi=1; argi<argc; argi++)
+            {
+            if(argv[argi][0] == '+')
+                {
+                sscanf(&argv[argi][1], "%d", &line);
+                }
+            else if(argv[argi][0] == '-')
+                {
+                proj = &argv[argi][2];
+                }
+            else
+                fn = argv[argi];
+            }
+        if(fn)
+            {
+            gEditor.getEditFiles().viewModule(fn, line);
+            }
+        else
+            {
             fprintf(stderr, "OovEdit version %s\n", OOV_VERSION);
             fprintf(stderr, "oovEdit: Args are: filename [args]...\n");
             fprintf(stderr, "args are:\n");
             fprintf(stderr, "   +<line>            line number of opened file\n");
             fprintf(stderr, "   -p<projectDir>    directory of project files\n");
-	    }
-	gtk_widget_show(window);
-	gtk_main();
-	}
+            }
+        gtk_widget_show(window);
+        gtk_main();
+        }
     else
-	{
-	Gui::messageBox("The file oovEdit.glade must be in the executable directory.");
-	}
+        {
+        Gui::messageBox("The file oovEdit.glade must be in the executable directory.");
+        }
     return 0;
     }
 #endif
@@ -741,9 +746,9 @@ extern "C" G_MODULE_EXPORT gboolean on_MainWindow_delete_event(GtkWidget *button
 extern "C" G_MODULE_EXPORT void on_HelpAboutImagemenuitem_activate(GtkWidget *widget, gpointer data)
     {
     char const * const comments =
-	    "This is a simple editor that is part of the Oovcde project";
+            "This is a simple editor that is part of the Oovcde project";
     gtk_show_about_dialog(nullptr, "program-name", "OovEdit",
-	    "version", "Version " OOV_VERSION, "comments", comments, nullptr);
+            "version", "Version " OOV_VERSION, "comments", comments, nullptr);
     }
 
 extern "C" G_MODULE_EXPORT void on_FindImagemenuitem_activate(GtkWidget *widget, gpointer data)
@@ -770,72 +775,72 @@ extern "C" G_MODULE_EXPORT void on_FindEntry_activate(GtkEditable *editable,
     }
 
 extern "C" G_MODULE_EXPORT void on_FindInFilesMenuitem_activate(
-	GtkWidget *widget, gpointer data)
+        GtkWidget *widget, gpointer data)
     {
     gEditor.findInFilesDialog();
     }
 
 extern "C" G_MODULE_EXPORT bool on_FindTextview_button_press_event(
-	GtkWidget *widget, GdkEvent *event, gpointer data)
+        GtkWidget *widget, GdkEvent *event, gpointer data)
     {
     GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
     if(buttEvent->type == GDK_2BUTTON_PRESS)
-	{
-	GtkWidget *widget = gEditor.getBuilder().getWidget("FindTextview");
-	std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-	size_t pos = line.find(' ');
-	if(pos != std::string::npos)
-	    {
-	    line.resize(pos);
-	    }
-	gEditor.gotoFileLine(line);
-	}
+        {
+        GtkWidget *widget = gEditor.getBuilder().getWidget("FindTextview");
+        std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+        size_t pos = line.find(' ');
+        if(pos != std::string::npos)
+            {
+            line.resize(pos);
+            }
+        gEditor.gotoFileLine(line);
+        }
     return FALSE;
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_StackTextview_button_press_event(GtkWidget *widget,
-	GdkEvent *event, gpointer user_data)
+        GdkEvent *event, gpointer user_data)
     {
     GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
     if(buttEvent->type == GDK_2BUTTON_PRESS)
-	{
-	GtkWidget *widget = gEditor.getBuilder().getWidget("StackTextview");
-	OovString line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-	gEditor.debugSetStackFrame(line);
-	size_t pos = line.rfind(' ');
-	if(pos != std::string::npos)
-	    {
-	    pos++;
-	    line.erase(0, pos);
-	    }
-	gEditor.gotoFileLine(line);
-	}
+        {
+        GtkWidget *widget = gEditor.getBuilder().getWidget("StackTextview");
+        OovString line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+        gEditor.debugSetStackFrame(line);
+        size_t pos = line.rfind(' ');
+        if(pos != std::string::npos)
+            {
+            pos++;
+            line.erase(0, pos);
+            }
+        gEditor.gotoFileLine(line);
+        }
     return false;
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_ControlTextview_key_press_event(GtkWidget *widget,
-	GdkEvent *event, gpointer data)
+        GdkEvent *event, gpointer data)
     {
     switch(event->key.keyval)
-	{
-	case GDK_KEY_Return:
-	    {
-	    std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
-	    gEditor.getDebugger().sendCommand(str);
-	    }
-	    break;
-	}
+        {
+        case GDK_KEY_Return:
+            {
+            std::string str = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
+            gEditor.getDebugger().sendCommand(str);
+            }
+            break;
+        }
     return false;
     }
 
 extern "C" G_MODULE_EXPORT void on_CutImagemenuitem_activate(GtkWidget *button,
-	gpointer data)
+        gpointer data)
     {
     gEditor.cut();
     }
 
 extern "C" G_MODULE_EXPORT void on_CopyImagemenuitem_activate(GtkWidget *button,
-	gpointer data)
+        gpointer data)
     {
     gEditor.copy();
     }

@@ -14,7 +14,7 @@ static Builder *sBuilder;
 void Builder::init()
     {
     if(!sBuilder)
-	mGtkBuilder = gtk_builder_new();
+        mGtkBuilder = gtk_builder_new();
     sBuilder = this;
     }
 

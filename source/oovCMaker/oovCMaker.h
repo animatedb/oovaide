@@ -25,14 +25,19 @@ class CMaker
         void makeTopLevelFiles(OovStringRef const outDir);
         void makeToolchainFiles(OovStringRef const outDir);
         void makeComponentFiles(bool writeToProject, OovStringRef const outDir,
-        	OovStringVec const &compNames);
+                OovStringVec const &compNames);
         void writeFile(OovStringRef const destName, OovStringRef const str);
+        // A cached version of the function in ComponentTypesFile.
+        // This doesn't make a big enough difference at this time.
+        // OovString getComponentAbsolutePath(OovStringRef const compName);
 
     public:
         std::string mProjectName;
 
         BuildConfigReader mConfig;
         ComponentTypesFile mCompTypes;
+        // First arg is component name, second is path
+        // std::map<OovString, OovString> mCachedComponentPaths;
         BuildPackages mBuildPkgs;
         BuildOptions mBuildOptions;
         IncDirDependencyMapReader mIncMap;
@@ -40,8 +45,8 @@ class CMaker
 
         static void appendNames(OovStringVec const &names, char delim,
             std::string &str);
-	void addPackageDefines(OovStringRef const pkgName, std::string &str);
-	void makeDefineName(OovStringRef const pkgName, OovString &defName);
+        void addPackageDefines(OovStringRef const pkgName, std::string &str);
+        void makeDefineName(OovStringRef const pkgName, OovString &defName);
         void makeToolchainFile(OovStringRef const compilePath, OovStringRef const destName);
         void makeTopInFile(OovStringRef const destName);
         void makeTopVerInFile(OovStringRef const destName);

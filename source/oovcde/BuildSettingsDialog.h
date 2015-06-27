@@ -20,23 +20,23 @@
 class BuildSettingsDialog
     {
     public:
-	BuildSettingsDialog();
-	virtual ~BuildSettingsDialog();
-	// Reads from the component file and displays in the tree view
-	void enterScreen();
-	// Writes the screen selections to the component file.
-	void saveScreen();
-	// Meant to be called when a different component is selected in the
-	// tree view.
-	void switchComponent();
+        BuildSettingsDialog();
+        virtual ~BuildSettingsDialog();
+        // Reads from the component file and displays in the tree view
+        void enterScreen();
+        // Writes the screen selections to the component file.
+        void saveScreen();
+        // Meant to be called when a different component is selected in the
+        // tree view.
+        void switchComponent();
 
     private:
-	GuiTree mComponentTree;
-	ComponentTypesFile mComponentFile;
-	std::string mLastCompName;
-	GuiTreeItem getParent(std::string const &compName);
-	void saveFromScreen(std::string const &compName);
-	void loadToScreen(std::string const &compName);
+        GuiTree mComponentTree;
+        ComponentTypesFile mComponentFile;
+        std::string mLastCompName;
+        GuiTreeItem getParent(std::string const &compName);
+        void saveFromScreen(std::string const &compName);
+        void loadToScreen(std::string const &compName);
     };
 
 

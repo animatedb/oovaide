@@ -14,22 +14,22 @@
 class OovProcessChildArgs
     {
     public:
-	OovProcessChildArgs()
-	    { clearArgs(); }
+        OovProcessChildArgs()
+            { clearArgs(); }
 
-	// WARNING: The arg[0] must be added.
-	void addArg(OovStringRef const argStr);
-	void clearArgs()
-	    { mArgStrings.clear(); }
-	char const * const *getArgv() const;
-	size_t getArgc() const
-	    { return mArgStrings.size(); }
-	OovString getArgsAsStr() const;
-	void printArgs(FILE *fh) const;
+        // WARNING: The arg[0] must be added.
+        void addArg(OovStringRef const argStr);
+        void clearArgs()
+            { mArgStrings.clear(); }
+        char const * const *getArgv() const;
+        size_t getArgc() const
+            { return mArgStrings.size(); }
+        OovString getArgsAsStr() const;
+        void printArgs(FILE *fh) const;
 
     private:
-	OovStringVec mArgStrings;
-	mutable std::vector<char const*> mArgv;	// These are created temporarily during getArgv
+        OovStringVec mArgStrings;
+        mutable std::vector<char const*> mArgv; // These are created temporarily during getArgv
     };
 
 

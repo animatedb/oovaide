@@ -30,13 +30,13 @@ static OovString getEntry(OovStringRef const widgetName)
 
 AddPackageDialog::AddPackageDialog():
     Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("AddPackageDialog")),
-	    GTK_WINDOW(Builder::getBuilder()->getWidget("ProjectPackagesDialog")))
+            GTK_WINDOW(Builder::getBuilder()->getWidget("ProjectPackagesDialog")))
     {
     sAddPackageDialog = this;
     mAllPackagesList.init(*Builder::getBuilder(), "AllPackagesTreeview", "Available Packages");
     mAllPackagesList.clear();
     for(auto const &pkgName : mAvailPackages.getAvailablePackages())
-    	mAllPackagesList.appendText(pkgName);
+        mAllPackagesList.appendText(pkgName);
     }
 
 AddPackageDialog::~AddPackageDialog()
@@ -58,16 +58,16 @@ void AddPackageDialog::selectPackage()
 
 ProjectPackagesDialog::ProjectPackagesDialog(std::string &baseBuildArgs):
     Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("ProjectPackagesDialog")),
-	    GTK_WINDOW(Builder::getBuilder()->getWidget("OptionsDialog"))),
+            GTK_WINDOW(Builder::getBuilder()->getWidget("OptionsDialog"))),
     mProjectPackages(true), mBaseBuildArgs(baseBuildArgs), mAllowSelection(true)
     {
     sProjectPackagesDialog = this;
     mProjectPackagesList.init(*Builder::getBuilder(), "ProjectPackagesTreeview", "Packages");
 #ifdef __linux__
     Gui::setVisible(GTK_LABEL(Builder::getBuilder()->getWidget(
-	    "MissingDirectoryLabel")), false);
+            "MissingDirectoryLabel")), false);
     Gui::setVisible(GTK_BUTTON(Builder::getBuilder()->getWidget(
-	    "ScanDirectoriesButton")), false);
+            "ScanDirectoriesButton")), false);
 #endif
     }
 
@@ -84,28 +84,28 @@ void ProjectPackagesDialog::beforeRun()
 
     OovString args(mBaseBuildArgs);
     while(pos != std::string::npos)
-	{
-	pos = args.find("-EP", pos);
-	if(pos != std::string::npos)
-	    {
-	    size_t endPos = args.findSpace(pos+3);
-//	    std::string pkg;
-	    if(endPos != std::string::npos)
-		{
-//		pkg = args.substr(pos+3, endPos-(pos+3));
-		if(args[endPos] == '\n')
-		    endPos++;
-		args.erase(pos, endPos-pos);
-		}
-	    else
-		{
-//		pkg = args.substr(pos+3);
-		args.erase(pos);
-		}
-	    // Could use the package names for something.
-//	    pkgNames.push_back(pkg);
-	    }
-	}
+        {
+        pos = args.find("-EP", pos);
+        if(pos != std::string::npos)
+            {
+            size_t endPos = args.findSpace(pos+3);
+//          std::string pkg;
+            if(endPos != std::string::npos)
+                {
+//              pkg = args.substr(pos+3, endPos-(pos+3));
+                if(args[endPos] == '\n')
+                    endPos++;
+                args.erase(pos, endPos-pos);
+                }
+            else
+                {
+//              pkg = args.substr(pos+3);
+                args.erase(pos);
+                }
+            // Could use the package names for something.
+//          pkgNames.push_back(pkg);
+            }
+        }
     updatePackageList();
     mBaseBuildArgs = args;
     }
@@ -113,65 +113,65 @@ void ProjectPackagesDialog::beforeRun()
 void ProjectPackagesDialog::afterRun(bool ok)
     {
     if(ok)
-	{
-	savePackage(mProjectPackagesList.getSelected());
-	mProjectPackages.savePackages();
-	int len = mBaseBuildArgs.length();
-	if(len > 0)
-	    {
-	    if(mBaseBuildArgs[len-1] != '\n')
-		mBaseBuildArgs.append("\n");
-	    }
-	for(auto const &str : mProjectPackagesList.getText())
-	    {
-	    mBaseBuildArgs += "-EP";
-	    mBaseBuildArgs += str;
-	    mBaseBuildArgs += "\n";
-	    }
-	}
+        {
+        savePackage(mProjectPackagesList.getSelected());
+        mProjectPackages.savePackages();
+        int len = mBaseBuildArgs.length();
+        if(len > 0)
+            {
+            if(mBaseBuildArgs[len-1] != '\n')
+                mBaseBuildArgs.append("\n");
+            }
+        for(auto const &str : mProjectPackagesList.getText())
+            {
+            mBaseBuildArgs += "-EP";
+            mBaseBuildArgs += str;
+            mBaseBuildArgs += "\n";
+            }
+        }
     }
 
 void ProjectPackagesDialog::savePackage(const std::string &pkgName)
     {
     if(pkgName.length() > 0)
-	{
-	bool addOk = true;
+        {
+        bool addOk = true;
 #ifndef __linux__
-	// This isn't perfect since it displays an error, but allows
-	// the package to be inserted into the project anyway. It does
-	// allow the user to clean up themselves though.
-	addOk = winCheckDirectoryOk();
+        // This isn't perfect since it displays an error, but allows
+        // the package to be inserted into the project anyway. It does
+        // allow the user to clean up themselves though.
+        addOk = winCheckDirectoryOk();
 #endif
-	if(addOk)
-	    {
-	    Package pkg(pkgName, getEntry("PackageRootDirEntry"));
-	    pkg.setCompileInfo(getEntry("PackageIncDirEntry"),
-		    getEntry("PackageCompileArgsEntry"));
-	    pkg.setLinkInfo(getEntry("PackageLibDirEntry"), getEntry("PackageLibNamesEntry"),
-		    getEntry("PackageLinkArgsEntry"));
-	    pkg.setExternalReferenceDir(getEntry("PackageExternRefEntry"));
-	    mProjectPackages.insertPackage(pkg);
-	    }
-	}
+        if(addOk)
+            {
+            Package pkg(pkgName, getEntry("PackageRootDirEntry"));
+            pkg.setCompileInfo(getEntry("PackageIncDirEntry"),
+                    getEntry("PackageCompileArgsEntry"));
+            pkg.setLinkInfo(getEntry("PackageLibDirEntry"), getEntry("PackageLibNamesEntry"),
+                    getEntry("PackageLinkArgsEntry"));
+            pkg.setExternalReferenceDir(getEntry("PackageExternRefEntry"));
+            mProjectPackages.insertPackage(pkg);
+            }
+        }
     }
 
 void ProjectPackagesDialog::selectPackage()
     {
     if(mAllowSelection)
-	{
-	std::string pkgName = mProjectPackagesList.getSelected();
-	savePackage(mLastSelectedPackage);
-	Package pkg = mProjectPackages.getPackage(pkgName);
+        {
+        std::string pkgName = mProjectPackagesList.getSelected();
+        savePackage(mLastSelectedPackage);
+        Package pkg = mProjectPackages.getPackage(pkgName);
 
-	setEntry("PackageRootDirEntry", pkg.getRootDir());
-	setEntry("PackageIncDirEntry", pkg.getIncludeDirsAsString());
-	setEntry("PackageCompileArgsEntry", pkg.getCompileArgsAsStr());
-	setEntry("PackageLibNamesEntry", pkg.getLibraryNamesAsString());
-	setEntry("PackageLibDirEntry", pkg.getLibraryDirsAsString());
-	setEntry("PackageLinkArgsEntry", pkg.getLinkArgsAsStr());
-	setEntry("PackageExternRefEntry", pkg.getExtRefDirsAsString());
-	mLastSelectedPackage = pkgName;
-	}
+        setEntry("PackageRootDirEntry", pkg.getRootDir());
+        setEntry("PackageIncDirEntry", pkg.getIncludeDirsAsString());
+        setEntry("PackageCompileArgsEntry", pkg.getCompileArgsAsStr());
+        setEntry("PackageLibNamesEntry", pkg.getLibraryNamesAsString());
+        setEntry("PackageLibDirEntry", pkg.getLibraryDirsAsString());
+        setEntry("PackageLinkArgsEntry", pkg.getLinkArgsAsStr());
+        setEntry("PackageExternRefEntry", pkg.getExtRefDirsAsString());
+        mLastSelectedPackage = pkgName;
+        }
     }
 
 void ProjectPackagesDialog::clearPackageDisplay()
@@ -199,7 +199,7 @@ void ProjectPackagesDialog::updatePackageList()
     clearPackageDisplay();
     mProjectPackagesList.clear();
     for(auto const &pkg : mProjectPackages.getPackages())
-	mProjectPackagesList.appendText(pkg.getPkgName());
+        mProjectPackagesList.appendText(pkg.getPkgName());
     mAllowSelection = true;
     }
 
@@ -207,25 +207,25 @@ void ProjectPackagesDialog::displayAddPackageDialog()
     {
     AddPackageDialog dlg;
     if(dlg.run(true))
-	{
-	OovStringVec packages = mProjectPackagesList.getText();
+        {
+        OovStringVec packages = mProjectPackagesList.getText();
 
-	Package pkg = dlg.getPackage();
-	if(std::find(packages.begin(), packages.end(), pkg.getPkgName()) ==
-		packages.end())
-	    {
-	    mProjectPackages.insertPackage(pkg);
-	    }
-	else
-	    {
-	    Gui::messageBox("Package already exists");
-	    }
-	updatePackageList();
-	mProjectPackagesList.setSelected(pkg.getPkgName());
+        Package pkg = dlg.getPackage();
+        if(std::find(packages.begin(), packages.end(), pkg.getPkgName()) ==
+                packages.end())
+            {
+            mProjectPackages.insertPackage(pkg);
+            }
+        else
+            {
+            Gui::messageBox("Package already exists");
+            }
+        updatePackageList();
+        mProjectPackagesList.setSelected(pkg.getPkgName());
 #ifndef __linux__
-	winScanDirectories();
+        winScanDirectories();
 #endif
-	}
+        }
     }
 
 
@@ -235,18 +235,18 @@ void ProjectPackagesDialog::winSetEnableScanning()
     {
     bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"));
     Gui::setEnabled(GTK_LABEL(Builder::getBuilder()->getWidget(
-	    "MissingDirectoryLabel")), missing);
+            "MissingDirectoryLabel")), missing);
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget(
-	    "ScanDirectoriesButton")), missing);
+            "ScanDirectoriesButton")), missing);
     }
 
 bool ProjectPackagesDialog::winCheckDirectoryOk()
     {
     bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"));
     if(missing)
-	{
-	Gui::messageBox("The root directory is not correct");
-	}
+        {
+        Gui::messageBox("The root directory is not correct");
+        }
     return(!missing);
     }
 
@@ -260,45 +260,45 @@ static int winMatchPackage(OovStringRef const pkgName, OovStringRef const dirNam
     CharTypes lastCt = CT_Start;
     std::string part;
     while(*p)
-	{
-	CharTypes ct;
-	if(isalpha(*p))
-	    ct = CT_Alpha;
-	else if(isdigit(*p))
-	    ct = CT_Num;
-	else
-	    ct = CT_Other;
-	if(lastCt == CT_Start)
-	    lastCt = ct;
-	if(ct == lastCt)
-	    {
-	    if(ct != CT_Other)
-		part += *p;
-	    }
-	else
-	    {
-	    pkgParts.push_back(part);
-	    lastCt = ct;
-	    part += *p;
-	    }
-	p++;
-	}
+        {
+        CharTypes ct;
+        if(isalpha(*p))
+            ct = CT_Alpha;
+        else if(isdigit(*p))
+            ct = CT_Num;
+        else
+            ct = CT_Other;
+        if(lastCt == CT_Start)
+            lastCt = ct;
+        if(ct == lastCt)
+            {
+            if(ct != CT_Other)
+                part += *p;
+            }
+        else
+            {
+            pkgParts.push_back(part);
+            lastCt = ct;
+            part += *p;
+            }
+        p++;
+        }
     pkgParts.push_back(part);
     // Rate alpha more than numeric, and longer strings more than many shorter strings
     OovString dir = dirName;
     std::transform(dir.begin(), dir.end(), dir.begin(), ::tolower);
     for(auto &part : pkgParts)
-	{
-	std::transform(part.begin(), part.end(), part.begin(), ::tolower);
-	if(std::string(dir).find(part) != std::string::npos)
-	    {
-	    int len = part.length();
-	    int mult = 1;
-	    if(isalpha(part[0]))
-		mult = 2;
-	    matchQuality += len * len * mult;
-	    }
-	}
+        {
+        std::transform(part.begin(), part.end(), part.begin(), ::tolower);
+        if(std::string(dir).find(part) != std::string::npos)
+            {
+            int len = part.length();
+            int mult = 1;
+            if(isalpha(part[0]))
+                mult = 2;
+            matchQuality += len * len * mult;
+            }
+        }
     return matchQuality;
     }
 */
@@ -307,24 +307,24 @@ static int winMatchPackage(OovStringRef const pkgName, OovStringRef const dirNam
 void ProjectPackagesDialog::winScanDirectories()
     {
     Package pkg = mProjectPackages.getPackage(
-	    mProjectPackagesList.getSelected());
+            mProjectPackagesList.getSelected());
     if(pkg.getPkgName().length() > 0)
-	{
-	OovString rootDir = getEntry("PackageRootDirEntry");
-	FilePaths dirs;
-	dirs.push_back(FilePath("/", FP_Dir));
-	dirs.push_back(FilePath("/Program Files", FP_Dir));
-	OovString dir = findMatchingDir(dirs, rootDir);
-	if(dir.length())
-	    {
-	    pkg.setRootDir(dir);
-	    // move to project packages.
-	    mProjectPackages.insertPackage(pkg);
-	    }
-	setEntry("PackageRootDirEntry", pkg.getRootDir());
-	}
+        {
+        OovString rootDir = getEntry("PackageRootDirEntry");
+        FilePaths dirs;
+        dirs.push_back(FilePath("/", FP_Dir));
+        dirs.push_back(FilePath("/Program Files", FP_Dir));
+        OovString dir = findMatchingDir(dirs, rootDir);
+        if(dir.length())
+            {
+            pkg.setRootDir(dir);
+            // move to project packages.
+            mProjectPackages.insertPackage(pkg);
+            }
+        setEntry("PackageRootDirEntry", pkg.getRootDir());
+        }
     else
-	Gui::messageBox("Select a package to scan", GTK_MESSAGE_INFO);
+        Gui::messageBox("Select a package to scan", GTK_MESSAGE_INFO);
     }
 
 #endif
@@ -336,21 +336,21 @@ extern "C" G_MODULE_EXPORT void on_PackageAddButton_clicked(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sProjectPackagesDialog)
-	sProjectPackagesDialog->displayAddPackageDialog();
+        sProjectPackagesDialog->displayAddPackageDialog();
     }
 
 extern "C" G_MODULE_EXPORT void on_PackageRemoveButton_clicked(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sProjectPackagesDialog)
-	sProjectPackagesDialog->removePackage();
+        sProjectPackagesDialog->removePackage();
     }
 
 extern "C" G_MODULE_EXPORT void on_ProjectPackagesTreeview_cursor_changed(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sProjectPackagesDialog)
-	sProjectPackagesDialog->selectPackage();
+        sProjectPackagesDialog->selectPackage();
     }
 
 //////////////
@@ -359,7 +359,7 @@ extern "C" G_MODULE_EXPORT void on_AllPackagesTreeview_cursor_changed(
     GtkWidget * /*button*/, gpointer /*data*/)
     {
     if(sAddPackageDialog)
-	sAddPackageDialog->selectPackage();
+        sAddPackageDialog->selectPackage();
     }
 
 extern "C" G_MODULE_EXPORT void on_ScanDirectoriesButton_clicked(
@@ -367,7 +367,7 @@ extern "C" G_MODULE_EXPORT void on_ScanDirectoriesButton_clicked(
     {
 #ifndef __linux__
     if(sProjectPackagesDialog)
-	sProjectPackagesDialog->winScanDirectories();
+        sProjectPackagesDialog->winScanDirectories();
 #endif
     }
 
@@ -376,6 +376,6 @@ extern "C" G_MODULE_EXPORT void on_PackageRootDirEntry_changed(
     {
 #ifndef __linux__
     if(sProjectPackagesDialog)
-	sProjectPackagesDialog->winSetEnableScanning();
+        sProjectPackagesDialog->winSetEnableScanning();
 #endif
     }

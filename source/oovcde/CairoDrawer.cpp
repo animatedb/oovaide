@@ -43,15 +43,15 @@ void CairoDrawer::drawLine(const GraphPoint &p1, const GraphPoint &p2, bool dash
     cairo_move_to(cr, p1.x, p1.y);
     cairo_line_to(cr, p2.x, p2.y);
     if(dashed)
-	{
-	double dashes[] = { 4 };
-	cairo_set_dash(cr, dashes, sizeof(dashes)/sizeof(dashes[0]), 1);
-	}
+        {
+        double dashes[] = { 4 };
+        cairo_set_dash(cr, dashes, sizeof(dashes)/sizeof(dashes[0]), 1);
+        }
     cairo_stroke(cr);
     if(dashed)
-	{
-	cairo_set_dash(cr, NULL, 0, 0);
-	}
+        {
+        cairo_set_dash(cr, NULL, 0, 0);
+        }
     }
 
 void CairoDrawer::drawCircle(const GraphPoint &p, int radius, Color fillColor)
@@ -78,18 +78,18 @@ void CairoDrawer::drawEllipse(const GraphRect &rect)
 void CairoDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
     {
     if(poly.size() > 0)
-	{
-	cairo_move_to(cr, poly[0].x, poly[0].y);
-	for(size_t i=1; i<poly.size(); i++)
-	    {
-	    cairo_line_to(cr, poly[i].x, poly[i].y);
-	    }
-	cairo_close_path(cr);
-	setColor(fillColor);
-	cairo_fill_preserve(cr);
-	setColor(mLineColor);
-	cairo_stroke(cr);
-	}
+        {
+        cairo_move_to(cr, poly[0].x, poly[0].y);
+        for(size_t i=1; i<poly.size(); i++)
+            {
+            cairo_line_to(cr, poly[i].x, poly[i].y);
+            }
+        cairo_close_path(cr);
+        setColor(fillColor);
+        cairo_fill_preserve(cr);
+        setColor(mLineColor);
+        cairo_stroke(cr);
+        }
     }
 
 void CairoDrawer::drawText(const GraphPoint &p, OovStringRef const text)
@@ -101,17 +101,25 @@ void CairoDrawer::drawText(const GraphPoint &p, OovStringRef const text)
 void CairoDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
     {
     if(start)
-	{
-	mFillColor = fillColor;
-	mLineColor = lineColor;
-	cairo_set_line_width(cr, 1);
-	}
+        {
+        mFillColor = fillColor;
+        mLineColor = lineColor;
+        cairo_set_line_width(cr, 1);
+        }
     }
 
 void CairoDrawer::groupText(bool start)
     {
     if(start)
-	{
-	setColor(mTextColor);
-	}
+        {
+        setColor(mTextColor);
+        }
+    }
+
+void CairoDrawer::clearAndSetDefaults()
+    {
+    cairo_set_source_rgb(cr, 255,255,255);
+    cairo_paint(cr);
+    cairo_set_source_rgb(cr, 0,0,0);
+    cairo_set_line_width(cr, 1.0);
     }

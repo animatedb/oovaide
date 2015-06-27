@@ -21,10 +21,10 @@ std::string DebuggerLocation::getAsString() const
     {
     OovString location = getFilename();
     if(mLineNum != -1)
-	{
-	location += ':';
-	location.appendInt(mLineNum);
-	}
+        {
+        location += ':';
+        location.appendInt(mLineNum);
+        }
     return location;
     }
 
@@ -45,10 +45,10 @@ DebuggerLocation DebuggerBase::getStoppedLocation()
     {
     DebuggerLocation loc;
     if(getChildState() == DCS_ChildPaused)
-	{
-	LockGuard lock(mStatusLock);
-	loc = mStoppedLocation;
-	}
+        {
+        LockGuard lock(mStatusLock);
+        loc = mStoppedLocation;
+        }
     return loc;
     }
 
@@ -57,10 +57,10 @@ eDebuggerChangeStatus DebuggerBase::getChangeStatus()
     LockGuard lock(mStatusLock);
     eDebuggerChangeStatus st = DCS_None;
     if(!mChangeStatusQueue.empty())
-	{
-	st = mChangeStatusQueue.front();
-	mChangeStatusQueue.pop();
-	}
+        {
+        st = mChangeStatusQueue.front();
+        mChangeStatusQueue.pop();
+        }
     return st;
     }
 
@@ -87,20 +87,20 @@ OovString DebuggerBase::getVarValue()
 
 void DebuggerBase::updateChangeStatus(eDebuggerChangeStatus status)
     {
-	{
-	LockGuard lock(mStatusLock);
-	mChangeStatusQueue.push(status);
-	}
+        {
+        LockGuard lock(mStatusLock);
+        mChangeStatusQueue.push(status);
+        }
     if(mDebuggerListener)
-	mDebuggerListener->DebugStatusChanged();
+        mDebuggerListener->DebugStatusChanged();
     }
 
 void DebuggerBase::changeChildState(DebuggerChildStates state)
     {
-	{
-	LockGuard lock(mStatusLock);
-	mDebuggerChildState = state;
-	}
+        {
+        LockGuard lock(mStatusLock);
+        mDebuggerChildState = state;
+        }
     updateChangeStatus(DCS_RunState);
     }
 
@@ -122,16 +122,16 @@ bool DebuggerGdb::runDebuggerProcess()
     {
     bool started = mBkgPipeProc.isIdle();
     if(started)
-	{
-	OovProcessChildArgs args;
-	args.addArg(mDebuggerFilePath);
-	args.addArg(mDebuggeeFilePath);
-	args.addArg("--interpreter=mi");
-	mBkgPipeProc.startProcess(mDebuggerFilePath, args.getArgv());
+        {
+        OovProcessChildArgs args;
+        args.addArg(mDebuggerFilePath);
+        args.addArg(mDebuggeeFilePath);
+        args.addArg("--interpreter=mi");
+        mBkgPipeProc.startProcess(mDebuggerFilePath, args.getArgv());
 #if(DEBUG_DBG)
-	sDbgFile.printflush("Starting process\n");
+        sDbgFile.printflush("Starting process\n");
 #endif
-	}
+        }
     return started;
     }
 
@@ -145,29 +145,29 @@ void DebuggerGdb::resume()
 void DebuggerGdb::toggleBreakpoint(const DebuggerBreakpoint &br)
     {
     if(getChildState() == DCS_ChildRunning)
-	{
-	interrupt();
-	}
+        {
+        interrupt();
+        }
     auto iter = std::find(mBreakpoints.begin(), mBreakpoints.end(), br);
     if(iter == mBreakpoints.end())
-	{
-	mBreakpoints.push_back(br);
-	if(getChildState() == DCS_ChildPaused)
-	    {
-	    sendAddBreakpoint(br);
-	    }
-	}
+        {
+        mBreakpoints.push_back(br);
+        if(getChildState() == DCS_ChildPaused)
+            {
+            sendAddBreakpoint(br);
+            }
+        }
     else
-	{
-	mBreakpoints.erase(iter);
-	if(getChildState() == DCS_ChildPaused)
-	    {
-	    if(br.mBreakpointNumber != -1)
-		{
-		sendDeleteBreakpoint(br);
-		}
-	    }
-	}
+        {
+        mBreakpoints.erase(iter);
+        if(getChildState() == DCS_ChildPaused)
+            {
+            if(br.mBreakpointNumber != -1)
+                {
+                sendDeleteBreakpoint(br);
+                }
+            }
+        }
     }
 
 void DebuggerGdb::sendAddBreakpoint(const DebuggerBreakpoint &br)
@@ -201,44 +201,44 @@ void DebuggerGdb::stepOver()
 void DebuggerGdb::interrupt()
     {
     if(!mBkgPipeProc.isIdle() && getChildState() == DCS_ChildRunning)
-	{
-	sendMiCommand("-exec-interrupt");
-	}
+        {
+        sendMiCommand("-exec-interrupt");
+        }
     }
 
 void DebuggerGdb::stop()
     {
     if(!mBkgPipeProc.isIdle())
-	{
-	sendMiCommand("-gdb-exit");
-	mBkgPipeProc.childProcessClose();
-	changeChildState(DCS_ChildNotRunning);
-	}
+        {
+        sendMiCommand("-gdb-exit");
+        mBkgPipeProc.childProcessClose();
+        changeChildState(DCS_ChildNotRunning);
+        }
     }
 
 void DebuggerGdb::ensureGdbChildRunning()
     {
     if(runDebuggerProcess())
-	{
-	for(auto const &br : mBreakpoints)
-	    sendAddBreakpoint(br);
-	}
+        {
+        for(auto const &br : mBreakpoints)
+            sendAddBreakpoint(br);
+        }
     if(getChildState() == DCS_ChildNotRunning)
-	{
-	if(mWorkingDir.length())
-	    {
-	    std::string dirCmd = "-environment-cd ";
-	    dirCmd += mWorkingDir;
-	    sendMiCommand(dirCmd);
-	    }
-	if(mDebuggeeArgs.length())
-	    {
-	    std::string argCmd = "-exec-arguments ";
-	    argCmd += mDebuggeeArgs;
-	    sendMiCommand(argCmd);
-	    }
-	sendMiCommand("-exec-run");
-	}
+        {
+        if(mWorkingDir.length())
+            {
+            std::string dirCmd = "-environment-cd ";
+            dirCmd += mWorkingDir;
+            sendMiCommand(dirCmd);
+            }
+        if(mDebuggeeArgs.length())
+            {
+            std::string argCmd = "-exec-arguments ";
+            argCmd += mDebuggeeArgs;
+            sendMiCommand(argCmd);
+            }
+        sendMiCommand("-exec-run");
+        }
     }
 
 void DebuggerGdb::startGetVariable(OovStringRef const variable)
@@ -278,19 +278,19 @@ void DebuggerGdb::sendCommand(OovStringRef const command)
     OovString cmd = command;
     size_t pos = cmd.find('\n');
     if(pos != std::string::npos)
-	{
-	if(pos > 0)
-	    {
-	    if(cmd[pos-1] != '\r')
-		cmd.insert(pos, "\r");
-	    }
-	}
+        {
+        if(pos > 0)
+            {
+            if(cmd[pos-1] != '\r')
+                cmd.insert(pos, "\r");
+            }
+        }
     else
-	cmd += "\r\n";
+        cmd += "\r\n";
     if(mDebuggerListener)
-	{
-	mDebuggerListener->DebugOutput(cmd);
-	}
+        {
+        mDebuggerListener->DebugOutput(cmd);
+        }
     mBkgPipeProc.childProcessSend(cmd);
 #if(DEBUG_DBG)
     sDbgFile.printflush("Sent Command %s\n", cmd.c_str());
@@ -301,17 +301,17 @@ void DebuggerGdb::onStdOut(OovStringRef const out, size_t len)\
     {
     mDebuggerOutputBuffer.append(out, len);
     while(1)
-	{
-	size_t pos = mDebuggerOutputBuffer.find('\n');
-	if(pos != std::string::npos)
-	    {
-	    std::string res(mDebuggerOutputBuffer, 0, pos+1);
-	    handleResult(res);
-	    mDebuggerOutputBuffer.erase(0, pos+1);
-	    }
-	else
-	    break;
-	}
+        {
+        size_t pos = mDebuggerOutputBuffer.find('\n');
+        if(pos != std::string::npos)
+            {
+            std::string res(mDebuggerOutputBuffer, 0, pos+1);
+            handleResult(res);
+            mDebuggerOutputBuffer.erase(0, pos+1);
+            }
+        else
+            break;
+        }
     }
 
 // The docs say that -stack-select-frame is deprecated for the --frame option.
@@ -322,15 +322,15 @@ void DebuggerGdb::setStackFrame(OovStringRef const frameLine)
     OovString line = frameLine;
     size_t pos = line.find(':');
     if(pos != std::string::npos)
-	{
-	int frameNumber;
-	OovString numStr = line;
-	numStr.resize(pos);
-	if(numStr.getInt(0, 10000, frameNumber))
-	    {
-	    mFrameNumber = frameNumber;
-	    }
-	}
+        {
+        int frameNumber;
+        OovString numStr = line;
+        numStr.resize(pos);
+        if(numStr.getInt(0, 10000, frameNumber))
+            {
+            mFrameNumber = frameNumber;
+            }
+        }
     }
 
 
@@ -338,11 +338,11 @@ void DebuggerGdb::onStdErr(OovStringRef const out, size_t len)
     {
     std::string result(out, len);
     if(mDebuggerListener)
-	mDebuggerListener->DebugOutput(result);
+        mDebuggerListener->DebugOutput(result);
     }
 
 // gets value within quotes of
-//	tagname="value"
+//      tagname="value"
 static std::string getTagValue(std::string const &wholeStr, char const * const tag)
     {
     std::string val;
@@ -350,13 +350,13 @@ static std::string getTagValue(std::string const &wholeStr, char const * const t
     tagStr += "=\"";
     size_t pos = wholeStr.find(tagStr);
     if(pos != std::string::npos)
-	{
+        {
         /// @todo - this has to skip escaped quotes
-	pos += tagStr.length();
-	size_t endPos = wholeStr.find("\"", pos);
-	if(endPos != std::string::npos)
-	    val = wholeStr.substr(pos, endPos-pos);
-	}
+        pos += tagStr.length();
+        size_t endPos = wholeStr.find("\"", pos);
+        if(endPos != std::string::npos)
+            val = wholeStr.substr(pos, endPos-pos);
+        }
     return val;
     }
 
@@ -369,7 +369,7 @@ static DebuggerLocation getLocationFromResult(const std::string &resultStr)
 // For some reason, "fullname" has doubled slashes on Windows, Sometimes "file"
 // contains a full good path, but not all the time.
     FilePath fullFn(FilePathFixFilePath(getTagValue(resultStr, "fullname")),
-	    FP_File);
+            FP_File);
     loc.setFileLine(fullFn, lineNum);
 //    loc.setFileLine(getTagValue(resultStr, "file"), lineNum);
     return loc;
@@ -377,7 +377,7 @@ static DebuggerLocation getLocationFromResult(const std::string &resultStr)
 
 // Return is end of result tuple.
 // A tuple is defined in the GDB/MI output syntax BNF
-// Example:		std::vector<WoolBag> mBags
+// Example:             std::vector<WoolBag> mBags
 // 15^done,value="{mBags = {
 //    <std::_Vector_base<WoolBag, std::allocator<WoolBag> >> =
 //      {
@@ -396,14 +396,14 @@ static DebuggerLocation getLocationFromResult(const std::string &resultStr)
 //      },
 //       <No data fields>}}"
 //
-// Example:		A class containing mModule and mInterface
+// Example:             A class containing mModule and mInterface
 // 10^done,value="
 //      {
 //      mModule = 0x8,
 //      mInterface =
 //          {
 //          getResourceName = 0x7625118e <onexit+97>,
-//      	putTogether = 0x76251162 <onexit+53>
+//              putTogether = 0x76251162 <onexit+53>
 //          }
 //      }"
 static size_t getResultTuple(size_t pos, const std::string &resultStr, std::string &tupleStr)
@@ -411,10 +411,10 @@ static size_t getResultTuple(size_t pos, const std::string &resultStr, std::stri
     size_t startPos = resultStr.find('{', pos);
     size_t endPos = resultStr.find('}', startPos);
     if(endPos != std::string::npos)
-	{
-	endPos++;	// Include the close brace.
-	tupleStr = resultStr.substr(startPos, endPos-startPos);
-	}
+        {
+        endPos++;       // Include the close brace.
+        tupleStr = resultStr.substr(startPos, endPos-startPos);
+        }
     return endPos;
     }
 
@@ -423,10 +423,10 @@ void DebuggerGdb::handleBreakpoint(const std::string &resultStr)
     OovString brkNumStr = getTagValue(resultStr, "number");
     int brkNum;
     if(brkNumStr.getInt(0, 55555, brkNum))
-	{
-	DebuggerLocation loc = getLocationFromResult(resultStr);
-	mBreakpoints.setBreakpointNumber(loc, brkNum);
-	}
+        {
+        DebuggerLocation loc = getLocationFromResult(resultStr);
+        mBreakpoints.setBreakpointNumber(loc, brkNum);
+        }
     }
 
 void DebuggerGdb::handleValue(const std::string &resultStr)
@@ -436,38 +436,38 @@ void DebuggerGdb::handleValue(const std::string &resultStr)
     mVarValue = debRes.getAsString();
     updateChangeStatus(DCS_Value);
     if(mDebuggerListener)
-	mDebuggerListener->DebugOutput(mVarValue);
+        mDebuggerListener->DebugOutput(mVarValue);
     }
 
 // 99^done,stack=[
 //    frame={level="0",addr="0x00408d0b",func="printf",file="c:/mingw/include/stdio.h",
-//	fullname="c:\\mingw\\include\\stdio.h",line="240"},
+//      fullname="c:\\mingw\\include\\stdio.h",line="240"},
 //    frame={level="1",...
 void DebuggerGdb::handleStack(const std::string &resultStr)
     {
-	{
-	LockGuard lock(mStatusLock);
-	mStack.clear();
-	int frameNum = 0;
+        {
+        LockGuard lock(mStatusLock);
+        mStack.clear();
+        int frameNum = 0;
         size_t pos=0;
-	do
-	    {
-	    std::string tuple;
-	    pos = getResultTuple(pos, resultStr, tuple);
-	    if(pos != std::string::npos)
-		{
-		mStack.appendInt(frameNum++, 10);
-		mStack += ':';
-		mStack += getTagValue(tuple, "func");
-		mStack += "   ";
-		DebuggerLocation loc = getLocationFromResult(tuple);
-		mStack += loc.getAsString();
-		mStack += "\n";
-		}
-	    else
-		break;
-	    } while(pos!=std::string::npos);
-	}
+        do
+            {
+            std::string tuple;
+            pos = getResultTuple(pos, resultStr, tuple);
+            if(pos != std::string::npos)
+                {
+                mStack.appendInt(frameNum++, 10);
+                mStack += ':';
+                mStack += getTagValue(tuple, "func");
+                mStack += "   ";
+                DebuggerLocation loc = getLocationFromResult(tuple);
+                mStack += loc.getAsString();
+                mStack += "\n";
+                }
+            else
+                break;
+            } while(pos!=std::string::npos);
+        }
     updateChangeStatus(DCS_Stack);
     }
 
@@ -484,99 +484,99 @@ void DebuggerGdb::handleResult(const std::string &resultStr)
     sDbgFile.printflush("%s\n", resultStr.c_str());
 #endif
     if(isdigit(resultStr[0]))
-	{
-	size_t pos = 0;
-	while(isdigit(resultStr[pos]))
-	    {
-	    pos++;
-	    }
-	switch(resultStr[pos+0])
-	    {
-	    case '^':
-		{
-		// After ^ is the "result-class":
-		//	running, done, connected, error, exit
-		if(compareSubstr(resultStr, pos+1, "running") == 0)
-		    {
-		    changeChildState(DCS_ChildRunning);
-		    }
-		else if(compareSubstr(resultStr, pos+1, "error") == 0)
-		    {
-//		if(mDebuggerListener)
-//		    mDebuggerListener->DebugOutput(&resultStr[3]);
-		    }
-		else if(compareSubstr(resultStr, pos+1, "done") == 0)
-		    {
-		    size_t variableNamePos = resultStr.find(',');
-		    if(variableNamePos != std::string::npos)
-			{
-			variableNamePos++;
-			if(compareSubstr(resultStr, variableNamePos, "type=") == 0)
-			    {
-			    std::string typeStr = getTagValue(resultStr, "type=");
-			    if(typeStr.compare("breakpoint") == 0)
-				{
-				handleBreakpoint(resultStr);
-				}
-			    }
-			else if(compareSubstr(resultStr, variableNamePos, "stack=") == 0)
-			    {
-			    handleStack(resultStr);
-			    }
-			else if(compareSubstr(resultStr, variableNamePos, "value=") == 0)
-			    {
-			    handleValue(resultStr.substr(variableNamePos));
-			    }
-			}
-		    }
-		else if(compareSubstr(resultStr, pos+1, "exit") == 0)
-		    {
-		    changeChildState(DCS_ChildNotRunning);
-		    }
-		}
-		break;
-	    }
-	}
+        {
+        size_t pos = 0;
+        while(isdigit(resultStr[pos]))
+            {
+            pos++;
+            }
+        switch(resultStr[pos+0])
+            {
+            case '^':
+                {
+                // After ^ is the "result-class":
+                //      running, done, connected, error, exit
+                if(compareSubstr(resultStr, pos+1, "running") == 0)
+                    {
+                    changeChildState(DCS_ChildRunning);
+                    }
+                else if(compareSubstr(resultStr, pos+1, "error") == 0)
+                    {
+//              if(mDebuggerListener)
+//                  mDebuggerListener->DebugOutput(&resultStr[3]);
+                    }
+                else if(compareSubstr(resultStr, pos+1, "done") == 0)
+                    {
+                    size_t variableNamePos = resultStr.find(',');
+                    if(variableNamePos != std::string::npos)
+                        {
+                        variableNamePos++;
+                        if(compareSubstr(resultStr, variableNamePos, "type=") == 0)
+                            {
+                            std::string typeStr = getTagValue(resultStr, "type=");
+                            if(typeStr.compare("breakpoint") == 0)
+                                {
+                                handleBreakpoint(resultStr);
+                                }
+                            }
+                        else if(compareSubstr(resultStr, variableNamePos, "stack=") == 0)
+                            {
+                            handleStack(resultStr);
+                            }
+                        else if(compareSubstr(resultStr, variableNamePos, "value=") == 0)
+                            {
+                            handleValue(resultStr.substr(variableNamePos));
+                            }
+                        }
+                    }
+                else if(compareSubstr(resultStr, pos+1, "exit") == 0)
+                    {
+                    changeChildState(DCS_ChildNotRunning);
+                    }
+                }
+                break;
+            }
+        }
     else
-	{
-	switch(resultStr[0])
-	    {
-	    case '*':
-		{
-		if(resultStr.compare(1, 7, "stopped") == 0)
-		    {
-		    std::string reason = getTagValue(resultStr, "reason");
-		    if((reason.find("end-stepping-range") != std::string::npos) ||
-			    (reason.find("breakpoint-hit") != std::string::npos))
-			{
-			    {
-			    LockGuard lock(mStatusLock);
-			    mStoppedLocation = getLocationFromResult(resultStr);
-			    }
-			changeChildState(DCS_ChildPaused);
-			}
-		    else if(reason.find("exited-normally") != std::string::npos)
-			{
-			changeChildState(DCS_ChildNotRunning);
-			}
-		    }
-		else if(resultStr.compare(1, std::string::npos, "stop") == 0)
-		    {
-		    changeChildState(DCS_ChildNotRunning);
-		    }
-		}
-		break;
+        {
+        switch(resultStr[0])
+            {
+            case '*':
+                {
+                if(resultStr.compare(1, 7, "stopped") == 0)
+                    {
+                    std::string reason = getTagValue(resultStr, "reason");
+                    if((reason.find("end-stepping-range") != std::string::npos) ||
+                            (reason.find("breakpoint-hit") != std::string::npos))
+                        {
+                            {
+                            LockGuard lock(mStatusLock);
+                            mStoppedLocation = getLocationFromResult(resultStr);
+                            }
+                        changeChildState(DCS_ChildPaused);
+                        }
+                    else if(reason.find("exited-normally") != std::string::npos)
+                        {
+                        changeChildState(DCS_ChildNotRunning);
+                        }
+                    }
+                else if(resultStr.compare(1, std::string::npos, "stop") == 0)
+                    {
+                    changeChildState(DCS_ChildNotRunning);
+                    }
+                }
+                break;
 
-	    case '~':
-	    case '@':
-	    case '&':
-    //	    if(mDebuggerListener)
-    //		mDebuggerListener->DebugOutput(&resultStr[3]);
-		break;
-	    }
-	}
+            case '~':
+            case '@':
+            case '&':
+    //      if(mDebuggerListener)
+    //          mDebuggerListener->DebugOutput(&resultStr[3]);
+                break;
+            }
+        }
     if(mDebuggerListener)
-	mDebuggerListener->DebugOutput(resultStr);
+        mDebuggerListener->DebugOutput(resultStr);
     }
 #endif
 

@@ -17,15 +17,15 @@
 class AddPackageDialog:public Dialog
     {
     public:
-	AddPackageDialog();
-	~AddPackageDialog();
-	Package getPackage() const;
-	// This is for external callbacks
-	void selectPackage();
+        AddPackageDialog();
+        ~AddPackageDialog();
+        Package getPackage() const;
+        // This is for external callbacks
+        void selectPackage();
 
     private:
-	GuiList mAllPackagesList;
-	AvailablePackages mAvailPackages;
+        GuiList mAllPackagesList;
+        AvailablePackages mAvailPackages;
     };
 
 /// This lists the packages in the Oovcde project, and select packages to view
@@ -33,30 +33,30 @@ class AddPackageDialog:public Dialog
 class ProjectPackagesDialog:public Dialog
     {
     public:
-	ProjectPackagesDialog(std::string &baseBuildArgs);
-	virtual ~ProjectPackagesDialog();
+        ProjectPackagesDialog(std::string &baseBuildArgs);
+        virtual ~ProjectPackagesDialog();
 
-	// These are for external callbacks
-	void selectPackage();
-	void displayAddPackageDialog();
-	void removePackage();
+        // These are for external callbacks
+        void selectPackage();
+        void displayAddPackageDialog();
+        void removePackage();
 #ifndef __linux__
-	void winScanDirectories();
-	void winSetEnableScanning();
-	bool winCheckDirectoryOk();
+        void winScanDirectories();
+        void winSetEnableScanning();
+        bool winCheckDirectoryOk();
 #endif
 
     private:
-	GuiList mProjectPackagesList;
-	ProjectPackages mProjectPackages;
-	std::string &mBaseBuildArgs;
-	std::string mLastSelectedPackage;
-	bool mAllowSelection;
-	virtual void beforeRun() override;
-	virtual void afterRun(bool ok) override;
-	void savePackage(const std::string &pkgName);
-	void updatePackageList();
-	void clearPackageDisplay();
+        GuiList mProjectPackagesList;
+        ProjectPackages mProjectPackages;
+        std::string &mBaseBuildArgs;
+        std::string mLastSelectedPackage;
+        bool mAllowSelection;
+        virtual void beforeRun() override;
+        virtual void afterRun(bool ok) override;
+        void savePackage(const std::string &pkgName);
+        void updatePackageList();
+        void clearPackageDisplay();
     };
 
 #endif /* PACKAGESDIALOGS_H_ */

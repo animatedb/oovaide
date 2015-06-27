@@ -31,7 +31,7 @@ static bool isListItemSepC(char c)
     { return(c == ','); }
 
 // A name can be:
-//	<std::allocator<char>>
+//      <std::allocator<char>>
 static bool isVarnameC(char c)
     { return(isalpha(c) || c == '<'); }
 
@@ -42,19 +42,19 @@ std::string cDebugResult::getAsString(int level) const
     std::string leadSpace(static_cast<size_t>(level*3), ' ');
     str = leadSpace;
     if(mVarName.length())
-	{
-	str = mVarName;
-	str += " = ";
-	for(size_t i=0; i<mChildResults.size(); i++)
-	    {
-	    if(i != 0)
-		{
-		str += leadSpace;
-		}
+        {
+        str = mVarName;
+        str += " = ";
+        for(size_t i=0; i<mChildResults.size(); i++)
+            {
+            if(i != 0)
+                {
+                str += leadSpace;
+                }
             str += mChildResults[i]->getAsString(level+1);
             str += "\n";
-	    }
-	}
+            }
+        }
     str += mConst;
     str += "\n";
 #if(DBG_RESULT)
@@ -76,31 +76,31 @@ int transPos = translatedStr.length();
     if(*p == '\"')
         {
         translatedStr += "\"";
-	p++;
+        p++;
         }
     while(*p)
-	{
-	if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\\')
+        {
+        if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\\')
             {
             translatedStr += "\\\\";
             p+=4;
             }
         else if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\"')
-	    {
+            {
             translatedStr += "\\\"";
-	    p+=4;
-	    }
-	else if(*p == '\\' && *(p+1) == '\"')
-	    {
+            p+=4;
+            }
+        else if(*p == '\\' && *(p+1) == '\"')
+            {
             translatedStr += "\"";
             p+=2;
-	    break;
-	    }
+            break;
+            }
         else
             {
             translatedStr += *p++;
             }
-	}
+        }
 #if(DBG_RESULT)
 sDbgFile.printflush("   parseString %s\n", translatedStr.substr(transPos).c_str());
 #endif
@@ -119,11 +119,11 @@ int transPos = translatedStr.length();
     char const *p = start;
     while(*p)
         {
-	if(*p == '\\' && *(p+1) == '\"')
-	    {
-	    p++;
-	    p = parseString(p, translatedStr);
-	    }
+        if(*p == '\\' && *(p+1) == '\"')
+            {
+            p++;
+            p = parseString(p, translatedStr);
+            }
         else if(*p == '=' || isListItemSepC(*p) || isEndListC(*p) ||
             *p == '\"')
             {
@@ -151,17 +151,17 @@ sDbgFile.printflush("parseVarName %s\n", resultStr);
     std::string translatedStr;
     char const *p = parseItem(start, translatedStr);
 //    if(*p == '=')
-	{
-	setVarName(start, static_cast<size_t>(p-start-1));
+        {
+        setVarName(start, static_cast<size_t>(p-start-1));
 #if(DBG_RESULT)
 sDbgFile.printflush("   parseVarName %s\n", std::string(start, p-start).c_str());
 #endif
-	//p++;
-	}
+        //p++;
+        }
 //    else
-//	{
-//	p = start;
-//	}
+//      {
+//      p = start;
+//      }
     return p;
     }
 
@@ -231,36 +231,36 @@ sDbgFile.printflush("parseValue\n");
 
 // "value=" has already been parsed.
 // Ex:  value="{mVarName = {
-//	static npos = <optimized out>,
-//	_M_dataplus =	{
-//	<std::allocator<char>> = {<__gnu_cxx::new_allocator<char>> =
-//	{<No data fields>},
-//	<No data fields>},
-//	_M_p = 0x6fcc3fa4 <libstdc++-6!_ZNSs4_Rep20_S_empty_rep_storageE+12> \"\"}}, "
-//	"mConst = {
-//	static npos = <optimized out>,
-//	_M_dataplus ="" {
-//	<std::allocator<char>> = {
-//	<__gnu_cxx::new_allocator<char>> ={<No data fields>},
-//	<No data fields>},
-//	_M_p = 0x6fcc3fa4 <libstdc++-6!_ZNSs4_Rep20_S_empty_rep_storageE+12> \"\"}},
-//	mChildResults = {c = {<std::_Deque_base<cDebugResult*,
-//	std::allocator<cDebugResult*> >> = {_M_impl = {<std::allocator<cDebugResult*>>
-//	= {<__gnu_cxx::new_allocator<cDebugResult*>> = {<No data fields>},
-//	<No data fields>}, _M_map = 0x6a11e0, _M_map_size = 8, _M_start =
-//	{_M_cur = 0x6a1218, _M_first = 0x6a1218, _M_last = 0x6a1418, _M_node
-//	= 0x6a11ec}, _M_finish = {_M_cur = 0x6a1218, _M_first = 0x6a1218,
-//	_M_last = 0x6a1418, _M_node = 0x6a11ec}}}, <No data fields>}}}"};
+//      static npos = <optimized out>,
+//      _M_dataplus =   {
+//      <std::allocator<char>> = {<__gnu_cxx::new_allocator<char>> =
+//      {<No data fields>},
+//      <No data fields>},
+//      _M_p = 0x6fcc3fa4 <libstdc++-6!_ZNSs4_Rep20_S_empty_rep_storageE+12> \"\"}}, "
+//      "mConst = {
+//      static npos = <optimized out>,
+//      _M_dataplus ="" {
+//      <std::allocator<char>> = {
+//      <__gnu_cxx::new_allocator<char>> ={<No data fields>},
+//      <No data fields>},
+//      _M_p = 0x6fcc3fa4 <libstdc++-6!_ZNSs4_Rep20_S_empty_rep_storageE+12> \"\"}},
+//      mChildResults = {c = {<std::_Deque_base<cDebugResult*,
+//      std::allocator<cDebugResult*> >> = {_M_impl = {<std::allocator<cDebugResult*>>
+//      = {<__gnu_cxx::new_allocator<cDebugResult*>> = {<No data fields>},
+//      <No data fields>}, _M_map = 0x6a11e0, _M_map_size = 8, _M_start =
+//      {_M_cur = 0x6a1218, _M_first = 0x6a1218, _M_last = 0x6a1418, _M_node
+//      = 0x6a11ec}, _M_finish = {_M_cur = 0x6a1218, _M_first = 0x6a1218,
+//      _M_last = 0x6a1418, _M_node = 0x6a11ec}}}, <No data fields>}}}"};
 //
 //     char const * const square = "{curly}";
-//		value="0x40d1af <_ZStL19piecewise_construct+159> \"{curly}\""
+//              value="0x40d1af <_ZStL19piecewise_construct+159> \"{curly}\""
 //
-//		value="0x40d1b7 <_ZStL19piecewise_construct+167> \"[square]\""
-//		value="0x40d1bf <_ZStL19piecewise_construct+175> \"\\\"quotes\\\"\""
+//              value="0x40d1b7 <_ZStL19piecewise_construct+167> \"[square]\""
+//              value="0x40d1bf <_ZStL19piecewise_construct+175> \"\\\"quotes\\\"\""
 //
-//	value="{curly = 0x40d1af <_ZStL19piecewise_construct+159> \"{curly}\",
-//	    square = 0x40d1b7 <_ZStL19piecewise_construct+167> \"[square]\",
-// 	    quotes = 0x40d1c0 <_ZStL19piecewise_construct+176> \"\\\"quotes\\\"\"}"
+//      value="{curly = 0x40d1af <_ZStL19piecewise_construct+159> \"{curly}\",
+//          square = 0x40d1b7 <_ZStL19piecewise_construct+167> \"[square]\",
+//          quotes = 0x40d1c0 <_ZStL19piecewise_construct+176> \"\\\"quotes\\\"\"}"
 
 // General:
 //  There is a varname followed by an equal sign.
@@ -275,12 +275,12 @@ sDbgFile.printflush("parseResult %s\n", resultStr);
     char const *start = skipSpace(resultStr);
     char const *p = start;
     if(*start)
-	{
+        {
         if(isVarnameC(*p))
             {
             p = parseVarName(p);
             }
-	p = parseValue(p);
-	}
+        p = parseValue(p);
+        }
     return p;
     }

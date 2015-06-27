@@ -494,6 +494,37 @@ Use this dialog to set up component definitions.</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">data/ClassDiagramButton.png</property>
   </object>
+  <object class="GtkMenu" id="ClassListPopupMenu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="ClassListAddSingleClassMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Add Single Class</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ClassListAddSingleClassMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ClassListAddWithStandardRelationsMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Add Standard Relations</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ClassListAddWithStandardRelationsMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ClassListAddAllRelationsMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Add All Relations</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ClassListAddAllRelationsMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="DrawClassPopupMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -2785,15 +2816,24 @@ These arguments are specific to the selected configuration.
                           <object class="GtkMenuItem" id="OpenProjectMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">_Open Project...</property>
+                            <property name="label" translatable="yes">Open _Project...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_OpenProjectMenuitem_activate" swapped="no"/>
                           </object>
                         </child>
                         <child>
-                          <object class="GtkSeparatorMenuItem" id="menuitem11">
+                          <object class="GtkSeparatorMenuItem" id="separator11">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="OpenDrawingMenuitem">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">_Open Drawing...</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_OpenDrawingMenuitem_activate" swapped="no"/>
                           </object>
                         </child>
                         <child>
@@ -2817,7 +2857,22 @@ These arguments are specific to the selected configuration.
                           </object>
                         </child>
                         <child>
-                          <object class="GtkSeparatorMenuItem" id="separatormenuitem1">
+                          <object class="GtkSeparatorMenuItem" id="seprator2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="ExportDrawingAsMenuitem">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Export Drawing As...</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_ExportDrawingAsMenuitem_activate" swapped="no"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separator1">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                           </object>

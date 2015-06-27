@@ -13,10 +13,10 @@
 class JournalList:public GuiList
     {
     public:
-	void init(Builder &builder)
-	    {
-	    GuiList::init(builder, "JournalTreeview", "Journal");
-	    }
+        void init(Builder &builder)
+            {
+            GuiList::init(builder, "JournalTreeview", "Journal");
+            }
     };
 
 

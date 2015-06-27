@@ -16,33 +16,33 @@
 class File
     {
     public:
-	File():
-	    mFp(nullptr)
-	    {}
-	File(OovStringRef const fn, OovStringRef const mode)
-	    {
-	    mFp = fopen(fn, mode);
-	    }
-	~File()
-	    { close(); }
-	void open(OovStringRef const fn, OovStringRef const mode)
-	    {
-	    if(!mFp)
-		mFp = fopen(fn, mode);
-	    }
+        File():
+            mFp(nullptr)
+            {}
+        File(OovStringRef const fn, OovStringRef const mode)
+            {
+            mFp = fopen(fn, mode);
+            }
+        ~File()
+            { close(); }
+        void open(OovStringRef const fn, OovStringRef const mode)
+            {
+            if(!mFp)
+                mFp = fopen(fn, mode);
+            }
         void close()
             {
-	    if(mFp)
-		fclose(mFp);
+            if(mFp)
+                fclose(mFp);
             mFp = nullptr;
             }
         void truncate(int size=0);
         bool isOpen() const
             { return(mFp != nullptr); }
-	FILE *getFp()
-	    { return mFp; }
+        FILE *getFp()
+            { return mFp; }
     private:
-	FILE *mFp;
+        FILE *mFp;
     };
 
 enum eOpenModes { M_ReadShared, M_ReadWriteExclusive, M_ReadWriteExclusiveAppend,
@@ -53,41 +53,41 @@ enum eOpenStatus { OS_Opened, OS_SharingProblem, OS_NoFile, OS_OtherError };
 class BaseSimpleFile
     {
     public:
-	BaseSimpleFile():
-	    mFd(-1)
-	    {}
-	~BaseSimpleFile()
-	    { close(); }
-	eOpenStatus open(OovStringRef const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
-		eOpenEndings oe=OE_Text);
-	void close();
-	bool isOpen() const
-	    { return(mFd != -1); }
-	// actual size may be less than file size in text mode.
-	bool read(void *buf, int size, int &actualSize);
-	bool write(void const *buf, int size);
-	void seekBegin();
-	int getSize() const;
-	void setFd(int fd)
-	    { mFd = fd; }
-	int getFd()
-	    { return mFd; }
+        BaseSimpleFile():
+            mFd(-1)
+            {}
+        ~BaseSimpleFile()
+            { close(); }
+        eOpenStatus open(OovStringRef const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
+                eOpenEndings oe=OE_Text);
+        void close();
+        bool isOpen() const
+            { return(mFd != -1); }
+        // actual size may be less than file size in text mode.
+        bool read(void *buf, int size, int &actualSize);
+        bool write(void const *buf, int size);
+        void seekBegin();
+        int getSize() const;
+        void setFd(int fd)
+            { mFd = fd; }
+        int getFd()
+            { return mFd; }
         void truncate(int size=0);
 
     protected:
-	int mFd;
+        int mFd;
     };
 
 /// non-buffered file
 class SimpleFile:public BaseSimpleFile
     {
     public:
-	SimpleFile(OovStringRef const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
-		eOpenEndings oe=OE_Text)
-	    {
-	    if(fn)
-		open(fn, mode, oe);
-	    }
+        SimpleFile(OovStringRef const fn=nullptr, eOpenModes mode=M_ReadWriteExclusive,
+                eOpenEndings oe=OE_Text)
+            {
+            if(fn)
+                open(fn, mode, oe);
+            }
     };
 
 /// This defines a shared file between processes.  This will prevent writing
@@ -97,8 +97,8 @@ class SimpleFile:public BaseSimpleFile
 class SharedFile: public BaseSimpleFile
     {
     public:
-	eOpenStatus open(OovStringRef const fn, eOpenModes mode,
-		eOpenEndings oe=OE_Text);
+        eOpenStatus open(OovStringRef const fn, eOpenModes mode,
+                eOpenEndings oe=OE_Text);
     };
 
 #endif /* FILE_H_ */

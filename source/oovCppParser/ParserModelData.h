@@ -17,23 +17,23 @@
 class ParserModelData
     {
     public:
-	void addParsedModule(OovStringRef fileName);
-	ModelModule const *getParsedModule() const;
-	ModelClassifier *createOrGetClassRef(OovStringRef const name);
-	ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);
-	ModelType *createOrGetDataTypeRef(CXType type, RefType &rt);
-	ModelType *createOrGetDataTypeRef(CXCursor cursor);
-	ModelType *createOrGetTypedef(CXCursor cursor);
-	bool isBaseClass(ModelClassifier const *child, OovStringRef const name) const;
-	void addAssociation(ModelClassifier const *parent,
-		ModelClassifier const *child, Visibility access);
-	void setLineStats(ModelModuleLineStats const &lineStats);
-	void writeModel(OovStringRef fileName);
-	ModelData const &DebugGetModelData() const
-	    { return mModelData; }
+        void addParsedModule(OovStringRef fileName);
+        ModelModule const *getParsedModule() const;
+        ModelClassifier *createOrGetClassRef(OovStringRef const name);
+        ModelType *createOrGetBaseTypeRef(CXCursor cursor, RefType &rt);
+        ModelType *createOrGetDataTypeRef(CXType type, RefType &rt);
+        ModelType *createOrGetDataTypeRef(CXCursor cursor);
+        ModelType *createOrGetTypedef(CXCursor cursor);
+        bool isBaseClass(ModelClassifier const *child, OovStringRef const name) const;
+        void addAssociation(ModelClassifier const *parent,
+                ModelClassifier const *child, Visibility access);
+        void setLineStats(ModelModuleLineStats const &lineStats);
+        void writeModel(OovStringRef fileName);
+        ModelData const &DebugGetModelData() const
+            { return mModelData; }
 
     private:
-	 ModelData mModelData;
+         ModelData mModelData;
     };
 
 

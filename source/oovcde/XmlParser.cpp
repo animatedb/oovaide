@@ -96,11 +96,11 @@ XmlError XmlParser::parseAttr(char const *&buf)
             {
             char const *end = strchr(startVal, quoteChar);
             if(end)
-        	{
-		int len = end - startVal;
-		onAttr(attrName, attrNameLen, startVal, len);
-		buf = startVal + len;
-        	}
+                {
+                int len = end - startVal;
+                onAttr(attrName, attrNameLen, startVal, len);
+                buf = startVal + len;
+                }
             }
         else
             errCode.setError(ERROR_BAD_VALUE);
@@ -173,7 +173,7 @@ XmlError XmlParser::parseElem(char const *&buf)
                 errCode = parseElemValue(buf);
             }
         else
-            buf++; 
+            buf++;
         }
     if(errCode.isOK())
         onCloseElem(elemName, elemNameLen);
@@ -183,7 +183,7 @@ XmlError XmlParser::parseElem(char const *&buf)
 // buf can point to the white space before the name, and will be updated to point
 // to the first character after the name.
 XmlError XmlParser::parseName(char const *&buf, char const *&name,
-	int &nameLen)
+        int &nameLen)
     {
     XmlError errCode;
     char const * const startName = buf + strspn(buf, sWhiteSpaceStr);

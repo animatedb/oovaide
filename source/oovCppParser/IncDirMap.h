@@ -15,21 +15,25 @@
 
 /// This works to build include paths, and to build include file dependencies
 /// This makes a file that keeps a map of paths, and for each path:
-///	the last time the path dependencies changed,
-///	the last time the paths were checked,
-///	the included filepath (such as "gtk/gtk.h"), and the directory to get to that file.
-/// This file does not store paths that the compiler searches by default.
+///     the last time the path dependencies were updated by the parser,
+///     the last time the paths were checked - THIS IS NOT UPDATED!,
+///     the included filepath (such as "gtk/gtk.h"), and the search path
+///     to get to that file.
 class IncDirDependencyMap:public NameValueFile
     {
     public:
-	void read(char const * const outDir, char const * const incPath);
-	void write();
-	void insert(const std::string &includerPath, const FilePath &includedPath);
+        void read(char const * const outDir, char const * const incPath);
+        void write();
+        void insert(const std::string &includerPath, const FilePath &includedPath);
 
     private:
-	/// This map keeps all included paths for every includer that was parsed.
-	/// This map is <includerPath, includedPath's>
-	std::map<std::string, std::set<std::string>> mParsedIncludeDependencies;
+        /// This map keeps all included paths for every includer that was parsed.
+        /// This map is <includerPath, includedPath's>
+        /// The second string is a compound value containing the IncludedPath,
+        /// which contains the included filepath, and the search path.
+        std::map<std::string, std::set<std::string>> mParsedIncludeDependencies;
+        bool includedPathsChanged(OovStringRef includerFn,
+                std::set<std::string> const &includedInfoStr) const;
     };
 
 

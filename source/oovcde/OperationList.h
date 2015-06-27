@@ -13,10 +13,10 @@
 class OperationList:public GuiList
     {
     public:
-	void init(Builder &builder)
-	    {
-	    GuiList::init(builder, "OperationsTreeview", "Operation List");
-	    }
+        void init(Builder &builder)
+            {
+            GuiList::init(builder, "OperationsTreeview", "Operation List");
+            }
     };
 
 #endif /* OPERATIONLIST_H_ */
