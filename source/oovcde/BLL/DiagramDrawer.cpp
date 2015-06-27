@@ -236,10 +236,34 @@ Color DistinctColors::getColor(size_t index)
         static_cast<uint8_t>((colors[index]) & 0xFF)));
     }
 
+// Returns an empty string if no editor is found.
+static OovString getEditor()
+    {
+    FilePath proc(gGuiOptions.getValue(OptGuiEditorPath), FP_File);
+    if(!FileIsFileOnDisk(proc))
+        {
+        // If the path to the user specified editor is not found, then
+        // search the standard locations for the executable directory.
+        FilePath testProcPath(Project::getBinDirectory(), FP_Dir);
+        testProcPath.append(proc.getNameExt());
+        if(FileIsFileOnDisk(testProcPath))
+            {
+            proc = testProcPath;
+            }
+        }
+    // If the editor is not present, return an empty string.
+    if(!FileIsFileOnDisk(proc))
+        {
+        proc.clear();
+        Gui::messageBox("Use Analysis/Settings to set up an editor to view source");
+        }
+    return proc;
+    }
+
 void viewSource(OovStringRef const module, unsigned int lineNum)
     {
-    std::string proc = gGuiOptions.getValue(OptGuiEditorPath);
-    if(proc.length() > 0)
+    OovString proc = getEditor();
+    if(proc.length())
         {
         OovProcessChildArgs args;
         args.addArg(proc);
@@ -261,10 +285,6 @@ void viewSource(OovStringRef const module, unsigned int lineNum)
             args.addArg(projArg);
             }
         spawnNoWait(proc, args.getArgv());
-        }
-    else
-        {
-        Gui::messageBox("Use Analysis/Settings to set up an editor to view source");
         }
     }
 
