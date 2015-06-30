@@ -156,6 +156,7 @@ Missing Features
 	- display column/character position
 	- error highlighting
 	- refactor-rename
+
 - Debugger (In editor)
 	- add remote debug (cross debug) gdbserver
 		ssh <hostip> -l <username> "cd ~/yourdir && gdbserver :2345 ~/yourprogram"
@@ -258,6 +259,7 @@ Missing Features
 		http://ubuntuforums.org/showthread.php?t=910717
 		http://unix.stackexchange.com/questions/30303/how-to-create-a-deb-file-manually
 	- reference design guidelines?
+		self-sufficient headers:
 	  	http://gernotklingler.com/blog/care-include-dependencies-cpp-keep-minimum/
 	  	http://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies
 	- create minimal code guidelines, ex:
