@@ -42,6 +42,23 @@ class ForegroundThreadBusyDialog:public OovTaskStatusListener
         TaskBusyDialog mDialog;
     };
 
+class AddClassDialog:public Dialog
+    {
+    public:
+        AddClassDialog();
+        void selectNodes(ClassDiagram const &classDiagram, ModelType const *type,
+            ClassGraph::eAddNodeTypes addType, std::vector<ClassNode> &nodes);
+        ModelType const *getSelectedType() const
+            { return mSelectedType; }
+        ClassGraph::eAddNodeTypes getSelectedAddType() const
+            { return mSelectedAddType; }
+
+    private:
+        GuiTree mAddClassTree;
+        ModelType const *mSelectedType;
+        ClassGraph::eAddNodeTypes mSelectedAddType;
+    };
+
 class ClassDiagramView:public ClassGraphListener
     {
     public:
@@ -97,6 +114,8 @@ class ClassDiagramView:public ClassGraphListener
         void updatePositions();
         void gotoClass(OovStringRef const className);
         void displayListContextMenu(guint button, guint32 acttime, gpointer data);
+        void displayAddClassDialog();
+        void selectAddClass(ModelType const *type, ClassGraph::eAddNodeTypes addType);
 
     private:
         ClassDiagram mClassDiagram;

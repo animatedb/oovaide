@@ -42,21 +42,23 @@ class OperationDrawer
         int mPad;
         int mCharHeight;
         GraphSize drawClass(DiagramDrawer &drawer, const OperationClass &node,
-                const OperationDrawOptions &options);
+                const OperationDrawOptions &options, bool draw);
         void drawLifeLines(DiagramDrawer &drawer,
                 const std::vector<OperationClass> &classes,
                 std::vector<int> const &classEndY, int endy);
+        /// @todo - This stuff is pretty ugly. The draw flag should be removed,
+        /// and some functions for getting size should be separately created.
         GraphSize drawOperation(DiagramDrawer &drawer, GraphPoint pos,
                 OperationDefinition &operDef,
                 const OperationGraph &graph, const OperationDrawOptions &options,
-                std::set<const OperationDefinition*> &drawnOperations);
+                std::set<const OperationDefinition*> &drawnOperations, bool draw);
         GraphSize drawOperationNoText(DiagramDrawer &drawer, GraphPoint pos,
                 OperationDefinition &operDef,
                 const OperationGraph &graph, const OperationDrawOptions &options,
                 std::set<const OperationDefinition*> &drawnOperations,
-                std::vector<DrawString> &drawStrings);
+                std::vector<DrawString> &drawStrings, bool draw);
         GraphSize drawOrSizeDiagram(DiagramDrawer &drawer, OperationGraph &graph,
-                const OperationDrawOptions &options);
+                const OperationDrawOptions &options, bool draw);
     };
 
 #endif /* OPERATIONDRAWER_H_ */

@@ -376,14 +376,14 @@ extern "C" G_MODULE_EXPORT void on_DiagramDrawingarea_button_release_event(
         rec->drawingAreaButtonReleaseEvent(reinterpret_cast<GdkEventButton*>(event));
     }
 
-// "Focus Change" must be set in Glade Events for this to work.
-extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_focus_out_event(
+// GDK_LEAVE_NOTIFY_MASK must be set in Glade Events for this to work.
+extern "C" G_MODULE_EXPORT bool on_DiagramDrawingarea_leave_notify_event(
     GtkWidget * /*widget*/,
         GdkEvent * /*event*/, gpointer /*user_data*/)
     {
     JournalRecord *rec = gJournal->getCurrentRecord();
     if(rec)
-        rec->drawingLoseFocusEvent();
+        rec->drawingLostPointerEvent();
     return false;
     }
 

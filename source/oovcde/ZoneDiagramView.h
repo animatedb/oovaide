@@ -30,7 +30,7 @@ class ZoneClassInfoToolTipWindow
             {}
         ~ZoneClassInfoToolTipWindow();
         void hide();
-        void lostFocus();
+        void lostPointer();
         void handleCursorMovement(int x, int y, OovStringRef str);
 
     private:
@@ -108,8 +108,8 @@ class ZoneDiagramView
             mZoneDiagram.updateGraph(mNullDrawer);
             gtk_widget_queue_draw(getDiagramWidget());
             }
-        void handleDrawingAreaLoseFocus()
-            { mToolTipWindow.lostFocus(); }
+        void handleDrawingAreaLostPointer()
+            { mToolTipWindow.lostPointer(); }
         void handleDrawingAreaMotion(int x, int y);
 
     private:

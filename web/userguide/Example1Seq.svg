@@ -1,148 +1,138 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="356" height="460">
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="7" y="7" width="33" height="11" />
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="392" height="311">
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="7" y="7" width="33" height="9" />
 </g>
-<g font-size="10">
-<text x="9" y="16">World</text>
+<text x="9" y="14">World</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="51" y="7" width="46" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="47" y="7" width="46" height="9" />
 </g>
-<g font-size="10">
-<text x="53" y="16">Location</text>
+<text x="49" y="14">Location</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="104" y="7" width="80" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="100" y="7" width="80" height="9" />
 </g>
-<g font-size="10">
-<text x="106" y="16">MoveableThing</text>
+<text x="102" y="14">MoveableThing</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="195" y="7" width="32" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="187" y="7" width="32" height="9" />
 </g>
-<g font-size="10">
-<text x="197" y="16">Lamb</text>
+<text x="189" y="14">Lamb</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="238" y="7" width="29" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="226" y="7" width="29" height="9" />
 </g>
-<g font-size="10">
-<text x="240" y="16">Mary</text>
+<text x="228" y="14">Mary</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="278" y="7" width="60" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="262" y="7" width="112" height="9" />
 </g>
-<g font-size="10">
-<text x="280" y="16">basic_string</text>
+<text x="264" y="14">std::basic_string&lt;char&gt;</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="345" y="7" width="4" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="381" y="7" width="4" height="9" />
 </g>
-<g font-size="10">
-<text x="347" y="16"></text>
+<text x="383" y="14"></text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<line x1="7" y1="38" x2="25" y2="38" />
-<line x1="21" y1="34" x2="25" y2="38" />
-<line x1="21" y1="42" x2="25" y2="38" />
-<line x1="29" y1="73" x2="74" y2="73" />
-<line x1="70" y1="69" x2="74" y2="73" />
-<line x1="70" y1="77" x2="74" y2="73" />
-<line x1="29" y1="87" x2="146" y2="87" />
-<line x1="142" y1="83" x2="146" y2="87" />
-<line x1="142" y1="91" x2="146" y2="87" />
-<line x1="150" y1="131" x2="74" y2="131" />
-<line x1="78" y1="135" x2="74" y2="131" />
-<line x1="78" y1="127" x2="74" y2="131" />
-<line x1="150" y1="145" x2="74" y2="145" />
-<line x1="78" y1="149" x2="74" y2="145" />
-<line x1="78" y1="141" x2="74" y2="145" />
-<polygon points="146,106 148,106 148,120 150,120 150,148 148,148 148,148 146,148 146,148 144,148 144,148 142,148 142,120 144,120 144,106 146,106 " style="fill:#f5f5ff" />
-<line x1="29" y1="163" x2="213" y2="163" />
-<line x1="209" y1="159" x2="213" y2="163" />
-<line x1="209" y1="167" x2="213" y2="163" />
-<line x1="217" y1="207" x2="146" y2="207" style="stroke-dasharray: 4, 4 "/>
-<line x1="150" y1="211" x2="146" y2="207" />
-<line x1="150" y1="203" x2="146" y2="207" />
-<line x1="217" y1="221" x2="74" y2="221" />
-<line x1="78" y1="225" x2="74" y2="221" />
-<line x1="78" y1="217" x2="74" y2="221" />
-<line x1="217" y1="235" x2="238" y2="235" />
-<line x1="238" y1="235" x2="238" y2="238" />
-<line x1="217" y1="238" x2="238" y2="238" />
-<polygon points="213,182 215,182 215,196 217,196 217,241 215,241 215,241 213,241 213,241 211,241 211,241 209,241 209,196 211,196 211,182 213,182 " style="fill:#f5f5ff" />
-<line x1="29" y1="256" x2="254" y2="256" />
-<line x1="250" y1="252" x2="254" y2="256" />
-<line x1="250" y1="260" x2="254" y2="256" />
-<line x1="258" y1="300" x2="146" y2="300" style="stroke-dasharray: 4, 4 "/>
-<line x1="150" y1="304" x2="146" y2="300" />
-<line x1="150" y1="296" x2="146" y2="300" />
-<line x1="258" y1="314" x2="308" y2="314" />
-<line x1="304" y1="310" x2="308" y2="314" />
-<line x1="304" y1="318" x2="308" y2="314" />
-<line x1="258" y1="328" x2="347" y2="328" />
-<line x1="343" y1="324" x2="347" y2="328" />
-<line x1="343" y1="332" x2="347" y2="328" />
-<polygon points="254,275 256,275 256,289 258,289 258,331 256,331 256,331 254,331 254,331 252,331 252,331 250,331 250,289 252,289 252,275 254,275 " style="fill:#f5f5ff" />
-<line x1="29" y1="346" x2="213" y2="346" />
-<line x1="209" y1="342" x2="213" y2="346" />
-<line x1="209" y1="350" x2="213" y2="346" />
-<line x1="217" y1="390" x2="146" y2="390" style="stroke-dasharray: 4, 4 "/>
-<line x1="150" y1="394" x2="146" y2="390" />
-<line x1="150" y1="386" x2="146" y2="390" />
-<line x1="217" y1="404" x2="308" y2="404" />
-<line x1="304" y1="400" x2="308" y2="404" />
-<line x1="304" y1="408" x2="308" y2="404" />
-<line x1="217" y1="418" x2="146" y2="418" style="stroke-dasharray: 4, 4 "/>
-<line x1="150" y1="422" x2="146" y2="418" />
-<line x1="150" y1="414" x2="146" y2="418" />
-<line x1="217" y1="432" x2="308" y2="432" />
-<line x1="304" y1="428" x2="308" y2="432" />
-<line x1="304" y1="436" x2="308" y2="432" />
-<line x1="217" y1="446" x2="347" y2="446" />
-<line x1="343" y1="442" x2="347" y2="446" />
-<line x1="343" y1="450" x2="347" y2="446" />
-<polygon points="213,365 215,365 215,379 217,379 217,449 215,449 215,449 213,449 213,449 211,449 211,449 209,449 209,379 211,379 211,365 213,365 " style="fill:#f5f5ff" />
-<polygon points="25,48 27,48 27,62 29,62 29,90 25,90 25,152 29,152 29,166 25,166 25,245 29,245 29,259 25,259 25,335 29,335 29,349 25,349 25,453 29,453 29,453 27,453 27,453 25,453 25,453 23,453 23,453 21,453 21,453 25,453 25,349 21,349 21,335 25,335 25,259 21,259 21,245 25,245 25,166 21,166 21,152 25,152 25,90 21,90 21,62 23,62 23,48 25,48 " style="fill:#f5f5ff" />
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="7" y1="29" x2="23" y2="29" />
+<line x1="19" y1="25" x2="23" y2="29" />
+<line x1="19" y1="33" x2="23" y2="29" />
+<line x1="23" y1="36" x2="70" y2="36" />
+<line x1="66" y1="32" x2="70" y2="36" />
+<line x1="66" y1="40" x2="70" y2="36" />
+<line x1="23" y1="50" x2="140" y2="50" />
+<line x1="136" y1="46" x2="140" y2="50" />
+<line x1="136" y1="54" x2="140" y2="50" />
+<line x1="140" y1="66" x2="70" y2="66" />
+<line x1="74" y1="70" x2="70" y2="66" />
+<line x1="74" y1="62" x2="70" y2="66" />
+<line x1="140" y1="80" x2="70" y2="80" />
+<line x1="74" y1="84" x2="70" y2="80" />
+<line x1="74" y1="76" x2="70" y2="80" />
+<polygon points="" style="fill:#f5f5ff" />
+<line x1="23" y1="98" x2="203" y2="98" />
+<line x1="199" y1="94" x2="203" y2="98" />
+<line x1="199" y1="102" x2="203" y2="98" />
+<line x1="203" y1="114" x2="140" y2="114" style="stroke-dasharray: 4, 4 "/>
+<line x1="144" y1="118" x2="140" y2="114" />
+<line x1="144" y1="110" x2="140" y2="114" />
+<line x1="203" y1="128" x2="70" y2="128" />
+<line x1="74" y1="132" x2="70" y2="128" />
+<line x1="74" y1="124" x2="70" y2="128" />
+<line x1="203" y1="142" x2="224" y2="142" />
+<line x1="224" y1="142" x2="224" y2="145" />
+<line x1="203" y1="145" x2="224" y2="145" />
+<polygon points="" style="fill:#f5f5ff" />
+<line x1="23" y1="163" x2="240" y2="163" />
+<line x1="236" y1="159" x2="240" y2="163" />
+<line x1="236" y1="167" x2="240" y2="163" />
+<line x1="240" y1="179" x2="140" y2="179" style="stroke-dasharray: 4, 4 "/>
+<line x1="144" y1="183" x2="140" y2="179" />
+<line x1="144" y1="175" x2="140" y2="179" />
+<line x1="240" y1="193" x2="318" y2="193" />
+<line x1="314" y1="189" x2="318" y2="193" />
+<line x1="314" y1="197" x2="318" y2="193" />
+<line x1="240" y1="207" x2="383" y2="207" />
+<line x1="379" y1="203" x2="383" y2="207" />
+<line x1="379" y1="211" x2="383" y2="207" />
+<polygon points="" style="fill:#f5f5ff" />
+<line x1="23" y1="225" x2="203" y2="225" />
+<line x1="199" y1="221" x2="203" y2="225" />
+<line x1="199" y1="229" x2="203" y2="225" />
+<line x1="203" y1="241" x2="140" y2="241" style="stroke-dasharray: 4, 4 "/>
+<line x1="144" y1="245" x2="140" y2="241" />
+<line x1="144" y1="237" x2="140" y2="241" />
+<line x1="203" y1="255" x2="318" y2="255" />
+<line x1="314" y1="251" x2="318" y2="255" />
+<line x1="314" y1="259" x2="318" y2="255" />
+<line x1="203" y1="269" x2="140" y2="269" style="stroke-dasharray: 4, 4 "/>
+<line x1="144" y1="273" x2="140" y2="269" />
+<line x1="144" y1="265" x2="140" y2="269" />
+<line x1="203" y1="283" x2="318" y2="283" />
+<line x1="314" y1="279" x2="318" y2="283" />
+<line x1="314" y1="287" x2="318" y2="283" />
+<line x1="203" y1="297" x2="383" y2="297" />
+<line x1="379" y1="293" x2="383" y2="297" />
+<line x1="379" y1="301" x2="383" y2="297" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="23,53 23,53 23,87 23,87 23,101 23,101 23,152 23,152 23,166 23,166 23,214 23,214 23,228 23,228 23,304 23,304 23,304 23,304 23,228 23,228 23,214 23,214 23,166 23,166 23,152 23,152 23,101 23,101 23,87 23,87 23,53 23,53 " style="fill:#f5f5ff" />
 </g>
-<g font-size="10">
-<text x="7" y="34">World</text>
-<text x="27" y="41"></text>
-<text x="29" y="55"></text>
-<text x="31" y="69">Location</text>
-<text x="31" y="83">move</text>
-<text x="148" y="99"></text>
-<text x="150" y="113"></text>
-<text x="80" y="127">Location</text>
-<text x="80" y="141">setPosition</text>
-<text x="31" y="159">follows</text>
-<text x="215" y="175"></text>
-<text x="217" y="189"></text>
-<text x="152" y="203">getLocation</text>
-<text x="80" y="217">Location</text>
-<text x="219" y="234">move</text>
-<text x="31" y="252">showLocation</text>
-<text x="256" y="268"></text>
-<text x="258" y="282"></text>
-<text x="152" y="296">getLocationString</text>
-<text x="260" y="310">c_str</text>
-<text x="260" y="324">printf</text>
-<text x="31" y="342">showLocation</text>
-<text x="215" y="358"></text>
-<text x="217" y="372"></text>
-<text x="152" y="386">getLocationString</text>
-<text x="219" y="400">c_str</text>
-<text x="152" y="414">getLocationString</text>
-<text x="219" y="428">c_str</text>
-<text x="219" y="442">printf</text>
+<g font-size="10.000000" stroke="none">
+<text x="7" y="25">World</text>
+<text x="25" y="32">Location</text>
+<text x="25" y="46">move</text>
+<text x="72" y="62">Location</text>
+<text x="72" y="76">setPosition</text>
+<text x="25" y="94">follows</text>
+<text x="142" y="110">getLocation</text>
+<text x="72" y="124">Location</text>
+<text x="205" y="141">move</text>
+<text x="25" y="159">showLocation</text>
+<text x="142" y="175">getLocationString</text>
+<text x="242" y="189">c_str</text>
+<text x="242" y="203">printf</text>
+<text x="25" y="221">showLocation</text>
+<text x="142" y="237">getLocationString</text>
+<text x="205" y="251">c_str</text>
+<text x="142" y="265">getLocationString</text>
+<text x="205" y="279">c_str</text>
+<text x="205" y="293">printf</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<line x1="25" y1="18" x2="25" y2="460" />
-<line x1="74" y1="18" x2="74" y2="460" />
-<line x1="146" y1="18" x2="146" y2="460" />
-<line x1="213" y1="18" x2="213" y2="460" />
-<line x1="254" y1="18" x2="254" y2="460" />
-<line x1="308" y1="18" x2="308" y2="460" />
-<line x1="347" y1="18" x2="347" y2="460" />
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="23" y1="16" x2="23" y2="311" />
+<line x1="70" y1="16" x2="70" y2="311" />
+<line x1="140" y1="16" x2="140" y2="311" />
+<line x1="203" y1="16" x2="203" y2="311" />
+<line x1="240" y1="16" x2="240" y2="311" />
+<line x1="318" y1="16" x2="318" y2="311" />
+<line x1="383" y1="16" x2="383" y2="311" />
 </g>
 </svg>

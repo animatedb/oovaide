@@ -209,12 +209,17 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
         /// @param maxDepth Recurses to the specified depth.
         void addRelatedNodesRecurse(const ModelData &model, const ModelType *type,
                 eAddNodeTypes addType=AN_All, int maxDepth=2);
+        void getRelatedNodesRecurse(const ModelData &model, const ModelType *type,
+                eAddNodeTypes addType, int maxDepth, std::vector<ClassNode> &nodes);
 
         void removeNode(const ClassNode &node, const ModelData &modelData)
             {
             removeNode(node);
             updateConnections(modelData);
             }
+
+        bool isNodeTypePresent(ClassNode const &node) const
+            { return isNodeTypePresent(node, mNodes); }
 
         /// Changing options doesn't change number of nodes, so only the size
         /// of nodes needs to be updated.
@@ -274,7 +279,6 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
         static const int KEY_INDEX = 0;
         static const int FIRST_CLASS_INDEX = 1;
 
-        void addNode(const ClassNode &node);
         void removeNode(const ClassNode &node);
 
         /// This updates quality information, runs the genetic algorithm for
@@ -290,9 +294,14 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
         void insertConnection(int node1, const ModelType *type,
             const ClassConnectItem &connectItem);
 
-        /// @param modelType The type to check to see if it is a user.
-        void addRelatedNodesRecurseUser(const ModelData &model, const ModelType *type,
-            const ModelType *modelType, eAddNodeTypes addType, int maxDepth);
+        /// Checks the modelType to see if any parts of it refer to the type.
+        /// @param type The base type to compare all other types against.
+        /// @param modelType The type to check to see if any parts of it is a user
+        ///                  of the base type.
+        void addRelatedNodesRecurseUserToVector(const ModelData &model,
+            const ModelType *type, const ModelType *modelType,
+            eAddNodeTypes addType, int maxDepth, std::vector<ClassNode> &nodes);
+        static void addNodeToVector(const ClassNode &node, std::vector<ClassNode> &nodes);
         void addRelationKeyNode();
 
         /// Update the visual node size based on font size, number of attributes, etc.
@@ -303,6 +312,8 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
         static const size_t NO_INDEX = static_cast<size_t>(-1);
         /// Get the index to the class.
         size_t getNodeIndex(const ModelType *type) const;
+        static bool isNodeTypePresent(ClassNode const &node,
+                std::vector<ClassNode> const &nodes);
 
         ClassNodeDrawOptions getComponentOptions(ModelType const &type,
                 ClassNodeDrawOptions const &options);

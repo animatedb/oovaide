@@ -9,6 +9,7 @@
 #include "ClassDrawer.h"
 #include "FilePath.h"
 #include "Debug.h"
+#include <algorithm>
 
 #define DEBUG_ADD 0
 #if(DEBUG_ADD)
@@ -111,21 +112,11 @@ const ClassConnectItem *ClassGraph::getNodeConnection(int node1, int node2) cons
     return connectItem;
     }
 
-void ClassGraph::addNode(const ClassNode &node)
+void ClassGraph::addNodeToVector(ClassNode const &node, std::vector<ClassNode> &nodes)
     {
-    bool present = false;
-    for(auto &graphNode : mNodes)
+    if(!isNodeTypePresent(node, nodes))
         {
-        if(graphNode.getType() == node.getType())
-            {
-            present = true;
-            break;
-            }
-        }
-    if(!present)
-        {
-        mModified = true;
-        mNodes.push_back(node);
+        nodes.push_back(node);
         }
     }
 
@@ -142,8 +133,19 @@ void ClassGraph::removeNode(const ClassNode &node)
     mModified = true;
     }
 
-void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelType *type,
-        const ModelType *modelType, eAddNodeTypes addType, int maxDepth)
+bool ClassGraph::isNodeTypePresent(ClassNode const &node,
+        std::vector<ClassNode> const &nodes)
+    {
+    auto nodeIter = std::find_if(nodes.begin(), nodes.end(),
+            [&node](ClassNode const &existingNode)
+                { return(node.getType() == existingNode.getType()); });
+    return (nodeIter != nodes.end());
+    }
+
+
+void ClassGraph::addRelatedNodesRecurseUserToVector(const ModelData &model,
+        const ModelType *type, const ModelType *modelType, eAddNodeTypes addType,
+        int maxDepth, std::vector<ClassNode> &nodes)
     {
     // Add nodes for template types if they refer to the passed in type.
     if(modelType->isTemplateType())
@@ -157,7 +159,8 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
 #if(DEBUG_ADD)
                 DebugAdd("Templ Rel", modelType);
 #endif
-                addRelatedNodesRecurse(model, modelType, addType, maxDepth);
+                getRelatedNodesRecurse(model, modelType, addType, maxDepth,
+                        nodes);
                 }
             }
         }
@@ -175,7 +178,7 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
 #if(DEBUG_ADD)
                     DebugAdd("Memb User", cl);
 #endif
-                    addRelatedNodesRecurse(model, cl, addType, maxDepth);
+                    getRelatedNodesRecurse(model, cl, addType, maxDepth, nodes);
                     }
                 }
             }
@@ -195,7 +198,7 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
 #if(DEBUG_ADD)
                     DebugAdd("Param User", cl);
 #endif
-                    addRelatedNodesRecurse(model, cl, addType, maxDepth);
+                    getRelatedNodesRecurse(model, cl, addType, maxDepth, nodes);
                     }
                 }
             }
@@ -215,21 +218,12 @@ void ClassGraph::addRelatedNodesRecurseUser(const ModelData &model, const ModelT
 #if(DEBUG_ADD)
                     DebugAdd("Var User", cl);
 #endif
-                    addRelatedNodesRecurse(model, cl, addType, maxDepth);
+                    getRelatedNodesRecurse(model, cl, addType, maxDepth, nodes);
                     }
                 }
             }
         }
     }
-
-class RecursiveBackgroundLevel
-    {
-    public:
-        RecursiveBackgroundLevel():
-            mLevel(0)
-            {}
-        int mLevel;
-    };
 
 ClassNodeDrawOptions ClassGraph::getComponentOptions(ModelType const &type,
     ClassNodeDrawOptions const &options)
@@ -274,6 +268,12 @@ ClassNodeDrawOptions ClassGraph::getComponentOptions(ModelType const &type,
 void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType *type,
         eAddNodeTypes addType, int maxDepth)
     {
+    getRelatedNodesRecurse(model, type, addType, maxDepth, mNodes);
+    }
+
+void ClassGraph::getRelatedNodesRecurse(const ModelData &model, const ModelType *type,
+        eAddNodeTypes addType, int maxDepth, std::vector<ClassNode> &nodes)
+    {
     mBackgroundTaskLevel++;
     -- maxDepth;
     if(maxDepth >= 0 && type /* && type->getObjectType() == otClass*/)
@@ -281,7 +281,8 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
         const ModelClassifier *classifier = type->getClass();
         if(classifier)
             {
-            addNode(ClassNode(classifier, getComponentOptions(*type, mGraphOptions)));
+            addNodeToVector(ClassNode(classifier,
+                    getComponentOptions(*type, mGraphOptions)), nodes);
             if((addType & AN_MemberChildren) > 0)
                 {
                 for(const auto &attr : classifier->getAttributes())
@@ -289,8 +290,8 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 #if(DEBUG_ADD)
                     DebugAdd("Member", attr->getDeclType());
 #endif
-                    addRelatedNodesRecurse(model, attr->getDeclType(), addType,
-                            maxDepth);
+                    getRelatedNodesRecurse(model, attr->getDeclType(), addType,
+                            maxDepth, nodes);
                     }
                 }
             if((addType & AN_Superclass) > 0)
@@ -304,8 +305,8 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 #if(DEBUG_ADD)
                             DebugAdd("Super", assoc->getParent());
 #endif
-                            addRelatedNodesRecurse(model, assoc->getParent(),
-                                    addType, maxDepth);
+                            getRelatedNodesRecurse(model, assoc->getParent(),
+                                    addType, maxDepth, nodes);
                             }
                         }
                     }
@@ -322,8 +323,8 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 #if(DEBUG_ADD)
                             DebugAdd("Subclass", assoc->getChild());
 #endif
-                            addRelatedNodesRecurse(model, assoc->getChild(),
-                                    addType, maxDepth);
+                            getRelatedNodesRecurse(model, assoc->getChild(),
+                                    addType, maxDepth, nodes);
                             }
                         }
                     }
@@ -337,7 +338,7 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 #if(DEBUG_ADD)
                     DebugAdd("Param Using", cls);
 #endif
-                    addRelatedNodesRecurse(model, cls, addType, maxDepth);
+                    getRelatedNodesRecurse(model, cls, addType, maxDepth, nodes);
                     }
                 }
             if((addType & AN_FuncBodyUsing) > 0)
@@ -349,8 +350,8 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 #if(DEBUG_ADD)
                     DebugAdd("Body Using", rdc.cl);
 #endif
-                    addRelatedNodesRecurse(model, rdc.getClass(), addType,
-                            maxDepth);
+                    getRelatedNodesRecurse(model, rdc.getClass(), addType,
+                            maxDepth, nodes);
                     }
                 }
             }
@@ -364,9 +365,10 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
 #if(DEBUG_ADD)
                 DebugAdd("Templ User", rc);
 #endif
-                addRelatedNodesRecurse(model, rc, addType, maxDepth);
+                getRelatedNodesRecurse(model, rc, addType, maxDepth, nodes);
                 }
-            addNode(ClassNode(type, getComponentOptions(*type, mGraphOptions)));
+            addNodeToVector(ClassNode(type,
+                    getComponentOptions(*type, mGraphOptions)), nodes);
             }
         int taskId = 0;
         if(mBackgroundTaskLevel == 1)
@@ -376,8 +378,8 @@ void ClassGraph::addRelatedNodesRecurse(const ModelData &model, const ModelType 
             }
         for(size_t i=0; i<model.mTypes.size(); i++)
             {
-            addRelatedNodesRecurseUser(model, type, model.mTypes[i].get(),
-                    addType, maxDepth);
+            addRelatedNodesRecurseUserToVector(model, type, model.mTypes[i].get(),
+                    addType, maxDepth, nodes);
             if(mBackgroundTaskLevel == 1)
                 {
                 if(!mForegroundTaskStatusListener->updateProgressIteration(
@@ -514,24 +516,22 @@ void ClassGraph::updateConnections(const ModelData &modelData)
 void ClassGraph::addNode(const ModelData &model, char const * const className,
         ClassGraph::eAddNodeTypes addType, int nodeDepth, bool reposition)
     {
-    static int depth = 0;
-    depth++;
-    if(depth == 1)
+    const ModelType *type = model.getTypeRef(className);
+    const ModelClassifier *classifier = type->getClass();
+    if(classifier)
         {
-        const ModelType *type = model.getTypeRef(className);
-        const ModelClassifier *classifier = type->getClass();
-        if(classifier)
+        if(mNodes.size() == 0 && mGraphOptions.drawRelationKey)
             {
-            if(mNodes.size() == 0 && mGraphOptions.drawRelationKey)
-                {
-                addRelationKeyNode();
-                }
-            addRelatedNodesRecurse(model, classifier, addType, nodeDepth);
-            updateGraph(model, reposition);
+            addRelationKeyNode();
             }
-        mModified = false;
+        size_t startSize = mNodes.size();
+        getRelatedNodesRecurse(model, classifier, addType, nodeDepth, mNodes);
+        if(startSize != mNodes.size())
+            {
+            mModified = true;
+            }
+        updateGraph(model, reposition);
         }
-    depth--;
     }
 
 void ClassGraph::addRelationKeyNode()

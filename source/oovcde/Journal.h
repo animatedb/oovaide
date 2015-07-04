@@ -41,7 +41,7 @@ class JournalRecord
         virtual void drawingAreaDrawEvent() = 0;
         virtual void drawingAreaMotionEvent(const GdkEventMotion * /*event*/)
             {}
-        virtual void drawingLoseFocusEvent()
+        virtual void drawingLostPointerEvent()
             {}
         virtual void cppArgOptionsChangedUpdateDrawings()
             {}
@@ -200,8 +200,8 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
             mZoneDiagram.handleDrawingAreaMotion(
                 static_cast<int>(event->x), static_cast<int>(event->y));
             }
-        virtual void drawingLoseFocusEvent() override
-            { mZoneDiagram.handleDrawingAreaLoseFocus(); }
+        virtual void drawingLostPointerEvent() override
+            { mZoneDiagram.handleDrawingAreaLostPointer(); }
         virtual void saveFile(FILE *drawFp) override
             { Gui::messageBox("Saving this drawing type is not supported yet, but exporting is."); }
         virtual void exportFile(FILE *svgFp) override

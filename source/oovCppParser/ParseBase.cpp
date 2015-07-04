@@ -385,8 +385,9 @@ std::string getFullBaseTypeName(CXType cursorType)
         }
     return fullName;
 */
-    CXStringDisposer spell = clang_getTypeSpelling(getBaseType(cursorType));
-    if(cursorType.kind == CXType_Typedef)
+    CXType baseType = getBaseType(cursorType);
+    CXStringDisposer spell = clang_getTypeSpelling(baseType);
+    if(baseType.kind == CXType_Typedef)
         {
         spell.insert(0, "<<typedef>> ");
         }

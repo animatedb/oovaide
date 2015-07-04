@@ -331,7 +331,8 @@ private:
 //
 // A DT_Class (ModelClassifier) is used for records (class or struct) and for
 // templates and typedefs.  The only reason that a typedef uses a DT_Class is
-// because it contains the file and line location of the definition.
+// because it contains the file and line location of the definition, and that
+// simple DT_DataType types are not shown on diagrams as relations.
 // A template may eventually use the attributes vector to keep relations
 // between the template arguments and other classes.
 // A typedef name is prepended with the UML <<typedef>> stereotype.  The Oovcde
@@ -526,15 +527,30 @@ class ModelDeclClass
             return (mDecl.getName() < rhs.mDecl.getName() &&
                     mDecl.getDeclClassType() < rhs.mDecl.getDeclClassType());
             }
+        bool operator==(const ModelDeclClass &rhs) const
+            {
+            return (mDecl.getName() == rhs.mDecl.getName() &&
+                    mDecl.getDeclClassType() == rhs.mDecl.getDeclClassType());
+            }
 
     private:
         const ModelDeclarator mDecl;
     };
 
-//typedef std::set<ModelDeclClass> ConstModelDeclClassSet;
 // @todo - this could be a set to eliminate duplicates, but it doesn't work yet.
-typedef std::vector<ModelDeclClass> ConstModelDeclClasses;
-typedef std::vector<ModelClassifier const *> ConstModelClassifierVector;
+//typedef std::vector<ModelDeclClass> ConstModelDeclClasses;
+
+class ConstModelDeclClasses:public std::vector<ModelDeclClass>
+    {
+    public:
+        bool addUnique(ModelDeclClass const &decl);
+    };
+
+class ConstModelClassifierVector:public std::vector<ModelClassifier const *>
+    {
+    public:
+        bool addUnique(ModelClassifier const *cl);
+    };
 
 
 /// Holds all data used to make class and sequence diagrams. This data is read
@@ -580,7 +596,7 @@ class ModelData
         void getRelatedBodyVarClasses(const ModelClassifier &type,
                 ConstModelDeclClasses &declclasses) const;
         // This also gets bases of bases.
-        void getBaseClasses(ModelClassifier const &type,
+        void addBaseClasses(ModelClassifier const &type,
                 ConstModelClassifierVector &classes) const;
 
     private:

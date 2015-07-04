@@ -428,62 +428,105 @@ OovString GuiList::findLongestMatch(OovStringRef const str)
     }
 
 
-
 void GuiTree::init(Builder &builder, OovStringRef const widgetName,
-        OovStringRef const title, ColumnTypes columnType)
+        OovStringRef const titleCol1, ColumnTypes columnType,
+        OovStringRef const titleCol2)
     {
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
+    if(!gtk_tree_view_get_column(mTreeView, 0))
+        {
+        GtkTreeStore *store;
+        switch(columnType)
+            {
+            case CT_String:
+                addStringColumn(DCI_StringColumnIndex, titleCol1);
+                store = gtk_tree_store_new(1, G_TYPE_STRING);
+                break;
 
+            case CT_StringBool:
+                addStringColumn(DCI_StringColumnIndex, titleCol1);
+                addBoolColumn(DCI_BoolColumnIndex, titleCol2);
+                store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_BOOLEAN);
+                break;
+
+            case CT_BoolString:
+                addBoolColumn(DCI_BoolColumnIndex, titleCol1);
+                addStringColumn(DCI_StringColumnIndex, titleCol2);
+				store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_BOOLEAN);
+                break;
+            }
+        gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
+        g_object_unref(store);
+        }
+    }
+
+void GuiTree::addStringColumn(int dataColumnIndex, OovStringRef title)
+    {
     // Add a string column as the first column
     GtkCellRenderer *textRenderer = gtk_cell_renderer_text_new();
     GtkTreeViewColumn *textColumn = gtk_tree_view_column_new_with_attributes(
-        title, textRenderer, "text", TV_StringIndex, nullptr);
+        title, textRenderer, "text", dataColumnIndex, nullptr);
     gtk_tree_view_append_column(GTK_TREE_VIEW(mTreeView), textColumn);
-
-    GtkTreeStore *store;
-    if(columnType == CT_String)
-        store = gtk_tree_store_new(N_StringColumns, G_TYPE_STRING);
-    else
-        {
-        store = gtk_tree_store_new(N_StringBoolColumns, G_TYPE_STRING, G_TYPE_BOOLEAN);
-
-        // Add a boolean checkbox column
-        GtkCellRenderer *toggleRenderer = gtk_cell_renderer_toggle_new();
-        GtkTreeViewColumn *toggleColumn = gtk_tree_view_column_new_with_attributes
-                ("Show", toggleRenderer, "active", GuiTree::TV_BoolIndex, NULL);
-        gtk_tree_view_append_column(mTreeView, toggleColumn);
-        }
-    gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
-    g_object_unref(store);
     }
 
-GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, OovStringRef const str)
+void GuiTree::addBoolColumn(int dataColumnIndex, OovStringRef title)
     {
-    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    // Add a boolean checkbox column
+    GtkCellRenderer *toggleRenderer = gtk_cell_renderer_toggle_new();
+    GtkTreeViewColumn *toggleColumn = gtk_tree_view_column_new_with_attributes
+            (title, toggleRenderer, "active", dataColumnIndex, NULL);
+    gtk_tree_view_append_column(mTreeView, toggleColumn);
+    }
+
+
+GuiTreeItem GuiTree::appendRow(GuiTreeItem parentItem)
+    {
     GuiTreeItem item(false);
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
     if(GTK_IS_LIST_STORE(model))
         {
         GtkListStore *store = GTK_LIST_STORE(model);
-        gtk_list_store_append(store, &item.mIter);
-        gtk_list_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
+        gtk_list_store_append(store, item.getPtr());
         }
     else
         {
         GtkTreeStore *store = GTK_TREE_STORE(model);
-        gtk_tree_store_append(store, &item.mIter, parentItem.getPtr());
-        gtk_tree_store_set(store, &item.mIter, TV_StringIndex, str.getStr(), -1);
+        gtk_tree_store_append(store, item.getPtr(), parentItem.getPtr());
         }
     return item;
     }
 
-bool GuiTree::getSelectedIter(GtkTreeIter *childIter) const
+GuiTreeItem GuiTree::appendText(GuiTreeItem parentItem, OovStringRef const str)
+    {
+    GuiTreeItem item = appendRow(parentItem);
+    setText(item, str);
+    return item;
+    }
+
+void GuiTree::setText(GuiTreeItem item, OovStringRef const str)
+    {
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    if(GTK_IS_LIST_STORE(model))
+        {
+        GtkListStore *store = GTK_LIST_STORE(model);
+        gtk_list_store_set(store, item.getPtr(), DCI_StringColumnIndex, str.getStr(), -1);
+        }
+    else
+        {
+        GtkTreeStore *store = GTK_TREE_STORE(model);
+        gtk_tree_store_set(store, item.getPtr(), DCI_StringColumnIndex, str.getStr(), -1);
+        }
+    }
+
+bool GuiTree::getSelectedItem(GuiTreeItem &childItem) const
     {
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     bool haveSel = false;
     if(sel)
         {
         GtkTreeModel *model;
-        haveSel = gtk_tree_selection_get_selected(sel, &model, childIter);
+        childItem.setRoot(false);
+        haveSel = gtk_tree_selection_get_selected(sel, &model, childItem.getPtr());
         }
     return haveSel;
     }
@@ -512,82 +555,100 @@ OovString const GuiTree::getSelected(char delimiter) const
 
 OovStringVec const GuiTree::getSelected() const
     {
-    GtkTreeIter iter;
+    GuiTreeItem item;
     OovStringVec names;
-    if(getSelectedIter(&iter))
+    if(getSelectedItem(item))
         {
-        names = getNodeVec(iter);
+        names = getNodeVec(item);
         }
     return names;
     }
 
-OovStringVec const GuiTree::getNodeVec(GtkTreeIter iter) const
+OovString GuiTree::getText(GuiTreeItem item) const
     {
-    GtkTreeIter parent;
     GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
-    OovStringVec names;
     char *nodeValue;
-    gtk_tree_model_get(model, &iter, TV_StringIndex, &nodeValue, -1);
-    names.push_back(nodeValue);
+    gtk_tree_model_get(model, item.getPtr(), DCI_StringColumnIndex, &nodeValue, -1);
+    OovString str = nodeValue;
     g_free(nodeValue);
+    return str;
+    }
+
+OovStringVec const GuiTree::getNodeVec(GuiTreeItem item) const
+    {
+    GuiTreeItem parent(false);
+    OovStringVec names;
+    names.push_back(getText(item));
     // Walk up the tree to the root.
-    while(gtk_tree_model_iter_parent(model, &parent, &iter))
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    while(gtk_tree_model_iter_parent(model, parent.getPtr(), item.getPtr()))
         {
-        char *value;
-        gtk_tree_model_get(model, &parent, TV_StringIndex, &value, -1);
-        names.push_back(value);
-        g_free(value);
-        iter = parent;
+        names.push_back(getText(parent));
+        item = parent;
         }
     std::reverse(names.begin(), names.end());
     return names;
     }
 
-OovString const GuiTree::getNodeName(GtkTreeIter iter, char delimiter) const
+OovString const GuiTree::getNodeName(GuiTreeItem item, char delimiter) const
     {
-    OovStringVec names = getNodeVec(iter);
+    OovStringVec names = getNodeVec(item);
     OovString name;
     name.join(names, delimiter);
     return name;
     }
 
-void GuiTree::setChildCheckboxes(GtkTreeIter *iter, bool set)
+void GuiTree::setCheckbox(GuiTreeItem item, bool set)
     {
-    GtkTreeIter child;
-    int numChilds = gtk_tree_model_iter_n_children(getModel(), iter);
+    gtk_tree_store_set(getTreeStore(), item.getPtr(), DCI_BoolColumnIndex, set, -1);
+    }
+
+bool GuiTree::getCheckbox(GuiTreeItem item)
+    {
+    GValue value = { 0, 0 };
+    gtk_tree_model_get_value(getModel(), item.getPtr(), DCI_BoolColumnIndex, &value);
+    bool val = (g_value_get_boolean(&value) == TRUE);
+    g_value_unset(&value);
+    return val;
+    }
+
+void GuiTree::setChildCheckboxes(GuiTreeItem item, bool set)
+    {
+    GuiTreeItem child(false);
+    int numChilds = gtk_tree_model_iter_n_children(getModel(), item.getPtr());
     for(int i=0; i<numChilds; i++)
         {
-        if(gtk_tree_model_iter_nth_child(getModel(), &child, iter, i))
+        if(gtk_tree_model_iter_nth_child(getModel(), child.getPtr(), item.getPtr(), i))
             {
-            gtk_tree_store_set(getTreeStore(), &child, GuiTree::TV_BoolIndex, set, -1);
-            setChildCheckboxes(&child, set);
+            setCheckbox(child, set);
+            setChildCheckboxes(child, set);
             }
         }
     }
 
 OovStringVec GuiTree::getSelectedChildNodeNames(char delimiter)
     {
-    GtkTreeIter iter;
+    GuiTreeItem item;
     OovStringVec names;
-    if(getSelectedIter(&iter))
+    if(getSelectedItem(item))
         {
-        names = getChildNodeNames(&iter, delimiter);
+        names = getChildNodeNames(item, delimiter);
         }
     return names;
     }
 
-OovStringVec const GuiTree::getChildNodeNames(GtkTreeIter *iter, char delimiter)
+OovStringVec const GuiTree::getChildNodeNames(GuiTreeItem item, char delimiter)
     {
-    GtkTreeIter child;
+    GuiTreeItem child(false);
     OovStringVec names;
 
-    int numChilds = gtk_tree_model_iter_n_children(getModel(), iter);
+    int numChilds = gtk_tree_model_iter_n_children(getModel(), item.getPtr());
     for(int i=0; i<numChilds; i++)
         {
-        if(gtk_tree_model_iter_nth_child(getModel(), &child, iter, i))
+        if(gtk_tree_model_iter_nth_child(getModel(), child.getPtr(), item.getPtr(), i))
             {
             names.push_back(getNodeName(child, delimiter));
-            OovStringVec newNames = getChildNodeNames(&child, delimiter);
+            OovStringVec newNames = getChildNodeNames(child, delimiter);
             for(auto const &newName : newNames)
                 {
                 names.push_back(newName);
@@ -599,47 +660,38 @@ OovStringVec const GuiTree::getChildNodeNames(GtkTreeIter *iter, char delimiter)
 
 void GuiTree::setAllCheckboxes(bool set)
     {
-    setChildCheckboxes(nullptr, set);
+    setChildCheckboxes(GuiTreeItem(), set);
     }
 
 void GuiTree::setSelectedChildCheckboxes(bool set)
     {
-    GtkTreeIter iter;
-    if(getSelectedIter(&iter))
+    GuiTreeItem item;
+    if(getSelectedItem(item))
         {
-        setChildCheckboxes(&iter, set);
+        setChildCheckboxes(item, set);
         }
     }
 
 bool GuiTree::toggleSelectedCheckbox()
     {
-    GtkTreeIter iter;
+    GuiTreeItem item;
     bool val = false;
-    if(getSelectedIter(&iter))
+    if(getSelectedItem(item))
         {
-        GValue value = { 0, 0 };
-        gtk_tree_model_get_value(getModel(), &iter,
-                GuiTree::TV_BoolIndex, &value);
-        val = (g_value_get_boolean(&value) == TRUE);
-        g_value_unset(&value);
-        gtk_tree_store_set(getTreeStore(), &iter,
-                GuiTree::TV_BoolIndex, !val, -1);
+        val = getCheckbox(item);
+        setCheckbox(item, !val);
         }
     return !val;
     }
 
 bool GuiTree::getSelectedCheckbox(bool &checked)
     {
-    GtkTreeIter iter;
+    GuiTreeItem item;
     checked = false;
-    bool selected = getSelectedIter(&iter);
+    bool selected = getSelectedItem(item);
     if(selected)
         {
-        GValue value = { 0, 0 };
-        gtk_tree_model_get_value(getModel(), &iter,
-                GuiTree::TV_BoolIndex, &value);
-        checked = (g_value_get_boolean(&value) == TRUE);
-        g_value_unset(&value);
+        selected = getCheckbox(item);
         }
     return selected;
     }
@@ -650,7 +702,7 @@ void GuiTree::setSelected(OovStringVec const &names)
     name.join(names, ':');
     GuiTreeItem item = getItem(name, '/');
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
-    gtk_tree_selection_select_iter(sel, &item.mIter);
+    gtk_tree_selection_select_iter(sel, item.getPtr());
     }
 
 void GuiTree::setSelected(OovString const &name, char delimiter)
@@ -659,43 +711,29 @@ void GuiTree::setSelected(OovString const &name, char delimiter)
     setSelected(tokens);
     }
 
-class GuiTreeValue
-    {
-    public:
-        GuiTreeValue():
-            mStr(nullptr)
-            {}
-        ~GuiTreeValue()
-            {
-            if(mStr)
-                g_free(mStr);
-            }
-
-    char *mStr;
-    };
-
-bool GuiTree::findNodeIter(GtkTreeIter *parent,
-        OovString const &name, char delimiter, GtkTreeIter *iter)
+bool GuiTree::findNodeItem(GuiTreeItem parent,
+        OovString const &name, char delimiter, GuiTreeItem &item)
     {
     OovStringVec tokens = name.split(delimiter);
     bool found = false;
     if(tokens.size() > 0)
         {
         GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
-        bool success = gtk_tree_model_iter_children(model, iter, parent);
+        item.setRoot(false);
+        bool success = gtk_tree_model_iter_children(model, item.getPtr(),
+                parent.getPtr());
         while(success && !found)
             {
-            GuiTreeValue value;
-            gtk_tree_model_get(model, iter, TV_StringIndex, &value.mStr, -1);
-            if(tokens[0].compare(value.mStr) == 0)
+            if(tokens[0].compare(getText(item)) == 0)
                 {
                 if(tokens.size() > 1)
                     {
                     OovString childName;
                     tokens.erase(tokens.begin());
                     childName.join(tokens, delimiter);
-                    GtkTreeIter parentIter = *iter;
-                    found = findNodeIter(&parentIter, childName, delimiter, iter);
+                    GuiTreeItem parent = item;
+                    item.setRoot(false);
+                    found = findNodeItem(parent, childName, delimiter, item);
                     }
                 else
                     {
@@ -704,7 +742,7 @@ bool GuiTree::findNodeIter(GtkTreeIter *parent,
                 }
             if(!found)
                 {
-                success = gtk_tree_model_iter_next(model, iter);
+                success = gtk_tree_model_iter_next(model, item.getPtr());
                 }
             }
         }
@@ -713,14 +751,10 @@ bool GuiTree::findNodeIter(GtkTreeIter *parent,
 
 GuiTreeItem GuiTree::getItem(OovString const &name, char delimiter)
     {
-    GuiTreeItem item(false);
+    GuiTreeItem item;
     if(name.length() > 0)
         {
-        GtkTreeIter iter;
-        if(findNodeIter(nullptr, name, delimiter, &iter))
-            item.mIter = iter;
-        else
-            item.setRoot();
+        findNodeItem(GuiTreeItem(), name, delimiter, item);
         }
     return item;
     }

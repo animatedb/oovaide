@@ -18,7 +18,6 @@ Explanations
 Missing Features
 ----------------
 - General
-	- BUG: OovStringRef has pointer changed if set into OovString/FilePath?
 	- need to clean up analysis dir when files are deleted.
 	- graph selection icons should be gray if project isn't loaded.
 	- Add new project icon?
@@ -29,6 +28,7 @@ Missing Features
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
 	  are the same?
 - Gui
+	- Saving drawings should default to last opened location/name.
 	- Add improved open recent files
 	- Add External Directories button for Build Arguments dialog.
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
@@ -44,8 +44,7 @@ Missing Features
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
-	- BUG: tool tip window doesn't go away when changing to other screen
-	- Remove all and hide all children can leave remnant component text
+	- BUG: Remove all and hide all children can leave remnant component text
 	- BUG: component text offsets
 	- allow zone diag map path to rename any arbitrary string? getMappedComponentName
 	- Add zoom buttons, and zoom in based on cursor position
@@ -55,10 +54,8 @@ Missing Features
 - Class Diagrams/List
 	- Allow adding nodes without  repositioning
 	- Saved drawings don't save preferences for each class
-	- Need either show classes that will be added, or undo, or multiple drawing copies
 	- BUG: forward class definitions mess up source line numbers
 	- Non-class types are not shown (templated types)
-	- graph doesn't display types through templates, typedefs (DiagramRect in DiagramGraph.h)
 	- Show parameter reference/pointer/const in methods
 	- find way to reduce strlen: std::allocator, std::less, std::basic_string<char> etc.
 	  see ComponentBuilder
@@ -95,7 +92,7 @@ Missing Features
 	- Scan CMake files to find external pkg-config package dependencies
 	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
 	- analysis - doesn't work on filenames with spaces
-	- Complexity - could show class and module complexity
+	- Complexity - could show module and component complexity
 	- Coverage tool - fix switch/case fall throughs
 	- Coverage tool - fix precompiled header before include oovcoverage.h
 	- Coverage tool - filenames with underscore has stats, but not lines covered

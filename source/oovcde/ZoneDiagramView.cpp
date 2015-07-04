@@ -17,7 +17,7 @@ static GraphPoint sStartPosInfo;
 void ZoneDiagramList::init()
     {
     mComponentTree.init(*Builder::getBuilder(), "ZoneTreeview",
-            "Component List", GuiTree::CT_StringBool);
+            "Component List", GuiTree::CT_StringBool, "Show");
     sZoneDiagramList = this;
     }
 
@@ -54,7 +54,7 @@ void ZoneClassInfoToolTipWindow::hide()
         }
     }
 
-void ZoneClassInfoToolTipWindow::lostFocus()
+void ZoneClassInfoToolTipWindow::lostPointer()
     {
     hide();
     }

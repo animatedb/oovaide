@@ -1052,7 +1052,7 @@ void ModelData::getRelatedTemplateClasses(const ModelType &type,
             {
             const ModelClassifier *tempCl = findType(id)->getClass();
             if(tempCl)
-                classes.push_back(tempCl);
+                classes.addUnique(tempCl);
             }
         }
     }
@@ -1068,10 +1068,38 @@ void ModelData::getRelatedFuncParamClasses(const ModelClassifier &classifier,
             const ModelClassifier *cl = param->getDeclClassType();
             if(cl)
                 {
-                declClasses.push_back(param.get());
+                declClasses.addUnique(param.get());
                 }
             }
         }
+    }
+
+bool ConstModelDeclClasses::addUnique(ModelDeclClass const &decl)
+    {
+    bool added = false;
+    auto declIter = std::find_if(begin(), end(),
+            [&decl](ModelDeclClass const &existingDecl)
+               { return(decl == existingDecl); });
+    if(declIter == end())
+        {
+        added = true;
+        push_back(decl);
+        }
+    return(added);
+    }
+
+bool ConstModelClassifierVector::addUnique(const ModelClassifier *cl)
+    {
+    bool added = false;
+    auto clIter = std::find_if(begin(), end(),
+            [&cl](ModelClassifier const *existingNode)
+               { return(cl == existingNode); });
+    if(clIter == end())
+        {
+        added = true;
+        push_back(cl);
+        }
+    return(added);
     }
 
 void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier,
@@ -1082,13 +1110,8 @@ void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier
         {
         for(auto &param : oper->getParams())
             {
-            const ModelClassifier *cl = param->getDeclClassType();
-            if(cl)
-                {
-                /// @todo = this should be a set, no need to add duplicate
-                /// relations.
-                }
-            classes.push_back(cl);
+            ModelClassifier const *cl = param.get()->getDeclClassType();
+            classes.addUnique(cl);
             }
         }
 // If the function's return is a relation, then the relation will already
@@ -1114,7 +1137,7 @@ void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
         {
         for(auto &vd : oper->getBodyVarDeclarators())
             {
-            declClasses.push_back(vd.get());
+            declClasses.addUnique(vd.get());
             }
         // Normally the call statements would not have to be checked since most
         // calls are through either variable declarations, or through
@@ -1126,7 +1149,7 @@ void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
                 const ModelClassifier *cl = stmt.getClassDecl().getDeclType()->getClass();
                 if(cl)
                     {
-                    declClasses.push_back(ModelDeclClass(stmt.getAttrName(),
+                    declClasses.addUnique(ModelDeclClass(stmt.getAttrName(),
                             stmt.getClassDecl().getDeclType()));
                     }
                 }
@@ -1134,7 +1157,7 @@ void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
         }
     }
 
-void ModelData::getBaseClasses(ModelClassifier const &type,
+void ModelData::addBaseClasses(ModelClassifier const &type,
         ConstModelClassifierVector &classes) const
     {
     for(auto const &assoc : mAssociations)
@@ -1142,10 +1165,9 @@ void ModelData::getBaseClasses(ModelClassifier const &type,
         if(assoc.get()->getChild() == &type)
             {
             ModelClassifier const *parent = assoc.get()->getParent();
-            if(std::find(classes.begin(), classes.end(), parent) == classes.end())
+            if(classes.addUnique(parent))
                 {
-                classes.push_back(parent);
-                getBaseClasses(*parent, classes);
+                addBaseClasses(*parent, classes);
                 }
             }
         }

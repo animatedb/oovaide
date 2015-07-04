@@ -49,8 +49,15 @@ class ClassDiagram
             ClassGraph::eAddNodeTypes addType=ClassGraph::AN_All,
             int maxDepth=DEPTH_IMMEDIATE_RELATIONS)
             { mClassGraph.addRelatedNodesRecurse(model, type, addType, maxDepth); }
-        void removeNode(const ClassNode &node, const ModelData &modelData)
+        void getRelatedNodesRecurse(const ModelData &model, const ModelType *type,
+                std::vector<ClassNode> &nodes,
+                ClassGraph::eAddNodeTypes addType=ClassGraph::AN_All,
+                int maxDepth=DEPTH_IMMEDIATE_RELATIONS)
+            { mClassGraph.getRelatedNodesRecurse(model, type, addType, maxDepth, nodes); }
+        void removeNode(ClassNode const &node, const ModelData &modelData)
             { mClassGraph.removeNode(node, modelData); }
+        bool isNodeTypePresent(ClassNode const &node) const
+            { return mClassGraph.isNodeTypePresent(node); }
 
         // This sets the drawer for computing sizes.
         void setNullDrawer(DiagramDrawer &drawer)

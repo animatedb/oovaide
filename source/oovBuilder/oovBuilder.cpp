@@ -28,13 +28,81 @@
 #include "Coverage.h"
 #include <stdio.h>
 
-static bool readProject(ComponentFinder &compFinder, OovStringRef const buildConfigName,
-        OovStringRef const oovProjDir, bool verbose)
+
+class OovBuilder
     {
-    bool success = compFinder.readProject(oovProjDir, buildConfigName);
+    public:
+        void build(eProcessModes processMode, OovStringRef oovProjDir,
+                OovStringRef buildConfigName, bool verbose);
+        ComponentFinder &getComponentFinder()
+            { return mCompFinder; }
+
+    private:
+        ComponentFinder mCompFinder;
+
+        bool readProject(OovStringRef const buildConfigName,
+            OovStringRef const oovProjDir, bool verbose);
+        void analyze(BuildConfigWriter &cfg, eProcessModes procMode,
+            OovStringRef const buildConfigName, OovStringRef const srcRootDir);
+    };
+
+
+void OovBuilder::build(eProcessModes processMode, OovStringRef oovProjDir,
+        OovStringRef buildConfigName, bool verbose)
+    {
+    bool success = true;
+    Project::setProjectDirectory(oovProjDir);
+    if(processMode == PM_CovBuild)
+        {
+        success = makeCoverageBuildProject();
+        }
     if(success)
         {
-        if(compFinder.getProject().getVerbose() || verbose)
+        success = readProject(buildConfigName, Project::getProjectDirectory(),
+                verbose);
+        }
+    if(success)
+        {
+        if(processMode == PM_CovStats)
+            {
+            if(makeCoverageStats())
+                {
+                printf("Coverage output: %s",
+                    Project::getCoverageProjectDirectory().getStr());
+                }
+            }
+        else
+            {
+            BuildConfigWriter cfg;
+            analyze(cfg, processMode, buildConfigName, Project::getSrcRootDirectory());
+
+            std::string configStr = "Configuration: ";
+            configStr += buildConfigName;
+            sVerboseDump.logProgress(configStr);
+            switch(processMode)
+                {
+                case PM_Analyze:
+                    break;
+
+                default:
+                    {
+                    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName);
+                    ComponentBuilder compBuilder(getComponentFinder());
+                    compBuilder.build(processMode, incDepsPath, buildConfigName);
+                    }
+                    break;
+                }
+            }
+        }
+    }
+
+bool OovBuilder::readProject(OovStringRef const buildConfigName,
+        OovStringRef const oovProjDir, bool verbose)
+    {
+    bool success = mCompFinder.readProject(oovProjDir, buildConfigName);
+    if(success)
+        {
+        if(mCompFinder.getProject().getVerbose() || verbose)
             {
             sVerboseDump.open(oovProjDir);
             }
@@ -47,7 +115,7 @@ static bool readProject(ComponentFinder &compFinder, OovStringRef const buildCon
     return success;
     }
 
-static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
+void OovBuilder::analyze(BuildConfigWriter &cfg,
         eProcessModes procMode, OovStringRef const buildConfigName,
         OovStringRef const srcRootDir)
     {
@@ -70,21 +138,21 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
         }
 
     cfg.setInitialConfig(buildConfigName,
-        compFinder.getProject().getExternalArgs(),
-        compFinder.getProject().getAllCrcCompileArgs(),
-        compFinder.getProject().getAllCrcLinkArgs());
+        mCompFinder.getProject().getExternalArgs(),
+        mCompFinder.getProject().getAllCrcCompileArgs(),
+        mCompFinder.getProject().getAllCrcLinkArgs());
 
     if(cfg.isConfigDifferent(buildConfigName,
             BuildConfig::CT_ExtPathArgsCrc))
         {
         // This is for the -ER switch.
-        for(auto const &arg : compFinder.getProject().getExternalArgs())
+        for(auto const &arg : mCompFinder.getProject().getExternalArgs())
             {
             printf("Scanning %s\n", &arg[3]);
             fflush(stdout);
-            compFinder.scanExternalProject(&arg[3]);
+            mCompFinder.scanExternalProject(&arg[3]);
             }
-        for(auto const &pkg : compFinder.getProject().getProjectPackages().
+        for(auto const &pkg : mCompFinder.getProject().getProjectPackages().
             getPackages())
             {
             if(pkg.needDirScan())
@@ -96,26 +164,26 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
                     {
                     if(pkg.getIncludeDirs().size() == 0)
                         {
-                        compFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
+                        mCompFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
                         }
                     else
                         {
-                        compFinder.addBuildPackage(pkg);
+                        mCompFinder.addBuildPackage(pkg);
                         }
                     }
                 }
             else
                 {
-                compFinder.addBuildPackage(pkg);
+                mCompFinder.addBuildPackage(pkg);
                 }
             }
         }
-    srcFileParser sfp(compFinder);
+    srcFileParser sfp(mCompFinder);
     printf("Scanning %s\n", srcRootDir.getStr());
-    compFinder.scanProject();
+    mCompFinder.scanProject();
     fflush(stdout);
 
-    cfg.setProjectConfig(compFinder.getScannedInfo().getProjectIncludeDirs());
+    cfg.setProjectConfig(mCompFinder.getScannedInfo().getProjectIncludeDirs());
     // Is anything different in the current build configuration?
     if(cfg.isAnyConfigDifferent(buildConfigName))
         {
@@ -170,7 +238,7 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 
     FilePath compFn(analysisPath, FP_Dir);
     compFn.appendFile(Project::getAnalysisComponentsFilename());
-    compFinder.saveProject(compFn);
+    mCompFinder.saveProject(compFn);
 
     sfp.analyzeSrcFiles(srcRootDir, analysisPath);
     }
@@ -179,8 +247,8 @@ static void analyze(ComponentFinder &compFinder, BuildConfigWriter &cfg,
 //      ../examples/staticlib ../examples/staticlib-oovcde -bld-Debug
 int main(int argc, char const * const argv[])
     {
-    ComponentFinder compFinder;
     char const *oovProjDir = NULL;
+    OovBuilder builder;
     std::string buildConfigName = BuildConfigAnalysis;  // analysis is default.
     eProcessModes processMode = PM_Analyze;
     bool verbose = false;
@@ -241,50 +309,7 @@ int main(int argc, char const * const argv[])
 
     if(success)
         {
-        Project::setProjectDirectory(oovProjDir);
-        if(processMode == PM_CovBuild)
-            {
-            success = makeCoverageBuildProject();
-            }
-        }
-    if(success)
-        {
-        success = readProject(compFinder, buildConfigName,
-            Project::getProjectDirectory(), verbose);
-        }
-    if(success)
-        {
-        if(processMode == PM_CovStats)
-            {
-            if(makeCoverageStats())
-                {
-                printf("Coverage output: %s",
-                    Project::getCoverageProjectDirectory().getStr());
-                }
-            }
-        else
-            {
-            BuildConfigWriter cfg;
-            analyze(compFinder, cfg, processMode, buildConfigName,
-                    Project::getSrcRootDirectory());
-
-            std::string configStr = "Configuration: ";
-            configStr += buildConfigName;
-            sVerboseDump.logProgress(configStr);
-            switch(processMode)
-                {
-                case PM_Analyze:
-                    break;
-
-                default:
-                    {
-                    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName);
-                    ComponentBuilder builder(compFinder);
-                    builder.build(processMode, incDepsPath, buildConfigName);
-                    }
-                    break;
-                }
-            }
+        builder.build(processMode, oovProjDir, buildConfigName, verbose);
         }
     return 0;
     }

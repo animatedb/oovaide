@@ -1,193 +1,219 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="337" height="655">
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="7" y="7" width="62" height="11" />
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="523" height="697">
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="7" y="7" width="62" height="9" />
 </g>
-<g font-size="10">
-<text x="9" y="16">ClassDrawer</text>
+<text x="9" y="14">ClassDrawer</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="88" y="7" width="58" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="84" y="7" width="58" height="9" />
 </g>
-<g font-size="10">
-<text x="90" y="16">ClassGraph</text>
+<text x="86" y="14">ClassGraph</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="153" y="7" width="54" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="149" y="7" width="177" height="18" />
 </g>
-<g font-size="10">
-<text x="155" y="16">std::vector</text>
+<text x="151" y="14">std::vector&lt;ClassNode,std::allocator&lt;</text>
+<text x="151" y="23">   ClassNode&gt; &gt;</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="214" y="7" width="78" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="333" y="7" width="60" height="9" />
 </g>
-<g font-size="10">
-<text x="216" y="16">DiagramDrawer</text>
+<text x="335" y="14">GraphPoint</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="299" y="7" width="31" height="11" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="400" y="7" width="78" height="9" />
 </g>
-<g font-size="10">
-<text x="301" y="16">Color</text>
+<text x="402" y="14">DiagramDrawer</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<line x1="7" y1="38" x2="44" y2="38" />
-<line x1="40" y1="34" x2="44" y2="38" />
-<line x1="40" y1="42" x2="44" y2="38" />
-<line x1="50" y1="87" x2="117" y2="87" />
-<line x1="113" y1="83" x2="117" y2="87" />
-<line x1="113" y1="91" x2="117" y2="87" />
-<line x1="50" y1="101" x2="180" y2="101" />
-<line x1="176" y1="97" x2="180" y2="101" />
-<line x1="176" y1="105" x2="180" y2="101" />
-<line x1="50" y1="115" x2="117" y2="115" style="stroke-dasharray: 4, 4 "/>
-<line x1="113" y1="111" x2="117" y2="115" />
-<line x1="113" y1="119" x2="117" y2="115" />
-<line x1="50" y1="129" x2="253" y2="129" />
-<line x1="249" y1="125" x2="253" y2="129" />
-<line x1="249" y1="133" x2="253" y2="129" />
-<line x1="52" y1="157" x2="117" y2="157" />
-<line x1="113" y1="153" x2="117" y2="157" />
-<line x1="113" y1="161" x2="117" y2="157" />
-<line x1="52" y1="171" x2="180" y2="171" />
-<line x1="176" y1="167" x2="180" y2="171" />
-<line x1="176" y1="175" x2="180" y2="171" />
-<line x1="52" y1="185" x2="117" y2="185" />
-<line x1="113" y1="181" x2="117" y2="185" />
-<line x1="113" y1="189" x2="117" y2="185" />
-<line x1="52" y1="199" x2="180" y2="199" />
-<line x1="176" y1="195" x2="180" y2="199" />
-<line x1="176" y1="203" x2="180" y2="199" />
-<line x1="52" y1="213" x2="73" y2="213" />
-<line x1="73" y1="213" x2="73" y2="216" />
-<line x1="52" y1="216" x2="73" y2="216" />
-<line x1="50" y1="230" x2="314" y2="230" />
-<line x1="310" y1="226" x2="314" y2="230" />
-<line x1="310" y1="234" x2="314" y2="230" />
-<line x1="50" y1="244" x2="253" y2="244" />
-<line x1="249" y1="240" x2="253" y2="244" />
-<line x1="249" y1="248" x2="253" y2="244" />
-<line x1="52" y1="272" x2="117" y2="272" />
-<line x1="113" y1="268" x2="117" y2="272" />
-<line x1="113" y1="276" x2="117" y2="272" />
-<line x1="52" y1="286" x2="180" y2="286" />
-<line x1="176" y1="282" x2="180" y2="286" />
-<line x1="176" y1="290" x2="180" y2="286" />
-<line x1="54" y1="314" x2="117" y2="314" />
-<line x1="113" y1="310" x2="117" y2="314" />
-<line x1="113" y1="318" x2="117" y2="314" />
-<line x1="54" y1="328" x2="180" y2="328" />
-<line x1="176" y1="324" x2="180" y2="328" />
-<line x1="176" y1="332" x2="180" y2="328" />
-<line x1="54" y1="342" x2="117" y2="342" style="stroke-dasharray: 4, 4 "/>
-<line x1="113" y1="338" x2="117" y2="342" />
-<line x1="113" y1="346" x2="117" y2="342" />
-<line x1="54" y1="356" x2="117" y2="356" style="stroke-dasharray: 4, 4 "/>
-<line x1="113" y1="352" x2="117" y2="356" />
-<line x1="113" y1="360" x2="117" y2="356" />
-<line x1="56" y1="384" x2="117" y2="384" />
-<line x1="113" y1="380" x2="117" y2="384" />
-<line x1="113" y1="388" x2="117" y2="384" />
-<line x1="56" y1="398" x2="180" y2="398" />
-<line x1="176" y1="394" x2="180" y2="398" />
-<line x1="176" y1="402" x2="180" y2="398" />
-<line x1="56" y1="412" x2="117" y2="412" />
-<line x1="113" y1="408" x2="117" y2="412" />
-<line x1="113" y1="416" x2="117" y2="412" />
-<line x1="56" y1="426" x2="180" y2="426" />
-<line x1="176" y1="422" x2="180" y2="426" />
-<line x1="176" y1="430" x2="180" y2="426" />
-<line x1="56" y1="440" x2="77" y2="440" />
-<line x1="77" y1="440" x2="77" y2="443" />
-<line x1="56" y1="443" x2="77" y2="443" />
-<line x1="56" y1="471" x2="117" y2="471" />
-<line x1="113" y1="467" x2="117" y2="471" />
-<line x1="113" y1="475" x2="117" y2="471" />
-<line x1="56" y1="485" x2="180" y2="485" />
-<line x1="176" y1="481" x2="180" y2="485" />
-<line x1="176" y1="489" x2="180" y2="485" />
-<line x1="56" y1="499" x2="117" y2="499" />
-<line x1="113" y1="495" x2="117" y2="499" />
-<line x1="113" y1="503" x2="117" y2="499" />
-<line x1="56" y1="513" x2="180" y2="513" />
-<line x1="176" y1="509" x2="180" y2="513" />
-<line x1="176" y1="517" x2="180" y2="513" />
-<line x1="56" y1="527" x2="77" y2="527" />
-<line x1="77" y1="527" x2="77" y2="530" />
-<line x1="56" y1="530" x2="77" y2="530" />
-<line x1="56" y1="558" x2="117" y2="558" />
-<line x1="113" y1="554" x2="117" y2="558" />
-<line x1="113" y1="562" x2="117" y2="558" />
-<line x1="56" y1="572" x2="180" y2="572" />
-<line x1="176" y1="568" x2="180" y2="572" />
-<line x1="176" y1="576" x2="180" y2="572" />
-<line x1="56" y1="586" x2="117" y2="586" />
-<line x1="113" y1="582" x2="117" y2="586" />
-<line x1="113" y1="590" x2="117" y2="586" />
-<line x1="56" y1="600" x2="180" y2="600" />
-<line x1="176" y1="596" x2="180" y2="600" />
-<line x1="176" y1="604" x2="180" y2="600" />
-<line x1="56" y1="614" x2="77" y2="614" />
-<line x1="77" y1="614" x2="77" y2="617" />
-<line x1="56" y1="617" x2="77" y2="617" />
-<line x1="50" y1="631" x2="314" y2="631" />
-<line x1="310" y1="627" x2="314" y2="631" />
-<line x1="310" y1="635" x2="314" y2="631" />
-<line x1="50" y1="645" x2="253" y2="645" />
-<line x1="249" y1="641" x2="253" y2="645" />
-<line x1="249" y1="649" x2="253" y2="645" />
-<polygon points="44,48 46,48 46,62 48,62 48,76 50,76 50,146 52,146 52,219 50,219 50,261 52,261 52,303 54,303 54,373 56,373 56,446 54,446 54,460 56,460 56,533 54,533 54,547 56,547 56,620 54,620 54,620 52,620 52,620 50,620 50,648 48,648 48,648 46,648 46,648 44,648 44,648 42,648 42,648 40,648 40,648 38,648 38,620 36,620 36,620 34,620 34,620 32,620 32,547 34,547 34,533 32,533 32,460 34,460 34,446 32,446 32,373 34,373 34,303 36,303 36,261 38,261 38,219 36,219 36,146 38,146 38,76 40,76 40,62 42,62 42,48 44,48 " style="fill:#f5f5ff" />
+<g font-size="10.000000" stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="485" y="7" width="31" height="9" />
 </g>
-<g font-size="10">
+<text x="487" y="14">Color</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="7" y1="38" x2="42" y2="38" />
+<line x1="38" y1="34" x2="42" y2="38" />
+<line x1="38" y1="42" x2="42" y2="38" />
+<line x1="44" y1="59" x2="113" y2="59" />
+<line x1="109" y1="55" x2="113" y2="59" />
+<line x1="109" y1="63" x2="113" y2="59" />
+<line x1="44" y1="73" x2="237" y2="73" />
+<line x1="233" y1="69" x2="237" y2="73" />
+<line x1="233" y1="77" x2="237" y2="73" />
+<line x1="44" y1="87" x2="113" y2="87" style="stroke-dasharray: 4, 4 "/>
+<line x1="109" y1="83" x2="113" y2="87" />
+<line x1="109" y1="91" x2="113" y2="87" />
+<line x1="44" y1="101" x2="363" y2="101" style="stroke-dasharray: 4, 4 "/>
+<line x1="359" y1="97" x2="363" y2="101" />
+<line x1="359" y1="105" x2="363" y2="101" />
+<line x1="44" y1="115" x2="439" y2="115" />
+<line x1="435" y1="111" x2="439" y2="115" />
+<line x1="435" y1="119" x2="439" y2="115" />
+<line x1="46" y1="143" x2="113" y2="143" />
+<line x1="109" y1="139" x2="113" y2="143" />
+<line x1="109" y1="147" x2="113" y2="143" />
+<line x1="46" y1="157" x2="237" y2="157" />
+<line x1="233" y1="153" x2="237" y2="157" />
+<line x1="233" y1="161" x2="237" y2="157" />
+<line x1="46" y1="171" x2="113" y2="171" />
+<line x1="109" y1="167" x2="113" y2="171" />
+<line x1="109" y1="175" x2="113" y2="171" />
+<line x1="46" y1="185" x2="237" y2="185" />
+<line x1="233" y1="181" x2="237" y2="185" />
+<line x1="233" y1="189" x2="237" y2="185" />
+<line x1="46" y1="199" x2="67" y2="199" />
+<line x1="67" y1="199" x2="67" y2="202" />
+<line x1="46" y1="202" x2="67" y2="202" />
+<line x1="44" y1="216" x2="500" y2="216" />
+<line x1="496" y1="212" x2="500" y2="216" />
+<line x1="496" y1="220" x2="500" y2="216" />
+<line x1="44" y1="230" x2="500" y2="230" />
+<line x1="496" y1="226" x2="500" y2="230" />
+<line x1="496" y1="234" x2="500" y2="230" />
+<line x1="44" y1="244" x2="439" y2="244" />
+<line x1="435" y1="240" x2="439" y2="244" />
+<line x1="435" y1="248" x2="439" y2="244" />
+<line x1="46" y1="272" x2="113" y2="272" />
+<line x1="109" y1="268" x2="113" y2="272" />
+<line x1="109" y1="276" x2="113" y2="272" />
+<line x1="46" y1="286" x2="237" y2="286" />
+<line x1="233" y1="282" x2="237" y2="286" />
+<line x1="233" y1="290" x2="237" y2="286" />
+<line x1="48" y1="314" x2="113" y2="314" />
+<line x1="109" y1="310" x2="113" y2="314" />
+<line x1="109" y1="318" x2="113" y2="314" />
+<line x1="48" y1="328" x2="237" y2="328" />
+<line x1="233" y1="324" x2="237" y2="328" />
+<line x1="233" y1="332" x2="237" y2="328" />
+<line x1="48" y1="342" x2="113" y2="342" style="stroke-dasharray: 4, 4 "/>
+<line x1="109" y1="338" x2="113" y2="342" />
+<line x1="109" y1="346" x2="113" y2="342" />
+<line x1="48" y1="356" x2="113" y2="356" style="stroke-dasharray: 4, 4 "/>
+<line x1="109" y1="352" x2="113" y2="356" />
+<line x1="109" y1="360" x2="113" y2="356" />
+<line x1="50" y1="384" x2="113" y2="384" />
+<line x1="109" y1="380" x2="113" y2="384" />
+<line x1="109" y1="388" x2="113" y2="384" />
+<line x1="50" y1="398" x2="237" y2="398" />
+<line x1="233" y1="394" x2="237" y2="398" />
+<line x1="233" y1="402" x2="237" y2="398" />
+<line x1="50" y1="412" x2="113" y2="412" />
+<line x1="109" y1="408" x2="113" y2="412" />
+<line x1="109" y1="416" x2="113" y2="412" />
+<line x1="50" y1="426" x2="237" y2="426" />
+<line x1="233" y1="422" x2="237" y2="426" />
+<line x1="233" y1="430" x2="237" y2="426" />
+<line x1="50" y1="440" x2="71" y2="440" />
+<line x1="71" y1="440" x2="71" y2="443" />
+<line x1="50" y1="443" x2="71" y2="443" />
+<line x1="50" y1="471" x2="113" y2="471" style="stroke-dasharray: 4, 4 "/>
+<line x1="109" y1="467" x2="113" y2="471" />
+<line x1="109" y1="475" x2="113" y2="471" />
+<line x1="50" y1="485" x2="113" y2="485" />
+<line x1="109" y1="481" x2="113" y2="485" />
+<line x1="109" y1="489" x2="113" y2="485" />
+<line x1="50" y1="499" x2="237" y2="499" />
+<line x1="233" y1="495" x2="237" y2="499" />
+<line x1="233" y1="503" x2="237" y2="499" />
+<line x1="50" y1="513" x2="113" y2="513" />
+<line x1="109" y1="509" x2="113" y2="513" />
+<line x1="109" y1="517" x2="113" y2="513" />
+<line x1="50" y1="527" x2="237" y2="527" />
+<line x1="233" y1="523" x2="237" y2="527" />
+<line x1="233" y1="531" x2="237" y2="527" />
+<line x1="50" y1="541" x2="71" y2="541" />
+<line x1="71" y1="541" x2="71" y2="544" />
+<line x1="50" y1="544" x2="71" y2="544" />
+<line x1="50" y1="572" x2="113" y2="572" style="stroke-dasharray: 4, 4 "/>
+<line x1="109" y1="568" x2="113" y2="572" />
+<line x1="109" y1="576" x2="113" y2="572" />
+<line x1="50" y1="586" x2="113" y2="586" />
+<line x1="109" y1="582" x2="113" y2="586" />
+<line x1="109" y1="590" x2="113" y2="586" />
+<line x1="50" y1="600" x2="237" y2="600" />
+<line x1="233" y1="596" x2="237" y2="600" />
+<line x1="233" y1="604" x2="237" y2="600" />
+<line x1="50" y1="614" x2="113" y2="614" />
+<line x1="109" y1="610" x2="113" y2="614" />
+<line x1="109" y1="618" x2="113" y2="614" />
+<line x1="50" y1="628" x2="237" y2="628" />
+<line x1="233" y1="624" x2="237" y2="628" />
+<line x1="233" y1="632" x2="237" y2="628" />
+<line x1="50" y1="642" x2="71" y2="642" />
+<line x1="71" y1="642" x2="71" y2="645" />
+<line x1="50" y1="645" x2="71" y2="645" />
+<line x1="44" y1="659" x2="500" y2="659" />
+<line x1="496" y1="655" x2="500" y2="659" />
+<line x1="496" y1="663" x2="500" y2="659" />
+<line x1="44" y1="673" x2="500" y2="673" />
+<line x1="496" y1="669" x2="500" y2="673" />
+<line x1="496" y1="677" x2="500" y2="673" />
+<line x1="44" y1="687" x2="439" y2="687" />
+<line x1="435" y1="683" x2="439" y2="687" />
+<line x1="435" y1="691" x2="439" y2="687" />
+<polygon points="42,48 44,48 44,132 46,132 46,205 44,205 44,261 46,261 46,303 48,303 48,373 50,373 50,446 48,446 48,460 50,460 50,547 48,547 48,561 50,561 50,648 48,648 48,648 46,648 46,648 44,648 44,690 42,690 42,690 40,690 40,648 38,648 38,648 36,648 36,648 34,648 34,561 36,561 36,547 34,547 34,460 36,460 36,446 34,446 34,373 36,373 36,303 38,303 38,261 40,261 40,205 38,205 38,132 40,132 40,48 42,48 " style="fill:#f5f5ff" />
+</g>
+<g font-size="10.000000" stroke="none">
 <text x="7" y="34">drawDiagram</text>
-<text x="46" y="41"></text>
-<text x="48" y="55"></text>
-<text x="50" y="69">[graph . getNodes ( ) . size ( ) &gt; 0 ]</text>
-<text x="52" y="83">getNodes</text>
-<text x="52" y="97">size</text>
-<text x="52" y="111">getGraphSize</text>
-<text x="52" y="125">setDiagramSize</text>
-<text x="52" y="139">*[ni1 &lt; graph . getNodes ( ) . size ( ) ]</text>
-<text x="54" y="153">getNodes</text>
-<text x="54" y="167">size</text>
-<text x="54" y="181">getNodes</text>
-<text x="54" y="195">operator[]</text>
-<text x="54" y="212">drawNode</text>
-<text x="52" y="226">Color</text>
-<text x="52" y="240">groupShapes</text>
-<text x="52" y="254">*[ni1 &lt; graph . getNodes ( ) . size ( ) ]</text>
-<text x="54" y="268">getNodes</text>
-<text x="54" y="282">size</text>
-<text x="54" y="296">*[ni2 &lt; graph . getNodes ( ) . size ( ) ]</text>
-<text x="56" y="310">getNodes</text>
-<text x="56" y="324">size</text>
-<text x="56" y="338">getNodeConnection</text>
-<text x="56" y="352">getNodeConnection</text>
-<text x="56" y="366">[ci1 || ci2 ]</text>
-<text x="58" y="380">getNodes</text>
-<text x="58" y="394">operator[]</text>
-<text x="58" y="408">getNodes</text>
-<text x="58" y="422">operator[]</text>
-<text x="58" y="439">drawConnectionLine</text>
-<text x="56" y="453">[ci1 ]</text>
-<text x="58" y="467">getNodes</text>
-<text x="58" y="481">operator[]</text>
-<text x="58" y="495">getNodes</text>
-<text x="58" y="509">operator[]</text>
-<text x="58" y="526">drawConnectionSymbols</text>
-<text x="56" y="540">[ci2 ]</text>
-<text x="58" y="554">getNodes</text>
-<text x="58" y="568">operator[]</text>
-<text x="58" y="582">getNodes</text>
-<text x="58" y="596">operator[]</text>
-<text x="58" y="613">drawConnectionSymbols</text>
-<text x="52" y="627">Color</text>
-<text x="52" y="641">groupShapes</text>
+<text x="44" y="41">[ graph . getNodes ( ) . size ( ) &gt; 0 ]</text>
+<text x="46" y="55">getNodes</text>
+<text x="46" y="69">size</text>
+<text x="46" y="83">getGraphSize</text>
+<text x="46" y="97">getZoomed</text>
+<text x="46" y="111">setDiagramSize</text>
+<text x="46" y="125">*[ ni1 &lt; graph . getNodes ( ) . size ( ) ;]</text>
+<text x="48" y="139">getNodes</text>
+<text x="48" y="153">size</text>
+<text x="48" y="167">getNodes</text>
+<text x="48" y="181">operator[]</text>
+<text x="48" y="198">drawNode</text>
+<text x="46" y="212">Color</text>
+<text x="46" y="226">Color</text>
+<text x="46" y="240">groupShapes</text>
+<text x="46" y="254">*[ ni1 &lt; graph . getNodes ( ) . size ( ) ;]</text>
+<text x="48" y="268">getNodes</text>
+<text x="48" y="282">size</text>
+<text x="48" y="296">*[ ni2 &lt; graph . getNodes ( ) . size ( ) ;]</text>
+<text x="50" y="310">getNodes</text>
+<text x="50" y="324">size</text>
+<text x="50" y="338">getNodeConnection</text>
+<text x="50" y="352">getNodeConnection</text>
+<text x="50" y="366">[ ci1 || ci2 ]</text>
+<text x="52" y="380">getNodes</text>
+<text x="52" y="394">operator[]</text>
+<text x="52" y="408">getNodes</text>
+<text x="52" y="422">operator[]</text>
+<text x="52" y="439">drawConnectionLine</text>
+<text x="50" y="453">[ ci1 ]</text>
+<text x="52" y="467">getOptions</text>
+<text x="52" y="481">getNodes</text>
+<text x="52" y="495">operator[]</text>
+<text x="52" y="509">getNodes</text>
+<text x="52" y="523">operator[]</text>
+<text x="52" y="540">drawConnectionSymbols</text>
+<text x="50" y="554">[ ci2 ]</text>
+<text x="52" y="568">getOptions</text>
+<text x="52" y="582">getNodes</text>
+<text x="52" y="596">operator[]</text>
+<text x="52" y="610">getNodes</text>
+<text x="52" y="624">operator[]</text>
+<text x="52" y="641">drawConnectionSymbols</text>
+<text x="46" y="655">Color</text>
+<text x="46" y="669">Color</text>
+<text x="46" y="683">groupShapes</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<line x1="44" y1="18" x2="44" y2="655" />
-<line x1="117" y1="18" x2="117" y2="655" />
-<line x1="180" y1="18" x2="180" y2="655" />
-<line x1="253" y1="18" x2="253" y2="655" />
-<line x1="314" y1="18" x2="314" y2="655" />
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="42" y1="16" x2="42" y2="697" />
+<line x1="113" y1="16" x2="113" y2="697" />
+<line x1="237" y1="25" x2="237" y2="697" />
+<line x1="363" y1="16" x2="363" y2="697" />
+<line x1="439" y1="16" x2="439" y2="697" />
+<line x1="500" y1="16" x2="500" y2="697" />
 </g>
 </svg>

@@ -156,7 +156,7 @@ bool ParserModelData::isBaseClass(ModelClassifier const *child,
     {
     bool isBase = false;
     ConstModelClassifierVector classes;
-    mModelData.getBaseClasses(*child, classes);
+    mModelData.addBaseClasses(*child, classes);
     for(auto const &cls : classes)
         {
         OovString const &baseName = cls->getName();

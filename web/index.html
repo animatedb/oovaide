@@ -1,5 +1,10 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+
 <html><head>
+
+
+<!-- Last Update July 1, 2015 -->
 
 <style type="text/css">
     body { font-family:"Helvetica Neue",Helvetica,Arial,sans-serif; }
@@ -22,6 +27,7 @@
 
 <div class="menu">
   <ul>
+  <li><a href="#DownloadSection">Download</a></li>
   <li><a href="description/oovcdereleases.html">Releases</a></li>
   <li><a href="description/oovcdefeatures.html">Features</a></li>
   <li><a href="userguide/oovcdeuserguide.html">User Guide</a></li>
@@ -37,17 +43,17 @@
 <body>
 <div class="content">
 
-May 5, 2015
 <p/>
 The oovcde project searches subdirectories and parses C++ code to
 automatically create object oriented static class, component, zone, 
-portion, and sequence diagrams, which allow easy navigation between
-diagrams and code.
+portion, sequence, and include diagrams, and allows easy
+navigation between diagrams and code.
 <p/>
     <div class="example">
-    The following diagram shows <a href="articles/ZoneDiagrams.html">zone diagrams</a>
-    where each point in a circle is a class.  This shows hundreds of classes and their
-    relations to each other.
+    The following shows a <a href="articles/ZoneDiagrams.html">zone diagram</a>
+    where each point in a circle is a class.  The diagram shows hundreds of
+    classes and their relations to each other. By applying filters, very large projects
+    can be analyzed.
     <br/>
         <embed src="articles/ZoneImages/ZoneOovcdeClassesChild.svg" type="image/svg+xml">
     </div>
@@ -55,25 +61,27 @@ diagrams and code.
 Many of the created diagrams are similar to UML, but have optional additional
 features. The diagrams can be edited manually and saved as .SVG files.
     <div class="example">
-    The following diagram shows a class diagram that shows inheritance,
-    aggregation, and class methods that use other classes.
+    The following shows a class diagram that shows inheritance,
+    aggregation, and shows classes that are used internal to methods or
+    as method parameters.
     <br/>
-        <img src="design/CppParser.svg" width="600">
+        <img src="design/CppParser.svg">
     </div>
 <p/>
     <div class="example">
-    The following diagram shows a <a href="articles/PortionDiagrams.html">portion</a>
+    The following shows a <a href="articles/PortionDiagrams.html">portion</a>
     diagram that shows the composition of a class.  It shows which methods use
     which member variables.
     <br/>
-        <img src="articles/PortionImages/PortionSimpleExample.svg" width="300">
+        <img src="articles/PortionImages/PortionSimpleExample.svg">
     </div>
 <p/>
     <div class="example">
-    The following diagram shows a sequence diagram that shows conditionals
-    and method calls in classes.
+    The following shows a sequence diagram that shows guard conditions
+    and method calls in classes.  The guard condition nesting is shown
+    along the lifelines.
     <br/>
-        <img src="design/SeqDrawDiagram.svg" width="300">
+        <img src="design/SeqDrawDiagram.svg">
     </div>
 <p/>
 Oovcde has a <a href="design/OovcdeBuildDesign.html">multithreaded build system</a>
@@ -140,6 +148,12 @@ of design documents that can be created with Oovcde, see the
   </li>
 </ul>
 <p>
+<h3><A name="DownloadSection">Downloads</h3>
+Oovcde is available in binary form from 
+<a href="http://sourceforge.net/projects/oovcde/">SourceForge</a> or from
+<a href="https://github.com/animatedb/oovcde/releases">Github</a>.
+To build from source, the easiest way is to use CMake by following the
+instructions in the <a href="https://github.com/animatedb/oovcde#download">Github download section</a>.
 
 </p>
 </div>

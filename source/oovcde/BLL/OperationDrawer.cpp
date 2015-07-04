@@ -11,18 +11,18 @@
 GraphSize OperationDrawer::getDrawingSize(DiagramDrawer &drawer,
     OperationGraph &graph, const OperationDrawOptions &options)
     {
-    return drawOrSizeDiagram(drawer, graph, options);
+    return drawOrSizeDiagram(drawer, graph, options, false);
     }
 
 GraphSize OperationDrawer::drawDiagram(DiagramDrawer &drawer,
         OperationGraph &graph, const OperationDrawOptions &options)
     {
     drawer.setDiagramSize(getDrawingSize(drawer, graph, options));
-    return drawOrSizeDiagram(drawer, graph, options);
+    return drawOrSizeDiagram(drawer, graph, options, true);
     }
 
 GraphSize OperationDrawer::drawOrSizeDiagram(DiagramDrawer &drawer,
-        OperationGraph &graph, const OperationDrawOptions &options)
+        OperationGraph &graph, const OperationDrawOptions &options, bool draw)
     {
     mCharHeight = static_cast<int>(drawer.getTextExtentHeight("W"));
     int pad = mCharHeight / 3;
@@ -40,7 +40,7 @@ GraphSize OperationDrawer::drawOrSizeDiagram(DiagramDrawer &drawer,
         {
         OperationClass &opClass = graph.mOpClasses[i];
         opClass.setPosition(pos);
-        size = drawClass(drawer, opClass, options);
+        size = drawClass(drawer, opClass, options, draw);
         size_t condDepth = graph.getNestDepth(i);
         size.x += static_cast<int>(condDepth) * mPad;
         opClass.setSize(size);
@@ -59,11 +59,14 @@ GraphSize OperationDrawer::drawOrSizeDiagram(DiagramDrawer &drawer,
         if(drawnOperations.find(oper) == drawnOperations.end())
             {
             size = drawOperation(drawer, pos, *oper, graph, options,
-                    drawnOperations);
+                    drawnOperations, draw);
             pos.y += size.y;
             }
         }
-    drawLifeLines(drawer, graph.mOpClasses, classEndY, pos.y);
+    if(draw)
+        {
+        drawLifeLines(drawer, graph.mOpClasses, classEndY, pos.y);
+        }
 
     diagramSize.y = pos.y + mCharHeight;
     return diagramSize;
@@ -85,7 +88,7 @@ void OperationDrawer::drawLifeLines(DiagramDrawer &drawer,
     }
 
 GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass &node,
-        const OperationDrawOptions & /*options*/)
+        const OperationDrawOptions & /*options*/, bool draw)
     {
     GraphPoint startpos = node.getPosition();
     const ModelType *type = node.getType();
@@ -95,7 +98,10 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
     const ModelClassifier *classifier = type->getClass();
     if(classifier)
         {
-        drawer.groupText(true);
+        if(draw)
+            {
+            drawer.groupText(true);
+            }
         OovStringVec strs;
         std::vector<GraphPoint> positions;
         strs.push_back(typeName);
@@ -110,15 +116,18 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
                 rectx = curx;
             }
 
-        drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
-        drawer.drawRect(GraphRect(startpos.x, startpos.y, rectx, recty));
-        drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
-
-        for(size_t i=0; i<strs.size(); i++)
+        if(draw)
             {
-            drawer.drawText(positions[i], strs[i]);
+            drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
+            drawer.drawRect(GraphRect(startpos.x, startpos.y, rectx, recty));
+            drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
+
+            for(size_t i=0; i<strs.size(); i++)
+                {
+                drawer.drawText(positions[i], strs[i]);
+                }
+            drawer.groupText(false);
             }
-        drawer.groupText(false);
         }
     return GraphSize(rectx, recty);
     }
@@ -177,7 +186,7 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
         OperationDefinition &operDef, const OperationGraph &graph,
         const OperationDrawOptions &options,
         std::set<const OperationDefinition*> &drawnOperations,
-        std::vector<DrawString> &drawStrings)
+        std::vector<DrawString> &drawStrings, bool draw)
     {
     GraphPoint startpos = pos;
     int starty = startpos.y+mPad;
@@ -199,9 +208,12 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
         drawStrings.push_back(DrawString(GraphPoint(
                 cls.getPosition().x, y), operDef.getName()));
         int lineY = y + mPad*2;
-        drawCall(drawer, GraphPoint(cls.getPosition().x, lineY),
+        if(draw)
+            {
+            drawCall(drawer, GraphPoint(cls.getPosition().x, lineY),
                 GraphPoint(cls.getLifelinePosX(), lineY),
                 operDef.isConst(), arrowLen);
+            }
         }
     for(const auto &stmt : operDef.getStatements())
         {
@@ -227,20 +239,26 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
                     }
                 else if(targetIndex != sourceIndex)
                     {
-                    drawCall(drawer, GraphPoint(sourcex, lineY),
+                    if(draw)
+                        {
+                        drawCall(drawer, GraphPoint(sourcex, lineY),
                             GraphPoint(targetx, lineY), call->isConst(), arrowLen);
+                        }
                     }
                 else
                     {
                     // Draw line back to same class
                     int len = mCharHeight*3;
                     int height = 3;
-                    drawer.drawLine(GraphPoint(sourcex, lineY),
+                    if(draw)
+                        {
+                        drawer.drawLine(GraphPoint(sourcex, lineY),
                             GraphPoint(sourcex+len, lineY), call->isConst());
-                    drawer.drawLine(GraphPoint(sourcex+len, lineY),
+                        drawer.drawLine(GraphPoint(sourcex+len, lineY),
                             GraphPoint(sourcex+len, lineY+height));
-                    drawer.drawLine(GraphPoint(sourcex, lineY+height),
+                        drawer.drawLine(GraphPoint(sourcex, lineY+height),
                             GraphPoint(sourcex+len, lineY+height), call->isConst());
+                        }
                     y += height;
                     }
                 int textX = (sourceIndex < targetIndex) ? cls.getLifelinePosX() :
@@ -260,14 +278,17 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
                         {
                         GraphSize childSize = drawOperationNoText(drawer,
                             GraphPoint(pos.x, y), *childDef, graph, options,
-                            drawnOperations, drawStrings);
+                            drawnOperations, drawStrings, draw);
                         y += childSize.y + mPad * 2;
                         }
                     else
                         {
                         GraphRect rect(targetx + mPad*2, callPos.y + mPad*2,
                             mCharHeight+mPad, mCharHeight+mPad);
-                        drawer.drawRect(rect);
+                        if(draw)
+                            {
+                            drawer.drawRect(rect);
+                            }
                         y += mCharHeight+mPad;
                         }
                     poly.endChildBlock(condDepth, y);
@@ -288,31 +309,43 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
                 if(targetIndex == NO_INDEX)
                     {
                     int len = mCharHeight*3;
-                    drawer.drawLine(GraphPoint(sourcex, lineY),
+                    if(draw)
+                        {
+                        drawer.drawLine(GraphPoint(sourcex, lineY),
                             GraphPoint(sourcex+len, lineY), ref->isConst());
+                        }
                     }
                 else if(targetIndex != sourceIndex)
                     {
-                    drawCall(drawer, GraphPoint(sourcex, lineY),
+                    if(draw)
+                        {
+                        drawCall(drawer, GraphPoint(sourcex, lineY),
                             GraphPoint(targetx, lineY), ref->isConst(), arrowLen);
+                        }
                     }
                 else
                     {
                     // Draw line back to same class
                     int len = mCharHeight*3;
                     int height = 3;
-                    drawer.drawLine(GraphPoint(sourcex, lineY),
+                    if(draw)
+                        {
+                        drawer.drawLine(GraphPoint(sourcex, lineY),
                             GraphPoint(sourcex+len, lineY), ref->isConst());
-                    drawer.drawLine(GraphPoint(sourcex+len, lineY),
+                        drawer.drawLine(GraphPoint(sourcex+len, lineY),
                             GraphPoint(sourcex+len, lineY+height));
-                    drawer.drawLine(GraphPoint(sourcex, lineY+height),
+                        drawer.drawLine(GraphPoint(sourcex, lineY+height),
                             GraphPoint(sourcex+len, lineY+height), ref->isConst());
+                        }
                     y += height;
                     }
                 int textX = (sourceIndex < targetIndex) ? cls.getLifelinePosX() :
                         targetCls.getLifelinePosX();
                 GraphPoint callPos(textX+condOffset+mPad, y+mCharHeight);
-                drawStrings.push_back(DrawString(callPos, ref->getName()));
+                if(draw)
+                    {
+                    drawStrings.push_back(DrawString(callPos, ref->getName()));
+                    }
                 ref->setRect(GraphPoint(callPos.x, callPos.y-mCharHeight),
                         GraphSize(mCharHeight*50, mCharHeight+mPad));
                 y += mCharHeight*2;
@@ -324,7 +357,10 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
                 GraphPoint lifePos(cls.getLifelinePosX()+condOffset+
                         mPad, y+mCharHeight);
                 const OperationNestStart *cond = stmt->getNestStart();
-                drawStrings.push_back(DrawString(lifePos, cond->getExpr()));
+                if(draw)
+                    {
+                    drawStrings.push_back(DrawString(lifePos, cond->getExpr()));
+                    }
                 condStartPosY.push_back(y);
                 y += mCharHeight*2;
 
@@ -342,7 +378,10 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
             }
         }
     poly.finishBlock();
-    drawer.drawPoly(poly, Color(245,245,255));
+    if(draw)
+        {
+        drawer.drawPoly(poly, Color(245,245,255));
+        }
 
     return GraphSize(0, y - startpos.y);
     }
@@ -350,20 +389,26 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
 GraphSize OperationDrawer::drawOperation(DiagramDrawer &drawer, GraphPoint pos,
         OperationDefinition &operDef, const OperationGraph &graph,
         const OperationDrawOptions &options,
-        std::set<const OperationDefinition*> &drawnOperations)
+        std::set<const OperationDefinition*> &drawnOperations, bool draw)
     {
     std::vector<DrawString> drawStrings;
 
-    drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
-    GraphSize size = drawOperationNoText(drawer, pos, operDef, graph, options,
-            drawnOperations, drawStrings);
-    drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
-
-    drawer.groupText(true);
-    for(size_t i=0; i<drawStrings.size(); i++)
+    if(draw)
         {
-        drawer.drawText(drawStrings[i].pos, drawStrings[i].str);
+        drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
         }
-    drawer.groupText(false);
+    GraphSize size = drawOperationNoText(drawer, pos, operDef, graph, options,
+            drawnOperations, drawStrings, draw);
+    if(draw)
+        {
+        drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
+
+        drawer.groupText(true);
+        for(size_t i=0; i<drawStrings.size(); i++)
+            {
+            drawer.drawText(drawStrings[i].pos, drawStrings[i].str);
+            }
+        drawer.groupText(false);
+        }
     return size;
     }

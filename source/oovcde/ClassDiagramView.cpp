@@ -33,6 +33,34 @@ static const ClassDrawOptions &getDrawOptions()
 ClassDiagramListener::~ClassDiagramListener()
     {}
 
+AddClassDialog *sAddClassDialog;
+AddClassDialog::AddClassDialog():
+    Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("AddClassDialog"))),
+    mSelectedType(nullptr), mSelectedAddType(ClassGraph::AN_AllStandard)
+    {
+    mAddClassTree.init(*Builder::getBuilder(), "AddClassesTreeview",
+            "Add", GuiTree::CT_BoolString, "Class");
+    sAddClassDialog = this;
+    }
+
+void AddClassDialog::selectNodes(ClassDiagram const &classDiagram, ModelType const *type,
+        ClassGraph::eAddNodeTypes addType, std::vector<ClassNode> &nodes)
+    {
+    mSelectedType = type;
+    mSelectedAddType = addType;
+    mAddClassTree.clear();
+    GuiTreeItem root;
+    nodes.erase(nodes.begin());     // First node is always self.
+    for(auto const &node : nodes)
+        {
+        GuiTreeItem item = mAddClassTree.appendRow(root);
+        mAddClassTree.setText(item, node.getType()->getName());
+        bool present = classDiagram.isNodeTypePresent(node);
+        mAddClassTree.setCheckbox(item, !present);
+        }
+    }
+
+
 void ClassDiagramView::initialize(const ModelData &modelData,
         ClassDiagramListener &listener,
         OovTaskStatusListener &taskStatusListener)
@@ -86,6 +114,43 @@ void ClassDiagramView::buttonPressEvent(const GdkEventButton *event)
     {
     gClassDiagramView = this;
     gStartPosInfo.set(static_cast<int>(event->x), static_cast<int>(event->y));
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassStandardRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/);
+
+void ClassDiagramView::displayAddClassDialog()
+    {
+    AddClassDialog dialog;
+
+    ClassNode *node = gClassDiagramView->getNode(gStartPosInfo.x, gStartPosInfo.y);
+    if(node && node->getType())
+        {
+        OovString title = "Add Class ";
+        title += node->getType()->getName();
+        dialog.setTitle(title);
+        }
+
+    // Fill the dialog with the default radio button and selected class info.
+    GtkWidget *radio = Builder::getBuilder()->getWidget("AddClassStandardRadiobutton");
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio), true);
+    // Even though the toggle was set above, it doesn't trigger unless it has changed.
+    on_AddClassStandardRadiobutton_toggled(radio, nullptr);
+    if(dialog.run(true))
+        {
+        getDiagram().addRelatedNodesRecurse(getDiagram().getModelData(),
+            dialog.getSelectedType(), dialog.getSelectedAddType());
+        updatePositions();
+        }
+    }
+
+void ClassDiagramView::selectAddClass(ModelType const *type,
+        ClassGraph::eAddNodeTypes addType)
+    {
+    std::vector<ClassNode> nodes;
+    getDiagram().getRelatedNodesRecurse(getDiagram().getModelData(),
+            type, nodes, addType);
+    sAddClassDialog->selectNodes(getDiagram(), type, addType, nodes);
     }
 
 void ClassDiagramView::displayListContextMenu(guint button, guint32 acttime, gpointer data)
@@ -195,20 +260,20 @@ extern "C" G_MODULE_EXPORT void on_RelayoutMenuitem_activate(
 
 void handlePopup(ClassGraph::eAddNodeTypes addType)
     {
-    ClassNode *node = gClassDiagramView->getNode(gStartPosInfo.x, gStartPosInfo.y);
-    if(node)
+    static int depth = 0;
+    depth++;
+    if(depth == 1)
         {
-        static int depth = 0;
-        depth++;
-        if(depth == 1)
+        ClassNode *node = gClassDiagramView->getNode(gStartPosInfo.x, gStartPosInfo.y);
+        if(node)
             {
             gClassDiagramView->getDiagram().addRelatedNodesRecurse(
                     gClassDiagramView->getDiagram().getModelData(),
                     node->getType(), addType);
             gClassDiagramView->updatePositions();
             }
-        depth--;
         }
+    depth--;
     }
 
 extern "C" G_MODULE_EXPORT void on_AddAllMenuitem_activate(
@@ -365,3 +430,89 @@ extern "C" G_MODULE_EXPORT void on_ClassListAddAllRelationsMenuitem_activate(
     list.access(GTK_TREE_VIEW(Builder::getBuilder()->getWidget("ClassTreeview")));
     gClassDiagramView->addClass(list.getSelected(), ClassGraph::AN_All);
     }
+
+extern "C" G_MODULE_EXPORT void on_AddSelectedMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    gClassDiagramView->displayAddClassDialog();
+    }
+
+
+void handleToggle(GtkWidget *widget,  ClassGraph::eAddNodeTypes addType)
+    {
+    static int depth = 0;
+    depth++;
+    if(depth == 1)
+        {
+        if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(widget)))
+            {
+            ClassNode *node = gClassDiagramView->getNode(gStartPosInfo.x, gStartPosInfo.y);
+            if(node)
+                {
+                gClassDiagramView->selectAddClass(node->getType(), addType);
+                }
+            }
+        }
+    depth--;
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassStandardRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_AllStandard);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassAllRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_All);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassSuperclassRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_Superclass);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassSubclassRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_Subclass);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassMemberRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_MemberChildren);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassMemberUserRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_MemberUsers);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassFuncParamRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_FuncParamsUsing);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassFuncParamUserRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_FuncParamsUsers);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassFuncBodyRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_FuncBodyUsing);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassFuncBodyUserRadiobutton_toggled(
+    GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_FuncBodyUsers);
+    }
+

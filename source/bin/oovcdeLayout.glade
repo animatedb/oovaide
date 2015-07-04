@@ -1,6 +1,308 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
+  <object class="GtkDialog" id="AddClassDialog">
+    <property name="can_focus">False</property>
+    <property name="border_width">5</property>
+    <property name="type_hint">dialog</property>
+    <child internal-child="vbox">
+      <object class="GtkBox" id="dialog-vbox15">
+        <property name="can_focus">False</property>
+        <property name="orientation">vertical</property>
+        <property name="spacing">2</property>
+        <child internal-child="action_area">
+          <object class="GtkButtonBox" id="dialog-action_area15">
+            <property name="can_focus">False</property>
+            <property name="layout_style">end</property>
+            <child>
+              <object class="GtkButton" id="AddClassCancelButton">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="AddClassOKButton">
+                <property name="label">gtk-ok</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="pack_type">end</property>
+            <property name="position">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box18">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkBox" id="box19">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassAllRadiobutton">
+                    <property name="label" translatable="yes">All</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassAllRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassStandardRadiobutton">
+                    <property name="label" translatable="yes">Standard</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <signal name="toggled" handler="on_AddClassStandardRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="separator2">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">2</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassSuperclassRadiobutton">
+                    <property name="label" translatable="yes">Superclass</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassSuperclassRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassSubclassRadiobutton">
+                    <property name="label" translatable="yes">Subclass</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassSubclassRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">4</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassMemberRadiobutton">
+                    <property name="label" translatable="yes">Member</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassMemberRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">5</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassMemberUserRadiobutton">
+                    <property name="label" translatable="yes">Member User</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassMemberUserRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">6</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="separator3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">7</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassFuncParamRadiobutton">
+                    <property name="label" translatable="yes">Func Param</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassFuncParamRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">8</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassFuncParamUserRadiobutton">
+                    <property name="label" translatable="yes">Func Param User</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassFuncParamUserRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">9</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassFuncBodyRadiobutton">
+                    <property name="label" translatable="yes">Func Body</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassFuncBodyRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">10</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkRadioButton" id="AddClassFuncBodyUserRadiobutton">
+                    <property name="label" translatable="yes">Func Body User</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">False</property>
+                    <property name="xalign">0</property>
+                    <property name="active">True</property>
+                    <property name="draw_indicator">True</property>
+                    <property name="group">AddClassStandardRadiobutton</property>
+                    <signal name="toggled" handler="on_AddClassFuncBodyUserRadiobutton_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">11</property>
+                  </packing>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow11">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="shadow_type">in</property>
+                <property name="min_content_width">300</property>
+                <child>
+                  <object class="GtkTreeView" id="AddClassesTreeview">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="treeview-selection16"/>
+                    </child>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="expand">True</property>
+            <property name="fill">True</property>
+            <property name="position">1</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <action-widgets>
+      <action-widget response="-6">AddClassCancelButton</action-widget>
+      <action-widget response="-5">AddClassOKButton</action-widget>
+    </action-widgets>
+  </object>
   <object class="GtkDialog" id="AddPackageDialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -556,27 +858,18 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="RestartMenuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Restart</property>
-        <property name="use_underline">True</property>
-        <signal name="activate" handler="on_RestartMenuitem_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="RelayoutMenuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Relayout</property>
-        <property name="use_underline">True</property>
-        <signal name="activate" handler="on_RelayoutMenuitem_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
       <object class="GtkSeparatorMenuItem" id="menuitem6">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="AddSelectedMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Add Selected...</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_AddSelectedMenuitem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -730,6 +1023,24 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="RelayoutMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Relayout</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RelayoutMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="RestartMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RestartMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="RemoveClassMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -752,12 +1063,18 @@ Use this dialog to set up component definitions.</property>
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <child>
-      <object class="GtkMenuItem" id="RestartComponentsMenuitem">
+      <object class="GtkCheckMenuItem" id="ShowImplicitRelationsMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Restart</property>
+        <property name="label" translatable="yes">Show Implicit Relations</property>
         <property name="use_underline">True</property>
-        <signal name="activate" handler="on_RestartComponentsMenuitem_activate" swapped="no"/>
+        <signal name="toggled" handler="on_ShowImplicitRelationsMenuitem_toggled" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="menuitem12">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
@@ -770,9 +1087,12 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
-      <object class="GtkSeparatorMenuItem" id="menuitem12">
+      <object class="GtkMenuItem" id="RestartComponentsMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RestartComponentsMenuitem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -782,15 +1102,6 @@ Use this dialog to set up component definitions.</property>
         <property name="label" translatable="yes">Remove Component</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_RemoveComponentMenuitem_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkCheckMenuItem" id="ShowImplicitRelationsMenuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Show Implicit Relations</property>
-        <property name="use_underline">True</property>
-        <signal name="toggled" handler="on_ShowImplicitRelationsMenuitem_toggled" swapped="no"/>
       </object>
     </child>
   </object>
@@ -803,6 +1114,21 @@ Use this dialog to set up component definitions.</property>
         <property name="can_focus">False</property>
         <property name="label" translatable="yes">View Source</property>
         <signal name="activate" handler="on_IncludeViewSourceMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="IncludeAddSuppliersMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Add Suppliers</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_IncludeAddSuppliersMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sepmenuitem2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
       </object>
     </child>
     <child>
@@ -820,15 +1146,6 @@ Use this dialog to set up component definitions.</property>
         <property name="label" translatable="yes">Restart</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_IncludeRestartMenuitem_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
-      <object class="GtkMenuItem" id="IncludeAddSuppliersMenuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Add Suppliers</property>
-        <property name="use_underline">True</property>
-        <signal name="activate" handler="on_IncludeAddSuppliersMenuitem_activate" swapped="no"/>
       </object>
     </child>
   </object>
@@ -863,15 +1180,6 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="RestartOperationsMenuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Restart</property>
-        <property name="use_underline">True</property>
-        <signal name="activate" handler="on_RestartOperationsMenuitem_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
       <object class="GtkMenuItem" id="AddCallsMenuitem">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -893,6 +1201,15 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkSeparatorMenuItem" id="menuitem9">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="RestartOperationsMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_RestartOperationsMenuitem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -963,14 +1280,6 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <child>
-      <object class="GtkMenuItem" id="ZoneRestartMenuitem">
-        <property name="visible">True</property>
-        <property name="can_focus">False</property>
-        <property name="label" translatable="yes">Restart</property>
-        <signal name="activate" handler="on_ZoneRestartMenuitem_activate" swapped="no"/>
-      </object>
-    </child>
-    <child>
       <object class="GtkSeparatorMenuItem" id="menuitem14">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
@@ -1034,6 +1343,14 @@ Use this dialog to set up component definitions.</property>
       <object class="GtkSeparatorMenuItem" id="menuitem19">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ZoneRestartMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Restart</property>
+        <signal name="activate" handler="on_ZoneRestartMenuitem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -3581,13 +3898,13 @@ These arguments are specific to the selected configuration.
                           <object class="GtkDrawingArea" id="DiagramDrawingarea">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
-                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_FOCUS_CHANGE_MASK | GDK_STRUCTURE_MASK</property>
+                            <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_STRUCTURE_MASK</property>
                             <property name="double_buffered">False</property>
                             <signal name="draw" handler="on_DiagramDrawingarea_draw" swapped="no"/>
                             <signal name="button-press-event" handler="on_DiagramDrawingarea_button_press_event" swapped="no"/>
+                            <signal name="leave-notify-event" handler="on_DiagramDrawingarea_leave_notify_event" swapped="no"/>
                             <signal name="button-release-event" handler="on_DiagramDrawingarea_button_release_event" swapped="no"/>
                             <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
-                            <signal name="focus-out-event" handler="on_DiagramDrawingarea_focus_out_event" swapped="no"/>
                             <signal name="motion-notify-event" handler="on_DiagramDrawingarea_motion_notify_event" swapped="no"/>
                           </object>
                         </child>

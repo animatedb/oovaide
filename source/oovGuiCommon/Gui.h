@@ -44,6 +44,8 @@ class Dialog
             if(parent)
                 gtk_window_set_transient_for(GTK_WINDOW(dlg), parent);
             }
+        void setTitle(OovStringRef title)
+            { gtk_window_set_title(GTK_WINDOW(mDialog), title); }
         GtkWidget *addButton(const gchar *text, gint response_id)
             { return gtk_dialog_add_button(mDialog, text, response_id); }
         int runHideCancel();
@@ -274,20 +276,24 @@ class GuiList:public GuiTreeView
 
 class GuiTreeItem
     {
-    friend class GuiTree;
     public:
-        GuiTreeItem(bool root = true):
-            mRoot(root)
-            {}
+        GuiTreeItem(bool root=true)
+            { setRoot(root); }
         bool isRoot() const
-            { return mRoot; }
+            { return(mIter.stamp == 0); }
         void setRoot(bool root=true)
-            { mRoot = root; }
+            {
+            // If not root, set to non-zero so getPtr returns the actual pointer.
+            if(root)
+                mIter.stamp = 0;
+            else
+                mIter.stamp = 1;
+            }
         GtkTreeIter *getPtr()
-            { return(mRoot ? NULL : &mIter); }
+            { return(isRoot() ? nullptr : &mIter); }
+
     private:
         GtkTreeIter mIter;
-        bool mRoot;
     };
 
 /// This only supports a few types of trees.  A tree where each item is a
@@ -295,17 +301,17 @@ class GuiTreeItem
 class GuiTree:public GuiTreeView
     {
     public:
-        enum TreeViewItems
-            {
-            TV_StringIndex = 0,
-            TV_BoolIndex = 1,
-            N_StringColumns = 1,
-            N_StringBoolColumns = 2
-            };
-        enum ColumnTypes { CT_String, CT_StringBool };
+        enum ColumnTypes { CT_String, CT_StringBool, CT_BoolString };
+        // This is the order of the data store, not the visible columns.
+        enum DataColumnIndices { DCI_StringColumnIndex, DCI_BoolColumnIndex };
+
         void init(Builder &builder, OovStringRef const widgetName,
-                OovStringRef const title, ColumnTypes ct=CT_String);
+            OovStringRef const titleCol1, ColumnTypes ct=CT_String,
+            OovStringRef const totleCol2="");
+
         /// Returns the newly created child item.
+        GuiTreeItem appendRow(GuiTreeItem parentItem);
+        /// Appends a row and sets a string in the row
         GuiTreeItem appendText(GuiTreeItem parentItem, OovStringRef const str);
         /// First element is parent, second is child
         OovStringVec const getSelected() const;
@@ -323,6 +329,8 @@ class GuiTree:public GuiTreeView
             }
         void setSelected(OovStringVec const &names);
         void setSelected(OovString const &name, char delimeter);
+        void setText(GuiTreeItem item, OovStringRef const str);
+        OovString getText(GuiTreeItem item) const;
 
         // This is for a CT_StringBool list.
         void setAllCheckboxes(bool set);
@@ -331,12 +339,17 @@ class GuiTree:public GuiTreeView
         // The value returned is true if the checkbox is set after the toggle.
         bool toggleSelectedCheckbox();
         bool getSelectedCheckbox(bool &checked);
+        void setCheckbox(GuiTreeItem item, bool set);
+        bool getCheckbox(GuiTreeItem item);
+
         OovStringVec getSelectedChildNodeNames(char delimiter);
         OovStringVec getAllChildNodeNames(char delimiter)
-            { return getChildNodeNames(nullptr, delimiter); }
+            { return getChildNodeNames(GuiTreeItem(), delimiter); }
 
         GuiTreeItem getItem(OovString const &name, char delimiter);
         GtkTreeModel *getModel()
+            { return gtk_tree_view_get_model(mTreeView); }
+        GtkTreeModel const *getModel() const
             { return gtk_tree_view_get_model(mTreeView); }
         GtkTreeStore *getTreeStore()
             {
@@ -345,19 +358,19 @@ class GuiTree:public GuiTreeView
             }
 
     private:
-        // parent can be nullptr to find top level nodes,
-        // otherwise this finds the child nodes.
-        bool findNodeIter(GtkTreeIter *parent, OovString const &name,
-                char delimiter, GtkTreeIter *childIter);
-        // @param iter  The parent iterator of the checkboxes to set or clear.
-        void setChildCheckboxes(GtkTreeIter *iter, bool set);
-        bool getSelectedIter(GtkTreeIter *childIter) const;
+        bool findNodeItem(GuiTreeItem parent, OovString const &name,
+                char delimiter, GuiTreeItem &item);
+        void setChildCheckboxes(GuiTreeItem item, bool set);
+        bool getSelectedItem(GuiTreeItem &item) const;
         /// First element is parent, second is child,...
         /// The returned string is the elements joined together using the
         /// delimiter passed in.
-        OovStringVec const getChildNodeNames(GtkTreeIter *iter, char delimeter);
-        OovStringVec const getNodeVec(GtkTreeIter iter) const;
-        OovString const getNodeName(GtkTreeIter iter, char delimiter) const;
+        OovStringVec const getChildNodeNames(GuiTreeItem item, char delimeter);
+        OovStringVec const getNodeVec(GuiTreeItem item) const;
+        OovString const getNodeName(GuiTreeItem item, char delimiter) const;
+
+        void addStringColumn(int column, OovStringRef title);
+        void addBoolColumn(int column, OovStringRef title);
     };
 
 /// This dialog is meant for tasks that execute in the background while the
