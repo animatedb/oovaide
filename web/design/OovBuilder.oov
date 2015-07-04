@@ -1,0 +1,5 @@
+DrawingName|OovBuilder
+FileType|Class
+Names|Oov-Key;OovBuilder;ComponentFinder;ComponentBuilder;Project;VerboseDumper;BuildConfig;ProjectReader;srcFileParser;ProjectPackages;FileStat;Packages;ScannedComponentsInfo;dirRecurser;
+XPositions|539;17;422;417;164;306;296;208;20;19;21;20;307;267;
+YPositions|21;18;246;154;224;19;146;293;521;310;387;204;539;454;

@@ -1,0 +1,5 @@
+DrawingName|CppParser
+FileType|Class
+Names|Oov-Key;CppParser;ParserModelData;cDupHashFile;ModelClassifier;ModelOperation;ModelStatements;SwitchContexts;FilePath;Visibility;IncDirDependencyMap;std::map<std::basic_string<char>,std::set<std::basic_string<char>,std::less<std::basic_string<char> >,std::allocator<std::basic_string<char> > >,std::less<std::basic_string<char> >,std::allocator<std::pair<std::basic_string<char>,std::set<std::basic_string<char>,std::less<std::basic_string<char> >,std::allocator<std::basic_string<char> > > > > >;NameValueFile;CXStringDisposer;Project;cCrashDiagnostics;RefType;ModelStatement;SwitchContext;std::vector<SwitchContext,std::allocator<SwitchContext> >;CXCursor;ModelType;
+XPositions|646;18;16;579;128;247;305;616;415;224;330;351;702;21;404;410;21;168;531;535;313;25;
+YPositions|706;31;697;183;437;629;397;98;328;492;474;626;426;324;428;697;411;360;298;31;599;564;
