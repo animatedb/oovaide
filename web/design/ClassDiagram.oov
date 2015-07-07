@@ -1,0 +1,5 @@
+DrawingName|ClassDiagram
+FileType|Class
+Names|Oov-Key;ClassDiagram;ModelData;ClassGraph;std::vector<ClassNode,std::allocator<ClassNode> >;std::map<nodePair,ClassConnectItem,std::less<nodePair>,std::allocator<std::pair<nodePair,ClassConnectItem> > >;ClassGenes;ClassGraphListener;OovTaskStatusListener;DiagramDrawer;ClassDrawOptions;ThreadedWorkBackgroundQueue<ClassGraph,ClassGraphBackgroundItem>;ClassDrawer;GenePool;ClassNode;ClassNodeDrawOptions;ClassRelationDrawOptions;
+XPositions|773;17;785;25;628;684;25;792;795;25;245;529;386;451;652;384;28;
+YPositions|809;15;546;510;17;1050;1298;451;699;1050;429;383;1050;1215;194;373;406;

@@ -512,20 +512,15 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
         }
     // Draw the aggregation symbol after the oov symbols so that it can show up
     // over the const and function symbols.
-    switch(connectItem.mConnectType & ctObjectRelationMask)
+    if(connectItem.mConnectType & ctAggregation)
         {
-        case ctAggregation:
-            // node1=owner, node2=owned.
-            drawHasSymbol(mDrawer, p1e, p2e, connectItem.mRefer, mActualZoomY);
-            break;
-
-        case ctIneritance:
-            // node1=parent, node2=child.
-            drawIsSymbol(mDrawer, p1e, p2e, mActualZoomY);
-            break;
-
-        default:
-            break;
+        // node1=owner, node2=owned.
+        drawHasSymbol(mDrawer, p1e, p2e, connectItem.mRefer, mActualZoomY);
+        }
+    if(connectItem.mConnectType & ctIneritance)
+        {
+        // node1=parent, node2=child.
+        drawIsSymbol(mDrawer, p1e, p2e, mActualZoomY);
         }
     }
 

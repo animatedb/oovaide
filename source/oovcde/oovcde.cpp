@@ -723,6 +723,7 @@ extern "C" G_MODULE_EXPORT void on_OpenDrawingMenuitem_activate(
         {
         DrawingFile drawFile(fn, false);
         gOovGui.loadFile(drawFile.getFp());
+        gOovGui.setDiagramName(fn);
         }
     }
 

@@ -52,6 +52,7 @@ class JournalRecord
         OovStringRef const getName() const
             { return mName; }
         // No space is used for building file names.
+        // So addSpace means build internal name and !addSpace builds file name.
         std::string getFullName(bool addSpace) const;
         // Used for file storage name
         OovString getDiagramName() const;
@@ -96,7 +97,7 @@ class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListene
         virtual void drawingAreaDrawEvent() override
             { mClassDiagram.drawToDrawingArea(); }
         virtual void cppArgOptionsChangedUpdateDrawings() override
-            { mClassDiagram.updatePositions(); }
+            { mClassDiagram.updateGraph(true); }
         virtual void saveFile(FILE *drawFp) override
             { mClassDiagram.saveDiagram(drawFp); }
         virtual void exportFile(FILE *svgFp) override

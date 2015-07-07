@@ -59,7 +59,7 @@
     </ol>
     <h1><a class="mozTocH1" name="mozTocId278883"></a>Description</h1>
     This design document describes the Oovcde program.&nbsp; It also contains
-    examples of the diagrams that can be produced with the program, and it
+    examples of the diagrams that have been produced with the program, and it
     contains descriptions of the diagrams.<br>
     <br>
     <h1><a class="mozTocH1" name="mozTocId304148"></a>Components</h1>
@@ -197,7 +197,7 @@
         </tr>
         <tr>
           <td>SharedFile</td>
-          <td>Provides synchronization for&nbsp;the include file that can be
+          <td>Provides synchronization for the include file that is
             updated and read by multiple processes.</td>
         </tr>
         <tr>
@@ -228,7 +228,7 @@
     <ul>
       <li>The CppParser owns/contains (controls the lifetime of) the ModelData
         as seen by the filled in aggregation diamond connection. The CppParse
-        can modify the Model objects from the oovCommon library since there is
+        modifies the Model objects from the oovCommon library since there is
         no unidirectional V symbol.<br>
       </li>
       <li>The ModelWriter only refers (has a pointer of reference) to the
@@ -259,7 +259,7 @@
       </li>
     </ul>
     <h2><a class="mozTocH2" name="mozTocId565763"></a>OovBuilder</h2>
-    OovBuilder is a command line tool. The Oovcde program can invoke the
+    OovBuilder is a command line tool. The Oovcde program invokes the
     OovBuilder from the command line. The OovBuilder works in two modes.<br>
     <ul>
       <li>Analysis Mode - To extract drawing information, OovBuilder recursively
@@ -267,9 +267,9 @@
         each file, and saves the information in files. It keeps track of source
         file modification times so that only newly modified source files are
         parsed.</li>
-      <li>Build Mode - OovBuilder can build a project including mutliple
+      <li>Build Mode - OovBuilder builds a project including mutliple
         libraries and executables. After the user has defined what each
-        component is, it can build each component.</li>
+        component is, the user can use the OovBuilder to build each component.</li>
     </ul>
     The command line synopsis is:<br>
     <br>
@@ -515,13 +515,13 @@
     </table>
     <h3> </h3>
     <h2><a class="mozTocH2" name="mozTocId514779"></a>Oovcde</h2>
-    The Oovcde program can display class and sequence diagrams.<br>
+    The Oovcde program displays class and sequence diagrams.<br>
     <br>
     <h3><a class="mozTocH2" name="mozTocId571076"></a>Oovcde GUI</h3>
-    The GUI objects are objects that can display information on screens. Some of
+    The GUI objects are objects that display information on screens. Some of
     the GUI objects are shown below.<br>
     <br>
-    <img src="GuiObjects.svg"><br>
+    <img src="Oovcde.svg"><br>
     <br>
     <br>
     <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
@@ -533,12 +533,28 @@
           </th>
         </tr>
         <tr>
-          <td>oovGui<br>
+          <td>oovGui</td>
+          <td>This is the top level class for the oovcde component.
           </td>
-          <td>This is the top level class for the
-            oovcde component. It inherits from the JournalListener so that the
-            journal can update cause the GUI to update the class and operation
-            list when a class or operation has been selected from any diagram.<br>
+        </tr>
+        <tr>
+          <td>Context</td>
+          <td>The context determines which lists are displayed to edit a drawing.
+	    It inherits from the JournalListener so that the journal can
+	    cause the GUI to update the class and operation
+            list when a class or operation has been selected from any diagram.
+          </td>
+        </tr>
+        <tr>
+          <td>OovProject</td>
+          <td>This keeps all project related data. Oovcde only works on a
+            single project at a time.  The project keeps the data model for
+	    the class relations.</td>
+        </tr>
+        <tr>
+          <td>Journal</td>
+          <td>This keeps a collection of journal records. Each record is
+	    a diagram that has been edited.
           </td>
         </tr>
         <tr>
@@ -549,96 +565,52 @@
           </td>
         </tr>
         <tr>
-          <td>WindowBuildListener</td>
-          <td>The background processing sends standard output to this class,
-            which displayes the results in an output window.</td>
-        </tr>
-        <tr>
           <td>ProjectStatus</td>
           <td>This keeps track of whether the background process is busy.&nbsp;
             The menu updates based on this status.</td>
         </tr>
         <tr>
-          <td>OovTaskStatusListener</td>
-          <td>The background processing can update progress. This is an
-            interface class.</td>
+          <td>WindowBuildListener</td>
+          <td>The background processing sends standard output to this class,
+            which displayes the progress results in an output window.</td>
         </tr>
         <tr>
           <td>WindowProjectStatusListener</td>
-          <td>This provides a non-modal background processing status dialog.</td>
+          <td>This provides a dialog to show task busy progress.</td>
         </tr>
+<!--
         <tr>
-          <td>OovProject</td>
-          <td>This keeps all project related data. Oovcde can only work on a
-            single project at a time.</td>
-        </tr>
-        <tr>
-          <td>ProjectReader<br>
-          </td>
+          <td>ProjectReader</td>
           <td>Reads the project files so that all
             XMI files are read. The XMI files contain class and operation
             information about the source files.<br>
           </td>
         </tr>
         <tr>
-          <td>GuiList<br>
-          </td>
-          <td>This is a generic class for
-            displaying lists of text.<br>
+          <td>GuiList</td>
+          <td>This is a generic class for displaying lists of text.<br>
           </td>
         </tr>
+-->
         <tr>
-          <td>...List<br>
-          </td>
-          <td>There are lists for classes,
-            operations, zone diagrams, etc.<br>
-          </td>
-        </tr>
-        <tr>
-          <td>JournalRecord<br>
-          </td>
-          <td>This is a record in the journal. It
-            can be derived in order to save different kinds of records.<br>
-          </td>
-        </tr>
-        <tr>
-          <td>JournalRecord...Diagram<br>
-          </td>
-          <td>This contains a journal record that
-            can display and keep preferences for a specific type of diagram.<br>
-          </td>
-        </tr>
-        <tr>
-          <td>OptionsDialog<br>
-          </td>
-          <td> This displays the tabbed options
-            dialog for Edit/Preferences.</td>
-        </tr>
-        <tr>
-          <td>ClassPreferencesDialog<br>
-          </td>
-          <td>This displays the class/node
-            preferences in the class diagram.<br>
-          </td>
-        </tr>
-        <tr>
-          <td>Builder<br>
-          </td>
-          <td>This is built on the GtkBuilder,
-            which reads the oovcdeLayout.glade file, which provides the
-            graphical layout of widgets such as the look of dialogs, lists,
-            menubars, etc. It provides an interface to get a widget hierarchy by
-            name.<br>
+          <td>...List</td>
+          <td>There are lists for classes, operations, zone diagrams, etc.
           </td>
         </tr>
       </tbody>
     </table>
+
     <br>
     <h3><a class="mozTocH2" name="mozTocId821661"></a>Class Diagrams</h3>
-    The different diagrams (Class, Sequence, etc.) mostly follow a common
+    The different diagrams (Class, Sequence, etc.) generally follow a common
     pattern.<br>
     <table border="2">
       <tbody>
+	<tr><th>Class</th><th>Description</th></tr>
+        <tr>
+          <td>View</td>
+          <td>Provides the GUI.</td>
+        </tr>
         <tr>
           <td>Graph</td>
           <td>Contains the nodes and edges. Does not refer to the Graph or
@@ -651,23 +623,49 @@
         </tr>
         <tr>
           <td>Diagram</td>
-          <td>Owns (controls the lifetime of) the Graph, and can modify the
+          <td>Owns (controls the lifetime of) the Graph, and modifies the
             Graph, and refers to the Drawer when drawing needs to be performed.</td>
         </tr>
       </tbody>
     </table>
     <br>
-    The ClassDiagram related classes draw class diagrams, and are shown below.<br>
+    The ClassDiagramView related classes provide the GUI for the class diagrams,
+	and are shown below.<br>
     <br>
+    <img alt="ClassDiagram Diagram" src="ClassDiagramView.svg"><br>
+    <p/>
+    <table border="1">
+        <tr>
+          <th>Class</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>ClassDiagramView<br>
+          </td>
+          <td>This provides the display and input handling.<br>
+          </td>
+        </tr>
+        <tr>
+          <td>GtkCairoContext<br>
+          </td>
+          <td>This the cairo drawing interface.</td>
+        </tr>
+        <tr>
+          <td>NullDrawer<br>
+          </td>
+          <td>This provides a null drawer that is used for calculating sizes.</td>
+        </tr>
+    </table>
+    <p/>
+
+    The ClassDiagram related classes draw class diagrams, and are shown below.<br>
     <img alt="ClassDiagram Diagram" src="ClassDiagram.svg"><br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table border="1">
       <tbody>
         <tr>
-          <th>Class<br>
-          </th>
-          <th>Description<br>
-          </th>
+          <th>Class</th>
+          <th>Description</th>
         </tr>
         <tr>
           <td>ClassDiagram<br>
@@ -831,8 +829,7 @@
         <tr>
           <td>Journal<br>
           </td>
-          <td>This keeps a collection of journal
-            records.<br>
+          <td>This keeps a collection of journal records.
           </td>
         </tr>
         <tr>
@@ -940,7 +937,7 @@
     </table>
     <br>
     <h3><a class="mozTocH3" name="mozTocId634834"></a>EditFiles</h3>
-    The editor can edit files within tabs. Each file has a buffer of text that
+    The editor edits files selected using tabs. Each file has a buffer of text that
     is highlighted. An indenter handles keys for indenting.<br>
     <br>
     <embed src="oovEditEditFiles.svg" type="image/svg+xml"> <br>
@@ -1044,7 +1041,7 @@
     </table>
     <br>
     <h2><a class="mozTocH2" name="mozTocId450840"></a>OovCMaker</h2>
-    This is a command line tool that can create CMake files from a project. The
+    This is a command line tool that creates CMake files from a project. The
     synopsis is:<br>
     <br>
     OovCMaker project_directory [-v][-w][-nProjName]<br>

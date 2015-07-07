@@ -78,9 +78,9 @@ void ClassDiagramView::gotoClass(OovStringRef const className)
         }
     }
 
-void ClassDiagramView::updatePositions()
+void ClassDiagramView::updateGraph(bool reposition)
     {
-    mClassDiagram.updatePositions();
+    mClassDiagram.updateGraph(reposition);
     updateDrawingAreaSize();
     }
 
@@ -134,13 +134,15 @@ void ClassDiagramView::displayAddClassDialog()
     // Fill the dialog with the default radio button and selected class info.
     GtkWidget *radio = Builder::getBuilder()->getWidget("AddClassStandardRadiobutton");
     gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(radio), true);
+    GtkWidget *relayout = Builder::getBuilder()->getWidget("AddClassRelayoutCheckbutton");
+    gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(relayout), false);
     // Even though the toggle was set above, it doesn't trigger unless it has changed.
     on_AddClassStandardRadiobutton_toggled(radio, nullptr);
     if(dialog.run(true))
         {
         getDiagram().addRelatedNodesRecurse(getDiagram().getModelData(),
             dialog.getSelectedType(), dialog.getSelectedAddType());
-        updatePositions();
+        updateGraph(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(relayout)));
         }
     }
 
@@ -255,7 +257,7 @@ extern "C" G_MODULE_EXPORT void on_RestartMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_RelayoutMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {
-    gClassDiagramView->updatePositions();
+    gClassDiagramView->updateGraph(true);
     }
 
 void handlePopup(ClassGraph::eAddNodeTypes addType)
@@ -270,7 +272,7 @@ void handlePopup(ClassGraph::eAddNodeTypes addType)
             gClassDiagramView->getDiagram().addRelatedNodesRecurse(
                     gClassDiagramView->getDiagram().getModelData(),
                     node->getType(), addType);
-            gClassDiagramView->updatePositions();
+            gClassDiagramView->updateGraph(true);
             }
         }
     depth--;
@@ -352,7 +354,7 @@ extern "C" G_MODULE_EXPORT void on_RemoveAllMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gClassDiagramView->getDiagram().clearGraph();
-    gClassDiagramView->updatePositions();
+    gClassDiagramView->updateGraph(true);
     }
 
 extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(

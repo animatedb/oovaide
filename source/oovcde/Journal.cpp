@@ -7,6 +7,7 @@
 
 #include "Journal.h"
 #include "DiagramStorage.h"
+#include "Project.h"
 
 static Journal *gJournal;
 
@@ -21,10 +22,21 @@ JournalRecord::~JournalRecord()
 
 std::string JournalRecord::getFullName(bool addSpace) const
     {
-    std::string fullName = getRecordTypeName();
+    std::string fullName;
     if(addSpace)
+        {
+        fullName = getRecordTypeName();
         fullName += ' ';
-    fullName += getName();
+        fullName += getName();
+        }
+    else
+        {
+        FilePath fp(Project::getProjectDirectory(), FP_Dir);
+        std::string name = getRecordTypeName();
+        name += getName();
+        fp.appendFile(name);
+        fullName = fp;
+        }
     return fullName;
     }
 

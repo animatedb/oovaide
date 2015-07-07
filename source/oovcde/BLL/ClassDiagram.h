@@ -67,7 +67,7 @@ class ClassDiagram
         void changeOptions(ClassDrawOptions const &options)
             { mClassGraph.changeOptions(options); }
         /// This repositions nodes, and can be slow.
-        void updatePositions();
+        void updateGraph(bool resposition);
 
         /// Redraw the graph. Does not change the graph or change or access the model.
         /// This can be used to paint to a window, or to an SVG file.

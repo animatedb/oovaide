@@ -19,16 +19,12 @@ Missing Features
 ----------------
 - General
 	- need to clean up analysis dir when files are deleted.
-	- graph selection icons should be gray if project isn't loaded.
-	- Add new project icon?
-	- combine class/portion tabs and add include diagrams to components
 	- link to https://rawgit.com/animatedb/oovcde/master/web/articles/PortionDiagrams.html
 	- BUG: doing File/New on an existing project doesn't delete package config.
 	- Add UML notes to diagrams, allow color/font selection
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
 	  are the same?
 - Gui
-	- Saving drawings should default to last opened location/name.
 	- Add improved open recent files
 	- Add External Directories button for Build Arguments dialog.
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
@@ -52,10 +48,8 @@ Missing Features
 	- Show related classes for a selected class
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams/List
-	- Allow adding nodes without  repositioning
 	- Saved drawings don't save preferences for each class
 	- BUG: forward class definitions mess up source line numbers
-	- Non-class types are not shown (templated types)
 	- Show parameter reference/pointer/const in methods
 	- find way to reduce strlen: std::allocator, std::less, std::basic_string<char> etc.
 	  see ComponentBuilder
@@ -88,7 +82,7 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
-	- Build of components within/under component directories doesn't work.
+	- Build of components within/under component directories not supported.
 	- Scan CMake files to find external pkg-config package dependencies
 	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
 	- analysis - doesn't work on filenames with spaces
@@ -128,8 +122,6 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - CMaker
-	- Add extra include directories (such as BLL)
-	- Add include directories that are not components
 	- BUG: discards directories in CMaker::getCompSources
 	- Allow debug/release and cross compile in cmake
 		http://blog.beuc.net/posts/Cross-compiling_with_CMake/

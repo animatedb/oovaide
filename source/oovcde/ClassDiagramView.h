@@ -111,7 +111,7 @@ class ClassDiagramView:public ClassGraphListener
         // For extern functions
         ClassNode *getNode(int x, int y)
             { return mClassDiagram.getNode(x, y); }
-        void updatePositions();
+        void updateGraph(bool reposition);
         void gotoClass(OovStringRef const className);
         void displayListContextMenu(guint button, guint32 acttime, gpointer data);
         void displayAddClassDialog();

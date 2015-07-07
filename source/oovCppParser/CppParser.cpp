@@ -875,8 +875,9 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
                 // so these would create a new model number for the type.
                 ModelClassifier *child = static_cast<ModelClassifier*>(
                         mParserModelData.createOrGetDataTypeRef(parent));
+                // Base classes are never simple types.
                 ModelClassifier *classParent = static_cast<ModelClassifier*>(
-                        mParserModelData.createOrGetDataTypeRef(cursor));
+                        mParserModelData.createOrGetClassRef(getFullBaseTypeName(cursor)));
                 mParserModelData.addAssociation(classParent, child, getAccess(cursor));
                 }
             }

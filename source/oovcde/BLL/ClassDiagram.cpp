@@ -23,16 +23,16 @@ void ClassDiagram::initialize(ModelData const &modelData,
             foregroundTaskStatusListener, backgroundTaskStatusListener);
     }
 
-void ClassDiagram::updatePositions()
+void ClassDiagram::updateGraph(bool reposition)
     {
-    mClassGraph.updateGraph(getModelData(), true);
+    mClassGraph.updateGraph(getModelData(), reposition);
     }
 
 void ClassDiagram::restart()
     {
     clearGraphAndAddClass(getLastSelectedClassName(),
             ClassGraph::AN_ClassesAndChildren);
-    updatePositions();
+    updateGraph(true);
     }
 
 void ClassDiagram::clearGraphAndAddClass(OovStringRef const className,

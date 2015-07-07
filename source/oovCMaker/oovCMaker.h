@@ -20,7 +20,8 @@ class CMaker
             return mConfig.getAnalysisPath(BuildConfigAnalysis);
             }
         OovStringVec getCompSources(OovStringRef const compName);
-        OovStringVec getCompLibraries(OovStringRef const compName);
+        OovStringVec getCompLibrariesAndIncs(OovStringRef const compName,
+                OovStringVec &extraIncDirs);
         void makeTopMakelistsFile(OovStringRef const destName);
         void makeTopLevelFiles(OovStringRef const outDir);
         void makeToolchainFiles(OovStringRef const outDir);
@@ -44,7 +45,8 @@ class CMaker
         bool mVerbose;
 
         static void appendNames(OovStringVec const &names, char delim,
-            std::string &str);
+            OovString &str);
+        void addLibsAndIncs(OovStringRef const compName, OovString &str);
         void addPackageDefines(OovStringRef const pkgName, std::string &str);
         void makeDefineName(OovStringRef const pkgName, OovString &defName);
         void makeToolchainFile(OovStringRef const compilePath, OovStringRef const destName);
