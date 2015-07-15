@@ -1,0 +1,5 @@
+DrawingName|ModelData
+FileType|Class
+Names|Oov-Key;ModelData;std::vector<std::unique_ptr<ModelType,std::default_delete<ModelType> >,std::allocator<std::unique_ptr<ModelType,std::default_delete<ModelType> > > >;std::vector<std::unique_ptr<ModelAssociation,std::default_delete<ModelAssociation> >,std::allocator<std::unique_ptr<ModelAssociation,std::default_delete<ModelAssociation> > > >;std::vector<std::unique_ptr<ModelModule,std::default_delete<ModelModule> >,std::allocator<std::unique_ptr<ModelModule,std::default_delete<ModelModule> > > >;ModelType;ModelAssociation;ModelModule;ModelClassifier;ModelObject;
+XPositions|14;12;194;476;472;13;477;497;267;31;
+YPositions|706;10;401;175;12;446;244;79;463;573;

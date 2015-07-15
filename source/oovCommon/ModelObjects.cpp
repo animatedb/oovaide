@@ -43,22 +43,32 @@ Visibility::Visibility(OovStringRef const umlStr)
 
 const ModelClassifier *ModelType::getClass() const
     {
-    const ModelClassifier *cl = nullptr;
-    if(this)
-        {
-        if(mDataType == DT_Class)
-            cl = static_cast<const ModelClassifier*>(this);
-        }
-    return cl;
+    return getClass(this);
     }
 
 ModelClassifier *ModelType::getClass()
     {
+    return getClass(this);
+    }
+
+class ModelClassifier *ModelType::getClass(ModelType *modelType)
+    {
     ModelClassifier *cl = nullptr;
-    if(this)
+    if(modelType)
         {
-        if(mDataType == DT_Class)
-            cl = static_cast<ModelClassifier*>(this);
+        if(modelType->getDataType() == DT_Class)
+            cl = static_cast<ModelClassifier *>(modelType);
+        }
+    return cl;
+    }
+
+class ModelClassifier const *ModelType::getClass(ModelType const *modelType)
+    {
+    ModelClassifier const *cl = nullptr;
+    if(modelType)
+        {
+        if(modelType->getDataType() == DT_Class)
+            cl = static_cast<ModelClassifier const *>(modelType);
         }
     return cl;
     }

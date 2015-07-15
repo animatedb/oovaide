@@ -94,8 +94,7 @@ Missing Features
 - Analysis/Build System (Build not required for displaying diagrams)
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
 		- Changing edit/preferences deletes analysis, but not debug/release
-	- Why is pthread now failing on linux?
-		- add -pthread to link whenever in compile flags?
+	- Add pthread to link if in compile switch? (external packages already does this)
 	- Build with relative paths doesn't include obj files (TestCpp)
 	- Adding pthreads-stubs to analysis settings in linux hangs
 	- Build of components within/under component directories not supported.
@@ -145,6 +144,7 @@ Missing Features
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Editor
 	- Restore previous session, save loaded files and line numbers when exit
+	- On linux, the line number margin doesn't grow with more digits
 	- Edit/Preferences working directory ... does not display dialog
 	- Single editor with multitabs doesn't work in linux
 	- oovcde/editor - https://en.wikipedia.org/wiki/Inter-process_communication

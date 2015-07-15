@@ -1,0 +1,5 @@
+DrawingName|OovProject
+FileType|Class
+Names|Oov-Key;OovProject;OovTaskStatusListener;ProjectStatus;ModelData;IncDirDependencyMapReader;OovBackgroundPipeProcess;ThreadedWorkBackgroundQueue<OovProject,ProjectBackgroundItem>;XmlParser;XmiParser;
+XPositions|20;17;258;18;168;408;418;372;394;267;
+YPositions|521;24;324;384;324;80;128;24;170;368;

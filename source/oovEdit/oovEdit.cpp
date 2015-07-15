@@ -546,8 +546,8 @@ bool Editor::checkExitSave()
     return exitOk;
     }
 
-
 #define SINGLE_INSTANCE 1
+
 #if(SINGLE_INSTANCE)
 
 // Note that this is called a few times. If command line arguments are
@@ -676,8 +676,7 @@ int main(int argc, char *argv[])
         gEditor.init();
         gEditor.getBuilder().connectSignals();
         GtkWidget *window = gEditor.getBuilder().getWidget("MainWindow");
-        char const * fn = nullptr;
-        char const *proj = nullptr;
+        char const *fn = nullptr;
         int line = 0;
         for(int argi=1; argi<argc; argi++)
             {
@@ -687,7 +686,8 @@ int main(int argc, char *argv[])
                 }
             else if(argv[argi][0] == '-')
                 {
-                proj = &argv[argi][2];
+                OovString fname = FilePathFixFilePath(&argv[argi][2]);
+                gEditor.setProjectDir(fname);
                 }
             else
                 fn = argv[argi];

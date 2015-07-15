@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="348" height="110">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="20" y="20" width="47" height="14" />
+<ellipse cx="143" cy="7" rx="16" ry="7" />
+<ellipse cx="288" cy="10" rx="20" ry="7" />
+<ellipse cx="307" cy="98" rx="35" ry="7" />
+<ellipse cx="166" cy="35" rx="40" ry="7" />
+</g>
+<g  fill="#f5f5ff" stroke="#0000ff" style="stroke-width:1">
+<rect x="126" y="28" width="81" height="14" />
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<g  fill="#f5f5ff" stroke="#cea262" style="stroke-width:1">
+<line x1="206" y1="35" x2="268" y2="10" />
+<line x1="206" y1="35" x2="211" y2="27" />
+<line x1="206" y1="35" x2="215" y2="37" />
+<line x1="206" y1="35" x2="272" y2="98" />
+<line x1="206" y1="35" x2="215" y2="36" />
+<line x1="206" y1="35" x2="207" y2="44" />
+<line x1="206" y1="35" x2="272" y2="98" />
+<line x1="206" y1="35" x2="215" y2="36" />
+<line x1="206" y1="35" x2="207" y2="44" />
+</g>
+<g  fill="#f5f5ff" stroke="#ffb300" style="stroke-width:1">
+<line x1="66" y1="27" x2="127" y2="7" />
+<line x1="66" y1="27" x2="71" y2="19" />
+<line x1="66" y1="27" x2="75" y2="30" />
+<line x1="66" y1="27" x2="272" y2="98" />
+<line x1="66" y1="27" x2="75" y2="25" />
+<line x1="66" y1="27" x2="71" y2="35" />
+</g>
+<g  fill="#f5f5ff" stroke="#803e75" style="stroke-width:1">
+<line x1="159" y1="7" x2="268" y2="10" />
+<line x1="159" y1="7" x2="167" y2="2" />
+<line x1="159" y1="7" x2="166" y2="13" />
+</g>
+</g>
+<g stroke="none">
+<text x="22" y="29">mFleece</text>
+<text x="129" y="9">move</text>
+<text x="270" y="12">follows</text>
+<text x="274" y="100">showLocation</text>
+<text x="128" y="37">MoveableThing</text>
+</g>
+</svg>

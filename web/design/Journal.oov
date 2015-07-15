@@ -1,0 +1,5 @@
+DrawingName|Journal
+FileType|Class
+Names|Oov-Key;Journal;std::vector<JournalRecord,std::allocator<JournalRecord> >;ModelData;IncDirDependencyMapReader;JournalListener;OovTaskStatusListener;JournalRecord;JournalRecordClassDiagram;JournalRecordOperationDiagram;JournalRecordComponentDiagram;JournalRecordZoneDiagram;JournalRecordPortionDiagram;JournalRecordIncludeDiagram;
+XPositions|16;14;484;377;23;574;134;462;203;232;263;292;317;341;
+YPositions|660;16;26;425;567;494;476;120;539;562;584;605;626;648;

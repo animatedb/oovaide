@@ -1,0 +1,5 @@
+DrawingName|OperationDiagramView
+FileType|Class
+Names|Oov-Key;OperationDiagramView;OperationDiagram;OperationDiagramListener;GtkCairoContext;NullDrawer;
+XPositions|19;19;195;317;340;359;
+YPositions|278;14;296;295;15;118;

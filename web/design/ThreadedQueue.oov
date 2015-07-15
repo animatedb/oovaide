@@ -1,0 +1,5 @@
+DrawingName|ThreadedBackgroundQueue
+FileType|Class
+Names|Oov-Key;ThreadedBackgroundQueue;ThreadedWorkBackgroundQueue<ThreadedBackgroundQueue,int>;OovThreadedBackgroundQueuePrivate;OovThreadedWaitQueuePrivate;ThreadedWaitQueue;ThreadedWorkWaitQueue<int,ThreadedWaitQueue>;
+XPositions|32;20;19;16;260;297;228;
+YPositions|278;172;84;18;19;168;86;

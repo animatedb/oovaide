@@ -1,0 +1,5 @@
+DrawingName|EditFiles
+FileType|Class
+Names|Oov-Key;EditFiles;EditOptions;<<typedef>>GtkNotebook;std::vector<std::unique_ptr<ScrolledFileView,std::default_delete<ScrolledFileView> >,std::allocator<std::unique_ptr<ScrolledFileView,std::default_delete<ScrolledFileView> > > >;<<typedef>>GtkTextView;<<typedef>>Debugger;ScrolledFileView;<<typedef>>GtkScrolledWindow;FileEditView;LeftMargin;Highlighter;Indenter;CompletionList;
+XPositions|628;23;568;406;407;463;408;24;213;373;22;553;73;311;
+YPositions|12;13;168;15;63;138;203;357;534;251;554;765;783;765;

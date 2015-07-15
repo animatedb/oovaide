@@ -1,0 +1,235 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="625" height="665">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="20" y="521" width="133" height="143" />
+<line x1="20" y1="534" x2="153" y2="534" />
+<polygon points="133,542 145,547 145,537 133,542 " style="fill:#ffffff" />
+<polygon points="133,556 140,560 147,556 140,552 133,556 " style="fill:#ffffff" />
+<polygon points="133,570 140,574 147,570 140,566 133,570 " style="fill:#000000" />
+<polygon points="133,584 141,589 137,584 141,579 133,584 " style="fill:#ffffff" />
+<circle cx="133" cy="598" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="612" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="612" r="2" style="fill:#ffffff" />
+<circle cx="133" cy="626" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="626" r="2" style="fill:#ffffff" />
+<circle cx="133" cy="640" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="640" r="2" style="fill:#000000" />
+<circle cx="133" cy="654" r="5" style="fill:#000000" />
+<circle cx="133" cy="654" r="2" style="fill:#000000" />
+</g>
+<g stroke="none">
+<text x="21" y="530">Relations Key</text>
+<text x="21" y="544">Generalization</text>
+<text x="21" y="558">Aggregation(reference)</text>
+<text x="21" y="572">Composition(owned)</text>
+<text x="21" y="586">Const</text>
+<text x="21" y="600">Method Variable</text>
+<text x="21" y="614">Method Parameter</text>
+<text x="21" y="628">Public</text>
+<text x="21" y="642">Protected</text>
+<text x="21" y="656">Private</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="17" y="24" width="307" height="260" />
+<line x1="17" y1="45" x2="324" y2="45" />
+<line x1="17" y1="93" x2="324" y2="93" />
+</g>
+<g stroke="none">
+<text x="18" y="33">OovProject</text>
+<text x="18" y="42">oovcde</text>
+<text x="18" y="54">-OovTaskStatusListener mStatusListener</text>
+<text x="18" y="63">-ProjectStatus mProjectStatus</text>
+<text x="18" y="72">-ModelData mModelData</text>
+<text x="18" y="81">-IncDirDependencyMapReader mIncludeMap</text>
+<text x="18" y="90">-OovBackgroundPipeProcess mBackgroundProc</text>
+<text x="18" y="102">+stopAndWaitForBackgroundComplete()</text>
+<text x="18" y="111">+newProject(OovString projectDir, CompoundValue excludeDirs,</text>
+<text x="25" y="120"> OovProject::eNewProjectStatus projStatus)</text>
+<text x="18" y="129">+openProject(OovStringRef projectDir, bool openedProj)</text>
+<text x="18" y="138">+clearAnalysis()</text>
+<text x="18" y="147">+loadAnalysisFiles()</text>
+<text x="18" y="156">+runSrcManager(OovStringRef buildConfigName, OovStringRef </text>
+<text x="25" y="165">runStr, OovProject::eSrcManagerOptions smo)</text>
+<text x="18" y="174">+stopSrcManager()</text>
+<text x="18" y="183">+getProjectStatus()</text>
+<text x="18" y="192">-processAnalysisFiles()</text>
+<text x="18" y="201">-loadIncludeMap()</text>
+<text x="18" y="210">+OovProject()</text>
+<text x="18" y="219">+~OovProject()</text>
+<text x="18" y="228">+setBackgroundProcessListener(OovProcessListener listener)</text>
+<text x="18" y="237">+setStatusListener(OovTaskStatusListener listener)</text>
+<text x="18" y="246">+getModelData()</text>
+<text x="18" y="255">+getIncMap()</text>
+<text x="18" y="264">+isAnalysisReady()</text>
+<text x="18" y="273">+isProjectIdle()</text>
+<text x="18" y="282">+processItem(ProjectBackgroundItem item)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="258" y="324" width="110" height="26" />
+<line x1="258" y1="345" x2="368" y2="345" />
+<line x1="258" y1="348" x2="368" y2="348" />
+</g>
+<g stroke="none">
+<text x="259" y="333">OovTaskStatusListener</text>
+<text x="259" y="342">oovCommon</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="18" y="384" width="232" height="107" />
+<line x1="18" y1="405" x2="250" y2="405" />
+<line x1="18" y1="444" x2="250" y2="444" />
+</g>
+<g stroke="none">
+<text x="19" y="393">ProjectStatus</text>
+<text x="19" y="402">oovcde</text>
+<text x="19" y="414">+bool mProjectOpen</text>
+<text x="19" y="423">+ProjectStatus::eAnalysisStatus mAnalysisStatus</text>
+<text x="19" y="432">+bool mBackgroundProcIdle</text>
+<text x="19" y="441">+bool mBackgroundThreadIdle</text>
+<text x="19" y="453">+ProjectStatus()</text>
+<text x="19" y="462">+clear()</text>
+<text x="19" y="471">+operator!=(ProjectStatus stat)</text>
+<text x="19" y="480">+isAnalysisReady()</text>
+<text x="19" y="489">+isIdle()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="168" y="324" width="63" height="26" />
+<line x1="168" y1="345" x2="231" y2="345" />
+<line x1="168" y1="348" x2="231" y2="348" />
+</g>
+<g stroke="none">
+<text x="169" y="333">ModelData</text>
+<text x="169" y="342">oovCommon</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="408" y="80" width="145" height="26" />
+<line x1="408" y1="101" x2="553" y2="101" />
+<line x1="408" y1="104" x2="553" y2="104" />
+</g>
+<g stroke="none">
+<text x="409" y="89">IncDirDependencyMapReader</text>
+<text x="409" y="98">oovCommon</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="418" y="128" width="135" height="26" />
+<line x1="418" y1="149" x2="553" y2="149" />
+<line x1="418" y1="152" x2="553" y2="152" />
+</g>
+<g stroke="none">
+<text x="419" y="137">OovBackgroundPipeProcess</text>
+<text x="419" y="146">oovCommon</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="372" y="24" width="180" height="26" />
+<line x1="372" y1="45" x2="552" y2="45" />
+<line x1="372" y1="48" x2="552" y2="48" />
+</g>
+<g stroke="none">
+<text x="373" y="33">ThreadedWorkBackgroundQueue&lt;</text>
+<text x="373" y="42">  OovProject,ProjectBackgroundItem&gt;</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="394" y="170" width="228" height="152" />
+<line x1="394" y1="191" x2="622" y2="191" />
+<line x1="394" y1="194" x2="622" y2="194" />
+</g>
+<g stroke="none">
+<text x="395" y="179">XmlParser</text>
+<text x="395" y="188">oovcde</text>
+<text x="395" y="203">+parseXml(char buf)</text>
+<text x="395" y="212">-parseAttr(char buf)</text>
+<text x="395" y="221">-parseElem(char buf)</text>
+<text x="395" y="230">-parseElemValue(char buf)</text>
+<text x="395" y="239">-parseName(char buf, char name, int nameLen)</text>
+<text x="395" y="248">-eatElementEndTag(char buf)</text>
+<text x="395" y="257">-stringCbCopy(char dest, int bytes, char src)</text>
+<text x="395" y="266">-isNameChar(char ch)</text>
+<text x="395" y="275">+~XmlParser()</text>
+<text x="395" y="284">#onOpenElem(char name, int len)</text>
+<text x="395" y="293">#onCloseElem(char name, int len)</text>
+<text x="395" y="302">#onAttr(char name, int nameLen, char val,</text>
+<text x="402" y="311"> int valLen)</text>
+<text x="395" y="320">#onElemValue(char , int )</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="267" y="368" width="357" height="296" />
+<line x1="267" y1="389" x2="624" y2="389" />
+<line x1="267" y1="473" x2="624" y2="473" />
+</g>
+<g stroke="none">
+<text x="268" y="377">XmiParser</text>
+<text x="268" y="386">oovcde</text>
+<text x="268" y="398">-ModelData mModel</text>
+<text x="268" y="407">-std::vector&lt;XmiElement,std::allocator&lt;XmiElement&gt; &gt; mElementStack</text>
+<text x="268" y="416">-ModelClassifier mCurrentClassifier</text>
+<text x="268" y="425">-int mStartingModuleTypeIndex</text>
+<text x="268" y="434">-int mEndingModuleTypeIndex</text>
+<text x="268" y="443">-std::map&lt;int,int,std::less&lt;int&gt;,std::allocator&lt;std::pair&lt;int,</text>
+<text x="275" y="452">int&gt; &gt; &gt; mFileTypeIndexMap</text>
+<text x="268" y="461">-std::vector&lt;ModelType,std::allocator&lt;ModelType&gt; &gt; mPotentialRemapInd</text>
+<text x="275" y="470">icesTypes</text>
+<text x="268" y="482">+parse(char buf)</text>
+<text x="268" y="491">-updateDeclTypeIndices(ModelTypeRef decl)</text>
+<text x="268" y="500">-updateStatementTypeIndices(ModelStatements stmt)</text>
+<text x="268" y="509">-updateTypeIndices()</text>
+<text x="268" y="518">-onOpenElem(char name, int len)</text>
+<text x="268" y="527">-onCloseElem(char , int )</text>
+<text x="268" y="536">-onAttr(char name, int nameLen, char val, int valLen)</text>
+<text x="268" y="545">-findParentInStack(XmiElementTypes type, bool afterAddingSelf)</text>
+<text x="268" y="554">-setDeclAttr(&lt;&lt;typedef&gt;&gt;string attrName, &lt;&lt;typedef&gt;&gt;string attrVal,</text>
+<text x="275" y="563"> ModelDeclarator decl)</text>
+<text x="268" y="572">-addFuncParams(OovStringRef attrName, OovStringRef attrVal, </text>
+<text x="275" y="581">ModelOperation oper)</text>
+<text x="268" y="590">-addFuncStatements(OovStringRef attrName, OovStringRef attrVal,</text>
+<text x="275" y="599"> ModelOperation oper)</text>
+<text x="268" y="608">+XmiParser(ModelData model)</text>
+<text x="268" y="617">+setStartingTypeIndex(int index)</text>
+<text x="268" y="626">+getNextTypeIndex()</text>
+<text x="268" y="635">-addClass(ModelClassifier obj)</text>
+<text x="268" y="644">-addAttrs(ModelClassifier obj)</text>
+<text x="268" y="653">-addOpers(ModelClassifier obj)</text>
+<text x="268" y="662">-dumpTypeMap(char str1, char str2)</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="271" y1="284" x2="303" y2="324" />
+<circle cx="279" cy="294" r="5" style="fill:#ffffff" />
+<circle cx="289" cy="307" r="5" style="fill:#000000" />
+<circle cx="289" cy="307" r="2" style="fill:#000000" />
+<polygon points="271,284 272,292 279,294 279,287 271,284 " style="fill:#ffffff" />
+<line x1="154" y1="284" x2="140" y2="384" />
+<circle cx="152" cy="297" r="5" style="fill:#ffffff" />
+<circle cx="149" cy="313" r="5" style="fill:#000000" />
+<circle cx="149" cy="313" r="2" style="fill:#000000" />
+<polygon points="154,284 149,291 153,297 157,292 154,284 " style="fill:#000000" />
+<line x1="190" y1="284" x2="197" y2="324" />
+<circle cx="192" cy="297" r="5" style="fill:#ffffff" />
+<circle cx="195" cy="313" r="5" style="fill:#000000" />
+<circle cx="195" cy="313" r="2" style="fill:#000000" />
+<polygon points="190,284 187,292 192,297 195,290 190,284 " style="fill:#000000" />
+<line x1="323" y1="124" x2="414" y2="106" />
+<circle cx="336" cy="121" r="5" style="fill:#ffffff" />
+<circle cx="352" cy="118" r="5" style="fill:#000000" />
+<circle cx="352" cy="118" r="2" style="fill:#000000" />
+<polygon points="323,124 331,126 336,122 329,119 323,124 " style="fill:#000000" />
+<line x1="323" y1="148" x2="418" y2="143" />
+<circle cx="336" cy="147" r="5" style="fill:#ffffff" />
+<circle cx="352" cy="146" r="5" style="fill:#000000" />
+<circle cx="352" cy="146" r="2" style="fill:#000000" />
+<polygon points="323,148 331,152 336,148 330,144 323,148 " style="fill:#000000" />
+<line x1="323" y1="93" x2="430" y2="50" />
+<circle cx="335" cy="87" r="5" style="fill:#ffffff" />
+<circle cx="402" cy="61" r="5" style="fill:#ffffff" />
+<circle cx="402" cy="61" r="2" style="fill:#ffffff" />
+<polygon points="430,50 417,50 420,59 430,50 " style="fill:#ffffff" />
+<line x1="216" y1="350" x2="267" y2="387" />
+<circle cx="255" cy="378" r="5" style="fill:#ffffff" />
+<circle cx="242" cy="369" r="5" style="fill:#000000" />
+<circle cx="242" cy="369" r="2" style="fill:#000000" />
+<polygon points="267,387 264,379 256,379 259,387 267,387 " style="fill:#ffffff" />
+<line x1="491" y1="322" x2="479" y2="368" />
+<circle cx="483" cy="351" r="5" style="fill:#000000" />
+<circle cx="483" cy="351" r="2" style="fill:#000000" />
+<polygon points="491,322 483,333 492,335 491,322 " style="fill:#ffffff" />
+<circle cx="482" cy="354" r="5" style="fill:#ffffff" />
+</g>
+</svg>

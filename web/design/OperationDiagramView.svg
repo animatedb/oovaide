@@ -1,0 +1,144 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="576" height="422">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="19" y="278" width="133" height="143" />
+<line x1="19" y1="291" x2="152" y2="291" />
+<polygon points="132,299 144,304 144,294 132,299 " style="fill:#ffffff" />
+<polygon points="132,313 139,317 146,313 139,309 132,313 " style="fill:#ffffff" />
+<polygon points="132,327 139,331 146,327 139,323 132,327 " style="fill:#000000" />
+<polygon points="132,341 140,346 136,341 140,336 132,341 " style="fill:#ffffff" />
+<circle cx="132" cy="355" r="5" style="fill:#ffffff" />
+<circle cx="132" cy="369" r="5" style="fill:#ffffff" />
+<circle cx="139" cy="369" r="2" style="fill:#ffffff" />
+<circle cx="132" cy="383" r="5" style="fill:#ffffff" />
+<circle cx="132" cy="383" r="2" style="fill:#ffffff" />
+<circle cx="132" cy="397" r="5" style="fill:#ffffff" />
+<circle cx="132" cy="397" r="2" style="fill:#000000" />
+<circle cx="132" cy="411" r="5" style="fill:#000000" />
+<circle cx="132" cy="411" r="2" style="fill:#000000" />
+</g>
+<g stroke="none">
+<text x="20" y="287">Relations Key</text>
+<text x="20" y="301">Generalization</text>
+<text x="20" y="315">Aggregation(reference)</text>
+<text x="20" y="329">Composition(owned)</text>
+<text x="20" y="343">Const</text>
+<text x="20" y="357">Method Variable</text>
+<text x="20" y="371">Method Parameter</text>
+<text x="20" y="385">Public</text>
+<text x="20" y="399">Protected</text>
+<text x="20" y="413">Private</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="19" y="14" width="272" height="233" />
+<line x1="19" y1="35" x2="291" y2="35" />
+<line x1="19" y1="74" x2="291" y2="74" />
+</g>
+<g stroke="none">
+<text x="20" y="23">OperationDiagramView</text>
+<text x="20" y="32">oovcde</text>
+<text x="20" y="44">-OperationDiagram mOperationDiagram</text>
+<text x="20" y="53">-OperationDiagramListener mListener</text>
+<text x="20" y="62">-GtkCairoContext mCairoContext</text>
+<text x="20" y="71">-NullDrawer mNullDrawer</text>
+<text x="20" y="83">+graphButtonPressEvent(&lt;&lt;typedef&gt;&gt;GdkEventButton </text>
+<text x="27" y="92">event)</text>
+<text x="20" y="101">+graphButtonReleaseEvent(&lt;&lt;typedef&gt;&gt;GdkEventButton</text>
+<text x="27" y="110"> event)</text>
+<text x="20" y="119">+drawToDrawingArea()</text>
+<text x="20" y="128">+drawSvgDiagram(&lt;&lt;typedef&gt;&gt;FILE fp)</text>
+<text x="20" y="137">+gotoClass(OovStringRef className)</text>
+<text x="20" y="146">-updateDrawingAreaSize()</text>
+<text x="20" y="155">+OperationDiagramView()</text>
+<text x="20" y="164">+initialize(ModelData modelData, OperationDiagramL</text>
+<text x="27" y="173">istener listener)</text>
+<text x="20" y="182">+clearGraphAndAddOperation(OovStringRef className,</text>
+<text x="27" y="191"> OovStringRef opName, bool isConst)</text>
+<text x="20" y="200">+restart()</text>
+<text x="20" y="209">+getDiagram()</text>
+<text x="20" y="218">+isModified()</text>
+<text x="20" y="227">+requestRedraw()</text>
+<text x="20" y="236">-setCairoContext()</text>
+<text x="20" y="245">-getDiagramWidget()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="195" y="296" width="90" height="26" />
+<line x1="195" y1="317" x2="285" y2="317" />
+<line x1="195" y1="320" x2="285" y2="320" />
+</g>
+<g stroke="none">
+<text x="196" y="305">OperationDiagram</text>
+<text x="196" y="314">oovcde/BLL</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="317" y="295" width="179" height="44" />
+<line x1="317" y1="316" x2="496" y2="316" />
+<line x1="317" y1="319" x2="496" y2="319" />
+</g>
+<g stroke="none">
+<text x="318" y="304">OperationDiagramListener</text>
+<text x="318" y="313">oovcde</text>
+<text x="318" y="328">+~OperationDiagramListener()</text>
+<text x="318" y="337">+gotoClass(OovStringRef className)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="340" y="15" width="235" height="80" />
+<line x1="340" y1="36" x2="575" y2="36" />
+<line x1="340" y1="48" x2="575" y2="48" />
+</g>
+<g stroke="none">
+<text x="341" y="24">GtkCairoContext</text>
+<text x="341" y="33">oovcde</text>
+<text x="341" y="45">-&lt;&lt;typedef&gt;&gt;cairo_t mCr</text>
+<text x="341" y="57">+GtkCairoContext(&lt;&lt;typedef&gt;&gt;GtkWidget widget)</text>
+<text x="341" y="66">+setContext(&lt;&lt;typedef&gt;&gt;GtkWidget widget)</text>
+<text x="341" y="75">+clear()</text>
+<text x="341" y="84">+~GtkCairoContext()</text>
+<text x="341" y="93">+getCairo()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="359" y="118" width="215" height="143" />
+<line x1="359" y1="139" x2="574" y2="139" />
+<line x1="359" y1="151" x2="574" y2="151" />
+</g>
+<g stroke="none">
+<text x="360" y="127">NullDrawer</text>
+<text x="360" y="136">oovcde</text>
+<text x="360" y="148">#&lt;&lt;typedef&gt;&gt;cairo_t cr</text>
+<text x="360" y="160">+getTextExtentWidth(OovStringRef )</text>
+<text x="360" y="169">+getTextExtentHeight(OovStringRef )</text>
+<text x="360" y="178">+NullDrawer(&lt;&lt;typedef&gt;&gt;cairo_t c)</text>
+<text x="360" y="187">+setGraphicsLib(&lt;&lt;typedef&gt;&gt;cairo_t c)</text>
+<text x="360" y="196">+haveCr()</text>
+<text x="360" y="205">+setDiagramSize(&lt;&lt;typedef&gt;&gt;GraphSize )</text>
+<text x="360" y="214">+drawRect(GraphRect )</text>
+<text x="360" y="223">+drawLine(GraphPoint , GraphPoint , bool )</text>
+<text x="360" y="232">+drawCircle(GraphPoint , int , Color )</text>
+<text x="360" y="241">+drawEllipse(GraphRect )</text>
+<text x="360" y="250">+drawPoly(&lt;&lt;typedef&gt;&gt;OovPolygon , Color )</text>
+<text x="360" y="259">+drawText(GraphPoint , OovStringRef )</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="210" y1="246" x2="234" y2="296" />
+<circle cx="216" cy="258" r="5" style="fill:#ffffff" />
+<circle cx="222" cy="273" r="5" style="fill:#000000" />
+<circle cx="222" cy="273" r="2" style="fill:#000000" />
+<polygon points="210,246 210,254 216,258 217,251 210,246 " style="fill:#000000" />
+<line x1="291" y1="231" x2="377" y2="295" />
+<circle cx="302" cy="239" r="5" style="fill:#ffffff" />
+<circle cx="315" cy="248" r="5" style="fill:#000000" />
+<circle cx="315" cy="248" r="2" style="fill:#000000" />
+<polygon points="291,231 294,239 302,239 299,232 291,231 " style="fill:#ffffff" />
+<line x1="291" y1="97" x2="340" y2="84" />
+<circle cx="304" cy="93" r="5" style="fill:#ffffff" />
+<circle cx="319" cy="89" r="5" style="fill:#000000" />
+<circle cx="319" cy="89" r="2" style="fill:#000000" />
+<polygon points="291,97 299,99 304,94 297,91 291,97 " style="fill:#000000" />
+<line x1="291" y1="155" x2="359" y2="169" />
+<circle cx="304" cy="157" r="5" style="fill:#ffffff" />
+<circle cx="320" cy="161" r="5" style="fill:#000000" />
+<circle cx="320" cy="161" r="2" style="fill:#000000" />
+<polygon points="291,155 297,160 304,157 299,153 291,155 " style="fill:#000000" />
+</g>
+</svg>

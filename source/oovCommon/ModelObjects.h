@@ -353,6 +353,8 @@ class ModelType:public ModelObject
             { return mDataType; }
         const class ModelClassifier *getClass() const;
         class ModelClassifier *getClass();
+        static class ModelClassifier const *getClass(ModelType const *modelType);
+        static class ModelClassifier *getClass(ModelType *modelType);
 
     private:
         eModelDataTypes mDataType;

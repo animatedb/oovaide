@@ -34,6 +34,9 @@
 class ProcDebugFile:public DebugFile
     {
     public:
+        ProcDebugFile():
+            DebugFile(nullptr)
+            {}
         void open()
             {
             char fn[60];
@@ -266,7 +269,7 @@ void OovPipeProcessLinux::linuxChildProcessListen(OovProcessListener &listener, 
     // If the error pipe has "Unable to run process..." then this should
     // actually return an error.
     int waitStatus;
-    wait(&waitStatus);
+    waitpid(mChildProcessId, &waitStatus, WEXITED);
     if(WIFEXITED(waitStatus) == 0)
         {
         exitCode = 0;

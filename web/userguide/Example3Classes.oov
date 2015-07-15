@@ -1,0 +1,5 @@
+DrawingName|Kingdom
+FileType|Class
+Names|Oov-Key;Kingdom;Egg;ResourceClient;std::basic_string<char>;<<typedef>>GModule;ResourceClientInterface;
+XPositions|332;14;237;14;152;359;304;
+YPositions|214;19;18;143;105;179;105;

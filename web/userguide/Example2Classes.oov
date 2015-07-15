@@ -1,0 +1,5 @@
+DrawingName|WoolWorld
+FileType|Class
+Names|Oov-Key;WoolWorld;BlackSheep;Master;Dame;LittleBoy;Client;WoolBag;std::vector<WoolBag,std::allocator<WoolBag> >;
+XPositions|11;12;403;12;203;388;192;211;382;
+YPositions|224;14;220;149;151;150;258;340;309;

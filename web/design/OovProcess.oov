@@ -1,0 +1,5 @@
+DrawingName|OovPipeProcess
+FileType|Class
+Names|Oov-Key;OovPipeProcess;OovPipeProcessWindows;OovBackgroundPipeProcess;OovProcessListener;std::thread;OovProcessStdListener;OovProcessBufferedStdListener;
+XPositions|434;16;315;20;143;35;360;64;
+YPositions|267;16;45;192;392;391;439;497;

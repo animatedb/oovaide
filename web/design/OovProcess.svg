@@ -1,0 +1,218 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="568" height="695">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="434" y="267" width="133" height="143" />
+<line x1="434" y1="280" x2="567" y2="280" />
+<polygon points="547,288 559,293 559,283 547,288 " style="fill:#ffffff" />
+<polygon points="547,302 554,306 561,302 554,298 547,302 " style="fill:#ffffff" />
+<polygon points="547,316 554,320 561,316 554,312 547,316 " style="fill:#000000" />
+<polygon points="547,330 555,335 551,330 555,325 547,330 " style="fill:#ffffff" />
+<circle cx="547" cy="344" r="5" style="fill:#ffffff" />
+<circle cx="547" cy="358" r="5" style="fill:#ffffff" />
+<circle cx="554" cy="358" r="2" style="fill:#ffffff" />
+<circle cx="547" cy="372" r="5" style="fill:#ffffff" />
+<circle cx="547" cy="372" r="2" style="fill:#ffffff" />
+<circle cx="547" cy="386" r="5" style="fill:#ffffff" />
+<circle cx="547" cy="386" r="2" style="fill:#000000" />
+<circle cx="547" cy="400" r="5" style="fill:#000000" />
+<circle cx="547" cy="400" r="2" style="fill:#000000" />
+</g>
+<g stroke="none">
+<text x="435" y="276">Relations Key</text>
+<text x="435" y="290">Generalization</text>
+<text x="435" y="304">Aggregation(reference)</text>
+<text x="435" y="318">Composition(owned)</text>
+<text x="435" y="332">Const</text>
+<text x="435" y="346">Method Variable</text>
+<text x="435" y="360">Method Parameter</text>
+<text x="435" y="374">Public</text>
+<text x="435" y="388">Protected</text>
+<text x="435" y="402">Private</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="16" y="16" width="239" height="125" />
+<line x1="16" y1="37" x2="255" y2="37" />
+<line x1="16" y1="49" x2="255" y2="49" />
+</g>
+<g stroke="none">
+<text x="17" y="25">OovPipeProcess</text>
+<text x="17" y="34">oovCommon</text>
+<text x="17" y="46">-OovPipeProcessWindows mPipeProcWindows</text>
+<text x="17" y="58">+createProcess(OovStringRef procPath, char argv)</text>
+<text x="17" y="67">+childProcessListen(OovProcessListener </text>
+<text x="24" y="76">listener, int exitCode)</text>
+<text x="17" y="85">+childProcessSend(OovStringRef str)</text>
+<text x="17" y="94">+childProcessClose()</text>
+<text x="17" y="103">+childProcessKill()</text>
+<text x="17" y="112">+spawn(OovStringRef procPath, char argv,</text>
+<text x="24" y="121"> OovProcessListener listener, int exitCode)</text>
+<text x="17" y="130">+~OovPipeProcess()</text>
+<text x="17" y="139">+isArgLengthOk(int len)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="315" y="45" width="252" height="206" />
+<line x1="315" y1="66" x2="567" y2="66" />
+<line x1="315" y1="132" x2="567" y2="132" />
+</g>
+<g stroke="none">
+<text x="316" y="54">OovPipeProcessWindows</text>
+<text x="316" y="63">oovCommon</text>
+<text x="316" y="75">-&lt;&lt;typedef&gt;&gt;PROCESS_INFORMATION mProcInfo</text>
+<text x="316" y="84">-&lt;&lt;typedef&gt;&gt;HANDLE mChildStd_IN_Rd</text>
+<text x="316" y="93">-&lt;&lt;typedef&gt;&gt;HANDLE mChildStd_IN_Wr</text>
+<text x="316" y="102">-&lt;&lt;typedef&gt;&gt;HANDLE mChildStd_OUT_Rd</text>
+<text x="316" y="111">-&lt;&lt;typedef&gt;&gt;HANDLE mChildStd_OUT_Wr</text>
+<text x="316" y="120">-&lt;&lt;typedef&gt;&gt;HANDLE mChildStd_ERR_Rd</text>
+<text x="316" y="129">-&lt;&lt;typedef&gt;&gt;HANDLE mChildStd_ERR_Wr</text>
+<text x="316" y="141">+windowsCreatePipeProcess(OovStringRef procPath,</text>
+<text x="323" y="150"> char argv)</text>
+<text x="316" y="159">+windowsChildProcessListen(OovProcessListener </text>
+<text x="323" y="168">listener, int exitCode)</text>
+<text x="316" y="177">+windowsChildProcessClose()</text>
+<text x="316" y="186">+windowsChildProcessSend(OovStringRef str)</text>
+<text x="316" y="195">+windowsChildProcessKill()</text>
+<text x="316" y="204">-windowsCloseHandle(&lt;&lt;typedef&gt;&gt;HANDLE h)</text>
+<text x="316" y="213">-windowsCreatePipes()</text>
+<text x="316" y="222">-windowsClosePipes()</text>
+<text x="316" y="231">+OovPipeProcessWindows()</text>
+<text x="316" y="240">-isProcRunning()</text>
+<text x="316" y="249">-setStatusProcNotRunning()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="20" y="192" width="237" height="152" />
+<line x1="20" y1="213" x2="257" y2="213" />
+<line x1="20" y1="261" x2="257" y2="261" />
+</g>
+<g stroke="none">
+<text x="21" y="201">OovBackgroundPipeProcess</text>
+<text x="21" y="210">oovCommon</text>
+<text x="21" y="222">-OovProcessListener mListener</text>
+<text x="21" y="231">-std::thread mThread</text>
+<text x="21" y="240">-OovBackgroundPipeProcess::ThreadStates </text>
+<text x="28" y="249">mThreadState</text>
+<text x="21" y="258">-int mChildProcessExitCode</text>
+<text x="21" y="270">+OovBackgroundPipeProcess(OovProcessListener</text>
+<text x="28" y="279"> listener)</text>
+<text x="21" y="288">+startProcess(OovStringRef procPath,</text>
+<text x="28" y="297"> char argv)</text>
+<text x="21" y="306">+stopProcess()</text>
+<text x="21" y="315">+privateBackground()</text>
+<text x="21" y="324">+~OovBackgroundPipeProcess()</text>
+<text x="21" y="333">+setListener(OovProcessListener listener)</text>
+<text x="21" y="342">+isIdle()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="143" y="392" width="143" height="80" />
+<line x1="143" y1="413" x2="286" y2="413" />
+<line x1="143" y1="416" x2="286" y2="416" />
+</g>
+<g stroke="none">
+<text x="144" y="401">OovProcessListener</text>
+<text x="144" y="410">oovCommon</text>
+<text x="144" y="425">+~OovProcessListener()</text>
+<text x="144" y="434">+onStdOut(OovStringRef out,</text>
+<text x="151" y="443"> &lt;&lt;typedef&gt;&gt;size_t len)</text>
+<text x="144" y="452">+onStdErr(OovStringRef out,</text>
+<text x="151" y="461"> &lt;&lt;typedef&gt;&gt;size_t len)</text>
+<text x="144" y="470">+processComplete()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="35" y="391" width="53" height="17" />
+<line x1="35" y1="403" x2="88" y2="403" />
+<line x1="35" y1="406" x2="88" y2="406" />
+</g>
+<g stroke="none">
+<text x="36" y="400">std::thread</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="360" y="439" width="199" height="170" />
+<line x1="360" y1="460" x2="559" y2="460" />
+<line x1="360" y1="517" x2="559" y2="517" />
+</g>
+<g stroke="none">
+<text x="361" y="448">OovProcessStdListener</text>
+<text x="361" y="457">oovCommon</text>
+<text x="361" y="469">#OovProcessStdListener::OutputPlaces </text>
+<text x="368" y="478">mStdOutPlace</text>
+<text x="361" y="487">#OovProcessStdListener::OutputPlaces </text>
+<text x="368" y="496">mStdErrPlace</text>
+<text x="361" y="505">#&lt;&lt;typedef&gt;&gt;FILE mStdoutFp</text>
+<text x="361" y="514">#&lt;&lt;typedef&gt;&gt;FILE mStderrFp</text>
+<text x="361" y="526">+onStdOut(OovStringRef out, &lt;&lt;typedef&gt;</text>
+<text x="368" y="535">&gt;size_t len)</text>
+<text x="361" y="544">+onStdErr(OovStringRef out, &lt;&lt;typedef&gt;</text>
+<text x="368" y="553">&gt;size_t len)</text>
+<text x="361" y="562">+OovProcessStdListener()</text>
+<text x="361" y="571">+setStdOut(&lt;&lt;typedef&gt;&gt;FILE stdoutFp, </text>
+<text x="368" y="580">OovProcessStdListener::OutputPlaces op)</text>
+<text x="361" y="589">+setErrOut(&lt;&lt;typedef&gt;&gt;FILE stdoutFp, </text>
+<text x="368" y="598">OovProcessStdListener::OutputPlaces op)</text>
+<text x="361" y="607">+~OovProcessStdListener()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="64" y="497" width="221" height="197" />
+<line x1="64" y1="518" x2="285" y2="518" />
+<line x1="64" y1="575" x2="285" y2="575" />
+</g>
+<g stroke="none">
+<text x="65" y="506">OovProcessBufferedStdListener</text>
+<text x="65" y="515">oovCommon</text>
+<text x="65" y="527">-InProcMutex mStdMutex</text>
+<text x="65" y="536">-OovString mStdoutStr</text>
+<text x="65" y="545">-OovString mStderrStr</text>
+<text x="65" y="554">-OovString mProcessIdStr</text>
+<text x="65" y="563">-&lt;&lt;typedef&gt;&gt;time_t mStdoutTime</text>
+<text x="65" y="572">-&lt;&lt;typedef&gt;&gt;time_t mStderrTime</text>
+<text x="65" y="584">+setProcessIdStr(OovStringRef str)</text>
+<text x="65" y="593">+onStdOut(OovStringRef out, &lt;&lt;typedef&gt;</text>
+<text x="72" y="602">&gt;size_t len)</text>
+<text x="65" y="611">+onStdErr(OovStringRef out, &lt;&lt;typedef&gt;</text>
+<text x="72" y="620">&gt;size_t len)</text>
+<text x="65" y="629">-periodicOutput(&lt;&lt;typedef&gt;&gt;FILE fp,</text>
+<text x="72" y="638"> &lt;&lt;typedef&gt;&gt;string str, &lt;&lt;typedef&gt;</text>
+<text x="72" y="647">&gt;time_t time)</text>
+<text x="65" y="656">-output(&lt;&lt;typedef&gt;&gt;FILE fp, &lt;&lt;typedef&gt;</text>
+<text x="72" y="665">&gt;string str, bool writeAll)</text>
+<text x="65" y="674">+OovProcessBufferedStdListener(InProcMutex</text>
+<text x="72" y="683"> stdMutex)</text>
+<text x="65" y="692">+~OovProcessBufferedStdListener()</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="254" y1="105" x2="315" y2="120" />
+<circle cx="267" cy="108" r="5" style="fill:#ffffff" />
+<circle cx="283" cy="112" r="5" style="fill:#000000" />
+<circle cx="283" cy="112" r="2" style="fill:#000000" />
+<polygon points="254,105 260,111 267,108 262,103 254,105 " style="fill:#000000" />
+<line x1="135" y1="140" x2="137" y2="192" />
+<circle cx="136" cy="169" r="5" style="fill:#ffffff" />
+<circle cx="136" cy="169" r="2" style="fill:#ffffff" />
+<polygon points="135,140 131,153 140,152 135,140 " style="fill:#ffffff" />
+<circle cx="136" cy="178" r="5" style="fill:#ffffff" />
+<line x1="148" y1="140" x2="206" y2="392" />
+<circle cx="151" cy="153" r="5" style="fill:#ffffff" />
+<circle cx="154" cy="169" r="5" style="fill:#000000" />
+<circle cx="154" cy="169" r="2" style="fill:#000000" />
+<line x1="359" y1="251" x2="245" y2="392" />
+<circle cx="350" cy="261" r="5" style="fill:#ffffff" />
+<circle cx="345" cy="267" r="2" style="fill:#ffffff" />
+<line x1="173" y1="344" x2="196" y2="392" />
+<circle cx="179" cy="356" r="5" style="fill:#ffffff" />
+<circle cx="185" cy="371" r="5" style="fill:#000000" />
+<circle cx="185" cy="371" r="2" style="fill:#000000" />
+<polygon points="173,344 173,352 179,356 180,349 173,344 " style="fill:#ffffff" />
+<line x1="94" y1="344" x2="65" y2="391" />
+<circle cx="86" cy="355" r="5" style="fill:#ffffff" />
+<circle cx="78" cy="369" r="5" style="fill:#000000" />
+<circle cx="78" cy="369" r="2" style="fill:#000000" />
+<polygon points="94,344 87,348 87,355 94,352 94,344 " style="fill:#000000" />
+<line x1="285" y1="458" x2="360" y2="487" />
+<circle cx="312" cy="468" r="5" style="fill:#ffffff" />
+<circle cx="312" cy="468" r="2" style="fill:#ffffff" />
+<polygon points="285,458 295,467 298,458 285,458 " style="fill:#ffffff" />
+<line x1="360" y1="548" x2="284" y2="568" />
+<circle cx="330" cy="555" r="5" style="fill:#ffffff" />
+<circle cx="330" cy="555" r="2" style="fill:#ffffff" />
+<polygon points="360,548 347,547 349,556 360,548 " style="fill:#ffffff" />
+</g>
+</svg>
