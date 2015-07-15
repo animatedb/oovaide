@@ -134,84 +134,90 @@ void TextViewOption::screenToOption(NameValueFile &file) const
 class ScreenOptions
     {
     public:
-        ScreenOptions(OovStringRef const buildConfig);
+        ScreenOptions(OovStringRef const buildConfig, ProjectReader &project,
+            GuiOptions &mGuiOptions);
         void optionsToScreen() const;
-        void screenToOptions() const;
+        void screenToOptions();
 
     private:
-        std::vector<std::unique_ptr<Option>> mBuildOptions;
-        std::vector<std::unique_ptr<Option>> mGuiOptions;
+        ProjectReader &mProjectOptions;
+        GuiOptions &mGuiOptions;
+        std::vector<std::unique_ptr<Option>> mBuildScreenOptions;
+        std::vector<std::unique_ptr<Option>> mGuiScreenOptions;
     };
 
-ScreenOptions::ScreenOptions(OovStringRef const buildConfig)
+ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &project,
+    GuiOptions &guiOptions):
+    mProjectOptions(project),
+    mGuiOptions(guiOptions)
     {
     std::string optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
-    mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             optStr, "CompilerPathEntry")));
 
     optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
-    mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             optStr, "LibraryPathEntry")));
 
     optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
-    mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             optStr, "SymbolPathEntry")));
 
 
-    mBuildOptions.push_back(std::unique_ptr<Option>(new TextViewOption(OptBaseArgs,
+    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new TextViewOption(OptBaseArgs,
             "CppArgumentsTextview")));
 
-    mBuildOptions.push_back(std::unique_ptr<Option>(new TextViewOption(
+    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new TextViewOption(
             makeBuildConfigArgName(OptExtraBuildArgs, buildConfig),
             "ExtraBuildArgsTextview")));
 
     // Editor
-    mGuiOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             OptGuiEditorPath, "EditorPathEntry")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             OptGuiEditorLineArg, "EditorLineArgEntry")));
-    mBuildOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             OptToolDebuggerPath, "DebuggerPathEntry")));
 
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowAttributes, "ShowAttributesCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperations, "ShowOperationsCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperParams, "ShowOperParamsCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperReturn, "ShowOperReturnCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowAttrTypes, "ShowAttrTypesCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperTypes, "ShowOperTypesCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowPackageName, "ShowPackageNameCheckbutton")));
 
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOovSymbols, "ShowOovSymbolsCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperParamRelations, "ShowOperParamRelationsCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperBodyVarRelations, "ShowOperBodyVarRelationsCheckbutton")));
-    mGuiOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowRelationKey, "ShowRelationKeyCheckbutton")));
     }
 
 void ScreenOptions::optionsToScreen() const
     {
-    for(auto const &opt : mBuildOptions)
-        opt->optionToScreen(gBuildOptions);
-    for(auto const &opt : mGuiOptions)
-        opt->optionToScreen(gGuiOptions);
+    for(auto const &opt : mBuildScreenOptions)
+        opt->optionToScreen(mProjectOptions);
+    for(auto const &opt : mGuiScreenOptions)
+        opt->optionToScreen(mGuiOptions);
     }
 
-void ScreenOptions::screenToOptions() const
+void ScreenOptions::screenToOptions()
     {
-    for(auto const &opt : mBuildOptions)
-        opt->screenToOption(gBuildOptions);
-    for(auto const &opt : mGuiOptions)
-        opt->screenToOption(gGuiOptions);
+    for(auto const &opt : mBuildScreenOptions)
+        opt->screenToOption(mProjectOptions);
+    for(auto const &opt : mGuiScreenOptions)
+        opt->screenToOption(mGuiOptions);
     }
 
 static void enableBuildWidgets(bool enable)
@@ -226,8 +232,8 @@ static void enableBuildWidgets(bool enable)
 
 ///////////////////
 
-OptionsDialog::OptionsDialog():
-    mDialogRunning(false)
+OptionsDialog::OptionsDialog(ProjectReader &project, GuiOptions &guiOptions):
+    mProjectOptions(project), mGuiOptions(guiOptions), mDialogRunning(false)
     {
     gOptionsDlg = this;
     mBuildConfigList.init(*Builder::getBuilder(), "BuildConfigTreeview", "Build Configurations");
@@ -242,12 +248,14 @@ void OptionsDialog::setBuildConfig()
     if(mDialogRunning && Builder::getBuilder())
         {
             {
-            ScreenOptions options(mCurrentBuildConfig);
+            ScreenOptions options(mCurrentBuildConfig, mProjectOptions,
+                mGuiOptions);
             options.screenToOptions();
             }
         mCurrentBuildConfig = mBuildConfigList.getSelected();
             {
-            ScreenOptions options(mCurrentBuildConfig);
+            ScreenOptions options(mCurrentBuildConfig, mProjectOptions,
+                mGuiOptions);
             options.optionsToScreen();
             }
         enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
@@ -299,7 +307,7 @@ void OptionsDialog::updateBuildConfig()
     mBuildConfigList.appendText(BuildConfigDebug);
     mBuildConfigList.appendText(BuildConfigRelease);
 
-    std::string confStr = gBuildOptions.getValue(OptBuildConfigs);
+    std::string confStr = mProjectOptions.getValue(OptBuildConfigs);
     CompoundValue configVals;
     configVals.parseString(confStr);
     for(const auto &config:configVals)
@@ -314,7 +322,7 @@ void OptionsDialog::showScreen()
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")),
             GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
     updateBuildConfig();
-    ScreenOptions options(mCurrentBuildConfig);
+    ScreenOptions options(mCurrentBuildConfig, mProjectOptions, mGuiOptions);
     mBuildConfigList.setSelected(mCurrentBuildConfig);
     options.optionsToScreen();
     enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
@@ -339,7 +347,7 @@ void OptionsDialog::addConfig()
     GtkEntry *newNameEntry = GTK_ENTRY(Builder::getBuilder()->getWidget("NewConfigNameEntry"));
 
     // Update the build config option
-    std::string compStr = gBuildOptions.getValue(OptBuildConfigs);
+    std::string compStr = mProjectOptions.getValue(OptBuildConfigs);
     CompoundValue compVal;
     compVal.parseString(compStr);
     OovString newName = Gui::getText(newNameEntry);
@@ -352,7 +360,7 @@ void OptionsDialog::addConfig()
     if(!found)
         {
         compVal.addArg(newName);
-        gBuildOptions.setNameValue(OptBuildConfigs, compVal.getAsString());
+        mProjectOptions.setNameValue(OptBuildConfigs, compVal.getAsString());
 
         // Leave what is on the screen, and change the config name.Save the
         // screen data to the new config.
@@ -368,11 +376,11 @@ void OptionsDialog::addConfig()
 
 void OptionsDialog::saveScreen()
     {
-    ScreenOptions options(mCurrentBuildConfig);
+    ScreenOptions options(mCurrentBuildConfig, mProjectOptions, mGuiOptions);
     options.screenToOptions();
 
-    gBuildOptions.writeFile();
-    gGuiOptions.writeFile();
+    mProjectOptions.writeFile();
+    mGuiOptions.writeFile();
     updateOptions();
     }
 

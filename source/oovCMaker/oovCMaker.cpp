@@ -554,16 +554,16 @@ void CMaker::makeTopLevelFiles(OovStringRef const outDir)
 
 void CMaker::makeToolchainFiles(OovStringRef const outDir)
     {
-    if(mBuildOptions.read())
+    if(mProject.readProject(Project::getProjectDirectory()))
         {
-        std::string buildConfigStr = mBuildOptions.getValue(OptBuildConfigs);
+        std::string buildConfigStr = mProject.getValue(OptBuildConfigs);
         if(buildConfigStr.length() > 0)
             {
             CompoundValue buildConfigs(buildConfigStr);
             for(auto const &config : buildConfigs)
                 {
                 OovString optStr = makeBuildConfigArgName(OptToolCompilePath, config);
-                OovString compilePath = mBuildOptions.getValue(optStr);
+                OovString compilePath = mProject.getValue(optStr);
 
                 FilePath outFp(outDir, FP_Dir);
                 std::string fn = config + ".cmake";

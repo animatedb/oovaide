@@ -219,7 +219,7 @@ OovString Project::getCoverageProjectDirectory()
     }
 
 
-bool ProjectReader::miniReadOovProject(OovStringRef const oovProjectDir)
+bool ProjectReader::readProject(OovStringRef const oovProjectDir)
     {
     Project::setProjectDirectory(oovProjectDir);
     setFilename(Project::getProjectFilePath());
@@ -231,38 +231,32 @@ bool ProjectReader::miniReadOovProject(OovStringRef const oovProjectDir)
     return success;
     }
 
-bool ProjectReader::readOovProject(OovStringRef const oovProjectDir,
-        OovStringRef const buildConfigName)
+void ProjectBuildArgs::loadBuildArgs(OovStringRef const buildConfigName)
     {
-    bool success = miniReadOovProject(oovProjectDir);
-    if(success)
+    mProjectPackages.read();
+    mBuildPackages.read();
+
+    OovStringVec args;
+    CompoundValue baseArgs;
+    baseArgs.parseString(mProjectOptions.getValue(OptBaseArgs));
+    for(auto const &arg : baseArgs)
         {
-        mProjectPackages.read();
-        mBuildPackages.read();
-
-        OovStringVec args;
-        CompoundValue baseArgs;
-        baseArgs.parseString(getValue(OptBaseArgs));
-        for(auto const &arg : baseArgs)
-            {
-            args.push_back(arg);
-            }
-
-        std::string optionExtraArgs = makeBuildConfigArgName(OptExtraBuildArgs,
-                buildConfigName);
-        CompoundValue extraArgs;
-        extraArgs.parseString(getValue(optionExtraArgs));
-        extraArgs.quoteAllArgs();
-        for(auto const &arg : extraArgs)
-            {
-            args.push_back(arg);
-            }
-        parseArgs(args);
+        args.push_back(arg);
         }
-    return success;
+
+    std::string optionExtraArgs = makeBuildConfigArgName(OptExtraBuildArgs,
+            buildConfigName);
+    CompoundValue extraArgs;
+    extraArgs.parseString(mProjectOptions.getValue(optionExtraArgs));
+    extraArgs.quoteAllArgs();
+    for(auto const &arg : extraArgs)
+        {
+        args.push_back(arg);
+        }
+    parseArgs(args);
     }
 
-void ProjectReader::parseArgs(OovStringVec const &args)
+void ProjectBuildArgs::parseArgs(OovStringVec const &args)
     {
     unsigned int linkOrderIndex = LOI_AfterInternalProject;
     for(auto const &arg : args)
@@ -296,10 +290,10 @@ void ProjectReader::parseArgs(OovStringVec const &args)
         }
     }
 
-CompoundValue ProjectReader::getProjectExcludeDirs() const
+CompoundValue ProjectBuildArgs::getProjectExcludeDirs() const
     {
     CompoundValue val;
-    val.parseString(getValue(OptProjectExcludeDirs));
+    val.parseString(mProjectOptions.getValue(OptProjectExcludeDirs));
 // This doesn't work.
 //    val.push_back(sCoverageSourceDir);
 //    val.push_back(sCoverageProjectDir);
@@ -310,7 +304,7 @@ CompoundValue ProjectReader::getProjectExcludeDirs() const
     return val;
     }
 
-void ProjectReader::handleExternalPackage(OovStringRef const pkgName)
+void ProjectBuildArgs::handleExternalPackage(OovStringRef const pkgName)
     {
     addPackageCrcName(pkgName);
     Package pkg = mProjectPackages.getPackage(pkgName);
@@ -347,7 +341,7 @@ void ProjectReader::handleExternalPackage(OovStringRef const pkgName)
         }
     }
 
-const OovStringVec ProjectReader::getAllCrcCompileArgs() const
+const OovStringVec ProjectBuildArgs::getAllCrcCompileArgs() const
     {
     OovStringVec vec;
     vec = mCompileArgs;
@@ -358,7 +352,7 @@ const OovStringVec ProjectReader::getAllCrcCompileArgs() const
     return vec;
     }
 
-const OovStringVec ProjectReader::getAllCrcLinkArgs() const
+const OovStringVec ProjectBuildArgs::getAllCrcLinkArgs() const
     {
     OovStringVec vec;
     for(auto item : mLinkArgs)
@@ -368,7 +362,7 @@ const OovStringVec ProjectReader::getAllCrcLinkArgs() const
     return vec;
     }
 
-unsigned int ProjectReader::getExternalPackageLinkOrder(OovStringRef const pkgName) const
+unsigned int ProjectBuildArgs::getExternalPackageLinkOrder(OovStringRef const pkgName) const
     {
     unsigned int index = LOI_AfterInternalProject;
     for(auto &item : mExternalPackageNames)

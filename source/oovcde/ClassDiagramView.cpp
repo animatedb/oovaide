@@ -8,25 +8,26 @@
 #include "ClassDiagramView.h"
 #include "Options.h"
 #include "OptionsDialog.h"
+#include "DiagramDrawer.h"
 #include "Svg.h"
 
 static ClassDiagramView *gClassDiagramView;
 static GraphPoint gStartPosInfo;
 
-static const ClassDrawOptions &getDrawOptions()
+static const ClassDrawOptions &getDrawOptions(GuiOptions const &guiOptions)
     {
     static ClassDrawOptions dopts;
-    dopts.drawAttributes = gGuiOptions.getValueBool(OptGuiShowAttributes);
-    dopts.drawOperations = gGuiOptions.getValueBool(OptGuiShowOperations);
-    dopts.drawOperParams = gGuiOptions.getValueBool(OptGuiShowOperParams);
-    dopts.drawOperReturn = gGuiOptions.getValueBool(OptGuiShowOperReturn);
-    dopts.drawAttrTypes = gGuiOptions.getValueBool(OptGuiShowAttrTypes);
-    dopts.drawOperTypes = gGuiOptions.getValueBool(OptGuiShowOperTypes);
-    dopts.drawPackageName = gGuiOptions.getValueBool(OptGuiShowPackageName);
-    dopts.drawOovSymbols = gGuiOptions.getValueBool(OptGuiShowOovSymbols);
-    dopts.drawOperParamRelations = gGuiOptions.getValueBool(OptGuiShowOperParamRelations);
-    dopts.drawOperBodyVarRelations = gGuiOptions.getValueBool(OptGuiShowOperBodyVarRelations);
-    dopts.drawRelationKey = gGuiOptions.getValueBool(OptGuiShowRelationKey);
+    dopts.drawAttributes = guiOptions.getValueBool(OptGuiShowAttributes);
+    dopts.drawOperations = guiOptions.getValueBool(OptGuiShowOperations);
+    dopts.drawOperParams = guiOptions.getValueBool(OptGuiShowOperParams);
+    dopts.drawOperReturn = guiOptions.getValueBool(OptGuiShowOperReturn);
+    dopts.drawAttrTypes = guiOptions.getValueBool(OptGuiShowAttrTypes);
+    dopts.drawOperTypes = guiOptions.getValueBool(OptGuiShowOperTypes);
+    dopts.drawPackageName = guiOptions.getValueBool(OptGuiShowPackageName);
+    dopts.drawOovSymbols = guiOptions.getValueBool(OptGuiShowOovSymbols);
+    dopts.drawOperParamRelations = guiOptions.getValueBool(OptGuiShowOperParamRelations);
+    dopts.drawOperBodyVarRelations = guiOptions.getValueBool(OptGuiShowOperBodyVarRelations);
+    dopts.drawRelationKey = guiOptions.getValueBool(OptGuiShowRelationKey);
     return dopts;
     }
 
@@ -66,7 +67,7 @@ void ClassDiagramView::initialize(const ModelData &modelData,
         OovTaskStatusListener &taskStatusListener)
     {
     mListener = &listener;
-    mClassDiagram.initialize(modelData, mNullDrawer, getDrawOptions(),
+    mClassDiagram.initialize(modelData, mNullDrawer, getDrawOptions(mGuiOptions),
             *this, mForegroundBusyDialog, taskStatusListener);
     }
 
@@ -160,6 +161,11 @@ void ClassDiagramView::displayListContextMenu(guint button, guint32 acttime, gpo
     gClassDiagramView = this;
     GtkMenu *menu = Builder::getBuilder()->getMenu("ClassListPopupMenu");
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
+    }
+
+void ClassDiagramView::viewSource(OovStringRef const module, unsigned int lineNum)
+    {
+    ::viewSource(mGuiOptions, module, lineNum);
     }
 
 void ClassDiagramView::displayDrawContextMenu(guint button, guint32 acttime, gpointer data)
@@ -366,7 +372,7 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(
         const ModelClassifier *classifier = node->getType()->getClass();
         if(classifier && classifier->getModule())
             {
-            viewSource(classifier->getModule()->getModulePath(),
+            gClassDiagramView->viewSource(classifier->getModule()->getModulePath(),
                 classifier->getLineNum());
             }
         }
@@ -381,7 +387,8 @@ extern "C" G_MODULE_EXPORT void on_ClassPreferencesMenuitem_activate(
         ClassPreferencesDialog dlg;
         if(dlg.run(*Builder::getBuilder(), node->getNodeOptions()))
             {
-            gClassDiagramView->getDiagram().changeOptions(getDrawOptions());
+            gClassDiagramView->getDiagram().changeOptions(getDrawOptions(
+                    gClassDiagramView->getGuiOptions()));
             gClassDiagramView->drawToDrawingArea();
             }
         }
@@ -414,7 +421,7 @@ extern "C" G_MODULE_EXPORT void on_ClassListAddSingleClassMenuitem_activate(
     GuiList list;
     list.access(GTK_TREE_VIEW(Builder::getBuilder()->getWidget("ClassTreeview")));
     gClassDiagramView->addClass(list.getSelected(), ClassGraph::AN_All,
-            ClassDiagram::DEPTH_SINGLE_CLASS);
+            ClassDiagram::DEPTH_SINGLE_CLASS, false);
     }
 
 extern "C" G_MODULE_EXPORT void on_ClassListAddWithStandardRelationsMenuitem_activate(

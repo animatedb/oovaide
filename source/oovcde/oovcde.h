@@ -168,6 +168,7 @@ class oovGui
             }
         ProjectStatus &getLastProjectStatus()
             { return mLastProjectStatus; }
+        void showProjectSettingsDialog();
 
     private:
         Builder mBuilder;

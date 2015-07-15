@@ -16,7 +16,8 @@
 class IncludeDiagramView
     {
     public:
-        IncludeDiagramView()
+        IncludeDiagramView(GuiOptions const &guiOptions):
+            mGuiOptions(guiOptions)
             {}
         void initialize(IncDirDependencyMapReader const &incMap)
             {
@@ -50,6 +51,7 @@ class IncludeDiagramView
         void viewFileSource();
 
     private:
+        GuiOptions const &mGuiOptions;
         IncludeDiagram mIncludeDiagram;
         /// Used to calculate font sizes.
         GtkCairoContext mCairoContext;

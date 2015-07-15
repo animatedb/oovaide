@@ -16,35 +16,44 @@
 #include <map>
 
 
-static size_t findEarlierBreakPos(size_t pos, std::string const &str,
+// Update the returned pos only if the found breakstring starting from
+// startpos is less than pos.
+static size_t findEarliestBreakPos(size_t pos, std::string const &str,
         char const *breakStr, size_t startPos)
     {
-    size_t spacePos = str.find(breakStr, startPos);
-    if(spacePos != std::string::npos)
+    size_t breakPos = str.find(breakStr, startPos);
+    if(breakPos != std::string::npos)
         {
-        spacePos += std::string(breakStr).length();
-        if(pos == std::string::npos || spacePos < pos)
+        breakPos += std::string(breakStr).length();
+        if(pos == std::string::npos || breakPos < pos)
             {
-            pos = spacePos;
+            pos = breakPos;
             }
         }
     return pos;
     }
 
-void splitStrings(OovStringVec &strs, size_t desiredLength)
+size_t findSplitPos(std::string const &str, size_t minLength, size_t maxLength)
+    {
+    size_t pos = maxLength;
+    pos = findEarliestBreakPos(pos, str, ",", minLength);
+    pos = findEarliestBreakPos(pos, str, "::", minLength);
+    pos = findEarliestBreakPos(pos, str, " ", minLength);
+    pos = findEarliestBreakPos(pos, str, "<", minLength);
+    pos = findEarliestBreakPos(pos, str, ">", minLength);
+    if(pos == std::string::npos || pos > maxLength)
+        pos = maxLength;
+    return pos;
+    }
+
+void splitStrings(OovStringVec &strs, size_t minLength, size_t maxLength)
     {
     for(size_t i=0; i<strs.size(); i++)
         {
-        if(strs[i].length() > desiredLength)
+        if(strs[i].length() > maxLength)
             {
-            size_t pos = strs[i].find(',', desiredLength);
-            pos = findEarlierBreakPos(pos, strs[i], "::", desiredLength);
-            pos = findEarlierBreakPos(pos, strs[i], " ", desiredLength);
-            pos = findEarlierBreakPos(pos, strs[i], "<", desiredLength);
-            pos = findEarlierBreakPos(pos, strs[i], ">", desiredLength);
-            if(pos == std::string::npos)
-                pos = desiredLength;
-            std::string temp = "   " + strs[i].substr(pos);
+            size_t pos = findSplitPos(strs[i], minLength, maxLength);
+            std::string temp = getSplitStringPrefix() + strs[i].substr(pos);
             strs[i].resize(pos);
             strs.insert(strs.begin()+static_cast<int>(i)+1, temp);
             }
@@ -237,9 +246,9 @@ Color DistinctColors::getColor(size_t index)
     }
 
 // Returns an empty string if no editor is found.
-static OovString getEditor()
+static OovString getEditor(GuiOptions const &guiOptions)
     {
-    FilePath proc(gGuiOptions.getValue(OptGuiEditorPath), FP_File);
+    FilePath proc(guiOptions.getEditorPath(), FP_File);
     if(!FileIsFileOnDisk(proc))
         {
         // If the path to the user specified editor is not found, then
@@ -260,14 +269,15 @@ static OovString getEditor()
     return proc;
     }
 
-void viewSource(OovStringRef const module, unsigned int lineNum)
+void viewSource(GuiOptions const &guiOptions, OovStringRef const module,
+        unsigned int lineNum)
     {
-    OovString proc = getEditor();
+    OovString proc = getEditor(guiOptions);
     if(proc.length())
         {
         OovProcessChildArgs args;
         args.addArg(proc);
-        OovString lineArg = gGuiOptions.getValue(OptGuiEditorLineArg);
+        OovString lineArg = guiOptions.getValue(OptGuiEditorLineArg);
         if(lineArg.length() != 0)
             {
             lineArg.appendInt(static_cast<int>(lineNum));

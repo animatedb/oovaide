@@ -75,10 +75,11 @@ class JournalRecord
 class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListener
     {
     public:
-        JournalRecordClassDiagram(const ModelData &model,
-                JournalListener &journalListener,
+        JournalRecordClassDiagram(GuiOptions const &guiOptions,
+                const ModelData &model, JournalListener &journalListener,
                 OovTaskStatusListener &taskStatusListener):
-            JournalRecord(RT_Class, journalListener)
+            JournalRecord(RT_Class, journalListener),
+            mClassDiagram(guiOptions)
             {
             mClassDiagram.initialize(model, *this, taskStatusListener);
             }
@@ -111,9 +112,10 @@ class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListene
 class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagramListener
     {
     public:
-        JournalRecordOperationDiagram(const ModelData &model,
-                JournalListener &listener):
-            JournalRecord(RT_Sequence, listener)
+        JournalRecordOperationDiagram(GuiOptions const &guiOptions,
+                const ModelData &model, JournalListener &listener):
+            JournalRecord(RT_Sequence, listener),
+            mOperationDiagram(guiOptions)
             {
             mOperationDiagram.initialize(model, this);
             }
@@ -144,9 +146,10 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
 class JournalRecordComponentDiagram:public JournalRecord
     {
     public:
-        JournalRecordComponentDiagram(IncDirDependencyMapReader const &incMap,
-            JournalListener &listener):
-            JournalRecord(RT_Component, listener)
+        JournalRecordComponentDiagram(GuiOptions const &guiOptions,
+            IncDirDependencyMapReader const &incMap, JournalListener &listener):
+            JournalRecord(RT_Component, listener),
+            mComponentDiagram(guiOptions)
             {
             mComponentDiagram.initialize(incMap);
             }
@@ -176,9 +179,10 @@ class JournalRecordComponentDiagram:public JournalRecord
 class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
     {
     public:
-        JournalRecordZoneDiagram(const ModelData &model,
-                JournalListener &listener):
-            JournalRecord(RT_Zone, listener)
+        JournalRecordZoneDiagram(GuiOptions const &guiOptions,
+                const ModelData &model, JournalListener &listener):
+            JournalRecord(RT_Zone, listener),
+            mZoneDiagram(guiOptions)
             {
             mZoneDiagram.initialize(model, *this);
             }
@@ -218,9 +222,10 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
 class JournalRecordPortionDiagram:public JournalRecord
     {
     public:
-        JournalRecordPortionDiagram(const ModelData &model,
-                JournalListener &listener):
-            JournalRecord(RT_Portion, listener)
+        JournalRecordPortionDiagram(GuiOptions const &guiOptions,
+                const ModelData &model, JournalListener &listener):
+            JournalRecord(RT_Portion, listener),
+            mPortionDiagram(guiOptions)
             {
             mPortionDiagram.initialize(model);
             }
@@ -251,9 +256,11 @@ class JournalRecordPortionDiagram:public JournalRecord
 class JournalRecordIncludeDiagram:public JournalRecord
     {
     public:
-        JournalRecordIncludeDiagram(const IncDirDependencyMapReader &incMap,
+        JournalRecordIncludeDiagram(GuiOptions const &guiOptions,
+                const IncDirDependencyMapReader &incMap,
                 JournalListener &listener):
-            JournalRecord(RT_Include, listener)
+            JournalRecord(RT_Include, listener),
+            mIncludeDiagram(guiOptions)
             {
             mIncludeDiagram.initialize(incMap);
             }
@@ -285,7 +292,7 @@ class JournalRecordIncludeDiagram:public JournalRecord
 class Journal
     {
     public:
-        Journal();
+        Journal(GuiOptions const &guiOptions);
         virtual ~Journal();
         static Journal *getJournal();
         void init(Builder &builder, const ModelData &model,
@@ -359,6 +366,7 @@ class Journal
             }
 
     private:
+        GuiOptions const &mGuiOptions;
         std::vector<JournalRecord*> mRecords;
         size_t mCurrentRecord;
         Builder *mBuilder;

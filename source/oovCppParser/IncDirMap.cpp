@@ -47,7 +47,7 @@ void IncDirDependencyMap::write()
     SharedFile file;
     if(!writeFileExclusiveReadUpdate(file))
         {
-        fprintf(stderr, "\nOovCppParser - Write file sharing error\n");
+        fprintf(stderr, "\nOovCppParser - Write file sharing error %s\n", getFilename().c_str());
         }
 #endif
     // Append new values from parsed includes into the original NameValueFile.

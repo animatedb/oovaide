@@ -86,7 +86,7 @@ class ScrolledFileView
         void drawRightMargin(cairo_t *cr);
     };
 
-class EditFiles
+class EditFiles:public FileEditViewListener
     {
     public:
         EditFiles(Debugger &debugger, EditOptions &editOptions);
@@ -111,6 +111,7 @@ class EditFiles
         /// return = true if it is ok to exit.
         bool checkExitSave();
         FileEditView *getEditView();
+        FileEditView *getEditView(GtkTextBuffer *textbuffer);
         std::string getEditViewSelectedText();
         // For signal handlers
         void setFocusEditTextView(GtkTextView *editTextView);
@@ -125,6 +126,7 @@ class EditFiles
         bool checkDebugger();
         void showInteractNotebookTab(char const * const tabName);
         ScrolledFileView *getScrolledFileView(GtkTextView *textView);
+        bool saveAsTextFileWithDialog();
 
     private:
         EditOptions &mEditOptions;
@@ -137,6 +139,9 @@ class EditFiles
         timeval mLastHightlightIdleUpdate;
         void idleHighlight();
         int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
+        void setTabText(FileEditView *view, OovStringRef text);
+        void textBufferModified(FileEditView *view, bool modified);
+        GtkNotebook *getBook(FileEditView *view);
     };
 
 

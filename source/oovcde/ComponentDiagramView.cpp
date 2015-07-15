@@ -13,13 +13,6 @@ static GraphPoint gStartPosInfo;
 static ComponentDiagramView *gComponentDiagramView;
 
 
-static const ComponentDrawOptions &getDrawOptions()
-    {
-    static ComponentDrawOptions dopts;
-    dopts.drawImplicitRelations = gGuiOptions.getValueBool(OptGuiShowCompImplicitRelations);
-    return dopts;
-    }
-
 void ComponentDiagramView::restart()
     {
     setCairoContext();
@@ -90,7 +83,7 @@ void ComponentDiagramView::displayContextMenu(guint button, guint32 acttime,
     {
     GtkMenu *menu = Builder::getBuilder()->getMenu("DrawComponentPopupMenu");
     GtkCheckMenuItem *implicitItem = GTK_CHECK_MENU_ITEM(
-            Builder::getBuilder()->getWidget("DrawComponentPopupMenu"));
+            Builder::getBuilder()->getWidget("ShowImplicitRelationsMenuitem"));
     ComponentDrawOptions opts = getDrawOptions();
     gtk_check_menu_item_set_active(implicitItem, opts.drawImplicitRelations);
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
@@ -115,16 +108,20 @@ extern "C" G_MODULE_EXPORT void on_RemoveComponentMenuitem_activate(
             gStartPosInfo.y);
     if(node)
         {
-        gComponentDiagramView->getDiagram().removeNode(*node, getDrawOptions());
+        gComponentDiagramView->getDiagram().removeNode(*node,
+                gComponentDiagramView->getDrawOptions());
         gComponentDiagramView->relayout();
         }
     }
 
 extern "C" G_MODULE_EXPORT void on_ShowImplicitRelationsMenuitem_toggled(
-        GtkWidget * /*widget*/, gpointer /*data*/)
+        GtkWidget *widget, gpointer /*data*/)
     {
-    bool drawImplicitRelations = gGuiOptions.getValueBool(OptGuiShowCompImplicitRelations);
-    gGuiOptions.setNameValueBool(OptGuiShowCompImplicitRelations, !drawImplicitRelations);
+    bool active = gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(widget));
+    ComponentDrawOptions &opts = gComponentDiagramView->getDrawOptions();
+    opts.drawImplicitRelations = active;
     gComponentDiagramView->restart();
-    gGuiOptions.writeFile();
+//    bool drawImplicitRelations = guiOptions.getValueBool(OptGuiShowCompImplicitRelations);
+//    guiOptions.setNameValueBool(OptGuiShowCompImplicitRelations, !drawImplicitRelations);
+//    gGuiOptions.writeFile();
     }

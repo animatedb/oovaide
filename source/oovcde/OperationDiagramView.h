@@ -24,7 +24,8 @@ class OperationDiagramListener
 class OperationDiagramView
     {
     public:
-        OperationDiagramView():
+        OperationDiagramView(GuiOptions const &guiOptions):
+            mGuiOptions(guiOptions),
             mListener(nullptr)
             {}
 
@@ -61,8 +62,11 @@ class OperationDiagramView
             { return mOperationDiagram.isModified(); }
         void requestRedraw()
             { gtk_widget_queue_draw(getDiagramWidget()); }
+        void viewSource(OovStringRef const module,
+                unsigned int lineNum);
 
     private:
+        GuiOptions const &mGuiOptions;
         OperationDiagram mOperationDiagram;
         OperationDiagramListener *mListener;
         /// Used to calculate font sizes.

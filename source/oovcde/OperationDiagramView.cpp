@@ -7,6 +7,7 @@
 
 #include "OperationDiagramView.h"
 #include "Svg.h"
+#include "DiagramDrawer.h"
 #include "Options.h"
 
 static OperationDiagramView *gOperationDiagramView;
@@ -55,6 +56,12 @@ void OperationDiagramView::graphButtonPressEvent(const GdkEventButton *event)
     {
     gOperationDiagramView = this;
     gStartPosInfo.set(static_cast<int>(event->x), static_cast<int>(event->y));
+    }
+
+void OperationDiagramView::viewSource(OovStringRef const module,
+        unsigned int lineNum)
+    {
+    ::viewSource(mGuiOptions, module, lineNum);
     }
 
 static void displayContextMenu(guint button, guint32 acttime, gpointer data)
@@ -203,7 +210,10 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
         {
         const ModelOperation &oper = opcall->getOperation();
         if(oper.getModule())
-            viewSource(oper.getModule()->getModulePath(), oper.getLineNum());
+            {
+            gOperationDiagramView->viewSource(oper.getModule()->getModulePath(),
+                    oper.getLineNum());
+            }
         }
     const OperationClass *node = gOperationDiagramView->getDiagram().getNode(
             gStartPosInfo.x, gStartPosInfo.y);
@@ -211,7 +221,10 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
         {
         const ModelClassifier *cls = node->getType()->getClass();
         if(cls->getModule())
-            viewSource(cls->getModule()->getModulePath(), cls->getLineNum());
+            {
+            gOperationDiagramView->viewSource(cls->getModule()->getModulePath(),
+                    cls->getLineNum());
+            }
         }
     }
 

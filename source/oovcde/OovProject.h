@@ -12,6 +12,8 @@
 #include "NameValueFile.h"
 #include "ModelObjects.h"
 #include "IncludeMap.h"
+#include "Project.h"
+#include "Options.h"
 #include "OovProcess.h"
 #include "OovThreadedBackgroundQueue.h"
 
@@ -118,6 +120,10 @@ class OovProject:public ThreadedWorkBackgroundQueue<OovProject, ProjectBackgroun
         IncDirDependencyMapReader &getIncMap()
             { return mIncludeMap; }
         ProjectStatus getProjectStatus();
+        ProjectReader &getProjectOptions()
+            { return mProjectOptions; }
+        GuiOptions &getGuiOptions()
+            { return mGuiOptions; }
 
         bool isAnalysisReady()
             {
@@ -135,6 +141,8 @@ class OovProject:public ThreadedWorkBackgroundQueue<OovProject, ProjectBackgroun
     private:
         OovTaskStatusListener *mStatusListener;
         ProjectStatus mProjectStatus;
+        ProjectReader mProjectOptions;
+        GuiOptions mGuiOptions;
         ModelData mModelData;
         IncDirDependencyMapReader mIncludeMap;
         OovBackgroundPipeProcess mBackgroundProc;

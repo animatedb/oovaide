@@ -21,8 +21,10 @@
 static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     {
     ProjectReader proj;
-    proj.readOovProject(Project::getProjectDirectory(), BuildConfigAnalysis);
-    OovStringVec cppArgs = proj.getCompileArgs();
+    ProjectBuildArgs buildArgs(proj);
+    proj.readProject(Project::getProjectDirectory());
+    buildArgs.loadBuildArgs(BuildConfigAnalysis);
+    OovStringVec cppArgs = buildArgs.getCompileArgs();
     for(auto const &arg : cppArgs)
         {
         args.addArg(arg);
@@ -344,9 +346,10 @@ gboolean draw(GtkWidget *widget, void *cr, gpointer user_data)
     }
 
 
-void FileEditView::init(GtkTextView *textView)
+void FileEditView::init(GtkTextView *textView, FileEditViewListener *listener)
     {
     mTextView = textView;
+    mListener = listener;
     mTextBuffer = gtk_text_view_get_buffer(mTextView);
     mIndenter.init(mTextBuffer);
     mCompleteList.init(mTextBuffer);
@@ -382,10 +385,15 @@ bool FileEditView::openTextFile(OovStringRef const fn)
     return(file.isOpen());
     }
 
+std::string FileEditView::getFileName() const
+    {
+    return FilePath(mFilePath, FP_File).getName();
+    }
+
 bool FileEditView::saveTextFile()
     {
     bool success = false;
-    if(mFileName.length() == 0)
+    if(mFilePath.length() == 0)
         {
         success = saveAsTextFileWithDialog();
         }
@@ -395,7 +403,7 @@ bool FileEditView::saveTextFile()
         }
     if(success)
         {
-        success = saveAsTextFile(mFileName);
+        success = saveAsTextFile(mFilePath);
         }
     return success;
     }
@@ -432,15 +440,15 @@ GuiText FileEditView::getBuffer()
 
 void FileEditView::highlightRequest()
     {
-    if(mFileName.length())
+    if(mFilePath.length())
         {
     //  int numArgs = 0;
     //  char const * cppArgv[40];
         OovProcessChildArgs cppArgs;
-        getCppArgs(mFileName, cppArgs);
+        getCppArgs(mFilePath, cppArgs);
 
         FilePath path;
-        path.getAbsolutePath(mFileName, FP_File);
+        path.getAbsolutePath(mFilePath, FP_File);
         mHighlighter.highlightRequest(path, cppArgs.getArgv(), cppArgs.getArgc());
         mHighlightTextContentChange = true;
         }
@@ -450,9 +458,9 @@ void FileEditView::gotoLine(int lineNum)
     {
     GtkTextIter iter;
     gtk_text_buffer_get_iter_at_line(mTextBuffer, &iter, lineNum-1);
-    // Moves the insert and selection_bound marks.
-    gtk_text_buffer_place_cursor(mTextBuffer, &iter);
-    moveToIter(iter);
+    GtkTextIter endIter;
+    gtk_text_buffer_get_iter_at_line(mTextBuffer, &endIter, lineNum);
+    moveToIter(iter, &endIter);
     }
 
 void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
@@ -483,10 +491,10 @@ void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
 bool FileEditView::saveAsTextFileWithDialog()
     {
     PathChooser ch;
-    OovString filename = mFileName;
+    OovString filename = mFilePath;
     bool saved = false;
     std::string prompt = "Save ";
-    prompt += mFileName;
+    prompt += mFilePath;
     prompt += " As";
     if(ch.ChoosePath(GTK_WINDOW(mTextView), prompt,
             GTK_FILE_CHOOSER_ACTION_SAVE, filename))
@@ -512,6 +520,7 @@ bool FileEditView::saveAsTextFile(OovStringRef const fn)
         FileDelete(fn);
         FileRename(tempFn, fn);
         gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+        setModified(false);
         }
     return(writeSize > 0);
     }
@@ -522,14 +531,14 @@ bool FileEditView::checkExitSave()
     if(gtk_text_buffer_get_modified(mTextBuffer))
         {
         std::string prompt = "Save ";
-        prompt += mFileName;
+        prompt += mFilePath;
         GtkDialog *dlg = GTK_DIALOG(gtk_message_dialog_new(NULL, GTK_DIALOG_MODAL,
             GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", prompt.c_str()));
         gtk_dialog_add_button(dlg, GUI_CANCEL, GTK_RESPONSE_CANCEL);
         gint result = gtk_dialog_run(dlg);
         if(result == GTK_RESPONSE_YES)
             {
-            if(mFileName.length() > 0)
+            if(mFilePath.length() > 0)
                 {
                 exitOk = saveTextFile();
                 }
@@ -635,6 +644,7 @@ void FileEditView::bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *loca
         addHistoryItem(HistoryItem(true, offset, text, len));
         }
     highlightRequest();
+    setModified(true);
     }
 
 void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
@@ -647,6 +657,7 @@ void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *sta
         addHistoryItem(HistoryItem(false, offset, str, str.length()));
         }
     highlightRequest();
+    setModified(true);
     }
 
 bool FileEditView::idleHighlight()

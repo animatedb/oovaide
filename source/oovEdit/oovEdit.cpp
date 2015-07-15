@@ -57,7 +57,7 @@ bool Editor::saveAsTextFileWithDialog()
     {
     bool saved = false;
     if(mEditFiles.getEditView())
-        saved = mEditFiles.getEditView()->saveAsTextFileWithDialog();
+        saved = mEditFiles.saveAsTextFileWithDialog();
     return saved;
     }
 
@@ -870,10 +870,19 @@ extern "C" G_MODULE_EXPORT void on_EditPreferences_activate(GtkWidget *button, g
     gEditor.editPreferences();
     }
 
+// For some reason, the click doesn't work, but pressing enter does.
 extern "C" G_MODULE_EXPORT void on_DebugWorkingDirButton_activate(GtkWidget *button, gpointer data)
     {
     gEditor.setPreferencesWorkingDir();
     }
+
+/*
+// In Glade, use GObject, notify, and enter "active" in the Detail column.
+extern "C" G_MODULE_EXPORT void on_DebugWorkingDirButton_active_notify()
+    {
+    gEditor.setPreferencesWorkingDir();
+    }
+*/
 
 extern "C" G_MODULE_EXPORT void on_GoToDeclMenuitem_activate(GtkWidget *button, gpointer data)
     {

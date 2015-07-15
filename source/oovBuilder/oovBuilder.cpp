@@ -102,7 +102,7 @@ bool OovBuilder::readProject(OovStringRef const buildConfigName,
     bool success = mCompFinder.readProject(oovProjDir, buildConfigName);
     if(success)
         {
-        if(mCompFinder.getProject().getVerbose() || verbose)
+        if(mCompFinder.getProjectBuildArgs().getVerbose() || verbose)
             {
             sVerboseDump.open(oovProjDir);
             }
@@ -138,21 +138,21 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         }
 
     cfg.setInitialConfig(buildConfigName,
-        mCompFinder.getProject().getExternalArgs(),
-        mCompFinder.getProject().getAllCrcCompileArgs(),
-        mCompFinder.getProject().getAllCrcLinkArgs());
+        mCompFinder.getProjectBuildArgs().getExternalArgs(),
+        mCompFinder.getProjectBuildArgs().getAllCrcCompileArgs(),
+        mCompFinder.getProjectBuildArgs().getAllCrcLinkArgs());
 
     if(cfg.isConfigDifferent(buildConfigName,
             BuildConfig::CT_ExtPathArgsCrc))
         {
         // This is for the -ER switch.
-        for(auto const &arg : mCompFinder.getProject().getExternalArgs())
+        for(auto const &arg : mCompFinder.getProjectBuildArgs().getExternalArgs())
             {
             printf("Scanning %s\n", &arg[3]);
             fflush(stdout);
             mCompFinder.scanExternalProject(&arg[3]);
             }
-        for(auto const &pkg : mCompFinder.getProject().getProjectPackages().
+        for(auto const &pkg : mCompFinder.getProjectBuildArgs().getProjectPackages().
             getPackages())
             {
             if(pkg.needDirScan())
@@ -203,11 +203,8 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
             cfg.isConfigDifferent(buildConfigName,
             BuildConfig::CT_OtherArgsCrc))
             {
-            if(procMode == PM_Analyze)
-                {
-                deleteAnalysis = true;
-                }
-            else
+            deleteAnalysis = true;
+            if(procMode != PM_Analyze)
                 {
                 deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
                 }
@@ -217,9 +214,11 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
             deleteDirs.push_back(Project::getOutputDir(buildConfigName));
             }
         cfg.saveConfig(buildConfigName);
+        // This must be after the saveConfig, because it uses the new CRC's
+        // to delete the new analysis path.
+        OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
         if(deleteAnalysis)
             {
-            OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
             deleteDirs.push_back(analysisPath);
             }
         for(auto const &dir : deleteDirs)
@@ -231,6 +230,12 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
                 }
             }
         fflush(stdout);
+
+        if(deleteAnalysis)
+            {
+            // Windows returns before the directory is actually deleted.
+            FileWaitForDirDeleted(analysisPath);
+            }
         }
 
     OovString analysisPath = cfg.getAnalysisPath(buildConfigName);

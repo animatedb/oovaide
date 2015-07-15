@@ -25,7 +25,7 @@ bool srcFileParser::analyzeSrcFiles(OovStringRef const srcRootDir,
     setupQueue(1);
 #endif
     mIncDirArgs = mComponentFinder.getAllIncludeDirs();
-    mExcludeDirs = mComponentFinder.getProject().getProjectExcludeDirs();
+    mExcludeDirs = mComponentFinder.getProjectBuildArgs().getProjectExcludeDirs();
     bool success = recurseDirs(srcRootDir);
     mIncDirArgs.clear();
     waitForCompletion();

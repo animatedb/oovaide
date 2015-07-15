@@ -220,6 +220,10 @@ void ZoneDiagramView::showAllComponents(bool show)
     updateGraphAndRequestRedraw();
     }
 
+void ZoneDiagramView::viewSource(OovStringRef const module, unsigned int lineNum)
+    {
+    ::viewSource(mGuiOptions, module, lineNum);
+    }
 
 
 extern "C" G_MODULE_EXPORT void on_ZoneGotoClassMenuitem_activate(
@@ -241,7 +245,8 @@ extern "C" G_MODULE_EXPORT void on_ZoneViewSourceMenuitem_activate(
         const ModelClassifier *classifier = node->mType->getClass();
         if(classifier)
             {
-            viewSource(classifier->getModule()->getModulePath(), classifier->getLineNum());
+            sZoneDiagramView->viewSource(classifier->getModule()->getModulePath(),
+                    classifier->getLineNum());
             }
         }
     }

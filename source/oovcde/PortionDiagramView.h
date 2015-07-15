@@ -17,6 +17,10 @@
 class PortionDiagramView
     {
     public:
+        PortionDiagramView(GuiOptions const &guiOptions):
+            mGuiOptions(guiOptions)
+            {}
+
         void initialize(const ModelData &modelData)
             {
             mPortionDiagram.initialize(modelData);
@@ -57,6 +61,7 @@ class PortionDiagramView
             { gtk_widget_queue_draw(getDiagramWidget()); }
 
     private:
+        GuiOptions const &mGuiOptions;
         PortionDiagram mPortionDiagram;
         /// Used to calculate font sizes.
         GtkCairoContext mCairoContext;

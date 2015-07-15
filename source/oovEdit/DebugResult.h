@@ -39,7 +39,7 @@ class cDebugResult
         std::string mVarName;
         // A result will contain either child results or a const.
         // If child results is empty, then it contains a const.
-        std::string mConst;
+        std::string mValue;
         // Using deque because it allows const reading.
         std::deque<std::unique_ptr<class cDebugResult>> mChildResults;
         char const *parseVarName(char const *resultStr);

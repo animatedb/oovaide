@@ -118,7 +118,7 @@ class ComponentFinder:public dirRecurser
     {
     public:
         ComponentFinder():
-        mScanningPackage(nullptr)
+            mProjectBuildArgs(mProject), mScanningPackage(nullptr)
             {}
         bool readProject(OovStringRef const oovProjectDir,
                 OovStringRef const buildConfigName);
@@ -142,6 +142,10 @@ class ComponentFinder:public dirRecurser
             { return mProject; }
         ProjectReader &getProject()
             { return mProject; }
+        ProjectBuildArgs &getProjectBuildArgs()
+            { return mProjectBuildArgs; }
+        ProjectBuildArgs const &getProjectBuildArgs() const
+            { return mProjectBuildArgs; }
         const ComponentTypesFile &getComponentTypesFile() const
             { return mComponentTypesFile; }
         const ComponentsFile &getComponentsFile() const
@@ -166,6 +170,7 @@ class ComponentFinder:public dirRecurser
         ScannedComponentsInfo mScannedInfo;
 
         ProjectReader mProject;
+        ProjectBuildArgs mProjectBuildArgs;
         ComponentTypesFile mComponentTypesFile;
         ComponentsFile mComponentsFile;
         Package *mScanningPackage;

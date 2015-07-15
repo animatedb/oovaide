@@ -101,7 +101,7 @@ void IncludeDiagramView::viewFileSource()
     if(index != IncludeDrawer::NO_INDEX)
         {
         IncludeNode const &node = mIncludeDiagram.getNodes()[index];
-        viewSource(node.getName(), 0);
+        viewSource(mGuiOptions, node.getName(), 0);
         }
     }
 

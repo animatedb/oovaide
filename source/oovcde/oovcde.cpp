@@ -169,13 +169,17 @@ void oovGui::updateGuiForProjectChange()
 
 void oovGui::updateGuiForAnalysis()
     {
+/*
     if(gBuildOptions.read())
         {
         gGuiOptions.read();
+*/
         mContexts.updateContextAfterProjectLoaded();
         if(sOptionsDialog)
+            {
             sOptionsDialog->updateBuildConfig();
-        }
+            }
+//        }
     }
 
 gboolean oovGui::onBackgroundIdle(gpointer data)
@@ -489,9 +493,30 @@ void oovGui::displayProjectStats()
         }
     }
 
+void oovGui::showProjectSettingsDialog()
+    {
+    ProjectSettingsDialog dlg(gOovGui.getWindow(),
+        gOovGui.getProject().getProjectOptions(),
+        gOovGui.getProject().getGuiOptions(), false);
+    if(dlg.runDialog())
+        {
+        if(gOovGui.canStartAnalysis())
+            {
+            gOovGui.getProject().getProjectOptions().setNameValue(OptProjectExcludeDirs,
+                    dlg.getExcludeDirs().getAsString(';'));
+            gOovGui.getProject().getProjectOptions().writeFile();
+            runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+            }
+        }
+    }
+
+
 class OptionsDialogUpdate:public OptionsDialog
     {
     public:
+        OptionsDialogUpdate(ProjectReader &options, GuiOptions &guiOptions):
+            OptionsDialog(options, guiOptions)
+            {}
         virtual ~OptionsDialogUpdate();
         virtual void updateOptions() override
             {
@@ -514,7 +539,8 @@ int main(int argc, char *argv[])
     if(gOovGui.getBuilder().addFromFile("oovcdeLayout.glade"))
         {
         gOovGui.init();
-        OptionsDialogUpdate optionsDlg;
+        OptionsDialogUpdate optionsDlg(gOovGui.getProject().getProjectOptions(),
+                gOovGui.getProject().getGuiOptions());
         sOptionsDialog = &optionsDlg;
         BuildSettingsDialog buildDlg;
 
@@ -532,7 +558,9 @@ int main(int argc, char *argv[])
 extern "C" G_MODULE_EXPORT void on_NewProjectMenuitem_activate(
         GtkWidget *button, gpointer data)
     {
-    ProjectSettingsDialog dlg(gOovGui.getWindow(), true);
+    ProjectSettingsDialog dlg(gOovGui.getWindow(),
+            gOovGui.getProject().getProjectOptions(),
+            gOovGui.getProject().getGuiOptions(), true);
     if(dlg.runDialog())
         {
         if(gOovGui.canStartAnalysis())
@@ -571,7 +599,6 @@ extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
         {
         if(gOovGui.canStartAnalysis())
             {
-            gGuiOptions.read(); // Make editor available for component list.
             bool openedProject = false;
             if(gOovGui.getProject().openProject(projectDir, openedProject))
                 {
@@ -591,17 +618,7 @@ extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_ProjectSettingsMenuitem_activate(
         GtkWidget *widget, gpointer data)
     {
-    ProjectSettingsDialog dlg(gOovGui.getWindow(), false);
-    if(dlg.runDialog())
-        {
-        if(gOovGui.canStartAnalysis())
-            {
-            gBuildOptions.setNameValue(OptProjectExcludeDirs,
-                    dlg.getExcludeDirs().getAsString(';'));
-            gBuildOptions.writeFile();
-            gOovGui.runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
-            }
-        }
+    gOovGui.showProjectSettingsDialog();
     }
 
 ////// New Module Dialog ////////////
@@ -661,7 +678,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
         File impFile(tempImp, "w");
         fprintf(impFile.getFp(), "// %s", implementationName.c_str());
         impFile.close();
-        viewSource(tempImp, 1);
+        viewSource(gOovGui.getProject().getGuiOptions(), tempImp, 1);
         }
     else
         Gui::messageBox("Implementation already exists", GTK_MESSAGE_INFO);
@@ -739,11 +756,15 @@ extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
     PathChooser ch;
-    OovString fn = gOovGui.getDiagramName("oov");
+    FilePath fn(gOovGui.getDiagramName("oov"), FP_File);
     ch.setDefaultPath(fn);
     if(ch.ChoosePath(gOovGui.getWindow(), "Save Drawing (.OOV)",
             GTK_FILE_CHOOSER_ACTION_SAVE, fn))
         {
+        if(!fn.hasExtension())
+            {
+            fn.appendExtension("oov");
+            }
         gOovGui.setDiagramName(fn);
         DrawingFile drawFile(fn, true);
         gOovGui.saveFile(drawFile.getFp());
@@ -754,11 +775,15 @@ extern "C" G_MODULE_EXPORT void on_ExportDrawingAsMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
     PathChooser ch;
-    OovString fn = gOovGui.getDiagramName("svg");
+    FilePath fn(gOovGui.getDiagramName("svg"), FP_File);
     ch.setDefaultPath(fn);
     if(ch.ChoosePath(gOovGui.getWindow(), "Export Drawing (.SVG)",
             GTK_FILE_CHOOSER_ACTION_SAVE, fn))
         {
+        if(!fn.hasExtension())
+            {
+            fn.appendExtension("svg");
+            }
         DrawingFile svg(fn, true);
         gOovGui.exportFile(svg.getFp());
         }
@@ -866,7 +891,7 @@ extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_press_event(
         unsigned int line = gOovGui.getStatusSourceFile(fn);
         if(fn.length() > 0)
             {
-            viewSource(fn, line);
+            viewSource(gOovGui.getProject().getGuiOptions(), fn, line);
             }
         }
     return FALSE;

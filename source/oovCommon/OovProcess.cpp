@@ -44,15 +44,6 @@ class ProcDebugFile:public DebugFile
 static ProcDebugFile sDbgFile;
 #endif
 
-void sleepMs(int ms)
-    {
-#ifdef __linux__
-    usleep(ms*1000);
-#else
-    Sleep(ms);
-#endif
-    }
-
 // Removes clang warning:
 // warning: 'OovProcessListener' has no out-of-line virtual method definitions;
 // its vtable will be emitted in every translation unit

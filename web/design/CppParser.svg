@@ -1,458 +1,485 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="816" height="886">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="762" height="856">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="674" y="740" width="133" height="143" />
-<line x1="674" y1="753" x2="807" y2="753" />
-<polygon points="787,761 799,766 799,756 787,761 " style="fill:#ffffff" />
-<polygon points="787,775 794,779 801,775 794,771 787,775 " style="fill:#ffffff" />
-<polygon points="787,789 794,793 801,789 794,785 787,789 " style="fill:#000000" />
-<polygon points="787,803 795,808 791,803 795,798 787,803 " style="fill:#ffffff" />
-<circle cx="787" cy="817" r="5" style="fill:#ffffff" />
-<circle cx="787" cy="831" r="5" style="fill:#ffffff" />
-<circle cx="794" cy="831" r="2" style="fill:#ffffff" />
-<circle cx="787" cy="845" r="5" style="fill:#ffffff" />
-<circle cx="787" cy="845" r="2" style="fill:#ffffff" />
-<circle cx="787" cy="859" r="5" style="fill:#ffffff" />
-<circle cx="787" cy="859" r="2" style="fill:#000000" />
-<circle cx="787" cy="873" r="5" style="fill:#000000" />
-<circle cx="787" cy="873" r="2" style="fill:#000000" />
+<rect x="625" y="705" width="133" height="143" />
+<line x1="625" y1="718" x2="758" y2="718" />
+<polygon points="738,726 750,731 750,721 738,726 " style="fill:#ffffff" />
+<polygon points="738,740 745,744 752,740 745,736 738,740 " style="fill:#ffffff" />
+<polygon points="738,754 745,758 752,754 745,750 738,754 " style="fill:#000000" />
+<polygon points="738,768 746,773 742,768 746,763 738,768 " style="fill:#ffffff" />
+<circle cx="738" cy="782" r="5" style="fill:#ffffff" />
+<circle cx="738" cy="796" r="5" style="fill:#ffffff" />
+<circle cx="745" cy="796" r="2" style="fill:#ffffff" />
+<circle cx="738" cy="810" r="5" style="fill:#ffffff" />
+<circle cx="738" cy="810" r="2" style="fill:#ffffff" />
+<circle cx="738" cy="824" r="5" style="fill:#ffffff" />
+<circle cx="738" cy="824" r="2" style="fill:#000000" />
+<circle cx="738" cy="838" r="5" style="fill:#000000" />
+<circle cx="738" cy="838" r="2" style="fill:#000000" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="675" y="749">Relations Key</text>
-<text x="675" y="763">Generalization</text>
-<text x="675" y="777">Aggregation(reference)</text>
-<text x="675" y="791">Composition(owned)</text>
-<text x="675" y="805">Const</text>
-<text x="675" y="819">Method Variable</text>
-<text x="675" y="833">Method Parameter</text>
-<text x="675" y="847">Public</text>
-<text x="675" y="861">Protected</text>
-<text x="675" y="875">Private</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="31" y="24" width="488" height="251" />
-<line x1="31" y1="45" x2="519" y2="45" />
-<line x1="31" y1="129" x2="519" y2="129" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="32" y="33">CppParser</text>
-<text x="32" y="42">/oovCppParser/</text>
-<text x="32" y="54">-ParserModelData mParserModelData</text>
-<text x="32" y="63">-cDupHashFile mDupHashFile</text>
-<text x="32" y="72">-ModelClassifier mClassifier</text>
-<text x="32" y="81">-ModelOperation mOperation</text>
-<text x="32" y="90">-ModelStatements mStatements</text>
-<text x="32" y="99">-SwitchContexts mSwitchContexts</text>
-<text x="32" y="108">-FilePath mTopParseFn</text>
-<text x="32" y="117">-Visibility mClassMemberAccess</text>
-<text x="32" y="126">-IncDirDependencyMap mIncDirDeps</text>
-<text x="32" y="138">+parse(bool lineHashes, char srcFn, char srcRootDir, char outDir, char[] clang_args, int num_clang_args)</text>
-<text x="32" y="147">+visitTranslationUnit(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor parent)</text>
-<text x="32" y="156">+visitTranslationUnitForIncludes(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor parent)</text>
-<text x="32" y="165">+visitRecord(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor parent)</text>
-<text x="32" y="174">+visitFunctionAddArgs(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor parent)</text>
-<text x="32" y="183">+visitFunctionAddStatements(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor parent)</text>
-<text x="32" y="192">+visitFunctionAddDupHashes(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor parent)</text>
-<text x="32" y="201">-addOperationParts(&lt;&lt;typedef&gt;&gt;CXCursor cursor, bool addParams)</text>
-<text x="32" y="210">-addRecord(&lt;&lt;typedef&gt;&gt;CXCursor cursor, Visibility vis)</text>
-<text x="32" y="219">-addVar(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
-<text x="32" y="228">-addClassFileLoc(&lt;&lt;typedef&gt;&gt;CXCursor cursor, ModelClassifier classifier)</text>
-<text x="32" y="237">-addTypedef(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
-<text x="32" y="246">-buildCondExpr(&lt;&lt;typedef&gt;&gt;CXCursor condStmtCursor, int condExprIndex)</text>
-<text x="32" y="255">-addCondStatement(&lt;&lt;typedef&gt;&gt;CXCursor stmtCursor, int condExprIndex, int condStatementIndex)</text>
-<text x="32" y="264">-addElseStatement(&lt;&lt;typedef&gt;&gt;CXCursor condStmtCursor, int elseBodyIndex)</text>
-<text x="32" y="273">+CppParser()</text>
+<g stroke="none">
+<text x="626" y="714">Relations Key</text>
+<text x="626" y="728">Generalization</text>
+<text x="626" y="742">Aggregation(reference)</text>
+<text x="626" y="756">Composition(owned)</text>
+<text x="626" y="770">Const</text>
+<text x="626" y="784">Method Variable</text>
+<text x="626" y="798">Method Parameter</text>
+<text x="626" y="812">Public</text>
+<text x="626" y="826">Protected</text>
+<text x="626" y="840">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="39" y="733" width="341" height="152" />
-<line x1="39" y1="754" x2="380" y2="754" />
-<line x1="39" y1="766" x2="380" y2="766" />
+<rect x="18" y="31" width="371" height="314" />
+<line x1="18" y1="52" x2="389" y2="52" />
+<line x1="18" y1="136" x2="389" y2="136" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="40" y="742">ParserModelData</text>
-<text x="40" y="751">/oovCppParser/</text>
-<text x="40" y="763">-ModelData mModelData</text>
-<text x="40" y="775">+addParsedModule(OovStringRef fileName)</text>
-<text x="40" y="784">+getParsedModule()</text>
-<text x="40" y="793">+createOrGetClassRef(OovStringRef name)</text>
-<text x="40" y="802">+createOrGetBaseTypeRef(&lt;&lt;typedef&gt;&gt;CXCursor cursor, RefType rt)</text>
-<text x="40" y="811">+createOrGetDataTypeRef(&lt;&lt;typedef&gt;&gt;CXType type, RefType rt)</text>
-<text x="40" y="820">+createOrGetDataTypeRef(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
-<text x="40" y="829">+createOrGetTypedef(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
-<text x="40" y="838">+isBaseClass(ModelClassifier child, OovStringRef name)</text>
-<text x="40" y="847">+addAssociation(ModelClassifier parent, ModelClassifier child, Visibility </text>
-<text x="40" y="856">   access)</text>
-<text x="40" y="865">+setLineStats(ModelModuleLineStats lineStats)</text>
-<text x="40" y="874">+writeModel(OovStringRef fileName)</text>
-<text x="40" y="883">+DebugGetModelData()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="681" y="133" width="134" height="98" />
-<line x1="681" y1="154" x2="815" y2="154" />
-<line x1="681" y1="175" x2="815" y2="175" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="682" y="142">cDupHashFile</text>
-<text x="682" y="151">/oovCppParser/</text>
-<text x="682" y="163">-File mFile</text>
-<text x="682" y="172">-bool mAlreadyAddedBreak</text>
-<text x="682" y="184">+append(OovStringRef text</text>
-<text x="682" y="193">   , unsigned int line)</text>
-<text x="682" y="202">+cDupHashFile()</text>
-<text x="682" y="211">+open(OovStringRef fn)</text>
-<text x="682" y="220">+isOpen()</text>
-<text x="682" y="229">+appendBreak()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="32" y="407" width="76" height="26" />
-<line x1="32" y1="428" x2="108" y2="428" />
-<line x1="32" y1="431" x2="108" y2="431" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="33" y="416">ModelClassifier</text>
-<text x="33" y="425">/oovCommon/</text>
+<g stroke="none">
+<text x="19" y="40">CppParser</text>
+<text x="19" y="49">oovCppParser</text>
+<text x="19" y="61">-ParserModelData mParserModelData</text>
+<text x="19" y="70">-cDupHashFile mDupHashFile</text>
+<text x="19" y="79">-ModelClassifier mClassifier</text>
+<text x="19" y="88">-ModelOperation mOperation</text>
+<text x="19" y="97">-ModelStatements mStatements</text>
+<text x="19" y="106">-SwitchContexts mSwitchContexts</text>
+<text x="19" y="115">-FilePath mTopParseFn</text>
+<text x="19" y="124">-Visibility mClassMemberAccess</text>
+<text x="19" y="133">-IncDirDependencyMap mIncDirDeps</text>
+<text x="19" y="145">+parse(bool lineHashes, char srcFn, char srcRootDir, char outDir,</text>
+<text x="26" y="154"> char[] clang_args, int num_clang_args)</text>
+<text x="19" y="163">+visitTranslationUnit(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor </text>
+<text x="26" y="172">parent)</text>
+<text x="19" y="181">+visitTranslationUnitForIncludes(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;</text>
+<text x="26" y="190">&gt;CXCursor parent)</text>
+<text x="19" y="199">+visitRecord(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor parent)</text>
+<text x="19" y="208">+visitFunctionAddArgs(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;&gt;CXCursor </text>
+<text x="26" y="217">parent)</text>
+<text x="19" y="226">+visitFunctionAddStatements(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;</text>
+<text x="26" y="235">&gt;CXCursor parent)</text>
+<text x="19" y="244">+visitFunctionAddDupHashes(&lt;&lt;typedef&gt;&gt;CXCursor cursor, &lt;&lt;typedef&gt;</text>
+<text x="26" y="253">&gt;CXCursor parent)</text>
+<text x="19" y="262">-addOperationParts(&lt;&lt;typedef&gt;&gt;CXCursor cursor, bool addParams)</text>
+<text x="19" y="271">-addRecord(&lt;&lt;typedef&gt;&gt;CXCursor cursor, Visibility vis)</text>
+<text x="19" y="280">-addVar(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
+<text x="19" y="289">-addClassFileLoc(&lt;&lt;typedef&gt;&gt;CXCursor cursor, ModelClassifier classifier)</text>
+<text x="19" y="298">-addTypedef(&lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
+<text x="19" y="307">-buildCondExpr(&lt;&lt;typedef&gt;&gt;CXCursor condStmtCursor, int condExprIndex)</text>
+<text x="19" y="316">-addCondStatement(&lt;&lt;typedef&gt;&gt;CXCursor stmtCursor, int condExprIndex,</text>
+<text x="26" y="325"> int condStatementIndex)</text>
+<text x="19" y="334">-addElseStatement(&lt;&lt;typedef&gt;&gt;CXCursor condStmtCursor, int elseBodyIndex)</text>
+<text x="19" y="343">+CppParser()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="141" y="460" width="80" height="26" />
-<line x1="141" y1="481" x2="221" y2="481" />
-<line x1="141" y1="484" x2="221" y2="484" />
+<rect x="18" y="658" width="238" height="197" />
+<line x1="18" y1="679" x2="256" y2="679" />
+<line x1="18" y1="691" x2="256" y2="691" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="142" y="469">ModelOperation</text>
-<text x="142" y="478">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="30" y="317" width="87" height="26" />
-<line x1="30" y1="338" x2="117" y2="338" />
-<line x1="30" y1="341" x2="117" y2="341" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="31" y="326">ModelStatements</text>
-<text x="31" y="335">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="564" y="80" width="159" height="44" />
-<line x1="564" y1="101" x2="723" y2="101" />
-<line x1="564" y1="113" x2="723" y2="113" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="565" y="89">SwitchContexts</text>
-<text x="565" y="98">/oovCppParser/</text>
-<text x="565" y="110">-SwitchContext mDummyContext</text>
-<text x="565" y="122">+getCurrentContext()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="655" y="374" width="71" height="26" />
-<line x1="655" y1="395" x2="726" y2="395" />
-<line x1="655" y1="398" x2="726" y2="398" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="656" y="383">FilePath</text>
-<text x="656" y="392">/oovCommon/</text>
+<g stroke="none">
+<text x="19" y="667">ParserModelData</text>
+<text x="19" y="676">oovCppParser</text>
+<text x="19" y="688">-ModelData mModelData</text>
+<text x="19" y="700">+addParsedModule(OovStringRef fileName)</text>
+<text x="19" y="709">+getParsedModule()</text>
+<text x="19" y="718">+createOrGetClassRef(OovStringRef name)</text>
+<text x="19" y="727">+createOrGetBaseTypeRef(&lt;&lt;typedef&gt;&gt;CXCursor </text>
+<text x="26" y="736">cursor, RefType rt)</text>
+<text x="19" y="745">+createOrGetDataTypeRef(&lt;&lt;typedef&gt;&gt;CXType </text>
+<text x="26" y="754">type, RefType rt)</text>
+<text x="19" y="763">+createOrGetDataTypeRef(&lt;&lt;typedef&gt;&gt;CXCursor </text>
+<text x="26" y="772">cursor)</text>
+<text x="19" y="781">+createOrGetTypedef(&lt;&lt;typedef&gt;&gt;CXCursor </text>
+<text x="26" y="790">cursor)</text>
+<text x="19" y="799">+isBaseClass(ModelClassifier child, OovStringR</text>
+<text x="26" y="808">ef name)</text>
+<text x="19" y="817">+addAssociation(ModelClassifier parent,</text>
+<text x="26" y="826"> ModelClassifier child, Visibility access)</text>
+<text x="19" y="835">+setLineStats(ModelModuleLineStats lineStats)</text>
+<text x="19" y="844">+writeModel(OovStringRef fileName)</text>
+<text x="19" y="853">+DebugGetModelData()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="261" y="360" width="71" height="26" />
-<line x1="261" y1="381" x2="332" y2="381" />
-<line x1="261" y1="384" x2="332" y2="384" />
+<rect x="443" y="157" width="136" height="98" />
+<line x1="443" y1="178" x2="579" y2="178" />
+<line x1="443" y1="199" x2="579" y2="199" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="262" y="369">Visibility</text>
-<text x="262" y="378">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="362" y="480" width="450" height="116" />
-<line x1="362" y1="501" x2="812" y2="501" />
-<line x1="362" y1="549" x2="812" y2="549" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="363" y="489">IncDirDependencyMap</text>
-<text x="363" y="498">/oovCppParser/</text>
-<text x="363" y="510">-std::map&lt;std::basic_string&lt;char&gt;,std::set&lt;std::basic_string&lt;char&gt;,std::less&lt;std::basic_string&lt;</text>
-<text x="363" y="519">   char&gt; &gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt;,std::less&lt;std::basic_string&lt;char&gt; &gt;,std::</text>
-<text x="363" y="528">   allocator&lt;std::pair&lt;std::basic_string&lt;char&gt;,std::set&lt;std::basic_string&lt;char&gt;,std::less&lt;std::</text>
-<text x="363" y="537">   basic_string&lt;char&gt; &gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt; &gt; &gt; &gt; mParsedIncludeDepend</text>
-<text x="363" y="546">   encies</text>
-<text x="363" y="558">+read(char outDir, char incPath)</text>
-<text x="363" y="567">+write()</text>
-<text x="363" y="576">+insert(string includerPath, FilePath includedPath)</text>
-<text x="363" y="585">-includedPathsChanged(OovStringRef includerFn, std::set&lt;std::basic_string&lt;char&gt;,std::less&lt;std::</text>
-<text x="363" y="594">   basic_string&lt;char&gt; &gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt; includedInfoStr)</text>
+<g stroke="none">
+<text x="444" y="166">cDupHashFile</text>
+<text x="444" y="175">oovCppParser</text>
+<text x="444" y="187">-File mFile</text>
+<text x="444" y="196">-bool mAlreadyAddedBreak</text>
+<text x="444" y="208">+append(OovStringRef text,</text>
+<text x="451" y="217"> unsigned int line)</text>
+<text x="444" y="226">+cDupHashFile()</text>
+<text x="444" y="235">+open(OovStringRef fn)</text>
+<text x="444" y="244">+isOpen()</text>
+<text x="444" y="253">+appendBreak()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="377" y="676" width="428" height="53" />
-<line x1="377" y1="724" x2="805" y2="724" />
-<line x1="377" y1="727" x2="805" y2="727" />
+<rect x="107" y="472" width="76" height="26" />
+<line x1="107" y1="493" x2="183" y2="493" />
+<line x1="107" y1="496" x2="183" y2="496" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="378" y="685">std::map&lt;std::basic_string&lt;char&gt;,std::set&lt;std::basic_string&lt;char&gt;,std::less&lt;std::basic_string&lt;</text>
-<text x="378" y="694">   char&gt; &gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt;,std::less&lt;std::basic_string&lt;char&gt;</text>
-<text x="378" y="703">    &gt;,std::allocator&lt;std::pair&lt;std::basic_string&lt;char&gt;,std::set&lt;std::basic_string&lt;char&gt;</text>
-<text x="378" y="712">   ,std::less&lt;std::basic_string&lt;char&gt; &gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt; &gt; &gt; &gt; </text>
-<text x="378" y="721">   &gt;</text>
+<g stroke="none">
+<text x="108" y="481">ModelClassifier</text>
+<text x="108" y="490">oovCommon</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="512" y="416" width="77" height="26" />
-<line x1="512" y1="437" x2="589" y2="437" />
-<line x1="512" y1="440" x2="589" y2="440" />
+<rect x="214" y="620" width="80" height="26" />
+<line x1="214" y1="641" x2="294" y2="641" />
+<line x1="214" y1="644" x2="294" y2="644" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="513" y="425">NameValueFile</text>
-<text x="513" y="434">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="300" y="626" width="273" height="35" />
-<line x1="300" y1="656" x2="573" y2="656" />
-<line x1="300" y1="659" x2="573" y2="659" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="301" y="635">std::set&lt;std::basic_string&lt;char&gt;,std::less&lt;std::basic_string&lt;</text>
-<text x="301" y="644">   char&gt; &gt;,std::allocator&lt;std::basic_string&lt;char&gt; &gt;</text>
-<text x="301" y="653">    &gt;</text>
+<g stroke="none">
+<text x="215" y="629">ModelOperation</text>
+<text x="215" y="638">oovCommon</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="705" y="416" width="71" height="26" />
-<line x1="705" y1="437" x2="776" y2="437" />
-<line x1="705" y1="440" x2="776" y2="440" />
+<rect x="304" y="409" width="87" height="26" />
+<line x1="304" y1="430" x2="391" y2="430" />
+<line x1="304" y1="433" x2="391" y2="433" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="706" y="425">SharedFile</text>
-<text x="706" y="434">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="405" y="748" width="235" height="17" />
-<line x1="405" y1="760" x2="640" y2="760" />
-<line x1="405" y1="763" x2="640" y2="763" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="406" y="757">std::vector&lt;OovString,std::allocator&lt;OovString&gt; &gt;</text>
+<g stroke="none">
+<text x="305" y="418">ModelStatements</text>
+<text x="305" y="427">oovCommon</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="308" y="412" width="158" height="35" />
-<line x1="308" y1="433" x2="466" y2="433" />
-<line x1="308" y1="436" x2="466" y2="436" />
+<rect x="601" y="91" width="159" height="44" />
+<line x1="601" y1="112" x2="760" y2="112" />
+<line x1="601" y1="124" x2="760" y2="124" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="309" y="421">CXStringDisposer</text>
-<text x="309" y="430">/oovEdit/</text>
-<text x="309" y="445">+CXStringDisposer(CXString xstr)</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="532" y="371" width="71" height="26" />
-<line x1="532" y1="392" x2="603" y2="392" />
-<line x1="532" y1="395" x2="603" y2="395" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="533" y="380">Project</text>
-<text x="533" y="389">/oovCommon/</text>
+<g stroke="none">
+<text x="602" y="100">SwitchContexts</text>
+<text x="602" y="109">oovCppParser</text>
+<text x="602" y="121">-SwitchContext mDummyContext</text>
+<text x="602" y="133">+getCurrentContext()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="47" y="528" width="214" height="152" />
-<line x1="47" y1="549" x2="261" y2="549" />
-<line x1="47" y1="615" x2="261" y2="615" />
+<rect x="415" y="328" width="63" height="26" />
+<line x1="415" y1="349" x2="478" y2="349" />
+<line x1="415" y1="352" x2="478" y2="352" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="48" y="537">cCrashDiagnostics</text>
-<text x="48" y="546">/oovCppParser/</text>
-<text x="48" y="558">-bool mCrashed</text>
-<text x="48" y="567">-string mDiagStr</text>
-<text x="48" y="576">-&lt;&lt;typedef&gt;&gt;CXCursor mMostRecentCursor</text>
-<text x="48" y="585">-bool mCrashed</text>
-<text x="48" y="594">-bool mEnableDumpCursor</text>
-<text x="48" y="603">-string mDiagStr</text>
-<text x="48" y="612">-&lt;&lt;typedef&gt;&gt;CXCursor mMostRecentCursor</text>
-<text x="48" y="624">+cCrashDiagnostics()</text>
-<text x="48" y="633">+saveMostRecentParseLocation(char diagStr</text>
-<text x="48" y="642">   , &lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
-<text x="48" y="651">+setCrashed()</text>
-<text x="48" y="660">+hasCrashed()</text>
-<text x="48" y="669">+dumpCrashed(FILE fp)</text>
-<text x="48" y="678">+enableDumpCursor(bool enable)</text>
+<g stroke="none">
+<text x="416" y="337">FilePath</text>
+<text x="416" y="346">oovCommon</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="139" y="346" width="83" height="26" />
-<line x1="139" y1="367" x2="222" y2="367" />
-<line x1="139" y1="370" x2="222" y2="370" />
+<rect x="198" y="530" width="63" height="26" />
+<line x1="198" y1="551" x2="261" y2="551" />
+<line x1="198" y1="554" x2="261" y2="554" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="140" y="355">ModelStatement</text>
-<text x="140" y="364">/oovCommon/</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="566" y="246" width="248" height="116" />
-<line x1="566" y1="267" x2="814" y2="267" />
-<line x1="566" y1="306" x2="814" y2="306" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="567" y="255">SwitchContext</text>
-<text x="567" y="264">/oovCppParser/</text>
-<text x="567" y="276">+string mSwitchExprString</text>
-<text x="567" y="285">-bool mInCase</text>
-<text x="567" y="294">-ModelStatements mParentFuncStatements</text>
-<text x="567" y="303">-OovString mConditionalStr</text>
-<text x="567" y="315">+startCase(ModelStatements parentFuncStatements</text>
-<text x="567" y="324">   , &lt;&lt;typedef&gt;&gt;CXCursor cursor, OovString </text>
-<text x="567" y="333">   opStr)</text>
-<text x="567" y="342">+endCase()</text>
-<text x="567" y="351">+SwitchContext()</text>
-<text x="567" y="360">+SwitchContext(string exprString)</text>
+<g stroke="none">
+<text x="199" y="539">Visibility</text>
+<text x="199" y="548">oovCommon</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="549" y="23" width="266" height="26" />
-<line x1="549" y1="44" x2="815" y2="44" />
-<line x1="549" y1="47" x2="815" y2="47" />
+<rect x="522" y="472" width="237" height="197" />
+<line x1="522" y1="493" x2="759" y2="493" />
+<line x1="522" y1="586" x2="759" y2="586" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="550" y="32">std::vector&lt;SwitchContext,std::allocator&lt;SwitchContext&gt;</text>
-<text x="550" y="41">    &gt;</text>
+<g stroke="none">
+<text x="523" y="481">IncDirDependencyMap</text>
+<text x="523" y="490">oovCppParser</text>
+<text x="523" y="502">-std::map&lt;std::basic_string&lt;char&gt;,std::</text>
+<text x="530" y="511">set&lt;std::basic_string&lt;char&gt;,std::less&lt;</text>
+<text x="530" y="520">std::basic_string&lt;char&gt; &gt;,std::allocator&lt;</text>
+<text x="530" y="529">std::basic_string&lt;char&gt; &gt; &gt;,std::less&lt;</text>
+<text x="530" y="538">std::basic_string&lt;char&gt; &gt;,std::allocator&lt;</text>
+<text x="530" y="547">std::pair&lt;std::basic_string&lt;char&gt;,</text>
+<text x="530" y="556">std::set&lt;std::basic_string&lt;char&gt;,std::</text>
+<text x="530" y="565">less&lt;std::basic_string&lt;char&gt; &gt;,std::</text>
+<text x="530" y="574">allocator&lt;std::basic_string&lt;char&gt; </text>
+<text x="530" y="583">&gt; &gt; &gt; &gt; &gt; mParsedIncludeDependencies</text>
+<text x="523" y="595">+read(char outDir, char incPath)</text>
+<text x="523" y="604">+write()</text>
+<text x="523" y="613">+insert(&lt;&lt;typedef&gt;&gt;string includerPath,</text>
+<text x="530" y="622"> FilePath includedPath)</text>
+<text x="523" y="631">-includedPathsChanged(OovStringRef includerFn</text>
+<text x="530" y="640">, std::set&lt;std::basic_string&lt;char&gt;</text>
+<text x="530" y="649">,std::less&lt;std::basic_string&lt;char&gt;</text>
+<text x="530" y="658"> &gt;,std::allocator&lt;std::basic_string&lt;</text>
+<text x="530" y="667">char&gt; &gt; &gt; includedInfoStr)</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="290" y="497" width="47" height="17" />
-<line x1="290" y1="509" x2="337" y2="509" />
-<line x1="290" y1="512" x2="337" y2="512" />
+<rect x="404" y="704" width="197" height="89" />
+<line x1="404" y1="788" x2="601" y2="788" />
+<line x1="404" y1="791" x2="601" y2="791" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="291" y="506">CXCursor</text>
+<g stroke="none">
+<text x="405" y="713">std::map&lt;std::basic_string&lt;char&gt;,std::set&lt;</text>
+<text x="405" y="722">  std::basic_string&lt;char&gt;,std::less&lt;std::</text>
+<text x="405" y="731">  basic_string&lt;char&gt; &gt;,std::allocator&lt;</text>
+<text x="405" y="740">  std::basic_string&lt;char&gt; &gt; &gt;,std::less&lt;</text>
+<text x="405" y="749">  std::basic_string&lt;char&gt; &gt;,std::allocator&lt;</text>
+<text x="405" y="758">  std::pair&lt;std::basic_string&lt;char&gt;,std::</text>
+<text x="405" y="767">  set&lt;std::basic_string&lt;char&gt;,std::less&lt;</text>
+<text x="405" y="776">  std::basic_string&lt;char&gt; &gt;,std::allocator&lt;</text>
+<text x="405" y="785">  std::basic_string&lt;char&gt; &gt; &gt; &gt; &gt; &gt;</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="547" y="403" width="77" height="26" />
+<line x1="547" y1="424" x2="624" y2="424" />
+<line x1="547" y1="427" x2="624" y2="427" />
+</g>
+<g stroke="none">
+<text x="548" y="412">NameValueFile</text>
+<text x="548" y="421">oovCommon</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="27" y="367" width="85" height="26" />
+<line x1="27" y1="388" x2="112" y2="388" />
+<line x1="27" y1="391" x2="112" y2="391" />
+</g>
+<g stroke="none">
+<text x="28" y="376">CXStringDisposer</text>
+<text x="28" y="385">oovEdit</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="404" y="442" width="63" height="26" />
+<line x1="404" y1="463" x2="467" y2="463" />
+<line x1="404" y1="466" x2="467" y2="466" />
+</g>
+<g stroke="none">
+<text x="405" y="451">Project</text>
+<text x="405" y="460">oovCommon</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="306" y="519" width="207" height="152" />
+<line x1="306" y1="540" x2="513" y2="540" />
+<line x1="306" y1="606" x2="513" y2="606" />
+</g>
+<g stroke="none">
+<text x="307" y="528">cCrashDiagnostics</text>
+<text x="307" y="537">oovCppParser</text>
+<text x="307" y="549">-bool mCrashed</text>
+<text x="307" y="558">-&lt;&lt;typedef&gt;&gt;string mDiagStr</text>
+<text x="307" y="567">-&lt;&lt;typedef&gt;&gt;CXCursor mMostRecentCursor</text>
+<text x="307" y="576">-bool mCrashed</text>
+<text x="307" y="585">-bool mEnableDumpCursor</text>
+<text x="307" y="594">-&lt;&lt;typedef&gt;&gt;string mDiagStr</text>
+<text x="307" y="603">-&lt;&lt;typedef&gt;&gt;CXCursor mMostRecentCursor</text>
+<text x="307" y="615">+cCrashDiagnostics()</text>
+<text x="307" y="624">+saveMostRecentParseLocation(char </text>
+<text x="314" y="633">diagStr, &lt;&lt;typedef&gt;&gt;CXCursor cursor)</text>
+<text x="307" y="642">+setCrashed()</text>
+<text x="307" y="651">+hasCrashed()</text>
+<text x="307" y="660">+dumpCrashed(&lt;&lt;typedef&gt;&gt;FILE fp)</text>
+<text x="307" y="669">+enableDumpCursor(bool enable)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="21" y="431" width="70" height="53" />
+<line x1="21" y1="452" x2="91" y2="452" />
+<line x1="21" y1="473" x2="91" y2="473" />
+</g>
+<g stroke="none">
+<text x="22" y="440">RefType</text>
+<text x="22" y="449">oovCppParser</text>
+<text x="22" y="461">-bool isConst</text>
+<text x="22" y="470">-bool isRef</text>
+<text x="22" y="482">-RefType()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="167" y="399" width="83" height="26" />
+<line x1="167" y1="420" x2="250" y2="420" />
+<line x1="167" y1="423" x2="250" y2="423" />
+</g>
+<g stroke="none">
+<text x="168" y="408">ModelStatement</text>
+<text x="168" y="417">oovCommon</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="510" y="279" width="251" height="107" />
+<line x1="510" y1="300" x2="761" y2="300" />
+<line x1="510" y1="339" x2="761" y2="339" />
+</g>
+<g stroke="none">
+<text x="511" y="288">SwitchContext</text>
+<text x="511" y="297">oovCppParser</text>
+<text x="511" y="309">+&lt;&lt;typedef&gt;&gt;string mSwitchExprString</text>
+<text x="511" y="318">-bool mInCase</text>
+<text x="511" y="327">-ModelStatements mParentFuncStatements</text>
+<text x="511" y="336">-OovString mConditionalStr</text>
+<text x="511" y="348">+startCase(ModelStatements parentFuncStatements,</text>
+<text x="518" y="357"> &lt;&lt;typedef&gt;&gt;CXCursor cursor, OovString opStr)</text>
+<text x="511" y="366">+endCase()</text>
+<text x="511" y="375">+SwitchContext()</text>
+<text x="511" y="384">+SwitchContext(&lt;&lt;typedef&gt;&gt;string exprString)</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="487" y="32" width="146" height="26" />
+<line x1="487" y1="53" x2="633" y2="53" />
+<line x1="487" y1="56" x2="633" y2="56" />
+</g>
+<g stroke="none">
+<text x="488" y="41">std::vector&lt;SwitchContext,std::</text>
+<text x="488" y="50">  allocator&lt;SwitchContext&gt; &gt;</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="269" y="450" width="47" height="17" />
+<line x1="269" y1="462" x2="316" y2="462" />
+<line x1="269" y1="465" x2="316" y2="465" />
+</g>
+<g stroke="none">
+<text x="270" y="459">CXCursor</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="25" y="564" width="63" height="26" />
+<line x1="25" y1="585" x2="88" y2="585" />
+<line x1="25" y1="588" x2="88" y2="588" />
+</g>
+<g stroke="none">
+<text x="26" y="573">ModelType</text>
+<text x="26" y="582">oovCommon</text>
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="263" y1="274" x2="216" y2="733" />
-<circle cx="261" cy="287" r="5" style="fill:#ffffff" />
-<circle cx="259" cy="303" r="5" style="fill:#000000" />
-<circle cx="259" cy="303" r="2" style="fill:#000000" />
-<polygon points="263,274 258,281 262,287 266,282 263,274 " style="fill:#000000" />
-<line x1="519" y1="166" x2="681" y2="178" />
-<circle cx="532" cy="167" r="5" style="fill:#ffffff" />
-<circle cx="548" cy="168" r="5" style="fill:#000000" />
-<circle cx="548" cy="168" r="2" style="fill:#000000" />
-<polygon points="519,166 526,171 532,167 527,163 519,166 " style="fill:#000000" />
-<line x1="181" y1="274" x2="79" y2="407" />
-<circle cx="172" cy="285" r="5" style="fill:#ffffff" />
-<circle cx="162" cy="297" r="5" style="fill:#000000" />
-<circle cx="162" cy="297" r="2" style="fill:#000000" />
-<polygon points="181,274 173,277 173,285 180,282 181,274 " style="fill:#ffffff" />
-<line x1="239" y1="274" x2="184" y2="460" />
-<circle cx="235" cy="287" r="5" style="fill:#ffffff" />
-<circle cx="230" cy="302" r="5" style="fill:#000000" />
-<circle cx="230" cy="302" r="2" style="fill:#000000" />
-<polygon points="239,274 233,280 236,287 241,282 239,274 " style="fill:#ffffff" />
-<line x1="136" y1="274" x2="87" y2="317" />
-<circle cx="125" cy="283" r="5" style="fill:#ffffff" />
-<circle cx="113" cy="293" r="5" style="fill:#000000" />
-<circle cx="113" cy="293" r="2" style="fill:#000000" />
-<polygon points="136,274 128,275 126,283 134,282 136,274 " style="fill:#ffffff" />
-<line x1="519" y1="118" x2="564" y2="112" />
-<circle cx="532" cy="116" r="5" style="fill:#ffffff" />
-<circle cx="548" cy="114" r="5" style="fill:#000000" />
-<circle cx="548" cy="114" r="2" style="fill:#000000" />
-<polygon points="519,118 527,121 532,117 526,113 519,118 " style="fill:#000000" />
-<line x1="492" y1="274" x2="668" y2="374" />
-<circle cx="504" cy="280" r="5" style="fill:#ffffff" />
-<circle cx="518" cy="288" r="5" style="fill:#000000" />
-<circle cx="518" cy="288" r="2" style="fill:#000000" />
-<polygon points="492,274 496,281 504,280 500,274 492,274 " style="fill:#000000" />
-<line x1="286" y1="274" x2="295" y2="360" />
-<circle cx="287" cy="287" r="5" style="fill:#ffffff" />
-<circle cx="289" cy="303" r="5" style="fill:#000000" />
-<circle cx="289" cy="303" r="2" style="fill:#000000" />
-<polygon points="286,274 283,282 287,287 291,281 286,274 " style="fill:#000000" />
-<line x1="375" y1="274" x2="541" y2="480" />
-<circle cx="383" cy="284" r="5" style="fill:#ffffff" />
-<circle cx="393" cy="297" r="5" style="fill:#000000" />
-<circle cx="393" cy="297" r="2" style="fill:#000000" />
-<polygon points="375,274 376,282 383,284 383,277 375,274 " style="fill:#000000" />
-<line x1="324" y1="274" x2="381" y2="412" />
-<circle cx="329" cy="286" r="5" style="fill:#ffffff" />
-<line x1="430" y1="274" x2="551" y2="371" />
-<circle cx="440" cy="282" r="5" style="fill:#ffffff" />
-<line x1="242" y1="274" x2="174" y2="528" />
-<circle cx="238" cy="287" r="5" style="fill:#ffffff" />
-<line x1="219" y1="274" x2="185" y2="346" />
-<circle cx="213" cy="286" r="5" style="fill:#ffffff" />
-<line x1="519" y1="240" x2="566" y2="258" />
-<circle cx="532" cy="245" r="5" style="fill:#ffffff" />
-<line x1="519" y1="82" x2="636" y2="49" />
-<circle cx="532" cy="78" r="5" style="fill:#ffffff" />
-<line x1="288" y1="274" x2="313" y2="497" />
-<circle cx="289" cy="287" r="5" style="fill:#ffffff" />
-<line x1="182" y1="733" x2="74" y2="433" />
-<polygon points="182,733 184,724 181,730 174,728 182,733 " style="fill:#ffffff" />
-<circle cx="177" cy="719" r="5" style="fill:#ffffff" />
-<circle cx="174" cy="713" r="2" style="fill:#ffffff" />
-<line x1="224" y1="733" x2="294" y2="386" />
-<circle cx="226" cy="719" r="5" style="fill:#ffffff" />
-<circle cx="229" cy="703" r="5" style="fill:#000000" />
-<circle cx="229" cy="703" r="2" style="fill:#000000" />
-<line x1="244" y1="733" x2="380" y2="446" />
-<circle cx="249" cy="720" r="5" style="fill:#ffffff" />
-<line x1="97" y1="433" x2="154" y2="460" />
-<circle cx="109" cy="438" r="5" style="fill:#ffffff" />
-<circle cx="124" cy="445" r="5" style="fill:#000000" />
-<circle cx="124" cy="445" r="2" style="fill:#000000" />
-<line x1="108" y1="413" x2="261" y2="380" />
-<circle cx="121" cy="410" r="5" style="fill:#ffffff" />
-<circle cx="137" cy="406" r="5" style="fill:#000000" />
-<circle cx="137" cy="406" r="2" style="fill:#000000" />
-<line x1="172" y1="460" x2="82" y2="343" />
-<circle cx="153" cy="436" r="5" style="fill:#000000" />
-<circle cx="153" cy="436" r="2" style="fill:#000000" />
-<polygon points="172,460 171,452 164,449 164,457 172,460 " style="fill:#000000" />
-<line x1="195" y1="460" x2="282" y2="386" />
-<circle cx="205" cy="450" r="5" style="fill:#ffffff" />
-<circle cx="217" cy="440" r="5" style="fill:#000000" />
-<circle cx="217" cy="440" r="2" style="fill:#000000" />
-<polygon points="195,460 203,459 205,451 198,452 195,460 " style="fill:#000000" />
-<line x1="116" y1="341" x2="139" y2="348" />
-<polygon points="116,341 122,348 119,342 125,338 116,341 " style="fill:#ffffff" />
-<circle cx="129" cy="345" r="5" style="fill:#ffffff" />
-<circle cx="136" cy="347" r="2" style="fill:#ffffff" />
-<line x1="116" y1="329" x2="566" y2="309" />
-<circle cx="552" cy="309" r="5" style="fill:#ffffff" />
-<circle cx="536" cy="310" r="5" style="fill:#000000" />
-<circle cx="536" cy="310" r="2" style="fill:#000000" />
-<polygon points="566,309 559,305 553,309 559,313 566,309 " style="fill:#ffffff" />
-<line x1="648" y1="124" x2="677" y2="246" />
-<circle cx="654" cy="153" r="5" style="fill:#000000" />
-<circle cx="654" cy="153" r="2" style="fill:#000000" />
-<polygon points="648,124 646,132 651,137 654,130 648,124 " style="fill:#000000" />
-<line x1="655" y1="80" x2="675" y2="49" />
-<circle cx="662" cy="68" r="5" style="fill:#ffffff" />
-<circle cx="658" cy="74" r="5" style="fill:#ffffff" />
-<circle cx="658" cy="74" r="2" style="fill:#ffffff" />
-<polygon points="675,49 664,56 673,62 675,49 " style="fill:#ffffff" />
-<line x1="682" y1="400" x2="626" y2="480" />
-<polygon points="626,480 635,477 628,477 626,471 626,480 " style="fill:#ffffff" />
-<circle cx="634" cy="468" r="5" style="fill:#ffffff" />
-<circle cx="643" cy="455" r="5" style="fill:#000000" />
-<circle cx="643" cy="455" r="2" style="fill:#000000" />
-<line x1="655" y1="387" x2="602" y2="384" />
-<circle cx="615" cy="384" r="5" style="fill:#ffffff" />
-<line x1="588" y1="596" x2="591" y2="676" />
-<circle cx="588" cy="609" r="5" style="fill:#ffffff" />
-<circle cx="589" cy="625" r="5" style="fill:#000000" />
-<circle cx="589" cy="625" r="2" style="fill:#000000" />
-<polygon points="588,596 584,603 588,609 592,603 588,596 " style="fill:#000000" />
-<line x1="568" y1="480" x2="554" y2="442" />
-<circle cx="563" cy="466" r="5" style="fill:#ffffff" />
-<circle cx="564" cy="470" r="5" style="fill:#ffffff" />
-<circle cx="564" cy="470" r="2" style="fill:#ffffff" />
-<polygon points="554,442 554,455 563,452 554,442 " style="fill:#ffffff" />
-<line x1="504" y1="596" x2="460" y2="626" />
-<polygon points="504,596 495,596 501,598 501,605 504,596 " style="fill:#ffffff" />
-<circle cx="492" cy="603" r="5" style="fill:#ffffff" />
-<circle cx="479" cy="612" r="5" style="fill:#000000" />
-<circle cx="479" cy="612" r="2" style="fill:#000000" />
-<line x1="668" y1="480" x2="722" y2="442" />
-<circle cx="679" cy="471" r="5" style="fill:#ffffff" />
-<line x1="570" y1="596" x2="524" y2="748" />
-<circle cx="565" cy="609" r="5" style="fill:#ffffff" />
-<line x1="588" y1="429" x2="705" y2="429" />
-<circle cx="602" cy="429" r="5" style="fill:#ffffff" />
-<circle cx="618" cy="429" r="5" style="fill:#000000" />
-<circle cx="618" cy="429" r="2" style="fill:#000000" />
-<line x1="554" y1="416" x2="563" y2="397" />
-<circle cx="557" cy="409" r="5" style="fill:#ffffff" />
-<line x1="261" y1="538" x2="301" y2="513" />
-<circle cx="272" cy="530" r="5" style="fill:#ffffff" />
-<line x1="221" y1="355" x2="566" y2="317" />
-<circle cx="552" cy="318" r="5" style="fill:#ffffff" />
-<line x1="689" y1="246" x2="682" y2="49" />
+<line x1="185" y1="345" x2="148" y2="658" />
+<circle cx="183" cy="358" r="5" style="fill:#ffffff" />
+<circle cx="181" cy="374" r="5" style="fill:#000000" />
+<circle cx="181" cy="374" r="2" style="fill:#000000" />
+<polygon points="185,345 180,352 184,358 188,353 185,345 " style="fill:#000000" />
+<line x1="388" y1="198" x2="443" y2="203" />
+<circle cx="401" cy="199" r="5" style="fill:#ffffff" />
+<circle cx="417" cy="200" r="5" style="fill:#000000" />
+<circle cx="417" cy="200" r="2" style="fill:#000000" />
+<polygon points="388,198 395,203 401,199 396,195 388,198 " style="fill:#000000" />
+<line x1="173" y1="345" x2="147" y2="472" />
+<circle cx="170" cy="358" r="5" style="fill:#ffffff" />
+<circle cx="166" cy="374" r="5" style="fill:#000000" />
+<circle cx="166" cy="374" r="2" style="fill:#000000" />
+<polygon points="173,345 168,351 171,358 175,353 173,345 " style="fill:#ffffff" />
+<line x1="220" y1="345" x2="253" y2="620" />
+<circle cx="221" cy="358" r="5" style="fill:#ffffff" />
+<circle cx="223" cy="374" r="5" style="fill:#000000" />
+<circle cx="223" cy="374" r="2" style="fill:#000000" />
+<polygon points="220,345 217,353 221,358 225,352 220,345 " style="fill:#ffffff" />
+<line x1="299" y1="345" x2="340" y2="409" />
+<circle cx="306" cy="356" r="5" style="fill:#ffffff" />
+<circle cx="315" cy="370" r="5" style="fill:#000000" />
+<circle cx="315" cy="370" r="2" style="fill:#000000" />
+<polygon points="299,345 299,353 306,356 306,349 299,345 " style="fill:#ffffff" />
+<line x1="388" y1="159" x2="601" y2="125" />
+<circle cx="401" cy="156" r="5" style="fill:#ffffff" />
+<circle cx="417" cy="154" r="5" style="fill:#000000" />
+<circle cx="417" cy="154" r="2" style="fill:#000000" />
+<polygon points="388,159 396,162 401,157 394,154 388,159 " style="fill:#000000" />
+<line x1="388" y1="304" x2="426" y2="328" />
+<circle cx="399" cy="311" r="5" style="fill:#ffffff" />
+<circle cx="413" cy="320" r="5" style="fill:#000000" />
+<circle cx="413" cy="320" r="2" style="fill:#000000" />
+<polygon points="388,304 392,311 399,311 396,304 388,304 " style="fill:#000000" />
+<line x1="214" y1="345" x2="229" y2="530" />
+<circle cx="215" cy="358" r="5" style="fill:#ffffff" />
+<circle cx="216" cy="374" r="5" style="fill:#000000" />
+<circle cx="216" cy="374" r="2" style="fill:#000000" />
+<polygon points="214,345 211,353 215,358 219,352 214,345 " style="fill:#000000" />
+<line x1="382" y1="345" x2="528" y2="472" />
+<circle cx="392" cy="354" r="5" style="fill:#ffffff" />
+<circle cx="404" cy="364" r="5" style="fill:#000000" />
+<circle cx="404" cy="364" r="2" style="fill:#000000" />
+<polygon points="382,345 384,353 392,354 390,346 382,345 " style="fill:#000000" />
+<line x1="94" y1="345" x2="78" y2="367" />
+<circle cx="85" cy="356" r="5" style="fill:#ffffff" />
+<line x1="339" y1="345" x2="424" y2="442" />
+<circle cx="348" cy="355" r="5" style="fill:#ffffff" />
+<line x1="282" y1="345" x2="371" y2="519" />
+<circle cx="288" cy="357" r="5" style="fill:#ffffff" />
+<line x1="118" y1="345" x2="70" y2="431" />
+<circle cx="111" cy="357" r="5" style="fill:#ffffff" />
+<line x1="206" y1="345" x2="208" y2="399" />
+<circle cx="206" cy="358" r="5" style="fill:#ffffff" />
+<line x1="388" y1="249" x2="510" y2="291" />
+<circle cx="401" cy="253" r="5" style="fill:#ffffff" />
+<line x1="388" y1="114" x2="528" y2="58" />
+<circle cx="400" cy="108" r="5" style="fill:#ffffff" />
+<line x1="254" y1="345" x2="290" y2="450" />
+<circle cx="258" cy="358" r="5" style="fill:#ffffff" />
+<line x1="144" y1="345" x2="60" y2="564" />
+<circle cx="138" cy="358" r="5" style="fill:#ffffff" />
+<line x1="139" y1="658" x2="145" y2="498" />
+<polygon points="139,658 145,651 139,655 134,650 139,658 " style="fill:#ffffff" />
+<circle cx="139" cy="644" r="5" style="fill:#ffffff" />
+<circle cx="139" cy="637" r="2" style="fill:#ffffff" />
+<line x1="179" y1="658" x2="224" y2="556" />
+<circle cx="184" cy="645" r="5" style="fill:#ffffff" />
+<circle cx="191" cy="630" r="5" style="fill:#000000" />
+<circle cx="191" cy="630" r="2" style="fill:#000000" />
+<line x1="120" y1="658" x2="71" y2="393" />
+<circle cx="117" cy="644" r="5" style="fill:#ffffff" />
+<line x1="111" y1="658" x2="63" y2="483" />
+<circle cx="107" cy="644" r="5" style="fill:#ffffff" />
+<circle cx="105" cy="637" r="2" style="fill:#ffffff" />
+<line x1="93" y1="658" x2="61" y2="590" />
+<circle cx="87" cy="645" r="5" style="fill:#ffffff" />
+<line x1="154" y1="498" x2="245" y2="620" />
+<circle cx="162" cy="509" r="5" style="fill:#ffffff" />
+<circle cx="171" cy="522" r="5" style="fill:#000000" />
+<circle cx="171" cy="522" r="2" style="fill:#000000" />
+<line x1="163" y1="498" x2="211" y2="530" />
+<circle cx="174" cy="505" r="5" style="fill:#ffffff" />
+<circle cx="187" cy="514" r="5" style="fill:#000000" />
+<circle cx="187" cy="514" r="2" style="fill:#000000" />
+<line x1="133" y1="498" x2="68" y2="564" />
+<polygon points="133,498 124,499 131,500 132,507 133,498 " style="fill:#ffffff" />
+<circle cx="123" cy="507" r="5" style="fill:#ffffff" />
+<circle cx="111" cy="519" r="5" style="fill:#000000" />
+<circle cx="111" cy="519" r="2" style="fill:#000000" />
+<circle cx="89" cy="542" r="5" style="fill:#ffffff" />
+<circle cx="89" cy="542" r="2" style="fill:#ffffff" />
+<polygon points="68,564 80,559 73,552 68,564 " style="fill:#ffffff" />
+<line x1="259" y1="620" x2="342" y2="435" />
+<circle cx="271" cy="592" r="5" style="fill:#000000" />
+<circle cx="271" cy="592" r="2" style="fill:#000000" />
+<polygon points="259,620 266,615 264,608 259,612 259,620 " style="fill:#000000" />
+<line x1="251" y1="620" x2="232" y2="556" />
+<circle cx="247" cy="606" r="5" style="fill:#ffffff" />
+<circle cx="242" cy="591" r="5" style="fill:#000000" />
+<circle cx="242" cy="591" r="2" style="fill:#000000" />
+<polygon points="251,620 253,612 248,607 245,614 251,620 " style="fill:#000000" />
+<line x1="214" y1="622" x2="87" y2="585" />
+<polygon points="214,622 208,615 211,621 205,625 214,622 " style="fill:#ffffff" />
+<circle cx="200" cy="618" r="5" style="fill:#ffffff" />
+<circle cx="193" cy="616" r="2" style="fill:#ffffff" />
+<line x1="304" y1="419" x2="249" y2="414" />
+<polygon points="304,419 297,413 301,419 296,424 304,419 " style="fill:#ffffff" />
+<circle cx="290" cy="417" r="5" style="fill:#ffffff" />
+<circle cx="283" cy="417" r="2" style="fill:#ffffff" />
+<line x1="388" y1="409" x2="510" y2="371" />
+<circle cx="496" cy="375" r="5" style="fill:#ffffff" />
+<circle cx="481" cy="379" r="5" style="fill:#000000" />
+<circle cx="481" cy="379" r="2" style="fill:#000000" />
+<polygon points="510,371 502,370 497,375 504,377 510,371 " style="fill:#ffffff" />
+<line x1="676" y1="135" x2="645" y2="279" />
+<circle cx="669" cy="164" r="5" style="fill:#000000" />
+<circle cx="669" cy="164" r="2" style="fill:#000000" />
+<polygon points="676,135 670,141 674,148 678,143 676,135 " style="fill:#000000" />
+<line x1="642" y1="91" x2="582" y2="58" />
+<circle cx="629" cy="84" r="5" style="fill:#ffffff" />
+<circle cx="608" cy="72" r="5" style="fill:#ffffff" />
+<circle cx="608" cy="72" r="2" style="fill:#ffffff" />
+<polygon points="582,58 590,68 595,59 582,58 " style="fill:#ffffff" />
+<line x1="457" y1="354" x2="557" y2="472" />
+<polygon points="557,472 557,463 555,469 548,470 557,472 " style="fill:#ffffff" />
+<circle cx="547" cy="461" r="5" style="fill:#ffffff" />
+<circle cx="537" cy="449" r="5" style="fill:#000000" />
+<circle cx="537" cy="449" r="2" style="fill:#000000" />
+<line x1="445" y1="354" x2="436" y2="442" />
+<circle cx="437" cy="428" r="5" style="fill:#ffffff" />
+<line x1="565" y1="668" x2="536" y2="704" />
+<circle cx="556" cy="678" r="5" style="fill:#ffffff" />
+<circle cx="546" cy="691" r="5" style="fill:#000000" />
+<circle cx="546" cy="691" r="2" style="fill:#000000" />
+<polygon points="565,668 557,671 557,678 564,676 565,668 " style="fill:#000000" />
+<line x1="606" y1="472" x2="589" y2="429" />
+<circle cx="600" cy="458" r="5" style="fill:#ffffff" />
+<circle cx="600" cy="456" r="5" style="fill:#ffffff" />
+<circle cx="600" cy="456" r="2" style="fill:#ffffff" />
+<polygon points="589,429 589,442 598,439 589,429 " style="fill:#ffffff" />
+<line x1="547" y1="425" x2="466" y2="447" />
+<circle cx="479" cy="443" r="5" style="fill:#ffffff" />
+<line x1="345" y1="519" x2="298" y2="466" />
+<circle cx="335" cy="508" r="5" style="fill:#ffffff" />
+<line x1="249" y1="405" x2="510" y2="355" />
+<circle cx="496" cy="357" r="5" style="fill:#ffffff" />
+<line x1="622" y1="279" x2="563" y2="58" />
 </g>
 </svg>

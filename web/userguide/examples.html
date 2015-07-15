@@ -138,13 +138,11 @@
     <embed src="Example1Seq.svg" type="image/svg+xml"><br>
     <br>
     <br>
-    <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
+    <table border="1">
       <tbody>
         <tr>
-          <th style="vertical-align: top;">Operation<br>
-          </th>
-          <th style="vertical-align: top;">Operation Description<br>
-          </th>
+          <th>Operation</th>
+          <th>Operation Description</th>
         </tr>
         <tr>
           <td style="vertical-align: top;">World::World</td>
@@ -184,7 +182,32 @@
         </tr>
       </tbody>
     </table>
-    <br>
+    <p/>
+
+    <h2><a class="mozTocH3" name="mozTocId748070"></a>Portion</h2>
+    The Portion diagram for the Lamb class looks like the following.<br>
+    <embed src="Example1Portion.svg" type="image/svg+xml"><br>
+    <table border="1">
+      <tbody>
+        <tr>
+          <th>Method</th>
+          <th>Method Description</th>
+        </tr>
+        <tr>
+          <td>follows</td>
+          <td>The follows method calls the move method, and interacts with
+		the MoveableThing class.</td>
+        </tr>
+        <tr>
+          <td>showLocation</td>
+          <td>The follows method either reads or writes the mFleece
+		member variable, and interacts with
+		the MoveableThing class.</td>
+        </tr>
+      </tbody>
+    </table>
+    <p/>
+
     <h2><a class="mozTocH3" name="mozTocId525410"></a>Code Test Coverage</h2>
     The Oovcde program contains tools to support flow path test coverage
     analysis. This shows the percentage of paths that have <br>

@@ -86,7 +86,8 @@ class TestCppModule
 public:
 	TestCppModule(char const * const moduleName);
 	void addFunctionTest(class TestCppFunction *func);
-	void runAllTests();
+    // Returns true for passed all tests.
+    bool runAllTests();
 	void addExtraDiagnostics(const char *str)
 	    { mExtraDiagnostics.push_back(str); }
 	void addExtraDiagnostics(const char *str, double val);

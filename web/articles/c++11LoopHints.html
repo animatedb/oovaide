@@ -92,8 +92,16 @@
     "{}".&nbsp; In this case, the "this" pointer is needed for the
     getComponentType() function. In this example, the"this" keyword could have
     been used instead of the "=". The "-&gt; bool" indicates that the return
-    type of the lambda is a boolean.<br>
-    <br>
+    type of the lambda is a boolean.
+    <p/>
+    <ul>
+	<li>[&] Capture any variable by reference</li>
+	<li>[=] Capture any variable using a copy </li>
+	<li>[&var] Capture listed variable by reference</li>
+	<li>[var] Capture listed variable using a copy</li>
+	<li>[=, &var] Capture any variable using copy, and listed variable by reference</li>
+    </ul>
+    <p/>
     Some Test Functions:<br>
     &nbsp;&nbsp;&nbsp; all_of, any_of, none_of<br>
     <br>

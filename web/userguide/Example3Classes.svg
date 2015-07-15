@@ -1,64 +1,119 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="504" height="270">
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="51" y="62" width="60" height="35" />
-<line x1="51" y1="83" x2="111" y2="83" />
-<line x1="51" y1="86" x2="111" y2="86" />
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="466" height="358">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="332" y="214" width="133" height="143" />
+<line x1="332" y1="227" x2="465" y2="227" />
+<polygon points="445,235 457,240 457,230 445,235 " style="fill:#ffffff" />
+<polygon points="445,249 452,253 459,249 452,245 445,249 " style="fill:#ffffff" />
+<polygon points="445,263 452,267 459,263 452,259 445,263 " style="fill:#000000" />
+<polygon points="445,277 453,282 449,277 453,272 445,277 " style="fill:#ffffff" />
+<circle cx="445" cy="291" r="5" style="fill:#ffffff" />
+<circle cx="445" cy="305" r="5" style="fill:#ffffff" />
+<circle cx="452" cy="305" r="2" style="fill:#ffffff" />
+<circle cx="445" cy="319" r="5" style="fill:#ffffff" />
+<circle cx="445" cy="319" r="2" style="fill:#ffffff" />
+<circle cx="445" cy="333" r="5" style="fill:#ffffff" />
+<circle cx="445" cy="333" r="2" style="fill:#000000" />
+<circle cx="445" cy="347" r="5" style="fill:#000000" />
+<circle cx="445" cy="347" r="2" style="fill:#000000" />
 </g>
-<g font-size="10">
-<text x="52" y="71">Kingdom</text>
-<text x="52" y="80">/kingdom/</text>
-<text x="52" y="95">+Kingdom()</text>
+<g stroke="none">
+<text x="333" y="223">Relations Key</text>
+<text x="333" y="237">Generalization</text>
+<text x="333" y="251">Aggregation(reference)</text>
+<text x="333" y="265">Composition(owned)</text>
+<text x="333" y="279">Const</text>
+<text x="333" y="293">Method Variable</text>
+<text x="333" y="307">Method Parameter</text>
+<text x="333" y="321">Public</text>
+<text x="333" y="335">Protected</text>
+<text x="333" y="349">Private</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="181" y="66" width="119" height="62" />
-<line x1="181" y1="87" x2="300" y2="87" />
-<line x1="181" y1="99" x2="300" y2="99" />
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="14" y="19" width="150" height="35" />
+<line x1="14" y1="40" x2="164" y2="40" />
+<line x1="14" y1="43" x2="164" y2="43" />
 </g>
-<g font-size="10">
-<text x="182" y="75">Egg</text>
-<text x="182" y="84">/kingdom/</text>
-<text x="182" y="96">-std::string mName</text>
-<text x="182" y="108">+Egg(char   const name)</text>
-<text x="182" y="117">+getName()</text>
-<text x="182" y="126">+fall()</text>
+<g stroke="none">
+<text x="15" y="28">Kingdom</text>
+<text x="15" y="37">examples/sharedlibgtk/kingdom</text>
+<text x="15" y="52">+Kingdom()</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="124" y="162" width="196" height="107" />
-<line x1="124" y1="183" x2="320" y2="183" />
-<line x1="124" y1="204" x2="320" y2="204" />
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="237" y="18" width="151" height="62" />
+<line x1="237" y1="39" x2="388" y2="39" />
+<line x1="237" y1="51" x2="388" y2="51" />
 </g>
-<g font-size="10">
-<text x="125" y="171">ResourceClient</text>
-<text x="125" y="180">/kingdom/</text>
-<text x="125" y="192">-GModule mModule</text>
-<text x="125" y="201">-ResourceClientInterface mInterface</text>
-<text x="125" y="213">+open(char   const fn)</text>
-<text x="125" y="222">+close()</text>
-<text x="125" y="231">+isOpen()</text>
-<text x="125" y="240">+getInterface()</text>
-<text x="125" y="249">-loadSymbols()</text>
-<text x="125" y="258">-loadModuleSymbol(gchar symbolName,</text>
-<text x="125" y="267">    gpointer symbol)</text>
+<g stroke="none">
+<text x="238" y="27">Egg</text>
+<text x="238" y="36">examples/sharedlibgtk/kingdom</text>
+<text x="238" y="48">-&lt;&lt;typedef&gt;&gt;string mName</text>
+<text x="238" y="60">+Egg(char name)</text>
+<text x="238" y="69">+getName()</text>
+<text x="238" y="78">+fall()</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="378" y="194" width="125" height="44" />
-<line x1="378" y1="215" x2="503" y2="215" />
-<line x1="378" y1="236" x2="503" y2="236" />
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="14" y="143" width="210" height="107" />
+<line x1="14" y1="164" x2="224" y2="164" />
+<line x1="14" y1="185" x2="224" y2="185" />
 </g>
-<g font-size="10">
-<text x="379" y="203">ResourceClientInterface</text>
-<text x="379" y="212">/kingdom/</text>
-<text x="379" y="224">+void ( getResourceName</text>
-<text x="379" y="233">+bool ( putTogether</text>
+<g stroke="none">
+<text x="15" y="152">ResourceClient</text>
+<text x="15" y="161">examples/sharedlibgtk/kingdom</text>
+<text x="15" y="173">-&lt;&lt;typedef&gt;&gt;GModule mModule</text>
+<text x="15" y="182">-ResourceClientInterface mInterface</text>
+<text x="15" y="194">+open(char fn)</text>
+<text x="15" y="203">+close()</text>
+<text x="15" y="212">-loadSymbols()</text>
+<text x="15" y="221">-loadModuleSymbol(&lt;&lt;typedef&gt;&gt;gchar </text>
+<text x="22" y="230">symbolName, &lt;&lt;typedef&gt;&gt;gpointer symbol)</text>
+<text x="15" y="239">+isOpen()</text>
+<text x="15" y="248">+getInterface()</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<line x1="111" y1="82" x2="181" y2="91" />
-<circle cx="124" cy="83" r="5" style="fill:#ffffff" />
-<line x1="98" y1="96" x2="168" y2="162" />
-<circle cx="108" cy="105" r="5" style="fill:#ffffff" />
-<line x1="320" y1="215" x2="378" y2="216" />
-<polygon points="320,215 327,219 337,215 327,211 320,215 " style="fill:#000000" />
-<circle cx="349" cy="215" r="5" style="fill:#000000" />
-<circle cx="349" cy="215" r="2" style="fill:#000000" />
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="152" y="105" width="110" height="17" />
+<line x1="152" y1="117" x2="262" y2="117" />
+<line x1="152" y1="120" x2="262" y2="120" />
+</g>
+<g stroke="none">
+<text x="153" y="114">std::basic_string&lt;char&gt;</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="359" y="179" width="106" height="17" />
+<line x1="359" y1="191" x2="465" y2="191" />
+<line x1="359" y1="194" x2="465" y2="194" />
+</g>
+<g stroke="none">
+<text x="360" y="188">&lt;&lt;typedef&gt;&gt;GModule</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="304" y="105" width="161" height="44" />
+<line x1="304" y1="126" x2="465" y2="126" />
+<line x1="304" y1="147" x2="465" y2="147" />
+</g>
+<g stroke="none">
+<text x="305" y="114">ResourceClientInterface</text>
+<text x="305" y="123">examples/sharedlibgtk/kingdom</text>
+<text x="305" y="135">+void(char,int) getResourceName</text>
+<text x="305" y="144">+bool() putTogether</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="164" y1="40" x2="237" y2="45" />
+<circle cx="177" cy="40" r="5" style="fill:#ffffff" />
+<line x1="92" y1="53" x2="110" y2="143" />
+<circle cx="94" cy="66" r="5" style="fill:#ffffff" />
+<line x1="115" y1="53" x2="195" y2="105" />
+<circle cx="126" cy="60" r="5" style="fill:#ffffff" />
+<line x1="262" y1="80" x2="220" y2="105" />
+<circle cx="249" cy="87" r="5" style="fill:#ffffff" />
+<line x1="224" y1="193" x2="359" y2="188" />
+<circle cx="253" cy="191" r="5" style="fill:#000000" />
+<circle cx="253" cy="191" r="2" style="fill:#000000" />
+<polygon points="224,193 231,197 237,193 231,189 224,193 " style="fill:#ffffff" />
+<line x1="224" y1="169" x2="304" y2="147" />
+<circle cx="252" cy="161" r="5" style="fill:#000000" />
+<circle cx="252" cy="161" r="2" style="fill:#000000" />
+<polygon points="224,169 232,171 237,166 230,163 224,169 " style="fill:#000000" />
 </g>
 </svg>

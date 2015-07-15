@@ -15,7 +15,8 @@ static Contexts *sContexts;
 
 
 Contexts::Contexts(OovProject &proj):
-    mProject(proj), mCurrentContext(C_BinaryComponent)
+    mProject(proj), mJournal(proj.getGuiOptions()),
+    mCurrentContext(C_BinaryComponent)
     {
     sContexts = this;
     }
@@ -111,7 +112,7 @@ void Contexts::displayComponentDiagram()
         std::string fn = mComponentList.getSelectedFileName();
         if(fn.length() > 0)
             {
-            viewSource(fn, 1);
+            viewSource(mProject.getGuiOptions(), fn, 1);
             }
         }
     }

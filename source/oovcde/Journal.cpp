@@ -54,8 +54,8 @@ OovString JournalRecord::getDiagramName() const
     return name;
     }
 
-Journal::Journal():
-    mCurrentRecord(0), mBuilder(nullptr), mModel(nullptr),
+Journal::Journal(GuiOptions const &guiOptions):
+    mGuiOptions(guiOptions), mCurrentRecord(0), mBuilder(nullptr), mModel(nullptr),
     mJournalListener(nullptr), mTaskStatusListener(nullptr)
     {
     gJournal = this;
@@ -81,16 +81,16 @@ void Journal::clear()
 
 JournalRecordClassDiagram *Journal::newClassRecord(OovStringRef const className)
     {
-    JournalRecordClassDiagram *rec = new JournalRecordClassDiagram(*mModel,
-            *mJournalListener, *mTaskStatusListener);
+    JournalRecordClassDiagram *rec = new JournalRecordClassDiagram(mGuiOptions,
+            *mModel, *mJournalListener, *mTaskStatusListener);
     addRecord(rec, className);
     return rec;
     }
 
 JournalRecordPortionDiagram *Journal::newPortionRecord(OovStringRef portionName)
     {
-    JournalRecordPortionDiagram *rec = new JournalRecordPortionDiagram(*mModel,
-            *mJournalListener);
+    JournalRecordPortionDiagram *rec = new JournalRecordPortionDiagram(mGuiOptions,
+            *mModel, *mJournalListener);
     addRecord(rec, portionName);
     return rec;
     }
@@ -134,7 +134,8 @@ void Journal::displayOperation(OovStringRef const className,
     size_t recordIndex = findRecord(RT_Sequence, fullOperName);
     if(recordIndex == NO_INDEX)
         {
-        rec = new JournalRecordOperationDiagram(*mModel, *mJournalListener);
+        rec = new JournalRecordOperationDiagram(mGuiOptions, *mModel,
+                *mJournalListener);
         addRecord(rec, fullOperName);
         rec->mOperationDiagram.clearGraphAndAddOperation(className, operName, isConst);
         }
@@ -155,7 +156,8 @@ void Journal::displayComponents()
         JournalRecordComponentDiagram *rec;
         if(recordIndex == NO_INDEX)
             {
-            rec = new JournalRecordComponentDiagram(*mIncludeMap, *mJournalListener);
+            rec = new JournalRecordComponentDiagram(mGuiOptions, *mIncludeMap,
+                    *mJournalListener);
             rec->mComponentDiagram.drawToDrawingArea();
             addRecord(rec, componentName);
             }
@@ -177,7 +179,8 @@ void Journal::displayWorldZone()
         JournalRecordZoneDiagram *rec;
         if(recordIndex == NO_INDEX)
             {
-            rec = new JournalRecordZoneDiagram(*mModel, *mJournalListener);
+            rec = new JournalRecordZoneDiagram(mGuiOptions, *mModel,
+                    *mJournalListener);
             rec->mZoneDiagram.drawToDrawingArea();
             addRecord(rec, zoneName);
             rec->mZoneDiagram.clearGraphAndAddWorldZone();
@@ -220,7 +223,8 @@ void Journal::displayInclude(OovStringRef const incName)
         JournalRecordIncludeDiagram *rec;
         if(recordIndex == NO_INDEX)
             {
-            rec = new JournalRecordIncludeDiagram(*mIncludeMap, *mJournalListener);
+            rec = new JournalRecordIncludeDiagram(mGuiOptions, *mIncludeMap,
+                    *mJournalListener);
             rec->mIncludeDiagram.clearGraphAndAddInclude(incName);
             rec->mIncludeDiagram.drawToDrawingArea();
             addRecord(rec, incName);

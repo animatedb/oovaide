@@ -67,6 +67,9 @@ class ZoneDiagramList
 class ZoneDiagramView
     {
     public:
+        ZoneDiagramView(GuiOptions const &guiOptions):
+            mGuiOptions(guiOptions)
+            {}
         void initialize(const ModelData &modelData,
                 ZoneDiagramListener &listener)
             {
@@ -111,8 +114,10 @@ class ZoneDiagramView
         void handleDrawingAreaLostPointer()
             { mToolTipWindow.lostPointer(); }
         void handleDrawingAreaMotion(int x, int y);
+        void viewSource(OovStringRef const module, unsigned int lineNum);
 
     private:
+        GuiOptions const &mGuiOptions;
         ZoneDiagram mZoneDiagram;
         ZoneDiagramListener *mListener;
         /// Used to calculate font sizes.

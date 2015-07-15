@@ -11,6 +11,7 @@
 #include "ClassDiagram.h"
 #include "Builder.h"
 #include "CairoDrawer.h"
+#include "Options.h"
 #include "Gui.h"
 
 class ClassDiagramListener
@@ -62,8 +63,8 @@ class AddClassDialog:public Dialog
 class ClassDiagramView:public ClassGraphListener
     {
     public:
-        ClassDiagramView():
-            mNullDrawer(nullptr), mListener(nullptr)
+        ClassDiagramView(GuiOptions const &guiOptions):
+            mGuiOptions(guiOptions), mNullDrawer(nullptr), mListener(nullptr)
             {}
         ~ClassDiagramView()
             {}
@@ -84,10 +85,11 @@ class ClassDiagramView:public ClassGraphListener
             }
         void addClass(OovStringRef const className,
                 ClassGraph::eAddNodeTypes addType=ClassGraph::AN_All,
-                int depth=ClassDiagram::DEPTH_IMMEDIATE_RELATIONS)
+                int depth=ClassDiagram::DEPTH_IMMEDIATE_RELATIONS,
+                bool reposition=false)
             {
             setCairoContext();
-            mClassDiagram.addClass(className, addType, depth);
+            mClassDiagram.addClass(className, addType, depth, reposition);
             }
         void buttonPressEvent(const GdkEventButton *event);
         void buttonReleaseEvent(const GdkEventButton *event);
@@ -116,8 +118,12 @@ class ClassDiagramView:public ClassGraphListener
         void displayListContextMenu(guint button, guint32 acttime, gpointer data);
         void displayAddClassDialog();
         void selectAddClass(ModelType const *type, ClassGraph::eAddNodeTypes addType);
+        void viewSource(OovStringRef const module, unsigned int lineNum);
+        GuiOptions const &getGuiOptions()
+            { return mGuiOptions; }
 
     private:
+        GuiOptions const &mGuiOptions;
         ClassDiagram mClassDiagram;
         /// Used to calculate font sizes. Apparently the setContext call that
         /// calls gdk_cairo_create cannot be called from the background

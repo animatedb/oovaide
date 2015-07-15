@@ -1,164 +1,166 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="635" height="451">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="540" height="449">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="26" y="307" width="133" height="143" />
-<line x1="26" y1="320" x2="159" y2="320" />
-<polygon points="139,328 151,333 151,323 139,328 " style="fill:#ffffff" />
-<polygon points="139,342 146,346 153,342 146,338 139,342 " style="fill:#ffffff" />
-<polygon points="139,356 146,360 153,356 146,352 139,356 " style="fill:#000000" />
-<polygon points="139,370 147,375 143,370 147,365 139,370 " style="fill:#ffffff" />
-<circle cx="139" cy="384" r="5" style="fill:#ffffff" />
-<circle cx="139" cy="398" r="5" style="fill:#ffffff" />
-<circle cx="146" cy="398" r="2" style="fill:#ffffff" />
-<circle cx="139" cy="412" r="5" style="fill:#ffffff" />
-<circle cx="139" cy="412" r="2" style="fill:#ffffff" />
-<circle cx="139" cy="426" r="5" style="fill:#ffffff" />
-<circle cx="139" cy="426" r="2" style="fill:#000000" />
-<circle cx="139" cy="440" r="5" style="fill:#000000" />
-<circle cx="139" cy="440" r="2" style="fill:#000000" />
+<rect x="27" y="305" width="133" height="143" />
+<line x1="27" y1="318" x2="160" y2="318" />
+<polygon points="140,326 152,331 152,321 140,326 " style="fill:#ffffff" />
+<polygon points="140,340 147,344 154,340 147,336 140,340 " style="fill:#ffffff" />
+<polygon points="140,354 147,358 154,354 147,350 140,354 " style="fill:#000000" />
+<polygon points="140,368 148,373 144,368 148,363 140,368 " style="fill:#ffffff" />
+<circle cx="140" cy="382" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="396" r="5" style="fill:#ffffff" />
+<circle cx="147" cy="396" r="2" style="fill:#ffffff" />
+<circle cx="140" cy="410" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="410" r="2" style="fill:#ffffff" />
+<circle cx="140" cy="424" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="424" r="2" style="fill:#000000" />
+<circle cx="140" cy="438" r="5" style="fill:#000000" />
+<circle cx="140" cy="438" r="2" style="fill:#000000" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="27" y="316">Relations Key</text>
-<text x="27" y="330">Generalization</text>
-<text x="27" y="344">Aggregation(reference)</text>
-<text x="27" y="358">Composition(owned)</text>
-<text x="27" y="372">Const</text>
-<text x="27" y="386">Method Variable</text>
-<text x="27" y="400">Method Parameter</text>
-<text x="27" y="414">Public</text>
-<text x="27" y="428">Protected</text>
-<text x="27" y="442">Private</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="28" y="66" width="82" height="44" />
-<line x1="28" y1="87" x2="110" y2="87" />
-<line x1="28" y1="99" x2="110" y2="99" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="29" y="75">World</text>
-<text x="29" y="84">examples/simple</text>
-<text x="29" y="96">-Mary mary</text>
-<text x="29" y="108">+World()</text>
+<g stroke="none">
+<text x="28" y="314">Relations Key</text>
+<text x="28" y="328">Generalization</text>
+<text x="28" y="342">Aggregation(reference)</text>
+<text x="28" y="356">Composition(owned)</text>
+<text x="28" y="370">Const</text>
+<text x="28" y="384">Method Variable</text>
+<text x="28" y="398">Method Parameter</text>
+<text x="28" y="412">Public</text>
+<text x="28" y="426">Protected</text>
+<text x="28" y="440">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="55" y="240" width="82" height="44" />
-<line x1="55" y1="261" x2="137" y2="261" />
-<line x1="55" y1="273" x2="137" y2="273" />
+<rect x="19" y="48" width="82" height="44" />
+<line x1="19" y1="69" x2="101" y2="69" />
+<line x1="19" y1="81" x2="101" y2="81" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="56" y="249">Mary</text>
-<text x="56" y="258">examples/simple</text>
-<text x="56" y="270">+Lamb lamb</text>
-<text x="56" y="282">+showLocation()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="508" y="143" width="126" height="71" />
-<line x1="508" y1="164" x2="634" y2="164" />
-<line x1="508" y1="185" x2="634" y2="185" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="509" y="152">Location</text>
-<text x="509" y="161">examples/simple</text>
-<text x="509" y="173">-int mX</text>
-<text x="509" y="182">-int mY</text>
-<text x="509" y="194">+setPosition(Location loc)</text>
-<text x="509" y="203">+getLocationString()</text>
-<text x="509" y="212">+Location(int x, int y)</text>
+<g stroke="none">
+<text x="20" y="57">World</text>
+<text x="20" y="66">examples/simple</text>
+<text x="20" y="78">-Mary mary</text>
+<text x="20" y="90">+World()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="282" y="30" width="101" height="62" />
-<line x1="282" y1="51" x2="383" y2="51" />
-<line x1="282" y1="63" x2="383" y2="63" />
+<rect x="44" y="247" width="82" height="44" />
+<line x1="44" y1="268" x2="126" y2="268" />
+<line x1="44" y1="280" x2="126" y2="280" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="283" y="39">MoveableThing</text>
-<text x="283" y="48">examples/simple</text>
-<text x="283" y="60">-Location mLocation</text>
-<text x="283" y="72">+move(Location loc)</text>
-<text x="283" y="81">+getLocation()</text>
-<text x="283" y="90">+getLocationString()</text>
+<g stroke="none">
+<text x="45" y="256">Mary</text>
+<text x="45" y="265">examples/simple</text>
+<text x="45" y="277">+Lamb lamb</text>
+<text x="45" y="289">+showLocation()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="334" y="195" width="129" height="62" />
-<line x1="334" y1="216" x2="463" y2="216" />
-<line x1="334" y1="228" x2="463" y2="228" />
+<rect x="297" y="204" width="130" height="62" />
+<line x1="297" y1="225" x2="427" y2="225" />
+<line x1="297" y1="237" x2="427" y2="237" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="335" y="204">Lamb</text>
-<text x="335" y="213">examples/simple</text>
-<text x="335" y="225">+MoveableThing mFleece</text>
-<text x="335" y="237">+move(Location loc)</text>
-<text x="335" y="246">+follows(Mammal leader)</text>
-<text x="335" y="255">+showLocation()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="195" y="189" width="82" height="26" />
-<line x1="195" y1="210" x2="277" y2="210" />
-<line x1="195" y1="213" x2="277" y2="213" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="196" y="198">Mammal</text>
-<text x="196" y="207">examples/simple</text>
+<g stroke="none">
+<text x="298" y="213">Lamb</text>
+<text x="298" y="222">examples/simple</text>
+<text x="298" y="234">+MoveableThing mFleece</text>
+<text x="298" y="246">+move(Location loc)</text>
+<text x="298" y="255">+follows(Mammal leader)</text>
+<text x="298" y="264">+showLocation()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="377" y="287" width="110" height="17" />
-<line x1="377" y1="299" x2="487" y2="299" />
-<line x1="377" y1="302" x2="487" y2="302" />
+<rect x="150" y="183" width="82" height="26" />
+<line x1="150" y1="204" x2="232" y2="204" />
+<line x1="150" y1="207" x2="232" y2="207" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="378" y="296">std::basic_string&lt;char&gt;</text>
+<g stroke="none">
+<text x="151" y="192">Mammal</text>
+<text x="151" y="201">examples/simple</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="178" y="11" width="102" height="62" />
+<line x1="178" y1="32" x2="280" y2="32" />
+<line x1="178" y1="44" x2="280" y2="44" />
+</g>
+<g stroke="none">
+<text x="179" y="20">MoveableThing</text>
+<text x="179" y="29">examples/simple</text>
+<text x="179" y="41">-Location mLocation</text>
+<text x="179" y="53">+move(Location loc)</text>
+<text x="179" y="62">+getLocation()</text>
+<text x="179" y="71">+getLocationString()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="372" y="309" width="110" height="17" />
+<line x1="372" y1="321" x2="482" y2="321" />
+<line x1="372" y1="324" x2="482" y2="324" />
+</g>
+<g stroke="none">
+<text x="373" y="318">std::basic_string&lt;char&gt;</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="412" y="95" width="127" height="71" />
+<line x1="412" y1="116" x2="539" y2="116" />
+<line x1="412" y1="137" x2="539" y2="137" />
+</g>
+<g stroke="none">
+<text x="413" y="104">Location</text>
+<text x="413" y="113">examples/simple</text>
+<text x="413" y="125">-int mX</text>
+<text x="413" y="134">-int mY</text>
+<text x="413" y="146">+setPosition(Location loc)</text>
+<text x="413" y="155">+getLocationString()</text>
+<text x="413" y="164">+Location(int x, int y)</text>
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="72" y1="110" x2="93" y2="240" />
-<circle cx="74" cy="123" r="5" style="fill:#ffffff" />
-<circle cx="76" cy="139" r="5" style="fill:#000000" />
-<circle cx="76" cy="139" r="2" style="fill:#000000" />
-<polygon points="72,110 69,118 74,123 77,116 72,110 " style="fill:#000000" />
-<line x1="110" y1="95" x2="508" y2="167" />
-<circle cx="123" cy="97" r="5" style="fill:#ffffff" />
-<line x1="110" y1="84" x2="282" y2="66" />
-<circle cx="123" cy="82" r="5" style="fill:#ffffff" />
-<line x1="110" y1="105" x2="334" y2="200" />
-<circle cx="122" cy="110" r="5" style="fill:#ffffff" />
-<line x1="121" y1="240" x2="296" y2="92" />
-<circle cx="131" cy="230" r="5" style="fill:#ffffff" />
-<line x1="137" y1="258" x2="334" y2="233" />
-<circle cx="166" cy="254" r="5" style="fill:#ffffff" />
-<circle cx="166" cy="254" r="2" style="fill:#ffffff" />
-<polygon points="137,258 145,261 150,257 144,253 137,258 " style="fill:#000000" />
-<line x1="137" y1="245" x2="206" y2="215" />
-<circle cx="178" cy="226" r="5" style="fill:#ffffff" />
-<circle cx="178" cy="226" r="2" style="fill:#ffffff" />
-<polygon points="206,215 193,215 197,225 206,215 " style="fill:#ffffff" />
-<line x1="137" y1="266" x2="377" y2="290" />
-<circle cx="150" cy="267" r="5" style="fill:#ffffff" />
-<line x1="508" y1="148" x2="382" y2="85" />
-<circle cx="394" cy="91" r="5" style="fill:#ffffff" />
-<circle cx="408" cy="98" r="5" style="fill:#000000" />
-<circle cx="408" cy="98" r="2" style="fill:#000000" />
-<polygon points="382,85 386,92 394,91 390,85 382,85 " style="fill:#000000" />
-<line x1="508" y1="195" x2="462" y2="209" />
-<circle cx="475" cy="204" r="5" style="fill:#ffffff" />
-<circle cx="490" cy="200" r="5" style="fill:#000000" />
-<circle cx="490" cy="200" r="2" style="fill:#000000" />
-<line x1="530" y1="213" x2="441" y2="287" />
-<circle cx="519" cy="221" r="5" style="fill:#ffffff" />
-<line x1="344" y1="92" x2="386" y2="195" />
-<circle cx="380" cy="182" r="5" style="fill:#ffffff" />
-<circle cx="374" cy="167" r="5" style="fill:#ffffff" />
-<circle cx="374" cy="167" r="2" style="fill:#ffffff" />
-<polygon points="386,195 387,187 381,183 379,190 386,195 " style="fill:#000000" />
-<line x1="311" y1="92" x2="244" y2="189" />
-<circle cx="293" cy="116" r="5" style="fill:#ffffff" />
-<circle cx="293" cy="116" r="2" style="fill:#ffffff" />
-<polygon points="311,92 300,99 309,105 311,92 " style="fill:#ffffff" />
-<line x1="334" y1="217" x2="277" y2="208" />
-<polygon points="334,217 327,210 331,217 326,221 334,217 " style="fill:#ffffff" />
-<circle cx="320" cy="214" r="5" style="fill:#ffffff" />
-<circle cx="313" cy="213" r="2" style="fill:#ffffff" />
-<circle cx="306" cy="212" r="5" style="fill:#ffffff" />
-<circle cx="306" cy="212" r="2" style="fill:#ffffff" />
-<polygon points="277,208 288,215 290,205 277,208 " style="fill:#ffffff" />
-<line x1="413" y1="257" x2="429" y2="287" />
-<circle cx="419" cy="269" r="5" style="fill:#ffffff" />
+<line x1="62" y1="92" x2="83" y2="247" />
+<circle cx="63" cy="105" r="5" style="fill:#ffffff" />
+<circle cx="66" cy="121" r="5" style="fill:#000000" />
+<circle cx="66" cy="121" r="2" style="fill:#000000" />
+<polygon points="62,92 59,100 63,105 67,99 62,92 " style="fill:#000000" />
+<line x1="100" y1="92" x2="306" y2="204" />
+<circle cx="112" cy="98" r="5" style="fill:#ffffff" />
+<line x1="101" y1="64" x2="178" y2="50" />
+<circle cx="114" cy="61" r="5" style="fill:#ffffff" />
+<line x1="101" y1="75" x2="412" y2="121" />
+<circle cx="114" cy="77" r="5" style="fill:#ffffff" />
+<line x1="126" y1="264" x2="297" y2="242" />
+<circle cx="155" cy="260" r="5" style="fill:#ffffff" />
+<circle cx="155" cy="260" r="2" style="fill:#ffffff" />
+<polygon points="126,264 134,267 139,263 133,259 126,264 " style="fill:#000000" />
+<line x1="116" y1="247" x2="173" y2="209" />
+<circle cx="148" cy="225" r="5" style="fill:#ffffff" />
+<circle cx="148" cy="225" r="2" style="fill:#ffffff" />
+<polygon points="173,209 160,211 166,220 173,209 " style="fill:#ffffff" />
+<line x1="98" y1="247" x2="210" y2="73" />
+<circle cx="105" cy="235" r="5" style="fill:#ffffff" />
+<line x1="126" y1="274" x2="372" y2="310" />
+<circle cx="139" cy="276" r="5" style="fill:#ffffff" />
+<line x1="297" y1="221" x2="232" y2="205" />
+<polygon points="297,221 291,214 294,221 288,224 297,221 " style="fill:#ffffff" />
+<circle cx="283" cy="217" r="5" style="fill:#ffffff" />
+<circle cx="276" cy="215" r="2" style="fill:#ffffff" />
+<circle cx="261" cy="212" r="5" style="fill:#ffffff" />
+<circle cx="261" cy="212" r="2" style="fill:#ffffff" />
+<polygon points="232,205 243,213 245,203 232,205 " style="fill:#ffffff" />
+<line x1="341" y1="204" x2="250" y2="73" />
+<circle cx="333" cy="192" r="5" style="fill:#ffffff" />
+<circle cx="323" cy="179" r="5" style="fill:#ffffff" />
+<circle cx="323" cy="179" r="2" style="fill:#ffffff" />
+<polygon points="341,204 341,196 334,193 333,201 341,204 " style="fill:#000000" />
+<line x1="386" y1="266" x2="421" y2="309" />
+<circle cx="394" cy="276" r="5" style="fill:#ffffff" />
+<line x1="395" y1="204" x2="438" y2="165" />
+<circle cx="405" cy="194" r="5" style="fill:#ffffff" />
+<circle cx="417" cy="183" r="5" style="fill:#000000" />
+<circle cx="417" cy="183" r="2" style="fill:#000000" />
+<line x1="194" y1="183" x2="222" y2="73" />
+<circle cx="214" cy="102" r="5" style="fill:#ffffff" />
+<circle cx="214" cy="102" r="2" style="fill:#ffffff" />
+<polygon points="222,73 214,84 224,86 222,73 " style="fill:#ffffff" />
+<line x1="280" y1="60" x2="412" y2="108" />
+<circle cx="293" cy="64" r="5" style="fill:#ffffff" />
+<circle cx="308" cy="70" r="5" style="fill:#000000" />
+<circle cx="308" cy="70" r="2" style="fill:#000000" />
+<polygon points="280,60 285,66 293,64 288,59 280,60 " style="fill:#000000" />
+<line x1="429" y1="309" x2="467" y2="165" />
+<circle cx="463" cy="178" r="5" style="fill:#ffffff" />
 </g>
 </svg>

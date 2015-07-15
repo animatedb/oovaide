@@ -43,13 +43,17 @@ bool OovProject::newProject(OovString projectDir, CompoundValue const &excludeDi
             if(FileEnsurePathExists(projectDir))
                 {
                 Project::setProjectDirectory(projectDir);
-                gBuildOptions.setFilename(Project::getProjectFilePath());
-                gGuiOptions.setFilename(Project::getGuiOptionsFilePath());
+                mProjectOptions.setFilename(Project::getProjectFilePath());
+                mGuiOptions.setFilename(Project::getGuiOptionsFilePath());
 
-                gBuildOptions.setNameValue(OptProjectExcludeDirs, excludeDirs.getAsString(';'));
-                if(gBuildOptions.writeFile())
+                OptionsDefaults optionDefaults(mProjectOptions);
+                optionDefaults.setDefaultOptions();
+                mGuiOptions.setDefaultOptions();
+
+                mProjectOptions.setNameValue(OptProjectExcludeDirs, excludeDirs.getAsString(';'));
+                if(mProjectOptions.writeFile())
                     {
-                    gGuiOptions.writeFile();
+                    mGuiOptions.writeFile();
                     bool openedProject = false;
                     // Return is discarded because isProjectIdle was checked previously.
                     openProject(projectDir, openedProject);
@@ -80,9 +84,9 @@ bool OovProject::openProject(OovStringRef projectDir, bool &openedProject)
         {
         mProjectStatus.clear();
         Project::setProjectDirectory(projectDir);
-        ProjectReader reader;
-        if(reader.miniReadOovProject(projectDir))
+        if(mProjectOptions.readProject(projectDir))
             {
+            mGuiOptions.read();
             openedProject = true;
             }
         mProjectStatus.mProjectOpen = openedProject;

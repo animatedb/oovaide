@@ -92,14 +92,16 @@ class Editor:public DebuggerListener
         void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
                 gchar *text, gint len)
             {
-            if(mEditFiles.getEditView())
-                mEditFiles.getEditView()->bufferInsertText(textbuffer, location, text, len);
+            FileEditView *editView = mEditFiles.getEditView(textbuffer);
+            if(editView)
+                { editView->bufferInsertText(textbuffer, location, text, len); }
             }
         void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
                 GtkTextIter *end)
             {
-            if(mEditFiles.getEditView())
-                mEditFiles.getEditView()->bufferDeleteRange(textbuffer, start, end);
+            FileEditView *editView = mEditFiles.getEditView(textbuffer);
+            if(editView)
+                { editView->bufferDeleteRange(textbuffer, start, end); }
             }
 /*
         void drawHighlight()

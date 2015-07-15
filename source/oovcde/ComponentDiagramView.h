@@ -11,15 +11,18 @@
 #include "ComponentDiagram.h"
 #include "Builder.h"
 #include "CairoDrawer.h"
-#include <gtk/gtk.h>
+#include "Options.h"
 
 class ComponentDiagramView
     {
     public:
-        ComponentDiagramView()
+        ComponentDiagramView(GuiOptions const &guiOptions):
+            mGuiOptions(guiOptions)
             {}
         void initialize(IncDirDependencyMapReader const &incMap)
             {
+            mDrawOptions.drawImplicitRelations =
+                    mGuiOptions.getValueBool(OptGuiShowCompImplicitRelations);
             mComponentDiagram.initialize(incMap);
             restart();
             }
@@ -41,9 +44,15 @@ class ComponentDiagramView
             }
         bool isModified() const
             { return true; }
+        ComponentDrawOptions &getDrawOptions()
+            { return mDrawOptions; }
+        GuiOptions const &getGuiOptions()
+            { return mGuiOptions; }
 
     private:
+        GuiOptions const &mGuiOptions;
         ComponentDiagram mComponentDiagram;
+        ComponentDrawOptions mDrawOptions;
         /// Used to calculate font sizes.
         GtkCairoContext mCairoContext;
         void setCairoContext()

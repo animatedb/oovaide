@@ -12,9 +12,6 @@
 #include "OovString.h"
 
 
-BuildOptions gBuildOptions;
-GuiOptions gGuiOptions;
-
 #ifndef __linux__
 /*
 // Return is empty if search string not found
@@ -98,7 +95,7 @@ static void setBuildConfigurationPaths(NameValueFile &file,
     file.setNameValue(optStr, compiler);
     }
 
-void BuildOptions::setDefaultOptions()
+void OptionsDefaults::setDefaultOptions()
     {
     CompoundValue baseArgs;
     CompoundValue extraCppDocArgs;
@@ -148,22 +145,21 @@ void BuildOptions::setDefaultOptions()
     extraCppRlsArgs.addArg("-O3");
 
 #ifdef __linux__
-    setNameValue(OptToolDebuggerPath, "/usr/bin/gdb");
+    mProject.setNameValue(OptToolDebuggerPath, "/usr/bin/gdb");
 #else
     // This works without setting the full path.
     // The path could be /MinGW/bin, or could be /Program Files/mingw-builds/...
-    setNameValue(OptToolDebuggerPath, "gdb.exe");
+    mProject.setNameValue(OptToolDebuggerPath, "gdb.exe");
 #endif
 
-    setBuildConfigurationPaths(*this, BuildConfigAnalysis,
+    setBuildConfigurationPaths(mProject, BuildConfigAnalysis,
             extraCppDocArgs.getAsString(), useCLangBuild);
-    setBuildConfigurationPaths(*this, BuildConfigDebug,
+    setBuildConfigurationPaths(mProject, BuildConfigDebug,
             extraCppDbgArgs.getAsString(), useCLangBuild);
-    setBuildConfigurationPaths(*this, BuildConfigRelease,
+    setBuildConfigurationPaths(mProject, BuildConfigRelease,
             extraCppRlsArgs.getAsString(), useCLangBuild);
 
-    setNameValue(OptBaseArgs, baseArgs.getAsString());
-
+    mProject.setNameValue(OptBaseArgs, baseArgs.getAsString());
     }
 
 void GuiOptions::setDefaultOptions()
@@ -187,12 +183,12 @@ void GuiOptions::setDefaultOptions()
         setNameValue(OptEditorPath, "\\Windows\\notepad.exe");
     #endif
     */
-    #ifdef __linux__
-        setNameValue(OptGuiEditorPath, "./oovEdit");
-    #else
-        setNameValue(OptGuiEditorPath, "oovEdit.exe");
-    #endif
-        setNameValue(OptGuiEditorLineArg, "+");
+#ifdef __linux__
+    setNameValue(OptGuiEditorPath, "./oovEdit");
+#else
+    setNameValue(OptGuiEditorPath, "oovEdit.exe");
+#endif
+    setNameValue(OptGuiEditorLineArg, "+");
     }
 
 void GuiOptions::read()

@@ -73,7 +73,7 @@ void PortionDiagramView::viewClassSource()
     ModelClassifier const *classifier = mPortionDiagram.getCurrentClass();
     if(classifier && classifier->getModule())
         {
-        viewSource(classifier->getModule()->getModulePath(),
+        viewSource(mGuiOptions, classifier->getModule()->getModulePath(),
         classifier->getLineNum());
         }
     }

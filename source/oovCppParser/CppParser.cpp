@@ -14,6 +14,7 @@
 #define off_t _off_t
 #include <unistd.h>             // for unlink
 #include <limits.h>
+#include <algorithm>
 
 
 // This must save a superset of what gets written to the file. For exmample,
@@ -1051,26 +1052,46 @@ CXChildVisitResult CppParser::visitTranslationUnitForIncludes(CXCursor cursor,
                 FilePath absEdFn;
                 absEdFn.getAbsolutePath(includedFn, FP_File);
 
-                // Find the base path minus the included path. This is for
-                // includes like "include <gtk/gtk.h>"
-                FilePath edFullPath(absEdFn, FP_File);
-                FilePath edName(includedNameString, FP_File);
-#ifndef __linux__
-                StringToLower(edFullPath);
-                StringToLower(edName);
-#endif
-                size_t pos = edFullPath.find(edName, absEdFn.length() -
-                        includedNameString.length());
-                if(pos != std::string::npos)
+                // For each included file listed in the source, the include path for
+                // the file is stored, and then the include string from the source file.
+
+                // If it is a relative path, then the include path is the path
+                // of the source file.
+                if(includedNameString[0] == '.')
                     {
-                    absEdFn.insert(pos, 1, ';');
+                    FilePath dirSepFilename(absErFn, FP_File);
+                    dirSepFilename.discardFilename();
+                    dirSepFilename += ';';
+                    dirSepFilename +=includedNameString;
+                    absEdFn = dirSepFilename;
                     }
                 else
                     {
-                    fprintf(stderr, "Unable to make oovcde-incdeps.txt: \n   %s\n",
-                            absEdFn.c_str());
-                    DebugAssert(__FILE__, __LINE__);
+                    // Find the base path minus the included path. This is for
+                    // includes like "include <gtk/gtk.h>"
+                    FilePath edFullPath(absEdFn, FP_File);
+                    FilePath edName(includedNameString, FP_File);
+    #ifndef __linux__
+                    StringToLower(edFullPath);
+                    StringToLower(edName);
+    #endif
+                    size_t pos = edFullPath.find(edName, absEdFn.length() -
+                            includedNameString.length());
+                    if(pos != std::string::npos)
+                        {
+                        absEdFn.insert(pos, 1, ';');
+                        }
+                    else
+                        {
+                        fprintf(stderr, "Unable to make %s: \n   %s\n",
+                            mIncDirDeps.getFilename().c_str(), absEdFn.c_str());
+                        fflush(stdout);
+                        DebugAssert(__FILE__, __LINE__);
+                        }
                     }
+
+//printf("%s\n  %s\n", absErFn.c_str(), absEdFn.c_str());
+//fflush(stdout);
                 mIncDirDeps.insert(absErFn, absEdFn);
                 }
             }

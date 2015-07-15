@@ -107,6 +107,10 @@ bool FileIsFileOnDisk(OovStringRef const path);
 bool FileIsDirOnDisk(OovStringRef const path);
 bool FileGetFileTime(OovStringRef const path, time_t &time);
 void FileDelete(OovStringRef const path);
+// Windows can return from a delete file or directory call before it
+// is finished being deleted.  It may be related to TortoiseSvn keeping
+// files open.
+void FileWaitForDirDeleted(OovStringRef const path, int waitMs=10000);
 void FileRename(OovStringRef const oldPath, OovStringRef const newPath);
 
 template<typename T_Str> class FilePathRefInterface
@@ -146,7 +150,8 @@ template<typename T_Str> class FilePathRefInterface
         OovString getAsWindowsPath() const
             { return FilePathGetAsWindowsPath(getThisStr()); }
 #endif
-
+        bool hasExtension() const
+            { return FilePathHasExtension(getThisStr()); }
         bool matchExtension(OovStringRef const path) const
             { return FilePathMatchExtension(getThisStr(), path); }
         bool isDirOnDisk() const

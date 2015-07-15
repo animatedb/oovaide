@@ -8,6 +8,7 @@
 #include "FilePath.h"
 #include "OovString.h"
 #include <string.h>
+#include "File.h"       // For sleepMs at the moment.
 #ifdef __linux__
 #include <unistd.h>
 #else
@@ -430,6 +431,25 @@ bool FileIsDirOnDisk(OovStringRef const path)
 void FileDelete(OovStringRef const path)
     {
     unlink(path.getStr());
+    }
+
+void FileWaitForDirDeleted(OovStringRef const path, int waitMs)
+    {
+#ifndef __linux__
+    int minWait = 100;
+    int count = waitMs / minWait;
+    for(int tries=0; tries<count; tries++)
+        {
+        if(!FileIsDirOnDisk(path))
+            {
+            break;
+            }
+        else
+            {
+            sleepMs(minWait);
+            }
+        }
+#endif
     }
 
 void FileRename(OovStringRef const  oldPath, OovStringRef const  newPath)

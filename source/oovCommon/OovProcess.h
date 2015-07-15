@@ -26,8 +26,6 @@
 #include "OovProcessArgs.h"
 
 
-void sleepMs(int ms);
-
 /// @param procPath Path to executable
 /// @param argv List of arguments, last one must be nullptr.
 int spawnNoWait(OovStringRef const procPath, char const * const *argv);
@@ -241,6 +239,8 @@ class OovPipeProcessWindows
     };
 #endif
 
+/// This creates a process, but does not create a separate thread for
+/// listening to the pipes for the process.
 class OovPipeProcess
     {
     public:
@@ -255,6 +255,7 @@ class OovPipeProcess
         void childProcessClose();
         void childProcessKill();
 
+        /// Creates the process, listens to the pipes, and closes when done.
         bool spawn(OovStringRef const procPath, char const * const * argv,
                 OovProcessListener &listener, int &exitCode);
         bool isArgLengthOk(int len) const
@@ -275,6 +276,7 @@ class OovPipeProcess
     };
 
 
+/// Creates a thread, and listens to pipes on the background thread.
 /// Runs a background process and redirects stdio
 class OovBackgroundPipeProcess:public OovPipeProcess
     {

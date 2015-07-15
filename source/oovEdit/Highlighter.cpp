@@ -137,10 +137,11 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             {
             mSourceFilename = fileName;
             CXIndex index = clang_createIndex(1, 1);
-            mTransUnitMutex.lock();
+            {
+            std::lock_guard<std::mutex> lock(mTransUnitMutex);
             mTransUnit = clang_parseTranslationUnit(index, fileName,
                 clang_args, static_cast<int>(num_clang_args), 0, 0, options);
-            mTransUnitMutex.unlock();
+            }
 
 #if(0)
             printf("%s\n", fileName);
@@ -163,14 +164,15 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             file.Filename = mSourceFilename.c_str();
             file.Contents = buffer;
             file.Length = bufLen;
-            mTransUnitMutex.lock();
-            int stat = clang_reparseTranslationUnit(mTransUnit, 1, &file, options);
-            if(stat != 0)
+            std::lock_guard<std::mutex> lock(mTransUnitMutex);
                 {
-                clang_disposeTranslationUnit(mTransUnit);
-                mTransUnit = nullptr;
+                int stat = clang_reparseTranslationUnit(mTransUnit, 1, &file, options);
+                if(stat != 0)
+                    {
+                    clang_disposeTranslationUnit(mTransUnit);
+                    mTransUnit = nullptr;
+                    }
                 }
-            mTransUnitMutex.unlock();
             }
         mSourceFile = clang_getFile(mTransUnit, fileName);
         }
@@ -182,12 +184,11 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
 
 void Tokenizer::tokenize(/*int startLine, int endLine, */TokenRange &tokens)
     {
-    mTransUnitMutex.lock();
+    std::lock_guard<std::mutex> lock(mTransUnitMutex);
     if(mTransUnit)
         {
         tokens.tokenize(mTransUnit/*, mSourceFile, startLine, endLine*/);
         }
-    mTransUnitMutex.unlock();
     }
 
 
@@ -327,7 +328,7 @@ void Tokenizer::getLineColumn(size_t charOffset, unsigned int &line, unsigned in
 bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
         size_t &line)
     {
-    mTransUnitMutex.lock();
+    std::lock_guard<std::mutex> lock(mTransUnitMutex);
     CXCursor startCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
     DUMP_PARSE("find:start cursor", startCursor);
     // Instantiating type - <class> <type> - CXCursor_TypeRef
@@ -399,7 +400,6 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
                 }
             }
         }
-    mTransUnitMutex.unlock();
     return(fn.size() > 0);
     }
 
@@ -501,7 +501,7 @@ OovStringVec Tokenizer::getMembers(int offset)
     OovStringVec members;
     visitClassData data(members);
     // The start cursor is probably a MemberRefExpr.
-    mTransUnitMutex.lock();
+    std::lock_guard<std::mutex> lock(mTransUnitMutex);
     CXCursor memberRefCursor = getCursorAtOffset(mTransUnit, mSourceFile, offset);
     DUMP_PARSE_INT("getMembers", offset);
     DUMP_PARSE("getMembers:memberref", memberRefCursor);
@@ -523,7 +523,6 @@ OovStringVec Tokenizer::getMembers(int offset)
         {
 //      myGetCursorAtOffset(mTransUnit, mSourceFile, offset);
         }
-    mTransUnitMutex.unlock();
     return members;
     }
 #endif

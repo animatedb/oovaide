@@ -11,23 +11,8 @@
 #include <vector>
 #include "Project.h"
 
-class BuildOptions:public NameValueFile
-    {
-    public:
-        // Warning: project must be set up before calling this.
-        bool read()
-            {
-            setFilename(Project::getProjectFilePath());
-            return NameValueFile::readFile();
-            }
-        void setDefaultOptions();
-    private:
-        bool readFile();        // Prevent calling NameValueFile - Not defined
-    };
 
-
-#define OptBuildConfigs "BuildConfigs"
-
+// These options are saved in the oovcde-gui.txt file
 #define OptGuiShowAttributes "ShowAttributes"
 #define OptGuiShowOperations "ShowOperations"
 #define OptGuiShowOperParams "ShowOperParams"
@@ -46,19 +31,31 @@ class BuildOptions:public NameValueFile
 #define OptGuiEditorPath "EditorPath"
 #define OptGuiEditorLineArg "EditorLineArg"
 
+
+// This is for the oovcde.txt file. Typically use ProjectReader directly for options.
+class OptionsDefaults
+    {
+    public:
+        OptionsDefaults(ProjectReader &project):
+            mProject(project)
+            {}
+        void setDefaultOptions();
+
+    private:
+        ProjectReader &mProject;
+    };
+
+// This is for the oovcde-gui.txt file
 class GuiOptions:public NameValueFile
     {
     public:
+        OovString getEditorPath() const
+            { return getValue(OptGuiEditorPath); }
         void setDefaultOptions();
-        // Warning: project must be set up before calling this.
         void read();
 
     private:
-        bool readFile();        // Prevent calling NameValueFile - Not defined
+        void readFile();        // Not defined to prevent use.
     };
-
-extern BuildOptions gBuildOptions;
-extern GuiOptions gGuiOptions;
-
 
 #endif /* OPTIONS_H_ */

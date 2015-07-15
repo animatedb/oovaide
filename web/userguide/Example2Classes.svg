@@ -1,161 +1,162 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="565" height="434">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="552" height="368">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="24" y="290" width="133" height="143" />
-<line x1="24" y1="303" x2="157" y2="303" />
-<polygon points="137,311 149,316 149,306 137,311 " style="fill:#ffffff" />
-<polygon points="137,325 144,329 151,325 144,321 137,325 " style="fill:#ffffff" />
-<polygon points="137,339 144,343 151,339 144,335 137,339 " style="fill:#000000" />
-<polygon points="137,353 145,358 141,353 145,348 137,353 " style="fill:#ffffff" />
-<circle cx="137" cy="367" r="5" style="fill:#ffffff" />
-<circle cx="137" cy="381" r="5" style="fill:#ffffff" />
-<circle cx="144" cy="381" r="2" style="fill:#ffffff" />
-<circle cx="137" cy="395" r="5" style="fill:#ffffff" />
-<circle cx="137" cy="395" r="2" style="fill:#ffffff" />
-<circle cx="137" cy="409" r="5" style="fill:#ffffff" />
-<circle cx="137" cy="409" r="2" style="fill:#000000" />
-<circle cx="137" cy="423" r="5" style="fill:#000000" />
-<circle cx="137" cy="423" r="2" style="fill:#000000" />
+<rect x="11" y="224" width="133" height="143" />
+<line x1="11" y1="237" x2="144" y2="237" />
+<polygon points="124,245 136,250 136,240 124,245 " style="fill:#ffffff" />
+<polygon points="124,259 131,263 138,259 131,255 124,259 " style="fill:#ffffff" />
+<polygon points="124,273 131,277 138,273 131,269 124,273 " style="fill:#000000" />
+<polygon points="124,287 132,292 128,287 132,282 124,287 " style="fill:#ffffff" />
+<circle cx="124" cy="301" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="315" r="5" style="fill:#ffffff" />
+<circle cx="131" cy="315" r="2" style="fill:#ffffff" />
+<circle cx="124" cy="329" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="329" r="2" style="fill:#ffffff" />
+<circle cx="124" cy="343" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="343" r="2" style="fill:#000000" />
+<circle cx="124" cy="357" r="5" style="fill:#000000" />
+<circle cx="124" cy="357" r="2" style="fill:#000000" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="25" y="299">Relations Key</text>
-<text x="25" y="313">Generalization</text>
-<text x="25" y="327">Aggregation(reference)</text>
-<text x="25" y="341">Composition(owned)</text>
-<text x="25" y="355">Const</text>
-<text x="25" y="369">Method Variable</text>
-<text x="25" y="383">Method Parameter</text>
-<text x="25" y="397">Public</text>
-<text x="25" y="411">Protected</text>
-<text x="25" y="425">Private</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="32" y="22" width="147" height="71" />
-<line x1="32" y1="43" x2="179" y2="43" />
-<line x1="32" y1="82" x2="179" y2="82" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="33" y="31">WoolWorld</text>
-<text x="33" y="40">examples/staticlib/MainClients</text>
-<text x="33" y="52">-BlackSheep sheep</text>
-<text x="33" y="61">-Master master</text>
-<text x="33" y="70">-Dame dame</text>
-<text x="33" y="79">-LittleBoy boy</text>
-<text x="33" y="91">+WoolWorld()</text>
+<g stroke="none">
+<text x="12" y="233">Relations Key</text>
+<text x="12" y="247">Generalization</text>
+<text x="12" y="261">Aggregation(reference)</text>
+<text x="12" y="275">Composition(owned)</text>
+<text x="12" y="289">Const</text>
+<text x="12" y="303">Method Variable</text>
+<text x="12" y="317">Method Parameter</text>
+<text x="12" y="331">Public</text>
+<text x="12" y="345">Protected</text>
+<text x="12" y="359">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="378" y="275" width="146" height="26" />
-<line x1="378" y1="296" x2="524" y2="296" />
-<line x1="378" y1="299" x2="524" y2="299" />
+<rect x="12" y="14" width="148" height="71" />
+<line x1="12" y1="35" x2="160" y2="35" />
+<line x1="12" y1="74" x2="160" y2="74" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="379" y="284">BlackSheep</text>
-<text x="379" y="293">examples/staticlib/BlackSheep</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="20" y="184" width="147" height="35" />
-<line x1="20" y1="205" x2="167" y2="205" />
-<line x1="20" y1="208" x2="167" y2="208" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="21" y="193">Master</text>
-<text x="21" y="202">examples/staticlib/MainClients</text>
-<text x="21" y="217">+getName()</text>
+<g stroke="none">
+<text x="13" y="23">WoolWorld</text>
+<text x="13" y="32">examples/staticlib/MainClients</text>
+<text x="13" y="44">-BlackSheep sheep</text>
+<text x="13" y="53">-Master master</text>
+<text x="13" y="62">-Dame dame</text>
+<text x="13" y="71">-LittleBoy boy</text>
+<text x="13" y="83">+WoolWorld()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="196" y="184" width="147" height="35" />
-<line x1="196" y1="205" x2="343" y2="205" />
-<line x1="196" y1="208" x2="343" y2="208" />
+<rect x="403" y="220" width="146" height="26" />
+<line x1="403" y1="241" x2="549" y2="241" />
+<line x1="403" y1="244" x2="549" y2="244" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="197" y="193">Dame</text>
-<text x="197" y="202">examples/staticlib/MainClients</text>
-<text x="197" y="217">+getName()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="379" y="184" width="147" height="35" />
-<line x1="379" y1="205" x2="526" y2="205" />
-<line x1="379" y1="208" x2="526" y2="208" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="380" y="193">LittleBoy</text>
-<text x="380" y="202">examples/staticlib/MainClients</text>
-<text x="380" y="217">+getName()</text>
+<g stroke="none">
+<text x="404" y="229">BlackSheep</text>
+<text x="404" y="238">examples/staticlib/BlackSheep</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="178" y="306" width="147" height="44" />
-<line x1="178" y1="327" x2="325" y2="327" />
-<line x1="178" y1="330" x2="325" y2="330" />
+<rect x="12" y="149" width="147" height="35" />
+<line x1="12" y1="170" x2="159" y2="170" />
+<line x1="12" y1="173" x2="159" y2="173" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="179" y="315">Client</text>
-<text x="179" y="324">examples/staticlib/MainClients</text>
-<text x="179" y="339">+takeBag(BlackSheep sheep)</text>
-<text x="179" y="348">+getName()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="346" y="374" width="218" height="26" />
-<line x1="346" y1="395" x2="564" y2="395" />
-<line x1="346" y1="398" x2="564" y2="398" />
-</g>
-<g font-size="10.000000" stroke="none">
-<text x="347" y="383">std::vector&lt;WoolBag,std::allocator&lt;WoolBag&gt;</text>
-<text x="347" y="392">    &gt;</text>
+<g stroke="none">
+<text x="13" y="158">Master</text>
+<text x="13" y="167">examples/staticlib/MainClients</text>
+<text x="13" y="182">+getName()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="178" y="397" width="146" height="35" />
-<line x1="178" y1="418" x2="324" y2="418" />
-<line x1="178" y1="421" x2="324" y2="421" />
+<rect x="203" y="151" width="147" height="35" />
+<line x1="203" y1="172" x2="350" y2="172" />
+<line x1="203" y1="175" x2="350" y2="175" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="179" y="406">WoolBag</text>
-<text x="179" y="415">examples/staticlib/BlackSheep</text>
-<text x="179" y="430">+charconst quantity()</text>
+<g stroke="none">
+<text x="204" y="160">Dame</text>
+<text x="204" y="169">examples/staticlib/MainClients</text>
+<text x="204" y="184">+getName()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="388" y="150" width="147" height="35" />
+<line x1="388" y1="171" x2="535" y2="171" />
+<line x1="388" y1="174" x2="535" y2="174" />
+</g>
+<g stroke="none">
+<text x="389" y="159">LittleBoy</text>
+<text x="389" y="168">examples/staticlib/MainClients</text>
+<text x="389" y="183">+getName()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="192" y="258" width="148" height="44" />
+<line x1="192" y1="279" x2="340" y2="279" />
+<line x1="192" y1="282" x2="340" y2="282" />
+</g>
+<g stroke="none">
+<text x="193" y="267">Client</text>
+<text x="193" y="276">examples/staticlib/MainClients</text>
+<text x="193" y="291">+takeBag(BlackSheep sheep)</text>
+<text x="193" y="300">+getName()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="211" y="340" width="146" height="26" />
+<line x1="211" y1="361" x2="357" y2="361" />
+<line x1="211" y1="364" x2="357" y2="364" />
+</g>
+<g stroke="none">
+<text x="212" y="349">WoolBag</text>
+<text x="212" y="358">examples/staticlib/BlackSheep</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="382" y="309" width="169" height="26" />
+<line x1="382" y1="330" x2="551" y2="330" />
+<line x1="382" y1="333" x2="551" y2="333" />
+</g>
+<g stroke="none">
+<text x="383" y="318">std::vector&lt;WoolBag,std::allocator&lt;</text>
+<text x="383" y="327">  WoolBag&gt; &gt;</text>
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="157" y1="92" x2="432" y2="275" />
-<circle cx="168" cy="99" r="5" style="fill:#ffffff" />
-<circle cx="181" cy="108" r="5" style="fill:#000000" />
-<circle cx="181" cy="108" r="2" style="fill:#000000" />
-<polygon points="157,92 160,100 168,99 165,92 157,92 " style="fill:#000000" />
-<line x1="103" y1="92" x2="94" y2="184" />
-<circle cx="100" cy="121" r="5" style="fill:#000000" />
-<circle cx="100" cy="121" r="2" style="fill:#000000" />
-<polygon points="103,92 98,99 102,105 106,100 103,92 " style="fill:#000000" />
-<line x1="144" y1="92" x2="250" y2="184" />
-<circle cx="166" cy="111" r="5" style="fill:#000000" />
-<circle cx="166" cy="111" r="2" style="fill:#000000" />
-<polygon points="144,92 146,100 154,101 152,93 144,92 " style="fill:#000000" />
-<line x1="178" y1="87" x2="412" y2="184" />
-<circle cx="205" cy="98" r="5" style="fill:#000000" />
-<circle cx="205" cy="98" r="2" style="fill:#000000" />
-<polygon points="178,87 183,94 190,92 186,86 178,87 " style="fill:#000000" />
-<line x1="123" y1="92" x2="240" y2="306" />
-<circle cx="129" cy="104" r="5" style="fill:#ffffff" />
-<line x1="386" y1="301" x2="324" y2="314" />
-<circle cx="337" cy="311" r="5" style="fill:#ffffff" />
-<circle cx="353" cy="307" r="5" style="fill:#000000" />
-<circle cx="353" cy="307" r="2" style="fill:#000000" />
-<line x1="451" y1="301" x2="455" y2="374" />
-<circle cx="451" cy="314" r="5" style="fill:#ffffff" />
-<circle cx="452" cy="330" r="5" style="fill:#000000" />
-<circle cx="452" cy="330" r="2" style="fill:#000000" />
-<polygon points="451,301 447,309 451,314 455,308 451,301 " style="fill:#000000" />
-<line x1="431" y1="301" x2="277" y2="397" />
-<circle cx="419" cy="308" r="5" style="fill:#ffffff" />
-<line x1="114" y1="218" x2="224" y2="306" />
-<circle cx="200" cy="287" r="5" style="fill:#ffffff" />
-<circle cx="200" cy="287" r="2" style="fill:#ffffff" />
-<polygon points="224,306 218,294 211,303 224,306 " style="fill:#ffffff" />
-<line x1="267" y1="218" x2="254" y2="306" />
-<circle cx="258" cy="276" r="5" style="fill:#ffffff" />
-<circle cx="258" cy="276" r="2" style="fill:#ffffff" />
-<polygon points="254,306 261,294 251,293 254,306 " style="fill:#ffffff" />
-<line x1="426" y1="218" x2="285" y2="306" />
-<circle cx="310" cy="290" r="5" style="fill:#ffffff" />
-<circle cx="310" cy="290" r="2" style="fill:#ffffff" />
-<polygon points="285,306 298,304 293,295 285,306 " style="fill:#ffffff" />
-<line x1="251" y1="350" x2="251" y2="397" />
-<circle cx="251" cy="364" r="5" style="fill:#ffffff" />
-<line x1="357" y1="400" x2="324" y2="405" />
+<line x1="160" y1="83" x2="449" y2="220" />
+<circle cx="172" cy="88" r="5" style="fill:#ffffff" />
+<circle cx="187" cy="95" r="5" style="fill:#000000" />
+<circle cx="187" cy="95" r="2" style="fill:#000000" />
+<polygon points="160,83 165,90 172,88 168,83 160,83 " style="fill:#000000" />
+<line x1="86" y1="84" x2="85" y2="149" />
+<circle cx="85" cy="113" r="5" style="fill:#000000" />
+<circle cx="85" cy="113" r="2" style="fill:#000000" />
+<polygon points="86,84 82,91 86,97 90,91 86,84 " style="fill:#000000" />
+<line x1="141" y1="84" x2="249" y2="151" />
+<circle cx="166" cy="99" r="5" style="fill:#000000" />
+<circle cx="166" cy="99" r="2" style="fill:#000000" />
+<polygon points="141,84 145,91 152,91 149,84 141,84 " style="fill:#000000" />
+<line x1="160" y1="72" x2="407" y2="150" />
+<circle cx="188" cy="81" r="5" style="fill:#000000" />
+<circle cx="188" cy="81" r="2" style="fill:#000000" />
+<polygon points="160,72 166,78 173,76 168,71 160,72 " style="fill:#000000" />
+<line x1="113" y1="84" x2="249" y2="258" />
+<circle cx="121" cy="95" r="5" style="fill:#ffffff" />
+<line x1="418" y1="246" x2="340" y2="264" />
+<circle cx="353" cy="260" r="5" style="fill:#ffffff" />
+<circle cx="369" cy="257" r="5" style="fill:#000000" />
+<circle cx="369" cy="257" r="2" style="fill:#000000" />
+<line x1="456" y1="246" x2="304" y2="340" />
+<circle cx="444" cy="253" r="5" style="fill:#ffffff" />
+<line x1="475" y1="246" x2="467" y2="309" />
+<circle cx="473" cy="259" r="5" style="fill:#ffffff" />
+<circle cx="471" cy="275" r="5" style="fill:#000000" />
+<circle cx="471" cy="275" r="2" style="fill:#000000" />
+<polygon points="475,246 470,253 474,259 478,254 475,246 " style="fill:#000000" />
+<line x1="111" y1="183" x2="232" y2="258" />
+<circle cx="206" cy="242" r="5" style="fill:#ffffff" />
+<circle cx="206" cy="242" r="2" style="fill:#ffffff" />
+<polygon points="232,258 224,247 219,256 232,258 " style="fill:#ffffff" />
+<line x1="275" y1="185" x2="267" y2="258" />
+<circle cx="270" cy="228" r="5" style="fill:#ffffff" />
+<circle cx="270" cy="228" r="2" style="fill:#ffffff" />
+<polygon points="267,258 273,246 264,245 267,258 " style="fill:#ffffff" />
+<line x1="432" y1="184" x2="303" y2="258" />
+<circle cx="329" cy="243" r="5" style="fill:#ffffff" />
+<circle cx="329" cy="243" r="2" style="fill:#ffffff" />
+<polygon points="303,258 316,257 311,247 303,258 " style="fill:#ffffff" />
+<line x1="271" y1="302" x2="281" y2="340" />
+<circle cx="274" cy="315" r="5" style="fill:#ffffff" />
+<line x1="357" y1="341" x2="390" y2="335" />
 </g>
 </svg>

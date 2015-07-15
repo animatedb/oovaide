@@ -75,7 +75,7 @@ void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName,
         OovStringVec &libDirs, OovStringVec &sortedLibNames)
     {
     bool didAnything = false;
-    BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
+    BuildPackages &buildPackages = mComponentFinder.getProjectBuildArgs().getBuildPackages();
     std::vector<Package> packages = buildPackages.getPackages();
     for(auto &pkg : packages)
         {
@@ -101,7 +101,7 @@ void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName,
 void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
         OovStringVec &libDirs, IndexedStringVec &sortedLibNames)
     {
-    BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
+    BuildPackages &buildPackages = mComponentFinder.getProjectBuildArgs().getBuildPackages();
     std::vector<Package> packages = buildPackages.getPackages();
 // This probably shouldn't be done since it does not include external packages.
 // Just leave them in the original order specified.
@@ -110,7 +110,7 @@ void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
     /// at the time that a component needs the symbols.
     for(auto &pkg : packages)
         {
-        unsigned int linkOrderIndex = mComponentFinder.getProject().
+        unsigned int linkOrderIndex = mComponentFinder.getProjectBuildArgs().
                 getExternalPackageLinkOrder(pkg.getPkgName());
         if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
             {
@@ -137,7 +137,7 @@ OovStringSet ComponentBuilder::getComponentCompileArgs(OovStringRef const compNa
         ComponentTypesFile const & /* file */ )
     {
     OovStringSet compileArgs;
-    BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
+    BuildPackages &buildPackages = mComponentFinder.getProjectBuildArgs().getBuildPackages();
     for(auto const &pkg : buildPackages.getPackages())
         {
         if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
@@ -169,14 +169,28 @@ IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(OovStringRef cons
         ComponentTypesFile const &file)
     {
     IndexedStringSet linkArgs;
-    BuildPackages &buildPackages = mComponentFinder.getProject().getBuildPackages();
+    BuildPackages &buildPackages = mComponentFinder.getProjectBuildArgs().getBuildPackages();
     for(auto const &pkg : buildPackages.getPackages())
         {
         if(mComponentPkgDeps.isDependent(compName, pkg.getPkgName()))
             {
-            unsigned int linkOrderIndex = mComponentFinder.getProject().
+            unsigned int linkOrderIndex = mComponentFinder.getProjectBuildArgs().
                 getExternalPackageLinkOrder(pkg.getPkgName());
-            for(auto const &arg : pkg.getLinkArgs())
+
+            // It is possible to look at special handling of pthreads by gcc using
+            //          gcc -dumpspecs | grep pthread
+            // Generally for compiling it uses special flags, and for linking adds the lib.
+            OovStringVec linkArgsVec = pkg.getLinkArgs();
+            // Special handling for pthread
+            OovStringVec compileArgs = pkg.getCompileArgs();
+            for(auto const &arg : compileArgs)
+                {
+                if(arg == "-pthread")
+                    {
+                    linkArgsVec.push_back(arg);
+                    }
+                }
+            for(auto const &arg : linkArgsVec)
                 {
                 linkArgs.insert(IndexedString(linkOrderIndex, arg));
                 }
@@ -276,7 +290,7 @@ void ComponentBuilder::generateDependencies()
             mComponentFinder.getComponentTypesFile();
     OovStringVec compNames = compTypesFile.getComponentNames();
     BuildPackages const &buildPackages =
-            mComponentFinder.getProject().getBuildPackages();
+            mComponentFinder.getProjectBuildArgs().getBuildPackages();
 
     sVerboseDump.logProgress("Generate dependencies");
     // Find component dependencies
@@ -425,6 +439,7 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
     bool success = FileEnsurePathExists(outDir);
     if(success)
         {
+        File stdoutFile;        // This must have a lifetime greater than listener.
         OovString processStr = "oovBuilder Building ";
         processStr += outFile;
         processStr += '\n';
@@ -434,7 +449,6 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
         listener.setProcessIdStr(processStr);
         if(stdOutFn)
             {
-            File stdoutFile;
             // The ar tool must send its output to a file.
             stdoutFile.open(stdOutFn, "a");
             listener.setStdOut(stdoutFile.getFp(), OovProcessStdListener::OP_OutputFile);
@@ -651,7 +665,7 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
 
         // These libs must be after project libs above for some projects.
         // May have to look at a better way of keeping original order.
-        for(const auto &arg : mComponentFinder.getProject().getLinkArgs())
+        for(const auto &arg : mComponentFinder.getProjectBuildArgs().getLinkArgs())
             {
             std::string temp = arg.mString;
             CompoundValue::quoteCommandLineArg(temp);

@@ -159,14 +159,15 @@ void DebuggerGdb::toggleBreakpoint(const DebuggerBreakpoint &br)
         }
     else
         {
-        mBreakpoints.erase(iter);
         if(getChildState() == DCS_ChildPaused)
             {
-            if(br.mBreakpointNumber != -1)
+            DebuggerBreakpoint &delBreakpoint = *iter;
+            if(delBreakpoint.mBreakpointNumber != -1)
                 {
-                sendDeleteBreakpoint(br);
+                sendDeleteBreakpoint(delBreakpoint);
                 }
             }
+        mBreakpoints.erase(iter);
         }
     }
 
@@ -250,6 +251,7 @@ void DebuggerGdb::startGetVariable(OovStringRef const variable)
     cmd.appendInt(mFrameNumber, 10);
     cmd += ' ';
     cmd += variable;
+    mGetVariableName = variable;
     sendMiCommand(cmd);
     }
 
@@ -433,7 +435,10 @@ void DebuggerGdb::handleValue(const std::string &resultStr)
     {
     cDebugResult debRes;
     debRes.parseResult(resultStr);
-    mVarValue = debRes.getAsString();
+    mVarValue = mGetVariableName;
+    mGetVariableName.clear();
+    mVarValue += " : ";
+    mVarValue += debRes.getAsString();
     updateChangeStatus(DCS_Value);
     if(mDebuggerListener)
         mDebuggerListener->DebugOutput(mVarValue);
@@ -511,9 +516,9 @@ void DebuggerGdb::handleResult(const std::string &resultStr)
                     if(variableNamePos != std::string::npos)
                         {
                         variableNamePos++;
-                        if(compareSubstr(resultStr, variableNamePos, "type=") == 0)
+                        if(compareSubstr(resultStr, variableNamePos, "bkpt=") == 0)
                             {
-                            std::string typeStr = getTagValue(resultStr, "type=");
+                            std::string typeStr = getTagValue(resultStr, "type");
                             if(typeStr.compare("breakpoint") == 0)
                                 {
                                 handleBreakpoint(resultStr);

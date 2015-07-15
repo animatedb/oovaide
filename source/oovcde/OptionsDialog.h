@@ -11,6 +11,8 @@
 #include "Builder.h"
 #include "ClassGraph.h"
 #include "Gui.h"
+#include "Project.h"
+#include "Options.h"
 #include "PackagesDialogs.h"
 
 /// Provides an options/preferences/settings dialog. This supports a tabbed
@@ -18,7 +20,7 @@
 class OptionsDialog
     {
     public:
-        OptionsDialog();
+        OptionsDialog(ProjectReader &project, GuiOptions &guiOptions);
         virtual ~OptionsDialog();
         void updateBuildConfig();
         void showScreen();
@@ -32,6 +34,8 @@ class OptionsDialog
         virtual void buildConfig(OovStringRef const name) = 0;
 
     private:
+        ProjectReader &mProjectOptions;
+        GuiOptions &mGuiOptions;
         GuiList mBuildConfigList;
         std::string mCurrentBuildConfig;
         int mDialogRunning;

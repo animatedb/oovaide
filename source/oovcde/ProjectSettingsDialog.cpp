@@ -7,19 +7,21 @@
 
 #include "ProjectSettingsDialog.h"
 #include "Builder.h"
-#include "Options.h"
 
 
-GtkWindow *sParentWindow;
-
+ProjectSettingsDialog *sProjectSettingsDialog;
 
 ProjectSettingsDialog::ProjectSettingsDialog(GtkWindow *parentWindow,
-        bool newProject):
+        ProjectReader &projectOptions,
+        GuiOptions &guiOptions, bool newProject):
     Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("NewProjectDialog")),
             parentWindow),
+    mProjectOptions(projectOptions),
+    mGuiOptions(guiOptions),
+    mParentWindow(parentWindow),
     mNewProject(newProject)
     {
-    sParentWindow = parentWindow;
+    sProjectSettingsDialog = this;
     }
 
 ProjectSettingsDialog::~ProjectSettingsDialog()
@@ -46,7 +48,7 @@ bool ProjectSettingsDialog::runDialog()
         {
         Gui::setText(projDirEntry, Project::getProjectDirectory());
         Gui::setText(srcDirEntry, Project::getSourceRootDirectory());
-        CompoundValue excDirs(gBuildOptions.getValue(OptProjectExcludeDirs), ';');
+        CompoundValue excDirs(mProjectOptions.getValue(OptProjectExcludeDirs), ';');
         Gui::setText(excDirsTextView, excDirs.getAsString('\n'));
         }
 
@@ -77,7 +79,8 @@ extern "C" G_MODULE_EXPORT void on_RootSourceDirButton_clicked(
     {
     PathChooser ch;
     OovString srcRootDir;
-    if(ch.ChoosePath(sParentWindow, "Open Root Source Directory",
+    if(ch.ChoosePath(sProjectSettingsDialog->getParentWindow(),
+            "Open Root Source Directory",
             GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, srcRootDir))
         {
         GtkEntry *dirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
@@ -91,7 +94,8 @@ extern "C" G_MODULE_EXPORT void on_OovcdeProjectDirButton_clicked(
     {
     PathChooser ch;
     OovString projectDir;
-    if(ch.ChoosePath(sParentWindow, "Create OOVCDE Project Directory",
+    if(ch.ChoosePath(sProjectSettingsDialog->getParentWindow(),
+            "Create OOVCDE Project Directory",
             GTK_FILE_CHOOSER_ACTION_CREATE_FOLDER,
         projectDir))
         {
@@ -104,11 +108,12 @@ extern "C" G_MODULE_EXPORT void on_OovcdeProjectDirButton_clicked(
 extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
         GtkWidget *button, gpointer data)
     {
-    gBuildOptions.setDefaultOptions();
-    gGuiOptions.setDefaultOptions();
+    OptionsDefaults optionDefaults(sProjectSettingsDialog->getProjectOptions());
+    optionDefaults.setDefaultOptions();
+    sProjectSettingsDialog->getGuiOptions().setDefaultOptions();
     GtkEntry *dirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget("RootSourceDirEntry"));
     FilePath rootSrcText(gtk_entry_get_text(dirEntry), FP_Dir);
-    gBuildOptions.setNameValue(OptSourceRootDir, rootSrcText);
+    sProjectSettingsDialog->getProjectOptions().setNameValue(OptSourceRootDir, rootSrcText);
 
     GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
             "OovcdeProjectDirEntry"));
@@ -124,7 +129,8 @@ extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
     {
     PathChooser ch;
     OovString dir;
-    if(ch.ChoosePath(sParentWindow, "Add Exclude Directory",
+    if(ch.ChoosePath(sProjectSettingsDialog->getParentWindow(),
+            "Add Exclude Directory",
             GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
         {
         GtkTextView *dirTextView = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(

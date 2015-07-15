@@ -5,7 +5,7 @@
 #include "Components.h"
 #include "IncludeMap.h"
 #include "Packages.h"
-#include "Options.h"
+#include "Project.h"
 #include "BuildConfigReader.h"
 
 
@@ -40,7 +40,7 @@ class CMaker
         // First arg is component name, second is path
         // std::map<OovString, OovString> mCachedComponentPaths;
         BuildPackages mBuildPkgs;
-        BuildOptions mBuildOptions;
+        ProjectReader mProject;
         IncDirDependencyMapReader mIncMap;
         bool mVerbose;
 

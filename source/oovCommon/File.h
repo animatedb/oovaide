@@ -12,6 +12,11 @@
 #include "OovString.h"
 #define __NO_MINGW_LFS 1
 
+
+// This is stuck here because we have no better place yet.
+void sleepMs(int ms);
+
+
 /// This is a simple buffered file interface.
 class File
     {

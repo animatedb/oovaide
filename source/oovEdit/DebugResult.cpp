@@ -8,11 +8,22 @@
 #include "DebugResult.h"
 #include "Debug.h"
 
+// A new parsing method should be used, but it seems like a
+// waste of time to do this since other debuggers are using
+// specialized  python pretty printing to format the output
+// for std::string.  It may be more worthwhile to investigate LLDB.
+#include <string.h>
 #define DBG_RESULT 0
 #if(DBG_RESULT)
 //static DebugFile sDbgFile("DbgResult.txt");
 static DebugFile sDbgFile(stdout);
+void debugStr(char const *title, char const *str)
+    { sDbgFile.printflush("%s @%s@\n", title, str); }
+#else
+void debugStr(char const * /*title*/, char const * /*str*/)
+    {}
 #endif
+
 
 static char const *skipSpace(char const *p)
     {
@@ -29,6 +40,9 @@ static bool isEndListC(char c)
 
 static bool isListItemSepC(char c)
     { return(c == ','); }
+
+static bool isStringC(char c)
+    { return(c == '\"'); }
 
 // A name can be:
 //      <std::allocator<char>>
@@ -55,89 +69,49 @@ std::string cDebugResult::getAsString(int level) const
             str += "\n";
             }
         }
-    str += mConst;
-    str += "\n";
+    str += mValue;
 #if(DBG_RESULT)
-    sDbgFile.printflush("getAsString %s\n", str.c_str());
+    debugStr("getAsString", str.c_str());
 #endif
     return str;
     }
 
+// Strings start and end with a quote.
 // The following characters are prefixed with a backslash when they are in
 // quotes:
 //      backslash, doublequote
-static char const *parseString(char const *resultStr, std::string &translatedStr)
+static char const *parseString(char const *valStr, std::string &translatedStr)
     {
 #if(DBG_RESULT)
-sDbgFile.printflush("parseString %s\n", resultStr);
-int transPos = translatedStr.length();
+    debugStr("parseString", valStr);
+    int transPos = translatedStr.length();
 #endif
-    char const *p = resultStr;
-    if(*p == '\"')
+    char const *p = valStr;
+    bool quotedValue = false;
+    if(*p == '\\' && *p == '\"')
         {
-        translatedStr += "\"";
-        p++;
+        quotedValue = true;
+        p+=2;
         }
-    while(*p)
+    while(*p && *p != '\"')
         {
-        if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\\')
+        if(*p == '\\')
             {
-            translatedStr += "\\\\";
-            p+=4;
-            }
-        else if(*p == '\\' && *(p+1) == '\\' && *(p+2) == '\\' && *(p+3) == '\"')
-            {
-            translatedStr += "\\\"";
-            p+=4;
-            }
-        else if(*p == '\\' && *(p+1) == '\"')
-            {
-            translatedStr += "\"";
-            p+=2;
-            break;
+            p++;
+            // Handle a backslash or quote.
+            translatedStr += *p++;
             }
         else
             {
             translatedStr += *p++;
             }
         }
-#if(DBG_RESULT)
-sDbgFile.printflush("   parseString %s\n", translatedStr.substr(transPos).c_str());
-#endif
-    return p;
-    }
-
-// Parses stuff up to the end of an item.
-// An item can be a variable name, or a value/const
-static char const *parseItem(char const *resultStr, std::string &translatedStr)
-    {
-#if(DBG_RESULT)
-sDbgFile.printflush("parseItem %s\n", resultStr);
-int transPos = translatedStr.length();
-#endif
-    char const *start = skipSpace(resultStr);
-    char const *p = start;
-    while(*p)
+    if(quotedValue && *p == '\\' && *p == '\"')
         {
-        if(*p == '\\' && *(p+1) == '\"')
-            {
-            p++;
-            p = parseString(p, translatedStr);
-            }
-        else if(*p == '=' || isListItemSepC(*p) || isEndListC(*p) ||
-            *p == '\"')
-            {
-            p++;
-            break;
-            }
-        else
-            {
-            translatedStr += *p;
-            }
-        p++;
+        p+=2;
         }
 #if(DBG_RESULT)
-sDbgFile.printflush("   parseItem %s\n", translatedStr.substr(transPos).c_str());
+    debugStr("  parseString", translatedStr.substr(transPos).c_str());
 #endif
     return p;
     }
@@ -145,87 +119,78 @@ sDbgFile.printflush("   parseItem %s\n", translatedStr.substr(transPos).c_str())
 char const *cDebugResult::parseVarName(char const *resultStr)
     {
 #if(DBG_RESULT)
-sDbgFile.printflush("parseVarName %s\n", resultStr);
+debugStr("parseVarName", resultStr);
 #endif
     char const *start = skipSpace(resultStr);
     std::string translatedStr;
-    char const *p = parseItem(start, translatedStr);
-//    if(*p == '=')
+    char const *p = strchr(start, '=');
+    if(*p == '=')
         {
-        setVarName(start, static_cast<size_t>(p-start-1));
+        start = skipSpace(start);
+        int len = p-start;
+        if(*(p-1) == ' ')
+            {
+            len--;
+            }
+        setVarName(start, static_cast<size_t>(len));
 #if(DBG_RESULT)
-sDbgFile.printflush("   parseVarName %s\n", std::string(start, p-start).c_str());
+debugStr("   parseVarName", std::string(start, len).c_str());
 #endif
-        //p++;
+        p++;
         }
-//    else
-//      {
-//      p = start;
-//      }
-    return p;
-    }
-
-char const *cDebugResult::parseConst(char const *resultStr)
-    {
-#if(DBG_RESULT)
-sDbgFile.printflush("parseConst %s\n", resultStr);
-#endif
-    char const *start = skipSpace(resultStr);
-    std::string translatedStr;
-    char const * const p = parseItem(start, translatedStr);
-#if(DBG_RESULT)
-sDbgFile.printflush("   parseConst %s\n", translatedStr.c_str());
-#endif
-    mConst = translatedStr;
-    return p;
-    }
-
-// Parse a list of comma separated stuff. The list ends when
-// isEndC returns true.
-char const *cDebugResult::parseList(char const *resultStr)
-    {
-#if(DBG_RESULT)
-sDbgFile.printflush("parseList\n");
-#endif
-    char const *p = resultStr;
-    while(*p)
+    else
         {
-        if(isListItemSepC(*p))
-            {
-            p++;
-            }
-        else if(isEndListC(*p))
-            {
-            break;
-            }
-        else
-            {
-            cDebugResult &res = addResult();
-            p = res.parseResult(p);
-            }
+        p = start;
         }
     return p;
     }
 
+// Parses up to a list separator
 char const *cDebugResult::parseValue(char const *resultStr)
     {
 #if(DBG_RESULT)
-sDbgFile.printflush("parseValue\n");
+debugStr("parseValue", resultStr);
 #endif
-    char const *p = resultStr;
-    if(*p == '\"')
+    char const *p = skipSpace(resultStr);
+    // Some values are quoted in strings, but are not C++ strings.
+    // C++ strings start with a backslash quote.
+    bool quotedValue = false;
+    if(isStringC(*p))
         {
-        p++;
+        quotedValue = true;
+        ++p;
         }
-    if(isStartListC(*p))
+    while(*p)
         {
-        p++;
-        p = parseList(p);
+        if(isStartListC(*p))
+            {
+            cDebugResult &res = addResult();
+            p = res.parseResult(++p);
+            }
+        else if(isEndListC(*p) || isListItemSepC(*p))
+            {
+            p++;
+            break;
+            }
+        else if(*p == '\\' && isStringC(*(p+1)))
+            {
+            // In the GDB/MI interface, the value sometimes starts with a quote, and
+            // ends with a quote and then \r\n.
+            p = parseString(p, mValue);
+            }
+        else if(quotedValue && isStringC(*p))
+            {
+            quotedValue = false;
+            p++;
+            }
+        else
+            {
+            mValue += *p++;
+            }
         }
-    else
-        p = parseConst(p);
-    if(*p == '\"')
-        p++;
+#if(DBG_RESULT)
+debugStr("   parseValue", mValue.c_str());
+#endif
     return p;
     }
 
@@ -270,7 +235,7 @@ sDbgFile.printflush("parseValue\n");
 char const *cDebugResult::parseResult(OovStringRef const resultStr)
     {
 #if(DBG_RESULT)
-sDbgFile.printflush("parseResult %s\n", resultStr);
+debugStr("parseResult", resultStr.getStr());
 #endif
     char const *start = skipSpace(resultStr);
     char const *p = start;

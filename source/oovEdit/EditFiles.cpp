@@ -163,11 +163,32 @@ void EditFiles::onIdle()
         {
         if(fv->mDesiredLine != -1)
             {
+#if(DBG_EDITF)
+            sDbgFile.printflush("onIdle file %s line %d\n",
+                    fv->getFileEditView().getFileName().c_str(),
+                    fv->mDesiredLine);
+#endif
             fv->mFileView.gotoLine(fv->mDesiredLine);
             gtk_widget_grab_focus(GTK_WIDGET(fv->mFileView.getTextView()));
             fv->mDesiredLine = -1;
             }
         }
+    }
+
+FileEditView *EditFiles::getEditView(GtkTextBuffer *textBuffer)
+    {
+    FileEditView *view = nullptr;
+
+    auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
+            [&textBuffer](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+                { return(fv->getFileEditView().getTextBuffer() == textBuffer); });
+    ScrolledFileView *scrolledView = nullptr;
+    if(fvIter != mFileViews.end())
+        {
+        scrolledView = fvIter->get();
+        view = &scrolledView->getFileEditView();
+        }
+    return view;
     }
 
 FileEditView *EditFiles::getEditView()
@@ -346,10 +367,10 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
 
 ScrolledFileView *EditFiles::getScrolledFileView(GtkTextView *textView)
     {
-    ScrolledFileView *scrolledView = nullptr;
     auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
-            [textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+            [&textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
                 { return(fv->getTextView() == textView); });
+    ScrolledFileView *scrolledView = nullptr;
     if(fvIter != mFileViews.end())
         {
         scrolledView = fvIter->get();
@@ -495,6 +516,21 @@ static bool putInMainWindow(char const * const fn)
     return(!header);
     }
 
+GtkNotebook *EditFiles::getBook(FileEditView *view)
+    {
+    GtkNotebook *book = nullptr;
+    ScrolledFileView *scrollView = getScrolledFileView(view->getTextView());
+    auto iter = std::find_if(mFileViews.begin(), mFileViews.end(),
+        [&scrollView](std::unique_ptr<ScrolledFileView> const &scview)
+            { return(scview.get() == scrollView); }
+        );
+    if(iter != mFileViews.end())
+        {
+        book = (*iter)->getBook();
+        }
+    return book;
+    }
+
 void EditFiles::viewFile(OovStringRef const fn, int lineNum)
     {
     FilePath fp;
@@ -517,7 +553,7 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
 
             /// @todo - use make_unique when supported.
             ScrolledFileView *scrolledView = new ScrolledFileView(mDebugger);
-            scrolledView->mFileView.init(GTK_TEXT_VIEW(editView));
+            scrolledView->mFileView.init(GTK_TEXT_VIEW(editView), this);
             scrolledView->mFileView.openTextFile(fp);
             scrolledView->mScrolled = GTK_SCROLLED_WINDOW(scrolled);
             scrolledView->mFilename = fp;
@@ -559,7 +595,7 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
                     G_CALLBACK(on_EditFiles_button_press_event), NULL);
             mFileViews.push_back(std::unique_ptr<ScrolledFileView>(scrolledView));
 #if(DBG_EDITF)
-        sDbgFile.printflush("viewFile count = %d\n", mFileViews.size());
+        sDbgFile.printflush("viewFile count %d, line %d\n", mFileViews.size(), lineNum);
 #endif
             iter = mFileViews.end()-1;
             }
@@ -574,7 +610,10 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
 #if(DBG_EDITF)
         sDbgFile.printflush("viewFile %d\n", pageIndex);
 #endif
-        (*iter)->mDesiredLine = lineNum;
+        if(lineNum > 1)
+            {
+            (*iter)->mDesiredLine = lineNum;
+            }
         }
     }
 
@@ -717,6 +756,33 @@ void EditFiles::showInteractNotebookTab(char const * const tabName)
     Gui::setCurrentPage(book, Gui::findTab(book, tabName));
     }
 
+void EditFiles::setTabText(FileEditView *editView, OovStringRef text)
+    {
+    GtkNotebook *book = getBook(editView);
+    GtkWidget *widget = GTK_WIDGET(getScrolledFileView(editView->getTextView())->
+            getViewTopParent());
+    gtk_notebook_set_tab_label_text(book, widget, text.getStr());
+    }
+
+bool EditFiles::saveAsTextFileWithDialog()
+    {
+    FileEditView *editView = getEditView();
+    bool saved = editView->saveAsTextFileWithDialog();
+    if(saved)
+        {
+        setTabText(editView, editView->getFileName());
+        }
+    return saved;
+    }
+
+void EditFiles::textBufferModified(FileEditView *editView, bool modified)
+    {
+    OovString text = editView->getFileName();
+    if(modified)
+        text += '*';
+    setTabText(editView, text);
+    }
+
 
 extern "C" G_MODULE_EXPORT gboolean on_DebugGo_activate(GtkWidget *widget,
         GdkEvent *event, gpointer user_data)
@@ -767,7 +833,7 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugToggleBreakpoint_activate(GtkWidget 
         if(view)
             {
             int line = Gui::getCurrentLineNumber(view->getTextView());
-            DebuggerBreakpoint bp(view->getFilename(), line);
+            DebuggerBreakpoint bp(view->getFilePath(), line);
             sEditFiles->getDebugger().toggleBreakpoint(bp);
             Gui::redraw(GTK_WIDGET(view->getTextView()));
             }

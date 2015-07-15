@@ -45,18 +45,33 @@ SvgDrawer::~SvgDrawer()
 
 void SvgDrawer::setDiagramSize(GraphSize size)
     {
-    fprintf(mFp, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\" "
-            "width=\"%d\" height=\"%d\">\n", size.x, size.y);
+    mDrawingSize = size;
+    mOutputHeader = true;
     }
 
 void SvgDrawer::setFontSize(double size)
     {
+    mOutputHeader = true;
     DiagramDrawer::setFontSize(size);
     mFontSize = size;
     }
 
+void SvgDrawer::maybeOutputHeader()
+    {
+    if(mOutputHeader)
+        {
+        const char *fontFamily = "Arial, Helvetica, sans-serif";
+        fprintf(mFp, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"\n"
+                "  font-family=\"%s\" font-size=\"%f\" \n"
+                "  width=\"%d\" height=\"%d\">\n",
+                fontFamily, mFontSize, mDrawingSize.x, mDrawingSize.y);
+        mOutputHeader = false;
+        }
+    }
+
 void SvgDrawer::drawRect(const GraphRect &rect)
     {
+    maybeOutputHeader();
     fprintf(mFp, "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" />\n",
             rect.start.x, rect.start.y, rect.size.x, rect.size.y);
     }
@@ -68,12 +83,14 @@ void SvgDrawer::drawLine(const GraphPoint &p1, const GraphPoint &p2, bool dashed
         {
         style = "style=\"stroke-dasharray: 4, 4 \"";
         }
+    maybeOutputHeader();
     fprintf(mFp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" %s/>\n",
             p1.x, p1.y, p2.x, p2.y, style);
     }
 
 void SvgDrawer::drawCircle(const GraphPoint &p, int radius, Color fillColor)
     {
+    maybeOutputHeader();
     fprintf(mFp, "<circle cx=\"%d\" cy=\"%d\" r=\"%d\" style=\"fill:#%06x\" />\n",
             p.x, p.y, radius, fillColor.getRGB());
     }
@@ -82,6 +99,7 @@ void SvgDrawer::drawEllipse(const GraphRect &rect)
     {
     int halfX = rect.size.x/2;
     int halfY = rect.size.y/2;
+    maybeOutputHeader();
     fprintf(mFp, "<ellipse cx=\"%d\" cy=\"%d\" rx=\"%d\" ry=\"%d\" />\n",
             rect.start.x+halfX, rect.start.y+halfY, halfX, halfY);
     }
@@ -97,12 +115,14 @@ void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
         snprintf(str, sizeof(str), "%d ", poly[i].y);
         pointsStr += str;
         }
+    maybeOutputHeader();
     fprintf(mFp, "<polygon points=\"%s\" style=\"fill:#%06x\" />\n",
             pointsStr.c_str(), fillColor.getRGB());
     }
 
 void SvgDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
     {
+    maybeOutputHeader();
     if(start)
         {
         std::string argStr;
@@ -122,15 +142,17 @@ void SvgDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
 
 void SvgDrawer::groupText(bool start)
     {
+    maybeOutputHeader();
         // stroke none means no outline, only fill
     if(start)
-        fprintf(mFp, "<g font-size=\"%f\" stroke=\"none\">\n", mFontSize);
+        fprintf(mFp, "<g stroke=\"none\">\n");
     else
         fprintf(mFp, "</g>\n");
     }
 
 void SvgDrawer::drawText(const GraphPoint &p, OovStringRef const text)
     {
+    maybeOutputHeader();
     std::string str;
     translateText(text, str);
     fprintf(mFp, "<text x=\"%d\" y=\"%d\">%s</text>\n",

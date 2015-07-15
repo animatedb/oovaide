@@ -100,9 +100,8 @@ class Contexts:public JournalListener
 
     private:
         OovProject &mProject;
-        eContexts mCurrentContext;
-
         Journal mJournal;
+        eContexts mCurrentContext;
         // This is the list of components (directories), not modules (source files).
         ComponentList mComponentList;
         IncludeList mIncludeList;

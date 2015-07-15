@@ -22,6 +22,9 @@
 // name appended.
 #define OptExtraBuildArgs "BuildArgsExtra"
 
+// This is for user custom build configurations.
+#define OptBuildConfigs "BuildConfigs"
+
 // These are stored per configuration. They will have the build configuration
 // name appended.
 #define OptToolLibPath "Tool-LibPath"
@@ -147,12 +150,21 @@ typedef std::set<IndexedString> IndexedStringSet;
 class ProjectReader:public NameValueFile
     {
     public:
-        ProjectReader():
-            mProjectPackages(false), mBuildPackages(false), mVerbose(false)
+        ProjectReader()
             {}
-        bool miniReadOovProject(OovStringRef const oovProjectDir);
-        bool readOovProject(OovStringRef const oovProjectDir,
-                OovStringRef const buildConfigName);
+        bool readProject(OovStringRef const oovProjectDir);
+        static OovStringRef const getSrcRootDirectory()
+            { return Project::getSrcRootDirectory(); }
+    };
+
+class ProjectBuildArgs
+    {
+    public:
+        ProjectBuildArgs(ProjectReader &project):
+            mProjectOptions(project), mProjectPackages(false), mBuildPackages(false),
+            mVerbose(false)
+            {}
+        void loadBuildArgs(OovStringRef const buildConfigName);
 
         const ProjectPackages &getProjectPackages() const
             { return mProjectPackages; }
@@ -172,14 +184,13 @@ class ProjectReader:public NameValueFile
         // all components.
         const OovStringVec getAllCrcCompileArgs() const;
         const OovStringVec getAllCrcLinkArgs() const;
-        static OovStringRef const getSrcRootDirectory()
-            { return Project::getSrcRootDirectory(); }
         /// These are absolute directories
         CompoundValue getProjectExcludeDirs() const;
         bool getVerbose() const
             { return mVerbose; }
 
     private:
+        ProjectReader &mProjectOptions;
         OovStringVec mCompileArgs;
         IndexedStringVec mLinkArgs;
         OovStringVec mExternalRootArgs;
@@ -217,5 +228,6 @@ class ProjectReader:public NameValueFile
         void parseArgs(OovStringVec const &strs);
         void handleExternalPackage(OovStringRef const pkgName);
     };
+
 
 #endif /* PROJECT_H_ */

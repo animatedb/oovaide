@@ -105,7 +105,7 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
         OovStringVec strs;
         std::vector<GraphPoint> positions;
         strs.push_back(typeName);
-        splitStrings(strs, 30);
+        splitStrings(strs, 30, 40);
 
         for(auto const &str : strs)
             {

@@ -171,9 +171,10 @@ void ScannedComponentsInfo::initializeComponentTypesFileValues(
 bool ComponentFinder::readProject(OovStringRef const oovProjectDir,
         OovStringRef const buildConfigName)
     {
-    bool success = mProject.readOovProject(oovProjectDir, buildConfigName);
+    bool success = mProject.readProject(oovProjectDir);
     if(success)
         {
+        mProjectBuildArgs.loadBuildArgs(buildConfigName);
         mComponentTypesFile.read();
         }
     return success;
@@ -182,7 +183,7 @@ bool ComponentFinder::readProject(OovStringRef const oovProjectDir,
 void ComponentFinder::scanProject()
     {
     mScanningPackage = nullptr;
-    mExcludeDirs = mProject.getProjectExcludeDirs();
+    mExcludeDirs = mProjectBuildArgs.getProjectExcludeDirs();
     recurseDirs(mProject.getSrcRootDirectory().getStr());
     }
 
@@ -205,8 +206,8 @@ void ComponentFinder::scanExternalProject(OovStringRef const externalRootSrch,
 
 void ComponentFinder::addBuildPackage(Package const &pkg)
     {
-    getProject().getBuildPackages().insertPackage(pkg);
-    getProject().getBuildPackages().savePackages();
+    getProjectBuildArgs().getBuildPackages().insertPackage(pkg);
+    getProjectBuildArgs().getBuildPackages().savePackages();
     }
 
 void ComponentFinder::saveProject(OovStringRef const compFn)
@@ -296,7 +297,7 @@ OovStringVec ComponentFinder::getAllIncludeDirs() const
     InsertOrderedSet projIncs = getScannedInfo().getProjectIncludeDirs();
     OovStringVec incs;
     std::copy(projIncs.begin(), projIncs.end(), std::back_inserter(incs));
-    for(auto const &pkg : getProject().getBuildPackages().getPackages())
+    for(auto const &pkg : getProjectBuildArgs().getBuildPackages().getPackages())
         {
         OovStringVec pkgIncs = pkg.getIncludeDirs();
         std::copy(pkgIncs.begin(), pkgIncs.end(), std::back_inserter(incs));
@@ -309,7 +310,7 @@ void CppChildArgs::addCompileArgList(const ComponentFinder &finder,
         const OovStringVec &incDirs)
     {
     // add cpp args
-    for(const auto &arg : finder.getProject().getCompileArgs())
+    for(const auto &arg : finder.getProjectBuildArgs().getCompileArgs())
         {
         std::string tempArg = arg;
         CompoundValue::quoteCommandLineArg(tempArg);

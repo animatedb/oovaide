@@ -4,8 +4,6 @@
 #include "../../oovCommon/OovThreadedBackgroundQueue.h"
 #include "../../oovCommon/OovThreadedWaitQueue.h"
 #include "../../oovCommon/OovProcess.h"     // For sleepMs
-// Including this causes oovbuilder to crash!
-//#include "../../oovCommon/OovProcess.h"
 
 class WaitQueueUnitTest:public TestCppModule
     {

@@ -46,15 +46,21 @@ class CompletionList
         void setWindowPosition(GdkWindow *compWin, int screenWidth);
     };
 
+class FileEditViewListener
+    {
+    public:
+        virtual void textBufferModified(class FileEditView *view, bool modified) = 0;
+    };
+
 class FileEditView
     {
     public:
         FileEditView():
             mTextView(nullptr), mTextBuffer(nullptr), mCurHistoryPos(0),
             mDoingHistory(false), mLastViewTopOffset(0), mLastViewBotOffset(0),
-            mHighlightTextContentChange(false)
+            mHighlightTextContentChange(false), mListener(nullptr)
             {}
-        void init(GtkTextView *textView);
+        void init(GtkTextView *textView, FileEditViewListener *listener);
         bool openTextFile(OovStringRef const fn);
         bool saveTextFile();
         bool saveAsTextFileWithDialog();
@@ -90,22 +96,22 @@ class FileEditView
             {
             mDoingHistory = true;
             if(mCurHistoryPos > 0)
-            mHistoryItems[--mCurHistoryPos].undo(mTextBuffer);
+                { mHistoryItems[--mCurHistoryPos].undo(mTextBuffer); }
             mDoingHistory = false;
             }
         void redo()
             {
             mDoingHistory = true;
             if(mCurHistoryPos < mHistoryItems.size())
-            mHistoryItems[mCurHistoryPos++].redo(mTextBuffer);
+                { mHistoryItems[mCurHistoryPos++].redo(mTextBuffer); }
             mDoingHistory = false;
             }
         void addHistoryItem(const HistoryItem &item)
             {
             if(mCurHistoryPos < mHistoryItems.size())
-            mHistoryItems[mCurHistoryPos] = item;
+                { mHistoryItems[mCurHistoryPos] = item; }
             else
-            mHistoryItems.push_back(item);
+                { mHistoryItems.push_back(item); }
             mCurHistoryPos++;
             }
         bool doingHistory() const
@@ -129,8 +135,10 @@ class FileEditView
         void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
                 GtkTextIter *end);
         bool handleIndentKeys(GdkEvent *event);
-        std::string getFilename() const
-            { return mFileName; }
+        std::string getFilePath() const
+            { return mFilePath; }
+        // Only the name part of the file path
+        std::string getFileName() const;
         GtkTextBuffer *getTextBuffer() const
             { return mTextBuffer; }
         Highlighter &getHighlighter()
@@ -140,7 +148,7 @@ class FileEditView
             { mHighlightTextContentChange = false; }
 
     private:
-        std::string mFileName;
+        std::string mFilePath;
         GtkTextView *mTextView;
         GtkTextBuffer *mTextBuffer;
         std::vector<HistoryItem> mHistoryItems;
@@ -152,13 +160,19 @@ class FileEditView
         Highlighter mHighlighter;
         Indenter mIndenter;
         CompletionList mCompleteList;
+        FileEditViewListener *mListener;
 
         void setFileName(OovStringRef const fn)
-            { mFileName = fn; }
+            { mFilePath = fn; }
         bool saveAsTextFile(OovStringRef const fn);
         void highlightRequest();
         void moveToIter(GtkTextIter startIter, GtkTextIter *endIter=NULL);
         GuiText getBuffer();
+        void setModified(bool modified)
+            {
+            if(mListener)
+                mListener->textBufferModified(this, modified);
+            }
     };
 
 

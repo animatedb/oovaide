@@ -7,7 +7,7 @@
 
 #include "ClassDrawer.h"
 #include "Project.h"
-#include <algorithm>    // For sort
+#include <algorithm>
 
 struct DrawString
     {
@@ -119,70 +119,98 @@ static void getStrings(const ClassNode &node,
         }
     }
 
+// This isn't exact, because the splitStrings function adds some leading
+// spaces for split lines.
+size_t getNumSegments(OovString const &str, size_t minLength, size_t maxLength)
+    {
+    size_t pos = 0;
+    size_t numSplits = 0;
+    while(pos < str.length())
+        {
+        pos = findSplitPos(str, pos+minLength, pos+maxLength);
+        numSplits++;
+        }
+    return numSplits;
+    }
+
+// Some actual code lengths can be up to 400 characters (Ex: See IncDirDependencyMap)
+// Attempt to split at certain characters, not in the middle of words.
 void splitClassStrings(OovStringVec &nodeStrs,
         OovStringVec &attrStrs, OovStringVec &operStrs,
-        float fontWidth, float fontHeight)
+        float fontHeight)
     {
-    std::vector<size_t> lengths;
-    for(auto const &str : nodeStrs)
+    OovStringVec strs;
+    strs = nodeStrs;
+    strs.insert(strs.end(), attrStrs.begin(), attrStrs.end());
+    strs.insert(strs.end(), operStrs.begin(), operStrs.end());
+
+    size_t maxLength = 0;
+    for(auto const &str : strs)
         {
-        lengths.push_back(str.length());
-        }
-    for(auto const &str : attrStrs)
-        {
-        lengths.push_back(str.length());
-        }
-    for(auto const &str : operStrs)
-        {
-        lengths.push_back(str.length());
-        }
-    std::sort(lengths.begin(), lengths.end());
-    size_t desiredLength = 0;
-    size_t maxLength = lengths[lengths.size()-1];
-    const int MAXCHARS = 40;
-    if(maxLength > MAXCHARS)
-        {
-        if(lengths.size() == 1)
+        size_t len = str.length();
+        if(len > maxLength)
             {
-            desiredLength = MAXCHARS;
-            int len = lengths[0] / MAXCHARS;
-            if(len == 0)
-                len = lengths[0];
-            else
-                desiredLength = MAXCHARS;
+            maxLength = len;
+            }
+        }
+    const int MIN_SPLIT=40;
+    const int SPLIT_WIDTH=10;
+    if(maxLength > MIN_SPLIT)
+        {
+        size_t bestLength = maxLength;
+        size_t desiredSegments = 0;
+        for(size_t length = maxLength; length > MIN_SPLIT/2; length -= SPLIT_WIDTH/2)
+            {
+            size_t totalSegments = 0;
+            for(size_t i=0; i<strs.size(); i++)
+                {
+                totalSegments += getNumSegments(strs[i], length, length + SPLIT_WIDTH);
+                }
+            float ratio = length / totalSegments;
+            if(ratio < 2 || length < MIN_SPLIT)
+                {
+                // Last time through with the desired segments will be
+                // the shortest length
+                if(desiredSegments != 0 && desiredSegments != totalSegments)
+                    {
+                    break;
+                    }
+                desiredSegments = totalSegments;
+                }
+            if(length < bestLength)
+                {
+                bestLength = length;
+                }
+            }
+        if(bestLength != 0)
+            {
+            splitStrings(nodeStrs, bestLength, bestLength + SPLIT_WIDTH);
+            splitStrings(attrStrs, bestLength, bestLength + SPLIT_WIDTH);
+            splitStrings(operStrs, bestLength, bestLength + SPLIT_WIDTH);
+            }
+        }
+    }
+
+static void addDrawStrings(OovStringVec const &strs, GraphPoint startPoint,
+        float fontHeight, float pad, float &y, std::vector<DrawString> &drawStrings)
+    {
+    for(auto const &str : strs)
+        {
+        y += fontHeight + (pad*2);
+        startPoint.y = y;
+        OovString outStr;
+        int xOffset = 0;
+        if(str.compare(0, strlen(getSplitStringPrefix()), getSplitStringPrefix()) == 0)
+            {
+            xOffset += fontHeight;      // Using font height as indent in x
+            outStr = &str.c_str()[2];
             }
         else
             {
-            float biggestRatio = 0;
-            size_t biggestRatioIndex = 0;
-            for(int numSplits=1; numSplits<2; numSplits++)
-                {
-                for(size_t i=lengths.size()/2; i<lengths.size()-1; i++)
-                    {
-                    float ratio = (maxLength - lengths[i]) / (lengths.size() - i);
-                    if(ratio > biggestRatio)
-                        {
-                        biggestRatio = ratio;
-                        biggestRatioIndex = i;
-                        }
-                    }
-                }
-            if(biggestRatio > 8)
-                desiredLength = lengths[biggestRatioIndex];
+            outStr = str;
             }
-        if(desiredLength != 0)
-            {
-            // Split into a maximum of four lines.
-            size_t minSplitLength = maxLength / 4;
-            if(desiredLength < minSplitLength)
-                desiredLength = minSplitLength;
-            if(desiredLength < MAXCHARS)
-                desiredLength = MAXCHARS;
-
-            splitStrings(nodeStrs, desiredLength);
-            splitStrings(attrStrs, desiredLength);
-            splitStrings(operStrs, desiredLength);
-            }
+        GraphPoint drawPoint(startPoint.x + xOffset, y);
+        drawStrings.push_back(DrawString(drawPoint, outStr));
         }
     }
 
@@ -192,7 +220,6 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
         {
         GraphPoint startpos(node.getPosition().getZoomed(mActualZoomX, mActualZoomY));
         float fontHeight = mDrawer.getTextExtentHeight("W");
-        float fontWidth = mDrawer.getTextExtentWidth("W");
         float pad = fontHeight / 7.f;
     //    if(pad < 1)
     //  pad = 1;
@@ -206,7 +233,7 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
         OovStringVec operStrs;
 
         getStrings(node, nodeStrs, attrStrs, operStrs);
-        splitClassStrings(nodeStrs, attrStrs, operStrs, fontWidth, fontHeight);
+        splitClassStrings(nodeStrs, attrStrs, operStrs, fontHeight);
         float y = startpos.y;
         for(auto const &str : nodeStrs)
             {
@@ -215,23 +242,22 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
             }
         y += padLine;   // Space for line.
         line1 = y;
-        for(auto const &str : attrStrs)
-            {
-            y += fontHeight + pad2;
-            drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str));
-            }
+        addDrawStrings(attrStrs, GraphPoint(startpos.x+pad, y), fontHeight,
+                pad, y, drawStrings);
         y += padLine;   // Space for line.
         line2 = y;
-        for(auto const &str : operStrs)
-            {
-            y += fontHeight + pad2;
-            drawStrings.push_back(DrawString(GraphPoint(startpos.x+pad, y), str));
-            }
+        addDrawStrings(operStrs, GraphPoint(startpos.x+pad, y), fontHeight,
+                pad, y, drawStrings);
 
         int maxWidth = 0;
+        int wrapInc = 0;
+        if(attrStrs.size() > 1 || operStrs.size() > 1)
+            {
+            wrapInc = pad;
+            }
         for(const auto &dstr : drawStrings)
             {
-            int width = mDrawer.getTextExtentWidth(dstr.str);
+            int width = mDrawer.getTextExtentWidth(dstr.str) + wrapInc;
             if(width > maxWidth)
                 maxWidth = width;
             }

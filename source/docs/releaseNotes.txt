@@ -18,9 +18,10 @@ Explanations
 Missing Features
 ----------------
 - General
-	- need to clean up analysis dir when files are deleted.
-	- link to https://rawgit.com/animatedb/oovcde/master/web/articles/PortionDiagrams.html
+	- remove mingw dependencies from common - Sleep/chrono/pthread-gthread
+	- BUG: need to clean up analysis dir when files are deleted.
 	- BUG: doing File/New on an existing project doesn't delete package config.
+	- link to https://rawgit.com/animatedb/oovcde/master/web/articles/PortionDiagrams.html
 	- Add UML notes to diagrams, allow color/font selection
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
 	  are the same?
@@ -35,11 +36,13 @@ Missing Features
 	- Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
 - Journal
+	- Provide MRU list of drawings from previous sessions?
 	- Allow more copies of diagrams?
 - Component Diagrams
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
+	- Allow restoring diagrams
 	- BUG: Remove all and hide all children can leave remnant component text
 	- BUG: component text offsets
 	- allow zone diag map path to rename any arbitrary string? getMappedComponentName
@@ -48,6 +51,7 @@ Missing Features
 	- Show related classes for a selected class
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams/List
+	- missing some template inheritance - OovThreadedWaitQueue/Private
 	- Saved drawings don't save preferences for each class
 	- BUG: forward class definitions mess up source line numbers
 	- Show parameter reference/pointer/const in methods
@@ -66,9 +70,15 @@ Missing Features
 	- Grid for class placement, option for grid size
 	- Add filter for class list (GTK search feature exists)
 - Portion Diagrams
+	- View source should go to selected function
+	- Could provide go to class for member variables
+	- Why does example Lamb class show MoveableThing?
 	- Should show connections to this/super
 	- Overloaded methods don't work
 - Sequence Diagrams
+	- Show class members in different color?
+	- Don't discard current operation when switching between class and operation view
+	- Allow restoring diagrams
 	- Improve else/switch case
 	- Show method parameters optionally
 	- Find top level function in diagram, may not be first class.
@@ -82,6 +92,12 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- If Debug objects exist, but no analysis directory, Write file sharing error displays
+		- Changing edit/preferences deletes analysis, but not debug/release
+	- Why is pthread now failing on linux?
+		- add -pthread to link whenever in compile flags?
+	- Build with relative paths doesn't include obj files (TestCpp)
+	- Adding pthreads-stubs to analysis settings in linux hangs
 	- Build of components within/under component directories not supported.
 	- Scan CMake files to find external pkg-config package dependencies
 	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
@@ -128,10 +144,14 @@ Missing Features
 		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Editor
+	- Restore previous session, save loaded files and line numbers when exit
+	- Edit/Preferences working directory ... does not display dialog
+	- Single editor with multitabs doesn't work in linux
+	- oovcde/editor - https://en.wikipedia.org/wiki/Inter-process_communication
 	- Add toolbar buttons
 	- find declaration/definition (also in other translation units)
-	- Hover over tab should display full file path
-	- tab name should change with file rename/save as.
+	- Hover over tab should display full file path in tooltip
+		http://www.velvetcache.org/2007/08/22/gtk-tooltips-on-notebook-tab-labels
 	- editor doesn't handle two files with same name
 	- Prevent file overwrite of another editor at the same time
 	- GtkPlug, XEmbed, Wayland? "gvim -f --socketid %w '%s'"
@@ -143,10 +163,21 @@ Missing Features
 		http://vimdoc.sourceforge.net/htmldoc/netbeans.html
 	- unindenting doesn't work well when tabs are in file
 	- display column/character position
-	- error highlighting
 	- refactor-rename
 
 - Debugger (In editor)
+	http://blogs.msdn.com/b/vcblog/archive/2015/04/29/open-sourcing-visual-studio-s-gdb-lldb-debug-engine.aspx
+	https://github.com/facebook/ds2
+	std::string says "incomplete type" .gdbinit?
+		- libstdc++ is not debug?
+		- use -gstabs3
+		- use -static, -lnk-static-libgcc, and -lnk/ -static-libstdc++?
+		 http://help.lockergnome.com/linux/GDB-capabilities-exploring-STL-classes--ftopict279673.html
+	- Right click menu in editor while debugging should show toggle breakpoint.
+	- Stopping debugger should remove code location indicator arrow. (redraw problem)
+	- variable display should not show "value = ", but should name variable.
+	- Can't paste into control window
+	- No way to debug editor using itself. Add cmd switch to start with new window?
 	- add remote debug (cross debug) gdbserver
 		ssh <hostip> -l <username> "cd ~/yourdir && gdbserver :2345 ~/yourprogram"
 		target machine: gdbserver hostip:2345 yourprogram
@@ -166,7 +197,6 @@ Missing Features
 	- Debug data could display graphs, unicode, etc.
 	- Debug data could be bound to functions in code
 	- Could execute functions in code with parameters
-	- remove breakpoint doesn't work
 	- Control window requires that entering commands must enter on blank line
 	- When build starts, should stop debugger
 	- GDB docs are gdb.info, "The GDB/MI Interface"
@@ -241,6 +271,7 @@ Missing Features
 	- abstract interpretation (show ranges of variables)
 	- C Intermediate Language - http://www.cs.berkeley.edu/~necula/cil/cil016.html
 	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
+		CMake - ExternalProject_Add
 		fpm deb/rpm
 		biicode
 		http://nsis.sourceforge.net/Main_Page

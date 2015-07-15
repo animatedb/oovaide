@@ -200,6 +200,7 @@ class DebuggerGdb:public OovProcessListener, public DebuggerBase
         int mFrameNumber;
         // Thread numbers start at 1
         int mCurrentThread;
+        std::string mGetVariableName;
 
         void resetFrameNumber()
             { mFrameNumber = 0; }

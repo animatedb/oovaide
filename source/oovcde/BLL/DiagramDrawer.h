@@ -12,10 +12,18 @@
 #include "OovString.h"
 #include "Graph.h"
 #include "FastGene.h"
+#include "Options.h"
 
 
 typedef std::vector<GraphPoint> OovPolygon;
-void splitStrings(OovStringVec &strs, size_t desiredLength);
+// Starting from the desired length, find the first position with a
+// break character. Returned pos is always between min and max.
+size_t findSplitPos(std::string const &str, size_t minLength,
+        size_t maxLength);
+inline const char *getSplitStringPrefix()
+    { return "  "; }
+void splitStrings(OovStringVec &strs, size_t minLength,
+        size_t maxLength=std::string::npos);
 
 class DiagramArrow
     {
@@ -109,7 +117,8 @@ class DistinctColors
 
 // This launches an editor to view source code at a certain line number in
 // the source code.
-void viewSource(OovStringRef const module, unsigned int lineNum);
+void viewSource(GuiOptions const &guiOptions, OovStringRef const module,
+        unsigned int lineNum);
 
 
 /// This defines functionality to use a genetic algorithm used to layout the

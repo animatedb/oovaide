@@ -24,7 +24,7 @@
 #else
 #include <windows.h>    // for Sleep
 #endif
-static void sleepMs(int ms)
+void sleepMs(int ms)
     {
 #ifdef __linux__
     usleep(ms*1000);
