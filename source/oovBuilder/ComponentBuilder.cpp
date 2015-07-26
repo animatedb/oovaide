@@ -71,10 +71,11 @@ bool ComponentBuilder::anyIncDirsMatch(OovStringRef const compName,
     return mIncDirMap.anyRootDirsMatch(incRoots, compDir);
     }
 
-void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName,
-        OovStringVec &libDirs, OovStringVec &sortedLibNames)
+void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName)
     {
     bool didAnything = false;
+    OovStringVec libDirs;       // not in library search order, eliminate dups.
+    OovStringVec sortedLibNames;
     BuildPackages &buildPackages = mComponentFinder.getProjectBuildArgs().getBuildPackages();
     std::vector<Package> packages = buildPackages.getPackages();
     for(auto &pkg : packages)
@@ -389,7 +390,6 @@ void ComponentBuilder::buildComponents()
            }
         }
 
-    sVerboseDump.logProgress("Build programs");
 
     // Build programs
     OovStringVec projectLibFileNames;
@@ -397,12 +397,14 @@ void ComponentBuilder::buildComponents()
             projectLibFileNames);
     if(compNames.size() > 0)
         {
+        sVerboseDump.logProgress("Order external libraries");
+
         for(const auto &name : compNames)
             {
-            OovStringVec externalLibDirs;       // not in library search order, eliminate dups.
-            OovStringVec externalOrderedLibNames;
-            makeOrderedPackageLibs(name, externalLibDirs, externalOrderedLibNames);
+            makeOrderedPackageLibs(name);
             }
+
+        sVerboseDump.logProgress("Build programs");
 
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
@@ -585,6 +587,11 @@ void ComponentBuilder::makeLibSymbols(OovStringRef const clumpName,
         OovStringVec const &files)
     {
     std::string objSymbolTool = mToolPathFile.getObjSymbolPath();
+
+    OovString str = "Make lib symbols: ";
+    str += clumpName;
+    str += "\n";
+    sVerboseDump.logProgress(str);
 
     mObjSymbols.makeClumpSymbols(clumpName, files,
             getSymbolBasePath(), objSymbolTool, *this);

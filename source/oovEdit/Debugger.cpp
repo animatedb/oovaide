@@ -127,7 +127,7 @@ bool DebuggerGdb::runDebuggerProcess()
         args.addArg(mDebuggerFilePath);
         args.addArg(mDebuggeeFilePath);
         args.addArg("--interpreter=mi");
-        mBkgPipeProc.startProcess(mDebuggerFilePath, args.getArgv());
+        mBkgPipeProc.startProcess(mDebuggerFilePath, args.getArgv(), false);
 #if(DEBUG_DBG)
         sDbgFile.printflush("Starting process\n");
 #endif

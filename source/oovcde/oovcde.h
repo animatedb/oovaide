@@ -152,6 +152,9 @@ class oovGui
             { mContexts.saveFile(drawFp); }
         void exportFile(FILE *svgFp)
             { mContexts.exportFile(svgFp); }
+        // true = ok to exit
+        bool okToExit()
+            { return mProject.okToExit(); }
         void cppArgOptionsChangedUpdateDrawings()
             { mContexts.cppArgOptionsChangedUpdateDrawings(); }
         std::string getDiagramName(OovStringRef ext);

@@ -115,8 +115,7 @@ class ComponentBuilder:public ComponentTaskQueue
         bool anyIncDirsMatch(OovStringRef const compName,
                 RootDirPackage const &pkg);
         void makePackageLibSymbols(OovStringRef const compName);
-        void makeOrderedPackageLibs(OovStringRef const compName,
-                OovStringVec &libDirs, OovStringVec &sortedLibNames);
+        void makeOrderedPackageLibs(OovStringRef const compName);
         /// For the specified component, get the library directories and library names
         /// from the external build packages.
         void appendOrderedPackageLibs(OovStringRef const compName,

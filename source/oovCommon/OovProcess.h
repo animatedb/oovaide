@@ -214,7 +214,7 @@ class OovPipeProcessWindows
             setStatusProcNotRunning();
             }
         bool windowsCreatePipeProcess(OovStringRef const procPath,
-                char const * const *argv);
+                char const * const *argv, bool showWindows);
         void windowsChildProcessListen(OovProcessListener &listener, int &exitCode);
         void windowsChildProcessClose();
         bool windowsChildProcessSend(OovStringRef const str);
@@ -246,7 +246,8 @@ class OovPipeProcess
     public:
         ~OovPipeProcess()
             { childProcessClose(); }
-        bool createProcess(OovStringRef const procPath, char const * const *argv);
+        bool createProcess(OovStringRef const procPath, char const * const *argv,
+                bool showWindows);
         /// This hangs waiting for the process to finish. It reads the output
         /// pipes from the child process, and sends the output to the listener.
         void childProcessListen(OovProcessListener &listener, int &exitCode);
@@ -277,7 +278,7 @@ class OovPipeProcess
 
 
 /// Creates a thread, and listens to pipes on the background thread.
-/// Runs a background process and redirects stdio
+/// Runs a background process and redirects std output to the listener
 class OovBackgroundPipeProcess:public OovPipeProcess
     {
     public:
@@ -287,9 +288,12 @@ class OovBackgroundPipeProcess:public OovPipeProcess
         ~OovBackgroundPipeProcess();
         void setListener(OovProcessListener *listener)
             { mListener = listener; }
-        bool startProcess(OovStringRef const procPath, char const * const *argv);
+        bool startProcess(OovStringRef const procPath, char const * const *argv,
+            bool showWindows);
         bool isIdle() const
             { return(mThreadState == TS_Idle || mThreadState == TS_Stopping); }
+        bool isRunning() const
+            { return(mThreadState == TS_Running); }
         void stopProcess();
 
         // Do not use. Used by background thread.
@@ -304,6 +308,35 @@ class OovBackgroundPipeProcess:public OovPipeProcess
 #endif
         ThreadStates mThreadState;
         int mChildProcessExitCode;
+    };
+
+class OovStdInListener
+    {
+    public:
+        virtual ~OovStdInListener();
+        virtual void onStdIn(OovStringRef const in, size_t len) = 0;
+        virtual void threadComplete()
+            {}
+    };
+
+// Creates a thread and reads stdin. Any string input (terminated by \n)
+// is sent to the listener.
+class OovBackgroundStdInListener
+    {
+    public:
+        OovBackgroundStdInListener();
+        ~OovBackgroundStdInListener();
+        void setListener(OovStdInListener *listener)
+            { mListener = listener; }
+
+        // Do not use. Used by background thread.
+        void privateBackground();
+
+    private:
+        enum ThreadStates { TS_Running, TS_Stopping };
+        OovStdInListener *mListener;
+        std::thread mThread;
+        ThreadStates mThreadState;
     };
 
 #endif /* PORTABLE_H_ */

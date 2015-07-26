@@ -198,6 +198,9 @@ void ComponentFinder::scanExternalProject(OovStringRef const externalRootSrch,
         rootPkg = *pkg;
     rootPkg.setRootDirPackage(externalRootSrch);
     mScanningPackage = &rootPkg;
+    mAddIncs = rootPkg.needIncs();
+    mAddLibs = rootPkg.needLibs();
+    rootPkg.clearDirScan();
 
     recurseDirs(externalRootDir.getStr());
 
@@ -251,25 +254,31 @@ bool ComponentFinder::processFile(OovStringRef const filePath)
             {
             if(inc)
                 {
-                FilePath path(filePath, FP_File);
-                path.discardFilename();
+                if(mAddIncs)
+                    {
+                    FilePath path(filePath, FP_File);
+                    path.discardFilename();
 
-                mScanningPackage->appendAbsoluteIncDir(path.getDrivePath());
+                    mScanningPackage->appendAbsoluteIncDir(path.getDrivePath());
 
-                // Insert parent for things like #include "gtk/gtk.h" or "sys/stat.h"
-                FilePath parent(path.getParent());
-                if(parent.length() > 0)
-                    mScanningPackage->appendAbsoluteIncDir(parent.getDrivePath());
+                    // Insert parent for things like #include "gtk/gtk.h" or "sys/stat.h"
+                    FilePath parent(path.getParent());
+                    if(parent.length() > 0)
+                        mScanningPackage->appendAbsoluteIncDir(parent.getDrivePath());
 
-                // Insert grandparent for things like "llvm/ADT/APInt.h"
-                FilePath grandparent(parent.getParent());
-                if(grandparent.length() > 0)
-                    mScanningPackage->appendAbsoluteIncDir(grandparent.getDrivePath());
+                    // Insert grandparent for things like "llvm/ADT/APInt.h"
+                    FilePath grandparent(parent.getParent());
+                    if(grandparent.length() > 0)
+                        mScanningPackage->appendAbsoluteIncDir(grandparent.getDrivePath());
+                    }
                 }
             else if(lib)
                 {
-                FilePath path(filePath, FP_File);
-                mScanningPackage->appendAbsoluteLibName(filePath);
+                if(mAddLibs)
+                    {
+                    FilePath path(filePath, FP_File);
+                    mScanningPackage->appendAbsoluteLibName(filePath);
+                    }
                 }
             }
         else

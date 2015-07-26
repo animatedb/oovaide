@@ -479,7 +479,6 @@ static GtkWidget *newTabLabel(OovStringRef const tabText, GtkWidget *viewTopPare
     {
     GtkWidget *box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
     gtk_container_add(GTK_CONTAINER(box), gtk_label_new(tabText));
-    gtk_image_new_from_icon_name("window-close", GTK_ICON_SIZE_MENU);
     GtkButton *button = GTK_BUTTON(gtk_button_new());
     gtk_button_set_relief(button, GTK_RELIEF_NORMAL);
     gtk_button_set_focus_on_click(button, false);

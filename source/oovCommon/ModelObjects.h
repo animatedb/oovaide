@@ -398,9 +398,9 @@ public:
     const ModelOperation *findExactMatchingOperation(const ModelOperation &op) const;
 
     /// @todo - these don't work for overloaded functions.
-    const ModelOperation *getOperation(const std::string &name, bool isConst) const;
-    size_t getOperationIndex(const std::string &name, bool isConst) const;
-    ModelOperation *getOperation(const std::string &name, bool isConst)
+    const ModelOperation *getOperation(OovStringRef const name, bool isConst) const;
+    size_t getOperationIndex(OovStringRef const name, bool isConst) const;
+    ModelOperation *getOperation(OovStringRef const name, bool isConst)
         {
         return const_cast<ModelOperation*>(
                 static_cast<const ModelClassifier*>(this)->getOperation(name, isConst));

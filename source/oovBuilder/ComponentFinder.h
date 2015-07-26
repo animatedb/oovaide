@@ -118,7 +118,8 @@ class ComponentFinder:public dirRecurser
     {
     public:
         ComponentFinder():
-            mProjectBuildArgs(mProject), mScanningPackage(nullptr)
+            mProjectBuildArgs(mProject), mScanningPackage(nullptr),
+            mAddIncs(false), mAddLibs(false)
             {}
         bool readProject(OovStringRef const oovProjectDir,
                 OovStringRef const buildConfigName);
@@ -130,6 +131,8 @@ class ComponentFinder:public dirRecurser
         void scanExternalProject(OovStringRef const externalRootSrch,
                 Package const *pkg=nullptr);
 
+        bool doesBuildPackageExist(OovStringRef pkgName)
+            { return getProjectBuildArgs().getBuildPackages().doesPackageExist(pkgName); }
         void addBuildPackage(Package const &pkg);
 
         /// Adds the components and initial includes to the project components
@@ -174,6 +177,8 @@ class ComponentFinder:public dirRecurser
         ComponentTypesFile mComponentTypesFile;
         ComponentsFile mComponentsFile;
         Package *mScanningPackage;
+        bool mAddIncs;
+        bool mAddLibs;
 
         /// While searching the directories add C++ source files to the
         /// mComponentNames set, and C++ include files to the mIncludeDirs list.

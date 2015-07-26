@@ -16,6 +16,7 @@
 #include "Options.h"
 #include "OovProcess.h"
 #include "OovThreadedBackgroundQueue.h"
+#include "EditorContainer.h"
 
 class ProjectStatus
     {
@@ -77,6 +78,9 @@ class OovProject:public ThreadedWorkBackgroundQueue<OovProject, ProjectBackgroun
     public:
         OovProject():
             mStatusListener(nullptr)
+#if(USE_IPC)
+            , mEditorContainer(mModelData)
+#endif
             {}
         virtual ~OovProject();
 
@@ -133,6 +137,9 @@ class OovProject:public ThreadedWorkBackgroundQueue<OovProject, ProjectBackgroun
             {
             return(getProjectStatus().isIdle());
             }
+        // true = ok to exit
+        bool okToExit()
+            { return mEditorContainer.okToExit(); }
 
         // Called from ThreadedWorkBackgroundQueue
         void processItem(ProjectBackgroundItem const &item)
@@ -146,6 +153,9 @@ class OovProject:public ThreadedWorkBackgroundQueue<OovProject, ProjectBackgroun
         ModelData mModelData;
         IncDirDependencyMapReader mIncludeMap;
         OovBackgroundPipeProcess mBackgroundProc;
+#if(USE_IPC)
+        EditorContainer mEditorContainer;
+#endif
 
         // Called from ThreadedWorkBackgroundQueue through processItem.
         void processAnalysisFiles();

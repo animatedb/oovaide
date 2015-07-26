@@ -16,7 +16,6 @@
 #define TagPkgLibDirSuffix "L"
 #define TagPkgLibNamesSuffix "l"
 #define TagPkgLinkArgsSuffix "Lnk"
-#define TagPkgExtRefSuffix "ER"
 #define TagPkgScannedLibPathsSuffix "ScannedLib"
 
 
@@ -128,14 +127,25 @@ bool RootDirPackage::addUndefinedPackage(OovString const &pkgName, NameValueFile
     return add;
     }
 
+void RootDirPackage::clearDirScan()
+    {
+    if(needIncs())
+        {
+        mIncludeDirs.clear();
+        }
+    if(needLibs())
+        {
+        mLibNames.clear();
+        }
+    }
+
 void RootDirPackage::loadFromMap(OovStringRef const name, NameValueFile const &file)
     {
     mName = name;
 
-    mIncludeDir = getTagVal(file, name, TagPkgIncDirSuffix);
-    mLibDir = getTagVal(file, name, TagPkgLibDirSuffix);
+    mIncludeDirs = getTagVal(file, name, TagPkgIncDirSuffix);
+    mLibDirs = getTagVal(file, name, TagPkgLibDirSuffix);
     mLibNames = getTagVal(file, name, TagPkgLibNamesSuffix);
-    mExternalReferenceDir = getTagVal(file, name, TagPkgExtRefSuffix);
     mRootDir.setPath(getTagVal(file, name, TagPkgRootDirSuffix), FP_Dir);
     mScannedLibFilePaths = getTagVal(file, name, TagPkgScannedLibPathsSuffix);;
     }
@@ -145,10 +155,9 @@ void RootDirPackage::saveToMap(NameValueFile &file) const
     addUndefinedPackage(mName, file);
 
     // Set the data even if the package already exists.
-    setTagVal(file, mName, TagPkgIncDirSuffix, mIncludeDir);
-    setTagVal(file, mName, TagPkgLibDirSuffix, mLibDir);
+    setTagVal(file, mName, TagPkgIncDirSuffix, mIncludeDirs);
+    setTagVal(file, mName, TagPkgLibDirSuffix, mLibDirs);
     setTagVal(file, mName, TagPkgLibNamesSuffix, mLibNames);
-    setTagVal(file, mName, TagPkgExtRefSuffix, mExternalReferenceDir);
     setTagVal(file, mName, TagPkgRootDirSuffix, mRootDir);
     setTagVal(file, mName, TagPkgScannedLibPathsSuffix, mScannedLibFilePaths);
     }
@@ -156,7 +165,7 @@ void RootDirPackage::saveToMap(NameValueFile &file) const
 void RootDirPackage::appendAbsoluteIncDir(OovStringRef const absDir)
     {
     std::string dir = makeRelative(mRootDir, absDir, FP_Dir);
-    appendStr(mIncludeDir, dir);
+    appendStr(mIncludeDirs, dir);
     }
 
 void RootDirPackage::appendAbsoluteLibName(OovStringRef const fn)
@@ -169,11 +178,11 @@ void RootDirPackage::setOrderedLibs(OovStringVec const &libDirs,
         OovStringVec const &libNames)
     {
     mScannedLibFilePaths.clear();
-    mLibDir.clear();
+    mLibDirs.clear();
     for(auto const &dir : libDirs)
         {
         std::string fp = makeRelative(mRootDir, dir, FP_Dir);
-        appendStr(mLibDir, fp);
+        appendStr(mLibDirs, fp);
         }
     mLibNames = CompoundValueRef::getAsString(libNames);
     }
@@ -196,22 +205,12 @@ OovStringVec RootDirPackage::getValAddRootToVector(OovStringRef const val,
 
 OovStringVec RootDirPackage::getIncludeDirs() const
     {
-    return(getValAddRootToVector(mIncludeDir, FP_Dir));
+    return(getValAddRootToVector(mIncludeDirs, FP_Dir));
     }
 
 OovStringVec RootDirPackage::getLibraryDirs() const
     {
-    return(getValAddRootToVector(mLibDir, FP_Dir));
-    }
-
-OovStringVec RootDirPackage::getExtRefDirs() const
-    {
-    std::string extDir = mExternalReferenceDir;
-    if(extDir.length() == 0 && needDirScan())
-        {
-        extDir = "./";
-        }
-    return(getValAddRootToVector(extDir, FP_Dir));
+    return(getValAddRootToVector(mLibDirs, FP_Dir));
     }
 
 OovStringVec RootDirPackage::getLibraryNames() const
@@ -374,6 +373,15 @@ std::vector<Package> BuildPackages::getPackages() const
         packages.push_back(getPackage(name));
         }
     return packages;
+    }
+
+bool BuildPackages::doesPackageExist(OovStringRef pkgName)
+    {
+    std::vector<Package> const &packages = getPackages();
+    auto iter = std::find_if(packages.begin(), packages.end(),
+            [&pkgName](Package const &pkg)
+                { return(pkg.getPkgName() == pkgName.getStr()); });
+    return(iter != packages.end());
     }
 
 

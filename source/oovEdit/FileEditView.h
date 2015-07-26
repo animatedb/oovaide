@@ -14,6 +14,9 @@
 #include "History.h"
 
 
+// This is written so that when the completion list is visible, it should
+// have focus. List navigation keys will be used to move in the list,
+// and other keys will be forwarded to the editor window.
 class CompletionList
     {
     public:

@@ -914,6 +914,16 @@ extern "C" G_MODULE_EXPORT void on_LineStatsMenuitem_activate(
     gOovGui->makeLineStats();
     }
 
+extern "C" G_MODULE_EXPORT gboolean on_TopWindow_delete_event(GtkWidget *button, gpointer data)
+    {
+    bool ok = gOovGui->okToExit();
+    if(!ok)
+        {
+        Gui::messageBox("Please close the editor first");
+        }
+    return !ok;
+    }
+
 extern "C" G_MODULE_EXPORT void on_HelpAboutmenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {

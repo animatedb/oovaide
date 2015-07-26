@@ -11,6 +11,22 @@
 #include "EditFiles.h"
 #include "EditOptions.h"
 #include "OovProcess.h"
+#include <queue>
+
+#define USE_IPC 1
+
+#if(USE_IPC)
+class EditorIpc:public OovStdInListener
+    {
+    public:
+        EditorIpc();
+        void onIdle();
+        virtual void onStdIn(OovStringRef const in, size_t len) override;
+    private:
+        OovBackgroundStdInListener mBackgroundListener;
+        std::queue<OovString> mStdInBuffer;
+    };
+#endif
 
 class Editor:public DebuggerListener
     {
@@ -19,7 +35,8 @@ class Editor:public DebuggerListener
         void init();
         void loadSettings();
         void saveSettings();
-        static gboolean onIdle(gpointer data);
+        static gboolean onIdleCallback(gpointer data);
+        gboolean onIdle(gpointer data);
         void openTextFile(OovStringRef const fn);
         void openTextFile();
         bool saveTextFile();
@@ -132,6 +149,9 @@ class Editor:public DebuggerListener
         OovString mDebugOut;
         EditOptions mEditOptions;
         GuiTree mVarView;
+#if(USE_IPC)
+        EditorIpc mEditorIpc;
+#endif
         void find(OovStringRef const findStr, bool forward, bool caseSensitive);
         void findAndReplace(OovStringRef const findStr, bool forward, bool caseSensitive,
                 OovStringRef const replaceStr);

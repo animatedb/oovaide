@@ -245,6 +245,7 @@ Color DistinctColors::getColor(size_t index)
         static_cast<uint8_t>((colors[index]) & 0xFF)));
     }
 
+#if(!USE_IPC)
 // Returns an empty string if no editor is found.
 static OovString getEditor(GuiOptions const &guiOptions)
     {
@@ -298,7 +299,7 @@ void viewSource(GuiOptions const &guiOptions, OovStringRef const module,
         }
     }
 
-
+#endif
 
 static const int NumGenerations = 30;
 

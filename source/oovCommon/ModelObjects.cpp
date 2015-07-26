@@ -327,12 +327,13 @@ const ModelAttribute *ModelClassifier::getAttribute(const std::string &name) con
     return attr;
     }
 
-size_t ModelClassifier::getOperationIndex(const std::string &name, bool isConst) const
+size_t ModelClassifier::getOperationIndex(OovStringRef const name,
+    bool isConst) const
     {
     size_t index = NoIndex;
     for(size_t i=0; i<mOperations.size(); i++)
         {
-        if(name.compare(mOperations[i]->getName()) == 0 &&
+        if(mOperations[i]->getName().compare(name) == 0 &&
                 mOperations[i]->isConst() == isConst)
             {
             index = i;
@@ -342,7 +343,8 @@ size_t ModelClassifier::getOperationIndex(const std::string &name, bool isConst)
     return index;
     }
 
-size_t ModelClassifier::findExactMatchingOperationIndex(const ModelOperation &matchOp) const
+size_t ModelClassifier::findExactMatchingOperationIndex(
+    const ModelOperation &matchOp) const
     {
     size_t index = NoIndex;
     for(size_t i=0; i<mOperations.size(); i++)
@@ -361,7 +363,8 @@ size_t ModelClassifier::findExactMatchingOperationIndex(const ModelOperation &ma
     return index;
     }
 
-const ModelOperation *ModelClassifier::findExactMatchingOperation(const ModelOperation &op) const
+const ModelOperation *ModelClassifier::findExactMatchingOperation(
+    const ModelOperation &op) const
     {
     ModelOperation *oper = nullptr;
     size_t index = findExactMatchingOperationIndex(op);
@@ -372,7 +375,8 @@ const ModelOperation *ModelClassifier::findExactMatchingOperation(const ModelOpe
     return oper;
     }
 
-const ModelOperation *ModelClassifier::getOperation(const std::string &name, bool isConst) const
+const ModelOperation *ModelClassifier::getOperation(OovStringRef const name,
+    bool isConst) const
     {
     ModelOperation *oper = nullptr;
     size_t index = getOperationIndex(name, isConst);

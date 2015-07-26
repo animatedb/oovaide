@@ -149,7 +149,6 @@ void ProjectPackagesDialog::savePackage(const std::string &pkgName)
                     getEntry("PackageCompileArgsEntry"));
             pkg.setLinkInfo(getEntry("PackageLibDirEntry"), getEntry("PackageLibNamesEntry"),
                     getEntry("PackageLinkArgsEntry"));
-            pkg.setExternalReferenceDir(getEntry("PackageExternRefEntry"));
             mProjectPackages.insertPackage(pkg);
             }
         }
@@ -169,7 +168,6 @@ void ProjectPackagesDialog::selectPackage()
         setEntry("PackageLibNamesEntry", pkg.getLibraryNamesAsString());
         setEntry("PackageLibDirEntry", pkg.getLibraryDirsAsString());
         setEntry("PackageLinkArgsEntry", pkg.getLinkArgsAsStr());
-        setEntry("PackageExternRefEntry", pkg.getExtRefDirsAsString());
         mLastSelectedPackage = pkgName;
         }
     }
@@ -182,7 +180,6 @@ void ProjectPackagesDialog::clearPackageDisplay()
     setEntry("PackageLibNamesEntry", "");
     setEntry("PackageLibDirEntry", "");
     setEntry("PackageLinkArgsEntry", "");
-    setEntry("PackageExternRefEntry", "");
     mLastSelectedPackage.clear();
     }
 

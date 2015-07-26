@@ -18,6 +18,10 @@ Explanations
 Missing Features
 ----------------
 - General
+	- editor IPC
+	- remove sleepMs calls in windowsChildProcessListen
+	- rename oovcde to oovaide?
+	- Make all dialogs have parent windows
 	- remove mingw dependencies from common - Sleep/chrono/pthread-gthread
 	- BUG: need to clean up analysis dir when files are deleted.
 	- BUG: doing File/New on an existing project doesn't delete package config.
@@ -92,6 +96,8 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Some header file changes don't reanalyze new dependent source files?
+		(cause is due to errors don't get reanalyzed?)
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
 		- Changing edit/preferences deletes analysis, but not debug/release
 	- Add pthread to link if in compile switch? (external packages already does this)
@@ -143,7 +149,9 @@ Missing Features
 		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Editor
+	- context help window in linux doesn't go away
 	- Restore previous session, save loaded files and line numbers when exit
+	- Sometimes not all tabs have an X for exiting - newTabLabel
 	- On linux, the line number margin doesn't grow with more digits
 	- Edit/Preferences working directory ... does not display dialog
 	- Single editor with multitabs doesn't work in linux
@@ -224,6 +232,8 @@ Missing Features
 	- BUG: Goto class doesn't change tab to class tab - journal requires this
 
 - Future
+	- dump call stack on crash
+		http://eli.thegreenplace.net/2015/programmatic-access-to-the-call-stack-in-c/
 	- Statistics / Quality measurement
 		amount of const, number of raw pointers, minimal use of new/delete/malloc/...
 		interface complexity, amount of encapsulation, size of exposed interface

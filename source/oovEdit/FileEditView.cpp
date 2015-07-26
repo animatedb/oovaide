@@ -122,7 +122,21 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
             }
 
         mGuiList.clear();
+
+// For some reason in linux, the top widget never gets the focus.
+#ifndef __linux__
         Gui::setVisible(mTopWidget, true);
+#endif
+/*
+        GtkTreePath *path = gtk_tree_path_new_from_string("0");
+        gtk_tree_view_set_cursor(mGuiList.getTreeView(), path, nullptr, false);
+        gtk_tree_path_free(path);
+*/
+//        gtk_widget_set_can_focus(mTopWidget, TRUE);
+//        gtk_window_set_decorated(GTK_WINDOW(mTopWidget), FALSE);
+//        gtk_window_set_type_hint(GTK_WINDOW(mTopWidget), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
+//        gtk_window_set_transient_for(GTK_WINDOW(mTopWidget), main_top_level_window);
+//        gtk_widget_grab_focus(GTK_WIDGET(mGuiList.getTreeView()));
         }
     if(!isModifierKey(key))
         {
@@ -371,16 +385,19 @@ bool FileEditView::openTextFile(OovStringRef const fn)
         {
         fseek(file.getFp(), 0, SEEK_END);
         long fileSize = ftell(file.getFp());
-        fseek(file.getFp(), 0, SEEK_SET);
-        std::vector<char> buf(fileSize);
-        // actualCount can be less than fileSize on Windows due to /r/n
-        int actualCount = fread(&buf.front(), 1, fileSize, file.getFp());
-        if(actualCount > 0)
+        if(fileSize >= 0 && fileSize < 10000000)
             {
-            gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
-            gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+            fseek(file.getFp(), 0, SEEK_SET);
+            std::vector<char> buf(fileSize);
+            // actualCount can be less than fileSize on Windows due to /r/n
+            int actualCount = fread(&buf.front(), 1, fileSize, file.getFp());
+            if(actualCount > 0)
+                {
+                gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
+                gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+                }
+            highlightRequest();
             }
-        highlightRequest();
         }
     return(file.isOpen());
     }

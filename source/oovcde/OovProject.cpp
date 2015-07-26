@@ -230,7 +230,7 @@ bool OovProject::runSrcManager(OovStringRef const buildConfigName,
         }
     if(success)
         {
-        success = mBackgroundProc.startProcess(procPath, args.getArgv());
+        success = mBackgroundProc.startProcess(procPath, args.getArgv(), false);
         }
     return success;
     }

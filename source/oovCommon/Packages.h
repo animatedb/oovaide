@@ -13,18 +13,26 @@
 #include <set>
 
 
-/// This class basically represents two types of packages.
-/// 1. Some packages may be defined and contain library names that are in link
+/// Packages can be in different states.  This mainly applies to Windows.
+/// 1. Some packages may have include dirs defined as '*'. This means search
+///     for include files below the root dir.  Once scanning is performed,
+///     if include files are found, the include paths are filled into the
+///     include dirs.
+///
+/// 2. Some packages may be defined and contain library names that are in link
 ///     dependency order.  They are in GNU linker format, so may or may not
 ///     have extensions.
 ///
-/// 2. Some packages may have no library names.  These packages are processed
-///     by the builder, and the external ref root dir is scanned for libraries
-///     which are put into the lib name field with full path names (when
-///     combined with the root dir and lib dir), but are
+/// 3. Some packages may have library names defined as '*'.  These packages are
+///     processed by the scanner/finder, and the root dir (and lib dir?)
+///      is scanned for libraries which are put into the scanned libs paths
+///     with full path names (when combined with the root dir and lib dir), but are
 ///     not ordered.  When the builder orders them, the lib dir and names
 ///     are updated, and the lib names are ordered and do not have paths,
 ///     but they do have extensions.
+///
+/// 4. When the scanning is complete for a package, the '*' values are
+///     cleared from the package.
 class RootDirPackage
     {
     public:
@@ -50,8 +58,6 @@ class RootDirPackage
         void setRootDirPackage(OovStringRef const rootDir);
         void setRootDir(OovStringRef const rootDir)
             { mRootDir.setPath(rootDir, FP_Dir); }
-        void setExternalReferenceDir(OovString const &extRefDir)
-            { mExternalReferenceDir = extRefDir; }
 
         OovString const &getPkgName() const
             { return mName; }
@@ -64,17 +70,21 @@ class RootDirPackage
         /// Returns paths made from the mRootDir and potentially multiple mLibDir entries.
         OovStringVec getLibraryDirs() const;
         OovString const &getIncludeDirsAsString() const
-            { return mIncludeDir; }
+            { return mIncludeDirs; }
         OovString const &getLibraryDirsAsString() const
-            { return mLibDir; }
+            { return mLibDirs; }
         OovString const &getLibraryNamesAsString() const
             { return mLibNames; }
-        OovString const &getExtRefDirsAsString() const
-            { return mExternalReferenceDir; }
 
-//      bool anyIncDirsMatch(std::set<std::string> const &includes) const;
+        bool needIncs() const
+            { return(mIncludeDirs == "*"); }
+        bool needLibs() const
+            { return(mLibNames == "*"); }
         bool needDirScan() const
-            { return(mLibNames.size() == 0);}
+            { return(needLibs() || needIncs());}
+        void clearDirScan();
+        // Libraries are either listed in order in the package, or they
+        // are scanned using a directory search.
         bool areLibraryNamesOrdered() const
             { return(mScannedLibFilePaths.size() == 0); }
         void loadFromMap(OovStringRef const pkgName, NameValueFile const &file);
@@ -86,11 +96,10 @@ class RootDirPackage
         OovString mName;
         FilePath mRootDir;
 
-        OovString mLibDir;                      // Relative to root
+        OovString mLibDirs;              // Relative to root
         OovString mLibNames;
 
-        OovString mIncludeDir;          // Relative to root
-        OovString mExternalReferenceDir;        // Relative to root. "./" means same as root
+        OovString mIncludeDirs;          // Relative to root
 
         OovString mScannedLibFilePaths;
 
@@ -112,13 +121,13 @@ class Package:public RootDirPackage
             {}
         void setCompileInfo(OovStringRef const incDir, OovStringRef const compileArgs)
             {
-            mIncludeDir = incDir;
+            mIncludeDirs = incDir;
             mCompileArgs = compileArgs;
             }
         void setLinkInfo(OovStringRef const libDir, OovStringRef const libNames,
                 OovStringRef const linkArgs)
             {
-            mLibDir = libDir;
+            mLibDirs = libDir;
             mLibNames = libNames;
             mLinkArgs = linkArgs;
             }
@@ -143,6 +152,7 @@ class BuildPackages
         bool read();
         Package getPackage(OovStringRef const name) const;
         std::vector<Package> getPackages() const;
+        bool doesPackageExist(OovStringRef pkgName);
         void insertPackage(Package const &pkg)
             { pkg.saveToMap(mFile); }
         void savePackages()

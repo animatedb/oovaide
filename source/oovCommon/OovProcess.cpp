@@ -348,7 +348,7 @@ static int linuxSpawnNoWait(OovStringRef const procPath, char const * const *arg
 static bool windowsChildProcessCreate(OovStringRef const szCmdline,
         HANDLE hChildStd_IN_Rd,
         HANDLE hChildStd_OUT_Wr, HANDLE hChildStd_ERR_Wr,
-        PROCESS_INFORMATION &piProcInfo)
+        PROCESS_INFORMATION &piProcInfo, bool showWindows)
     {
     STARTUPINFO siStartInfo;
     ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
@@ -360,10 +360,17 @@ static bool windowsChildProcessCreate(OovStringRef const szCmdline,
     siStartInfo.hStdOutput = hChildStd_OUT_Wr;
     siStartInfo.hStdInput = hChildStd_IN_Rd;
     siStartInfo.dwFlags |= STARTF_USESTDHANDLES | STARTF_USESHOWWINDOW;
-    siStartInfo.wShowWindow = SW_HIDE;
+    if(showWindows)
+        {
+        siStartInfo.wShowWindow = SW_SHOW;
+        }
+    else
+        {
+        siStartInfo.wShowWindow = SW_HIDE;
+        }
 
 #if(DEBUG_PROC)
-    sDbgFile.printflush("windowsChildProcessCreate %s\n", szCmdline);
+    sDbgFile.printflush("windowsChildProcessCreate %s\n", szCmdline.getStr());
 #endif
     BOOL bSuccess = CreateProcess(NULL, const_cast<char*>(szCmdline.getStr()),
         NULL, NULL, TRUE, 0, NULL, NULL, &siStartInfo, &piProcInfo);
@@ -461,7 +468,7 @@ bool OovPipeProcessWindows::windowsCreatePipes()
     }
 
 bool OovPipeProcessWindows::windowsCreatePipeProcess(OovStringRef const procPath,
-        char const * const *argv)
+        char const * const *argv, bool showWindows)
     {
     /// @todo - procPath is not used.
     CmdLine cmdLine(procPath, argv);
@@ -469,7 +476,8 @@ bool OovPipeProcessWindows::windowsCreatePipeProcess(OovStringRef const procPath
     if(windowsCreatePipes())
         {
         success = windowsChildProcessCreate(cmdLine.getCmdStr(),
-                mChildStd_IN_Rd, mChildStd_OUT_Wr, mChildStd_ERR_Wr, mProcInfo);
+                mChildStd_IN_Rd, mChildStd_OUT_Wr, mChildStd_ERR_Wr, mProcInfo,
+                showWindows);
         }
     return success;
     }
@@ -562,12 +570,13 @@ void OovPipeProcessWindows::windowsChildProcessKill()
 #endif
 
 bool OovPipeProcess::createProcess(OovStringRef const procPath,
-        char const * const *argv)
+        char const * const *argv, bool showWindows)
     {
 #ifdef __linux__
     bool success = mPipeProcLinux.linuxCreatePipeProcess(procPath, argv);
 #else
-    bool success = mPipeProcWindows.windowsCreatePipeProcess(procPath, argv);
+    bool success = mPipeProcWindows.windowsCreatePipeProcess(procPath, argv,
+            showWindows);
 #endif
     return success;
     }
@@ -614,7 +623,7 @@ bool OovPipeProcess::spawn(OovStringRef const procPath, char const * const * arg
     {
     exitCode = -1;
 
-    bool success = createProcess(procPath, argv);
+    bool success = createProcess(procPath, argv, false);
     if(success)
         {
         childProcessListen(listener, exitCode);
@@ -793,7 +802,7 @@ OovBackgroundPipeProcess::~OovBackgroundPipeProcess()
     }
 
 bool OovBackgroundPipeProcess::startProcess(OovStringRef const procPath,
-        char const * const *argv)
+        char const * const *argv, bool showWindows)
     {
     bool success = false;
     if(mThreadState == TS_Stopping)
@@ -810,7 +819,7 @@ bool OovBackgroundPipeProcess::startProcess(OovStringRef const procPath,
 #else
         mThread = g_thread_new("BackThread", BackgroundThreadFunc, this);
 #endif
-        success = OovPipeProcess::createProcess(procPath, argv);
+        success = OovPipeProcess::createProcess(procPath, argv, showWindows);
         mThreadState = TS_Running;
 #if(DEBUG_PROC)
         sDbgFile.printflush("bkg-startProcess - TS_Running\n");
@@ -856,7 +865,7 @@ void OovBackgroundPipeProcess::privateBackground()
             }
         childProcessClose();
 #if(DEBUG_PROC)
-        sDbgFile.printflush("bkg-background - T_Stopping\n");
+        sDbgFile.printflush("bkg-background - TS_Stopping\n");
 #endif
         mThreadState = TS_Stopping;
 #if(USE_STD_THREAD)
@@ -864,4 +873,54 @@ void OovBackgroundPipeProcess::privateBackground()
         g_thread_exit(0);
 #endif
         }
+    }
+
+OovStdInListener::~OovStdInListener()
+    {}
+
+static void BackgroundStdInThreadFunc(OovBackgroundStdInListener *proc)
+    {
+    proc->privateBackground();
+    }
+
+OovBackgroundStdInListener::OovBackgroundStdInListener():
+    mListener(nullptr), mThreadState(TS_Running)
+    {
+    mThread = std::thread(BackgroundStdInThreadFunc, this);
+    }
+
+OovBackgroundStdInListener::~OovBackgroundStdInListener()
+    {
+    mThreadState = TS_Stopping;
+    mThread.join();
+    }
+
+void OovBackgroundStdInListener::privateBackground()
+    {
+#if(DEBUG_PROC)
+        sDbgFile.printflush("OovBackgroundStdInListener\n");
+#endif
+    while(mThreadState == TS_Running)
+        {
+        // This will block, but it is ok since it is on a separate thread.
+        // Also when the host program exits, the fgets function returns.
+        char buf[200];
+        if(fgets(buf, sizeof(buf), stdin))
+            {
+#if(DEBUG_PROC)
+            sDbgFile.printflush("OovBackgroundStdInListener got data %s\n", buf);
+#endif
+            if(mListener)
+                {
+                mListener->onStdIn(buf, strlen(buf));
+                }
+            }
+        }
+    if(mListener)
+        {
+        mListener->threadComplete();
+        }
+#if(DEBUG_PROC)
+        sDbgFile.printflush("OovBackgroundStdInListener End\n");
+#endif
     }

@@ -155,26 +155,18 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         for(auto const &pkg : mCompFinder.getProjectBuildArgs().getProjectPackages().
             getPackages())
             {
-            if(pkg.needDirScan())
+            if(!mCompFinder.doesBuildPackageExist(pkg.getPkgName()))
                 {
-                printf("Scanning %s\n", pkg.getPkgName().getStr());
-                fflush(stdout);
-                /// @todo - only one ext root dir per package currently.
-                if(pkg.getExtRefDirs().size() > 0)
+                if(pkg.needDirScan())
                     {
-                    if(pkg.getIncludeDirs().size() == 0)
-                        {
-                        mCompFinder.scanExternalProject(pkg.getExtRefDirs()[0], &pkg);
-                        }
-                    else
-                        {
-                        mCompFinder.addBuildPackage(pkg);
-                        }
+                    printf("Scanning %s\n", pkg.getPkgName().getStr());
+                    fflush(stdout);
+                    mCompFinder.scanExternalProject(pkg.getRootDir(), &pkg);
                     }
-                }
-            else
-                {
-                mCompFinder.addBuildPackage(pkg);
+                else
+                    {
+                    mCompFinder.addBuildPackage(pkg);
+                    }
                 }
             }
         }
