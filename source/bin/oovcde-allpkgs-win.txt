@@ -2,20 +2,30 @@ PkgNames|boost;gtk+-3.0;gtkmm;llvm;Qt;mingw-w64;wxWidgets;VisualStudio;Microsoft
 Pkg-boost-Root|/boost*
 Pkg-boost-I|.
 Pkg-gtk+-3.0-Root|/GTK*
+Pkg-gtk+-3.0-I|*
+Pkg-gtk+-3.0-l|*
+Pkg-gtk+-3.0-L|lib
 Pkg-gtkmm-Root|/gtkmm*
+Pkg-gtkmm-I|*
+Pkg-gtkmm-l|*
 Pkg-llvm-Root|/Program Files/LLVM
 Pkg-llvm-I|include
 Pkg-llvm-l|libclang.lib
 Pkg-llvm-L|lib
 Pkg-MicrosoftSDK-Root|/Microsoft SDKs/Windows/v*
 Pkg-MicrosoftSDK-I|Include
+Pkg-MicrosoftSDK-l|*
 Pkg-MicrosoftSDK-L|Lib
 Pkg-mingw-w64-Root|/mingw-w64/*/mingw32/i686-w64-mingw32
 Pkg-mingw-w64-I|include;/include/c++;/include/c++/i686-w64-mingw32
+Pkg-mingw-w64-l|*
+Pkg-mingw-w64-L|lib
 Pkg-Qt-Root|/Qt/*/*/mingw48_32
 Pkg-Qt-I|include
+Pkg-Qt-l|*
 Pkg-Qt-L|lib
 Pkg-wxWidgets-Root|/wxWidgets
 Pkg-VisualStudio-Root|/Microsoft Visual Studio*
 Pkg-VisualStudio-I|VC/include;VC/atlmfc/include
+Pkg-VisualStudio-l|*
 Pkg-VisualStudio-L|VC/lib
