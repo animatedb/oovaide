@@ -10,29 +10,16 @@
 
 #include "EditFiles.h"
 #include "EditOptions.h"
-#include "OovProcess.h"
-#include <queue>
+#include "EditorIpc.h"
 
-#define USE_IPC 1
-
-#if(USE_IPC)
-class EditorIpc:public OovStdInListener
-    {
-    public:
-        EditorIpc();
-        void onIdle();
-        virtual void onStdIn(OovStringRef const in, size_t len) override;
-    private:
-        OovBackgroundStdInListener mBackgroundListener;
-        std::queue<OovString> mStdInBuffer;
-    };
-#endif
 
 class Editor:public DebuggerListener
     {
     public:
         Editor();
         void init();
+        void startStdinListening()
+            { mEditorIpc.startStdinListening(); }
         void loadSettings();
         void saveSettings();
         static gboolean onIdleCallback(gpointer data);
@@ -78,6 +65,12 @@ class Editor:public DebuggerListener
             if(mEditFiles.getEditView())
                 mEditFiles.getEditView()->redo();
             }
+        void analyze()
+            { mEditorIpc.analyze(); }
+        void build()
+            { mEditorIpc.build(); }
+        void stopAnalyze()
+            { mEditorIpc.stopAnalyze(); }
         bool checkExitSave();
         void gotoToken(eFindTokenTypes ft)
             {
@@ -93,6 +86,23 @@ class Editor:public DebuggerListener
         void gotoDefinition()
             {
             gotoToken(FT_FindDef);
+            }
+        void goToMethod()
+            {
+            OovString className;
+            OovString methodName;
+            mEditFiles.getEditView()->getMethodNameAtLocation(className, methodName);
+            mEditorIpc.goToMethod(className, methodName);
+            }
+        void viewClassDiagram()
+            {
+            mEditorIpc.viewClassDiagram(
+                    mEditFiles.getEditView()->getClassNameAtLocation());
+            }
+        void viewPortionDiagram()
+            {
+            mEditorIpc.viewPortionDiagram(
+                    mEditFiles.getEditView()->getClassNameAtLocation());
             }
         Builder &getBuilder()
             { return mBuilder; }
@@ -149,9 +159,8 @@ class Editor:public DebuggerListener
         OovString mDebugOut;
         EditOptions mEditOptions;
         GuiTree mVarView;
-#if(USE_IPC)
         EditorIpc mEditorIpc;
-#endif
+
         void find(OovStringRef const findStr, bool forward, bool caseSensitive);
         void findAndReplace(OovStringRef const findStr, bool forward, bool caseSensitive,
                 OovStringRef const replaceStr);

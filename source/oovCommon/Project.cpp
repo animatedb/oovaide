@@ -10,9 +10,13 @@
 
 OovString Project::sProjectDirectory;
 OovString Project::sSourceRootDirectory;
+#ifndef __linux__
+OovString Project::sArgv0;
+#endif
 
 static char sCoverageSourceDir[] = "oov-cov";
 static char sCoverageProjectDir[] = "oov-cov-oovcde";
+
 
 
 OovString makeBuildConfigArgName(OovStringRef const baseName,
@@ -22,6 +26,13 @@ OovString makeBuildConfigArgName(OovStringRef const baseName,
     name += '-';
     name += buildConfig;
     return name;
+    }
+
+void Project::setArgv0(OovStringRef arg)
+    {
+#ifndef __linux__
+    sArgv0 = arg;
+#endif
     }
 
 OovString Project::getComponentTypesFilePath()
@@ -85,7 +96,14 @@ OovString const &Project::getBinDirectory()
             path = "/usr/bin";
             }
 #else
-        path = "./";
+        if(FileIsFileOnDisk("./oovcde.exe"))
+            {
+            path = "./";
+            }
+        else
+            {
+            path = FilePathGetDrivePath(sArgv0);
+            }
 #endif
         }
     return path;

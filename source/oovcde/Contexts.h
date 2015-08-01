@@ -12,6 +12,8 @@
 #include "JournalList.h"
 #include "ComponentList.h"
 #include "OperationList.h"
+#include "EditorContainer.h"
+#include <stack>
 
 
 class ClassList:public GuiList
@@ -46,7 +48,7 @@ class IncludeList:public GuiList
 //      View part of a class:
 //              Display portion diagram
 //              Display class selection list
-class Contexts:public JournalListener
+class Contexts:public JournalListener, public EditorListener
     {
     public:
         enum eContexts
@@ -82,6 +84,15 @@ class Contexts:public JournalListener
             { return mJournal.getCurrentRecord(); }
         JournalRecord *getCurrentJournalRecord()
             { return mJournal.getCurrentRecord(); }
+        // true = ok to exit
+        bool okToExit()
+            { return mEditorContainer.okToExit(); }
+        bool handleEditorMessages(EditorContainerCommands &command);
+        void displayPortion(OovStringRef className);
+
+        // EditorListener callbacks
+        virtual void handleEditorMessage(OovIpcMsg const &msg) override
+            { mEditorMessages.push(msg); }
 
         // JournalListener callbacks
         virtual void displayClass(OovStringRef const className) override;
@@ -89,7 +100,7 @@ class Contexts:public JournalListener
                 OovStringRef const operName, bool isConst) override;
 
         // Called from callbacks
-        void displayClassDiagram();
+        void displaySelectedClassDiagram();
         void displayOperationsDiagram();
         void displayJournal();
         void displayComponentDiagram();
@@ -109,6 +120,8 @@ class Contexts:public JournalListener
         OperationList mOperationList;
         ZoneDiagramList mZoneList;
         JournalList mJournalList;
+        EditorContainer mEditorContainer;
+        std::stack<OovIpcMsg> mEditorMessages;
 
         void addClass(OovStringRef const className);
         std::string getSelectedClass() const

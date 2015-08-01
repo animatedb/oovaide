@@ -245,61 +245,6 @@ Color DistinctColors::getColor(size_t index)
         static_cast<uint8_t>((colors[index]) & 0xFF)));
     }
 
-#if(!USE_IPC)
-// Returns an empty string if no editor is found.
-static OovString getEditor(GuiOptions const &guiOptions)
-    {
-    FilePath proc(guiOptions.getEditorPath(), FP_File);
-    if(!FileIsFileOnDisk(proc))
-        {
-        // If the path to the user specified editor is not found, then
-        // search the standard locations for the executable directory.
-        FilePath testProcPath(Project::getBinDirectory(), FP_Dir);
-        testProcPath.append(proc.getNameExt());
-        if(FileIsFileOnDisk(testProcPath))
-            {
-            proc = testProcPath;
-            }
-        }
-    // If the editor is not present, return an empty string.
-    if(!FileIsFileOnDisk(proc))
-        {
-        proc.clear();
-        Gui::messageBox("Use Analysis/Settings to set up an editor to view source");
-        }
-    return proc;
-    }
-
-void viewSource(GuiOptions const &guiOptions, OovStringRef const module,
-        unsigned int lineNum)
-    {
-    OovString proc = getEditor(guiOptions);
-    if(proc.length())
-        {
-        OovProcessChildArgs args;
-        args.addArg(proc);
-        OovString lineArg = guiOptions.getValue(OptGuiEditorLineArg);
-        if(lineArg.length() != 0)
-            {
-            lineArg.appendInt(static_cast<int>(lineNum));
-            args.addArg(lineArg);
-            }
-        FilePath file(module, FP_File);
-        FilePathQuoteCommandLinePath(file);
-        args.addArg(file);
-
-        std::string projArg;
-        if(proc.find("oovEdit") != std::string::npos)
-            {
-            projArg += "-p";
-            projArg += Project::getProjectDirectory();
-            args.addArg(projArg);
-            }
-        spawnNoWait(proc, args.getArgv());
-        }
-    }
-
-#endif
 
 static const int NumGenerations = 30;
 

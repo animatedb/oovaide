@@ -600,10 +600,10 @@ class ModelData
         // This also gets bases of bases.
         void addBaseClasses(ModelClassifier const &type,
                 ConstModelClassifierVector &classes) const;
+        static std::string getBaseType(OovStringRef const fullStr);
 
     private:
         ModelObject *createDataType(eModelDataTypes type, const std::string &id);
-        std::string getBaseType(OovStringRef const fullStr) const;
         void resolveStatements(class TypeIdMap const &typeMap, ModelStatements &stmt);
         void resolveDecl(class TypeIdMap const &typeMap, ModelTypeRef &decl);
         bool isTypeReferencedByStatements(ModelStatements const &stmts, ModelType const &type) const;

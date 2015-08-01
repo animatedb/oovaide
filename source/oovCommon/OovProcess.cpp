@@ -886,7 +886,6 @@ static void BackgroundStdInThreadFunc(OovBackgroundStdInListener *proc)
 OovBackgroundStdInListener::OovBackgroundStdInListener():
     mListener(nullptr), mThreadState(TS_Running)
     {
-    mThread = std::thread(BackgroundStdInThreadFunc, this);
     }
 
 OovBackgroundStdInListener::~OovBackgroundStdInListener()
@@ -895,15 +894,25 @@ OovBackgroundStdInListener::~OovBackgroundStdInListener()
     mThread.join();
     }
 
+void OovBackgroundStdInListener::start()
+    {
+#if(DEBUG_PROC)
+    sDbgFile.printflush("OovBackgroundStdInListener::start\n");
+#endif
+    mThread = std::thread(BackgroundStdInThreadFunc, this);
+    }
+
 void OovBackgroundStdInListener::privateBackground()
     {
 #if(DEBUG_PROC)
-        sDbgFile.printflush("OovBackgroundStdInListener\n");
+        sDbgFile.printflush("OovBackgroundStdInListener::background\n");
 #endif
     while(mThreadState == TS_Running)
         {
         // This will block, but it is ok since it is on a separate thread.
-        // Also when the host program exits, the fgets function returns.
+        // Also when the host program exits, this may be hung in the fgets,
+        // but the program will exit anyway, meaning this thread does not
+        // cleanly exit.
         char buf[200];
         if(fgets(buf, sizeof(buf), stdin))
             {
@@ -921,6 +930,6 @@ void OovBackgroundStdInListener::privateBackground()
         mListener->threadComplete();
         }
 #if(DEBUG_PROC)
-        sDbgFile.printflush("OovBackgroundStdInListener End\n");
+        sDbgFile.printflush("OovBackgroundStdInListener::background End\n");
 #endif
     }

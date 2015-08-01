@@ -7,8 +7,6 @@
 #include "OovIpc.h"
 #include "Gui.h"
 
-#if(USE_IPC)
-
 
 static EditorContainer *sEditorContainer;
 
@@ -77,8 +75,13 @@ void viewSource(GuiOptions const &guiOptions, OovStringRef const module,
         }
     }
 
+EditorListener::~EditorListener()
+    {
+    }
+
+
 EditorContainer::EditorContainer(ModelData const &modelData):
-    mModelData(modelData)
+    mModelData(modelData), mListener(nullptr)
     {
     sEditorContainer = this;
     mBackgroundProcess.setListener(this);
@@ -102,37 +105,37 @@ void EditorContainer::viewFile(OovStringRef const procPath, char const * const *
         {
         OovString line;
         line.appendInt(lineNum);
-        mBackgroundProcess.childProcessSend(OovMsg::buildSendMsg(EC_ViewFile,
-            fn, line));
+        OovIpcMsg msg(EC_ViewFile, fn, line);
+        mBackgroundProcess.childProcessSend(msg);
         }
     }
 
-void EditorContainer::handleCommand(OovStringRef cmdStr)
+void EditorContainer::handleMessage(OovIpcMsg const &cmd)
     {
     OovString retStr;
-    switch(cmdStr[0])
+    switch(cmd.getCommand())
         {
-        case ECC_GetMethodDef:
+        case ECC_GotoMethodDef:
             {
-            ModelClassifier const *classifier = findClass(OovMsg::getArg(
-                cmdStr, 1));
+            ModelClassifier const *classifier = findClass(cmd.getArg(1));
             if(classifier)
                 {
                 ModelOperation const *operation = classifier->
-                    getOperation(OovMsg::getArg(cmdStr, 2), false);
+                        getOperationAnyConst(cmd.getArg(2), false);
                 if(operation)
                     {
                     ModelModule const *module = operation->getModule();
                     OovString line;
                     line.appendInt(operation->getLineNum());
-                    retStr = OovMsg::buildSendMsg(EC_ViewFile, module->getName(),
-                        line);
+                    OovIpcMsg msg(EC_ViewFile, module->getName(), line);
+                    mBackgroundProcess.childProcessSend(msg);
                     }
                 }
             }
             break;
 
-        case ECC_GetClassDef:
+/*
+        case ECC_GoToClassDef:
             {
             ModelClassifier const *classifier = findClass(OovMsg::getArg(
                 cmdStr, 1));
@@ -146,11 +149,14 @@ void EditorContainer::handleCommand(OovStringRef cmdStr)
                 }
             }
             break;
-
-        case ECC_RunAnalysis:
-            break;
-
-        case ECC_StopAnalysis:
+*/
+        default:
+            {
+            if(mListener)
+                {
+                mListener->handleEditorMessage(cmd);
+                }
+            }
             break;
         }
     if(retStr.length() > 0)
@@ -176,8 +182,15 @@ void EditorContainer::onStdOut(OovStringRef const out, size_t len)
     size_t pos = mReceivedData.find('\n');
     if(pos != std::string::npos)
         {
-        handleCommand(OovString(mReceivedData, pos));
-        mReceivedData.erase(0, pos);
+        size_t cmdLen = pos;
+        size_t crpos = mReceivedData.find('\r');
+        if(crpos < pos)
+            {
+            cmdLen = crpos;
+            }
+        OovString cmdStr(mReceivedData, 0, cmdLen);
+        handleMessage(cmdStr);
+        mReceivedData.erase(0, pos+1);
         }
     }
 
@@ -189,4 +202,3 @@ void EditorContainer::processComplete()
     {
     }
 
-#endif

@@ -49,6 +49,7 @@ OovString makeBuildConfigArgName(OovStringRef const baseName,
 class Project
     {
     public:
+        static void setArgv0(OovStringRef arg);
         static void setProjectDirectory(OovStringRef const projDir)
             { sProjectDirectory = projDir; }
         static OovString const &getProjectDirectory()
@@ -126,6 +127,9 @@ class Project
     private:
         static OovString sProjectDirectory;
         static OovString sSourceRootDirectory;
+#ifndef __linux__
+        static OovString sArgv0;
+#endif
     };
 
 enum eLinkOrderIndices { LOI_InternalProject=0, LOI_AfterInternalProject=1000,

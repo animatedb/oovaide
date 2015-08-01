@@ -192,6 +192,27 @@ gboolean oovGui::onBackgroundIdle(gpointer data)
         mContexts.updateContextAfterAnalysisCompletes();
         didSomething = true;
         }
+    EditorContainerCommands editorMsg;
+    if(mContexts.handleEditorMessages(editorMsg))
+        {
+        switch(editorMsg)
+            {
+            case ECC_RunAnalysis:
+                gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+                break;
+
+            case ECC_Build:
+                gOovGui->runSrcManager(BuildConfigDebug, OovProject::SM_Build);
+                break;
+
+            case ECC_StopAnalysis:
+                gOovGui->stopSrcManager();
+                break;
+
+            default:
+                break;
+            }
+        }
     // This must be after running analysis functions.
     updateGuiForProjectChange();
     mProjectStatusListener.idleUpdateProgress();
@@ -541,6 +562,7 @@ int main(int argc, char *argv[])
     oovGui oovGui;
     gOovGui = &oovGui;
 
+    Project::setArgv0(argv[0]);
     if(gOovGui->getBuilder().addFromFile("oovcdeLayout.glade"))
         {
         gOovGui->init();

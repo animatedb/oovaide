@@ -77,6 +77,7 @@
 									<listOptionValue builtIn="false" value="psapi"/>
 									<listOptionValue builtIn="false" value="imagehlp"/>
 									<listOptionValue builtIn="false" value="libclang"/>
+									<listOptionValue builtIn="false" value="ws2_32"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1145778521" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libgcc -mwindows" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.292711813" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -494,5 +495,4 @@
 		</scannerConfigBuildInfo>
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
-	<storageModule moduleId="org.eclipse.cdt.core.pathentry"/>
 </cproject>

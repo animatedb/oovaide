@@ -375,9 +375,26 @@ gboolean Editor::onIdle(gpointer data)
         idleDebugStatusChange(dbgStatus);
         }
     getEditFiles().onIdle();
-#if(USE_IPC)
-    mEditorIpc.onIdle();
-#endif
+    OovIpcMsg msg;
+    if(mEditorIpc.getMessage(msg))
+        {
+        OovString cmd = msg.getArg(0);
+        if(cmd[0] == EC_ViewFile)
+            {
+            OovString fn = msg.getArg(1);
+            OovString lineNumStr = msg.getArg(2);
+            int lineNum = 1;
+            size_t pos = lineNumStr.findSpace();
+            if(pos != std::string::npos)
+                {
+                lineNumStr = lineNumStr.substr(0, pos);
+                }
+            if(lineNumStr.getInt(0, INT_MAX, lineNum))
+                {
+                }
+            gEditor->getEditFiles().viewModule(fn, lineNum);
+            }
+        }
     sleepMs(5);
     return true;
     }
@@ -554,11 +571,11 @@ bool Editor::checkExitSave()
     return exitOk;
     }
 
-#if(USE_IPC)
+// Using pipe IPC and editor container to talk between editor and oovcde solves
+// all problems by launching a single editor. No need to use special GTK stuff,
+// and it works much better since only a single process is launched instead of
+// trying to launch a process, then discovering it is already running.
 #define SINGLE_INSTANCE 0
-#else
-#define SINGLE_INSTANCE 1
-#endif
 
 #if(SINGLE_INSTANCE)
 
@@ -689,13 +706,12 @@ int main(int argc, char *argv[])
     // will be initialized after statics have been initialized.
     Editor editor;
     gEditor = &editor;
+    Project::setArgv0(argv[0]);
     if(editor.getBuilder().addFromFile("oovEdit.glade"))
         {
-        editor.init();
-        editor.getBuilder().connectSignals();
-        GtkWidget *window = editor.getBuilder().getWidget("MainWindow");
         char const *fn = nullptr;
         int line = 0;
+        bool debug = false;
         for(int argi=1; argi<argc; argi++)
             {
             if(argv[argi][0] == '+')
@@ -704,12 +720,28 @@ int main(int argc, char *argv[])
                 }
             else if(argv[argi][0] == '-')
                 {
-                OovString fname = FilePathFixFilePath(&argv[argi][2]);
-                editor.setProjectDir(fname);
+                if(argv[argi][1] == 'p')
+                    {
+                    OovString fname = FilePathFixFilePath(&argv[argi][2]);
+                    editor.setProjectDir(fname);
+                    }
+                if(argv[argi][1] == 'd')
+                    {
+                    debug = true;
+                    }
                 }
             else
                 fn = argv[argi];
             }
+        if(!debug)
+            {
+            // This must be before the editor.init(), or connectSignals(),
+            // otherwise the pipes don't work.
+            editor.startStdinListening();
+            }
+        editor.init();
+        editor.getBuilder().connectSignals();
+        GtkWidget *window = editor.getBuilder().getWidget("MainWindow");
         gEditor->loadSettings();
         if(fn)
             {
@@ -720,8 +752,9 @@ int main(int argc, char *argv[])
             fprintf(stderr, "OovEdit version %s\n", OOV_VERSION);
             fprintf(stderr, "oovEdit: Args are: filename [args]...\n");
             fprintf(stderr, "args are:\n");
-            fprintf(stderr, "   +<line>            line number of opened file\n");
+            fprintf(stderr, "   +<line>           line number of opened file\n");
             fprintf(stderr, "   -p<projectDir>    directory of project files\n");
+            fprintf(stderr, "   -d                debug without pipes\n");
             }
         gtk_widget_show(window);
         gtk_main();
@@ -918,6 +951,21 @@ extern "C" G_MODULE_EXPORT void on_GoToLineMenuitem_activate(GtkWidget *button, 
     gEditor->gotoLineDialog();
     }
 
+extern "C" G_MODULE_EXPORT void on_GoToMethodMenuitem_activate(GtkWidget *button, gpointer data)
+    {
+    gEditor->goToMethod();
+    }
+
+extern "C" G_MODULE_EXPORT void on_ViewClassDiagramMenuitem_activate(GtkWidget *button, gpointer data)
+    {
+    gEditor->viewClassDiagram();
+    }
+
+extern "C" G_MODULE_EXPORT void on_ViewPortionDiagramMenuitem_activate(GtkWidget *button, gpointer data)
+    {
+    gEditor->viewPortionDiagram();
+    }
+
 extern "C" G_MODULE_EXPORT void on_LineNumberEntry_activate(GtkEditable *editable,
         gpointer user_data)
     {
@@ -926,43 +974,17 @@ extern "C" G_MODULE_EXPORT void on_LineNumberEntry_activate(GtkEditable *editabl
     g_signal_emit_by_name(dlg, "response", GTK_RESPONSE_OK);
     }
 
-#if(USE_IPC)
-#include "OovIpc.h"
-
-EditorIpc::EditorIpc()
+extern "C" G_MODULE_EXPORT void on_MainAnalyzeToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
     {
-    mBackgroundListener.setListener(this);
+    gEditor->analyze();
     }
 
-void EditorIpc::onIdle()
+extern "C" G_MODULE_EXPORT void on_MainBuildToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
     {
-    if(!mStdInBuffer.empty())
-        {
-        OovString in = mStdInBuffer.front();
-        mStdInBuffer.pop();
-        OovString cmd = OovMsg::getArg(in, 0);
-        if(cmd[0] == EC_ViewFile)
-            {
-            OovString fn = OovMsg::getArg(in, 1);
-            OovString lineNumStr = OovMsg::getArg(in, 2);
-            int lineNum = 1;
-            size_t pos = lineNumStr.findSpace();
-            if(pos != std::string::npos)
-                {
-                lineNumStr = lineNumStr.substr(0, pos);
-                }
-            if(lineNumStr.getInt(0, INT_MAX, lineNum))
-                {
-                }
-            gEditor->getEditFiles().viewModule(fn, lineNum);
-            }
-        }
+    gEditor->build();
     }
 
-void EditorIpc::onStdIn(OovStringRef const in, size_t len)
+extern "C" G_MODULE_EXPORT void on_MainStopToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
     {
-    // WARNING - This thread cannot do GUI calls
-    mStdInBuffer.push(OovString(in));
+    gEditor->stopAnalyze();
     }
-
-#endif

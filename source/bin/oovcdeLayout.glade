@@ -459,6 +459,11 @@
       <action-widget response="-5">AddPackageOKButton</action-widget>
     </action-widgets>
   </object>
+  <object class="GtkImage" id="AnalyzeButtonImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">data/AnalyzeButton.png</property>
+  </object>
   <object class="GtkDialog" id="BackgroundProgressDialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -554,6 +559,11 @@
     <property name="visible">True</property>
     <property name="can_focus">False</property>
     <property name="pixbuf">data/BinaryComponentsButton.png</property>
+  </object>
+  <object class="GtkImage" id="BuildButtonImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">data/BuildButton.png</property>
   </object>
   <object class="GtkDialog" id="BuildSettingsDialog">
     <property name="can_focus">False</property>
@@ -2913,7 +2923,7 @@ These arguments are specific to the selected configuration.
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip_text" translatable="yes">This is relative from "Root Directory"</property>
+                    <property name="tooltip_text" translatable="yes">This is relative from "Root Directory". Use * to search.</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                   </object>
@@ -2970,40 +2980,11 @@ These arguments are specific to the selected configuration.
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="PackageExternRefEntry">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="has_tooltip">True</property>
-                    <property name="tooltip_text" translatable="yes">Recursively search for include and library files</property>
-                    <property name="invisible_char">●</property>
-                    <property name="invisible_char_set">True</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">1</property>
-                    <property name="top_attach">7</property>
-                    <property name="width">1</property>
-                    <property name="height">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label25">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">External References (-ER)</property>
-                  </object>
-                  <packing>
-                    <property name="left_attach">0</property>
-                    <property name="top_attach">7</property>
-                    <property name="width">1</property>
-                    <property name="height">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkEntry" id="PackageLibNamesEntry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="has_tooltip">True</property>
-                    <property name="tooltip_text" translatable="yes">List the full filename without the path</property>
+                    <property name="tooltip_text" translatable="yes">List the full filename without the path. Use * to search.</property>
                     <property name="invisible_char">●</property>
                     <property name="invisible_char_set">True</property>
                   </object>
@@ -3104,12 +3085,18 @@ These arguments are specific to the selected configuration.
       <action-widget response="-5">ProjectPackagesOKButton</action-widget>
     </action-widgets>
   </object>
+  <object class="GtkImage" id="ZoneDiagramButtonImage">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">data/ZoneDiagramButton.png</property>
+  </object>
   <object class="GtkWindow" id="TopWindow">
     <property name="can_focus">False</property>
     <property name="default_width">800</property>
     <property name="default_height">600</property>
     <property name="icon">OovLogo.png</property>
     <signal name="destroy" handler="gtk_main_quit" swapped="no"/>
+    <signal name="delete-event" handler="on_TopWindow_delete_event" swapped="no"/>
     <child>
       <object class="GtkBox" id="box1">
         <property name="visible">True</property>
@@ -3531,8 +3518,23 @@ These arguments are specific to the selected configuration.
                     <property name="tooltip_text" translatable="yes">Analyze</property>
                     <property name="label" translatable="yes">Analyze</property>
                     <property name="use_underline">True</property>
-                    <property name="stock_id">gtk-execute</property>
+                    <property name="icon_widget">AnalyzeButtonImage</property>
                     <signal name="clicked" handler="on_BuildAnalyzeMenuitem_activate" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="MainBuildToolbutton">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Build (Debug Mode)</property>
+                    <property name="label" translatable="yes">Build</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">BuildButtonImage</property>
+                    <signal name="clicked" handler="on_BuildDebugMenuitem_activate" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -3556,7 +3558,7 @@ These arguments are specific to the selected configuration.
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -3972,11 +3974,6 @@ These arguments are specific to the selected configuration.
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkImage" id="ZoneDiagramButtonImage">
-    <property name="visible">True</property>
-    <property name="can_focus">False</property>
-    <property name="pixbuf">data/ZoneDiagramButton.png</property>
   </object>
   <object class="GtkMenu" id="ZoneListPopupMenu">
     <property name="visible">True</property>

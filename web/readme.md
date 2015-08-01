@@ -3,7 +3,8 @@
 
 An object oriented analysis and code development platform that automatically
 generates build, class, sequence, and component diagrams for C++
-and Objective C languages.
+and Objective C languages. Also includes test coverage, complexity and
+analysis statistics.
 
 [Oovcde Home Page](http://oovcde.sourceforge.net/)
 

@@ -48,6 +48,9 @@ class Tokenizer
         void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
         bool findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
                 size_t &offset);
+        OovString getClassNameAtLocation(size_t origOffset);
+        void getMethodNameAtLocation(size_t origOffset, OovString &className,
+                OovString &methodName);
 #if(CODE_COMPLETE)
         OovStringVec codeComplete(size_t offset);
 #else
@@ -170,6 +173,8 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
             { return mTaskResults; }
         // Called by HighlighterSharedQueue on background thread.
         void processItem(HighlightTaskItem const &item);
+        Tokenizer &getTokenizer()
+            { return mTokenizer; }
 
     private:
         OovString mFilename;
@@ -221,6 +226,17 @@ class Highlighter
         void findToken(eFindTokenTypes ft, size_t origOffset);
         void getFindTokenResults(std::string &fn, size_t &offset)
             { return mBackgroundThreadData.getFindTokenResults(fn, offset); }
+        OovString getClassNameAtLocation(size_t offset)
+            {
+            return mBackgroundThreadData.getTokenizer().getClassNameAtLocation(
+                   offset);
+            }
+        void getMethodNameAtLocation(size_t offset, OovString &className,
+                OovString &methodName)
+            {
+            mBackgroundThreadData.getTokenizer().getMethodNameAtLocation(
+                    offset, className, methodName);
+            }
 
         /// This should be called from the draw function.  It applies
         /// the tokens to the tags in the viewable area of the buffer.

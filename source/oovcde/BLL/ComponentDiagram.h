@@ -43,7 +43,6 @@ class ComponentDiagram
         ComponentGraph mComponentGraph;
 
         void updatePositionsInGraph(DiagramDrawer &nullDrawer);
-        void updateDrawingAreaSize();
         // Load components and reposition
         void updateGraph(ComponentDrawOptions const &options,
                 DiagramDrawer &nullDrawer);

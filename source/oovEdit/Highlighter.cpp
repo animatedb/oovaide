@@ -7,6 +7,7 @@
 
 #include "Highlighter.h"
 #include "Debug.h"
+#include "ModelObjects.h"       // for getBaseType
 #include <chrono>
 
 
@@ -369,7 +370,7 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
                 // If instantiating a type (CXCursor_TypeRef), this goes to the type declaration.
                 cursor = clang_getCursorDefinition(startCursor);
                 // Method call can return invalid file when the definition is not in this
-                // translation unit.  This really needs to load the file with the definition.
+                // translation unit.
                 if(clang_getCursorKind(cursor) == CXCursor_InvalidFile)
                     {
                     DUMP_PARSE("find:def-invalid", cursor);
@@ -401,6 +402,64 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
             }
         }
     return(fn.size() > 0);
+    }
+
+OovString Tokenizer::getClassNameAtLocation(size_t origOffset)
+    {
+    CXCursor classCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
+    CXStringDisposer className = clang_getCursorDisplayName(classCursor);
+    return ModelData::getBaseType(className);
+    }
+
+void Tokenizer::getMethodNameAtLocation(size_t origOffset, OovString &className,
+        OovString &methodName)
+    {
+    CXCursor startCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
+    CXStringDisposer method = clang_getCursorDisplayName(startCursor);
+    size_t pos = method.find('(');
+    if(pos != std::string::npos)
+        {
+        method.erase(pos);
+        }
+    methodName = method;
+
+    // Attempt to go to the definition from the following places:
+    //  A header file method declaration or inline definition.
+    //  A source file where the method is defined.
+    //  A call to a method through a pointer, or directly (self)
+
+    // Attempt to go directly to the definition, it will work if it is in this
+    // translation unit.
+    CXCursor methodDefCursor = clang_getCursorDefinition(startCursor);
+    CXCursor classCursor = startCursor;         // Just default to something.
+
+    // Method call can return invalid file when the definition is not in this
+    // translation unit.
+    if(clang_getCursorKind(methodDefCursor) != CXCursor_InvalidFile)
+        {
+        // In this translation unit (either header or source)
+        // At this point, the semantic parent of the method definition is
+        // the class.
+        classCursor = clang_getCursorSemanticParent(methodDefCursor);
+        }
+    else
+        {
+        // In a file that isn't in this translation unit
+        if(startCursor.kind == CXCursor_CXXMethod)
+            {
+            classCursor = clang_getCursorSemanticParent(startCursor);
+            }
+        else    // Handle a call - The cursor is usually a compound statement?
+            {
+            // The definition was not available, so instead, look for the
+            // declaration and class from through the referenced cursor.
+            CXCursor refCursor = clang_getCursorReferenced(startCursor);
+            classCursor = clang_getCursorSemanticParent(refCursor);
+            }
+        }
+
+    CXStringDisposer classCursorStr = clang_getCursorDisplayName(classCursor);
+    className = classCursorStr;
     }
 
 
@@ -805,6 +864,7 @@ bool Highlighter::applyTags(GtkTextBuffer *textBuffer,
     DUMP_THREAD("applyTags-end");
     return(mTokenState == TS_AppliedTokens);
     }
+
 
 #if(SHARED_QUEUE)
 void HighlighterSharedQueue::processItem(HighlightTaskItem const &item)

@@ -76,6 +76,16 @@ class FileEditView
             { mHighlighter.findToken(ft, GuiTextBuffer::getCursorOffset(mTextBuffer)); }
         void getFindTokenResults(std::string &fn, size_t &offset)
             { mHighlighter.getFindTokenResults(fn, offset); }
+        OovString getClassNameAtLocation()
+            {
+            return mHighlighter.getClassNameAtLocation(
+                    GuiTextBuffer::getCursorOffset(mTextBuffer));
+            }
+        void getMethodNameAtLocation(OovString &className, OovString &methodName)
+            {
+            mHighlighter.getMethodNameAtLocation(
+                GuiTextBuffer::getCursorOffset(mTextBuffer), className, methodName);
+            }
         void cut()
             {
             GtkClipboard *clipboard = gtk_clipboard_get (GDK_SELECTION_CLIPBOARD);

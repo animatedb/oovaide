@@ -795,3 +795,23 @@ extern "C" G_MODULE_EXPORT bool on_CompletionListTreeview_draw(GtkWidget *widget
     sCurrentCompleteList->positionCompletionWindow();
     return false;
     }
+
+/*
+extern "C" G_MODULE_EXPORT void on_ViewsPaned_check_resize(GtkWidget *widget, gpointer data)
+    {
+    GtkWindow *window = GTK_WINDOW(widget);
+    int width;
+    int height;
+    gtk_window_get_size(window, &width, &height);
+    gtk_paned_set_position(GTK_PANED(widget), width/2);
+    }
+
+extern "C" G_MODULE_EXPORT void on_ControlPaned_check_resize(GtkWidget *widget, gpointer data)
+    {
+    GtkWindow *window = GTK_WINDOW(widget);
+    int width;
+    int height;
+    gtk_window_get_size(window, &width, &height);
+    gtk_paned_set_position(GTK_PANED(widget), height * 3/4);
+    }
+*/

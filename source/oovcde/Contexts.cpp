@@ -15,10 +15,11 @@ static Contexts *sContexts;
 
 
 Contexts::Contexts(OovProject &proj):
-    mProject(proj), mJournal(proj.getGuiOptions()),
-    mCurrentContext(C_BinaryComponent)
+    mProject(proj), mJournal(proj.getGuiOptions()), mCurrentContext(C_BinaryComponent),
+    mEditorContainer(mProject.getModelData())
     {
     sContexts = this;
+    mEditorContainer.setListener(this);
     }
 
 void Contexts::init(OovTaskStatusListener &taskStatusListener)
@@ -47,8 +48,17 @@ void Contexts::clear()
     mZoneList.clear();
     }
 
+void Contexts::displayPortion(OovStringRef className)
+    {
+    if(std::string(className).length() > 0)
+        {
+        updateOperationList(mProject.getModelData(), className);
+        mJournal.displayPortion(className);
+        updateJournalList();
+        }
+    }
 
-void Contexts::displayClassDiagram()
+void Contexts::displaySelectedClassDiagram()
     {
     if(mProject.isAnalysisReady())
         {
@@ -69,12 +79,7 @@ void Contexts::displayClassDiagram()
             }
         else if(mCurrentContext == C_Portion)
             {
-            if(std::string(className).length() > 0)
-                {
-                updateOperationList(mProject.getModelData(), className);
-                mJournal.displayPortion(className);
-                updateJournalList();
-                }
+            displayPortion(className);
             }
         }
     }
@@ -192,12 +197,12 @@ void Contexts::setContext(eContexts context)
             break;
 
         case C_Class:
-            displayClassDiagram();
+            displaySelectedClassDiagram();
             page = PI_Class;
             break;
 
         case C_Portion:
-            displayClassDiagram();
+            displaySelectedClassDiagram();
             page = PI_Class;
             break;
 
@@ -217,6 +222,36 @@ void Contexts::setContext(eContexts context)
     gtk_notebook_set_current_page(notebook, page);
     }
 
+bool Contexts::handleEditorMessages(EditorContainerCommands &command)
+    {
+    bool handleMessage = false;
+    if(!mEditorMessages.empty())
+        {
+        OovIpcMsg msg = mEditorMessages.top();
+        mEditorMessages.pop();
+        command = static_cast<EditorContainerCommands>(msg.getCommand());
+        switch(command)
+            {
+            case ECC_ViewClassDiagram:
+                displayClass(msg.getArg(1));
+                break;
+
+            case ECC_ViewPortionDiagram:
+                displayPortion(msg.getArg(1));
+                break;
+
+            case ECC_RunAnalysis:
+            case ECC_Build:
+            case ECC_StopAnalysis:
+                handleMessage = true;
+                break;
+
+            default:
+                break;
+            }
+        }
+    return handleMessage;
+    }
 
 void Contexts::updateContextAfterAnalysisCompletes()
     {
@@ -318,7 +353,7 @@ void Contexts::displayOperation(OovStringRef const className,
 extern "C" G_MODULE_EXPORT void on_ClassTreeview_cursor_changed(
         GtkWidget *button, gpointer data)
     {
-    sContexts->displayClassDiagram();
+    sContexts->displaySelectedClassDiagram();
     }
 
 extern "C" G_MODULE_EXPORT bool on_ClassTreeview_button_press_event(

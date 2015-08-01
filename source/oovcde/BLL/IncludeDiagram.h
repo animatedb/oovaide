@@ -53,8 +53,6 @@ class IncludeDiagram
         OovString mLastIncName;
         IncludeGraph mIncludeGraph;
         IncludeDrawer mIncludeDrawer;
-
-        void updateDrawingAreaSize();
     };
 
 #endif

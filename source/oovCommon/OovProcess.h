@@ -326,6 +326,9 @@ class OovBackgroundStdInListener
     public:
         OovBackgroundStdInListener();
         ~OovBackgroundStdInListener();
+        // This starts the thread. It is not started by default because
+        // it messes with the GDB or Eclipse session to listen to stdin.
+        void start();
         void setListener(OovStdInListener *listener)
             { mListener = listener; }
 

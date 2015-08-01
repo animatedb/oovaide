@@ -859,3 +859,28 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *wid
         }
     return false;
     }
+
+
+extern "C" G_MODULE_EXPORT void on_MainDebugGoToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
+    {
+    if(sEditFiles && sEditFiles->checkDebugger())
+        sEditFiles->getDebugger().resume();
+    }
+
+extern "C" G_MODULE_EXPORT void on_MainDebugStopToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
+    {
+    if(sEditFiles)
+        sEditFiles->getDebugger().stop();
+    }
+
+extern "C" G_MODULE_EXPORT void on_MainDebugStepIntoToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
+    {
+    if(sEditFiles && sEditFiles->checkDebugger())
+        sEditFiles->getDebugger().stepInto();
+    }
+
+extern "C" G_MODULE_EXPORT void on_MainDebugStepOverToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
+    {
+    if(sEditFiles && sEditFiles->checkDebugger())
+        sEditFiles->getDebugger().stepOver();
+    }

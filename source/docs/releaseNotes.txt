@@ -18,7 +18,9 @@ Explanations
 Missing Features
 ----------------
 - General
-	- editor IPC
+	- do something if project source directory does not exist
+	- add notes/title box (class name, file name, etc.)
+	- add font size for drawings, display and print
 	- remove sleepMs calls in windowsChildProcessListen
 	- rename oovcde to oovaide?
 	- Make all dialogs have parent windows
@@ -46,6 +48,7 @@ Missing Features
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
 - Zone Diagrams
+	- Don't cause redraw while mouse is moving
 	- Allow restoring diagrams
 	- BUG: Remove all and hide all children can leave remnant component text
 	- BUG: component text offsets
@@ -56,6 +59,7 @@ Missing Features
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams/List
 	- missing some template inheritance - OovThreadedWaitQueue/Private
+	- templates missing methods
 	- Saved drawings don't save preferences for each class
 	- BUG: forward class definitions mess up source line numbers
 	- Show parameter reference/pointer/const in methods
@@ -80,6 +84,7 @@ Missing Features
 	- Should show connections to this/super
 	- Overloaded methods don't work
 - Sequence Diagrams
+	- Go to operation, then restart does not restore to main operation
 	- Show class members in different color?
 	- Don't discard current operation when switching between class and operation view
 	- Allow restoring diagrams
@@ -149,6 +154,8 @@ Missing Features
 		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Editor
+	- Make find in files a background task
+	- Add history list of lines of last go to defs, go to method, etc.
 	- context help window in linux doesn't go away
 	- Restore previous session, save loaded files and line numbers when exit
 	- Sometimes not all tabs have an X for exiting - newTabLabel
@@ -156,7 +163,6 @@ Missing Features
 	- Edit/Preferences working directory ... does not display dialog
 	- Single editor with multitabs doesn't work in linux
 	- oovcde/editor - https://en.wikipedia.org/wiki/Inter-process_communication
-	- Add toolbar buttons
 	- find declaration/definition (also in other translation units)
 	- Hover over tab should display full file path in tooltip
 		http://www.velvetcache.org/2007/08/22/gtk-tooltips-on-notebook-tab-labels

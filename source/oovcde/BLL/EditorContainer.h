@@ -5,15 +5,21 @@
 #ifndef EDITOR_CONTAINER
 #define EDITOR_CONTAINER
 
-#define USE_IPC 1
-#if(USE_IPC)
 
 #include "ModelObjects.h"
 #include "OovProcess.h"
 #include "Options.h"
+#include "OovIpc.h"
 
 void viewSource(GuiOptions const &guiOptions, OovStringRef const module,
         unsigned int lineNum);
+
+class EditorListener
+    {
+    public:
+        virtual ~EditorListener();
+        virtual void handleEditorMessage(OovIpcMsg const &msg) = 0;
+    };
 
 // The communication protocol is point-to-point, full-duplex, asynchronous.
 // The editor container can send commands/requests to the editor, and the
@@ -25,6 +31,8 @@ class EditorContainer:public OovProcessListener
     {
     public:
         EditorContainer(ModelData const &modelData);
+        void setListener(EditorListener *listener)
+            { mListener = listener; }
         void viewFile(OovStringRef const procPath, char const * const *argv,
             OovStringRef const fn, int lineNum);
         bool okToExit();
@@ -33,15 +41,17 @@ class EditorContainer:public OovProcessListener
         ModelData const &mModelData;
         OovBackgroundPipeProcess mBackgroundProcess;
         OovString mReceivedData;
+        EditorListener *mListener;
 
-        void handleCommand(OovStringRef cmdStr);
+        /// WARNING: this is called from a background thread.
+        void handleMessage(OovIpcMsg const &cmd);
         ModelClassifier const *findClass(OovStringRef name);
 
+        /// WARNING: this is called from a background thread.
         virtual void onStdOut(OovStringRef const out, size_t len) override;
         virtual void onStdErr(OovStringRef const out, size_t len) override;
         virtual void processComplete()  override;
     };
-#endif
 
 #endif
 

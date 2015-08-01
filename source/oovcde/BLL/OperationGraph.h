@@ -11,7 +11,6 @@
 
 #include "ModelObjects.h"
 #include "Graph.h"
-#include <gtk/gtk.h>    // For GtkWidget and cairo_t
 #include <vector>
 
 struct OperationDrawOptions

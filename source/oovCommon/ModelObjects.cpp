@@ -861,7 +861,7 @@ static char getTokenType(char c)
     return c;
     }
 
-std::string ModelData::getBaseType(OovStringRef const fullStr) const
+std::string ModelData::getBaseType(OovStringRef const fullStr)
 {
 #if(BASESPEED)
     std::string str;

@@ -136,8 +136,10 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
         OovString(std::string const &str, size_t pos, size_t len = npos):
             std::string(str, pos, len)
             {}
-        OovString(char const * const str, size_t n):
-            std::string(str, n)
+        // This provides the same interface as std::string, even though
+        // for consistency, it would be better to take a pos and len.
+        OovString(char const * const str, size_t len):
+            std::string(str, len)
             {}
         /// These can prevent temporary OovStrings from being created.
         void operator=(char const * const str)

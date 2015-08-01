@@ -14,18 +14,32 @@ enum EditorCommands
 
 enum EditorContainerCommands
     {
-    ECC_GetMethodDef = 'm',     // arg1=className, arg2=methodName
-    ECC_GetClassDef = 'c',      // arg1=className
-    ECC_RunAnalysis = 'a',      // no args
-    ECC_StopAnalysis = 's',     // no args
+    ECC_GotoMethodDef = 'm',            // arg1=className, arg2=methodName
+    ECC_ViewClassDiagram = 'c',         // arg1=className
+    ECC_ViewPortionDiagram = 'p',       // arg1=className
+    ECC_RunAnalysis = 'a',              // no args
+    ECC_Build = 'b',                    // no args
+    ECC_StopAnalysis = 's',             // no args
     };
 
-class OovMsg
+class OovIpcMsg:public OovString
     {
     public:
-        static OovStringRef buildSendMsg(int cmd, OovStringRef arg1,
-            OovStringRef arg2=nullptr);
-        static OovString getArg(OovStringRef cmdStr, size_t argNum);
+        OovIpcMsg()
+            {}
+        OovIpcMsg(OovString const &str):
+            OovString(str)
+            {}
+        OovIpcMsg(int cmd, OovStringRef arg1=nullptr, OovStringRef arg2=nullptr);
+        // argNum=0 is the command
+        OovString getArg(size_t argNum) const;
+        int getCommand() const;
+    };
+
+class OovIpc
+    {
+    public:
+        static void sendMessage(OovStringRef msg);
     };
 
 #endif

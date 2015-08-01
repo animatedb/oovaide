@@ -13,6 +13,7 @@
 #include "Graph.h"
 #include "FastGene.h"
 #include "Options.h"
+#include "EditorContainer.h"    // Make viewSource available.
 
 
 typedef std::vector<GraphPoint> OovPolygon;
@@ -114,14 +115,6 @@ class DistinctColors
         static size_t getNumColors();
         static Color getColor(size_t index);
     };
-
-#include "EditorContainer.h"
-#if(!USE_IPC)
-// This launches an editor to view source code at a certain line number in
-// the source code.
-void viewSource(GuiOptions const &guiOptions, OovStringRef const module,
-        unsigned int lineNum);
-#endif
 
 /// This defines functionality to use a genetic algorithm used to layout the
 /// node positions for the include diagram. The genetic algorithm will place

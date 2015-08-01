@@ -52,7 +52,7 @@ class OperationDiagram
         void addOperCallers(const OperationCall &call)
             { mOpGraph.addOperCallers(*mModelData, call); }
         std::string getClassName(const OperationCall &opCall) const
-            { return getClassName(opCall); }
+            { return mOpGraph.getClassName(opCall); }
 
         /// This can be used to paint to a window, or to an SVG file.
         void drawDiagram(DiagramDrawer &drawer);
@@ -70,8 +70,6 @@ class OperationDiagram
         OperationGraph mOpGraph;
         OperationDrawer mOperationDrawer;
         OperationDiagramParams mLastOperDiagramParams;
-
-        void updateDrawingAreaSize(GtkWidget *drawingArea, OperationDrawer &opDrawer);
     };
 
 
