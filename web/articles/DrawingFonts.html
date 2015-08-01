@@ -1,0 +1,81 @@
+<html>
+
+SVG fonts are not rendered same on linux and windows.
+Some of the description below covers how to define a font for an SVG file.
+The problem is that relative paths are difficult, and it doesn't seem
+to work if the SVG is embedded into an html file.
+<p/>
+Use fallbacks: font-family="Arial, Helvetica, sans-serif"
+<p/>
+http://www.w3schools.com/cssref/css_websafe_fonts.asp
+<p/>
+HTML font does not seem to be inherited into SVG.
+
+<h3>References</h3>
+<ul>
+<li>http://www.w3.org/TR/SVG/styling.html#StylingWithCSS</li>
+<li>http://stackoverflow.com/questions/15930003/downloading-a-google-font-and-setting-up-an-offline-site-that-uses-it</li>
+<li>http://stackoverflow.com/questions/16416013/svg-font-face-with-ttf-fonts</li>
+<li>http://www.fontsquirrel.com/tools/webfont-generator</li>
+<li>http://blog.fontspring.com/2011/02/the-new-bulletproof-font-face-syntax/</li>
+</ul>
+
+<h3>Embedding Font in SVG File</h3>
+
+The following works within an SVG file:
+<pre>
+	&lt;?xml version="1.0" standalone="no"?&gt;
+	&lt;?xml-stylesheet href="opensans-stylesheet.css" type="text/css"?&gt;
+</pre>
+
+The following works within an SVG file:
+<pre>
+	&lt;style type="text/css"&gt;&lt;![CDATA[
+	@font-face {
+	    font-family: 'open_sansregular';
+
+	    src: url('opensans-regular-webfont.eot');
+	    src: url('opensans-regular-webfont.eot?#iefix') format('embedded-opentype'),
+	         url('opensans-regular-webfont.woff2') format('woff2'),
+	         url('opensans-regular-webfont.woff') format('woff'),
+	         url('opensans-regular-webfont.ttf') format('truetype'),
+	         url('opensans-regular-webfont.svg#open_sansregular') format('svg');
+	    font-weight: normal;
+	    font-style: normal;
+
+	}
+	]]&gt;&lt;/style&gt;
+</pre>
+
+
+<h3>Windows 2000</h3>
+Arial 	arial.ttf, arialdb.ttf, ariali.ttf, arialbi.ttf
+Arial Black 	ariblk.ttf
+Comic Sans MS 	comic.ttf, comicbd.ttf
+Courier New 	cour.ttf, courb.ttf, couri.ttf, courbi.ttf
+Georgia 	georgia.ttf, georgiab.ttf, georgiai.ttf, georgiaz.ttf
+Impact 	impact.ttf
+Lucida Console 	lucon.ttf
+Lucida Sans Unicode 	l_10646.ttf
+Marlett 	marlett.ttf
+Microsoft Sans Serif 	micross.ttf
+Palatino 	pala.ttf, palab.ttf, palai.ttf, palabi.ttf
+Symbol 	Symbol.ttf
+Tahoma 	tahoma.ttf, tahomabd.ttf
+Times New Roman 	times.ttf, timesb.ttf, timesi.ttf, timesbi.ttf
+Trebuchet MS 	Trebuc.ttf, Trebucbd.ttf, Trebucit.ttf, Trebucbi.ttf
+Verdana 	verdana.ttf, verdanab.ttf, verdanai.ttf, verdanaz.ttf
+Webdings 	webdings.ttf
+Wingdings 	wingding.ttf
+
+<h3>Linux</h3>
+
+http://sixrevisions.com/web_design/a-web-designers-guide-to-linux-fonts/
+<p/>
+    Sans-serif fonts: Arial Black, Arial, Comic Sans MS, Trebuchet MS, and Verdana
+    Serif fonts: Georgia and Times New Roman
+    Monospace fonts: Andale Mono and Courier New
+    Fantasy fonts: Impact and Webdings
+
+</html>
+
