@@ -118,8 +118,8 @@ class oovGui
     {
     friend class Menu;
     public:
-        oovGui():
-            mContexts(mProject)
+        oovGui(Builder &builder):
+            mBuilder(builder), mContexts(mProject)
             {}
         ~oovGui();
         void init();
@@ -165,16 +165,12 @@ class oovGui
             { return mProject; }
         // fn is only filled if a fn, colons, and line number are found.
         int getStatusSourceFile(std::string &fn);
-        GtkWindow *getWindow()
-            {
-            return GTK_WINDOW(getBuilder().getWidget("TopWindow"));
-            }
         ProjectStatus &getLastProjectStatus()
             { return mLastProjectStatus; }
         void showProjectSettingsDialog();
 
     private:
-        Builder mBuilder;
+        Builder &mBuilder;
         OovProject mProject;
         Contexts mContexts;
         ProjectStatus mLastProjectStatus;

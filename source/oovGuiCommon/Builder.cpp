@@ -11,24 +11,25 @@
 
 static Builder *sBuilder;
 
-void Builder::init()
+Builder::Builder():
+    mGtkBuilder(nullptr)
     {
-    if(!sBuilder)
-        mGtkBuilder = gtk_builder_new();
     sBuilder = this;
     }
 
 Builder *Builder::getBuilder()
     {
+    if(!sBuilder->mGtkBuilder)
+        sBuilder->mGtkBuilder = gtk_builder_new();
     return sBuilder;
     }
 
 bool Builder::addFromFile(OovStringRef const fn)
     {
     GError *err = nullptr;
-    init();
     OovString path = Project::getBinDirectory();
     path += fn;
+    getBuilder();
     gtk_builder_add_from_file(mGtkBuilder, path.getStr(), &err);
     return(!err);
     }

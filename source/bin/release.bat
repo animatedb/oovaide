@@ -9,6 +9,7 @@ set dst=..\..\..\backup\oovcde
 rd /s /q %dst%
 mkdir %dst%
 
+del /s %dst%\web\*.bak
 xcopy /s %trnk%\..\web\*.* %dst%\web\
 xcopy /s %trnk%\bin\*.* %dst%\bin\
 xcopy /s /Y %trnk%\bin\data\*.* %dst%\bin\data\

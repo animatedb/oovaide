@@ -40,6 +40,19 @@ bool PathChooser::ChoosePath(GtkWindow *parent, OovStringRef const dlgName,
 Dialog::~Dialog()
     {}
 
+void Dialog::setDialog(GtkDialog *dlg, GtkWindow *parent)
+    {
+    mDialog = dlg;
+    if(!parent)
+        {
+        parent = Gui::getMainWindow();
+        }
+    if(parent)
+        {
+        gtk_window_set_transient_for(GTK_WINDOW(dlg), parent);
+        }
+    }
+
 int Dialog::runHideCancel()
     {
     beforeRun();
@@ -58,6 +71,12 @@ bool Dialog::run(bool hideDialogAfterButtonPress)
     if(hideDialogAfterButtonPress)
         gtk_widget_hide(GTK_WIDGET(getDialog()));
     return ok;
+    }
+
+
+GtkWindow *Gui::getMainWindow()
+    {
+    return GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow"));
     }
 
 
@@ -163,7 +182,8 @@ void Gui::reparentWidget(GtkWidget *windowToMove, GtkContainer *newParent)
 bool Gui::messageBox(OovStringRef const msg, GtkMessageType msgType,
         GtkButtonsType buttons)
     {
-    GtkWidget *widget = gtk_message_dialog_new(nullptr, GTK_DIALOG_MODAL,
+    GtkWindow *main = getMainWindow();
+    GtkWidget *widget = gtk_message_dialog_new(main, GTK_DIALOG_MODAL,
         msgType, buttons, "%s", msg.getStr());
     int resp = gtk_dialog_run(GTK_DIALOG(widget));
     gtk_widget_destroy(widget);
@@ -435,7 +455,7 @@ void GuiTree::init(Builder &builder, OovStringRef const widgetName,
     mTreeView = GTK_TREE_VIEW(builder.getWidget(widgetName));
     if(!gtk_tree_view_get_column(mTreeView, 0))
         {
-        GtkTreeStore *store;
+        GtkTreeStore *store = nullptr;
         switch(columnType)
             {
             case CT_String:
@@ -455,7 +475,10 @@ void GuiTree::init(Builder &builder, OovStringRef const widgetName,
 				store = gtk_tree_store_new(2, G_TYPE_STRING, G_TYPE_BOOLEAN);
                 break;
             }
-        gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
+        if(store)
+            {
+            gtk_tree_view_set_model(mTreeView, GTK_TREE_MODEL(store));
+            }
         g_object_unref(store);
         }
     }

@@ -23,7 +23,6 @@ Missing Features
 	- add font size for drawings, display and print
 	- remove sleepMs calls in windowsChildProcessListen
 	- rename oovcde to oovaide?
-	- Make all dialogs have parent windows
 	- remove mingw dependencies from common - Sleep/chrono/pthread-gthread
 	- BUG: need to clean up analysis dir when files are deleted.
 	- BUG: doing File/New on an existing project doesn't delete package config.

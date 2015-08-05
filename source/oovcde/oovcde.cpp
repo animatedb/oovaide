@@ -516,7 +516,7 @@ void oovGui::displayProjectStats()
 
 void oovGui::showProjectSettingsDialog()
     {
-    ProjectSettingsDialog dlg(gOovGui->getWindow(),
+    ProjectSettingsDialog dlg(Gui::getMainWindow(),
         gOovGui->getProject().getProjectOptions(),
         gOovGui->getProject().getGuiOptions(), false);
     if(dlg.runDialog())
@@ -557,21 +557,23 @@ OptionsDialogUpdate::~OptionsDialogUpdate()
 int main(int argc, char *argv[])
     {
     gtk_init(&argc, &argv);
-    // Creating this as not a static means that all code that this initializes
-    // will be initialized after statics have been initialized.
-    oovGui oovGui;
-    gOovGui = &oovGui;
+    Builder builder;
 
     Project::setArgv0(argv[0]);
-    if(gOovGui->getBuilder().addFromFile("oovcdeLayout.glade"))
+    if(builder.addFromFile("oovcdeLayout.glade"))
         {
+        // Creating this as not a static means that all code that this initializes
+        // will be initialized after statics have been initialized.
+        // The oovGui constructs dialogs, which must be done after loading the glade file.
+        oovGui oovGui(builder);
+        gOovGui = &oovGui;
         gOovGui->init();
         OptionsDialogUpdate optionsDlg(gOovGui->getProject().getProjectOptions(),
                 gOovGui->getProject().getGuiOptions());
         sOptionsDialog = &optionsDlg;
         BuildSettingsDialog buildDlg;
 
-        GtkWidget *window = gOovGui->getBuilder().getWidget("TopWindow");
+        GtkWidget *window = gOovGui->getBuilder().getWidget("MainWindow");
         gtk_widget_show(window);
         gtk_main();
         }
@@ -585,7 +587,7 @@ int main(int argc, char *argv[])
 extern "C" G_MODULE_EXPORT void on_NewProjectMenuitem_activate(
         GtkWidget *button, gpointer data)
     {
-    ProjectSettingsDialog dlg(gOovGui->getWindow(),
+    ProjectSettingsDialog dlg(Gui::getMainWindow(),
             gOovGui->getProject().getProjectOptions(),
             gOovGui->getProject().getGuiOptions(), true);
     if(dlg.runDialog())
@@ -621,7 +623,7 @@ extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
     {
     OovString projectDir;
     PathChooser ch;
-    if(ch.ChoosePath(gOovGui->getWindow(), "Open OOVCDE Project Directory",
+    if(ch.ChoosePath(Gui::getMainWindow(), "Open OOVCDE Project Directory",
             GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, projectDir))
         {
         if(gOovGui->canStartAnalysis())
@@ -716,8 +718,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
 extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
         GtkWidget * /*widget*/, gpointer /*data*/)
     {
-    Dialog dlg(GTK_DIALOG(gOovGui->getBuilder().getWidget("NewModuleDialog")),
-            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+    Dialog dlg(GTK_DIALOG(gOovGui->getBuilder().getWidget("NewModuleDialog")));
     ComponentTypesFile componentsFile;
     Gui::clear(GTK_COMBO_BOX_TEXT(gOovGui->getBuilder().getWidget(
             "NewModule_ComponentComboboxtext")));
@@ -762,7 +763,7 @@ extern "C" G_MODULE_EXPORT void on_OpenDrawingMenuitem_activate(
     {
     PathChooser ch;
     OovString fn = gOovGui->getDiagramName("oov");
-    if(ch.ChoosePath(gOovGui->getWindow(), "Open Drawing (.OOV)",
+    if(ch.ChoosePath(Gui::getMainWindow(), "Open Drawing (.OOV)",
             GTK_FILE_CHOOSER_ACTION_OPEN, fn))
         {
         DrawingFile drawFile(fn, false);
@@ -785,7 +786,7 @@ extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
     PathChooser ch;
     FilePath fn(gOovGui->getDiagramName("oov"), FP_File);
     ch.setDefaultPath(fn);
-    if(ch.ChoosePath(gOovGui->getWindow(), "Save Drawing (.OOV)",
+    if(ch.ChoosePath(Gui::getMainWindow(), "Save Drawing (.OOV)",
             GTK_FILE_CHOOSER_ACTION_SAVE, fn))
         {
         if(!fn.hasExtension())
@@ -804,7 +805,7 @@ extern "C" G_MODULE_EXPORT void on_ExportDrawingAsMenuitem_activate(
     PathChooser ch;
     FilePath fn(gOovGui->getDiagramName("svg"), FP_File);
     ch.setDefaultPath(fn);
-    if(ch.ChoosePath(gOovGui->getWindow(), "Export Drawing (.SVG)",
+    if(ch.ChoosePath(Gui::getMainWindow(), "Export Drawing (.SVG)",
             GTK_FILE_CHOOSER_ACTION_SAVE, fn))
         {
         if(!fn.hasExtension())
@@ -936,7 +937,7 @@ extern "C" G_MODULE_EXPORT void on_LineStatsMenuitem_activate(
     gOovGui->makeLineStats();
     }
 
-extern "C" G_MODULE_EXPORT gboolean on_TopWindow_delete_event(GtkWidget *button, gpointer data)
+extern "C" G_MODULE_EXPORT gboolean on_MainWindow_delete_event(GtkWidget *button, gpointer data)
     {
     bool ok = gOovGui->okToExit();
     if(!ok)
@@ -952,7 +953,7 @@ extern "C" G_MODULE_EXPORT void on_HelpAboutmenuitem_activate(
     OovStringRef const comments =
             "This program generates diagrams from C++ files, and allows"
             " graphical navigation between drawings and source code.";
-    gtk_show_about_dialog(nullptr, "program-name", "Oovcde",
+    gtk_show_about_dialog(Gui::getMainWindow(), "program-name", "Oovcde",
             "version", "Version " OOV_VERSION, "comments", comments.getStr(), nullptr);
     }
 

@@ -38,12 +38,7 @@ class Dialog
             setDialog(dlg, parent);
             }
         virtual ~Dialog();
-        void setDialog(GtkDialog *dlg, GtkWindow *parent=nullptr)
-            {
-            mDialog = dlg;
-            if(parent)
-                gtk_window_set_transient_for(GTK_WINDOW(dlg), parent);
-            }
+        void setDialog(GtkDialog *dlg, GtkWindow *parent=nullptr);
         void setTitle(OovStringRef title)
             { gtk_window_set_title(GTK_WINDOW(mDialog), title); }
         GtkWidget *addButton(const gchar *text, gint response_id)
@@ -88,6 +83,7 @@ namespace Gui
     {
         inline GtkWindow *getWindow(GtkWidget *widget)
             { return GTK_WINDOW(widget); }
+        GtkWindow *getMainWindow();
         void clear(GtkTextView *textview);
         inline void clear(GtkEntry *textEntry)
             { gtk_entry_set_text(textEntry, ""); }

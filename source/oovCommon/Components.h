@@ -20,9 +20,16 @@ bool isSource(OovStringRef const file);
 bool isLibrary(OovStringRef const file);
 
 
-/// This file is read and written by both oovcde and oovBuilder.
-/// This defines each component's source and include files.
-/// A component pretty directly maps to a directory in the project.
+/// The component types information is read and written by both oovcde and
+/// oovBuilder.
+///
+/// This class is made up of two files.
+///    - One file defines the component types defining directories. The
+///      component types file is a NameValue file that contains a list
+///      of component / directories, where each directory can be defined as
+///      a component, which has a component type.
+///    - The other file is a NameValue file that defines which source and
+///      header files are in each component.
 class ComponentTypesFile
     {
     public:
@@ -34,35 +41,87 @@ class ComponentTypesFile
             CT_Program          // no extension or .exe
             };
 
+        /// This reads both component files.
         bool read();
+        /// This reads the component type information only.
         bool readTypesOnly(OovStringRef const fn);
+        /// Set the component names for a project.
+        /// @param compNames A list of component names using the default
+        ///     CompoundValue separator.
         void setComponentNames(OovStringRef const compNames)
             { mCompTypesFile.setNameValue("Components", compNames); }
+        /// Get the component names for a project.
+        /// @param definedComponentsOnly If true, this does not return any
+        ///     CT_Unknown components.
         OovStringVec getComponentNames(bool definedComponentsOnly = false) const;
+
+        /// Gets the child name of the component. The child name is the
+        /// last name of the directory.  /parent-part1/parent-part2/child
+        /// @param compName The path name of the component
         static std::string getComponentChildName(std::string const &compName);
+        /// Gets the parent name of the component. The parent is the part
+        /// of the path that is not the child.
+        /// @param compName The path name of the component
         static std::string getComponentParentName(std::string const &compName);
 
+        /// Returns true if any of the components in a project are not unknown.
         bool anyComponentsDefined() const;
+        /// Returns the component type of a directory / component.
+        /// @param compName The name of the component.
         enum eCompTypes getComponentType(OovStringRef const compName) const;
+        /// Set the component type of a directory / component.
+        /// @param compName The component name.
+        /// @param typeName The component type to set.
         void setComponentType(OovStringRef const compName, OovStringRef const typeName);
+
+        /// Set the list of C++ source files for a component.
+        /// @param compName The component name.
+        /// @param srcs The list of sources with CompoundValue default delimeters.
         void setComponentSources(OovStringRef const compName,
                 OovStringSet const &srcs);
+        /// Set the list of C++ include files for a component.
+        /// @param compName The component name.
+        /// @param srcs The list of sources with CompoundValue default delimeters.
         void setComponentIncludes(OovStringRef const compName,
             OovStringSet const &incs);
+        /// Get the list of C++ source files for a component.
+        /// @param compName The component name.
         OovStringVec getComponentSources(OovStringRef const compName) const;
+        /// Get the list of C++ include files for a component.
+        /// @param compName The component name.
         OovStringVec getComponentIncludes(OovStringRef const compName) const;
+
+        /// Gets the build arguments that are specific for a component.
+        /// @param compName The component name.
         OovString getComponentBuildArgs(OovStringRef const compName) const;
+        /// Sets the build arguments that are specific for a component.
+        /// @param compName The component name.
         void setComponentBuildArgs(OovStringRef const compName, OovStringRef const args);
 
+        /// Get the long type of component type name.  This is typically
+        /// shown the the user.
+        /// @param ct The component type
         static OovStringRef const getLongComponentTypeName(eCompTypes ct);
+        /// Get the short type of component type name.  This is typically
+        /// saved in a file.
+        /// @param ct The component type
         static OovStringRef const getShortComponentTypeName(eCompTypes ct)
             { return getComponentTypeAsFileValue(ct); }
+
+        /// Get the absolute path of a component.  Note that a directory may
+        /// contain a subdirectory of type unknown, and both directories are
+        /// listed as a component with a component type.  So each
+        /// directory / component only has a single absolute path.
+        /// @param compName The component name.
         OovString getComponentAbsolutePath(OovStringRef const compName) const;
+
+        /// Write the files to disk.
         void writeFile()
             {
             mCompTypesFile.writeFile();
             mCompSourceListFile.writeFile();
             }
+        /// Only write the component types file to disk.
         void writeTypesOnly(OovStringRef const fn)
             {
             mCompTypesFile.setFilename(fn);
@@ -86,29 +145,36 @@ class ComponentTypesFile
                 OovStringRef const compTypeName);
     };
 
+/// This class stores the directories that contain include files within a project.
+/// These paths are used as default include paths to analyze a file.
 /// This file is stored in the analysis directory.
 /// This class does not open the file. The read must be done before calling any of
 /// the other members.
 class ComponentsFile:public NameValueFile
     {
     public:
+        /// Reads the specified components file.
+        /// @param fn The path of the file to open.
         void read(OovStringRef const fn);
-        /// Get the include paths.
+        /// Get the include paths for the project.
         OovStringVec getProjectIncludeDirs() const
             {
-            return CompoundValueRef::parseString(
-                    getProjectIncludeDirsStr());
+            return CompoundValueRef::parseString(getProjectIncludeDirsStr());
             }
+        /// Gets the absolute include paths for the project.
         OovStringVec getAbsoluteIncludeDirs() const;
-        OovStringVec getExternalRootPaths() const
-            {
-            return CompoundValueRef::parseString(
-                    getValue("Components-init-ext-roots"));
-            }
-        /// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
+
         /// This splits the root search dir into a root dir and exclude directories.
+        /// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
+        /// @param rootSrch The entire search dir including exclude directories.
+        /// @param rootDir The returned rootDir part of the search dir.
+        /// @param excludes The returned list of exclude directories.
         static void parseProjRefs(OovStringRef const rootSrch, OovString &rootDir,
                 OovStringVec &excludes);
+        /// Checks to see if the filePath is a substring of any of the exclude
+        /// paths.
+        /// @param filePath The filePath to search for within the excludes.
+        /// @param excludes The list of exclude directories.
         static bool excludesMatch(OovStringRef const filePath,
                 OovStringVec const &excludes);
 

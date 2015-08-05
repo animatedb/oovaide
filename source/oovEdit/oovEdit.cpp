@@ -38,7 +38,7 @@ void Editor::openTextFile()
     {
     OovString filename;
     PathChooser ch;
-    if(ch.ChoosePath(GTK_WINDOW(mBuilder.getWidget("MainWindow")), "Open File",
+    if(ch.ChoosePath(Gui::getMainWindow(), "Open File",
             GTK_FILE_CHOOSER_ACTION_OPEN, filename))
         {
         openTextFile(filename);
@@ -65,8 +65,7 @@ class FindDialog:public Dialog
     {
     public:
         FindDialog(EditFiles &editFiles):
-            Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("FindDialog")),
-                    Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")))
+            Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("FindDialog")))
             {
             GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
             FileEditView *view = editFiles.getEditView();
@@ -120,8 +119,7 @@ void Editor::findDialog()
 
 void Editor::gotoLineDialog()
     {
-    Dialog dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("GoToLineDialog")),
-            Gui::getWindow(Builder::getBuilder()->getWidget("MainWindow")));
+    Dialog dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("GoToLineDialog")));
     int ret = dialog.run(true);
     if(ret)
         {
@@ -461,7 +459,7 @@ void Editor::loadSettings()
     mEditOptions.setProjectDir(mProjectDir);
     if(mEditOptions.getScreenSize(width, height))
         {
-        gtk_window_resize(GTK_WINDOW(mBuilder.getWidget("MainWindow")), width, height);
+        gtk_window_resize(Gui::getMainWindow(), width, height);
         }
     Project::setProjectDirectory(mProjectDir);
     }
@@ -469,7 +467,7 @@ void Editor::loadSettings()
 void Editor::saveSettings()
     {
     int width, height;
-    gtk_window_get_size(GTK_WINDOW(mBuilder.getWidget("MainWindow")), &width, &height);
+    gtk_window_get_size(Gui::getMainWindow(), &width, &height);
     mEditOptions.saveScreenSize(width, height);
     }
 
@@ -520,8 +518,7 @@ void Editor::editPreferences()
     GtkEntry *workDirEntry = GTK_ENTRY(mBuilder.getWidget("DebugWorkingDirEntry"));
     Gui::setText(workDirEntry, mEditOptions.getValue(OptEditDebuggerWorkingDir));
 
-    Dialog dlg(GTK_DIALOG(mBuilder.getWidget("Preferences")),
-            GTK_WINDOW(mBuilder.getWidget("MainWindow")));
+    Dialog dlg(GTK_DIALOG(mBuilder.getWidget("Preferences")));
     if(dlg.run(true))
         {
         if(haveNames)
@@ -543,8 +540,7 @@ void Editor::setPreferencesWorkingDir()
     PathChooser chooser;
     chooser.setDefaultPath(Project::getOutputDir(BuildConfigDebug));
     OovString dir;
-    if(chooser.ChoosePath(GTK_WINDOW(mBuilder.getWidget("MainWindow")),
-            "Select Working Directory",
+    if(chooser.ChoosePath(Gui::getMainWindow(), "Select Working Directory",
             GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))
         {
         GtkEntry *workDirEntry = GTK_ENTRY(mBuilder.getWidget("DebugWorkingDirEntry"));
@@ -585,7 +581,7 @@ bool Editor::checkExitSave()
 static void activateApp(GApplication *gapp)
     {
     GtkApplication *app = GTK_APPLICATION (gapp);
-    GtkWidget *window = gEditor->getBuilder().getWidget("MainWindow");
+    GtkWidget *window = Gui::getMainWindow();
     gEditor->loadSettings();
     gtk_widget_show_all(window);
     gtk_application_add_window(app, GTK_WINDOW(window));
@@ -785,7 +781,7 @@ extern "C" G_MODULE_EXPORT void on_FileSaveAsImagemenuitem_activate(GtkWidget *b
 extern "C" G_MODULE_EXPORT void on_FileQuitImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
 #if(GTK_MINOR_VERSION >= 10)
-    gtk_window_close(GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+    gtk_window_close(Gui::getMainWindow());
 #endif
     }
 
@@ -799,7 +795,7 @@ extern "C" G_MODULE_EXPORT void on_HelpAboutImagemenuitem_activate(GtkWidget *wi
     {
     char const * const comments =
             "This is a simple editor that is part of the Oovcde project";
-    gtk_show_about_dialog(nullptr, "program-name", "OovEdit",
+    gtk_show_about_dialog(Gui::getMainWindow(), "program-name", "OovEdit",
             "version", "Version " OOV_VERSION, "comments", comments, nullptr);
     }
 

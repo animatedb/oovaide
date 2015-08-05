@@ -17,8 +17,7 @@ BuildConfig::BuildConfig()
     mConfigFile.readFile();
     }
 
-std::string BuildConfig::getAnalysisPath(OovStringRef const /*buildType*/,
-        OovStringRef const crcStr) const
+std::string BuildConfig::getAnalysisPathUsingCRC(OovStringRef const crcStr) const
     {
     FilePath analysisCrcStr(Project::getProjectDirectory(), FP_Dir);
     OovString dirName = "analysis-";
@@ -27,21 +26,22 @@ std::string BuildConfig::getAnalysisPath(OovStringRef const /*buildType*/,
     return analysisCrcStr;
     }
 
-std::string BuildConfig::getAnalysisPath(OovStringRef const buildType) const
+std::string BuildConfig::getAnalysisPath() const
     {
-    return getAnalysisPath(buildType, getCrcAsStr(buildType, CT_AnalysisArgsCrc));
+    return getAnalysisPathUsingCRC(getCrcAsStr(BuildConfigAnalysis,
+            CT_AnalysisArgsCrc));
     }
 
-std::string BuildConfig::getIncDepsFilePath(OovStringRef const buildType) const
+std::string BuildConfig::getIncDepsFilePath() const
     {
-    FilePath fp(getAnalysisPath(buildType), FP_Dir);
+    FilePath fp(getAnalysisPath(), FP_Dir);
     fp.appendFile(Project::getAnalysisIncDepsFilename());
     return fp;
     }
 
-std::string BuildConfig::getComponentsFilePath(OovStringRef const buildType) const
+std::string BuildConfig::getComponentsFilePath() const
     {
-    FilePath fp(getAnalysisPath(buildType), FP_Dir);
+    FilePath fp(getAnalysisPath(), FP_Dir);
     fp.appendFile(Project::getAnalysisComponentsFilename());
     return fp;
     }

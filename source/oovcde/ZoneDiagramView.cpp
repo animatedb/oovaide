@@ -327,8 +327,7 @@ class ZoneMapPathDialog:public Dialog
         ZoneMapPathDialog()
             {
             gMapPathDialog = this;
-            setDialog(GTK_DIALOG(Builder::getBuilder()->getWidget("ZoneMapPathDialog")),
-                    GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+            setDialog(GTK_DIALOG(Builder::getBuilder()->getWidget("ZoneMapPathDialog")));
             mPathMapList.init(*Builder::getBuilder(), "ZonePathMapTreeview",
                     "Path Map List");
             ZoneDiagramView *zoneDiagramView = Journal::getJournal()->getCurrentZoneDiagram();

@@ -17,7 +17,7 @@ class CMaker
             {}
         std::string getAnalysisPath() const
             {
-            return mConfig.getAnalysisPath(BuildConfigAnalysis);
+            return mConfig.getAnalysisPath();
             }
         OovStringVec getCompSources(OovStringRef const compName);
         OovStringVec getCompLibrariesAndIncs(OovStringRef const compName,

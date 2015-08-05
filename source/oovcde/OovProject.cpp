@@ -123,7 +123,7 @@ bool OovProject::loadAnalysisFiles()
 void OovProject::loadIncludeMap()
     {
     BuildConfigReader buildConfig;
-    std::string incDepsFilePath = buildConfig.getIncDepsFilePath(BuildConfigAnalysis);
+    std::string incDepsFilePath = buildConfig.getIncDepsFilePath();
     mIncludeMap.read(incDepsFilePath);
     }
 

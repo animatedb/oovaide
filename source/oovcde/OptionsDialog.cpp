@@ -319,8 +319,7 @@ void OptionsDialog::updateBuildConfig()
 
 void OptionsDialog::showScreen()
     {
-    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")),
-            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")));
     updateBuildConfig();
     ScreenOptions options(mCurrentBuildConfig, mProjectOptions, mGuiOptions);
     mBuildConfigList.setSelected(mCurrentBuildConfig);
@@ -333,8 +332,7 @@ void OptionsDialog::showScreen()
 
 void OptionsDialog::newConfig()
     {
-    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("NewBuildConfigDialog")),
-            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("NewBuildConfigDialog")));
     GtkEntry *oldNameEntry = GTK_ENTRY(Builder::getBuilder()->getWidget("OldConfigNameEntry"));
     Gui::setText(oldNameEntry, mBuildConfigList.getSelected());
     if(dlg.run())
@@ -482,8 +480,7 @@ static PrefOption PrefOptions[] =
 
 bool ClassPreferencesDialog::run(Builder &builder, ClassNodeDrawOptions &options)
     {
-    Dialog dlg(GTK_DIALOG(gtk_dialog_new()),
-            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+    Dialog dlg(GTK_DIALOG(gtk_dialog_new()));
     dlg.addButton(GUI_CANCEL, GTK_RESPONSE_CANCEL);
     dlg.addButton(GUI_OK, GTK_RESPONSE_OK);
 

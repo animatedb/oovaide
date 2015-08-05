@@ -17,14 +17,11 @@
 class Builder
     {
     public:
-        Builder():
-            mGtkBuilder(nullptr)
-            {}
+        Builder();
         ~Builder()
             {
             g_object_unref(mGtkBuilder);
             }
-        void init();
         bool addFromFile(OovStringRef const fn);
         void connectSignals()
             {

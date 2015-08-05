@@ -86,7 +86,7 @@ void OovBuilder::build(eProcessModes processMode, OovStringRef oovProjDir,
 
                 default:
                     {
-                    std::string incDepsPath = cfg.getIncDepsFilePath(buildConfigName);
+                    std::string incDepsPath = cfg.getIncDepsFilePath();
                     ComponentBuilder compBuilder(getComponentFinder());
                     compBuilder.build(processMode, incDepsPath, buildConfigName);
                     }
@@ -186,7 +186,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         cfg.getUnusedCrcs(unusedCrcs);
         for(auto const &crcStr : unusedCrcs)
             {
-            deleteDirs.push_back(cfg.getAnalysisPath(buildConfigName, crcStr));
+            deleteDirs.push_back(cfg.getAnalysisPathUsingCRC(crcStr));
             }
         if(cfg.isConfigDifferent(buildConfigName,
             BuildConfig::CT_ExtPathArgsCrc) ||
@@ -208,7 +208,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         cfg.saveConfig(buildConfigName);
         // This must be after the saveConfig, because it uses the new CRC's
         // to delete the new analysis path.
-        OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
+        OovString analysisPath = cfg.getAnalysisPath();
         if(deleteAnalysis)
             {
             deleteDirs.push_back(analysisPath);
@@ -230,7 +230,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
             }
         }
 
-    OovString analysisPath = cfg.getAnalysisPath(buildConfigName);
+    OovString analysisPath = cfg.getAnalysisPath();
     FileEnsurePathExists(analysisPath);
 
     FilePath compFn(analysisPath, FP_Dir);

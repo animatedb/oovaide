@@ -141,7 +141,6 @@ extern "C" G_MODULE_EXPORT void on_BuildSettingsMenuitem_activate()
     {
     gBuildDlg->enterScreen();
 
-    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("BuildSettingsDialog")),
-            GTK_WINDOW(Builder::getBuilder()->getWidget("MainWindow")));
+    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("BuildSettingsDialog")));
     dlg.run();
     }
