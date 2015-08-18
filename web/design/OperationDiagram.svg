@@ -1,37 +1,37 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
   font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
-  width="718" height="911">
+  width="720" height="912">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="11" y="767" width="133" height="143" />
-<line x1="11" y1="780" x2="144" y2="780" />
-<polygon points="124,788 136,793 136,783 124,788 " style="fill:#ffffff" />
-<polygon points="124,802 131,806 138,802 131,798 124,802 " style="fill:#ffffff" />
-<polygon points="124,816 131,820 138,816 131,812 124,816 " style="fill:#000000" />
-<polygon points="124,830 132,835 128,830 132,825 124,830 " style="fill:#ffffff" />
-<circle cx="124" cy="844" r="5" style="fill:#ffffff" />
-<circle cx="124" cy="858" r="5" style="fill:#ffffff" />
-<circle cx="131" cy="858" r="2" style="fill:#ffffff" />
-<circle cx="124" cy="872" r="5" style="fill:#ffffff" />
-<circle cx="124" cy="872" r="2" style="fill:#ffffff" />
-<circle cx="124" cy="886" r="5" style="fill:#ffffff" />
-<circle cx="124" cy="886" r="2" style="fill:#000000" />
-<circle cx="124" cy="900" r="5" style="fill:#000000" />
-<circle cx="124" cy="900" r="2" style="fill:#000000" />
+<rect x="8" y="758" width="133" height="143" />
+<line x1="8" y1="771" x2="141" y2="771" />
+<polygon points="121,779 133,784 133,774 121,779 " style="fill:#ffffff" />
+<polygon points="121,793 128,797 135,793 128,789 121,793 " style="fill:#ffffff" />
+<polygon points="121,807 128,811 135,807 128,803 121,807 " style="fill:#000000" />
+<polygon points="121,821 129,826 125,821 129,816 121,821 " style="fill:#ffffff" />
+<circle cx="121" cy="835" r="5" style="fill:#ffffff" />
+<circle cx="121" cy="849" r="5" style="fill:#ffffff" />
+<circle cx="128" cy="849" r="2" style="fill:#ffffff" />
+<circle cx="121" cy="863" r="5" style="fill:#ffffff" />
+<circle cx="121" cy="863" r="2" style="fill:#ffffff" />
+<circle cx="121" cy="877" r="5" style="fill:#ffffff" />
+<circle cx="121" cy="877" r="2" style="fill:#000000" />
+<circle cx="121" cy="891" r="5" style="fill:#000000" />
+<circle cx="121" cy="891" r="2" style="fill:#000000" />
 </g>
 <g stroke="none">
-<text x="12" y="776">Relations Key</text>
-<text x="12" y="790">Generalization</text>
-<text x="12" y="804">Aggregation(reference)</text>
-<text x="12" y="818">Composition(owned)</text>
-<text x="12" y="832">Const</text>
-<text x="12" y="846">Method Variable</text>
-<text x="12" y="860">Method Parameter</text>
-<text x="12" y="874">Public</text>
-<text x="12" y="888">Protected</text>
-<text x="12" y="902">Private</text>
+<text x="9" y="767">Relations Key</text>
+<text x="9" y="781">Generalization</text>
+<text x="9" y="795">Aggregation(reference)</text>
+<text x="9" y="809">Composition(owned)</text>
+<text x="9" y="823">Const</text>
+<text x="9" y="837">Method Variable</text>
+<text x="9" y="851">Method Parameter</text>
+<text x="9" y="865">Public</text>
+<text x="9" y="879">Protected</text>
+<text x="9" y="893">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="15" y="12" width="270" height="242" />
+<rect x="15" y="12" width="270" height="224" />
 <line x1="15" y1="33" x2="285" y2="33" />
 <line x1="15" y1="81" x2="285" y2="81" />
 </g>
@@ -60,8 +60,8 @@
 <text x="16" y="216">+updateDiagram()</text>
 <text x="16" y="225">+getDrawingSize(DiagramDrawer drawer)</text>
 <text x="16" y="234">+isModified()</text>
-<text x="16" y="243">-updateDrawingAreaSize(&lt;&lt;typedef&gt;&gt;GtkWidget </text>
-<text x="23" y="252">drawingArea, OperationDrawer opDrawer)</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="24" y="298" width="63" height="26" />
@@ -72,15 +72,19 @@
 <text x="25" y="307">ModelData</text>
 <text x="25" y="316">oovCommon</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="147" y="304" width="123" height="35" />
-<line x1="147" y1="325" x2="270" y2="325" />
-<line x1="147" y1="328" x2="270" y2="328" />
+<rect x="147" y="304" width="120" height="35" />
+<line x1="147" y1="325" x2="267" y2="325" />
+<line x1="147" y1="328" x2="267" y2="328" />
 </g>
 <g stroke="none">
 <text x="148" y="313">OperationDrawOptions</text>
 <text x="148" y="322">oovcde/BLL</text>
-<text x="148" y="337">+OperationDrawOptions()</text>
+<text x="148" y="337">-OperationDrawOptions()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="12" y="377" width="423" height="341" />
@@ -92,14 +96,14 @@
 <text x="13" y="395">oovcde/BLL</text>
 <text x="13" y="407">-std::vector&lt;OperationClass,std::allocator&lt;OperationClass&gt; &gt; mOpClasses</text>
 <text x="13" y="416">-std::vector&lt;OperationDefinition,std::allocator&lt;OperationDefinition&gt; &gt; mOperations</text>
-<text x="13" y="425">-&lt;&lt;typedef&gt;&gt;GraphSize mPad</text>
+<text x="13" y="425">-GraphSize&lt;&lt;typedef&gt;&gt; mPad</text>
 <text x="13" y="434">-bool mModified</text>
-<text x="13" y="443">-&lt;&lt;typedef&gt;&gt;size_t NO_INDEX</text>
+<text x="13" y="443">-size_t&lt;&lt;typedef&gt;&gt; NO_INDEX</text>
 <text x="13" y="455">+addRelatedOperations(ModelClassifier operClass, ModelOperation oper, OperationGrap</text>
 <text x="20" y="464">h::eAddOperationTypes , int maxDepth)</text>
 <text x="13" y="473">+clearGraphAndAddOperation(ModelData model, OperationDrawOptions options, </text>
 <text x="20" y="482">char className, char operName, bool isConst, int nodeDepth)</text>
-<text x="13" y="491">+getNestDepth(&lt;&lt;typedef&gt;&gt;size_t classIndex)</text>
+<text x="13" y="491">+getNestDepth(size_t&lt;&lt;typedef&gt;&gt; classIndex)</text>
 <text x="13" y="500">+getNode(int x, int y)</text>
 <text x="13" y="509">+removeNode(OperationClass classNode)</text>
 <text x="13" y="518">+getOperation(int x, int y)</text>
@@ -109,22 +113,24 @@
 <text x="13" y="554">+removeOperDefinition(OperationCall opcall)</text>
 <text x="13" y="563">+isOperCalled(OperationCall opcall)</text>
 <text x="13" y="572">+getOperDefinition(OperationCall opcall)</text>
-<text x="13" y="581">-addDefinition(&lt;&lt;typedef&gt;&gt;size_t classIndex, ModelOperation oper)</text>
+<text x="13" y="581">-addDefinition(size_t&lt;&lt;typedef&gt;&gt; classIndex, ModelOperation oper)</text>
 <text x="13" y="590">-addOperCallers(ModelStatements stmts, ModelClassifier srcCls, ModelOperation </text>
 <text x="20" y="599">oper, OperationCall callee)</text>
 <text x="13" y="608">-addOrGetClass(ModelClassifier cls, OperationGraph::eGetClass gc)</text>
 <text x="13" y="617">-fillDefinition(ModelStatements stmt, OperationDefinition opDef, OperationGraph::</text>
 <text x="20" y="626">eGetClass ft)</text>
 <text x="13" y="635">-removeUnusedClasses()</text>
-<text x="13" y="644">-removeOperation(&lt;&lt;typedef&gt;&gt;size_t index)</text>
-<text x="13" y="653">-removeClass(&lt;&lt;typedef&gt;&gt;size_t index)</text>
+<text x="13" y="644">-removeOperation(size_t&lt;&lt;typedef&gt;&gt; index)</text>
+<text x="13" y="653">-removeClass(size_t&lt;&lt;typedef&gt;&gt; index)</text>
 <text x="13" y="662">+OperationGraph()</text>
 <text x="13" y="671">+~OperationGraph()</text>
 <text x="13" y="680">+clearGraph()</text>
 <text x="13" y="689">+getClasses()</text>
-<text x="13" y="698">+getClass(&lt;&lt;typedef&gt;&gt;size_t index)</text>
+<text x="13" y="698">+getClass(size_t&lt;&lt;typedef&gt;&gt; index)</text>
 <text x="13" y="707">+isOperDefined(OperationCall opcall)</text>
 <text x="13" y="716">+isModified()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="419" y="88" width="298" height="269" />
@@ -134,7 +140,7 @@
 <g stroke="none">
 <text x="420" y="97">OperationDrawer</text>
 <text x="420" y="106">oovcde/BLL</text>
-<text x="420" y="118">-&lt;&lt;typedef&gt;&gt;size_t NO_INDEX</text>
+<text x="420" y="118">-size_t&lt;&lt;typedef&gt;&gt; NO_INDEX</text>
 <text x="420" y="127">-int mPad</text>
 <text x="420" y="136">-int mCharHeight</text>
 <text x="420" y="148">+drawDiagram(DiagramDrawer drawer, OperationGraph graph,</text>
@@ -162,6 +168,8 @@
 <text x="427" y="346">graph, OperationDrawOptions options, bool draw)</text>
 <text x="420" y="355">+OperationDrawer()</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="419" y="15" width="156" height="62" />
 <line x1="419" y1="36" x2="575" y2="36" />
@@ -170,10 +178,12 @@
 <g stroke="none">
 <text x="420" y="24">OperationDiagramParams</text>
 <text x="420" y="33">oovcde/BLL</text>
-<text x="420" y="45">-&lt;&lt;typedef&gt;&gt;string mClassName</text>
-<text x="420" y="54">-&lt;&lt;typedef&gt;&gt;string mOpName</text>
+<text x="420" y="45">-string&lt;&lt;typedef&gt;&gt; mClassName</text>
+<text x="420" y="54">-string&lt;&lt;typedef&gt;&gt; mOpName</text>
 <text x="420" y="63">-bool mIsConst</text>
 <text x="420" y="75">-OperationDiagramParams()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="207" y="267" width="150" height="26" />
@@ -184,6 +194,8 @@
 <text x="208" y="276">std::vector&lt;OperationClass,std::</text>
 <text x="208" y="285">  allocator&lt;OperationClass&gt; &gt;</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="542" y="533" width="172" height="26" />
 <line x1="542" y1="554" x2="714" y2="554" />
@@ -192,6 +204,8 @@
 <g stroke="none">
 <text x="543" y="542">std::vector&lt;OperationDefinition,std::</text>
 <text x="543" y="551">  allocator&lt;OperationDefinition&gt; &gt;</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="533" y="413" width="182" height="107" />
@@ -206,133 +220,140 @@
 <text x="534" y="464">+OperationClass(ModelType type)</text>
 <text x="534" y="473">+getType()</text>
 <text x="534" y="482">+setPosition(GraphPoint pos)</text>
-<text x="534" y="491">+setSize(&lt;&lt;typedef&gt;&gt;GraphSize size)</text>
+<text x="534" y="491">+setSize(GraphSize&lt;&lt;typedef&gt;&gt; size)</text>
 <text x="534" y="500">+getRect(GraphRect r)</text>
 <text x="534" y="509">+getPosition()</text>
 <text x="534" y="518">+getLifelinePosX()</text>
 </g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="460" y="575" width="256" height="215" />
-<line x1="460" y1="596" x2="716" y2="596" />
-<line x1="460" y1="653" x2="716" y2="653" />
-</g>
-<g stroke="none">
-<text x="461" y="584">OperationDefinition</text>
-<text x="461" y="593">oovcde/BLL</text>
-<text x="461" y="605">-std::vector&lt;std::unique_ptr&lt;OperationStatement,</text>
-<text x="468" y="614">std::default_delete&lt;OperationStatement&gt; &gt;</text>
-<text x="468" y="623">,std::allocator&lt;std::unique_ptr&lt;OperationStatement</text>
-<text x="468" y="632">,std::default_delete&lt;OperationStatement&gt; </text>
-<text x="468" y="641">&gt; &gt; &gt; mStatements</text>
-<text x="461" y="650">-&lt;&lt;typedef&gt;&gt;size_t NO_INDEX</text>
-<text x="461" y="662">+getNestDepth()</text>
-<text x="461" y="671">+getCall(int x, int y)</text>
-<text x="461" y="680">+isCalled(OperationCall opcall)</text>
-<text x="461" y="689">+isClassReferred(&lt;&lt;typedef&gt;&gt;size_t classIndex)</text>
-<text x="461" y="698">+OperationDefinition(&lt;&lt;typedef&gt;&gt;size_t classIndex,</text>
-<text x="468" y="707"> ModelOperation operation)</text>
-<text x="461" y="716">+~OperationDefinition()</text>
-<text x="461" y="725">+removeStatements()</text>
-<text x="461" y="734">+addStatement(std::unique_ptr&lt;OperationStatement,</text>
-<text x="468" y="743">std::default_delete&lt;OperationStatement&gt; &gt; stmt)</text>
-<text x="461" y="752">+addNestStart(OovStringRef exprName)</text>
-<text x="461" y="761">+addNestEnd()</text>
-<text x="461" y="770">+getStatements()</text>
-<text x="461" y="779">-OperationDefinition(OperationDefinition def)</text>
-<text x="461" y="788">-operator=(OperationDefinition def)</text>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="177" y="748" width="223" height="161" />
-<line x1="177" y1="769" x2="400" y2="769" />
-<line x1="177" y1="799" x2="400" y2="799" />
+<rect x="463" y="575" width="256" height="215" />
+<line x1="463" y1="596" x2="719" y2="596" />
+<line x1="463" y1="653" x2="719" y2="653" />
 </g>
 <g stroke="none">
-<text x="178" y="757">OperationCall</text>
-<text x="178" y="766">oovcde/BLL</text>
-<text x="178" y="778">-&lt;&lt;typedef&gt;&gt;size_t mOperClassIndex</text>
-<text x="178" y="787">-ModelOperation mOperation</text>
-<text x="178" y="796">-GraphRect rect</text>
-<text x="178" y="808">+compareOperation(OperationCall call)</text>
-<text x="178" y="817">+OperationCall(&lt;&lt;typedef&gt;&gt;size_t operClassIn</text>
-<text x="185" y="826">dex, ModelOperation operation)</text>
-<text x="178" y="835">+~OperationCall()</text>
-<text x="178" y="844">+getOperClassIndex()</text>
-<text x="178" y="853">+getName()</text>
-<text x="178" y="862">+isConst()</text>
-<text x="178" y="871">+setRect(GraphPoint pos, &lt;&lt;typedef&gt;</text>
-<text x="185" y="880">&gt;GraphSize size)</text>
-<text x="178" y="889">+getRect(GraphRect r)</text>
-<text x="178" y="898">+getOperation()</text>
-<text x="178" y="907">+decrementClassIndex()</text>
+<text x="464" y="584">OperationDefinition</text>
+<text x="464" y="593">oovcde/BLL</text>
+<text x="464" y="605">-std::vector&lt;std::unique_ptr&lt;OperationStatement,</text>
+<text x="471" y="614">std::default_delete&lt;OperationStatement&gt; &gt;</text>
+<text x="471" y="623">,std::allocator&lt;std::unique_ptr&lt;OperationStatement</text>
+<text x="471" y="632">,std::default_delete&lt;OperationStatement&gt; </text>
+<text x="471" y="641">&gt; &gt; &gt; mStatements</text>
+<text x="464" y="650">-size_t&lt;&lt;typedef&gt;&gt; NO_INDEX</text>
+<text x="464" y="662">+getNestDepth()</text>
+<text x="464" y="671">+getCall(int x, int y)</text>
+<text x="464" y="680">+isCalled(OperationCall opcall)</text>
+<text x="464" y="689">+isClassReferred(size_t&lt;&lt;typedef&gt;&gt; classIndex)</text>
+<text x="464" y="698">+OperationDefinition(size_t&lt;&lt;typedef&gt;&gt; classIndex,</text>
+<text x="471" y="707"> ModelOperation operation)</text>
+<text x="464" y="725">+removeStatements()</text>
+<text x="464" y="734">+addStatement(std::unique_ptr&lt;OperationStatement,</text>
+<text x="471" y="743">std::default_delete&lt;OperationStatement&gt; &gt; stmt)</text>
+<text x="464" y="752">+addNestStart(OovStringRef exprName)</text>
+<text x="464" y="761">+addNestEnd()</text>
+<text x="464" y="770">+getStatements()</text>
+<text x="464" y="779">-OperationDefinition(OperationDefinition def)</text>
+<text x="464" y="788">-operator=(OperationDefinition def)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="464" y="716">+~OperationDefinition()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="460" y="801" width="206" height="107" />
-<line x1="460" y1="822" x2="666" y2="822" />
-<line x1="460" y1="834" x2="666" y2="834" />
+<rect x="179" y="750" width="223" height="161" />
+<line x1="179" y1="771" x2="402" y2="771" />
+<line x1="179" y1="801" x2="402" y2="801" />
 </g>
 <g stroke="none">
-<text x="461" y="810">OperationStatement</text>
-<text x="461" y="819">oovcde/BLL</text>
-<text x="461" y="831">-eModelStatementTypes mStatementType</text>
-<text x="461" y="843">+getCall()</text>
-<text x="461" y="852">+getVarRef()</text>
-<text x="461" y="861">+getNestStart()</text>
-<text x="461" y="870">+getNestEnd()</text>
-<text x="461" y="879">+OperationStatement(eModelStatementT</text>
-<text x="468" y="888">ypes type)</text>
-<text x="461" y="897">+getStatementType()</text>
-<text x="461" y="906">+~OperationStatement()</text>
+<text x="180" y="759">OperationCall</text>
+<text x="180" y="768">oovcde/BLL</text>
+<text x="180" y="780">-size_t&lt;&lt;typedef&gt;&gt; mOperClassIndex</text>
+<text x="180" y="789">-ModelOperation mOperation</text>
+<text x="180" y="798">-GraphRect rect</text>
+<text x="180" y="810">+compareOperation(OperationCall call)</text>
+<text x="180" y="819">+OperationCall(size_t&lt;&lt;typedef&gt;&gt; operClassIn</text>
+<text x="187" y="828">dex, ModelOperation operation)</text>
+<text x="180" y="846">+getOperClassIndex()</text>
+<text x="180" y="855">+getName()</text>
+<text x="180" y="864">+isConst()</text>
+<text x="180" y="873">+setRect(GraphPoint pos, GraphSize&lt;</text>
+<text x="187" y="882">&lt;typedef&gt;&gt; size)</text>
+<text x="180" y="891">+getRect(GraphRect r)</text>
+<text x="180" y="900">+getOperation()</text>
+<text x="180" y="909">+decrementClassIndex()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="180" y="837">+~OperationCall()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="464" y="804" width="206" height="107" />
+<line x1="464" y1="825" x2="670" y2="825" />
+<line x1="464" y1="837" x2="670" y2="837" />
+</g>
+<g stroke="none">
+<text x="465" y="813">OperationStatement</text>
+<text x="465" y="822">oovcde/BLL</text>
+<text x="465" y="834">-eModelStatementTypes mStatementType</text>
+<text x="465" y="846">+getCall()</text>
+<text x="465" y="855">+getVarRef()</text>
+<text x="465" y="864">+getNestStart()</text>
+<text x="465" y="873">+getNestEnd()</text>
+<text x="465" y="882">+OperationStatement(eModelStatementT</text>
+<text x="472" y="891">ypes type)</text>
+<text x="465" y="909">+getStatementType()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="465" y="900">+~OperationStatement()</text>
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="86" y1="254" x2="61" y2="298" />
-<polygon points="86,254 77,258 85,257 87,263 86,254 " style="fill:#ffffff" />
-<circle cx="79" cy="266" r="5" style="fill:#ffffff" />
-<circle cx="71" cy="280" r="5" style="fill:#000000" />
-<circle cx="71" cy="280" r="2" style="fill:#000000" />
-<polygon points="86,254 79,258 80,266 86,262 86,254 " style="fill:#ffffff" />
-<line x1="187" y1="254" x2="203" y2="304" />
-<circle cx="196" cy="282" r="5" style="fill:#000000" />
-<circle cx="196" cy="282" r="2" style="fill:#000000" />
-<polygon points="187,254 186,262 191,267 193,260 187,254 " style="fill:#000000" />
-<line x1="171" y1="254" x2="194" y2="377" />
-<circle cx="173" cy="267" r="5" style="fill:#ffffff" />
-<circle cx="176" cy="283" r="5" style="fill:#000000" />
-<circle cx="176" cy="283" r="2" style="fill:#000000" />
-<polygon points="171,254 169,262 173,267 176,260 171,254 " style="fill:#000000" />
-<line x1="285" y1="161" x2="419" y2="191" />
-<circle cx="298" cy="164" r="5" style="fill:#ffffff" />
-<circle cx="314" cy="167" r="5" style="fill:#000000" />
-<circle cx="314" cy="167" r="2" style="fill:#000000" />
-<polygon points="285,161 291,167 298,164 293,159 285,161 " style="fill:#000000" />
-<line x1="285" y1="100" x2="419" y2="65" />
-<circle cx="314" cy="92" r="5" style="fill:#000000" />
-<circle cx="314" cy="92" r="2" style="fill:#000000" />
-<polygon points="285,100 293,102 298,97 291,94 285,100 " style="fill:#000000" />
-<line x1="285" y1="227" x2="549" y2="413" />
-<polygon points="285,227 288,236 288,229 294,227 285,227 " style="fill:#ffffff" />
-<circle cx="296" cy="235" r="5" style="fill:#ffffff" />
-<circle cx="302" cy="239" r="2" style="fill:#ffffff" />
-<line x1="174" y1="254" x2="273" y2="748" />
-<polygon points="174,254 170,263 174,257 181,260 174,254 " style="fill:#ffffff" />
-<circle cx="176" cy="267" r="5" style="fill:#ffffff" />
-<circle cx="178" cy="274" r="2" style="fill:#ffffff" />
+<line x1="94" y1="236" x2="61" y2="298" />
+<polygon points="94,236 86,240 93,239 95,245 94,236 " style="fill:#ffffff" />
+<circle cx="87" cy="248" r="5" style="fill:#ffffff" />
+<circle cx="84" cy="254" r="2" style="fill:#ffffff" />
+<circle cx="79" cy="262" r="5" style="fill:#000000" />
+<circle cx="79" cy="262" r="2" style="fill:#000000" />
+<polygon points="94,236 87,240 88,248 94,244 94,236 " style="fill:#ffffff" />
+<line x1="182" y1="236" x2="203" y2="304" />
+<circle cx="190" cy="264" r="5" style="fill:#000000" />
+<circle cx="190" cy="264" r="2" style="fill:#000000" />
+<polygon points="182,236 181,244 186,249 188,242 182,236 " style="fill:#000000" />
+<line x1="169" y1="236" x2="194" y2="377" />
+<circle cx="171" cy="249" r="5" style="fill:#ffffff" />
+<circle cx="174" cy="265" r="5" style="fill:#000000" />
+<circle cx="174" cy="265" r="2" style="fill:#000000" />
+<polygon points="169,236 166,244 171,249 174,242 169,236 " style="fill:#000000" />
+<line x1="285" y1="155" x2="419" y2="188" />
+<circle cx="298" cy="158" r="5" style="fill:#ffffff" />
+<circle cx="314" cy="162" r="5" style="fill:#000000" />
+<circle cx="314" cy="162" r="2" style="fill:#000000" />
+<polygon points="285,155 291,161 298,158 293,153 285,155 " style="fill:#000000" />
+<line x1="285" y1="94" x2="419" y2="63" />
+<circle cx="314" cy="87" r="5" style="fill:#000000" />
+<circle cx="314" cy="87" r="2" style="fill:#000000" />
+<polygon points="285,94 293,96 298,91 291,88 285,94 " style="fill:#000000" />
+<line x1="285" y1="221" x2="551" y2="413" />
+<polygon points="285,221 288,230 288,223 294,221 285,221 " style="fill:#ffffff" />
+<circle cx="296" cy="229" r="5" style="fill:#ffffff" />
+<circle cx="302" cy="233" r="2" style="fill:#ffffff" />
+<line x1="172" y1="236" x2="275" y2="750" />
+<polygon points="172,236 168,245 172,239 179,242 172,236 " style="fill:#ffffff" />
+<circle cx="174" cy="249" r="5" style="fill:#ffffff" />
+<circle cx="176" cy="256" r="2" style="fill:#ffffff" />
 <line x1="64" y1="324" x2="102" y2="377" />
 <polygon points="102,377 102,368 100,374 93,374 102,377 " style="fill:#ffffff" />
 <circle cx="93" cy="365" r="5" style="fill:#ffffff" />
-<circle cx="84" cy="352" r="5" style="fill:#000000" />
-<circle cx="84" cy="352" r="2" style="fill:#000000" />
-<line x1="209" y1="338" x2="212" y2="377" />
-<polygon points="212,377 217,369 212,374 206,370 212,377 " style="fill:#ffffff" />
-<circle cx="210" cy="363" r="5" style="fill:#ffffff" />
-<circle cx="210" cy="356" r="2" style="fill:#ffffff" />
-<line x1="269" y1="305" x2="419" y2="262" />
+<circle cx="89" cy="359" r="2" style="fill:#ffffff" />
+<line x1="208" y1="338" x2="211" y2="377" />
+<polygon points="211,377 216,369 211,374 205,370 211,377 " style="fill:#ffffff" />
+<circle cx="209" cy="363" r="5" style="fill:#ffffff" />
+<circle cx="209" cy="356" r="2" style="fill:#ffffff" />
+<line x1="267" y1="305" x2="419" y2="262" />
 <polygon points="419,262 410,259 416,263 413,269 419,262 " style="fill:#ffffff" />
 <circle cx="405" cy="265" r="5" style="fill:#ffffff" />
 <circle cx="398" cy="267" r="2" style="fill:#ffffff" />
 <line x1="403" y1="377" x2="426" y2="356" />
 <circle cx="415" cy="365" r="5" style="fill:#ffffff" />
-<circle cx="403" cy="376" r="5" style="fill:#000000" />
-<circle cx="403" cy="376" r="2" style="fill:#000000" />
+<circle cx="410" cy="370" r="2" style="fill:#ffffff" />
 <line x1="260" y1="377" x2="280" y2="293" />
 <circle cx="263" cy="363" r="5" style="fill:#ffffff" />
 <circle cx="266" cy="347" r="5" style="fill:#000000" />
@@ -346,47 +367,46 @@
 <line x1="434" y1="505" x2="533" y2="484" />
 <polygon points="434,505 443,509 437,505 440,498 434,505 " style="fill:#ffffff" />
 <circle cx="447" cy="502" r="5" style="fill:#ffffff" />
-<circle cx="463" cy="498" r="5" style="fill:#000000" />
-<circle cx="463" cy="498" r="2" style="fill:#000000" />
-<line x1="434" y1="625" x2="460" y2="635" />
-<circle cx="447" cy="630" r="5" style="fill:#ffffff" />
-<circle cx="462" cy="635" r="5" style="fill:#000000" />
-<circle cx="462" cy="635" r="2" style="fill:#000000" />
-<line x1="262" y1="717" x2="270" y2="748" />
-<polygon points="262,717 259,726 262,720 269,723 262,717 " style="fill:#ffffff" />
-<circle cx="265" cy="730" r="5" style="fill:#ffffff" />
-<circle cx="269" cy="746" r="5" style="fill:#000000" />
-<circle cx="269" cy="746" r="2" style="fill:#000000" />
+<circle cx="454" cy="500" r="2" style="fill:#ffffff" />
+<line x1="434" y1="624" x2="463" y2="636" />
+<circle cx="446" cy="629" r="5" style="fill:#ffffff" />
+<circle cx="453" cy="632" r="2" style="fill:#ffffff" />
+<line x1="263" y1="717" x2="272" y2="750" />
+<polygon points="263,717 260,726 264,720 270,723 263,717 " style="fill:#ffffff" />
+<circle cx="266" cy="730" r="5" style="fill:#ffffff" />
+<circle cx="268" cy="737" r="2" style="fill:#ffffff" />
 <line x1="419" y1="252" x2="346" y2="267" />
 <polygon points="419,252 410,248 416,252 413,259 419,252 " style="fill:#ffffff" />
 <circle cx="405" cy="254" r="5" style="fill:#ffffff" />
-<circle cx="389" cy="258" r="5" style="fill:#000000" />
-<circle cx="389" cy="258" r="2" style="fill:#000000" />
+<circle cx="398" cy="256" r="2" style="fill:#ffffff" />
 <line x1="598" y1="356" x2="612" y2="413" />
 <polygon points="598,356 595,365 598,359 605,362 598,356 " style="fill:#ffffff" />
 <circle cx="601" cy="369" r="5" style="fill:#ffffff" />
-<circle cx="605" cy="385" r="5" style="fill:#000000" />
-<circle cx="605" cy="385" r="2" style="fill:#000000" />
-<line x1="573" y1="356" x2="584" y2="575" />
-<circle cx="573" cy="369" r="5" style="fill:#ffffff" />
-<circle cx="574" cy="385" r="5" style="fill:#000000" />
-<circle cx="574" cy="385" r="2" style="fill:#000000" />
-<line x1="507" y1="356" x2="324" y2="748" />
+<circle cx="603" cy="376" r="2" style="fill:#ffffff" />
+<line x1="574" y1="356" x2="586" y2="575" />
+<circle cx="574" cy="369" r="5" style="fill:#ffffff" />
+<circle cx="575" cy="376" r="2" style="fill:#ffffff" />
+<line x1="507" y1="356" x2="326" y2="750" />
 <circle cx="501" cy="368" r="5" style="fill:#ffffff" />
-<line x1="305" y1="293" x2="533" y2="417" />
-<line x1="625" y1="559" x2="619" y2="575" />
-<line x1="460" y1="744" x2="399" y2="774" />
-<polygon points="460,744 451,743 457,745 456,752 460,744 " style="fill:#ffffff" />
-<circle cx="447" cy="750" r="5" style="fill:#ffffff" />
-<circle cx="433" cy="757" r="5" style="fill:#000000" />
-<circle cx="433" cy="757" r="2" style="fill:#000000" />
-<circle cx="425" cy="760" r="5" style="fill:#ffffff" />
-<circle cx="425" cy="760" r="2" style="fill:#ffffff" />
-<polygon points="399,774 412,774 408,764 399,774 " style="fill:#ffffff" />
-<line x1="399" y1="838" x2="460" y2="845" />
-<circle cx="412" cy="839" r="5" style="fill:#ffffff" />
-<circle cx="430" cy="841" r="5" style="fill:#ffffff" />
-<circle cx="430" cy="841" r="2" style="fill:#ffffff" />
-<polygon points="460,845 448,839 447,848 460,845 " style="fill:#ffffff" />
+<line x1="305" y1="293" x2="533" y2="417" style="stroke-dasharray: 4, 4 "/>
+<line x1="305" y1="293" x2="533" y2="417" style="stroke-dasharray: 4, 4 "/>
+<line x1="533" y1="417" x2="525" y2="407" />
+<line x1="533" y1="417" x2="520" y2="416" />
+<line x1="625" y1="559" x2="620" y2="575" style="stroke-dasharray: 4, 4 "/>
+<line x1="625" y1="559" x2="620" y2="575" style="stroke-dasharray: 4, 4 "/>
+<line x1="620" y1="575" x2="628" y2="565" />
+<line x1="620" y1="575" x2="619" y2="562" />
+<line x1="463" y1="744" x2="401" y2="776" />
+<polygon points="463,744 454,743 460,745 459,752 463,744 " style="fill:#ffffff" />
+<circle cx="450" cy="750" r="5" style="fill:#ffffff" />
+<circle cx="444" cy="753" r="2" style="fill:#ffffff" />
+<circle cx="427" cy="762" r="5" style="fill:#ffffff" />
+<circle cx="427" cy="762" r="2" style="fill:#ffffff" />
+<polygon points="401,776 414,775 410,766 401,776 " style="fill:#ffffff" />
+<line x1="401" y1="840" x2="464" y2="847" />
+<circle cx="414" cy="841" r="5" style="fill:#ffffff" />
+<circle cx="434" cy="843" r="5" style="fill:#ffffff" />
+<circle cx="434" cy="843" r="2" style="fill:#ffffff" />
+<polygon points="464,847 452,841 451,850 464,847 " style="fill:#ffffff" />
 </g>
 </svg>

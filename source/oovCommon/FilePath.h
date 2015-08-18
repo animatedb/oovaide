@@ -44,73 +44,193 @@ enum eReturnPosition {
 };
 
 //***** non-modifying path functions
-// Returns the position after the drive spec. If no drive spec, returns the
-// beginning (0).
+/// Get the start of the directory specification. This is the position after
+/// after the drive spec. If there is no drive spec, this returns the
+/// beginning (0).
+/// @param path A file path.
 size_t FilePathGetPosStartDir(OovStringRef const path);
-// Returns the position of the last path separator. If no path separators,
-// returns the start dir pos.
+
+/// Get the position at the end of the directory specification. This is
+/// the position of the last path separator. If there are no path separators,
+/// this returns the start dir pos.
+/// @param path A file path.
 size_t FilePathGetPosEndDir(OovStringRef const path);
-// Returns the position of the extension separator. Since a period may be
-// used for relative path specs, a check is made to see if the period is
-// after a path separator, and only then is it considered an extension.
-// If the extension is not present, the last character position is returned.
+
+/// Get the position of the extension.  This is the position of the
+/// extension separator. Since a period may be used for relative path specs,
+/// a check is made to see if the period is after a path separator, and only
+/// then is it considered an extension. If the extension is not present,
+/// the last character position is returned.
+/// @param path A file path.
 size_t FilePathGetPosExtension(OovStringRef const path, eReturnPosition rp);
-// Only case insensitive comparisons are done on Windows.
-// Returns std::string::npos if the segment is not found.
-/// @todo - the following should probably be changed.
-// The position returned is pointing to the segment. (If segment starts
-// with a path separator, the position will contains the path separator)
+
+/// Get the position of a directory segment.  This is the text between
+/// path separators.  Only case insensitive comparisons are done on Windows.
+/// Returns std::string::npos if the segment is not found.
+//// @todo - the following should probably be changed.
+/// The position returned is pointing to the segment. (If segment starts
+/// with a path separator, the position will contains the path separator)
+/// @param path A file path.
+/// @param seg Some text that does not contain any path separators.
 size_t FilePathGetPosSegment(OovStringRef const path, OovStringRef const seg);
-// If there is no left path separator, the beginning (0) is returned.
+
+/// Get the position of a path separator to the left of the passed in position.
+/// If using RP_RetPosNatural, and there is no left path separator, the
+/// beginning (0) is returned.
+/// @param path A file path.
+/// @param pos The reference position.
+/// @param rp The returned position specification.
 size_t FilePathGetPosLeftPathSep(OovStringRef const path, size_t pos, eReturnPosition rp);
+
+/// Get the position of a path separator to the right of the passed in position.
+/// If using RP_RetPosNatural, and there is no right path separator, the
+/// beginning (0) is returned.
+/// @param path A file path.
+/// @param pos The reference position.
+/// @param rp The returned position specification.
 size_t FilePathGetPosRightPathSep(OovStringRef const path, size_t pos, eReturnPosition rp);
 
-// If the first character is a path separator or if a drive spec is present
-// with a path separator after it, then the path is considered to be absolute.
+/// Check if the path is an absolute path.
+/// If the first character is a path separator or if a drive spec is present
+/// with a path separator after it, then the path is considered to be absolute.
+/// @param path The file path to check.
 bool FilePathIsAbsolutePath(OovStringRef const path);
+
+/// Check if the character at the specified position is a path separator.
+/// @param path The file path to check.
+/// @param pos The position to test.
 bool FilePathIsPathSep(OovStringRef const path, size_t pos);
-// Returns true if the path ends with a path separator.
+
+/// Check if the path ends with a path separator.
+/// @param path The file path to check.
 bool FilePathIsEndPathSep(OovStringRef const path);
+
+/// Check if the character at the specified position is an extension separator.
+/// @param path The file path to check.
+/// @param pos The position to test.
 bool FilePathIsExtensionSep(OovStringRef const path, size_t pos);
+
+/// Check if the path has an extension.
+/// @param path The file path to check.
 bool FilePathHasExtension(OovStringRef const path);
+
+/// See if the paths passed in have matching extensions.
+/// @param path1 The file path to check.
+/// @param path2 The file path to check.
 bool FilePathMatchExtension(OovStringRef const path1, OovStringRef const path2);
+
+/// See if the paths passed in have matching extensions.
+/// In Windows, this is a case insensitive comparison.
+/// @param path1 The file path to check.
+/// @param path2 The file path to check.
 int FilePathComparePaths(OovStringRef const path1, OovStringRef const path2);
 
+/// Get the string to the left and including the position.
+/// @param path A file path.
+/// @param pos The reference position.
 OovString FilePathGetHead(OovStringRef const path, size_t pos);
+
+/// Get the string to the right and including the position.
+/// @param path A file path.
+/// @param pos The reference position.
 OovString FilePathGetTail(OovStringRef const path, size_t pos);
-// The segment is returned without path separators.
-// The position can be pointing to the anywhere within the desired segment.
-// If it is pointing to a path separator, the segment following the path
-// separator is returned.
-// If the segment is not found, this returns std::string::npos.
+
+/// Gets the segment that encloses the position. The segment is returned
+/// without path separators. The position can be pointing to the anywhere
+/// within the desired segment.
+/// If it is pointing to a path separator, the segment following the path
+/// separator is returned.
+/// If the segment is not found, this returns std::string::npos.
+/// @param path A file path.
+/// @param pos The reference position.
 OovString FilePathGetSegment(OovStringRef const path, size_t pos);
+
+/// Gets the drive and directory specs of the path.
+/// @param path A file path.
 OovString FilePathGetDrivePath(OovStringRef const path);
+
+/// Gets the filename without the extension of the path.
+/// @param path A file path.
 OovString FilePathGetFileName(OovStringRef const path);
+
+/// Gets the filename and extension of the path.
+/// @param path A file path.
 OovString FilePathGetFileNameExt(OovStringRef const path);
+
+/// Gets the extension of the path.
+/// @param path A file path.
 OovString FilePathGetFileExt(OovStringRef const path);
+
+/// Gets the drive and path without the end separator.
+/// @param path A file path.
 OovString FilePathGetWithoutEndPathSep(OovStringRef const path);
+
+/// Gets the path where the directory separators are converted to a
+/// foward slash character.
 #ifndef __linux__
 OovString FilePathGetAsWindowsPath(OovStringRef const path);
 #endif
 
 //***** modifying path functions
+
+/// Appends a path separator if the path does not already end with one.
+/// @param path The path to modify.
 void FilePathEnsureLastPathSep(std::string &path);
+
+/// Remove the path separator at the specified position if it is a path
+/// separator.
+/// @param path The path to modify.
 void FilePathRemovePathSep(std::string &path, size_t pos);
-void FilePathQuoteCommandLinePath(std::string &libfilePath);
+
+/// If the path does not start with a double quote, then add quotes to
+/// the beginning and end.
+/// @param path The path to modify.
+void FilePathQuoteCommandLinePath(std::string &path);
+
+/// Append the proper extension for a file that is an executable depending on
+/// the operating system.
+/// @param path The path to modify.
 OovString FilePathMakeExeFilename(OovStringRef const rootFn);
-// For some reason, oovEdit requires this?
-std::string FilePathFixFilePath(OovStringRef const fullFn);
+
+/// Remove consecutive directory separators.  It appears that GTK, GDB or Eclipse
+/// adds them at some point. For some reason, oovEdit requires this?
+/// @param path The path to modify.
+std::string FilePathFixFilePath(OovStringRef const path);
 
 //***** File/disk operations
+
+/// If the path does not exist, create all of the subdirectories required
+/// to match the path.
+/// @param path The path to use to build the directories.
 bool FileEnsurePathExists(OovStringRef const path);
+
+/// Check if the specified file is on disk
+/// @param path The path to check.
 bool FileIsFileOnDisk(OovStringRef const path);
+
+/// Check if the specified directory is on disk
+/// @param path The path to check.
 bool FileIsDirOnDisk(OovStringRef const path);
+
+/// Get the modify time of the file.
+/// @param path The path to use to get the time.
+/// @param time The returned time of the file.
 bool FileGetFileTime(OovStringRef const path, time_t &time);
+
+/// Delete the specified file.
+/// @param path The file to delete.
 void FileDelete(OovStringRef const path);
-// Windows can return from a delete file or directory call before it
-// is finished being deleted.  It may be related to TortoiseSvn keeping
-// files open.
+
+/// Wait for a directory to be deleted.
+/// Windows can return from a delete file or directory call before it
+/// is finished being deleted.  It may be related to TortoiseSvn keeping
+/// files open.
+/// @param path The file to wait for deletion.
 void FileWaitForDirDeleted(OovStringRef const path, int waitMs=10000);
+
+/// Rename a file
+/// @param oldPath The original path name.
+/// @param newPath The new path name.
 void FileRename(OovStringRef const oldPath, OovStringRef const newPath);
 
 template<typename T_Str> class FilePathRefInterface
@@ -210,27 +330,84 @@ class FilePath:public FilePathRefInterface<FilePath>, public OovString
         int comparePaths(OovStringRef const path2) const
             { return FilePathComparePaths(getStr(), path2); }
 
+        /// Erases anything after the position and appends with an intervening
+        /// path separator.
+        /// @param pathPart The part of the path to append.
+        /// @param pos The offset from the start of the 'this' path.
         void appendPathAtPos(OovStringRef const pathPart, size_t pos);
+
+        /// Erases anything after the position and appends with an intervening
+        /// path separator, and appends an ending path separator to the result.
+        /// @param pathPart The part of the path to append.
+        /// @param pos The offset from the start of the 'this' path.
         void appendDirAtPos(OovStringRef const pathPart, size_t pos);
+
+        /// Appends either a directory or file to a path.
+        /// @param pathPart The part of the path to append.
+        /// @param fpt The type of part to append.
         void appendPart(OovStringRef const pathPart, eFilePathTypes fpt);
+
+        /// Append a part of a path to the end of this path.
+        /// @param pathPart The part of the path to append.
         void appendDir(OovStringRef const pathPart);
+
+        /// Append a file to the end of this path.
+        /// @param fileName The file name to append.
         void appendFile(OovStringRef const fileName);
-        void appendExtension( OovStringRef const fileName);
+
+        /// Append an extension to the end of this path.  Appends an extension
+        /// separator character if needed, so the extension passed in should
+        /// not have an extension separator character.
+        /// @param ext The extension to append.
+        void appendExtension( OovStringRef const ext);
+
+        /// Discard the directory part of the path.
         void discardDirectory();
+
+        /// Discard the filename and extension part of the path.
         void discardFilename();
+
+        /// Discard the extension part of the path.
         void discardExtension();
-        // Keeps the end sep so that this is still indicated as a directory.
+
+        /// Discard the characters after the position.
+        /// Keeps the end sep so that this is still indicated as a directory.
+        /// @param pos The reference position.
         void discardTail(size_t pos);
-        // Erases up to after the position (pos + 1).
+
+        /// Discard the characters before the position.
+        /// Erases up to after the position (pos + 1).
+        /// @param pos The reference position.
         void discardHead(size_t pos);
+
+        /// Discard leading relative directory specifiers.
         int discardLeadingRelSegments();
+
+        /// Discard the head if it matches.
+        /// @param pathPart The head to match.
         void discardMatchingHead(OovStringRef const pathPart);
+
+        /// Get the working directory.
         void getWorkingDirectory();
+
+        /// If the path is already an absolute path, this simply ensures
+        /// the path is conformant to the file path type.
+        /// If the path is not an absolute path, the working dirctory is
+        /// used, and the path is appended to build a path that is
+        /// conformant to the file path type.
+        /// @param path The path to append to the working directory.
+        /// @param fpt The file path type.
         void getAbsolutePath(OovStringRef const path, eFilePathTypes fpt);
+
+        /// Converts the path separators to a forward slash separator, and
+        /// converts "/./" to a single forward slash.
         static void normalizePathSeps(std::string &path);
 
+        /// Return the path as an std::string
         std::string &pathStdStr()
             { return *this; }
+
+        /// Return the path as an std::string
         const std::string &pathStdStr() const
             { return *this; }
 

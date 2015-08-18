@@ -4,7 +4,7 @@
 #include "twinkle.h"
 
 using namespace Universe;
-namespace InkStar = Teaching;   // Really from Universe::Teaching
+namespace Teaching = Awards;   // Really from Universe::Awards
 
 namespace Imaginary
     {
@@ -22,55 +22,68 @@ class MyThoughts
     {
     public:
         MyThoughts();
-        void displaySomeThoughts(InkStar::Star const &inkStar,
+        void displaySomeThoughts(Teaching::Star const &teachingStar,
             Imaginary::FakeStar fakeStar, char const * const noStar);
 
     private:
         Teaching::Star mTeachingStar;
         Teaching::Star const &mTeachingStarRef;
         Imaginary::PretendStar **mPretendStar;
-        // Really Universe::Hollywood::Star
-        Hollywood::Star mHollywoodStar;
-        Displayer<Hollywood::Star> mHollywoodStarDisplay;
+        // Really Universe::Movie::Star
+        Movies::Star mMovieStar;
+        IdentityDisplayer<Movies::Star> mMovieStarDisplay;
     };
-
-// This is for testing aliased start names (templates)
-class MyOtherThoughts
-	{
-	private:
-		NotAStar mNotAStar;
-		RenamedStar mRenamedStar;
-		RenamedDisplayStar mRenamedDisplayStar;
-	};
-
-#include <stdio.h>
 
 MyThoughts::MyThoughts():
     mTeachingStarRef(mTeachingStar)
     {
-    World();
+    Galaxy Galaxy;
     DisplayStar littleStar;
-    InkStar::Star inkStar;
+    Teaching::Star teachingStar;
     Imaginary::FakeStar fakeStar;
 
-    mHollywoodStarDisplay.displayThoughts(mHollywoodStar);
-    littleStar.displayThoughts(littleStar);
-    displaySomeThoughts(inkStar, fakeStar, "");
+    mMovieStarDisplay.displayIdentity();
+    littleStar.displayIdentity();
+    displaySomeThoughts(teachingStar, fakeStar, "noStar");
     }
 
-void MyThoughts::displaySomeThoughts(InkStar::Star const &inkStar,
+void MyThoughts::displaySomeThoughts(Teaching::Star const &teachingStar,
     Imaginary::FakeStar fakeStar, char const * const noStar)
     {
-    InkStar::Star anotherStar;
-    printf("I think I am a inkStar, I am a %s\n", inkStar.whatAreYou());
-    printf("I think I am a anotherStar, I am a %s\n", anotherStar.whatAreYou());
+    Awards::Star anotherStar;
+    printf("My thoughts are:\n");
+    printf("  I think I am a Teaching::Star, I am a %s\n", teachingStar.whatAreYou());
+    printf("  I think I am a Award::Star, I am a %s\n", anotherStar.whatAreYou());
+    printf("  I think I am a Imaginary::Star, I don't know what I am\n");
     }
+
+
+// This shows aliased star names (typedefs)
+class MyOtherThoughts
+    {
+    public:
+        // Some of these thoughts are fleeting.
+        void displayOtherThoughts(Movies::Star const &moviesStar)
+            {
+            printf("My other thoughts are:\n");
+            printf("  I think I am a NewNameDisplayStar. ");
+            mNewNameStar.displayIdentity();
+            printf("  I think I am a NewTypeDisplayStar. ");
+            mNewTypeStar.displayIdentity();
+            printf("  I think I am a Movies::Star, I am a %s\n",
+                moviesStar.whatAreYou());
+            }
+    private:
+        NotAStar mNotAStar;
+        NewNameDisplayStar mNewNameStar;
+        NewTypeDisplayStar mNewTypeStar;
+    };
+
 
 int main(int argc, const char* argv[])
     {
     MyThoughts thoughts;
-	MyOtherThoughts myOtherThoughts;	// These thoughts are not revealed.
-    InkStar::Star inkStar;
-    Imaginary::FakeStar fakeStar;
-    thoughts.displaySomeThoughts(inkStar, fakeStar, "noStar");
+    MyOtherThoughts myOtherThoughts;	// These thoughts are not revealed.
+    Movies::Star moviesStar;
+    myOtherThoughts.displayOtherThoughts(moviesStar);
     }

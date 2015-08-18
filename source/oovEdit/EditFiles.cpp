@@ -695,7 +695,7 @@ bool EditFiles::handleKeyPress(GdkEvent *event)
     {
     bool handled = false;
     if(getEditView())
-        handled = getEditView()->handleIndentKeys(event);
+        handled = getEditView()->handleKeys(event);
     return handled;
     }
 
@@ -760,7 +760,19 @@ void EditFiles::setTabText(FileEditView *editView, OovStringRef text)
     GtkNotebook *book = getBook(editView);
     GtkWidget *widget = GTK_WIDGET(getScrolledFileView(editView->getTextView())->
             getViewTopParent());
-    gtk_notebook_set_tab_label_text(book, widget, text.getStr());
+
+    GtkWidget *tabLabel = gtk_notebook_get_tab_label(book, widget);
+    /// The top widget is a box container that is added using gtk_notebook_append_page.
+    /// The first child in the box is the label, the second is the close button.
+    GList *children = gtk_container_get_children(GTK_CONTAINER(tabLabel));
+    if(children)
+		{
+    	/// Set text of first child
+    	Gui::setText(GTK_LABEL(children->data), text);
+		}
+    g_list_free(children);
+
+//    gtk_notebook_set_tab_label_text(book, widget, text.getStr());
     }
 
 bool EditFiles::saveAsTextFileWithDialog()

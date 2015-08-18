@@ -617,6 +617,16 @@ void ComponentBuilder::makeLib(OovStringRef const libPath,
         }
     }
 
+static void appendLibName(OovString libName, size_t linkOrderIndex,
+    IndexedStringVec &libNames,
+    OovProcessChildArgs &ca)
+    {
+    CompoundValue::quoteCommandLineArg(libName);
+    if(libName.compare(0, 2, "-l") == 0)
+        libNames.push_back(IndexedString(linkOrderIndex, libName.substr(2)));
+    else
+        ca.addArg(libName);
+    }
 
 /// @param projectLibFilePaths Libary names from project. Includes full paths.
 /// @param externPkgOrderedLibNames Library names from external packages
@@ -674,21 +684,11 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
         // May have to look at a better way of keeping original order.
         for(const auto &arg : mComponentFinder.getProjectBuildArgs().getLinkArgs())
             {
-            std::string temp = arg.mString;
-            CompoundValue::quoteCommandLineArg(temp);
-            if(temp.compare(0, 2, "-l") == 0)
-                libNames.push_back(IndexedString(arg.mLinkOrderIndex, temp.substr(2)));
-            else
-                ca.addArg(temp);
+            appendLibName(arg.mString, arg.mLinkOrderIndex, libNames, ca);
             }
         for(const auto &arg : externPkgLinkArgs)
             {
-            std::string temp = arg.mString;
-            CompoundValue::quoteCommandLineArg(temp);
-            if(temp.compare(0, 2, "-l") == 0)
-                libNames.push_back(IndexedString(arg.mLinkOrderIndex, temp.substr(2)));
-            else
-                ca.addArg(temp);
+            appendLibName(arg.mString, arg.mLinkOrderIndex, libNames, ca);
             }
 
         for(auto const &dir : externLibsDirs)

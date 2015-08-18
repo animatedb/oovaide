@@ -9,17 +9,6 @@
 #include "Project.h"
 #include <algorithm>
 
-struct DrawString
-    {
-    DrawString()
-        {}
-    DrawString(GraphPoint p, OovStringRef const s):
-        pos(p), str(s)
-        {}
-    GraphPoint pos;
-    OovString str;
-    };
-
 static void getLeafPath(std::string &moduleStr)
     {
     size_t pos = FilePathGetPosLeftPathSep(moduleStr, moduleStr.length()-1, RP_RetPosFailure);
@@ -37,8 +26,8 @@ static void getLeafPath(std::string &moduleStr)
     }
 
 static void getStrings(const ClassNode &node,
-        OovStringVec &nodeStrs, OovStringVec &attrStrs,
-        OovStringVec &operStrs)
+    OovStringVec &nodeStrs, OovStringVec &attrStrs,
+    OovStringVec &operStrs, std::vector<bool> &virtOpers)
     {
     const ModelType *type = node.getType();
     OovStringRef const typeName = type->getName();
@@ -113,7 +102,9 @@ static void getStrings(const ClassNode &node,
                         }
                     }
                 operStr += ")";
+
                 operStrs.push_back(operStr);
+                virtOpers.push_back(oper->isVirtual());
                 }
             }
         }
@@ -135,9 +126,11 @@ size_t getNumSegments(OovString const &str, size_t minLength, size_t maxLength)
 
 // Some actual code lengths can be up to 400 characters (Ex: See IncDirDependencyMap)
 // Attempt to split at certain characters, not in the middle of words.
-void splitClassStrings(OovStringVec &nodeStrs,
-        OovStringVec &attrStrs, OovStringVec &operStrs,
-        float fontHeight)
+/// @param originalOperStrIndices This will not be filled if no strings were
+///         split.
+static void splitClassStrings(OovStringVec &nodeStrs, OovStringVec &attrStrs,
+    OovStringVec &operStrs, float fontHeight,
+    std::vector<size_t> &originalOperStrIndices)
     {
     OovStringVec strs;
     strs = nodeStrs;
@@ -186,9 +179,30 @@ void splitClassStrings(OovStringVec &nodeStrs,
             {
             splitStrings(nodeStrs, bestLength, bestLength + SPLIT_WIDTH);
             splitStrings(attrStrs, bestLength, bestLength + SPLIT_WIDTH);
-            splitStrings(operStrs, bestLength, bestLength + SPLIT_WIDTH);
+            splitStrings(operStrs, bestLength, bestLength + SPLIT_WIDTH,
+                &originalOperStrIndices);
             }
         }
+    }
+
+static void addDrawString(OovString str, GraphPoint startPoint,
+    float fontHeight, float pad, float &y, std::vector<DrawString> &drawStrings)
+    {
+    y += fontHeight + (pad*2);
+    startPoint.y = y;
+    OovString outStr;
+    int xOffset = 0;
+    if(str.compare(0, strlen(getSplitStringPrefix()), getSplitStringPrefix()) == 0)
+        {
+        xOffset += fontHeight;      // Using font height as indent in x
+        outStr = &str.c_str()[2];
+        }
+    else
+        {
+        outStr = str;
+        }
+    GraphPoint drawPoint(startPoint.x + xOffset, y);
+    drawStrings.push_back(DrawString(drawPoint, outStr));
     }
 
 static void addDrawStrings(OovStringVec const &strs, GraphPoint startPoint,
@@ -196,21 +210,7 @@ static void addDrawStrings(OovStringVec const &strs, GraphPoint startPoint,
     {
     for(auto const &str : strs)
         {
-        y += fontHeight + (pad*2);
-        startPoint.y = y;
-        OovString outStr;
-        int xOffset = 0;
-        if(str.compare(0, strlen(getSplitStringPrefix()), getSplitStringPrefix()) == 0)
-            {
-            xOffset += fontHeight;      // Using font height as indent in x
-            outStr = &str.c_str()[2];
-            }
-        else
-            {
-            outStr = str;
-            }
-        GraphPoint drawPoint(startPoint.x + xOffset, y);
-        drawStrings.push_back(DrawString(drawPoint, outStr));
+    	addDrawString(str, startPoint, fontHeight, pad, y, drawStrings);
         }
     }
 
@@ -228,12 +228,16 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
         int line1 = startpos.y;
         int line2 = startpos.y;
         std::vector<DrawString> drawStrings;
+        std::vector<DrawString> virtDrawStrings;
         OovStringVec nodeStrs;
         OovStringVec attrStrs;
         OovStringVec operStrs;
+        std::vector<size_t> originalOperStrIndices;
+        std::vector<bool> virtOpers;
 
-        getStrings(node, nodeStrs, attrStrs, operStrs);
-        splitClassStrings(nodeStrs, attrStrs, operStrs, fontHeight);
+        getStrings(node, nodeStrs, attrStrs, operStrs, virtOpers);
+        splitClassStrings(nodeStrs, attrStrs, operStrs, fontHeight,
+        	originalOperStrIndices);
         float y = startpos.y;
         for(auto const &str : nodeStrs)
             {
@@ -243,12 +247,33 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
         y += padLine;   // Space for line.
         line1 = y;
         addDrawStrings(attrStrs, GraphPoint(startpos.x+pad, y), fontHeight,
-                pad, y, drawStrings);
+	    pad, y, drawStrings);
         y += padLine;   // Space for line.
         line2 = y;
-        addDrawStrings(operStrs, GraphPoint(startpos.x+pad, y), fontHeight,
-                pad, y, drawStrings);
-
+        // Keep the order of operators the same as the source.  This means
+        // virtual methods are interspersed with normal methods.
+        for(size_t i=0; i<operStrs.size(); i++)
+            {
+            size_t index = 0;
+            if(originalOperStrIndices.size())
+                {
+                index = originalOperStrIndices[i];
+                }
+            else
+                {
+                index = i;
+                }
+            if(!virtOpers[index])
+                {
+                addDrawString(operStrs[i], GraphPoint(startpos.x+pad, y),
+                fontHeight, pad, y, drawStrings);
+                }
+            else
+                {
+                addDrawString(operStrs[i], GraphPoint(startpos.x+pad, y),
+                fontHeight, pad, y, virtDrawStrings);
+                }
+            }
         int maxWidth = 0;
         int wrapInc = 0;
         if(attrStrs.size() > 1 || operStrs.size() > 1)
@@ -261,6 +286,12 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
             if(width > maxWidth)
                 maxWidth = width;
             }
+        for(const auto &dstr : virtDrawStrings)
+            {
+            int width = mDrawer.getTextExtentWidth(dstr.str) + wrapInc;
+            if(width > maxWidth)
+                maxWidth = width;
+            }
         maxWidth += pad2;
         y += pad2;
         mDrawer.groupShapes(true, Color(0,0,0), Color(245,255,245));
@@ -268,10 +299,19 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
         mDrawer.drawLine(GraphPoint(startpos.x, line1), GraphPoint(startpos.x+maxWidth, line1));
         mDrawer.drawLine(GraphPoint(startpos.x, line2), GraphPoint(startpos.x+maxWidth, line2));
         mDrawer.groupShapes(false, 0, 0);
-        mDrawer.groupText(true);
+        mDrawer.groupText(true, false);
         for(const auto &dstr : drawStrings)
+            {
             mDrawer.drawText(dstr.pos, dstr.str);
-        mDrawer.groupText(false);
+            }
+        mDrawer.groupText(false, false);
+
+        mDrawer.groupText(true, true);
+        for(const auto &dstr : virtDrawStrings)
+            {
+            mDrawer.drawText(dstr.pos, dstr.str);
+            }
+        mDrawer.groupText(false, true);
         return GraphSize(maxWidth, y - startpos.y);
         }
     else
@@ -383,7 +423,7 @@ static void drawFuncRelation(DiagramDrawer &drawer, RelationDrawInfo const &draw
     p.set(drawInfo.consumer.x + sin(drawInfo.lineAngleRadians) * drawInfo.baseFuncOffset,
             drawInfo.consumer.y + cos(drawInfo.lineAngleRadians) * drawInfo.baseFuncOffset);
     drawer.drawCircle(p, drawInfo.quarterSymbolSize, color);
-    if(connectType == ctFuncParam)
+    if(connectType & ctFuncParam)
         {
         const int paramOffset = drawInfo.baseFuncOffset + drawInfo.quarterSymbolSize +
                 drawInfo.eighthSymbolSize;
@@ -391,6 +431,36 @@ static void drawFuncRelation(DiagramDrawer &drawer, RelationDrawInfo const &draw
                 drawInfo.consumer.y + cos(drawInfo.lineAngleRadians) * paramOffset);
         drawer.drawCircle(p, drawInfo.eighthSymbolSize, color);
         }
+    }
+
+static void drawTemplateRelation(DiagramDrawer &drawer, RelationDrawInfo const &drawInfo,
+        double zoom)
+    {
+    drawer.drawLine(drawInfo.consumer, drawInfo.producer, true);
+
+    int xdist = drawInfo.consumer.x-drawInfo.producer.x;
+    int ydist = drawInfo.consumer.y-drawInfo.producer.y;
+    double lineAngleRadians;
+    if(ydist != 0)
+        lineAngleRadians = atan2(xdist, ydist);
+    else
+        {
+        if(drawInfo.producer.x > drawInfo.consumer.x)
+            lineAngleRadians = -M_PI/2;
+        else
+            lineAngleRadians = M_PI/2;
+        }
+    const double isAngle = (2 * M_PI) / 16;
+    double isSize = 14 * zoom;
+
+    // calc left point of arrow
+    GraphPoint p(sin(lineAngleRadians-isAngle) * isSize,
+            cos(lineAngleRadians-isAngle) * isSize);
+    drawer.drawLine(drawInfo.producer, drawInfo.producer + p);
+    // calc right point of arrow
+    p.set(sin(lineAngleRadians+isAngle) * isSize,
+            cos(lineAngleRadians+isAngle) * isSize);
+    drawer.drawLine(drawInfo.producer, drawInfo.producer + p);
     }
 
 static void drawVisibility(DiagramDrawer &drawer, RelationDrawInfo const &drawInfo,
@@ -426,6 +496,10 @@ static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
     if((connectItem.mConnectType & ctFuncVar) || (connectItem.mConnectType & ctFuncParam))
         {
         drawFuncRelation(drawer, drawInfo, connectItem.mConnectType);
+        }
+    if(connectItem.mConnectType & ctTemplateDependency)
+        {
+        drawTemplateRelation(drawer, drawInfo, zoom);
         }
     if(connectItem.hasAccess())
         {
@@ -511,14 +585,15 @@ static void drawIsSymbol(DiagramDrawer &drawer, GraphPoint parent, GraphPoint ch
     drawPolyWithOffset(drawer, GraphPoint(parent.x, parent.y), polygon, Color(255,255,255));
     }
 
-void ClassDrawer::drawConnectionLine(const ClassNode &node1, const ClassNode &node2)
+void ClassDrawer::drawConnectionLine(const ClassNode &node1, const ClassNode &node2,
+    bool dashed)
     {
     GraphRect rect1 = node1.getRect().getZoomed(mActualZoomX, mActualZoomY);
     GraphRect rect2 = node2.getRect().getZoomed(mActualZoomX, mActualZoomY);
     GraphPoint p1e;
     GraphPoint p2e;
     rect1.findConnectPoints(rect2, p1e, p2e);
-    mDrawer.drawLine(p1e, p2e);
+    mDrawer.drawLine(p1e, p2e, dashed);
     }
 
 void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
@@ -628,7 +703,7 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node)
         }
     mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 
-    mDrawer.groupText(true);
+    mDrawer.groupText(true, false);
     p1 = startpos;
     p1.x += pad;
     p1.y += fontHeight + pad*2;
@@ -637,7 +712,7 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node)
         mDrawer.drawText(p1, str);
         p1.y += shapeHeight;
         }
-    mDrawer.groupText(false);
+    mDrawer.groupText(false, false);
     return GraphSize(keyWidth, keyHeight);
     }
 
@@ -675,9 +750,18 @@ void ClassDrawer::drawDiagram(const ClassGraph &graph)
                 {
                 const ClassConnectItem *ci1 = graph.getNodeConnection(ni1, ni2);
                 const ClassConnectItem *ci2 = graph.getNodeConnection(ni2, ni1);
-                if(ci1 || ci2)
+                const ClassConnectItem *conn = (ci1 != nullptr) ? ci1 : ci2;
+                if(conn)
                     {
-                    drawConnectionLine(graph.getNodes()[ni1], graph.getNodes()[ni2]);
+                    bool drawDashed = false;
+                    // If there are relationships in addition to a template, then
+                    // draw a solid line.
+                    if(conn->mConnectType == ctTemplateDependency)
+                        {
+                        drawDashed = true;
+                        }
+                    drawConnectionLine(graph.getNodes()[ni1], graph.getNodes()[ni2],
+                        drawDashed);
                     }
                 if(ci1)
                     {

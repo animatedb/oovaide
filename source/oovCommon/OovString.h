@@ -15,37 +15,121 @@
 #include <set>
 
 // Immutable functions
+
+/// Convert a string to a float. The string can only contain characters that
+/// are valid for a floating point number, otherwise this returns false.
+/// @param str The string to convert.
+/// @param min The minimum allowed value.
+/// @param max The maximum allowed value.
+/// @param val The returned value.
 bool StringToFloat(char const * const str, float min, float max, float &val);
+
+/// Convert a string to an integer. The string can only contain characters that
+/// are valid for an integer, otherwise this returns false.
+/// @param str The string to convert.
+/// @param min The minimum allowed value.
+/// @param max The maximum allowed value.
+/// @param val The returned value.
 bool StringToInt(char const * const str, int min, int max, int &val);
+
+/// Convert a string to an unsigned integer. The string can only contain
+///  characters that are valid for an unsigned integer, otherwise this returns
+///  false.
+/// @param str The string to convert.
+/// @param min The minimum allowed value.
+/// @param max The maximum allowed value.
+/// @param val The returned value.
 bool StringToUnsignedInt(char const * const str, unsigned int min,
         unsigned int max, unsigned int &val);
+
+/// Count the number of characters in the string. Note that this can count the
+/// number of multibyte or ASCII characters.
+/// This counts all first-bytes (the ones that don't match 10xxxxxx).
+/// @param str The string to count.
 size_t StringNumChars(char const * const str);
+
+/// This counts the number of bytes until the null character.
+/// @param str The string to count.
 size_t StringNumBytes(char const * const str);
+
+/// This indicates whether all characters in the string are ASCII.
+/// @param str The string to check.
 bool StringIsAscii(char const * const str);
-// WARNING - these only work for ASCII
+
+/// Compares the strings using a case insensitive comparison, and returns zero
+/// if they match, or greater or less than zero depending on the mismatch.
+/// WARNING - this only work for ASCII
 int StringCompareNoCase(char const * const str1, char const * const str2);
-// Returns the number of characters that match.
+
+/// Compares the strings using a case insensitive comparison, and returns the
+///  number of characters that match.
+/// This probably only works for ASCII strings.  A tolower is performed for
+/// every character in both strings, and then the strings are compared.
+/// @param str1 The first string to compare.
+/// @param str2 The second string to compare.
 int StringCompareNoCaseNumCharsMatch(char const * const str1, char const * const str2);
+
+/// This returns the position of the first space.
+/// This only works on ASCII strings.
+/// @param str The string to search.
+/// @param startPos The starting position to search.
 size_t StringFindSpace(char const * const str, size_t startPos);
+
+/// This returns the position of the first non-space.
+/// This only works on ASCII strings.
+/// @param str The string to search.
+/// @param startPos The starting position to search.
 size_t StringFindNonSpace(char const * const str, size_t startPos);
 
+/// A vector of strings.
 class OovStringVec:public std::vector<class OovString>
     {
     public:
+        /// Use the std::vector constructors.
         using vector::vector;
+
+        /// Get a string at the index. This will return an empty string if
+        /// the index is out of range.
+        /// @param index The index of the string to get.
         OovString getStr(size_t index);
+
+        /// Delete all of the strings that are empty.
         void deleteEmptyStrings();
     };
 
+/// A set of strings.
 class OovStringSet:public std::set<class OovString>
     {
     };
 
+/// Get a vector of strings by parsing the string for delimiter characters.
+/// @param str The string to parse.
+/// @param delimiter The character to use as a delimiter.
 OovStringVec StringSplit(char const * const str, char delimiter);
+
+/// Get a vector of strings by parsing the string for delimiter strings.
+/// @param str The string to parse.
+/// @param delimiterStr The string to use as a delimiter.
 OovStringVec StringSplit(char const * const str, char const * const delimiterStr);
+
+/// Get a vector of strings by parsing the string for multiple delimiter strings.
+/// @param str The string to parse.
+/// @param delimiters The strings to use as delimiters.
 OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters);
+
+/// Convert a string to lower case.
+/// This only works for ASCII strings.
+/// @param str The string use as a source.
 void StringToLower(class OovString &str);
+
+/// A string to concatenate together by interspersing the delimiter.
+/// @param tokens The tokens to combine.
+/// @param delimiter The character to use as a delimiter.
 class OovString StringJoin(OovStringVec const &tokens, char delimiter);
+
+/// Gets a converted string where all special characters represented in XML
+/// are converted to the XML equivalent.  For example, '>' becomes "&gt;".
+/// @param str The string to use as a source
 class OovString StringMakeXml(char const * const str);
 
 /// This template requires T_Str to have a member "char const * const getStr()".
@@ -56,27 +140,73 @@ class OovString StringMakeXml(char const * const str);
 template<typename T_Str> class OovStringRefInterface
     {
     public:
+        /// Get the float value of the string. The string can only contain
+        ///  characters that are valid for a floating point number, otherwise
+        /// this returns false.
+        /// @param min The minimum allowed value.
+        /// @param max The maximum allowed value.
+        /// @param val The returned value.
         bool getFloat(float min, float max, float &val) const
             { return StringToFloat(getThisStr(), min, max, val); }
+
+        /// Get the integer value of the string. The string can only contain
+        /// characters that are valid for an integer, otherwise this returns false.
+        /// @param min The minimum allowed value.
+        /// @param max The maximum allowed value.
+        /// @param val The returned value.
         bool getInt(int min, int max, int &val) const
             { return StringToInt(getThisStr(), min, max, val); }
+
+        /// Get the unsigned integer value of the string. The string can only contain
+        /// characters that are valid for an integer, otherwise this returns false.
+        /// @param min The minimum allowed value.
+        /// @param max The maximum allowed value.
+        /// @param val The returned value.
         bool getUnsignedInt(unsigned int min, unsigned int max,
                 unsigned int &val) const
             { return StringToUnsignedInt(getThisStr(), min, max, val); }
+
+        /// This returns the position of the first space.
+        /// This only works on ASCII strings.
+        /// @param startPos The starting position to search.
         size_t findSpace(size_t startPos=0) const
             { return StringFindSpace(getThisStr(), startPos);}
+
+        /// This returns the position of the first non-space.
+        /// This only works on ASCII strings.
+        /// @param startPos The starting position to search.
         size_t findNonSpace(size_t startPos=0) const
             { return StringFindNonSpace(getThisStr(), startPos);}
+
+        /// Count the number of characters in the string. Note that this can
+        /// count the number of multibyte or ASCII characters.
+        /// This counts all first-bytes (the ones that don't match 10xxxxxx).
         size_t numChars() const
             { return StringNumChars(getThisStr()); }
+
+        /// This counts the number of bytes until the null character.
+        /// @param str The string to count.
         size_t numBytes() const
             { return StringNumBytes(getThisStr()); }
+
+        /// This indicates whether all characters in the string are ASCII.
         bool isAscii() const
             { return StringIsAscii(getThisStr()); }
+
+        /// Get a vector of strings by parsing the string for delimiter characters.
+        /// @param delim The character to use as a delimiter.
         OovStringVec split(char delim) const
             { return StringSplit(getThisStr(), delim); }
+
+        /// Get a vector of strings by parsing the string for delimiter strings.
+        /// @param delimiterStr The string to use as a delimiter.
         OovStringVec split(char const * const delimiterStr) const
             { return StringSplit(getThisStr(), delimiterStr); }
+
+        /// Get a vector of strings by parsing the string for multiple delimiter
+        /// strings.
+        /// @param str The string to parse.
+        /// @param delimiters The strings to use as delimiters.
         OovStringVec split(OovStringVec const &delimiters) const
             { return StringSplit(getThisStr(), delimiters); }
 
@@ -107,11 +237,17 @@ class OovStringRef:public OovStringRefInterface<OovStringRef>
         OovStringRef(std::string const &str):
             mStr(str.c_str())
             {}
-        // For common string functions, see OovStringRefInterface
+        /// For common string functions, see OovStringRefInterface
+
+        /// Get the character at the index.
         char operator[] (int index) const
             { return mStr[index]; }
+
+        /// Get the string as a "char const *".
         char const * getStr() const
             { return mStr; }
+
+        /// The conversion operator to get the string.
         operator char const * const() const
             { return mStr; }
 
@@ -150,19 +286,45 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
             { std::string::operator=(str); }
         void operator=(OovStringRef const &str)
             { std::string::operator=(str); }
+
+        /// Use toupper to convert the string. This only works for ASCII strings.
+        /// @param str The string to use as the source.
         void setUpperCase(OovStringRef const str);
+
+        /// Use tolower to convert the string. This only works for ASCII strings.
+        /// @param str The string to use as the source.
         void setLowerCase(OovStringRef const str);
+
+        /// Append an integer. This does not append any whitespace.
+        /// @param val The integer value to append.
+        /// @param radix The radix, typically 10 or 16.
         void appendInt(int val, int radix=10);
+
+        /// Append a float. This does not append any whitespace.
+        /// @param val The floating value to append.
         void appendFloat(float val);
+
+        /// Concatenate a string together by interspersing the delimiter.
+        /// @param tokens The tokens to combine.
+        /// @param delimiter The character to use as a delimiter.
         void join(OovStringVec const &tokens, char delim)
             { *this = StringJoin(tokens, delim); }
-        // Convert some characters in a string so they can be encoded into XML.
-        // For example, "<" is converted to "&lt;"
+
+        /// Convert some characters in a string so they can be encoded into XML.
+        /// For example, "<" is converted to "&lt;"
         OovString makeXml() const
             { return StringMakeXml(getStr()); }
+
+        /// Replace all strings within a string to a different string.
+        /// @param srchStr The string to use as a search string.
+        /// @param repStr The string to use as the replace string.
         bool replaceStrs(OovStringRef const srchStr, OovStringRef const repStr);
+
+        /// Get the string as a "char const *"
         char const * getStr() const
             { return std::string::c_str(); }
+
+        /// Get the string as an std::string.
         std::string &getStdString()
             { return *this; }
     };

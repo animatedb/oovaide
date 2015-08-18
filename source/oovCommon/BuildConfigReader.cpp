@@ -48,7 +48,7 @@ std::string BuildConfig::getComponentsFilePath() const
 
 std::string BuildConfig::getCrcAsStr(OovStringRef const buildType, CrcTypes crcType) const
     {
-    OovStringRef const buildStr = mConfigFile.getValue(buildType);
+    OovString buildStr = mConfigFile.getValue(buildType);
     std::vector<OovString> crcStrs = buildStr.split(';');
     std::string crcStr;
     if(crcStrs.size() == CT_LastCrc+1)

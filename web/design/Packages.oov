@@ -1,5 +1,5 @@
 DrawingName|RootDirPackage
 FileType|Class
 Names|Oov-Key;RootDirPackage;Package;std::vector<Package,std::allocator<Package> >;BuildPackages;Packages;NameValueFile;ProjectReader;ProjectPackages;ProjectPackagesDialog;AddPackageDialog;
-XPositions|587;15;415;392;17;507;271;17;560;425;622;
-YPositions|730;14;15;228;395;268;353;545;519;649;649;
+XPositions|15;15;415;404;15;517;270;15;521;374;576;
+YPositions|542;14;15;244;357;292;389;476;522;619;623;

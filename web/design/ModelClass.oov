@@ -1,5 +1,5 @@
 DrawingName|ModelClassifier
 FileType|Class
 Names|Oov-Key;ModelClassifier;std::vector<std::unique_ptr<ModelAttribute,std::default_delete<ModelAttribute> >,std::allocator<std::unique_ptr<ModelAttribute,std::default_delete<ModelAttribute> > > >;std::vector<std::unique_ptr<ModelOperation,std::default_delete<ModelOperation> >,std::allocator<std::unique_ptr<ModelOperation,std::default_delete<ModelOperation> > > >;ModelModule;ModelType;std::vector<ModelClassifier,std::allocator<ModelClassifier> >;ModelOperation;ModelAttribute;ModelStatements;ModelStatement;ModelTypeRef;ModelObject;std::vector<ModelStatement,std::allocator<ModelStatement> >;ModelDeclarator;ModelDeclClass;
-XPositions|11;13;494;11;498;512;488;14;483;281;469;488;220;465;294;491;
-YPositions|516;12;77;433;248;332;13;687;152;598;837;462;498;764;406;654;
+XPositions|11;13;503;11;509;521;488;11;498;281;491;491;220;496;294;496;
+YPositions|536;12;74;433;249;329;13;692;152;602;862;495;498;811;406;697;

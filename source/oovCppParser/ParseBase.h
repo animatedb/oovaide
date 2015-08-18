@@ -31,6 +31,18 @@ struct RefType
     bool isRef;
     };
 
+class MethodQualifiers
+	{
+	public:
+		MethodQualifiers(CXCursor cursor);
+		bool isMethodConst() const;
+		bool isMethodVirtual() const;
+
+	private:
+		std::vector<std::string> mQualifierStrings;
+		void getMethodQualifiers(CXCursor cursor);
+	};
+
 CXCursor getNthChildCursor(CXCursor cursor, int nth);
 CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind);
 CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
@@ -42,8 +54,6 @@ void removeLastNonIdentChar(std::string &name);
 void appendConditionString(CXCursor cursor, std::string &str);
 // endCondition=true is the same as appendConditionString().
 void appendCursorTokenString(CXCursor cursor, std::string &str, bool endCondition=false);
-void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers);
-bool isMethodConst(CXCursor cursor);
 bool isConstType(CXCursor cursor);
 bool isConstType(CXType cursType);
 bool isIdentC(char c);

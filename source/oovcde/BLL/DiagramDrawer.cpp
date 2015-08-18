@@ -46,8 +46,17 @@ size_t findSplitPos(std::string const &str, size_t minLength, size_t maxLength)
     return pos;
     }
 
-void splitStrings(OovStringVec &strs, size_t minLength, size_t maxLength)
+void splitStrings(OovStringVec &strs, size_t minLength, size_t maxLength,
+	std::vector<size_t> *originalIndices)
     {
+    if(originalIndices)
+        {
+        originalIndices->resize(strs.size());
+        for(size_t i=0; i<strs.size(); i++)
+            {
+            (*originalIndices)[i] = i;
+            }
+        }
     for(size_t i=0; i<strs.size(); i++)
         {
         if(strs[i].length() > maxLength)
@@ -56,6 +65,11 @@ void splitStrings(OovStringVec &strs, size_t minLength, size_t maxLength)
             std::string temp = getSplitStringPrefix() + strs[i].substr(pos);
             strs[i].resize(pos);
             strs.insert(strs.begin()+static_cast<int>(i)+1, temp);
+            if(originalIndices)
+                {
+                originalIndices->insert(originalIndices->begin()+
+                    static_cast<int>(i)+1, (*originalIndices)[i]);
+                }
             }
         }
     }

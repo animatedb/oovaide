@@ -100,7 +100,7 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
         {
         if(draw)
             {
-            drawer.groupText(true);
+            drawer.groupText(true, false);
             }
         OovStringVec strs;
         std::vector<GraphPoint> positions;
@@ -126,7 +126,7 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
                 {
                 drawer.drawText(positions[i], strs[i]);
                 }
-            drawer.groupText(false);
+            drawer.groupText(false, false);
             }
         }
     return GraphSize(rectx, recty);
@@ -403,12 +403,12 @@ GraphSize OperationDrawer::drawOperation(DiagramDrawer &drawer, GraphPoint pos,
         {
         drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 
-        drawer.groupText(true);
+        drawer.groupText(true, false);
         for(size_t i=0; i<drawStrings.size(); i++)
             {
             drawer.drawText(drawStrings[i].pos, drawStrings[i].str);
             }
-        drawer.groupText(false);
+        drawer.groupText(false, false);
         }
     return size;
     }

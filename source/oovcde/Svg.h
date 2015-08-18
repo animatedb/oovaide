@@ -31,7 +31,7 @@ class SvgDrawer:public DiagramDrawer
         virtual void drawPoly(const OovPolygon &poly, Color fillColor) override;
 
         virtual void groupShapes(bool start, Color lineColor, Color fillColor) override;
-        virtual void groupText(bool start) override;
+        virtual void groupText(bool start, bool italics) override;
         virtual void drawText(const GraphPoint &p, OovStringRef const text) override;
 
         virtual float getTextExtentWidth(OovStringRef const name) const override;

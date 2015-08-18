@@ -34,7 +34,8 @@ class ClassDrawer
 
         // Typically node1 is consumer, and node2 is producer
         /// @todo - should make this constant and clear
-        void drawConnectionLine(const ClassNode &node1, const ClassNode &node2);
+        void drawConnectionLine(const ClassNode &node1, const ClassNode &node2,
+            bool dashed = false);
         void drawConnectionSymbols(const ClassRelationDrawOptions &options,
             const ClassNode &node1,
             const ClassNode &node2, const ClassConnectItem &connectItem);

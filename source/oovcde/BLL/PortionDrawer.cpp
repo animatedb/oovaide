@@ -106,9 +106,17 @@ void PortionDrawer::drawGraph(DiagramDrawer &drawer)
         drawConnections(drawer);
         drawer.groupShapes(false, 0, 0);
 
-        drawer.groupText(true);
-        drawNodeText(drawer);
-        drawer.groupText(false);
+        std::vector<DrawString> drawStrings;
+        std::vector<bool> virtOpers;
+        getNodeText(drawer, drawStrings, virtOpers);
+
+        drawer.groupText(true, false);
+        drawNodeText(drawer, false, drawStrings, virtOpers);
+        drawer.groupText(false, false);
+
+        drawer.groupText(true, true);
+        drawNodeText(drawer, true, drawStrings, virtOpers);
+        drawer.groupText(false, false);
         }
     }
 
@@ -196,7 +204,8 @@ void PortionDrawer::drawConnections(DiagramDrawer &drawer)
         }
     }
 
-void PortionDrawer::drawNodeText(DiagramDrawer &drawer)
+void PortionDrawer::getNodeText(DiagramDrawer &drawer,
+    std::vector<DrawString> &drawStrings, std::vector<bool> &virtOpers)
     {
     float textHeight = drawer.getTextExtentHeight("W");
     int pad = static_cast<int>(textHeight / 7.f * 2);
@@ -206,7 +215,21 @@ void PortionDrawer::drawNodeText(DiagramDrawer &drawer)
         GraphRect rect = getNodeRect(drawer, i);
         rect.start.x += pad;
         rect.start.y += yTextOffset;
-        drawer.drawText(rect.start, mGraph->getNodes()[i].getName().getStr());
+        PortionNode const &node = mGraph->getNodes()[i];
+        drawStrings.push_back(DrawString(rect.start, node.getName().getStr()));
+        virtOpers.push_back(node.isVirtualOperation());
+        }
+    }
+
+void PortionDrawer::drawNodeText(DiagramDrawer &drawer, bool drawVirts,
+    std::vector<DrawString> const &drawStrings, std::vector<bool> const &virtOpers)
+    {
+    for(size_t i=0; i<drawStrings.size(); i++)
+        {
+        if(drawVirts == virtOpers[i])
+            {
+            drawer.drawText(drawStrings[i].pos, drawStrings[i].str);
+            }
         }
     }
 

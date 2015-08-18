@@ -214,13 +214,11 @@ void CppParser::addOperationParts(CXCursor cursor, bool addParams)
         {
         clang_visitChildren(cursor, ::visitFunctionAddArgs, this);
         }
-#if(OPER_RET_TYPE)
     CXType retType = clang_getResultType(clang_getCursorType(cursor));
     RefType rt;
     mOperation->getReturnType().setDeclType(mParserModelData.createOrGetDataTypeRef(retType, rt));
     mOperation->getReturnType().setConst(rt.isConst);
     mOperation->getReturnType().setRefer(rt.isRef);
-#endif
     mStatements = &mOperation->getStatements();
     clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
     if(mDupHashFile.isOpen())
@@ -896,8 +894,9 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
             {
             // Add all operations in all TU's so that the correct access is defined.
             CXStringDisposer str(clang_getCursorSpelling(cursor));
-            bool isConst = isMethodConst(cursor);
-            mOperation = mClassifier->addOperation(str, mClassMemberAccess, isConst);
+            MethodQualifiers quals(cursor);
+            mOperation = mClassifier->addOperation(str, mClassMemberAccess,
+                quals.isMethodConst(), quals.isMethodVirtual());
             addOperationParts(cursor, true);
             unsigned int line;
             FilePath fn(getFileLoc(cursor, &line), FP_File);
@@ -917,7 +916,7 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
                 RefType rt;
                 ModelType *type = mParserModelData.createOrGetBaseTypeRef(cursor, rt);
                 ModelAttribute *attr = mClassifier->addAttribute(name,
-                        type, mClassMemberAccess.getVis());
+                    type, mClassMemberAccess.getVis());
                 attr->setConst(rt.isConst);
                 attr->setRefer(rt.isRef);
                 }
@@ -1002,7 +1001,9 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor,
                 if(fn == mTopParseFn)
                     {
                     CXStringDisposer funcName(clang_getCursorSpelling(cursor));
-                    ModelOperation tempOper(funcName, Visibility(), isMethodConst(cursor));
+                    MethodQualifiers quals(cursor);
+                    ModelOperation tempOper(funcName, Visibility(),
+                    	quals.isMethodConst(), quals.isMethodVirtual());
                     mOperation = &tempOper;
                     // Prevent double display of arg parsing since it is in addOperationParts().
                     sCrashDiagnostics.enableDumpCursor(false);

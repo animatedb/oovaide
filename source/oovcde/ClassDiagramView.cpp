@@ -25,6 +25,7 @@ static const ClassDrawOptions &getDrawOptions(GuiOptions const &guiOptions)
     dopts.drawOperTypes = guiOptions.getValueBool(OptGuiShowOperTypes);
     dopts.drawPackageName = guiOptions.getValueBool(OptGuiShowPackageName);
     dopts.drawOovSymbols = guiOptions.getValueBool(OptGuiShowOovSymbols);
+    dopts.drawTemplateRelations = guiOptions.getValueBool(OptGuiShowTemplateRelations);
     dopts.drawOperParamRelations = guiOptions.getValueBool(OptGuiShowOperParamRelations);
     dopts.drawOperBodyVarRelations = guiOptions.getValueBool(OptGuiShowOperBodyVarRelations);
     dopts.drawRelationKey = guiOptions.getValueBool(OptGuiShowRelationKey);
@@ -320,6 +321,12 @@ extern "C" G_MODULE_EXPORT void on_AddMemberUsersMenuitem_activate(
     handlePopup(ClassGraph::AN_MemberUsers);
     }
 
+extern "C" G_MODULE_EXPORT void on_AddTemplateMenuItem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    handlePopup(ClassGraph::AN_Templates);
+    }
+
 extern "C" G_MODULE_EXPORT void on_AddFuncParamsUsingMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {
@@ -499,6 +506,12 @@ extern "C" G_MODULE_EXPORT void on_AddClassMemberUserRadiobutton_toggled(
     GtkWidget *widget, gpointer /*data*/)
     {
     handleToggle(widget, ClassGraph::AN_MemberUsers);
+    }
+
+extern "C" G_MODULE_EXPORT void on_AddClassTemplateRadioButton_toggled(
+        GtkWidget *widget, gpointer /*data*/)
+    {
+    handleToggle(widget, ClassGraph::AN_Templates);
     }
 
 extern "C" G_MODULE_EXPORT void on_AddClassFuncParamRadiobutton_toggled(

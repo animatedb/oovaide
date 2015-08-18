@@ -1,77 +1,89 @@
 // twinkle.h
 
+// Sorry, this may be a bit nebulous.
+//
+// The Oovcde program must show all relationships between the correct
+// objects even if a particular namespace is not specified at some point in
+// this source code.
+//
+// This example shows nested namespaces, using namespace, namespace assignment,
+// multiple uses of templates, typedefs of templates, etc.
+// It also shows inheritance, aggregation, composition, class member methods
+// and variables, method variables, method parameters, etc.
+//
 // The namespace Hierarchy is:
 //  Universe
 //      {
-//      Hollywood
-//      Teaching
+//      Movies
+//      Awards
 //      }
 //  Imaginary
 //
 // Classes:
+//      Universe::Galaxy
 //      Universe::Star
-//      Universe::World
-//      Universe::Hollywood::Star
-//      Universe::Teaching::Star
+//      Universe::DisplayStar
+//      Universe::Movies::Star
+//      Universe::Awards::Star
 //      Imaginary::FakeStar
 //      Imaginary::PretendStar
 
-template<class T> class Displayer
+template<class T> class IdentityDisplayer:public T
     {
     public:
-        void displayThoughts(T type)
-            { printf("I am a %s\n", type.whatAreYou()); }
+        void displayIdentity()
+            { printf("I am a %s\n", this->whatAreYou()); }
     };
 
 
 namespace Universe
 {
+    namespace Movies
+    {
+    class Star
+        {
+        public:
+            char const *whatAreYou() const
+                { return("movie star"); }
+        };
+    };
+
+    namespace Awards
+    {
+    class Star
+        {
+        public:
+            char const *whatAreYou() const
+                { return("award star"); }
+        };
+    };
 
 class Star
     {
     public:
-        void twinkle()
-            {}
         char const *whatAreYou() const
             { return("little star"); }
     };
 
-class DisplayStar:public Star, public Displayer<Star>
-	{
-	};
+class DisplayStar:public Star, public IdentityDisplayer<Star>
+    {
+    };
 
-class World
+class Galaxy
     {
     public:
-        World()
+        Galaxy()
             {}
+
+    private:
+        DisplayStar mStar;
+        Awards::Star mAwardStar;
+        Movies::Star mMovieStar;
     };
 
-
-namespace Hollywood
-{
-
-class Star
-    {
-    public:
-        char const *whatAreYou() const
-            { return("Hollywood star"); }
-    };
-
-};
-
-namespace Teaching
-{
-class Star
-    {
-    public:
-        char const *whatAreYou() const
-            { return("ink star"); }
-    };
-};
 
 typedef int NotAStar;
-typedef Star RenamedStar;
-typedef DisplayStar RenamedDisplayStar;
-typedef Displayer<Star> RenamedDisplayerStar;
+typedef Star AlteredStar;
+typedef DisplayStar NewNameDisplayStar;
+typedef IdentityDisplayer<Star> NewTypeDisplayStar;
 };

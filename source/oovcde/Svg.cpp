@@ -140,14 +140,23 @@ void SvgDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
         }
     }
 
-void SvgDrawer::groupText(bool start)
+void SvgDrawer::groupText(bool start, bool italic)
     {
     maybeOutputHeader();
-        // stroke none means no outline, only fill
+    char const *style = "";
+    // stroke none means no outline, only fill
+    if(italic)
+        {
+        style = " font-style=\"italic\"";
+        }
     if(start)
-        fprintf(mFp, "<g stroke=\"none\">\n");
+    	{
+        fprintf(mFp, "<g stroke=\"none\"%s>\n", style);
+    	}
     else
+    	{
         fprintf(mFp, "</g>\n");
+    	}
     }
 
 void SvgDrawer::drawText(const GraphPoint &p, OovStringRef const text)

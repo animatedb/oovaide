@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
   font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
-  width="800" height="804">
+  width="800" height="810">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="16" y="660" width="133" height="143" />
 <line x1="16" y1="673" x2="149" y2="673" />
@@ -31,51 +31,54 @@
 <text x="17" y="795">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="14" y="16" width="398" height="368" />
+<rect x="14" y="16" width="398" height="377" />
 <line x1="14" y1="37" x2="412" y2="37" />
-<line x1="14" y1="112" x2="412" y2="112" />
+<line x1="14" y1="121" x2="412" y2="121" />
 </g>
 <g stroke="none">
 <text x="15" y="25">Journal</text>
 <text x="15" y="34">oovcde</text>
-<text x="15" y="46">-std::vector&lt;JournalRecord,std::allocator&lt;JournalRecord&gt; &gt; mRecords</text>
-<text x="15" y="55">-&lt;&lt;typedef&gt;&gt;size_t mCurrentRecord</text>
-<text x="15" y="64">-Builder mBuilder</text>
-<text x="15" y="73">-ModelData mModel</text>
-<text x="15" y="82">-IncDirDependencyMapReader mIncludeMap</text>
-<text x="15" y="91">-JournalListener mJournalListener</text>
-<text x="15" y="100">-OovTaskStatusListener mTaskStatusListener</text>
-<text x="15" y="109">-&lt;&lt;typedef&gt;&gt;size_t NO_INDEX</text>
-<text x="15" y="121">+Journal()</text>
-<text x="15" y="130">+getJournal()</text>
-<text x="15" y="139">+clear()</text>
-<text x="15" y="148">+displayClass(OovStringRef className)</text>
-<text x="15" y="157">+addClass(OovStringRef className)</text>
-<text x="15" y="166">+displayOperation(OovStringRef className, OovStringRef operName, bool isConst)</text>
-<text x="15" y="175">+displayComponents()</text>
-<text x="15" y="184">+displayWorldZone()</text>
-<text x="15" y="193">+displayPortion(OovStringRef className)</text>
-<text x="15" y="202">+displayInclude(OovStringRef incName)</text>
-<text x="15" y="211">+loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="15" y="220">+saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="15" y="229">+exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="15" y="238">+cppArgOptionsChangedUpdateDrawings()</text>
-<text x="15" y="247">+removeUnmodifiedRecords()</text>
-<text x="15" y="256">-addRecord(JournalRecord record, OovStringRef name)</text>
-<text x="15" y="265">-newClassRecord(OovStringRef className)</text>
-<text x="15" y="274">-newPortionRecord(OovStringRef portionName)</text>
-<text x="15" y="283">-removeRecord(&lt;&lt;typedef&gt;&gt;size_t index)</text>
-<text x="15" y="292">-findRecord(eRecordTypes rt, OovStringRef name)</text>
-<text x="15" y="301">+~Journal()</text>
-<text x="15" y="310">+init(Builder builder, ModelData model, IncDirDependencyMapReader incMap, </text>
-<text x="22" y="319">JournalListener journalListener, OovTaskStatusListener taskStatusListener)</text>
-<text x="15" y="328">+stopAndWaitForBackgroundComplete()</text>
-<text x="15" y="337">+setCurrentRecord(&lt;&lt;typedef&gt;&gt;size_t index)</text>
-<text x="15" y="346">+getRecords()</text>
-<text x="15" y="355">+getCurrentRecord()</text>
+<text x="15" y="46">-GuiOptions mGuiOptions</text>
+<text x="15" y="55">-std::vector&lt;JournalRecord,std::allocator&lt;JournalRecord&gt; &gt; mRecords</text>
+<text x="15" y="64">-size_t&lt;&lt;typedef&gt;&gt; mCurrentRecord</text>
+<text x="15" y="73">-Builder mBuilder</text>
+<text x="15" y="82">-ModelData mModel</text>
+<text x="15" y="91">-IncDirDependencyMapReader mIncludeMap</text>
+<text x="15" y="100">-JournalListener mJournalListener</text>
+<text x="15" y="109">-OovTaskStatusListener mTaskStatusListener</text>
+<text x="15" y="118">-size_t&lt;&lt;typedef&gt;&gt; NO_INDEX</text>
+<text x="15" y="130">+Journal(GuiOptions guiOptions)</text>
+<text x="15" y="139">+getJournal()</text>
+<text x="15" y="148">+clear()</text>
+<text x="15" y="157">+displayClass(OovStringRef className)</text>
+<text x="15" y="166">+addClass(OovStringRef className)</text>
+<text x="15" y="175">+displayOperation(OovStringRef className, OovStringRef operName, bool isConst)</text>
+<text x="15" y="184">+displayComponents()</text>
+<text x="15" y="193">+displayWorldZone()</text>
+<text x="15" y="202">+displayPortion(OovStringRef className)</text>
+<text x="15" y="211">+displayInclude(OovStringRef incName)</text>
+<text x="15" y="220">+loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="15" y="229">+saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="15" y="238">+exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="15" y="247">+cppArgOptionsChangedUpdateDrawings()</text>
+<text x="15" y="256">+removeUnmodifiedRecords()</text>
+<text x="15" y="265">-addRecord(JournalRecord record, OovStringRef name)</text>
+<text x="15" y="274">-newClassRecord(OovStringRef className)</text>
+<text x="15" y="283">-newPortionRecord(OovStringRef portionName)</text>
+<text x="15" y="292">-removeRecord(size_t&lt;&lt;typedef&gt;&gt; index)</text>
+<text x="15" y="301">-findRecord(eRecordTypes rt, OovStringRef name)</text>
+<text x="15" y="319">+init(Builder builder, ModelData model, IncDirDependencyMapReader incMap, </text>
+<text x="22" y="328">JournalListener journalListener, OovTaskStatusListener taskStatusListener)</text>
+<text x="15" y="337">+stopAndWaitForBackgroundComplete()</text>
+<text x="15" y="346">+setCurrentRecord(size_t&lt;&lt;typedef&gt;&gt; index)</text>
+<text x="15" y="355">+getRecords()</text>
 <text x="15" y="364">+getCurrentRecord()</text>
-<text x="15" y="373">+getCurrentZoneDiagram()</text>
-<text x="15" y="382">+getCurrentClassDiagram()</text>
+<text x="15" y="373">+getCurrentRecord()</text>
+<text x="15" y="382">+getCurrentZoneDiagram()</text>
+<text x="15" y="391">+getCurrentClassDiagram()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="15" y="310">+~Journal()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="484" y="26" width="147" height="26" />
@@ -86,6 +89,8 @@
 <text x="485" y="35">std::vector&lt;JournalRecord,std::</text>
 <text x="485" y="44">  allocator&lt;JournalRecord&gt; &gt;</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="377" y="425" width="63" height="26" />
 <line x1="377" y1="446" x2="440" y2="446" />
@@ -94,6 +99,8 @@
 <g stroke="none">
 <text x="378" y="434">ModelData</text>
 <text x="378" y="443">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="23" y="567" width="145" height="26" />
@@ -104,6 +111,8 @@
 <text x="24" y="576">IncDirDependencyMapReader</text>
 <text x="24" y="585">oovCommon</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="574" y="494" width="213" height="62" />
 <line x1="574" y1="515" x2="787" y2="515" />
@@ -112,6 +121,8 @@
 <g stroke="none">
 <text x="575" y="503">JournalListener</text>
 <text x="575" y="512">oovcde</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="575" y="527">+~JournalListener()</text>
 <text x="575" y="536">+displayClass(OovStringRef className)</text>
 <text x="575" y="545">+displayOperation(OovStringRef className,</text>
@@ -126,8 +137,10 @@
 <text x="135" y="485">OovTaskStatusListener</text>
 <text x="135" y="494">oovCommon</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="462" y="120" width="337" height="242" />
+<rect x="462" y="120" width="337" height="260" />
 <line x1="462" y1="141" x2="799" y2="141" />
 <line x1="462" y1="180" x2="799" y2="180" />
 </g>
@@ -141,74 +154,85 @@
 <text x="463" y="189">+getFullName(bool addSpace)</text>
 <text x="463" y="198">+getDiagramName()</text>
 <text x="463" y="207">+JournalRecord(eRecordTypes type, JournalListener listener)</text>
-<text x="463" y="216">+~JournalRecord()</text>
-<text x="463" y="225">+getRecordTypeName()</text>
-<text x="463" y="234">+drawingAreaButtonPressEvent(&lt;&lt;typedef&gt;&gt;GdkEventButton event)</text>
-<text x="463" y="243">+drawingAreaButtonReleaseEvent(&lt;&lt;typedef&gt;&gt;GdkEventButton event)</text>
-<text x="463" y="252">+drawingAreaDrawEvent()</text>
-<text x="463" y="261">+drawingAreaMotionEvent(&lt;&lt;typedef&gt;&gt;GdkEventMotion )</text>
-<text x="463" y="270">+drawingLostPointerEvent()</text>
-<text x="463" y="279">+cppArgOptionsChangedUpdateDrawings()</text>
-<text x="463" y="288">+saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="463" y="297">+exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="463" y="306">+loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="463" y="315">+isModified()</text>
 <text x="463" y="324">+getName()</text>
 <text x="463" y="333">+setDiagramName(OovStringRef name)</text>
 <text x="463" y="342">+setName(OovStringRef str)</text>
 <text x="463" y="351">+getRecordType()</text>
 <text x="463" y="360">+displayClass(OovStringRef className)</text>
+<text x="463" y="369">+displayOperation(OovStringRef className, OovStringRef </text>
+<text x="470" y="378">operName, bool isConst)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="463" y="216">+~JournalRecord()</text>
+<text x="463" y="225">+getRecordTypeName()</text>
+<text x="463" y="234">+drawingAreaButtonPressEvent(GdkEventButton&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="463" y="243">+drawingAreaButtonReleaseEvent(GdkEventButton&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="463" y="252">+drawingAreaDrawEvent()</text>
+<text x="463" y="261">+drawingAreaMotionEvent(GdkEventMotion&lt;&lt;typedef&gt;&gt; )</text>
+<text x="463" y="270">+drawingLostPointerEvent()</text>
+<text x="463" y="279">+cppArgOptionsChangedUpdateDrawings()</text>
+<text x="463" y="288">+saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="463" y="297">+exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="463" y="306">+loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="463" y="315">+isModified()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="203" y="539" width="219" height="188" />
-<line x1="203" y1="560" x2="422" y2="560" />
-<line x1="203" y1="572" x2="422" y2="572" />
+<rect x="203" y="539" width="224" height="188" />
+<line x1="203" y1="560" x2="427" y2="560" />
+<line x1="203" y1="572" x2="427" y2="572" />
 </g>
 <g stroke="none">
 <text x="204" y="548">JournalRecordClassDiagram</text>
 <text x="204" y="557">oovcde</text>
 <text x="204" y="569">+ClassDiagramView mClassDiagram</text>
-<text x="204" y="581">+JournalRecordClassDiagram(ModelData </text>
-<text x="211" y="590">model, JournalListener journalListener,</text>
-<text x="211" y="599"> OovTaskStatusListener taskStatusListener</text>
-<text x="211" y="608">)</text>
+<text x="204" y="581">+JournalRecordClassDiagram(GuiOptions </text>
+<text x="211" y="590">guiOptions, ModelData model, JournalLis</text>
+<text x="211" y="599">tener journalListener, OovTaskStatusLis</text>
+<text x="211" y="608">tener taskStatusListener)</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="204" y="617">+~JournalRecordClassDiagram()</text>
 <text x="204" y="626">-getRecordTypeName()</text>
 <text x="204" y="635">-gotoClass(OovStringRef className)</text>
-<text x="204" y="644">-drawingAreaButtonPressEvent(&lt;&lt;typedef&gt;</text>
-<text x="211" y="653">&gt;GdkEventButton event)</text>
-<text x="204" y="662">-drawingAreaButtonReleaseEvent(&lt;&lt;typedef&gt;</text>
-<text x="211" y="671">&gt;GdkEventButton event)</text>
+<text x="204" y="644">-drawingAreaButtonPressEvent(GdkEventButt</text>
+<text x="211" y="653">on&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="204" y="662">-drawingAreaButtonReleaseEvent(GdkEventBu</text>
+<text x="211" y="671">tton&lt;&lt;typedef&gt;&gt; event)</text>
 <text x="204" y="680">-drawingAreaDrawEvent()</text>
 <text x="204" y="689">-cppArgOptionsChangedUpdateDrawings()</text>
-<text x="204" y="698">-saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="204" y="707">-exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="204" y="716">-loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
+<text x="204" y="698">-saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="204" y="707">-exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="204" y="716">-loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
 <text x="204" y="725">-isModified()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="232" y="562" width="223" height="161" />
-<line x1="232" y1="583" x2="455" y2="583" />
-<line x1="232" y1="595" x2="455" y2="595" />
+<rect x="232" y="562" width="224" height="188" />
+<line x1="232" y1="583" x2="456" y2="583" />
+<line x1="232" y1="595" x2="456" y2="595" />
 </g>
 <g stroke="none">
 <text x="233" y="571">JournalRecordOperationDiagram</text>
 <text x="233" y="580">oovcde</text>
 <text x="233" y="592">+OperationDiagramView mOperationDiagram</text>
-<text x="233" y="604">+JournalRecordOperationDiagram(ModelData </text>
-<text x="240" y="613">model, JournalListener listener)</text>
-<text x="233" y="622">+~JournalRecordOperationDiagram()</text>
-<text x="233" y="631">-getRecordTypeName()</text>
-<text x="233" y="640">-gotoClass(OovStringRef className)</text>
-<text x="233" y="649">-drawingAreaButtonPressEvent(&lt;&lt;typedef&gt;</text>
-<text x="240" y="658">&gt;GdkEventButton event)</text>
-<text x="233" y="667">-drawingAreaButtonReleaseEvent(&lt;&lt;typedef&gt;</text>
-<text x="240" y="676">&gt;GdkEventButton event)</text>
-<text x="233" y="685">-drawingAreaDrawEvent()</text>
-<text x="233" y="694">-saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="233" y="703">-exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="233" y="712">-loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="233" y="721">-isModified()</text>
+<text x="233" y="604">+JournalRecordOperationDiagram(GuiOptions</text>
+<text x="240" y="613"> guiOptions, ModelData model, </text>
+<text x="240" y="622">JournalListener listener)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="233" y="631">+~JournalRecordOperationDiagram()</text>
+<text x="233" y="640">-getRecordTypeName()</text>
+<text x="233" y="649">-gotoClass(OovStringRef className)</text>
+<text x="233" y="658">-gotoOperation(OovStringRef className,</text>
+<text x="240" y="667"> OovStringRef operName, bool isConst)</text>
+<text x="233" y="676">-drawingAreaButtonPressEvent(GdkEventButt</text>
+<text x="240" y="685">on&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="233" y="694">-drawingAreaButtonReleaseEvent(GdkEventBu</text>
+<text x="240" y="703">tton&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="233" y="712">-drawingAreaDrawEvent()</text>
+<text x="233" y="721">-saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="233" y="730">-exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="233" y="739">-loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="233" y="748">-isModified()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="263" y="584" width="236" height="161" />
@@ -219,218 +243,236 @@
 <text x="264" y="593">JournalRecordComponentDiagram</text>
 <text x="264" y="602">oovcde</text>
 <text x="264" y="614">+ComponentDiagramView mComponentDiagram</text>
-<text x="264" y="626">+JournalRecordComponentDiagram(IncDirDep</text>
-<text x="271" y="635">endencyMapReader incMap, JournalListen</text>
-<text x="271" y="644">er listener)</text>
+<text x="264" y="626">+JournalRecordComponentDiagram(GuiOptions </text>
+<text x="271" y="635">guiOptions, IncDirDependencyMapReader </text>
+<text x="271" y="644">incMap, JournalListener listener)</text>
 <text x="264" y="653">+~JournalRecordComponentDiagram()</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="264" y="662">-getRecordTypeName()</text>
-<text x="264" y="671">-drawingAreaButtonPressEvent(&lt;&lt;</text>
-<text x="271" y="680">typedef&gt;&gt;GdkEventButton event)</text>
-<text x="264" y="689">-drawingAreaButtonReleaseEvent(&lt;</text>
-<text x="271" y="698">&lt;typedef&gt;&gt;GdkEventButton event)</text>
+<text x="264" y="671">-drawingAreaButtonPressEvent(GdkEventButton</text>
+<text x="271" y="680">&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="264" y="689">-drawingAreaButtonReleaseEvent(GdkEventButt</text>
+<text x="271" y="698">on&lt;&lt;typedef&gt;&gt; event)</text>
 <text x="264" y="707">-drawingAreaDrawEvent()</text>
-<text x="264" y="716">-saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="264" y="725">-exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="264" y="734">-loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
+<text x="264" y="716">-saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="264" y="725">-exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="264" y="734">-loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
 <text x="264" y="743">-isModified()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="292" y="605" width="200" height="188" />
-<line x1="292" y1="626" x2="492" y2="626" />
-<line x1="292" y1="638" x2="492" y2="638" />
+<rect x="292" y="605" width="224" height="197" />
+<line x1="292" y1="626" x2="516" y2="626" />
+<line x1="292" y1="638" x2="516" y2="638" />
 </g>
 <g stroke="none">
 <text x="293" y="614">JournalRecordZoneDiagram</text>
 <text x="293" y="623">oovcde</text>
 <text x="293" y="635">+ZoneDiagramView mZoneDiagram</text>
-<text x="293" y="647">+JournalRecordZoneDiagram(ModelData </text>
-<text x="300" y="656">model, JournalListener listener)</text>
-<text x="293" y="665">+~JournalRecordZoneDiagram()</text>
-<text x="293" y="674">-getRecordTypeName()</text>
-<text x="293" y="683">-gotoClass(OovStringRef className)</text>
-<text x="293" y="692">-drawingAreaButtonPressEvent(&lt;</text>
-<text x="300" y="701">&lt;typedef&gt;&gt;GdkEventButton event)</text>
-<text x="293" y="710">-drawingAreaButtonReleaseEvent(&lt;</text>
-<text x="300" y="719">&lt;typedef&gt;&gt;GdkEventButton event)</text>
-<text x="293" y="728">-drawingAreaDrawEvent()</text>
-<text x="293" y="737">-drawingAreaMotionEvent(&lt;&lt;typedef&gt;</text>
-<text x="300" y="746">&gt;GdkEventMotion event)</text>
-<text x="293" y="755">-drawingLostPointerEvent()</text>
-<text x="293" y="764">-saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="293" y="773">-exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="293" y="782">-loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="293" y="791">-isModified()</text>
+<text x="293" y="647">+JournalRecordZoneDiagram(GuiOptions </text>
+<text x="300" y="656">guiOptions, ModelData model, JournalLis</text>
+<text x="300" y="665">tener listener)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="293" y="674">+~JournalRecordZoneDiagram()</text>
+<text x="293" y="683">-getRecordTypeName()</text>
+<text x="293" y="692">-gotoClass(OovStringRef className)</text>
+<text x="293" y="701">-drawingAreaButtonPressEvent(GdkEventButt</text>
+<text x="300" y="710">on&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="293" y="719">-drawingAreaButtonReleaseEvent(GdkEventBu</text>
+<text x="300" y="728">tton&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="293" y="737">-drawingAreaDrawEvent()</text>
+<text x="293" y="746">-drawingAreaMotionEvent(GdkEventMotion&lt;</text>
+<text x="300" y="755">&lt;typedef&gt;&gt; event)</text>
+<text x="293" y="764">-drawingLostPointerEvent()</text>
+<text x="293" y="773">-saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="293" y="782">-exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="293" y="791">-loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="293" y="800">-isModified()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="317" y="626" width="210" height="152" />
-<line x1="317" y1="647" x2="527" y2="647" />
-<line x1="317" y1="659" x2="527" y2="659" />
+<rect x="317" y="626" width="212" height="161" />
+<line x1="317" y1="647" x2="529" y2="647" />
+<line x1="317" y1="659" x2="529" y2="659" />
 </g>
 <g stroke="none">
 <text x="318" y="635">JournalRecordPortionDiagram</text>
 <text x="318" y="644">oovcde</text>
 <text x="318" y="656">+PortionDiagramView mPortionDiagram</text>
-<text x="318" y="668">+JournalRecordPortionDiagram(ModelData </text>
-<text x="325" y="677">model, JournalListener listener)</text>
-<text x="318" y="686">+~JournalRecordPortionDiagram()</text>
-<text x="318" y="695">-getRecordTypeName()</text>
-<text x="318" y="704">-drawingAreaButtonPressEvent(&lt;&lt;typedef&gt;</text>
-<text x="325" y="713">&gt;GdkEventButton event)</text>
-<text x="318" y="722">-drawingAreaButtonReleaseEvent(&lt;</text>
-<text x="325" y="731">&lt;typedef&gt;&gt;GdkEventButton event)</text>
-<text x="318" y="740">-drawingAreaDrawEvent()</text>
-<text x="318" y="749">-saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="318" y="758">-exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="318" y="767">-loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="318" y="776">-isModified()</text>
+<text x="318" y="668">+JournalRecordPortionDiagram(GuiOptions</text>
+<text x="325" y="677"> guiOptions, ModelData model,</text>
+<text x="325" y="686"> JournalListener listener)</text>
+<text x="318" y="695">+~JournalRecordPortionDiagram()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="318" y="704">-getRecordTypeName()</text>
+<text x="318" y="713">-drawingAreaButtonPressEvent(GdkEventBu</text>
+<text x="325" y="722">tton&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="318" y="731">-drawingAreaButtonReleaseEvent(GdkEvent</text>
+<text x="325" y="740">Button&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="318" y="749">-drawingAreaDrawEvent()</text>
+<text x="318" y="758">-saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="318" y="767">-exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="318" y="776">-loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="318" y="785">-isModified()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="341" y="648" width="264" height="152" />
-<line x1="341" y1="669" x2="605" y2="669" />
-<line x1="341" y1="681" x2="605" y2="681" />
+<rect x="341" y="648" width="224" height="161" />
+<line x1="341" y1="669" x2="565" y2="669" />
+<line x1="341" y1="681" x2="565" y2="681" />
 </g>
 <g stroke="none">
 <text x="342" y="657">JournalRecordIncludeDiagram</text>
 <text x="342" y="666">oovcde</text>
 <text x="342" y="678">+IncludeDiagramView mIncludeDiagram</text>
-<text x="342" y="690">+JournalRecordIncludeDiagram(IncDirDependencyMap</text>
-<text x="349" y="699">Reader incMap, JournalListener listener)</text>
-<text x="342" y="708">+~JournalRecordIncludeDiagram()</text>
-<text x="342" y="717">-getRecordTypeName()</text>
-<text x="342" y="726">-drawingAreaButtonPressEvent(&lt;&lt;typedef&gt;</text>
-<text x="349" y="735">&gt;GdkEventButton event)</text>
-<text x="342" y="744">-drawingAreaButtonReleaseEvent(&lt;&lt;typedef&gt;</text>
-<text x="349" y="753">&gt;GdkEventButton event)</text>
-<text x="342" y="762">-drawingAreaDrawEvent()</text>
-<text x="342" y="771">-saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="342" y="780">-exportFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="342" y="789">-loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="342" y="798">-isModified()</text>
+<text x="342" y="690">+JournalRecordIncludeDiagram(GuiOptions </text>
+<text x="349" y="699">guiOptions, IncDirDependencyMapReader </text>
+<text x="349" y="708">incMap, JournalListener listener)</text>
+<text x="342" y="717">+~JournalRecordIncludeDiagram()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="342" y="726">-getRecordTypeName()</text>
+<text x="342" y="735">-drawingAreaButtonPressEvent(GdkEventButt</text>
+<text x="349" y="744">on&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="342" y="753">-drawingAreaButtonReleaseEvent(GdkEventBu</text>
+<text x="349" y="762">tton&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="342" y="771">-drawingAreaDrawEvent()</text>
+<text x="342" y="780">-saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="342" y="789">-exportFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="342" y="798">-loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="342" y="807">-isModified()</text>
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="412" y1="107" x2="530" y2="52" />
-<circle cx="424" cy="101" r="5" style="fill:#ffffff" />
-<circle cx="439" cy="94" r="5" style="fill:#000000" />
-<circle cx="439" cy="94" r="2" style="fill:#000000" />
-<polygon points="412,107 420,107 424,102 417,100 412,107 " style="fill:#000000" />
-<line x1="363" y1="384" x2="398" y2="425" />
-<polygon points="363,384 363,393 365,387 372,386 363,384 " style="fill:#ffffff" />
-<circle cx="372" cy="394" r="5" style="fill:#ffffff" />
-<circle cx="382" cy="406" r="5" style="fill:#000000" />
-<circle cx="382" cy="406" r="2" style="fill:#000000" />
-<polygon points="363,384 364,392 372,394 371,387 363,384 " style="fill:#ffffff" />
-<line x1="156" y1="384" x2="99" y2="567" />
-<polygon points="156,384 148,389 155,387 159,393 156,384 " style="fill:#ffffff" />
-<circle cx="151" cy="397" r="5" style="fill:#ffffff" />
-<circle cx="147" cy="412" r="5" style="fill:#000000" />
-<circle cx="147" cy="412" r="2" style="fill:#000000" />
-<polygon points="156,384 150,390 152,397 157,392 156,384 " style="fill:#ffffff" />
-<line x1="412" y1="338" x2="636" y2="494" />
-<circle cx="423" cy="346" r="5" style="fill:#ffffff" />
-<circle cx="436" cy="355" r="5" style="fill:#000000" />
-<circle cx="436" cy="355" r="2" style="fill:#000000" />
-<polygon points="412,338 415,346 423,346 420,338 412,338 " style="fill:#ffffff" />
-<line x1="198" y1="384" x2="190" y2="476" />
-<circle cx="196" cy="397" r="5" style="fill:#ffffff" />
-<circle cx="195" cy="413" r="5" style="fill:#000000" />
-<circle cx="195" cy="413" r="2" style="fill:#000000" />
-<polygon points="198,384 193,391 197,397 201,392 198,384 " style="fill:#ffffff" />
-<line x1="412" y1="219" x2="462" y2="225" />
-<circle cx="425" cy="220" r="5" style="fill:#ffffff" />
-<circle cx="441" cy="222" r="5" style="fill:#000000" />
-<circle cx="441" cy="222" r="2" style="fill:#000000" />
-<line x1="255" y1="384" x2="291" y2="539" />
-<circle cx="258" cy="397" r="5" style="fill:#ffffff" />
-<line x1="267" y1="384" x2="320" y2="562" />
-<circle cx="270" cy="397" r="5" style="fill:#ffffff" />
-<line x1="279" y1="384" x2="353" y2="584" />
-<circle cx="283" cy="397" r="5" style="fill:#ffffff" />
-<line x1="279" y1="384" x2="359" y2="605" />
-<circle cx="283" cy="397" r="5" style="fill:#ffffff" />
-<line x1="289" y1="384" x2="391" y2="626" />
-<circle cx="294" cy="396" r="5" style="fill:#ffffff" />
-<line x1="304" y1="384" x2="436" y2="648" />
-<circle cx="310" cy="396" r="5" style="fill:#ffffff" />
-<line x1="561" y1="52" x2="587" y2="120" />
-<line x1="402" y1="451" x2="358" y2="539" />
-<polygon points="358,539 366,535 359,536 357,530 358,539 " style="fill:#ffffff" />
-<circle cx="364" cy="526" r="5" style="fill:#ffffff" />
-<circle cx="367" cy="520" r="2" style="fill:#ffffff" />
-<line x1="404" y1="451" x2="368" y2="562" />
-<polygon points="368,562 376,557 369,559 365,553 368,562 " style="fill:#ffffff" />
-<circle cx="372" cy="548" r="5" style="fill:#ffffff" />
-<circle cx="374" cy="542" r="2" style="fill:#ffffff" />
-<line x1="408" y1="451" x2="397" y2="605" />
-<polygon points="397,605 403,598 397,602 392,597 397,605 " style="fill:#ffffff" />
-<circle cx="397" cy="591" r="5" style="fill:#ffffff" />
-<circle cx="398" cy="584" r="2" style="fill:#ffffff" />
-<line x1="408" y1="451" x2="418" y2="626" />
-<polygon points="418,626 423,618 418,623 412,619 418,626 " style="fill:#ffffff" />
-<circle cx="417" cy="612" r="5" style="fill:#ffffff" />
-<circle cx="416" cy="605" r="2" style="fill:#ffffff" />
+<line x1="412" y1="109" x2="530" y2="52" />
+<circle cx="424" cy="102" r="5" style="fill:#ffffff" />
+<circle cx="439" cy="95" r="5" style="fill:#000000" />
+<circle cx="439" cy="95" r="2" style="fill:#000000" />
+<polygon points="412,109 420,109 424,103 417,102 412,109 " style="fill:#000000" />
+<line x1="369" y1="392" x2="398" y2="425" />
+<polygon points="369,392 369,401 371,395 378,394 369,392 " style="fill:#ffffff" />
+<circle cx="378" cy="402" r="5" style="fill:#ffffff" />
+<circle cx="382" cy="407" r="2" style="fill:#ffffff" />
+<circle cx="388" cy="414" r="5" style="fill:#000000" />
+<circle cx="388" cy="414" r="2" style="fill:#000000" />
+<polygon points="369,392 370,400 378,402 377,394 369,392 " style="fill:#ffffff" />
+<line x1="155" y1="392" x2="99" y2="567" />
+<polygon points="155,392 147,397 154,395 158,401 155,392 " style="fill:#ffffff" />
+<circle cx="150" cy="405" r="5" style="fill:#ffffff" />
+<circle cx="148" cy="412" r="2" style="fill:#ffffff" />
+<circle cx="145" cy="420" r="5" style="fill:#000000" />
+<circle cx="145" cy="420" r="2" style="fill:#000000" />
+<polygon points="155,392 149,398 151,405 156,400 155,392 " style="fill:#ffffff" />
+<line x1="412" y1="340" x2="635" y2="494" />
+<circle cx="423" cy="347" r="5" style="fill:#ffffff" />
+<circle cx="429" cy="351" r="2" style="fill:#ffffff" />
+<circle cx="436" cy="357" r="5" style="fill:#000000" />
+<circle cx="436" cy="357" r="2" style="fill:#000000" />
+<polygon points="412,340 415,348 423,347 420,340 412,340 " style="fill:#ffffff" />
+<line x1="198" y1="392" x2="190" y2="476" />
+<circle cx="196" cy="405" r="5" style="fill:#ffffff" />
+<circle cx="196" cy="412" r="2" style="fill:#ffffff" />
+<circle cx="195" cy="421" r="5" style="fill:#000000" />
+<circle cx="195" cy="421" r="2" style="fill:#000000" />
+<polygon points="198,392 193,399 197,405 201,400 198,392 " style="fill:#ffffff" />
+<line x1="412" y1="225" x2="462" y2="232" />
+<circle cx="425" cy="226" r="5" style="fill:#ffffff" />
+<circle cx="432" cy="227" r="2" style="fill:#ffffff" />
+<line x1="257" y1="392" x2="293" y2="539" />
+<circle cx="260" cy="405" r="5" style="fill:#ffffff" />
+<line x1="267" y1="392" x2="317" y2="562" />
+<circle cx="270" cy="405" r="5" style="fill:#ffffff" />
+<line x1="281" y1="392" x2="352" y2="584" />
+<circle cx="285" cy="405" r="5" style="fill:#ffffff" />
+<line x1="284" y1="392" x2="367" y2="605" />
+<circle cx="289" cy="405" r="5" style="fill:#ffffff" />
+<line x1="291" y1="392" x2="390" y2="626" />
+<circle cx="296" cy="404" r="5" style="fill:#ffffff" />
+<line x1="299" y1="392" x2="417" y2="648" />
+<circle cx="304" cy="404" r="5" style="fill:#ffffff" />
+<line x1="561" y1="52" x2="586" y2="120" style="stroke-dasharray: 4, 4 "/>
+<line x1="561" y1="52" x2="586" y2="120" style="stroke-dasharray: 4, 4 "/>
+<line x1="586" y1="120" x2="586" y2="107" />
+<line x1="586" y1="120" x2="577" y2="110" />
+<line x1="402" y1="451" x2="359" y2="539" />
+<polygon points="359,539 367,535 360,536 358,530 359,539 " style="fill:#ffffff" />
+<circle cx="365" cy="526" r="5" style="fill:#ffffff" />
+<circle cx="368" cy="520" r="2" style="fill:#ffffff" />
+<line x1="405" y1="451" x2="371" y2="562" />
+<polygon points="371,562 378,556 372,559 368,553 371,562 " style="fill:#ffffff" />
+<circle cx="375" cy="548" r="5" style="fill:#ffffff" />
+<circle cx="377" cy="541" r="2" style="fill:#ffffff" />
+<line x1="408" y1="451" x2="405" y2="605" />
+<polygon points="405,605 411,598 405,602 400,597 405,605 " style="fill:#ffffff" />
+<circle cx="405" cy="591" r="5" style="fill:#ffffff" />
+<circle cx="405" cy="584" r="2" style="fill:#ffffff" />
+<line x1="408" y1="451" x2="419" y2="626" />
+<polygon points="419,626 424,618 419,623 413,619 419,626 " style="fill:#ffffff" />
+<circle cx="418" cy="612" r="5" style="fill:#ffffff" />
+<circle cx="417" cy="605" r="2" style="fill:#ffffff" />
 <line x1="139" y1="593" x2="263" y2="630" />
 <polygon points="263,630 257,623 260,629 254,633 263,630 " style="fill:#ffffff" />
 <circle cx="249" cy="625" r="5" style="fill:#ffffff" />
 <circle cx="242" cy="623" r="2" style="fill:#ffffff" />
-<line x1="129" y1="593" x2="341" y2="674" />
-<polygon points="341,674 336,666 338,673 332,676 341,674 " style="fill:#ffffff" />
-<circle cx="327" cy="669" r="5" style="fill:#ffffff" />
-<circle cx="321" cy="666" r="2" style="fill:#ffffff" />
-<line x1="675" y1="494" x2="651" y2="362" />
-<circle cx="653" cy="375" r="5" style="fill:#ffffff" />
-<circle cx="656" cy="391" r="5" style="fill:#000000" />
-<circle cx="656" cy="391" r="2" style="fill:#000000" />
-<polygon points="651,362 648,370 653,375 656,368 651,362 " style="fill:#ffffff" />
-<line x1="575" y1="556" x2="421" y2="602" />
-<circle cx="434" cy="597" r="5" style="fill:#ffffff" />
-<circle cx="441" cy="595" r="2" style="fill:#ffffff" />
-<line x1="591" y1="556" x2="454" y2="604" />
-<circle cx="467" cy="599" r="5" style="fill:#ffffff" />
-<circle cx="473" cy="597" r="2" style="fill:#ffffff" />
+<line x1="126" y1="593" x2="341" y2="682" />
+<polygon points="341,682 336,674 338,681 332,684 341,682 " style="fill:#ffffff" />
+<circle cx="328" cy="676" r="5" style="fill:#ffffff" />
+<circle cx="321" cy="673" r="2" style="fill:#ffffff" />
+<line x1="675" y1="494" x2="653" y2="380" />
+<circle cx="655" cy="393" r="5" style="fill:#ffffff" />
+<circle cx="656" cy="400" r="2" style="fill:#ffffff" />
+<circle cx="658" cy="409" r="5" style="fill:#000000" />
+<circle cx="658" cy="409" r="2" style="fill:#000000" />
+<polygon points="653,380 651,388 655,393 658,386 653,380 " style="fill:#ffffff" />
+<line x1="576" y1="556" x2="427" y2="600" />
+<circle cx="440" cy="596" r="5" style="fill:#ffffff" />
+<circle cx="447" cy="594" r="2" style="fill:#ffffff" />
+<line x1="601" y1="556" x2="456" y2="613" />
+<circle cx="469" cy="607" r="5" style="fill:#ffffff" />
+<circle cx="475" cy="605" r="2" style="fill:#ffffff" />
 <line x1="614" y1="556" x2="499" y2="610" />
 <circle cx="511" cy="604" r="5" style="fill:#ffffff" />
 <circle cx="518" cy="601" r="2" style="fill:#ffffff" />
-<line x1="629" y1="556" x2="492" y2="639" />
-<circle cx="503" cy="631" r="5" style="fill:#ffffff" />
-<circle cx="509" cy="628" r="2" style="fill:#ffffff" />
-<line x1="635" y1="556" x2="527" y2="630" />
-<circle cx="538" cy="622" r="5" style="fill:#ffffff" />
-<circle cx="544" cy="618" r="2" style="fill:#ffffff" />
-<line x1="648" y1="556" x2="552" y2="648" />
-<circle cx="562" cy="638" r="5" style="fill:#ffffff" />
-<circle cx="567" cy="633" r="2" style="fill:#ffffff" />
-<line x1="200" y1="502" x2="232" y2="539" />
-<circle cx="222" cy="528" r="5" style="fill:#ffffff" />
-<circle cx="218" cy="523" r="2" style="fill:#ffffff" />
-<line x1="532" y1="362" x2="388" y2="539" />
-<circle cx="513" cy="385" r="5" style="fill:#ffffff" />
-<circle cx="513" cy="385" r="2" style="fill:#ffffff" />
-<polygon points="532,362 520,368 528,375 532,362 " style="fill:#ffffff" />
-<circle cx="396" cy="528" r="5" style="fill:#ffffff" />
-<line x1="544" y1="362" x2="400" y2="562" />
-<circle cx="526" cy="386" r="5" style="fill:#ffffff" />
-<circle cx="526" cy="386" r="2" style="fill:#ffffff" />
-<polygon points="544,362 533,369 541,375 544,362 " style="fill:#ffffff" />
-<circle cx="408" cy="550" r="5" style="fill:#ffffff" />
-<line x1="559" y1="362" x2="428" y2="584" />
-<circle cx="543" cy="387" r="5" style="fill:#ffffff" />
-<circle cx="543" cy="387" r="2" style="fill:#ffffff" />
-<polygon points="559,362 548,370 558,375 559,362 " style="fill:#ffffff" />
-<circle cx="435" cy="571" r="5" style="fill:#ffffff" />
-<line x1="568" y1="362" x2="440" y2="605" />
-<circle cx="554" cy="388" r="5" style="fill:#ffffff" />
-<circle cx="554" cy="388" r="2" style="fill:#ffffff" />
-<polygon points="568,362 558,370 567,375 568,362 " style="fill:#ffffff" />
-<circle cx="446" cy="592" r="5" style="fill:#ffffff" />
-<line x1="576" y1="362" x2="456" y2="626" />
-<circle cx="563" cy="389" r="5" style="fill:#ffffff" />
-<circle cx="563" cy="389" r="2" style="fill:#ffffff" />
-<polygon points="576,362 566,371 576,375 576,362 " style="fill:#ffffff" />
-<circle cx="461" cy="613" r="5" style="fill:#ffffff" />
-<line x1="591" y1="362" x2="497" y2="648" />
-<circle cx="581" cy="390" r="5" style="fill:#ffffff" />
-<circle cx="581" cy="390" r="2" style="fill:#ffffff" />
-<polygon points="591,362 582,372 592,375 591,362 " style="fill:#ffffff" />
-<circle cx="501" cy="634" r="5" style="fill:#ffffff" />
+<line x1="632" y1="556" x2="516" y2="631" />
+<circle cx="527" cy="623" r="5" style="fill:#ffffff" />
+<circle cx="533" cy="619" r="2" style="fill:#ffffff" />
+<line x1="636" y1="556" x2="529" y2="632" />
+<circle cx="540" cy="623" r="5" style="fill:#ffffff" />
+<circle cx="546" cy="619" r="2" style="fill:#ffffff" />
+<line x1="646" y1="556" x2="542" y2="648" />
+<circle cx="552" cy="638" r="5" style="fill:#ffffff" />
+<circle cx="557" cy="634" r="2" style="fill:#ffffff" />
+<line x1="200" y1="502" x2="233" y2="539" />
+<circle cx="223" cy="528" r="5" style="fill:#ffffff" />
+<circle cx="219" cy="523" r="2" style="fill:#ffffff" />
+<line x1="524" y1="380" x2="392" y2="539" />
+<circle cx="504" cy="403" r="5" style="fill:#ffffff" />
+<circle cx="504" cy="403" r="2" style="fill:#ffffff" />
+<polygon points="524,380 512,386 520,393 524,380 " style="fill:#ffffff" />
+<circle cx="400" cy="528" r="5" style="fill:#ffffff" />
+<line x1="539" y1="380" x2="410" y2="562" />
+<circle cx="521" cy="404" r="5" style="fill:#ffffff" />
+<circle cx="521" cy="404" r="2" style="fill:#ffffff" />
+<polygon points="539,380 528,387 536,393 539,380 " style="fill:#ffffff" />
+<circle cx="418" cy="550" r="5" style="fill:#ffffff" />
+<line x1="552" y1="380" x2="429" y2="584" />
+<circle cx="536" cy="405" r="5" style="fill:#ffffff" />
+<circle cx="536" cy="405" r="2" style="fill:#ffffff" />
+<polygon points="552,380 541,388 550,393 552,380 " style="fill:#ffffff" />
+<circle cx="436" cy="572" r="5" style="fill:#ffffff" />
+<line x1="566" y1="380" x2="452" y2="605" />
+<circle cx="552" cy="406" r="5" style="fill:#ffffff" />
+<circle cx="552" cy="406" r="2" style="fill:#ffffff" />
+<polygon points="566,380 556,389 565,393 566,380 " style="fill:#ffffff" />
+<circle cx="458" cy="592" r="5" style="fill:#ffffff" />
+<line x1="571" y1="380" x2="459" y2="626" />
+<circle cx="558" cy="407" r="5" style="fill:#ffffff" />
+<circle cx="558" cy="407" r="2" style="fill:#ffffff" />
+<polygon points="571,380 561,389 571,393 571,380 " style="fill:#ffffff" />
+<circle cx="464" cy="613" r="5" style="fill:#ffffff" />
+<line x1="582" y1="380" x2="482" y2="648" />
+<circle cx="571" cy="408" r="5" style="fill:#ffffff" />
+<circle cx="571" cy="408" r="2" style="fill:#ffffff" />
+<polygon points="582,380 573,390 582,393 582,380 " style="fill:#ffffff" />
+<circle cx="486" cy="634" r="5" style="fill:#ffffff" />
 </g>
 </svg>

@@ -12,17 +12,6 @@
 #include "OperationGraph.h"
 #include <set>
 
-struct DrawString
-    {
-    DrawString()
-        {}
-    DrawString(GraphPoint p, OovStringRef const s):
-        pos(p), str(s)
-        {}
-    GraphPoint pos;
-    OovString str;
-    };
-
 /// Used to draw an operation graph.
 class OperationDrawer
     {

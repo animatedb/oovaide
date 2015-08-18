@@ -13,6 +13,11 @@
 #include "Indenter.h"
 #include "History.h"
 
+#define USE_NEW_TIME 1
+#if(USE_NEW_TIME)
+//#define __cplusplus 201403L
+#include <chrono>
+#endif
 
 // This is written so that when the completion list is visible, it should
 // have focus. List navigation keys will be used to move in the list,
@@ -23,7 +28,10 @@ class CompletionList
         CompletionList():
             mEditView(nullptr), mTopWidget(nullptr), mTextBuffer(nullptr),
             mStartIdentifierOffset(0), mCompletionTriggerPointOffset(0),
-            mLastKey(0), mLastNonModifierKey(0)
+            mLastKey(0), mLastNonModifierKey(0), mGettingCompletionData(false)
+#if(!USE_NEW_TIME)
+            , mGettingCompletionDataStartTime(0)
+#endif
             {}
         void init(GtkTextBuffer *textBuffer);
         void positionCompletionWindow();
@@ -36,6 +44,9 @@ class CompletionList
         void lostFocus();
         int getCompletionTriggerPointOffset()
             { return mCompletionTriggerPointOffset; }
+        bool isGettingCompletionData() const
+            { return mGettingCompletionData; }
+        bool okToShowList() const;
 
     private:
         FileEditView *mEditView;
@@ -46,7 +57,17 @@ class CompletionList
         int mCompletionTriggerPointOffset;
         int mLastKey;
         int mLastNonModifierKey;
+        bool mGettingCompletionData;
+#if(USE_NEW_TIME)
+        /// https://www.eclipse.org/forums/index.php/t/490066/
+        std::chrono::high_resolution_clock::time_point mGettingCompletionDataStartTime;
+#else
+        time_t mGettingCompletionDataStartTime;
+#endif
         void setWindowPosition(GdkWindow *compWin, int screenWidth);
+        void quitGettingCompletionData()
+            { mGettingCompletionData = false; }
+        void startGettingCompletionData();
     };
 
 class FileEditViewListener
@@ -147,7 +168,9 @@ class FileEditView
                 gchar *text, gint len);
         void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
                 GtkTextIter *end);
-        bool handleIndentKeys(GdkEvent *event);
+        /// Used to process keys that require special handling.  These are
+        /// things like code completion, indenting, home key, etc.
+        bool handleKeys(GdkEvent *event);
         std::string getFilePath() const
             { return mFilePath; }
         // Only the name part of the file path

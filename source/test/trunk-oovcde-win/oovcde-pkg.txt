@@ -8,6 +8,6 @@ Pkg-llvm-Root|/Program Files/LLVM/
 Pkg-llvm-l|libclang.lib
 Pkg-mingw-w64-I|include;/include/c++;/include/c++/i686-w64-mingw32
 Pkg-mingw-w64-L|lib
-Pkg-mingw-w64-Root|/Program Files/mingw-w64/i686-4.9.2-posix-dwarf-rt_v3-rev1/mingw32/i686-w64-mingw32/
+Pkg-mingw-w64-Root|/Program Files/mingw-w64/i686-5.1.0-posix-dwarf-rt_v4-rev0/mingw32/i686-w64-mingw32/
 Pkg-mingw-w64-l|*
 PkgNames|gtk+-3.0;llvm;mingw-w64;

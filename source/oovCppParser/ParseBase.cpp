@@ -7,8 +7,9 @@
 
 
 #include "ParseBase.h"
-#include <algorithm>
+#include "ModelObjects.h"
 #include "Debug.h"
+#include <algorithm>
 
 
 
@@ -260,10 +261,15 @@ void appendCursorTokenString(CXCursor cursor, std::string &str, bool endConditio
     clang_disposeTokens(tu, tokens, nTokens);
     }
 
-void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers)
+MethodQualifiers::MethodQualifiers(CXCursor cursor)
+	{
+	getMethodQualifiers(cursor);
+	}
+
+void MethodQualifiers::getMethodQualifiers(CXCursor cursor)
     {
     CXTranslationUnit tu = clang_Cursor_getTranslationUnit(cursor);
-    qualifiers.clear();
+    mQualifierStrings.clear();
 
     CXSourceRange range = clang_getCursorExtent(cursor);
     CXToken* tokens;
@@ -289,16 +295,21 @@ void getMethodQualifiers(CXCursor cursor, std::vector<std::string> &qualifiers)
         else if (clang_getTokenKind(tokens[i]) == CXToken_Keyword &&
              !insideBrackets)
             {
-            qualifiers.push_back(token);
+            mQualifierStrings.push_back(token);
             }
         }
     }
 
-bool isMethodConst(CXCursor cursor)
+bool MethodQualifiers::isMethodConst() const
     {
-    std::vector<std::string> quals;
-    getMethodQualifiers(cursor, quals);
-    return(std::find(quals.begin(), quals.end(), "const") != quals.end());
+    return(std::find(mQualifierStrings.begin(), mQualifierStrings.end(),
+    		"const") != mQualifierStrings.end());
+    }
+
+bool MethodQualifiers::isMethodVirtual() const
+    {
+    return(std::find(mQualifierStrings.begin(), mQualifierStrings.end(),
+    		"virtual") != mQualifierStrings.end());
     }
 
 // clang_isConstQualifiedType returns false for a type that has a type spelling like "const type &"
@@ -332,8 +343,38 @@ bool isConstType(CXType cursType)
 
 std::string getFullBaseTypeName(CXCursor cursor)
     {
-    CXType cursorType = clang_getCursorType(cursor);
-    return getFullBaseTypeName(cursorType);
+    std::string name;
+    if(cursor.kind == CXCursor_ClassTemplate || cursor.kind == CXCursor_TemplateRef)
+        {
+        CXStringDisposer sp(clang_getCursorSpelling(cursor));
+        name = sp;
+        name += '<';
+        for(int i=0; i<50; i++)
+            {
+            CXCursor child = getNthChildCursor(cursor, i);
+            if(child.kind == CXCursor_TemplateTypeParameter)
+                {
+                CXStringDisposer parm(clang_getCursorSpelling(child));
+                if(i != 0)
+                    {
+                    name += ',';
+                    }
+                name += parm;
+                }
+            else
+                {
+                break;
+                }
+            }
+        name += '>';
+        name += ModelType::getTemplateStereotype();
+        }
+    else
+        {
+        CXType cursorType = clang_getCursorType(cursor);
+        name = getFullBaseTypeName(cursorType);
+        }
+    return name;
     }
 
 size_t getFunctionNameFromMemberRefExpr(std::string &expr)
@@ -389,7 +430,7 @@ std::string getFullBaseTypeName(CXType cursorType)
     CXStringDisposer spell = clang_getTypeSpelling(baseType);
     if(baseType.kind == CXType_Typedef)
         {
-        spell.insert(0, "<<typedef>> ");
+        spell += ModelType::getTypedefStereotype();
         }
     return spell;
     }

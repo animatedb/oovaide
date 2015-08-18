@@ -460,13 +460,13 @@ void ZoneDrawer::drawGraph(DiagramDrawer &drawer)
                 }
             }
         drawer.groupShapes(false, 0, 0);
-        drawer.groupText(true);
+        drawer.groupText(true, false);
         drawComponentText(drawer);
         if(mDrawNodeText && mGraph->getDrawOptions().mDrawAllClasses)
             {
             drawNodeText(drawer);
             }
-        drawer.groupText(false);
+        drawer.groupText(false, false);
         }
     }
 

@@ -214,7 +214,7 @@ void XmiParser::onOpenElem(char const * const name, int len)
             break;
 
         case ET_Function:
-            elem.mModelObject = new ModelOperation("", Visibility(), true);
+            elem.mModelObject = new ModelOperation("", Visibility(), true, false);
             break;
 
         case ET_FuncParams:
@@ -490,6 +490,8 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
                     oper->setAccess(getAccess(attrVal.c_str()));
                 else if(strcmp(attrName.c_str(), "const") == 0)
                     oper->setConst(isTrue(attrVal));
+                else if(strcmp(attrName.c_str(), "virt") == 0)
+                    oper->setVirtual(isTrue(attrVal));
                 else if(strcmp(attrName.c_str(), "line") == 0)
                     {
                     if(mModel.mModules.size() > 0)
@@ -499,7 +501,6 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
                         }
                     oper->setLineNum(getInt(attrVal.c_str()));
                     }
-#if(OPER_RET_TYPE)
                 else if(strcmp(attrName.c_str(), "ret") == 0)
                     {
                     ModelTypeRef &retType = oper->getReturnType();
@@ -515,7 +516,6 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
                     ModelTypeRef retType = oper->getReturnType();
                     retType.setRefer(isTrue(attrVal));
                     }
-#endif
                 }
                 break;
 
@@ -772,9 +772,7 @@ void XmiParser::updateTypeIndices()
                     {
                     updateDeclTypeIndices(*vd);
                     }
-#if(OPER_RET_TYPE)
                 updateDeclTypeIndices(oper->getReturnType());
-#endif
                 }
             }
         }

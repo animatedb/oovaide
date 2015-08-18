@@ -35,11 +35,13 @@ struct ClassRelationDrawOptions
     {
     ClassRelationDrawOptions():
         drawOovSymbols(true), drawOperParamRelations(true),
-        drawOperBodyVarRelations(true), drawRelationKey(true)
+        drawOperBodyVarRelations(true), drawTemplateRelations(true),
+        drawRelationKey(true)
         {}
     bool drawOovSymbols;
     bool drawOperParamRelations;
     bool drawOperBodyVarRelations;
+    bool drawTemplateRelations;
     bool drawRelationKey;
     };
 
@@ -102,10 +104,8 @@ enum eDiagramConnectType
     {
     ctNone = 0,
     ctAggregation = 0x01, ctIneritance = 0x02, ctAssociation = 0x04,
+    ctTemplateDependency = 0x80,
     ctFuncParam = 0x10, ctFuncVar = 0x20,
-
-    ctObjectRelationMask = 0x0F,
-    ctFuncReferenceMask = 0xF0
     };
 
 /// Defines a connection between two class nodes
@@ -123,8 +123,7 @@ struct ClassConnectItem
         {}
     bool hasAccess() const
         {
-        return (mConnectType != ctAssociation && mConnectType != ctFuncParam &&
-                mConnectType != ctFuncVar);
+        return (mConnectType & ctAggregation || mConnectType & ctIneritance);
         }
     // For aggregation, node1 is the owner
     // For inheritance, node1 is the parent
@@ -180,7 +179,8 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
             AN_MemberChildren=0x04, AN_MemberUsers=0x08,
             AN_FuncParamsUsing=0x10, AN_FuncParamsUsers=0x20,
             AN_FuncBodyUsing=0x40, AN_FuncBodyUsers=0x80,
-            AN_All=0xFF,
+            AN_Templates=0x100,
+            AN_All=0xFFF,
             AN_AllStandard=AN_Superclass | AN_Subclass | AN_MemberChildren | AN_MemberUsers,
             AN_ClassesAndChildren=AN_Superclass | AN_Subclass | AN_MemberChildren
         };

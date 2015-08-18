@@ -129,9 +129,9 @@ void IncludeDrawer::drawGraph(DiagramDrawer &drawer)
         drawConnections(drawer);
         drawer.groupShapes(false, 0, 0);
 
-        drawer.groupText(true);
+        drawer.groupText(true, false);
         drawNodeText(drawer);
-        drawer.groupText(false);
+        drawer.groupText(false, false);
         }
     }
 

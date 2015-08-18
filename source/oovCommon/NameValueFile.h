@@ -27,6 +27,9 @@
 #include <set>
 #include "File.h"
 
+
+/// This is just a collection of a few static functions for conversion of
+/// collections to and from strings.
 class CompoundValueRef
     {
     public:
@@ -62,15 +65,19 @@ class CompoundValue:public OovStringVec
                 }
             }
         static const size_t npos = static_cast<size_t>(-1);
+        /// Add a string argument to the collection.
         void addArg(OovStringRef const arg)
             { push_back(arg); }
+        /// Convert the collection to a string with delimiters between
+        /// the items.
         /// The delimiter is \n for editing in an editor, and a semicolon
         /// for passing on the command line or saved in the file.
         OovString getAsString(char delimiter=';') const
             { return CompoundValueRef::getAsString(*this, delimiter); }
+        /// Parse a string with delimiters into the collection.
         void parseString(OovStringRef const str, char delimiter=';')
             { CompoundValueRef::parseStringRef(str, *this, delimiter); }
-        // Returns index to found string, else npos.
+        /// Returns index to found string, else npos.
         size_t find(OovStringRef const str);
         /// WARNING - This should not be saved to the options file.
         /// This is for passing command line arguments in Windows/DOS.
@@ -79,25 +86,63 @@ class CompoundValue:public OovStringVec
         static void quoteCommandLineArg(std::string &str);
     };
 
+
+/// This holds a collection of named value items, where each value is a string.
+/// Each string value can be a compound value.
 class NameValueRecord
     {
     public:
         NameValueRecord():
             mSaveNullValues(false)
             {}
+
+        /// This is the delimiter between the name and value string.
+        /// The delimiter for each name, value item is a '\n'.
         static char const mapDelimiter = '|';
+
+        /// Clear all values.
         void clear()
             { mNameValues.clear(); }
+
+        /// Append one name, value item.
+        /// @param optionName The name of the item.
+        /// @param value The value of the item.
         void setNameValue(OovStringRef const optionName, OovStringRef const value);
+
+        /// Get a value associated with the name
         OovString getValue(OovStringRef const optionName) const;
+
+        /// Set a name value item, where the value is a bool.
+        /// @param optionName The name of the item.
+        /// @param val The boolean value.
         void setNameValueBool(OovStringRef const optionName, bool val);
+
+        /// Get the value of an item that is a boolean.
+        /// @param optionName The name of the item to look up.
         bool getValueBool(OovStringRef const optionName) const;
+
+        /// Get all of the items in the collection.
         const std::map<OovString, OovString> &getNameValues() const
             { return mNameValues; }
+
+        /// Write all items to the file pointer.
+        /// @param fp The file pointer to write to.
         void write(FILE *fp);
+
+        /// Read all items from the file pointer.
+        /// @param fp The file pointer to read from.
         void read(FILE *fp);
+
+        /// Take a string with '\n' and add the items to the collection.
+        /// @param buf The buffer to read and add to the collection.
         void insertBufToMap(OovString const buf);
+
+        /// Read the items and for each item, insert a '\n' as the delimiter.
+        /// @param buf The buffer to write from the collection.
         void readMapToBuf(OovString &buf);
+
+        /// Set a flag to indicate whether to save empty items.
+        /// @param save Set true to save empty items.
         void saveNullValues(bool save)
             { mSaveNullValues = save; }
 
@@ -108,9 +153,10 @@ class NameValueRecord
         void insertLine(OovString line);
     };
 
-/// This can store a bunch of options in a file. Each option is on a separate line
-/// and has a name and value separated by a colon.  Anything after the first
-/// colon is a value, which means the value can contain colons.
+/// This can store a bunch of items in a file. Each item is on a separate line
+/// and has a name and value separated by a separator.  Anything after the first
+/// separator is a value, which means the value can contain characters that
+/// are the same as the separator.
 class NameValueFile:public NameValueRecord
     {
     public:
@@ -120,26 +166,42 @@ class NameValueFile:public NameValueRecord
             {
             setFilename(fn);
             }
+        /// Get the file name of the file.
         const std::string &getFilename() const
             { return mFilename; }
+        /// Set the file name of the file.
         void setFilename(OovStringRef const fn)
             { mFilename = fn; }
+
+        /// Read the file into the map of items.
         bool readFile();
+        /// Write the file from the map of items.
         bool writeFile();
-        // These do not use the filename.
+
+        /// Read the file using the file poniter. This does not use the filename.
         void readFile(FILE *fp);
+        /// Write the file using the file poniter. This does not use the filename.
         void writeFile(FILE *fp);
+        /// Seek to the beginning of the file.
         void seekStart(FILE *fp)
             { fseek(fp, 0, SEEK_SET); }
 
+        /// Read the file using shared file access.  This may take some time
+        /// if the file is being written.
         bool readFileShared();
-        // These functions must be used together and assume that the current map
-        // can be discarded and reread.
-        // Clear and update map by reading current file, and lock/open file.
-        // THIS WILL NOT SHRINK FILES!
+
+        /// Clear and update map by reading current file, and lock/open file.
+        /// This function is meant to be used with the writeFileExclusive
+        /// funtion.  This function is used first to read the existing file
+        /// into the map. Then the map can be modified, and finally the file
+        /// is written with writeFileExclusive.
         /// @todo - This does not need to reread files if they haven't changed
         /// since the first read.
         bool writeFileExclusiveReadUpdate(SharedFile &file);
+
+        /// Write exclusive means that a normal file write is performed with
+        /// no sharing, and it will fail if the file is open somewhere else.
+        /// THIS WILL NOT SHRINK FILES!
         bool writeFileExclusive(SharedFile &file);
 
     private:

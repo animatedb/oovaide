@@ -154,9 +154,7 @@ int OovComplexity::getOperationComplexity(const ModelOperation *oper)
             complexity += getDeclComplexity(param->getDeclType());
             }
         }
-#if(OPER_RET_TYPE)
     complexity += getDeclComplexity(oper->getReturnType().getDeclType());
-#endif
     return complexity;
     }
 

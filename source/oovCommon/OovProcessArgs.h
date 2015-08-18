@@ -17,14 +17,20 @@ class OovProcessChildArgs
         OovProcessChildArgs()
             { clearArgs(); }
 
-        // WARNING: The arg[0] must be added.
+        /// Add command line arguments for the child process.
+        /// WARNING: The arg[0] must be added.
         void addArg(OovStringRef const argStr);
+        /// Erase all arguments.
         void clearArgs()
             { mArgStrings.clear(); }
+        /// Get all arguments. The last array item is a null.
         char const * const *getArgv() const;
+        /// Get the number of child arguments.
         size_t getArgc() const
             { return mArgStrings.size(); }
+        /// Get the arguments as a single string.
         OovString getArgsAsStr() const;
+        ///  Print all arguments to a file.
         void printArgs(FILE *fh) const;
 
     private:

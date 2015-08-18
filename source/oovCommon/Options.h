@@ -22,6 +22,7 @@
 #define OptGuiShowPackageName "ShowPackageName"
 
 #define OptGuiShowOovSymbols "ShowOovSymbols"
+#define OptGuiShowTemplateRelations "ShowTemplateRelations"
 #define OptGuiShowOperParamRelations "ShowOperParamRelations"
 #define OptGuiShowOperBodyVarRelations "ShowOperBodyVarRelations"
 #define OptGuiShowRelationKey "ShowRelationKey"
@@ -39,6 +40,8 @@ class OptionsDefaults
         OptionsDefaults(ProjectReader &project):
             mProject(project)
             {}
+        /// This sets the default executable names and compiler arguments by
+        /// searching the environment and directories.
         void setDefaultOptions();
 
     private:
@@ -51,7 +54,9 @@ class GuiOptions:public NameValueFile
     public:
         OovString getEditorPath() const
             { return getValue(OptGuiEditorPath); }
+        /// This sets the default GUI (graph) options and the editor path.
         void setDefaultOptions();
+        /// Uses the path for the GUI options to read the options.
         void read();
 
     private:

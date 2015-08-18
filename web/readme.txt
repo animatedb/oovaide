@@ -35,12 +35,11 @@ Building - Windows Versions:
 		Packages button	in the Analysis/Settings dialog.
 
 		From: http://mingw-w64.sourceforge.net/download.php
-		File: i686-4.92-release-posix-dwarf-rt_v3-rev1
+		File: i686-5.1.0-release-posix-dwarf-rt_v4-rev0
 		Or:
 		From: http://sourceforge.net/projects/mingwbuilds/
 		File: mingw-builds-install.exe
 			Install to C:\Program Files\mingw-builds
-			Using x32-4.8.1-posix-dwarf-rev5
 
 	MinGW:
 		From: http://sourceforge.net/projects/mingw/files/

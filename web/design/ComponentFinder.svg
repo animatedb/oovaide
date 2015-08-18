@@ -31,46 +31,56 @@
 <text x="29" y="546">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="30" y="26" width="230" height="242" />
-<line x1="30" y1="47" x2="260" y2="47" />
-<line x1="30" y1="113" x2="260" y2="113" />
+<rect x="30" y="26" width="254" height="296" />
+<line x1="30" y1="47" x2="284" y2="47" />
+<line x1="30" y1="140" x2="284" y2="140" />
 </g>
 <g stroke="none">
 <text x="31" y="35">ComponentFinder</text>
 <text x="31" y="44">oovBuilder</text>
-<text x="31" y="56">-&lt;&lt;typedef&gt;&gt;string mRootPathName</text>
+<text x="31" y="56">-string&lt;&lt;typedef&gt;&gt; mRootPathName</text>
 <text x="31" y="65">-OovStringVec mExcludeDirs</text>
 <text x="31" y="74">-ScannedComponentsInfo mScannedInfo</text>
 <text x="31" y="83">-ProjectReader mProject</text>
-<text x="31" y="92">-ComponentTypesFile mComponentTypesFile</text>
-<text x="31" y="101">-ComponentsFile mComponentsFile</text>
-<text x="31" y="110">-Package mScanningPackage</text>
-<text x="31" y="122">+readProject(OovStringRef oovProjectDir,</text>
-<text x="38" y="131"> OovStringRef buildConfigName)</text>
-<text x="31" y="140">+scanProject()</text>
-<text x="31" y="149">+scanExternalProject(OovStringRef externalRoo</text>
-<text x="38" y="158">tSrch, Package pkg)</text>
-<text x="31" y="167">+addBuildPackage(Package pkg)</text>
-<text x="31" y="176">+saveProject(OovStringRef compFn)</text>
-<text x="31" y="185">+getComponentName(OovStringRef filePath)</text>
-<text x="31" y="194">+getAllIncludeDirs()</text>
-<text x="31" y="203">-processFile(OovStringRef filePath)</text>
-<text x="31" y="212">+ComponentFinder()</text>
-<text x="31" y="221">+getProject()</text>
-<text x="31" y="230">+getProject()</text>
-<text x="31" y="239">+getComponentTypesFile()</text>
-<text x="31" y="248">+getComponentsFile()</text>
-<text x="31" y="257">+getScannedInfo()</text>
-<text x="31" y="266">+makeFileName(OovStringRef projName)</text>
+<text x="31" y="92">-ProjectBuildArgs mProjectBuildArgs</text>
+<text x="31" y="101">-ComponentTypesFile mComponentTypesFile</text>
+<text x="31" y="110">-ComponentsFile mComponentsFile</text>
+<text x="31" y="119">-Package mScanningPackage</text>
+<text x="31" y="128">-bool mAddIncs</text>
+<text x="31" y="137">-bool mAddLibs</text>
+<text x="31" y="149">+readProject(OovStringRef oovProjectDir, </text>
+<text x="38" y="158">OovStringRef buildConfigName)</text>
+<text x="31" y="167">+scanProject()</text>
+<text x="31" y="176">+scanExternalProject(OovStringRef externalRootSrch</text>
+<text x="38" y="185">, Package pkg)</text>
+<text x="31" y="194">+addBuildPackage(Package pkg)</text>
+<text x="31" y="203">+saveProject(OovStringRef compFn)</text>
+<text x="31" y="212">+getComponentName(OovStringRef filePath)</text>
+<text x="31" y="221">+getAllIncludeDirs()</text>
+<text x="31" y="239">+ComponentFinder()</text>
+<text x="31" y="248">+doesBuildPackageExist(OovStringRef pkgName)</text>
+<text x="31" y="257">+getProject()</text>
+<text x="31" y="266">+getProject()</text>
+<text x="31" y="275">+getProjectBuildArgs()</text>
+<text x="31" y="284">+getProjectBuildArgs()</text>
+<text x="31" y="293">+getComponentTypesFile()</text>
+<text x="31" y="302">+getComponentsFile()</text>
+<text x="31" y="311">+getScannedInfo()</text>
+<text x="31" y="320">+makeFileName(OovStringRef projName)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="31" y="230">-processFile(OovStringRef filePath)</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="209" y="345" width="69" height="26" />
-<line x1="209" y1="366" x2="278" y2="366" />
-<line x1="209" y1="369" x2="278" y2="369" />
+<rect x="224" y="363" width="69" height="26" />
+<line x1="224" y1="384" x2="293" y2="384" />
+<line x1="224" y1="387" x2="293" y2="387" />
 </g>
 <g stroke="none">
-<text x="210" y="354">OovStringVec</text>
-<text x="210" y="363">oovCommon</text>
+<text x="225" y="372">OovStringVec</text>
+<text x="225" y="381">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="455" y="27" width="250" height="170" />
@@ -97,23 +107,29 @@
 <text x="456" y="186">+addProjectIncludePath(OovStringRef path)</text>
 <text x="456" y="195">+getProjectIncludeDirs()</text>
 </g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="186" y="429" width="71" height="26" />
-<line x1="186" y1="450" x2="257" y2="450" />
-<line x1="186" y1="453" x2="257" y2="453" />
-</g>
-<g stroke="none">
-<text x="187" y="438">ProjectReader</text>
-<text x="187" y="447">oovCommon</text>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="320" y="306" width="104" height="26" />
-<line x1="320" y1="327" x2="424" y2="327" />
-<line x1="320" y1="330" x2="424" y2="330" />
+<rect x="186" y="433" width="71" height="26" />
+<line x1="186" y1="454" x2="257" y2="454" />
+<line x1="186" y1="457" x2="257" y2="457" />
 </g>
 <g stroke="none">
-<text x="321" y="315">ComponentTypesFile</text>
-<text x="321" y="324">oovCommon</text>
+<text x="187" y="442">ProjectReader</text>
+<text x="187" y="451">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="327" y="308" width="104" height="26" />
+<line x1="327" y1="329" x2="431" y2="329" />
+<line x1="327" y1="332" x2="431" y2="332" />
+</g>
+<g stroke="none">
+<text x="328" y="317">ComponentTypesFile</text>
+<text x="328" y="326">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="335" y="225" width="80" height="26" />
@@ -124,14 +140,18 @@
 <text x="336" y="234">ComponentsFile</text>
 <text x="336" y="243">oovCommon</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="80" y="327" width="63" height="26" />
-<line x1="80" y1="348" x2="143" y2="348" />
-<line x1="80" y1="351" x2="143" y2="351" />
+<rect x="32" y="361" width="63" height="26" />
+<line x1="32" y1="382" x2="95" y2="382" />
+<line x1="32" y1="385" x2="95" y2="385" />
 </g>
 <g stroke="none">
-<text x="81" y="336">Package</text>
-<text x="81" y="345">oovCommon</text>
+<text x="33" y="370">Package</text>
+<text x="33" y="379">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="326" y="28" width="63" height="26" />
@@ -142,15 +162,19 @@
 <text x="327" y="37">dirRecurser</text>
 <text x="327" y="46">oovCommon</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="484" y="262" width="219" height="35" />
-<line x1="484" y1="292" x2="703" y2="292" />
-<line x1="484" y1="295" x2="703" y2="295" />
+<rect x="484" y="273" width="219" height="35" />
+<line x1="484" y1="303" x2="703" y2="303" />
+<line x1="484" y1="306" x2="703" y2="306" />
 </g>
 <g stroke="none">
-<text x="485" y="271">std::map&lt;OovString,ScannedComponent,std::</text>
-<text x="485" y="280">  less&lt;OovString&gt;,std::allocator&lt;std::pair&lt;</text>
-<text x="485" y="289">  OovString,ScannedComponent&gt; &gt; &gt;</text>
+<text x="485" y="282">std::map&lt;OovString,ScannedComponent,std::</text>
+<text x="485" y="291">  less&lt;OovString&gt;,std::allocator&lt;std::pair&lt;</text>
+<text x="485" y="300">  OovString,ScannedComponent&gt; &gt; &gt;</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="312" y="415" width="119" height="44" />
@@ -162,6 +186,8 @@
 <text x="313" y="433">oovBuilder</text>
 <text x="313" y="448">+insert(OovStringRef str)</text>
 <text x="313" y="457">+exists(OovStringRef str)</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="459" y="378" width="223" height="80" />
@@ -178,68 +204,64 @@
 <text x="460" y="447">+addSourceFileName(OovStringRef objPath)</text>
 <text x="460" y="456">+addIncludeFileName(OovStringRef objPath)</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="201" y1="268" x2="237" y2="345" />
-<circle cx="206" cy="280" r="5" style="fill:#ffffff" />
-<circle cx="213" cy="295" r="5" style="fill:#000000" />
-<circle cx="213" cy="295" r="2" style="fill:#000000" />
-<polygon points="201,268 201,276 206,280 208,273 201,268 " style="fill:#000000" />
-<line x1="260" y1="138" x2="455" y2="122" />
-<circle cx="273" cy="136" r="5" style="fill:#ffffff" />
-<circle cx="289" cy="135" r="5" style="fill:#000000" />
-<circle cx="289" cy="135" r="2" style="fill:#000000" />
-<polygon points="260,138 268,141 273,137 267,133 260,138 " style="fill:#000000" />
-<line x1="176" y1="268" x2="218" y2="429" />
-<circle cx="179" cy="281" r="5" style="fill:#ffffff" />
-<circle cx="183" cy="297" r="5" style="fill:#000000" />
-<circle cx="183" cy="297" r="2" style="fill:#000000" />
-<polygon points="176,268 174,276 179,281 182,274 176,268 " style="fill:#000000" />
-<line x1="260" y1="234" x2="355" y2="306" />
-<circle cx="271" cy="242" r="5" style="fill:#ffffff" />
-<circle cx="283" cy="252" r="5" style="fill:#000000" />
-<circle cx="283" cy="252" r="2" style="fill:#000000" />
-<polygon points="260,234 263,242 271,242 268,235 260,234 " style="fill:#000000" />
-<line x1="260" y1="192" x2="343" y2="225" />
-<circle cx="273" cy="197" r="5" style="fill:#ffffff" />
-<circle cx="287" cy="203" r="5" style="fill:#000000" />
-<circle cx="287" cy="203" r="2" style="fill:#000000" />
-<polygon points="260,192 265,199 273,197 268,191 260,192 " style="fill:#000000" />
-<line x1="124" y1="268" x2="113" y2="327" />
-<circle cx="121" cy="281" r="5" style="fill:#ffffff" />
-<circle cx="118" cy="297" r="5" style="fill:#000000" />
-<circle cx="118" cy="297" r="2" style="fill:#000000" />
-<polygon points="124,268 119,274 122,281 126,276 124,268 " style="fill:#ffffff" />
-<line x1="260" y1="90" x2="332" y2="54" />
-<circle cx="272" cy="83" r="5" style="fill:#ffffff" />
-<circle cx="305" cy="67" r="5" style="fill:#ffffff" />
-<circle cx="305" cy="67" r="2" style="fill:#ffffff" />
-<polygon points="332,54 319,54 323,64 332,54 " style="fill:#ffffff" />
-<line x1="239" y1="268" x2="354" y2="415" />
-<circle cx="247" cy="279" r="5" style="fill:#ffffff" />
-<line x1="240" y1="371" x2="224" y2="429" />
-<circle cx="227" cy="415" r="5" style="fill:#ffffff" />
-<circle cx="231" cy="400" r="5" style="fill:#000000" />
-<circle cx="231" cy="400" r="2" style="fill:#000000" />
-<polygon points="224,429 230,423 227,416 222,421 224,429 " style="fill:#000000" />
-<line x1="277" y1="348" x2="329" y2="332" />
-<circle cx="315" cy="336" r="5" style="fill:#ffffff" />
-<line x1="257" y1="345" x2="361" y2="251" />
-<polygon points="361,251 352,252 359,253 359,260 361,251 " style="fill:#ffffff" />
-<circle cx="350" cy="260" r="5" style="fill:#ffffff" />
-<circle cx="338" cy="271" r="5" style="fill:#000000" />
-<circle cx="338" cy="271" r="2" style="fill:#000000" />
-<line x1="264" y1="371" x2="336" y2="415" />
-<circle cx="289" cy="386" r="5" style="fill:#ffffff" />
-<circle cx="289" cy="386" r="2" style="fill:#ffffff" />
-<polygon points="264,371 272,382 277,373 264,371 " style="fill:#ffffff" />
-<line x1="495" y1="197" x2="385" y2="306" />
-<circle cx="485" cy="206" r="5" style="fill:#ffffff" />
-<circle cx="473" cy="218" r="5" style="fill:#000000" />
-<circle cx="473" cy="218" r="2" style="fill:#000000" />
+<line x1="231" y1="322" x2="252" y2="363" />
+<circle cx="237" cy="334" r="5" style="fill:#ffffff" />
+<circle cx="244" cy="348" r="5" style="fill:#000000" />
+<circle cx="244" cy="348" r="2" style="fill:#000000" />
+<polygon points="231,322 231,330 237,334 238,326 231,322 " style="fill:#000000" />
+<line x1="284" y1="156" x2="455" y2="130" />
+<circle cx="297" cy="153" r="5" style="fill:#ffffff" />
+<circle cx="313" cy="151" r="5" style="fill:#000000" />
+<circle cx="313" cy="151" r="2" style="fill:#000000" />
+<polygon points="284,156 292,159 297,154 291,151 284,156 " style="fill:#000000" />
+<line x1="191" y1="322" x2="218" y2="433" />
+<circle cx="194" cy="335" r="5" style="fill:#ffffff" />
+<circle cx="198" cy="351" r="5" style="fill:#000000" />
+<circle cx="198" cy="351" r="2" style="fill:#000000" />
+<polygon points="191,322 189,330 194,335 197,328 191,322 " style="fill:#000000" />
+<line x1="284" y1="258" x2="360" y2="308" />
+<circle cx="295" cy="265" r="5" style="fill:#ffffff" />
+<circle cx="309" cy="274" r="5" style="fill:#000000" />
+<circle cx="309" cy="274" r="2" style="fill:#000000" />
+<polygon points="284,258 288,266 295,265 292,258 284,258 " style="fill:#000000" />
+<line x1="284" y1="211" x2="335" y2="227" />
+<circle cx="297" cy="215" r="5" style="fill:#ffffff" />
+<circle cx="312" cy="219" r="5" style="fill:#000000" />
+<circle cx="312" cy="219" r="2" style="fill:#000000" />
+<polygon points="284,211 290,217 297,215 292,210 284,211 " style="fill:#000000" />
+<line x1="88" y1="322" x2="69" y2="361" />
+<circle cx="81" cy="334" r="5" style="fill:#ffffff" />
+<circle cx="78" cy="340" r="2" style="fill:#ffffff" />
+<circle cx="74" cy="348" r="5" style="fill:#000000" />
+<circle cx="74" cy="348" r="2" style="fill:#000000" />
+<polygon points="88,322 81,327 82,334 88,330 88,322 " style="fill:#ffffff" />
+<line x1="284" y1="90" x2="338" y2="54" />
+<circle cx="295" cy="82" r="5" style="fill:#ffffff" />
+<circle cx="313" cy="70" r="5" style="fill:#ffffff" />
+<circle cx="313" cy="70" r="2" style="fill:#ffffff" />
+<polygon points="338,54 325,56 331,65 338,54 " style="fill:#ffffff" />
+<line x1="277" y1="322" x2="354" y2="415" />
+<circle cx="285" cy="332" r="5" style="fill:#ffffff" />
+<line x1="286" y1="363" x2="351" y2="334" />
+<circle cx="338" cy="339" r="5" style="fill:#ffffff" />
+<line x1="269" y1="363" x2="364" y2="251" />
+<polygon points="364,251 355,253 362,254 364,260 364,251 " style="fill:#ffffff" />
+<circle cx="354" cy="261" r="5" style="fill:#ffffff" />
+<circle cx="350" cy="267" r="2" style="fill:#ffffff" />
+<line x1="282" y1="389" x2="331" y2="415" />
+<circle cx="308" cy="403" r="5" style="fill:#ffffff" />
+<circle cx="308" cy="403" r="2" style="fill:#ffffff" />
+<polygon points="282,389 290,399 295,390 282,389 " style="fill:#ffffff" />
+<line x1="499" y1="197" x2="391" y2="308" />
+<circle cx="489" cy="207" r="5" style="fill:#ffffff" />
+<circle cx="484" cy="212" r="2" style="fill:#ffffff" />
 <line x1="455" y1="188" x2="396" y2="225" />
 <circle cx="443" cy="195" r="5" style="fill:#ffffff" />
 <circle cx="437" cy="199" r="2" style="fill:#ffffff" />
-<line x1="586" y1="197" x2="592" y2="262" />
+<line x1="586" y1="197" x2="592" y2="273" />
 <circle cx="587" cy="210" r="5" style="fill:#ffffff" />
 <circle cx="588" cy="226" r="5" style="fill:#000000" />
 <circle cx="588" cy="226" r="2" style="fill:#000000" />
@@ -251,12 +273,12 @@
 <polygon points="526,197 518,201 519,208 526,205 526,197 " style="fill:#000000" />
 <line x1="578" y1="197" x2="571" y2="378" />
 <circle cx="577" cy="210" r="5" style="fill:#ffffff" />
-<line x1="207" y1="429" x2="125" y2="353" />
-<circle cx="196" cy="419" r="5" style="fill:#ffffff" />
-<line x1="398" y1="332" x2="491" y2="378" />
-<circle cx="478" cy="371" r="5" style="fill:#ffffff" />
-<circle cx="464" cy="364" r="5" style="fill:#000000" />
-<circle cx="464" cy="364" r="2" style="fill:#000000" />
-<line x1="591" y1="296" x2="576" y2="378" />
+<line x1="404" y1="334" x2="492" y2="378" />
+<circle cx="479" cy="371" r="5" style="fill:#ffffff" />
+<circle cx="473" cy="368" r="2" style="fill:#ffffff" />
+<line x1="590" y1="307" x2="577" y2="378" style="stroke-dasharray: 4, 4 "/>
+<line x1="590" y1="307" x2="577" y2="378" style="stroke-dasharray: 4, 4 "/>
+<line x1="577" y1="378" x2="584" y2="367" />
+<line x1="577" y1="378" x2="575" y2="365" />
 </g>
 </svg>

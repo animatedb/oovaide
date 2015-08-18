@@ -1,39 +1,39 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
   font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
-  width="680" height="850">
+  width="684" height="857">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="14" y="706" width="133" height="143" />
-<line x1="14" y1="719" x2="147" y2="719" />
-<polygon points="127,727 139,732 139,722 127,727 " style="fill:#ffffff" />
-<polygon points="127,741 134,745 141,741 134,737 127,741 " style="fill:#ffffff" />
-<polygon points="127,755 134,759 141,755 134,751 127,755 " style="fill:#000000" />
-<polygon points="127,769 135,774 131,769 135,764 127,769 " style="fill:#ffffff" />
-<circle cx="127" cy="783" r="5" style="fill:#ffffff" />
-<circle cx="127" cy="797" r="5" style="fill:#ffffff" />
-<circle cx="134" cy="797" r="2" style="fill:#ffffff" />
-<circle cx="127" cy="811" r="5" style="fill:#ffffff" />
-<circle cx="127" cy="811" r="2" style="fill:#ffffff" />
-<circle cx="127" cy="825" r="5" style="fill:#ffffff" />
-<circle cx="127" cy="825" r="2" style="fill:#000000" />
-<circle cx="127" cy="839" r="5" style="fill:#000000" />
-<circle cx="127" cy="839" r="2" style="fill:#000000" />
+<rect x="14" y="713" width="133" height="143" />
+<line x1="14" y1="726" x2="147" y2="726" />
+<polygon points="127,734 139,739 139,729 127,734 " style="fill:#ffffff" />
+<polygon points="127,748 134,752 141,748 134,744 127,748 " style="fill:#ffffff" />
+<polygon points="127,762 134,766 141,762 134,758 127,762 " style="fill:#000000" />
+<polygon points="127,776 135,781 131,776 135,771 127,776 " style="fill:#ffffff" />
+<circle cx="127" cy="790" r="5" style="fill:#ffffff" />
+<circle cx="127" cy="804" r="5" style="fill:#ffffff" />
+<circle cx="134" cy="804" r="2" style="fill:#ffffff" />
+<circle cx="127" cy="818" r="5" style="fill:#ffffff" />
+<circle cx="127" cy="818" r="2" style="fill:#ffffff" />
+<circle cx="127" cy="832" r="5" style="fill:#ffffff" />
+<circle cx="127" cy="832" r="2" style="fill:#000000" />
+<circle cx="127" cy="846" r="5" style="fill:#000000" />
+<circle cx="127" cy="846" r="2" style="fill:#000000" />
 </g>
 <g stroke="none">
-<text x="15" y="715">Relations Key</text>
-<text x="15" y="729">Generalization</text>
-<text x="15" y="743">Aggregation(reference)</text>
-<text x="15" y="757">Composition(owned)</text>
-<text x="15" y="771">Const</text>
-<text x="15" y="785">Method Variable</text>
-<text x="15" y="799">Method Parameter</text>
-<text x="15" y="813">Public</text>
-<text x="15" y="827">Protected</text>
-<text x="15" y="841">Private</text>
+<text x="15" y="722">Relations Key</text>
+<text x="15" y="736">Generalization</text>
+<text x="15" y="750">Aggregation(reference)</text>
+<text x="15" y="764">Composition(owned)</text>
+<text x="15" y="778">Const</text>
+<text x="15" y="792">Method Variable</text>
+<text x="15" y="806">Method Parameter</text>
+<text x="15" y="820">Public</text>
+<text x="15" y="834">Protected</text>
+<text x="15" y="848">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="12" y="10" width="421" height="359" />
-<line x1="12" y1="31" x2="433" y2="31" />
-<line x1="12" y1="115" x2="433" y2="115" />
+<rect x="12" y="10" width="418" height="359" />
+<line x1="12" y1="31" x2="430" y2="31" />
+<line x1="12" y1="115" x2="430" y2="115" />
 </g>
 <g stroke="none">
 <text x="13" y="19">ModelData</text>
@@ -55,26 +55,28 @@
 <text x="13" y="169">+createOrGetTypeRef(OovStringRef typeName, eModelDataTypes otype)</text>
 <text x="13" y="178">+createTypeRef(OovStringRef typeName, eModelDataTypes otype)</text>
 <text x="13" y="187">+getTypeRef(OovStringRef typeName)</text>
-<text x="13" y="196">+findType(OovStringRef name)</text>
-<text x="13" y="205">+findType(OovStringRef name)</text>
+<text x="13" y="196">+findType(OovStringRef typeName)</text>
+<text x="13" y="205">+findType(OovStringRef typeName)</text>
 <text x="13" y="214">+replaceType(ModelType existingType, ModelClassifier newType)</text>
-<text x="13" y="223">+replaceStatementType(ModelStatements stmts, ModelType existingType, ModelClassif</text>
-<text x="20" y="232">ier newType)</text>
-<text x="13" y="241">+eraseType(ModelType existingType)</text>
-<text x="13" y="250">+takeAttributes(ModelClassifier sourceType, ModelClassifier destType)</text>
-<text x="13" y="259">+getRelatedTemplateClasses(ModelType type, ConstModelClassifierVector classes)</text>
-<text x="13" y="268">+getRelatedFuncInterfaceClasses(ModelClassifier type, ConstModelClassifierVector </text>
-<text x="20" y="277">classes)</text>
-<text x="13" y="286">+getRelatedFuncParamClasses(ModelClassifier type, ConstModelDeclClasses classes)</text>
-<text x="13" y="295">+getRelatedBodyVarClasses(ModelClassifier type, ConstModelDeclClasses declclasses</text>
-<text x="20" y="304">)</text>
-<text x="13" y="313">+addBaseClasses(ModelClassifier type, ConstModelClassifierVector classes)</text>
-<text x="13" y="322">-createDataType(eModelDataTypes type, &lt;&lt;typedef&gt;&gt;string id)</text>
-<text x="13" y="331">-getBaseType(OovStringRef fullStr)</text>
-<text x="13" y="340">-resolveStatements(TypeIdMap typeMap, ModelStatements stmt)</text>
-<text x="13" y="349">-resolveDecl(TypeIdMap typeMap, ModelTypeRef decl)</text>
-<text x="13" y="358">-isTypeReferencedByStatements(ModelStatements stmts, ModelType type)</text>
-<text x="13" y="367">-dumpTypes()</text>
+<text x="13" y="223">+takeAttributes(ModelClassifier sourceType, ModelClassifier destType)</text>
+<text x="13" y="232">+getRelatedTypeArgClasses(ModelType type, ConstModelClassifierVector classes)</text>
+<text x="13" y="241">+getRelatedFuncInterfaceClasses(ModelClassifier type, ConstModelClassifierVector </text>
+<text x="20" y="250">classes)</text>
+<text x="13" y="259">+getRelatedFuncParamClasses(ModelClassifier type, ConstModelDeclClasses classes)</text>
+<text x="13" y="268">+getRelatedBodyVarClasses(ModelClassifier type, ConstModelDeclClasses declclasses</text>
+<text x="20" y="277">)</text>
+<text x="13" y="286">+addBaseClasses(ModelClassifier type, ConstModelClassifierVector classes)</text>
+<text x="13" y="295">+getBaseType(OovStringRef fullStr)</text>
+<text x="13" y="304">-createDataType(eModelDataTypes type, string&lt;&lt;typedef&gt;&gt; id)</text>
+<text x="13" y="313">-resolveStatements(TypeIdMap typeMap, ModelStatements stmt)</text>
+<text x="13" y="322">-resolveDecl(TypeIdMap typeMap, ModelTypeRef decl)</text>
+<text x="13" y="331">-isTypeReferencedByStatements(ModelStatements stmts, ModelType type)</text>
+<text x="13" y="340">-dumpTypes()</text>
+<text x="13" y="349">-replaceStatementType(ModelStatements stmts, ModelType existingType, ModelClassif</text>
+<text x="20" y="358">ier newType)</text>
+<text x="13" y="367">-eraseType(ModelType existingType)</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="194" y="401" width="237" height="44" />
@@ -86,6 +88,8 @@
 <text x="195" y="419">  default_delete&lt;ModelType&gt; &gt;,std::allocator&lt;</text>
 <text x="195" y="428">  std::unique_ptr&lt;ModelType,std::default_delete&lt;</text>
 <text x="195" y="437">  ModelType&gt; &gt; &gt; &gt;</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="476" y="175" width="202" height="53" />
@@ -99,6 +103,8 @@
 <text x="477" y="211">  ModelAssociation,std::default_delete&lt;</text>
 <text x="477" y="220">  ModelAssociation&gt; &gt; &gt; &gt;</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="472" y="12" width="202" height="53" />
 <line x1="472" y1="60" x2="674" y2="60" />
@@ -111,21 +117,29 @@
 <text x="473" y="48">  ModelModule,std::default_delete&lt;</text>
 <text x="473" y="57">  ModelModule&gt; &gt; &gt; &gt;</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="13" y="446" width="164" height="89" />
-<line x1="13" y1="467" x2="177" y2="467" />
-<line x1="13" y1="479" x2="177" y2="479" />
+<rect x="12" y="426" width="168" height="125" />
+<line x1="12" y1="447" x2="180" y2="447" />
+<line x1="12" y1="459" x2="180" y2="459" />
 </g>
 <g stroke="none">
-<text x="14" y="455">ModelType</text>
-<text x="14" y="464">oovCommon</text>
-<text x="14" y="476">-eModelDataTypes mDataType</text>
-<text x="14" y="488">+isTemplateType()</text>
-<text x="14" y="497">+getClass()</text>
-<text x="14" y="506">+getClass()</text>
-<text x="14" y="515">+ModelType(OovStringRef name,</text>
-<text x="21" y="524"> eModelDataTypes type)</text>
-<text x="14" y="533">+getDataType()</text>
+<text x="13" y="435">ModelType</text>
+<text x="13" y="444">oovCommon</text>
+<text x="13" y="456">-eModelDataTypes mDataType</text>
+<text x="13" y="468">+isTypedefType()</text>
+<text x="13" y="477">+isTemplateDefType()</text>
+<text x="13" y="486">+isTemplateUseType()</text>
+<text x="13" y="495">+getClass()</text>
+<text x="13" y="504">+getClass()</text>
+<text x="13" y="513">+getClass(ModelType modelType)</text>
+<text x="13" y="522">+getClass(ModelType modelType)</text>
+<text x="13" y="531">+ModelType(OovStringRef name,</text>
+<text x="20" y="540"> eModelDataTypes type)</text>
+<text x="13" y="549">+getDataType()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="477" y="244" width="198" height="179" />
@@ -153,6 +167,8 @@
 <text x="478" y="412">+setChildClass(ModelClassifier cl)</text>
 <text x="478" y="421">+setParentClass(ModelClassifier cl)</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="497" y="79" width="178" height="62" />
 <line x1="497" y1="100" x2="675" y2="100" />
@@ -166,46 +182,48 @@
 <text x="498" y="130">+setModulePath(OovStringRef str)</text>
 <text x="498" y="139">+getModulePath()</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="267" y="463" width="412" height="386" />
-<line x1="267" y1="484" x2="679" y2="484" />
-<line x1="267" y1="568" x2="679" y2="568" />
+<rect x="267" y="463" width="416" height="386" />
+<line x1="267" y1="484" x2="683" y2="484" />
+<line x1="267" y1="568" x2="683" y2="568" />
 </g>
 <g stroke="none">
 <text x="268" y="472">ModelClassifier</text>
 <text x="268" y="481">oovCommon</text>
-<text x="268" y="493">+&lt;&lt;typedef&gt;&gt;size_t NoIndex</text>
+<text x="268" y="493">+size_t&lt;&lt;typedef&gt;&gt; NoIndex</text>
 <text x="268" y="502">-std::vector&lt;std::unique_ptr&lt;ModelAttribute,std::default_delete&lt;ModelAttribute&gt;</text>
-<text x="275" y="511"> &gt;,std::allocator&lt;std::unique_ptr&lt;ModelAttribute,std::default_delete&lt;ModelAttri</text>
-<text x="275" y="520">bute&gt; &gt; &gt; &gt; mAttributes</text>
+<text x="275" y="511"> &gt;,std::allocator&lt;std::unique_ptr&lt;ModelAttribute,std::default_delete&lt;ModelAttribute&gt;</text>
+<text x="275" y="520"> &gt; &gt; &gt; mAttributes</text>
 <text x="268" y="529">-std::vector&lt;std::unique_ptr&lt;ModelOperation,std::default_delete&lt;ModelOperation&gt;</text>
-<text x="275" y="538"> &gt;,std::allocator&lt;std::unique_ptr&lt;ModelOperation,std::default_delete&lt;ModelOpera</text>
-<text x="275" y="547">tion&gt; &gt; &gt; &gt; mOperations</text>
+<text x="275" y="538"> &gt;,std::allocator&lt;std::unique_ptr&lt;ModelOperation,std::default_delete&lt;ModelOperation&gt;</text>
+<text x="275" y="547"> &gt; &gt; &gt; mOperations</text>
 <text x="268" y="556">-ModelModule mModule</text>
 <text x="268" y="565">-unsigned int mLineNum</text>
 <text x="268" y="577">+clearOperations()</text>
 <text x="268" y="586">+clearAttributes()</text>
-<text x="268" y="595">+addAttribute(&lt;&lt;typedef&gt;&gt;string name, ModelType attrType, Visibility scope)</text>
-<text x="268" y="604">+addOperation(&lt;&lt;typedef&gt;&gt;string name, Visibility access, bool isConst)</text>
+<text x="268" y="595">+addAttribute(string&lt;&lt;typedef&gt;&gt; name, ModelType attrType, Visibility scope)</text>
+<text x="268" y="604">+addOperation(string&lt;&lt;typedef&gt;&gt; name, Visibility access, bool isConst, bool isVirtual)</text>
 <text x="268" y="613">+removeOperation(ModelOperation oper)</text>
 <text x="268" y="622">+replaceOperation(ModelOperation operToReplace, std::unique_ptr&lt;ModelOperation,</text>
 <text x="275" y="631">std::default_delete&lt;ModelOperation&gt; &gt; newOper)</text>
 <text x="268" y="640">+eraseAttribute(ModelAttribute attr)</text>
 <text x="268" y="649">+eraseOperation(ModelOperation oper)</text>
-<text x="268" y="658">+getAttributeIndex(&lt;&lt;typedef&gt;&gt;string name)</text>
-<text x="268" y="667">+getAttribute(&lt;&lt;typedef&gt;&gt;string name)</text>
+<text x="268" y="658">+getAttributeIndex(string&lt;&lt;typedef&gt;&gt; name)</text>
+<text x="268" y="667">+getAttribute(string&lt;&lt;typedef&gt;&gt; name)</text>
 <text x="268" y="676">+findExactMatchingOperationIndex(ModelOperation op)</text>
 <text x="268" y="685">+findExactMatchingOperation(ModelOperation op)</text>
-<text x="268" y="694">+getOperation(&lt;&lt;typedef&gt;&gt;string name, bool isConst)</text>
-<text x="268" y="703">+getOperationIndex(&lt;&lt;typedef&gt;&gt;string name, bool isConst)</text>
-<text x="268" y="712">+getOperationAnyConst(&lt;&lt;typedef&gt;&gt;string name, bool isConst)</text>
+<text x="268" y="694">+getOperation(OovStringRef name, bool isConst)</text>
+<text x="268" y="703">+getOperationIndex(OovStringRef name, bool isConst)</text>
+<text x="268" y="712">+getOperationAnyConst(string&lt;&lt;typedef&gt;&gt; name, bool isConst)</text>
 <text x="268" y="721">+isDefinition()</text>
 <text x="268" y="730">+ModelClassifier(OovStringRef name)</text>
 <text x="268" y="739">+addAttribute(std::unique_ptr&lt;ModelAttribute,std::default_delete&lt;ModelAttribute&gt;</text>
 <text x="275" y="748"> &gt; attr)</text>
 <text x="268" y="757">+addOperation(std::unique_ptr&lt;ModelOperation,std::default_delete&lt;ModelOperation&gt;</text>
 <text x="275" y="766"> &gt; oper)</text>
-<text x="268" y="775">+getOperation(&lt;&lt;typedef&gt;&gt;string name, bool isConst)</text>
+<text x="268" y="775">+getOperation(OovStringRef name, bool isConst)</text>
 <text x="268" y="784">+getAttributes()</text>
 <text x="268" y="793">+getAttributes()</text>
 <text x="268" y="802">+getOperations()</text>
@@ -215,21 +233,25 @@
 <text x="268" y="838">+setLineNum(unsigned int lineNum)</text>
 <text x="268" y="847">+getLineNum()</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="31" y="573" width="172" height="89" />
-<line x1="31" y1="594" x2="203" y2="594" />
-<line x1="31" y1="615" x2="203" y2="615" />
+<rect x="36" y="612" width="172" height="89" />
+<line x1="36" y1="633" x2="208" y2="633" />
+<line x1="36" y1="654" x2="208" y2="654" />
 </g>
 <g stroke="none">
-<text x="32" y="582">ModelObject</text>
-<text x="32" y="591">oovCommon</text>
-<text x="32" y="603">-OovString mName</text>
-<text x="32" y="612">-int mModelId</text>
-<text x="32" y="624">+ModelObject(OovStringRef name)</text>
-<text x="32" y="633">+getName()</text>
-<text x="32" y="642">+setName(OovStringRef name)</text>
-<text x="32" y="651">+setModelId(int id)</text>
-<text x="32" y="660">+getModelId()</text>
+<text x="37" y="621">ModelObject</text>
+<text x="37" y="630">oovCommon</text>
+<text x="37" y="642">-OovString mName</text>
+<text x="37" y="651">-int mModelId</text>
+<text x="37" y="663">+ModelObject(OovStringRef name)</text>
+<text x="37" y="672">+getName()</text>
+<text x="37" y="681">+setName(OovStringRef name)</text>
+<text x="37" y="690">+setModelId(int id)</text>
+<text x="37" y="699">+getModelId()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
 <line x1="290" y1="368" x2="304" y2="401" />
@@ -237,66 +259,74 @@
 <circle cx="301" cy="395" r="5" style="fill:#ffffff" />
 <circle cx="301" cy="395" r="2" style="fill:#ffffff" />
 <polygon points="290,368 289,376 295,380 297,373 290,368 " style="fill:#000000" />
-<line x1="432" y1="196" x2="476" y2="198" />
-<circle cx="445" cy="196" r="5" style="fill:#ffffff" />
-<circle cx="461" cy="197" r="5" style="fill:#ffffff" />
-<circle cx="461" cy="197" r="2" style="fill:#ffffff" />
-<polygon points="432,196 439,200 445,196 439,192 432,196 " style="fill:#000000" />
-<line x1="432" y1="99" x2="513" y2="64" />
-<circle cx="444" cy="93" r="5" style="fill:#ffffff" />
-<circle cx="459" cy="87" r="5" style="fill:#ffffff" />
-<circle cx="459" cy="87" r="2" style="fill:#ffffff" />
-<polygon points="432,99 440,100 444,94 437,92 432,99 " style="fill:#000000" />
-<line x1="147" y1="368" x2="113" y2="446" />
-<polygon points="147,368 139,373 146,371 149,377 147,368 " style="fill:#ffffff" />
+<line x1="430" y1="196" x2="476" y2="198" />
+<circle cx="443" cy="196" r="5" style="fill:#ffffff" />
+<circle cx="459" cy="197" r="5" style="fill:#ffffff" />
+<circle cx="459" cy="197" r="2" style="fill:#ffffff" />
+<polygon points="430,196 437,200 443,196 437,192 430,196 " style="fill:#000000" />
+<line x1="430" y1="100" x2="513" y2="64" />
+<circle cx="442" cy="94" r="5" style="fill:#ffffff" />
+<circle cx="457" cy="88" r="5" style="fill:#ffffff" />
+<circle cx="457" cy="88" r="2" style="fill:#ffffff" />
+<polygon points="430,100 438,101 442,95 435,93 430,100 " style="fill:#000000" />
+<line x1="147" y1="368" x2="121" y2="426" />
+<polygon points="147,368 139,372 146,371 149,377 147,368 " style="fill:#ffffff" />
 <circle cx="141" cy="380" r="5" style="fill:#ffffff" />
-<circle cx="135" cy="395" r="5" style="fill:#000000" />
-<circle cx="135" cy="395" r="2" style="fill:#000000" />
-<line x1="318" y1="368" x2="370" y2="463" />
+<circle cx="138" cy="387" r="2" style="fill:#ffffff" />
+<line x1="318" y1="368" x2="371" y2="463" />
 <circle cx="324" cy="380" r="5" style="fill:#ffffff" />
-<circle cx="332" cy="394" r="5" style="fill:#000000" />
-<circle cx="332" cy="394" r="2" style="fill:#000000" />
-<line x1="179" y1="368" x2="127" y2="573" />
-<circle cx="175" cy="381" r="5" style="fill:#ffffff" />
-<line x1="241" y1="445" x2="177" y2="465" />
-<line x1="577" y1="227" x2="576" y2="244" />
-<line x1="577" y1="64" x2="581" y2="79" />
-<line x1="177" y1="526" x2="267" y2="566" />
-<circle cx="204" cy="538" r="5" style="fill:#ffffff" />
-<circle cx="204" cy="538" r="2" style="fill:#ffffff" />
-<polygon points="177,526 186,536 190,526 177,526 " style="fill:#ffffff" />
-<polygon points="267,566 262,558 264,565 258,568 267,566 " style="fill:#ffffff" />
-<circle cx="254" cy="560" r="5" style="fill:#ffffff" />
-<circle cx="239" cy="553" r="5" style="fill:#000000" />
-<circle cx="239" cy="553" r="2" style="fill:#000000" />
-<line x1="102" y1="534" x2="110" y2="573" />
-<circle cx="104" cy="547" r="5" style="fill:#ffffff" />
-<circle cx="103" cy="543" r="5" style="fill:#ffffff" />
-<circle cx="103" cy="543" r="2" style="fill:#ffffff" />
-<polygon points="110,573 112,560 103,562 110,573 " style="fill:#ffffff" />
-<line x1="548" y1="422" x2="534" y2="463" />
-<polygon points="548,422 540,427 547,425 550,431 548,422 " style="fill:#ffffff" />
-<circle cx="543" cy="435" r="5" style="fill:#ffffff" />
-<circle cx="538" cy="450" r="5" style="fill:#000000" />
-<circle cx="538" cy="450" r="2" style="fill:#000000" />
-<polygon points="548,422 542,427 544,435 549,430 548,422 " style="fill:#ffffff" />
-<line x1="477" y1="394" x2="188" y2="573" />
-<circle cx="465" cy="401" r="5" style="fill:#ffffff" />
-<circle cx="213" cy="557" r="5" style="fill:#ffffff" />
-<circle cx="213" cy="557" r="2" style="fill:#ffffff" />
-<polygon points="188,573 201,571 196,562 188,573 " style="fill:#ffffff" />
-<line x1="580" y1="141" x2="512" y2="463" />
-<polygon points="512,463 519,457 512,460 508,454 512,463 " style="fill:#ffffff" />
-<circle cx="514" cy="449" r="5" style="fill:#ffffff" />
-<circle cx="518" cy="433" r="5" style="fill:#000000" />
-<circle cx="518" cy="433" r="2" style="fill:#000000" />
-<polygon points="512,463 518,457 514,450 510,455 512,463 " style="fill:#ffffff" />
-<line x1="558" y1="141" x2="157" y2="573" />
-<circle cx="548" cy="151" r="5" style="fill:#ffffff" />
-<circle cx="177" cy="551" r="5" style="fill:#ffffff" />
-<circle cx="177" cy="551" r="2" style="fill:#ffffff" />
-<polygon points="157,573 169,568 161,560 157,573 " style="fill:#ffffff" />
-<line x1="267" y1="634" x2="203" y2="626" />
-<circle cx="253" cy="632" r="5" style="fill:#ffffff" />
+<circle cx="328" cy="386" r="2" style="fill:#ffffff" />
+<line x1="184" y1="368" x2="131" y2="612" />
+<circle cx="181" cy="381" r="5" style="fill:#ffffff" />
+<line x1="239" y1="445" x2="180" y2="463" style="stroke-dasharray: 4, 4 "/>
+<line x1="239" y1="445" x2="180" y2="463" style="stroke-dasharray: 4, 4 "/>
+<line x1="180" y1="463" x2="193" y2="464" />
+<line x1="180" y1="463" x2="190" y2="455" />
+<line x1="577" y1="227" x2="576" y2="244" style="stroke-dasharray: 4, 4 "/>
+<line x1="577" y1="227" x2="576" y2="244" style="stroke-dasharray: 4, 4 "/>
+<line x1="576" y1="244" x2="582" y2="232" />
+<line x1="576" y1="244" x2="572" y2="231" />
+<line x1="577" y1="64" x2="581" y2="79" style="stroke-dasharray: 4, 4 "/>
+<line x1="577" y1="64" x2="581" y2="79" style="stroke-dasharray: 4, 4 "/>
+<line x1="581" y1="79" x2="582" y2="66" />
+<line x1="581" y1="79" x2="573" y2="68" />
+<line x1="180" y1="525" x2="267" y2="564" />
+<circle cx="207" cy="537" r="5" style="fill:#ffffff" />
+<circle cx="207" cy="537" r="2" style="fill:#ffffff" />
+<polygon points="180,525 189,535 193,525 180,525 " style="fill:#ffffff" />
+<polygon points="267,564 263,556 264,563 258,566 267,564 " style="fill:#ffffff" />
+<circle cx="254" cy="558" r="5" style="fill:#ffffff" />
+<circle cx="247" cy="555" r="2" style="fill:#ffffff" />
+<line x1="105" y1="550" x2="116" y2="612" />
+<circle cx="107" cy="563" r="5" style="fill:#ffffff" />
+<circle cx="110" cy="582" r="5" style="fill:#ffffff" />
+<circle cx="110" cy="582" r="2" style="fill:#ffffff" />
+<polygon points="116,612 119,599 109,601 116,612 " style="fill:#ffffff" />
+<line x1="549" y1="422" x2="535" y2="463" />
+<polygon points="549,422 541,427 548,425 551,431 549,422 " style="fill:#ffffff" />
+<circle cx="544" cy="435" r="5" style="fill:#ffffff" />
+<circle cx="542" cy="441" r="2" style="fill:#ffffff" />
+<circle cx="539" cy="450" r="5" style="fill:#000000" />
+<circle cx="539" cy="450" r="2" style="fill:#000000" />
+<polygon points="549,422 543,427 545,435 550,430 549,422 " style="fill:#ffffff" />
+<line x1="477" y1="403" x2="183" y2="612" />
+<circle cx="465" cy="411" r="5" style="fill:#ffffff" />
+<circle cx="207" cy="594" r="5" style="fill:#ffffff" />
+<circle cx="207" cy="594" r="2" style="fill:#ffffff" />
+<polygon points="183,612 196,609 190,601 183,612 " style="fill:#ffffff" />
+<line x1="580" y1="141" x2="514" y2="463" />
+<polygon points="514,463 521,457 514,460 510,454 514,463 " style="fill:#ffffff" />
+<circle cx="516" cy="449" r="5" style="fill:#ffffff" />
+<circle cx="518" cy="442" r="2" style="fill:#ffffff" />
+<circle cx="520" cy="433" r="5" style="fill:#000000" />
+<circle cx="520" cy="433" r="2" style="fill:#000000" />
+<polygon points="514,463 519,457 516,450 512,455 514,463 " style="fill:#ffffff" />
+<line x1="560" y1="141" x2="159" y2="612" />
+<circle cx="550" cy="151" r="5" style="fill:#ffffff" />
+<circle cx="178" cy="589" r="5" style="fill:#ffffff" />
+<circle cx="178" cy="589" r="2" style="fill:#ffffff" />
+<polygon points="159,612 171,606 163,599 159,612 " style="fill:#ffffff" />
+<line x1="267" y1="656" x2="208" y2="656" />
+<circle cx="253" cy="656" r="5" style="fill:#ffffff" />
 </g>
 </svg>

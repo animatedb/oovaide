@@ -57,7 +57,10 @@ class PortionDrawer:public DiagramDependencyDrawer
 
         void drawNodes(DiagramDrawer &drawer);
         void drawConnections(DiagramDrawer &drawer);
-        void drawNodeText(DiagramDrawer &drawer);
+        void getNodeText(DiagramDrawer &drawer,
+            std::vector<DrawString> &drawStrings, std::vector<bool> &virtOpers);
+        void drawNodeText(DiagramDrawer &drawer, bool drawVirts,
+            std::vector<DrawString> const &drawStrings, std::vector<bool> const &virtOpers);
         /// This returns a dependency depth for each node.
         /// Operations start at a depth of 1, and attributes start at 0.
         std::vector<size_t> getCallDepths() const;

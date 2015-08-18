@@ -77,6 +77,7 @@ class NullDrawer:public DiagramDrawer
             {}
         virtual float getTextExtentWidth(OovStringRef const /*name*/) const override;
         virtual float getTextExtentHeight(OovStringRef const /*name*/) const override;
+
     protected:
         cairo_t *cr;
     };
@@ -99,7 +100,7 @@ class CairoDrawer:public NullDrawer
         virtual void drawPoly(const OovPolygon &poly, Color fillColor) override;
         virtual void drawText(const GraphPoint &p, OovStringRef const text) override;
         virtual void groupShapes(bool start, Color lineColor, Color fillColor) override;
-        virtual void groupText(bool start) override;
+        virtual void groupText(bool start, bool italics) override;
 
         void setColor(Color c)
             { cairo_set_source_rgb(cr, c.red/255.0, c.green/255.0, c.blue/255.0); }
@@ -109,6 +110,8 @@ class CairoDrawer:public NullDrawer
         Color mFillColor;
         Color mLineColor;
         Color mTextColor;
+
+        void setFillAndLine(cairo_t *cr, Color fillColor, Color lineColor);
     };
 
 

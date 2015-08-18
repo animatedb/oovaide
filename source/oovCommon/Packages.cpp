@@ -314,7 +314,7 @@ std::vector<Package> Packages::getPackages() const
 #ifndef __linux__
 void Packages::read(OovStringRef const fn)
     {
-    mFile.setFilename("oovcde-allpkgs-win.txt");
+    mFile.setFilename(fn);
     mFile.readFile();
     }
 #endif
@@ -352,27 +352,8 @@ BuildPackages::BuildPackages(bool readNow)
 bool BuildPackages::read()
     {
     FilePath fn(Project::getBuildPackagesFilePath(), FP_File);
-    mFile.setFilename(fn);
-    return mFile.readFile();
-    }
-
-Package BuildPackages::getPackage(OovStringRef const name) const
-    {
-    Package pkg;
-    pkg.loadFromMap(name, mFile);
-    return pkg;
-    }
-
-std::vector<Package> BuildPackages::getPackages() const
-    {
-    CompoundValue pkgNames;
-    pkgNames.parseString(mFile.getValue(TagPkgNames));
-    std::vector<Package> packages;
-    for(std::string const &name : pkgNames)
-        {
-        packages.push_back(getPackage(name));
-        }
-    return packages;
+    mPackages.getFile().setFilename(fn);
+    return mPackages.getFile().readFile();
     }
 
 bool BuildPackages::doesPackageExist(OovStringRef pkgName)

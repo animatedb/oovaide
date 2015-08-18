@@ -100,6 +100,7 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
             )
         {
         getCompletionData = true;
+        startGettingCompletionData();
         mCompletionTriggerPointOffset = GuiTextBuffer::getCursorOffset(mTextBuffer);
 
         if(key == ' ')
@@ -123,10 +124,6 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
 
         mGuiList.clear();
 
-// For some reason in linux, the top widget never gets the focus.
-#ifndef __linux__
-        Gui::setVisible(mTopWidget, true);
-#endif
 /*
         GtkTreePath *path = gtk_tree_path_new_from_string("0");
         gtk_tree_view_set_cursor(mGuiList.getTreeView(), path, nullptr, false);
@@ -137,6 +134,17 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
 //        gtk_window_set_type_hint(GTK_WINDOW(mTopWidget), GDK_WINDOW_TYPE_HINT_POPUP_MENU);
 //        gtk_window_set_transient_for(GTK_WINDOW(mTopWidget), main_top_level_window);
 //        gtk_widget_grab_focus(GTK_WIDGET(mGuiList.getTreeView()));
+        }
+    /// The completion list can have identifiers and functions. When it has
+    /// functions, then it can have a few other items in the list such as
+    /// parenthesis, pointers, spaces, etc., but if the user typed in that
+    /// much, then there is probably no reason to display the list.
+    ///
+    /// The identifier keys should really be sent to the list when it displays,
+    /// so for now, just train the user to quit typing until the list displays.
+    else if(isGettingCompletionData() /*&& (!isIdentC(key) && (key != GDK_KEY_BackSpace))*/)
+        {
+        quitGettingCompletionData();
         }
     if(!isModifierKey(key))
         {
@@ -206,6 +214,7 @@ bool CompletionList::handleListKey(int key, int modKeys)
         }
     if(doneList)
         {
+        quitGettingCompletionData();
         Gui::setVisible(mTopWidget, false);
         }
     return handled;
@@ -216,35 +225,63 @@ void CompletionList::lostFocus()
     Gui::setVisible(mTopWidget, false);
     }
 
+void CompletionList::startGettingCompletionData()
+    {
+    mGettingCompletionData = true;
+#if(USE_NEW_TIME)
+    mGettingCompletionDataStartTime = std::chrono::high_resolution_clock::now();
+#else
+    time(&mGettingCompletionDataStartTime);
+#endif
+    }
+
+bool CompletionList::okToShowList() const
+    {
+#if(USE_NEW_TIME)
+	std::chrono::high_resolution_clock::time_point currentTime =
+		std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> timeSpan = std::chrono::duration_cast<
+		std::chrono::duration<double>>(currentTime - mGettingCompletionDataStartTime);
+    bool timeIsUp = (timeSpan.count() > std::chrono::seconds(1).count());
+#else
+    time_t curTime;
+    time(&curTime);
+    /// The time resolution is poor, so the time will vary between 1 and 2 seconds.
+    bool timeIsUp = (abs(mGettingCompletionDataTime - curTime) > 1);
+#endif
+    return(mGettingCompletionData && timeIsUp);
+    }
+
 void CompletionList::setList(FileEditView *view, OovStringVec const &strs)
     {
-    mEditView = view;
-    mGuiList.clear();
+    if(strs.size() > 0)
+        {
+        mEditView = view;
+        mGuiList.clear();
 
-    // When the completion point is on a member operator, then there is
-    // no identifier, and the identifier offset is after the trigger point.
-    // If the completion point is on the middle of an identifier, then
-    // the identifier is before the completion trigger point.
-    OovString prefix;
-    if(mStartIdentifierOffset < mCompletionTriggerPointOffset)
-        {
-        prefix = GuiTextBuffer::getText(mTextBuffer,
-            mStartIdentifierOffset, mCompletionTriggerPointOffset);
-        }
-    for(auto const &str : strs)
-        {
-        if(prefix.compare(0, prefix.length(), str, 0, prefix.length()) == 0)
+        // When the completion point is on a member operator, then there is
+        // no identifier, and the identifier offset is after the trigger point.
+        // If the completion point is on the middle of an identifier, then
+        // the identifier is before the completion trigger point.
+        OovString prefix;
+        if(mStartIdentifierOffset < mCompletionTriggerPointOffset)
             {
-            mGuiList.appendText(str);
+            prefix = GuiTextBuffer::getText(mTextBuffer,
+                mStartIdentifierOffset, mCompletionTriggerPointOffset);
             }
-        }
-    if(strs.size())
-        {
+        for(auto const &str : strs)
+            {
+            if(prefix.compare(0, prefix.length(), str, 0, prefix.length()) == 0)
+                {
+                mGuiList.appendText(str);
+                }
+            }
+// For some reason in linux, the top widget never gets the focus.
+#ifndef __linux__
+        Gui::setVisible(mTopWidget, true);
+#endif
         mGuiList.setSelected(strs[0]);
-        }
-    else
-        {
-        Gui::setVisible(mTopWidget, false);
+        quitGettingCompletionData();
         }
     }
 
@@ -688,22 +725,27 @@ bool FileEditView::idleHighlight()
         }
     if(task & HT_ShowMembers)
         {
-        OovStringVec members = mHighlighter.getShowMembers();
-        mCompleteList.setList(this, members);
+        if(mCompleteList.okToShowList())
+            {
+            OovStringVec members = mHighlighter.getShowMembers();
+            mCompleteList.setList(this, members);
+            }
         }
     return foundToken;
     }
 
-bool FileEditView::handleIndentKeys(GdkEvent *event)
+bool FileEditView::handleKeys(GdkEvent *event)
     {
     bool handled = false;
+
     int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
-        if(mCompleteList.handleEditorKey(event->key.keyval, modKeys))
+    if(mCompleteList.handleEditorKey(event->key.keyval, modKeys))
         {
 #if(CODE_COMPLETE)
         mHighlighter.showMembers(mCompleteList.getCompletionTriggerPointOffset());
 #endif
         }
+
     switch(event->key.keyval)
         {
         case '>':       // Checking for "->"
@@ -714,20 +756,20 @@ bool FileEditView::handleIndentKeys(GdkEvent *event)
             int offset = GuiTextBuffer::getCursorOffset(mTextBuffer);
             offset--;
             if(event->key.keyval == '>')
-            {
-            GtkTextIter prevCharIter = cursorIter;
-            gtk_text_iter_backward_char(&prevCharIter);
-            GuiText str(gtk_text_buffer_get_text(mTextBuffer,
-                &prevCharIter, &cursorIter, false));
-            if(str[0] == '-')
-                offset--;
-            else
-                offset = -1;
-            }
+                {
+                GtkTextIter prevCharIter = cursorIter;
+                gtk_text_iter_backward_char(&prevCharIter);
+                GuiText str(gtk_text_buffer_get_text(mTextBuffer,
+                    &prevCharIter, &cursorIter, false));
+                if(str[0] == '-')
+                    offset--;
+                else
+                    offset = -1;
+                }
             if(offset != -1)
-            {
-            mHighlighter.showMembers(offset);
-            }
+                {
+                mHighlighter.showMembers(offset);
+                }
 #endif
             }
             break;

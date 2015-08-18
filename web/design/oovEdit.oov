@@ -1,5 +1,5 @@
 DrawingName|Editor
 FileType|Class
 Names|Oov-Key;Editor;EditFiles;<<typedef>>Debugger;EditOptions;GuiTree;DebuggerListener;DebuggerBase;DebuggerGdb;FindFiles;
-XPositions|10;10;465;555;399;174;506;596;500;175;
-YPositions|570;17;556;554;642;556;162;345;410;597;
+XPositions|711;10;28;513;277;78;685;479;591;632;
+YPositions|554;17;724;618;620;612;159;706;245;14;

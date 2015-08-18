@@ -182,20 +182,20 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         // Find CRC's that are not used by any build configuration.
         OovStringVec unusedCrcs;
         OovStringVec deleteDirs;
-        bool deleteAnalysis = false;
         cfg.getUnusedCrcs(unusedCrcs);
         for(auto const &crcStr : unusedCrcs)
             {
             deleteDirs.push_back(cfg.getAnalysisPathUsingCRC(crcStr));
             }
-        if(cfg.isConfigDifferent(buildConfigName,
+        bool analysisDifferent = (cfg.isConfigDifferent(buildConfigName,
             BuildConfig::CT_ExtPathArgsCrc) ||
             cfg.isConfigDifferent(buildConfigName,
-            BuildConfig::CT_ProjPathArgsCrc) ||
+            BuildConfig::CT_ProjPathArgsCrc));
+        bool buildDifferent = (analysisDifferent ||
             cfg.isConfigDifferent(buildConfigName,
-            BuildConfig::CT_OtherArgsCrc))
+            BuildConfig::CT_OtherArgsCrc));
+        if(buildDifferent)
             {
-            deleteAnalysis = true;
             if(procMode != PM_Analyze)
                 {
                 deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
@@ -209,7 +209,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         // This must be after the saveConfig, because it uses the new CRC's
         // to delete the new analysis path.
         OovString analysisPath = cfg.getAnalysisPath();
-        if(deleteAnalysis)
+        if(analysisDifferent)
             {
             deleteDirs.push_back(analysisPath);
             }
@@ -223,7 +223,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
             }
         fflush(stdout);
 
-        if(deleteAnalysis)
+        if(analysisDifferent)
             {
             // Windows returns before the directory is actually deleted.
             FileWaitForDirDeleted(analysisPath);

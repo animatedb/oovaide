@@ -54,9 +54,12 @@ class OperationStatement
         OperationStatement(eModelStatementTypes type):
             mStatementType(type)
             {}
+        /// All of the classes derived from operation statement are put into a
+        /// collection, so they require a virtual destructor to delete the
+        /// correctly inserted type.
+        virtual ~OperationStatement();
         eModelStatementTypes getStatementType() const
             { return mStatementType; }
-        virtual ~OperationStatement();
         // Returns non-const, so that the rect can be modified.
         class OperationCall *getCall();
         class OperationVarRef *getVarRef();

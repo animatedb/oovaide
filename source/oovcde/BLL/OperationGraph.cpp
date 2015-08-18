@@ -16,7 +16,8 @@ static DebugFile sLog("OperGraph.txt");
 #endif
 
 OperationStatement::~OperationStatement()
-    {}
+	{
+	}
 
 OperationCall *OperationStatement::getCall()
     {
@@ -29,7 +30,8 @@ OperationVarRef *OperationStatement::getVarRef()
     }
 
 OperationNestStart::~OperationNestStart()
-    {}
+	{
+	}
 
 const OperationNestStart *OperationStatement::getNestStart() const
     {
@@ -38,7 +40,8 @@ const OperationNestStart *OperationStatement::getNestStart() const
     }
 
 OperationNestEnd::~OperationNestEnd()
-    {}
+	{
+	}
 
 const OperationNestEnd *OperationStatement::getNestEnd() const
     {
@@ -47,7 +50,8 @@ const OperationNestEnd *OperationStatement::getNestEnd() const
     }
 
 OperationCall::~OperationCall()
-    {}
+	{
+	}
 
 bool OperationCall::compareOperation(const OperationCall &call) const
     {
@@ -55,9 +59,6 @@ bool OperationCall::compareOperation(const OperationCall &call) const
             std::string(getName()).compare(call.getName()) == 0 &&
             isConst() == call.isConst());
     }
-
-OperationVarRef::~OperationVarRef()
-    {}
 
 OperationDefinition::~OperationDefinition()
     {
@@ -169,16 +170,18 @@ size_t OperationGraph::addOrGetClass(const ModelClassifier *cls, eGetClass gc)
 class DummyOperation:public ModelOperation
     {
     public:
-        DummyOperation(const std::string &name, bool isConst):
-            ModelOperation(name, Visibility::Public, isConst)
+        DummyOperation(const std::string &name, bool isConst, bool isVirt):
+            ModelOperation(name, Visibility::Public, isConst, isVirt)
             {}
     };
 
 class DummyOperationCall:public OperationCall
     {
     public:
-        DummyOperationCall(size_t operClassIndex, const std::string &name, bool isConst):
-            OperationCall(operClassIndex, *(mDo=new DummyOperation(name, isConst)))
+        DummyOperationCall(size_t operClassIndex, const std::string &name,
+        		bool isConst):
+            OperationCall(operClassIndex, *(mDo=new DummyOperation(name,
+            	isConst, false)))
             {}
         virtual ~DummyOperationCall();
     private:

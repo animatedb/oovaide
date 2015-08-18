@@ -339,9 +339,16 @@ OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters)
                 }
             }
         end = lowestEnd;
+        /// Don't add zero length strings when two delimiters are next to each other.
         size_t len = (end == std::string::npos) ? std::string::npos : end - start;
-        OovString splitStr = tempStr.substr(start, len);
-        tokens.push_back(splitStr);
+        if(len > 0)
+            {
+            OovString splitStr = tempStr.substr(start, len);
+            if(splitStr.length() > 0)
+                {
+                tokens.push_back(splitStr);
+                }
+            }
         start = (( end > (std::string::npos - delimLen)) ?
                 std::string::npos : end + delimLen);
         }

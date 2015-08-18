@@ -29,17 +29,21 @@ enum PortionNodeTypes
 class PortionNode
     {
     public:
-        PortionNode(OovStringRef name, PortionNodeTypes type):
-            mName(name), mNodeType(type)
+        PortionNode(OovStringRef name, PortionNodeTypes type,
+                bool virtOper = false):
+            mName(name), mNodeType(type), mVirtOperation(virtOper)
             {}
         OovString const &getName() const
             { return mName; }
         PortionNodeTypes getNodeType() const
             { return mNodeType; }
+        bool isVirtualOperation() const
+            { return mVirtOperation; }
 
     private:
         OovString mName;
         PortionNodeTypes mNodeType;
+        bool mVirtOperation;
     };
 
 struct PortionConnection

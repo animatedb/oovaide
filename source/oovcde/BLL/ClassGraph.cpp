@@ -148,19 +148,22 @@ void ClassGraph::addRelatedNodesRecurseUserToVector(const ModelData &model,
         int maxDepth, std::vector<ClassNode> &nodes)
     {
     // Add nodes for template types if they refer to the passed in type.
-    if(modelType->isTemplateType())
+    if((addType & AN_Templates) > 0)
         {
-        ConstModelClassifierVector relatedClassifiers;
-        model.getRelatedTemplateClasses(*modelType, relatedClassifiers);
-        for(const auto &rc : relatedClassifiers)
+        if(modelType->isTemplateUseType())
             {
-            if(rc == type)
+            ConstModelClassifierVector relatedClassifiers;
+            model.getRelatedTypeArgClasses(*modelType, relatedClassifiers);
+            for(const auto &rc : relatedClassifiers)
                 {
+                if(rc == type)
+                    {
 #if(DEBUG_ADD)
-                DebugAdd("Templ Rel", modelType);
+                DebugAdd("Typedef Rel", modelType);
 #endif
-                getRelatedNodesRecurse(model, modelType, addType, maxDepth,
-                        nodes);
+                    getRelatedNodesRecurse(model, modelType, addType, maxDepth,
+                            nodes);
+                    }
                 }
             }
         }
@@ -355,20 +358,23 @@ void ClassGraph::getRelatedNodesRecurse(const ModelData &model, const ModelType 
                     }
                 }
             }
-        if(type->isTemplateType())
+        if((addType & AN_Templates) > 0)
             {
-            // Add types pointed to by templates.
-            ConstModelClassifierVector relatedClassifiers;
-            model.getRelatedTemplateClasses(*type, relatedClassifiers);
-            for(const auto &rc : relatedClassifiers)
+            if(type->isTemplateUseType())
                 {
+                // Add types pointed to by templates.
+                ConstModelClassifierVector relatedClassifiers;
+                model.getRelatedTypeArgClasses(*type, relatedClassifiers);
+                for(const auto &rc : relatedClassifiers)
+                    {
 #if(DEBUG_ADD)
                 DebugAdd("Templ User", rc);
 #endif
-                getRelatedNodesRecurse(model, rc, addType, maxDepth, nodes);
+                    getRelatedNodesRecurse(model, rc, addType, maxDepth, nodes);
+                    }
+                addNodeToVector(ClassNode(type,
+                        getComponentOptions(*type, mGraphOptions)), nodes);
                 }
-            addNodeToVector(ClassNode(type,
-                    getComponentOptions(*type, mGraphOptions)), nodes);
             }
         int taskId = 0;
         if(mBackgroundTaskLevel == 1)
@@ -439,17 +445,19 @@ void ClassGraph::updateConnections(const ModelData &modelData)
 
         if(type)
             {
-            // Go through templates
-            if(type->isTemplateType())
+            if(mGraphOptions.drawTemplateRelations)
                 {
-                ConstModelClassifierVector relatedClassifiers;
-                modelData.getRelatedTemplateClasses(*type, relatedClassifiers);
-                for(auto const &cl : relatedClassifiers)
+                // Go through templates
+                if(type->isTemplateUseType())
                     {
-                    insertConnection(ni, cl, ClassConnectItem(ctAssociation));
+                    ConstModelClassifierVector relatedClassifiers;
+                    modelData.getRelatedTypeArgClasses(*type, relatedClassifiers);
+                    for(auto const &cl : relatedClassifiers)
+                        {
+                        insertConnection(ni, cl, ClassConnectItem(ctTemplateDependency));
+                        }
                     }
                 }
-
             const ModelClassifier *classifier = type->getClass();
             if(classifier)
                 {

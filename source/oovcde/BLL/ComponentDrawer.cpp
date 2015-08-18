@@ -43,7 +43,7 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
     mDrawer.drawRect(GraphRect(startpos.x, startpos.y+symbolSize*3, symbolSize*2, symbolSize));
     mDrawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
 
-    mDrawer.groupText(true);
+    mDrawer.groupText(true, false);
     int y = startpos.y;
     for(const auto &str : drawStrings)
         {
@@ -51,7 +51,7 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
         // Drawing text is started from the bottom left corner
         mDrawer.drawText(GraphPoint(startpos.x+symbolSize*2+pad*2, y), str);
         }
-    mDrawer.groupText(false);
+    mDrawer.groupText(false, false);
 
     return GraphSize(maxWidth, rectHeight);
     }

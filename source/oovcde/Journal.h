@@ -64,6 +64,9 @@ class JournalRecord
             { return mRecordType; }
         void displayClass(OovStringRef const className)
             { mListener.displayClass(className); }
+        void displayOperation(OovStringRef const className, OovStringRef const operName,
+			bool isConst)
+            { mListener.displayOperation(className, operName, isConst); }
 
     private:
         OovString mName;
@@ -127,6 +130,9 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
             { return "Seq"; }
         virtual void gotoClass(OovStringRef const className) override
             { displayClass(className); }
+        virtual void gotoOperation(OovStringRef const className,
+            OovStringRef const operName, bool isConst) override
+			{ displayOperation(className, operName, isConst); }
         virtual void drawingAreaButtonPressEvent(const GdkEventButton *event) override
             { mOperationDiagram.graphButtonPressEvent(event); }
         virtual void drawingAreaButtonReleaseEvent(const GdkEventButton *event) override

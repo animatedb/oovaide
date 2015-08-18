@@ -6,7 +6,6 @@ Features
 Explanations
 ------------
 	- If operations aren't shown for classes, use -x c++ for Clang.
-	- clean up compile warnings for %d/%ld and size_t
 	- If float.h is or intrinics are missing, make sure clang dir is under exec dir (bin).
 	- If classes aren't showing relation to std::vector<>, use "-x c++" for Clang.
 	- Analysis will run again if there are include path errors
@@ -18,6 +17,16 @@ Explanations
 Missing Features
 ----------------
 - General
+	- Sometimes analysis path is analysis-
+	- "OovStringRef const buildStr = mConfigFile.getValue(buildType)" is
+		optimized where buildStr contains garbage.
+	- Preserve state between sessions
+	- https://github.com/rdp/open-source-how-to-popularize-your-project
+	- http://keywordtool.io/search
+		- C++ class diagram: automatic, reverse engineering
+		- C++ ide: simple, clang
+		- C++ analysis: architecture
+		- C++ architecture: class, component, application, plugin, layered
 	- do something if project source directory does not exist
 	- add notes/title box (class name, file name, etc.)
 	- add font size for drawings, display and print
@@ -57,8 +66,9 @@ Missing Features
 	- Show related classes for a selected class
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams/List
-	- missing some template inheritance - OovThreadedWaitQueue/Private
-	- templates missing methods
+	- moviesStar.whatAreYou() causes displayOtherThoughts to show method (not param)
+	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
+	- Allow add all classes in module
 	- Saved drawings don't save preferences for each class
 	- BUG: forward class definitions mess up source line numbers
 	- Show parameter reference/pointer/const in methods
@@ -77,13 +87,15 @@ Missing Features
 	- Grid for class placement, option for grid size
 	- Add filter for class list (GTK search feature exists)
 - Portion Diagrams
+	- Allow move with multiple selection
+	- Grid for placement, option for grid size
 	- View source should go to selected function
 	- Could provide go to class for member variables
 	- Why does example Lamb class show MoveableThing?
 	- Should show connections to this/super
 	- Overloaded methods don't work
 - Sequence Diagrams
-	- Go to operation, then restart does not restore to main operation
+	- NewNameDisplayStar name not shown in displayOtherThoughts sequence
 	- Show class members in different color?
 	- Don't discard current operation when switching between class and operation view
 	- Allow restoring diagrams
@@ -100,10 +112,12 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Add global functions?
 	- Some header file changes don't reanalyze new dependent source files?
 		(cause is due to errors don't get reanalyzed?)
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
 		- Changing edit/preferences deletes analysis, but not debug/release
+	- Duplicates info is not updated if some duplicate is removed. (hsh file not updated)
 	- Add pthread to link if in compile switch? (external packages already does this)
 	- Build with relative paths doesn't include obj files (TestCpp)
 	- Adding pthreads-stubs to analysis settings in linux hangs
@@ -153,14 +167,13 @@ Missing Features
 		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 - Editor
+	- Tab close button does not ask to save when tab is closed if modified
 	- Make find in files a background task
 	- Add history list of lines of last go to defs, go to method, etc.
 	- context help window in linux doesn't go away
 	- Restore previous session, save loaded files and line numbers when exit
-	- Sometimes not all tabs have an X for exiting - newTabLabel
 	- On linux, the line number margin doesn't grow with more digits
 	- Edit/Preferences working directory ... does not display dialog
-	- Single editor with multitabs doesn't work in linux
 	- oovcde/editor - https://en.wikipedia.org/wiki/Inter-process_communication
 	- find declaration/definition (also in other translation units)
 	- Hover over tab should display full file path in tooltip
@@ -174,6 +187,7 @@ Missing Features
 		http://pages.cs.wisc.edu/~psilord/blog/18.html
 		http://www.freehackers.org/VimIntegration
 		http://vimdoc.sourceforge.net/htmldoc/netbeans.html
+	- add tab size, indent size
 	- unindenting doesn't work well when tabs are in file
 	- display column/character position
 	- refactor-rename

@@ -5,6 +5,7 @@
  *  \copyright 2014 DCBlaha.  Distributed under the GPL.
  */
 #include "Debug.h"
+#include <assert.h>
 #include <string>
 
 

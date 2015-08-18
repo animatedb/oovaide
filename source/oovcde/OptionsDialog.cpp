@@ -197,6 +197,8 @@ ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &proj
     mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOovSymbols, "ShowOovSymbolsCheckbutton")));
     mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
+            OptGuiShowTemplateRelations, "ShowTemplateRelationsCheckbutton")));
+    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperParamRelations, "ShowOperParamRelationsCheckbutton")));
     mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
             OptGuiShowOperBodyVarRelations, "ShowOperBodyVarRelationsCheckbutton")));

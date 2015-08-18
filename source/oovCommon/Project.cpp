@@ -123,22 +123,24 @@ OovString Project::getGuiOptionsFilePath()
     return fn;
     }
 
-FilePath Project::getOutputDir(OovStringRef const buildDirClass)
+static FilePath getDir(OovStringRef prefix, OovStringRef buildDirClass,
+    OovStringRef projDir)
     {
-    std::string outClass("out-");
+    std::string outClass(prefix);
     outClass += buildDirClass;
-    FilePath dir(getProjectDirectory(), FP_Dir);
+    FilePath dir(projDir, FP_Dir);
     dir.appendDir(outClass);
     return dir;
     }
 
+FilePath Project::getOutputDir(OovStringRef const buildDirClass)
+    {
+    return getDir("out-", buildDirClass, getProjectDirectory());
+    }
+
 FilePath Project::getIntermediateDir(OovStringRef const buildDirClass)
     {
-    std::string outClass("bld-");
-    outClass += buildDirClass;
-    FilePath dir(getProjectDirectory(), FP_Dir);
-    dir.appendDir(outClass);
-    return dir;
+    return getDir("bld-", buildDirClass, getProjectDirectory());
     }
 
 OovString Project::getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileName,

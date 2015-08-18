@@ -31,9 +31,9 @@
 <text x="525" y="774">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="22" y="470" width="251" height="287" />
+<rect x="22" y="470" width="251" height="296" />
 <line x1="22" y1="491" x2="273" y2="491" />
-<line x1="22" y1="530" x2="273" y2="530" />
+<line x1="22" y1="539" x2="273" y2="539" />
 </g>
 <g stroke="none">
 <text x="23" y="479">DebuggerGdb</text>
@@ -42,31 +42,34 @@
 <text x="23" y="509">-int mCommandIndex</text>
 <text x="23" y="518">-int mFrameNumber</text>
 <text x="23" y="527">-int mCurrentThread</text>
-<text x="23" y="539">+DebuggerGdb()</text>
-<text x="23" y="548">+setStackFrame(OovStringRef frameLine)</text>
-<text x="23" y="557">+toggleBreakpoint(DebuggerBreakpoint br)</text>
-<text x="23" y="566">+stepInto()</text>
-<text x="23" y="575">+stepOver()</text>
-<text x="23" y="584">+resume()</text>
-<text x="23" y="593">+interrupt()</text>
-<text x="23" y="602">+stop()</text>
-<text x="23" y="611">+sendCommand(OovStringRef command)</text>
-<text x="23" y="620">+startGetVariable(OovStringRef variable)</text>
-<text x="23" y="629">+startGetStack()</text>
-<text x="23" y="638">+startGetMemory(OovStringRef addr)</text>
-<text x="23" y="647">-runDebuggerProcess()</text>
-<text x="23" y="656">-ensureGdbChildRunning()</text>
-<text x="23" y="665">-sendAddBreakpoint(DebuggerBreakpoint br)</text>
-<text x="23" y="674">-sendDeleteBreakpoint(DebuggerBreakpoint br)</text>
-<text x="23" y="683">-sendMiCommand(OovStringRef command)</text>
-<text x="23" y="692">-handleResult(&lt;&lt;typedef&gt;&gt;string resultStr)</text>
-<text x="23" y="701">-handleBreakpoint(&lt;&lt;typedef&gt;&gt;string resultStr)</text>
-<text x="23" y="710">-handleStack(&lt;&lt;typedef&gt;&gt;string resultStr)</text>
-<text x="23" y="719">-handleValue(&lt;&lt;typedef&gt;&gt;string resultStr)</text>
-<text x="23" y="728">-onStdOut(OovStringRef out, &lt;&lt;typedef&gt;&gt;size_t len)</text>
-<text x="23" y="737">-onStdErr(OovStringRef out, &lt;&lt;typedef&gt;&gt;size_t len)</text>
-<text x="23" y="746">+~DebuggerGdb()</text>
-<text x="23" y="755">-resetFrameNumber()</text>
+<text x="23" y="536">-string&lt;&lt;typedef&gt;&gt; mGetVariableName</text>
+<text x="23" y="548">+DebuggerGdb()</text>
+<text x="23" y="557">+setStackFrame(OovStringRef frameLine)</text>
+<text x="23" y="566">+toggleBreakpoint(DebuggerBreakpoint br)</text>
+<text x="23" y="575">+stepInto()</text>
+<text x="23" y="584">+stepOver()</text>
+<text x="23" y="593">+resume()</text>
+<text x="23" y="602">+interrupt()</text>
+<text x="23" y="611">+stop()</text>
+<text x="23" y="620">+sendCommand(OovStringRef command)</text>
+<text x="23" y="629">+startGetVariable(OovStringRef variable)</text>
+<text x="23" y="638">+startGetStack()</text>
+<text x="23" y="647">+startGetMemory(OovStringRef addr)</text>
+<text x="23" y="656">-runDebuggerProcess()</text>
+<text x="23" y="665">-ensureGdbChildRunning()</text>
+<text x="23" y="674">-sendAddBreakpoint(DebuggerBreakpoint br)</text>
+<text x="23" y="683">-sendDeleteBreakpoint(DebuggerBreakpoint br)</text>
+<text x="23" y="692">-sendMiCommand(OovStringRef command)</text>
+<text x="23" y="701">-handleResult(string&lt;&lt;typedef&gt;&gt; resultStr)</text>
+<text x="23" y="710">-handleBreakpoint(string&lt;&lt;typedef&gt;&gt; resultStr)</text>
+<text x="23" y="719">-handleStack(string&lt;&lt;typedef&gt;&gt; resultStr)</text>
+<text x="23" y="728">-handleValue(string&lt;&lt;typedef&gt;&gt; resultStr)</text>
+<text x="23" y="764">-resetFrameNumber()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="23" y="737">-onStdOut(OovStringRef out, size_t&lt;&lt;typedef&gt;&gt; len)</text>
+<text x="23" y="746">-onStdErr(OovStringRef out, size_t&lt;&lt;typedef&gt;&gt; len)</text>
+<text x="23" y="755">+~DebuggerGdb()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="339" y="633" width="135" height="26" />
@@ -77,6 +80,8 @@
 <text x="340" y="642">OovBackgroundPipeProcess</text>
 <text x="340" y="651">oovCommon</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="403" y="710" width="95" height="26" />
 <line x1="403" y1="731" x2="498" y2="731" />
@@ -85,6 +90,8 @@
 <g stroke="none">
 <text x="404" y="719">OovProcessListener</text>
 <text x="404" y="728">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="15" y="22" width="363" height="377" />
@@ -100,9 +107,9 @@
 <text x="16" y="79">#OovString mWorkingDir</text>
 <text x="16" y="88">#DebuggerBreakpoints mBreakpoints</text>
 <text x="16" y="97">#DebuggerListener mDebuggerListener</text>
-<text x="16" y="106">#&lt;&lt;typedef&gt;&gt;string mDebuggerOutputBuffer</text>
+<text x="16" y="106">#string&lt;&lt;typedef&gt;&gt; mDebuggerOutputBuffer</text>
 <text x="16" y="115">#OovString mStack</text>
-<text x="16" y="124">#&lt;&lt;typedef&gt;&gt;string mVarValue</text>
+<text x="16" y="124">#string&lt;&lt;typedef&gt;&gt; mVarValue</text>
 <text x="16" y="133">#DebuggerChildStates mDebuggerChildState</text>
 <text x="16" y="142">#InProcMutex mStatusLock</text>
 <text x="16" y="151">#std::queue&lt;eDebuggerChangeStatus,std::deque&lt;eDebuggerChangeStatus,</text>
@@ -116,12 +123,17 @@
 <text x="16" y="226">+getStoppedLocation()</text>
 <text x="16" y="235">#updateChangeStatus(eDebuggerChangeStatus status)</text>
 <text x="16" y="244">#changeChildState(DebuggerChildStates state)</text>
-<text x="16" y="253">+~DebuggerBase()</text>
 <text x="16" y="262">+setListener(DebuggerListener listener)</text>
 <text x="16" y="271">+setDebuggerFilePath(OovStringRef dbgPath)</text>
 <text x="16" y="280">+setDebuggee(OovStringRef debuggee)</text>
 <text x="16" y="289">+setDebuggeeArgs(OovStringRef args)</text>
 <text x="16" y="298">+setWorkingDir(OovStringRef dir)</text>
+<text x="16" y="379">+getDebuggerFilePath()</text>
+<text x="16" y="388">+getDebuggeeFilePath()</text>
+<text x="16" y="397">+getBreakpoints()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="16" y="253">+~DebuggerBase()</text>
 <text x="16" y="307">+setStackFrame(OovStringRef frameLine)</text>
 <text x="16" y="316">+toggleBreakpoint(DebuggerBreakpoint br)</text>
 <text x="16" y="325">+stepInto()</text>
@@ -130,18 +142,6 @@
 <text x="16" y="352">+interrupt()</text>
 <text x="16" y="361">+stop()</text>
 <text x="16" y="370">+sendCommand(OovStringRef command)</text>
-<text x="16" y="379">+getDebuggerFilePath()</text>
-<text x="16" y="388">+getDebuggeeFilePath()</text>
-<text x="16" y="397">+getBreakpoints()</text>
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="331" y="753" width="109" height="26" />
-<line x1="331" y1="774" x2="440" y2="774" />
-<line x1="331" y1="777" x2="440" y2="777" />
-</g>
-<g stroke="none">
-<text x="332" y="762">&lt;&lt;typedef&gt;&gt;Debugger</text>
-<text x="332" y="771">oovEdit</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="440" y="376" width="192" height="62" />
@@ -156,6 +156,8 @@
 <text x="441" y="427">+setBreakpointNumber(DebuggerLocati</text>
 <text x="448" y="436">on loc, int bn)</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="435" y="136" width="157" height="53" />
 <line x1="435" y1="157" x2="592" y2="157" />
@@ -164,6 +166,8 @@
 <g stroke="none">
 <text x="436" y="145">DebuggerListener</text>
 <text x="436" y="154">oovEdit</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="436" y="169">+~DebuggerListener()</text>
 <text x="436" y="178">+DebugOutput(OovStringRef str)</text>
 <text x="436" y="187">+DebugStatusChanged()</text>
@@ -177,6 +181,8 @@
 <text x="510" y="83">InProcMutex</text>
 <text x="510" y="92">oovCommon</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="417" y="22" width="235" height="35" />
 <line x1="417" y1="52" x2="652" y2="52" />
@@ -186,6 +192,8 @@
 <text x="418" y="31">std::queue&lt;eDebuggerChangeStatus,std::deque&lt;</text>
 <text x="418" y="40">  eDebuggerChangeStatus,std::allocator&lt;</text>
 <text x="418" y="49">  eDebuggerChangeStatus&gt; &gt; &gt;</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="438" y="212" width="219" height="125" />
@@ -207,6 +215,8 @@
 <text x="439" y="326">+getLine()</text>
 <text x="439" y="335">+getFilename()</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="438" y="461" width="218" height="161" />
 <line x1="438" y1="482" x2="656" y2="482" />
@@ -215,8 +225,8 @@
 <g stroke="none">
 <text x="439" y="470">cDebugResult</text>
 <text x="439" y="479">oovEdit</text>
-<text x="439" y="491">-&lt;&lt;typedef&gt;&gt;string mVarName</text>
-<text x="439" y="500">-&lt;&lt;typedef&gt;&gt;string mConst</text>
+<text x="439" y="491">-string&lt;&lt;typedef&gt;&gt; mVarName</text>
+<text x="439" y="500">-string&lt;&lt;typedef&gt;&gt; mValue</text>
 <text x="439" y="509">-std::deque&lt;std::unique_ptr&lt;cDebugResult,</text>
 <text x="446" y="518">std::default_delete&lt;cDebugResult&gt; &gt;,std::</text>
 <text x="446" y="527">allocator&lt;std::unique_ptr&lt;cDebugResult,</text>
@@ -226,40 +236,39 @@
 <text x="439" y="566">+getAsString(int level)</text>
 <text x="439" y="575">-parseVarName(char resultStr)</text>
 <text x="439" y="584">-parseValue(char resultStr)</text>
-<text x="439" y="593">-parseList(char resultStr)</text>
-<text x="439" y="602">-parseConst(char resultStr)</text>
-<text x="439" y="611">+setVarName(char str, &lt;&lt;typedef&gt;&gt;size_t len)</text>
+<text x="439" y="593">+setVarName(char str, size_t&lt;&lt;typedef&gt;&gt; len)</text>
+<text x="439" y="602">-parseList(char resultStr)</text>
+<text x="439" y="611">-parseConst(char resultStr)</text>
 <text x="439" y="620">-addResult()</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="272" y1="628" x2="339" y2="638" />
-<circle cx="285" cy="630" r="5" style="fill:#ffffff" />
-<circle cx="301" cy="632" r="5" style="fill:#000000" />
-<circle cx="301" cy="632" r="2" style="fill:#000000" />
-<polygon points="272,628 279,633 285,630 280,625 272,628 " style="fill:#000000" />
-<line x1="272" y1="658" x2="415" y2="710" />
-<circle cx="386" cy="699" r="5" style="fill:#ffffff" />
-<circle cx="386" cy="699" r="2" style="fill:#ffffff" />
-<polygon points="415,710 405,701 402,710 415,710 " style="fill:#ffffff" />
+<line x1="272" y1="631" x2="339" y2="639" />
+<circle cx="285" cy="632" r="5" style="fill:#ffffff" />
+<circle cx="301" cy="634" r="5" style="fill:#000000" />
+<circle cx="301" cy="634" r="2" style="fill:#000000" />
+<polygon points="272,631 279,636 285,632 280,628 272,631 " style="fill:#000000" />
+<line x1="272" y1="661" x2="413" y2="710" />
+<circle cx="384" cy="700" r="5" style="fill:#ffffff" />
+<circle cx="384" cy="700" r="2" style="fill:#ffffff" />
+<polygon points="413,710 403,701 400,710 413,710 " style="fill:#ffffff" />
 <line x1="164" y1="470" x2="174" y2="398" />
 <circle cx="165" cy="456" r="5" style="fill:#ffffff" />
 <circle cx="169" cy="427" r="5" style="fill:#ffffff" />
 <circle cx="169" cy="427" r="2" style="fill:#ffffff" />
 <polygon points="174,398 167,410 177,411 174,398 " style="fill:#ffffff" />
-<line x1="272" y1="693" x2="365" y2="753" />
-<circle cx="297" cy="709" r="5" style="fill:#000000" />
-<circle cx="297" cy="709" r="2" style="fill:#000000" />
-<polygon points="272,693 279,704 285,695 272,693 " style="fill:#ffffff" />
-<line x1="272" y1="547" x2="478" y2="438" />
-<circle cx="284" cy="540" r="5" style="fill:#ffffff" />
-<line x1="263" y1="470" x2="492" y2="188" />
-<circle cx="271" cy="459" r="5" style="fill:#ffffff" />
-<line x1="272" y1="508" x2="474" y2="336" />
-<circle cx="282" cy="498" r="5" style="fill:#ffffff" />
-<line x1="272" y1="591" x2="438" y2="560" />
-<circle cx="285" cy="588" r="5" style="fill:#ffffff" />
+<line x1="272" y1="551" x2="479" y2="438" />
+<circle cx="284" cy="544" r="5" style="fill:#ffffff" />
+<line x1="265" y1="470" x2="493" y2="188" />
+<circle cx="273" cy="459" r="5" style="fill:#ffffff" />
+<line x1="272" y1="511" x2="475" y2="336" />
+<circle cx="282" cy="501" r="5" style="fill:#ffffff" />
+<line x1="272" y1="594" x2="438" y2="561" />
+<circle cx="285" cy="591" r="5" style="fill:#ffffff" />
 <line x1="413" y1="659" x2="443" y2="710" />
 <circle cx="420" cy="671" r="5" style="fill:#ffffff" />
+<circle cx="423" cy="677" r="2" style="fill:#ffffff" />
 <circle cx="428" cy="684" r="5" style="fill:#000000" />
 <circle cx="428" cy="684" r="2" style="fill:#000000" />
 <polygon points="413,659 413,667 420,671 420,663 413,659 " style="fill:#ffffff" />
@@ -269,6 +278,7 @@
 <polygon points="377,314 381,321 389,321 385,314 377,314 " style="fill:#000000" />
 <line x1="377" y1="183" x2="435" y2="173" />
 <circle cx="390" cy="180" r="5" style="fill:#ffffff" />
+<circle cx="397" cy="179" r="2" style="fill:#ffffff" />
 <circle cx="406" cy="177" r="5" style="fill:#ffffff" />
 <circle cx="406" cy="177" r="2" style="fill:#000000" />
 <polygon points="377,183 385,186 390,181 383,178 377,183 " style="fill:#ffffff" />

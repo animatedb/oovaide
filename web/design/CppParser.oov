@@ -1,5 +1,5 @@
 DrawingName|CppParser
 FileType|Class
-Names|Oov-Key;CppParser;ParserModelData;cDupHashFile;ModelClassifier;ModelOperation;ModelStatements;SwitchContexts;FilePath;Visibility;IncDirDependencyMap;std::map<std::basic_string<char>,std::set<std::basic_string<char>,std::less<std::basic_string<char> >,std::allocator<std::basic_string<char> > >,std::less<std::basic_string<char> >,std::allocator<std::pair<std::basic_string<char>,std::set<std::basic_string<char>,std::less<std::basic_string<char> >,std::allocator<std::basic_string<char> > > > > >;NameValueFile;CXStringDisposer;Project;cCrashDiagnostics;RefType;ModelStatement;SwitchContext;std::vector<SwitchContext,std::allocator<SwitchContext> >;CXCursor;ModelType;
-XPositions|625;18;18;443;107;214;304;601;415;198;522;404;547;27;404;306;21;167;510;487;269;25;
-YPositions|705;31;658;157;472;620;409;91;328;530;472;704;403;367;442;519;431;399;279;32;450;564;
+Names|Oov-Key;CppParser;ParserModelData;cDupHashFile;ModelClassifier;ModelOperation;ModelStatements;SwitchContexts;FilePath;Visibility;IncDirDependencyMap;NameValueFile;CXStringDisposer;Project;cCrashDiagnostics;RefType;ModelStatement;SwitchContext;std::vector<SwitchContext,std::allocator<SwitchContext> >;CXCursor;ModelType;
+XPositions|625;18;18;443;107;214;304;601;415;198;522;547;27;404;306;21;167;510;487;269;25;
+YPositions|705;31;658;157;472;620;409;91;328;530;472;403;367;442;519;431;399;279;32;450;564;

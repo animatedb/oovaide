@@ -73,9 +73,40 @@ class ModelClassifier const *ModelType::getClass(ModelType const *modelType)
     return cl;
     }
 
-bool ModelType::isTemplateType() const
+bool ModelType::isTemplateUseType() const
     {
-    return(getName().find('<') != std::string::npos);
+    // Stereotypes have two "<", but template uses have one.
+    // Look for a '<' that is not followed by a '<'.
+    OovString const &name = getName();
+    bool templateUse = false;
+    for(size_t i=0; i<name.length(); i++)
+        {
+        if(name[i] == '<')
+            {
+            // Worst case, this could index the null terminator,
+            // but normal class names should not have this format.
+            if(name[i+1] != '<')
+                {
+                templateUse = true;
+                }
+            }
+        }
+    return(templateUse);
+    }
+
+bool ModelType::isTemplateDefType(OovString const &name)
+    {
+    return(name.find("<<templ") != std::string::npos);
+    }
+
+bool ModelType::isTemplateDefType() const
+    {
+    return(isTemplateDefType(getName()));
+    }
+
+bool ModelType::isTypedefType() const
+    {
+    return(getName().find("<<type") != std::string::npos);
     }
 
 bool ModelTypeRef::match(ModelTypeRef const &typeRef) const
@@ -241,9 +272,9 @@ ModelAttribute *ModelClassifier::addAttribute(const std::string &name,
     }
 
 ModelOperation *ModelClassifier::addOperation(const std::string &name,
-        Visibility access, bool isConst)
+        Visibility access, bool isConst, bool isVirtual)
     {
-    ModelOperation *oper = new ModelOperation(name, access, isConst);
+    ModelOperation *oper = new ModelOperation(name, access, isConst, isVirtual);
     addOperation(std::unique_ptr<ModelOperation>(oper));
     return oper;
     }
@@ -496,10 +527,7 @@ void ModelData::resolveModelIds()
                     {
                     resolveDecl(typeMap, *vd);
                     }
-
-#if(OPER_RET_TYPE)
                 resolveDecl(typeMap, oper->getReturnType());
-#endif
                 }
             }
         }
@@ -606,7 +634,6 @@ bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) con
                                     }
                                 }
                             }
-#if(OPER_RET_TYPE)
                         if(!referenced)
                             {
                             if(oper->getReturnType().getDeclType() == &checkType)
@@ -615,7 +642,6 @@ bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) con
                                 break;
                                 }
                             }
-#endif
                         }
                     }
                 }
@@ -726,12 +752,10 @@ void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
                         vd->setDeclType(newType);
                         }
                     }
-#if(OPER_RET_TYPE)
                 if(oper->getReturnType().getDeclType() == existingType)
                     {
                     oper->getReturnType().setDeclType(newType);
                     }
-#endif
                 replaceStatementType(oper->getStatements(), existingType, newType);
                 }
             }
@@ -945,6 +969,38 @@ void ModelData::addType(std::unique_ptr<ModelType> &&type)
 #endif
     }
 
+/// This discards the template type parameters
+static OovString getTemplateBaseName(OovString const &name)
+    {
+    OovString templName;
+    if(ModelType::isTemplateDefType(name))
+        {
+        size_t pos = name.find('<');
+        templName = name.substr(0, pos);
+        }
+    else
+        {
+        templName = name;
+        }
+    return templName;
+    }
+
+const ModelType *ModelData::findTemplateType(OovStringRef const name) const
+    {
+    const ModelType *type = nullptr;
+    // This comparison must produce the same sort order as addType.
+    std::string baseTypeName = getBaseType(name);
+    auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseTypeName,
+        [](std::unique_ptr<ModelType> const &mod1, OovStringRef const mod2Name) -> bool
+        { return(compareStrs(getTemplateBaseName(mod1->getName()), mod2Name)); } );
+    if(iter != mTypes.end())
+        {
+        if(baseTypeName.compare(getTemplateBaseName((*iter)->getName())) == 0)
+            type = (*iter).get();
+        }
+    return type;
+    }
+
 const ModelType *ModelData::findType(OovStringRef const name) const
     {
     const ModelType *type = nullptr;
@@ -1003,6 +1059,7 @@ ModelModule const * ModelData::findModuleById(int id)
     return mod;
     }
 
+/*
 static size_t findIdentC(const std::string &str, size_t pos)
     {
     size_t ret = std::string::npos;
@@ -1048,14 +1105,36 @@ static void getIdents(const std::string &str, std::vector<std::string> &idents)
             }
         }
     }
+*/
 
-void ModelData::getRelatedTemplateClasses(const ModelType &type,
+void ModelData::getRelatedTypeArgClasses(const ModelType &type,
         ConstModelClassifierVector &classes) const
     {
     classes.clear();
-    std::string name = type.getName();
-    /// @todo - this does not handle templates of templates currently.
-    /// Only the inner template classes are found.
+    OovString name = type.getName();
+    OovStringVec delimiters;
+    delimiters.push_back("<");
+    delimiters.push_back(">");
+    delimiters.push_back(",");
+
+    OovStringVec idents = name.split(delimiters);
+    for(auto &id : idents)
+        {
+        if(id.findNonSpace() != OovString::npos)
+            {
+            const ModelClassifier *tempCl = ModelClassifier::getClass(findType(id));
+            if(!tempCl)
+                {
+                // find template
+                tempCl = ModelClassifier::getClass(findTemplateType(id));
+                }
+            if(tempCl)
+                classes.addUnique(tempCl);
+            }
+        }
+    /*
+    /// @todo - this does not handle typedefs of typedefs currently.
+    /// Only the inner typedef classes are found.
     size_t startPos = name.rfind('<');
     if(startPos != std::string::npos)
         {
@@ -1069,6 +1148,7 @@ void ModelData::getRelatedTemplateClasses(const ModelType &type,
                 classes.addUnique(tempCl);
             }
         }
+        */
     }
 
 void ModelData::getRelatedFuncParamClasses(const ModelClassifier &classifier,
@@ -1131,7 +1211,6 @@ void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier
 // If the function's return is a relation, then the relation will already
 // be present as either a param, member or body user
 /*
-#if(OPER_RET_TYPE)
         ModelTypeRef const &retType = oper->getReturnType();
         const ModelClassifier *cl = retType.getDeclType()->getClass();
         if(cl)
@@ -1139,7 +1218,6 @@ void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier
             classes.push_back(cl);
             }
         }
-#endif
 */
     }
 

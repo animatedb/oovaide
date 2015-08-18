@@ -439,6 +439,14 @@ static void displayHelpFile(OovStringRef const fileName)
     displayBrowserFile(fullFn);
     }
 
+static void displayWriteError(OovStringRef fn)
+    {
+    OovString str = "Unable to write ";
+    str += fn;
+    str += " to project directory";
+    Gui::messageBox(str);
+    }
+
 void oovGui::makeComplexityFile()
     {
     std::string fn;
@@ -448,8 +456,7 @@ void oovGui::makeComplexityFile()
         }
     else
         {
-        OovString str = "Unable to write " + fn + " to project directory";
-        Gui::messageBox(str);
+        displayWriteError(fn);
         }
     }
 
@@ -462,8 +469,7 @@ void oovGui::makeMemberUseFile()
         }
     else
         {
-        OovString str = "Unable to write " + fn + " to project directory";
-        Gui::messageBox(str);
+        displayWriteError(fn);
         }
     }
 
@@ -476,8 +482,7 @@ void oovGui::makeLineStats()
         }
     else
         {
-        OovString str = "Unable to write " + fn + " to project directory";
-        Gui::messageBox(str);
+        displayWriteError(fn);
         }
     }
 

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
   font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
-  width="768" height="1189">
+  width="807" height="1191">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="362" y="655" width="133" height="143" />
 <line x1="362" y1="668" x2="495" y2="668" />
@@ -31,7 +31,7 @@
 <text x="363" y="790">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="12" y="20" width="294" height="341" />
+<rect x="12" y="20" width="294" height="350" />
 <line x1="12" y1="41" x2="306" y2="41" />
 <line x1="12" y1="98" x2="306" y2="98" />
 </g>
@@ -59,150 +59,171 @@
 <text x="13" y="215">+makeLineStats()</text>
 <text x="13" y="224">+getDiagramName(OovStringRef ext)</text>
 <text x="13" y="233">+setDiagramName(OovStringRef name)</text>
-<text x="13" y="242">+getStatusSourceFile(&lt;&lt;typedef&gt;&gt;string fn)</text>
-<text x="13" y="251">-onBackgroundIdle(&lt;&lt;typedef&gt;&gt;gpointer data)</text>
-<text x="13" y="260">+oovGui()</text>
-<text x="13" y="269">+~oovGui()</text>
-<text x="13" y="278">+onIdle(&lt;&lt;typedef&gt;&gt;gpointer data)</text>
-<text x="13" y="287">+stopSrcManager()</text>
-<text x="13" y="296">+loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="13" y="305">+saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="13" y="314">+exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="13" y="323">+cppArgOptionsChangedUpdateDrawings()</text>
-<text x="13" y="332">+getBuilder()</text>
-<text x="13" y="341">+getProject()</text>
-<text x="13" y="350">+getWindow()</text>
-<text x="13" y="359">+getLastProjectStatus()</text>
+<text x="13" y="242">+getStatusSourceFile(string&lt;&lt;typedef&gt;&gt; fn)</text>
+<text x="13" y="251">+showProjectSettingsDialog()</text>
+<text x="13" y="260">-onBackgroundIdle(gpointer&lt;&lt;typedef&gt;&gt; data)</text>
+<text x="13" y="269">+oovGui(Builder builder)</text>
+<text x="13" y="278">+~oovGui()</text>
+<text x="13" y="287">+onIdle(gpointer&lt;&lt;typedef&gt;&gt; data)</text>
+<text x="13" y="296">+stopSrcManager()</text>
+<text x="13" y="305">+loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="13" y="314">+saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="13" y="323">+exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="13" y="332">+okToExit()</text>
+<text x="13" y="341">+cppArgOptionsChangedUpdateDrawings()</text>
+<text x="13" y="350">+getBuilder()</text>
+<text x="13" y="359">+getProject()</text>
+<text x="13" y="368">+getLastProjectStatus()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="12" y="600" width="307" height="260" />
+<rect x="12" y="600" width="307" height="296" />
 <line x1="12" y1="621" x2="319" y2="621" />
-<line x1="12" y1="669" x2="319" y2="669" />
+<line x1="12" y1="687" x2="319" y2="687" />
 </g>
 <g stroke="none">
 <text x="13" y="609">OovProject</text>
 <text x="13" y="618">oovcde</text>
 <text x="13" y="630">-OovTaskStatusListener mStatusListener</text>
 <text x="13" y="639">-ProjectStatus mProjectStatus</text>
-<text x="13" y="648">-ModelData mModelData</text>
-<text x="13" y="657">-IncDirDependencyMapReader mIncludeMap</text>
-<text x="13" y="666">-OovBackgroundPipeProcess mBackgroundProc</text>
-<text x="13" y="678">+stopAndWaitForBackgroundComplete()</text>
-<text x="13" y="687">+newProject(OovString projectDir, CompoundValue excludeDirs,</text>
-<text x="20" y="696"> OovProject::eNewProjectStatus projStatus)</text>
-<text x="13" y="705">+openProject(OovStringRef projectDir, bool openedProj)</text>
-<text x="13" y="714">+clearAnalysis()</text>
-<text x="13" y="723">+loadAnalysisFiles()</text>
-<text x="13" y="732">+runSrcManager(OovStringRef buildConfigName, OovStringRef </text>
-<text x="20" y="741">runStr, OovProject::eSrcManagerOptions smo)</text>
-<text x="13" y="750">+stopSrcManager()</text>
-<text x="13" y="759">+getProjectStatus()</text>
-<text x="13" y="768">-processAnalysisFiles()</text>
-<text x="13" y="777">-loadIncludeMap()</text>
-<text x="13" y="786">+OovProject()</text>
-<text x="13" y="795">+~OovProject()</text>
-<text x="13" y="804">+setBackgroundProcessListener(OovProcessListener listener)</text>
-<text x="13" y="813">+setStatusListener(OovTaskStatusListener listener)</text>
-<text x="13" y="822">+getModelData()</text>
-<text x="13" y="831">+getIncMap()</text>
-<text x="13" y="840">+isAnalysisReady()</text>
-<text x="13" y="849">+isProjectIdle()</text>
-<text x="13" y="858">+processItem(ProjectBackgroundItem item)</text>
+<text x="13" y="648">-ProjectReader mProjectOptions</text>
+<text x="13" y="657">-GuiOptions mGuiOptions</text>
+<text x="13" y="666">-ModelData mModelData</text>
+<text x="13" y="675">-IncDirDependencyMapReader mIncludeMap</text>
+<text x="13" y="684">-OovBackgroundPipeProcess mBackgroundProc</text>
+<text x="13" y="696">+stopAndWaitForBackgroundComplete()</text>
+<text x="13" y="705">+newProject(OovString projectDir, CompoundValue excludeDirs,</text>
+<text x="20" y="714"> OovProject::eNewProjectStatus projStatus)</text>
+<text x="13" y="723">+openProject(OovStringRef projectDir, bool openedProj)</text>
+<text x="13" y="732">+clearAnalysis()</text>
+<text x="13" y="741">+loadAnalysisFiles()</text>
+<text x="13" y="750">+runSrcManager(OovStringRef buildConfigName, OovStringRef </text>
+<text x="20" y="759">runStr, OovProject::eSrcManagerOptions smo)</text>
+<text x="13" y="768">+stopSrcManager()</text>
+<text x="13" y="777">+getProjectStatus()</text>
+<text x="13" y="786">-processAnalysisFiles()</text>
+<text x="13" y="795">-loadIncludeMap()</text>
+<text x="13" y="804">+OovProject()</text>
+<text x="13" y="822">+setBackgroundProcessListener(OovProcessListener listener)</text>
+<text x="13" y="831">+setStatusListener(OovTaskStatusListener listener)</text>
+<text x="13" y="840">+getModelData()</text>
+<text x="13" y="849">+getIncMap()</text>
+<text x="13" y="858">+getProjectOptions()</text>
+<text x="13" y="867">+getGuiOptions()</text>
+<text x="13" y="876">+isAnalysisReady()</text>
+<text x="13" y="885">+isProjectIdle()</text>
+<text x="13" y="894">+processItem(ProjectBackgroundItem item)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="13" y="813">+~OovProject()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="367" y="19" width="398" height="368" />
-<line x1="367" y1="40" x2="765" y2="40" />
-<line x1="367" y1="124" x2="765" y2="124" />
+<rect x="354" y="23" width="448" height="422" />
+<line x1="354" y1="44" x2="802" y2="44" />
+<line x1="354" y1="146" x2="802" y2="146" />
 </g>
 <g stroke="none">
-<text x="368" y="28">Contexts</text>
-<text x="368" y="37">oovcde</text>
-<text x="368" y="49">-OovProject mProject</text>
-<text x="368" y="58">-Contexts::eContexts mCurrentContext</text>
-<text x="368" y="67">-Journal mJournal</text>
-<text x="368" y="76">-ComponentList mComponentList</text>
-<text x="368" y="85">-IncludeList mIncludeList</text>
-<text x="368" y="94">-ClassList mClassList</text>
-<text x="368" y="103">-OperationList mOperationList</text>
-<text x="368" y="112">-ZoneDiagramList mZoneList</text>
-<text x="368" y="121">-JournalList mJournalList</text>
-<text x="368" y="133">+Contexts(OovProject proj)</text>
-<text x="368" y="142">+init(OovTaskStatusListener taskStatusListener)</text>
-<text x="368" y="151">+clear()</text>
-<text x="368" y="160">+updateContextAfterAnalysisCompletes()</text>
-<text x="368" y="169">+updateContextAfterProjectLoaded()</text>
-<text x="368" y="178">+displayClass(OovStringRef className)</text>
-<text x="368" y="187">+displayOperation(OovStringRef className, OovStringRef operName, bool isConst)</text>
-<text x="368" y="196">+displayClassDiagram()</text>
-<text x="368" y="205">+displayOperationsDiagram()</text>
-<text x="368" y="214">+displayJournal()</text>
-<text x="368" y="223">+displayComponentDiagram()</text>
-<text x="368" y="232">+displayIncludeDiagram()</text>
-<text x="368" y="241">+displayZoneDiagram()</text>
-<text x="368" y="250">+zoneTreeviewButtonRelease(&lt;&lt;typedef&gt;&gt;GdkEventButton event)</text>
-<text x="368" y="259">+setContext(Contexts::eContexts context)</text>
-<text x="368" y="268">-updateJournalList()</text>
-<text x="368" y="277">-updateIncludeList()</text>
-<text x="368" y="286">-updateClassList()</text>
-<text x="368" y="295">-updateOperationList(ModelData modelData, OovStringRef className)</text>
-<text x="368" y="304">+stopAndWaitForBackgroundComplete()</text>
-<text x="368" y="313">+loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="368" y="322">+saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="368" y="331">+exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="368" y="340">+cppArgOptionsChangedUpdateDrawings()</text>
-<text x="368" y="349">+getCurrentJournalRecord()</text>
-<text x="368" y="358">+getCurrentJournalRecord()</text>
-<text x="368" y="367">-addClass(OovStringRef className)</text>
-<text x="368" y="376">-getSelectedClass()</text>
-<text x="368" y="385">-clearSelectedComponent()</text>
+<text x="355" y="32">Contexts</text>
+<text x="355" y="41">oovcde</text>
+<text x="355" y="53">-OovProject mProject</text>
+<text x="355" y="62">-Journal mJournal</text>
+<text x="355" y="71">-Contexts::eContexts mCurrentContext</text>
+<text x="355" y="80">-ComponentList mComponentList</text>
+<text x="355" y="89">-IncludeList mIncludeList</text>
+<text x="355" y="98">-ClassList mClassList</text>
+<text x="355" y="107">-OperationList mOperationList</text>
+<text x="355" y="116">-ZoneDiagramList mZoneList</text>
+<text x="355" y="125">-JournalList mJournalList</text>
+<text x="355" y="134">-EditorContainer mEditorContainer</text>
+<text x="355" y="143">-std::stack&lt;OovIpcMsg,std::deque&lt;OovIpcMsg,std::allocator&lt;OovIpcMsg&gt; &gt; &gt; mEditorMessages</text>
+<text x="355" y="155">+Contexts(OovProject proj)</text>
+<text x="355" y="164">+init(OovTaskStatusListener taskStatusListener)</text>
+<text x="355" y="173">+clear()</text>
+<text x="355" y="182">+updateContextAfterAnalysisCompletes()</text>
+<text x="355" y="191">+updateContextAfterProjectLoaded()</text>
+<text x="355" y="200">+handleEditorMessages(EditorContainerCommands command)</text>
+<text x="355" y="209">+displayPortion(OovStringRef className)</text>
+<text x="355" y="236">+displaySelectedClassDiagram()</text>
+<text x="355" y="245">+displayOperationsDiagram()</text>
+<text x="355" y="254">+displayJournal()</text>
+<text x="355" y="263">+displayComponentDiagram()</text>
+<text x="355" y="272">+displayIncludeDiagram()</text>
+<text x="355" y="281">+displayZoneDiagram()</text>
+<text x="355" y="290">+zoneTreeviewButtonRelease(GdkEventButton&lt;&lt;typedef&gt;&gt; event)</text>
+<text x="355" y="299">+setContext(Contexts::eContexts context)</text>
+<text x="355" y="308">-updateJournalList()</text>
+<text x="355" y="317">-updateIncludeList()</text>
+<text x="355" y="326">-updateClassList()</text>
+<text x="355" y="335">-updateOperationList(ModelData modelData, OovStringRef className)</text>
+<text x="355" y="344">+stopAndWaitForBackgroundComplete()</text>
+<text x="355" y="353">+loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="355" y="362">+saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="355" y="371">+exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="355" y="380">+cppArgOptionsChangedUpdateDrawings()</text>
+<text x="355" y="389">+getCurrentJournalRecord()</text>
+<text x="355" y="398">+getCurrentJournalRecord()</text>
+<text x="355" y="407">+okToExit()</text>
+<text x="355" y="425">-addClass(OovStringRef className)</text>
+<text x="355" y="434">-getSelectedClass()</text>
+<text x="355" y="443">-clearSelectedComponent()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="355" y="218">+displayClass(OovStringRef className)</text>
+<text x="355" y="227">+displayOperation(OovStringRef className, OovStringRef operName, bool isConst)</text>
+<text x="355" y="416">+handleEditorMessage(OovIpcMsg msg)</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="14" y="1081" width="232" height="107" />
-<line x1="14" y1="1102" x2="246" y2="1102" />
-<line x1="14" y1="1141" x2="246" y2="1141" />
+<rect x="11" y="1083" width="232" height="107" />
+<line x1="11" y1="1104" x2="243" y2="1104" />
+<line x1="11" y1="1143" x2="243" y2="1143" />
 </g>
 <g stroke="none">
-<text x="15" y="1090">ProjectStatus</text>
-<text x="15" y="1099">oovcde</text>
-<text x="15" y="1111">+bool mProjectOpen</text>
-<text x="15" y="1120">+ProjectStatus::eAnalysisStatus mAnalysisStatus</text>
-<text x="15" y="1129">+bool mBackgroundProcIdle</text>
-<text x="15" y="1138">+bool mBackgroundThreadIdle</text>
-<text x="15" y="1150">+ProjectStatus()</text>
-<text x="15" y="1159">+clear()</text>
-<text x="15" y="1168">+operator!=(ProjectStatus stat)</text>
-<text x="15" y="1177">+isAnalysisReady()</text>
-<text x="15" y="1186">+isIdle()</text>
+<text x="12" y="1092">ProjectStatus</text>
+<text x="12" y="1101">oovcde</text>
+<text x="12" y="1113">+bool mProjectOpen</text>
+<text x="12" y="1122">+ProjectStatus::eAnalysisStatus mAnalysisStatus</text>
+<text x="12" y="1131">+bool mBackgroundProcIdle</text>
+<text x="12" y="1140">+bool mBackgroundThreadIdle</text>
+<text x="12" y="1152">+ProjectStatus()</text>
+<text x="12" y="1161">+clear()</text>
+<text x="12" y="1170">+operator!=(ProjectStatus stat)</text>
+<text x="12" y="1179">+isAnalysisReady()</text>
+<text x="12" y="1188">+isIdle()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="13" y="895" width="212" height="170" />
-<line x1="13" y1="916" x2="225" y2="916" />
-<line x1="13" y1="964" x2="225" y2="964" />
+<rect x="13" y="905" width="212" height="170" />
+<line x1="13" y1="926" x2="225" y2="926" />
+<line x1="13" y1="974" x2="225" y2="974" />
 </g>
 <g stroke="none">
-<text x="14" y="904">WindowBuildListener</text>
-<text x="14" y="913">oovcde</text>
-<text x="14" y="925">-&lt;&lt;typedef&gt;&gt;GtkTextView mStatusTextView</text>
-<text x="14" y="934">-&lt;&lt;typedef&gt;&gt;string mStdOutAndErr</text>
-<text x="14" y="943">-InProcMutex mMutex</text>
-<text x="14" y="952">-GuiHighlightTag mErrHighlightTag</text>
-<text x="14" y="961">-bool mComplete</text>
-<text x="14" y="973">+initListener(Builder builder)</text>
-<text x="14" y="982">+processComplete()</text>
-<text x="14" y="991">+onBackgroundProcessIdle(bool complete)</text>
-<text x="14" y="1000">+WindowBuildListener()</text>
-<text x="14" y="1009">+~WindowBuildListener()</text>
-<text x="14" y="1018">+getBuffer()</text>
-<text x="14" y="1027">+clearStatusTextView(Builder builder)</text>
-<text x="14" y="1036">+onStdOut(OovStringRef out, &lt;&lt;typedef&gt;</text>
-<text x="21" y="1045">&gt;size_t len)</text>
-<text x="14" y="1054">+onStdErr(OovStringRef out, &lt;&lt;typedef&gt;</text>
-<text x="21" y="1063">&gt;size_t len)</text>
+<text x="14" y="914">WindowBuildListener</text>
+<text x="14" y="923">oovcde</text>
+<text x="14" y="935">-GtkTextView&lt;&lt;typedef&gt;&gt; mStatusTextView</text>
+<text x="14" y="944">-string&lt;&lt;typedef&gt;&gt; mStdOutAndErr</text>
+<text x="14" y="953">-InProcMutex mMutex</text>
+<text x="14" y="962">-GuiHighlightTag mErrHighlightTag</text>
+<text x="14" y="971">-bool mComplete</text>
+<text x="14" y="983">+initListener(Builder builder)</text>
+<text x="14" y="1001">+onBackgroundProcessIdle(bool complete)</text>
+<text x="14" y="1010">+WindowBuildListener()</text>
+<text x="14" y="1028">+getBuffer()</text>
+<text x="14" y="1037">+clearStatusTextView(Builder builder)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="14" y="992">+processComplete()</text>
+<text x="14" y="1019">+~WindowBuildListener()</text>
+<text x="14" y="1046">+onStdOut(OovStringRef out, size_t&lt;</text>
+<text x="21" y="1055">&lt;typedef&gt;&gt; len)</text>
+<text x="14" y="1064">+onStdErr(OovStringRef out, size_t&lt;</text>
+<text x="21" y="1073">&lt;typedef&gt;&gt; len)</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="11" y="412" width="227" height="170" />
-<line x1="11" y1="433" x2="238" y2="433" />
-<line x1="11" y1="490" x2="238" y2="490" />
+<rect x="11" y="412" width="195" height="170" />
+<line x1="11" y1="433" x2="206" y2="433" />
+<line x1="11" y1="490" x2="206" y2="490" />
 </g>
 <g stroke="none">
 <text x="12" y="421">WindowProjectStatusListener</text>
@@ -210,92 +231,101 @@
 <text x="12" y="442">-int mProgressIteration</text>
 <text x="12" y="451">-std::mutex mMutex</text>
 <text x="12" y="460">-OovString mUpdateText</text>
-<text x="12" y="469">-std::atomic&lt;WindowProjectStatusListener::</text>
-<text x="19" y="478">eTaskStates&gt; mState</text>
+<text x="12" y="469">-std::atomic&lt;WindowProjectStatusListen</text>
+<text x="19" y="478">er::eTaskStates&gt; mState</text>
 <text x="12" y="487">-TaskBusyDialog mBackDlg</text>
 <text x="12" y="499">+WindowProjectStatusListener()</text>
 <text x="12" y="508">+~WindowProjectStatusListener()</text>
-<text x="12" y="517">+startTask(OovStringRef text, &lt;&lt;typedef&gt;</text>
-<text x="19" y="526">&gt;size_t i)</text>
-<text x="12" y="535">+updateProgressIteration(&lt;&lt;typedef&gt;</text>
-<text x="19" y="544">&gt;OovTaskStatusListenerId id, &lt;&lt;typedef&gt;</text>
-<text x="19" y="553">&gt;size_t i, OovStringRef text)</text>
-<text x="12" y="562">+endTask(&lt;&lt;typedef&gt;&gt;OovTaskStatusListenerId</text>
-<text x="19" y="571"> id)</text>
 <text x="12" y="580">+idleUpdateProgress()</text>
 </g>
+<g stroke="none" font-style="italic">
+<text x="12" y="517">+startTask(OovStringRef text,</text>
+<text x="19" y="526"> size_t&lt;&lt;typedef&gt;&gt; i)</text>
+<text x="12" y="535">+updateProgressIteration(OovTaskStatus</text>
+<text x="19" y="544">ListenerId&lt;&lt;typedef&gt;&gt; id, size_t&lt;</text>
+<text x="19" y="553">&lt;typedef&gt;&gt; i, OovStringRef text)</text>
+<text x="12" y="562">+endTask(OovTaskStatusListenerId&lt;</text>
+<text x="19" y="571">&lt;typedef&gt;&gt; id)</text>
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="329" y="813" width="398" height="368" />
+<rect x="329" y="813" width="398" height="377" />
 <line x1="329" y1="834" x2="727" y2="834" />
-<line x1="329" y1="909" x2="727" y2="909" />
+<line x1="329" y1="918" x2="727" y2="918" />
 </g>
 <g stroke="none">
 <text x="330" y="822">Journal</text>
 <text x="330" y="831">oovcde</text>
-<text x="330" y="843">-std::vector&lt;JournalRecord,std::allocator&lt;JournalRecord&gt; &gt; mRecords</text>
-<text x="330" y="852">-&lt;&lt;typedef&gt;&gt;size_t mCurrentRecord</text>
-<text x="330" y="861">-Builder mBuilder</text>
-<text x="330" y="870">-ModelData mModel</text>
-<text x="330" y="879">-IncDirDependencyMapReader mIncludeMap</text>
-<text x="330" y="888">-JournalListener mJournalListener</text>
-<text x="330" y="897">-OovTaskStatusListener mTaskStatusListener</text>
-<text x="330" y="906">-&lt;&lt;typedef&gt;&gt;size_t NO_INDEX</text>
-<text x="330" y="918">+Journal()</text>
-<text x="330" y="927">+getJournal()</text>
-<text x="330" y="936">+clear()</text>
-<text x="330" y="945">+displayClass(OovStringRef className)</text>
-<text x="330" y="954">+addClass(OovStringRef className)</text>
-<text x="330" y="963">+displayOperation(OovStringRef className, OovStringRef operName, bool isConst)</text>
-<text x="330" y="972">+displayComponents()</text>
-<text x="330" y="981">+displayWorldZone()</text>
-<text x="330" y="990">+displayPortion(OovStringRef className)</text>
-<text x="330" y="999">+displayInclude(OovStringRef incName)</text>
-<text x="330" y="1008">+loadFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="330" y="1017">+saveFile(&lt;&lt;typedef&gt;&gt;FILE drawFp)</text>
-<text x="330" y="1026">+exportFile(&lt;&lt;typedef&gt;&gt;FILE svgFp)</text>
-<text x="330" y="1035">+cppArgOptionsChangedUpdateDrawings()</text>
-<text x="330" y="1044">+removeUnmodifiedRecords()</text>
-<text x="330" y="1053">-addRecord(JournalRecord record, OovStringRef name)</text>
-<text x="330" y="1062">-newClassRecord(OovStringRef className)</text>
-<text x="330" y="1071">-newPortionRecord(OovStringRef portionName)</text>
-<text x="330" y="1080">-removeRecord(&lt;&lt;typedef&gt;&gt;size_t index)</text>
-<text x="330" y="1089">-findRecord(eRecordTypes rt, OovStringRef name)</text>
-<text x="330" y="1098">+~Journal()</text>
-<text x="330" y="1107">+init(Builder builder, ModelData model, IncDirDependencyMapReader incMap, </text>
-<text x="337" y="1116">JournalListener journalListener, OovTaskStatusListener taskStatusListener)</text>
-<text x="330" y="1125">+stopAndWaitForBackgroundComplete()</text>
-<text x="330" y="1134">+setCurrentRecord(&lt;&lt;typedef&gt;&gt;size_t index)</text>
-<text x="330" y="1143">+getRecords()</text>
-<text x="330" y="1152">+getCurrentRecord()</text>
+<text x="330" y="843">-GuiOptions mGuiOptions</text>
+<text x="330" y="852">-std::vector&lt;JournalRecord,std::allocator&lt;JournalRecord&gt; &gt; mRecords</text>
+<text x="330" y="861">-size_t&lt;&lt;typedef&gt;&gt; mCurrentRecord</text>
+<text x="330" y="870">-Builder mBuilder</text>
+<text x="330" y="879">-ModelData mModel</text>
+<text x="330" y="888">-IncDirDependencyMapReader mIncludeMap</text>
+<text x="330" y="897">-JournalListener mJournalListener</text>
+<text x="330" y="906">-OovTaskStatusListener mTaskStatusListener</text>
+<text x="330" y="915">-size_t&lt;&lt;typedef&gt;&gt; NO_INDEX</text>
+<text x="330" y="927">+Journal(GuiOptions guiOptions)</text>
+<text x="330" y="936">+getJournal()</text>
+<text x="330" y="945">+clear()</text>
+<text x="330" y="954">+displayClass(OovStringRef className)</text>
+<text x="330" y="963">+addClass(OovStringRef className)</text>
+<text x="330" y="972">+displayOperation(OovStringRef className, OovStringRef operName, bool isConst)</text>
+<text x="330" y="981">+displayComponents()</text>
+<text x="330" y="990">+displayWorldZone()</text>
+<text x="330" y="999">+displayPortion(OovStringRef className)</text>
+<text x="330" y="1008">+displayInclude(OovStringRef incName)</text>
+<text x="330" y="1017">+loadFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="330" y="1026">+saveFile(FILE&lt;&lt;typedef&gt;&gt; drawFp)</text>
+<text x="330" y="1035">+exportFile(FILE&lt;&lt;typedef&gt;&gt; svgFp)</text>
+<text x="330" y="1044">+cppArgOptionsChangedUpdateDrawings()</text>
+<text x="330" y="1053">+removeUnmodifiedRecords()</text>
+<text x="330" y="1062">-addRecord(JournalRecord record, OovStringRef name)</text>
+<text x="330" y="1071">-newClassRecord(OovStringRef className)</text>
+<text x="330" y="1080">-newPortionRecord(OovStringRef portionName)</text>
+<text x="330" y="1089">-removeRecord(size_t&lt;&lt;typedef&gt;&gt; index)</text>
+<text x="330" y="1098">-findRecord(eRecordTypes rt, OovStringRef name)</text>
+<text x="330" y="1116">+init(Builder builder, ModelData model, IncDirDependencyMapReader incMap, </text>
+<text x="337" y="1125">JournalListener journalListener, OovTaskStatusListener taskStatusListener)</text>
+<text x="330" y="1134">+stopAndWaitForBackgroundComplete()</text>
+<text x="330" y="1143">+setCurrentRecord(size_t&lt;&lt;typedef&gt;&gt; index)</text>
+<text x="330" y="1152">+getRecords()</text>
 <text x="330" y="1161">+getCurrentRecord()</text>
-<text x="330" y="1170">+getCurrentZoneDiagram()</text>
-<text x="330" y="1179">+getCurrentClassDiagram()</text>
+<text x="330" y="1170">+getCurrentRecord()</text>
+<text x="330" y="1179">+getCurrentZoneDiagram()</text>
+<text x="330" y="1188">+getCurrentClassDiagram()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="330" y="1107">+~Journal()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="550" y="556" width="217" height="89" />
-<line x1="550" y1="577" x2="767" y2="577" />
-<line x1="550" y1="598" x2="767" y2="598" />
+<rect x="587" y="606" width="217" height="89" />
+<line x1="587" y1="627" x2="804" y2="627" />
+<line x1="587" y1="648" x2="804" y2="648" />
 </g>
 <g stroke="none">
-<text x="551" y="565">ComponentList</text>
-<text x="551" y="574">oovcde</text>
-<text x="551" y="586">-std::vector&lt;ComponentListItem,std::allocator</text>
-<text x="558" y="595">&lt;ComponentListItem&gt; &gt; mListMap</text>
-<text x="551" y="607">+updateComponentList()</text>
-<text x="551" y="616">+getSelectedFileName()</text>
-<text x="551" y="625">+init(Builder builder, OovStringRef </text>
-<text x="558" y="634">widgetName, OovStringRef title)</text>
-<text x="551" y="643">+clear()</text>
+<text x="588" y="615">ComponentList</text>
+<text x="588" y="624">oovcde</text>
+<text x="588" y="636">-std::vector&lt;ComponentListItem,std::allocator</text>
+<text x="595" y="645">&lt;ComponentListItem&gt; &gt; mListMap</text>
+<text x="588" y="657">+updateComponentList()</text>
+<text x="588" y="666">+getSelectedFileName()</text>
+<text x="588" y="675">+init(Builder builder, OovStringRef </text>
+<text x="595" y="684">widgetName, OovStringRef title)</text>
+<text x="588" y="693">+clear()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="414" y="490" width="102" height="35" />
-<line x1="414" y1="511" x2="516" y2="511" />
-<line x1="414" y1="514" x2="516" y2="514" />
+<rect x="408" y="494" width="102" height="35" />
+<line x1="408" y1="515" x2="510" y2="515" />
+<line x1="408" y1="518" x2="510" y2="518" />
 </g>
 <g stroke="none">
-<text x="415" y="499">IncludeList</text>
-<text x="415" y="508">oovcde</text>
-<text x="415" y="523">+init(Builder builder)</text>
+<text x="409" y="503">IncludeList</text>
+<text x="409" y="512">oovcde</text>
+<text x="409" y="527">+init(Builder builder)</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="357" y="546" width="102" height="35" />
@@ -307,31 +337,37 @@
 <text x="358" y="564">oovcde</text>
 <text x="358" y="579">+init(Builder builder)</text>
 </g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="344" y="438" width="102" height="35" />
-<line x1="344" y1="459" x2="446" y2="459" />
-<line x1="344" y1="462" x2="446" y2="462" />
-</g>
-<g stroke="none">
-<text x="345" y="447">OperationList</text>
-<text x="345" y="456">oovcde</text>
-<text x="345" y="471">+init(Builder builder)</text>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="560" y="433" width="205" height="89" />
-<line x1="560" y1="454" x2="765" y2="454" />
-<line x1="560" y1="475" x2="765" y2="475" />
+<rect x="260" y="482" width="102" height="35" />
+<line x1="260" y1="503" x2="362" y2="503" />
+<line x1="260" y1="506" x2="362" y2="506" />
 </g>
 <g stroke="none">
-<text x="561" y="442">ZoneDiagramList</text>
-<text x="561" y="451">oovcde</text>
-<text x="561" y="463">-GuiTree mComponentTree</text>
-<text x="561" y="472">-ComponentTypesFile mComponentFile</text>
-<text x="561" y="484">+init()</text>
-<text x="561" y="493">+update()</text>
-<text x="561" y="502">+getParent(&lt;&lt;typedef&gt;&gt;string compName)</text>
-<text x="561" y="511">+clear()</text>
-<text x="561" y="520">+getComponentTree()</text>
+<text x="261" y="491">OperationList</text>
+<text x="261" y="500">oovcde</text>
+<text x="261" y="515">+init(Builder builder)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="601" y="486" width="205" height="89" />
+<line x1="601" y1="507" x2="806" y2="507" />
+<line x1="601" y1="528" x2="806" y2="528" />
+</g>
+<g stroke="none">
+<text x="602" y="495">ZoneDiagramList</text>
+<text x="602" y="504">oovcde</text>
+<text x="602" y="516">-GuiTree mComponentTree</text>
+<text x="602" y="525">-ComponentTypesFile mComponentFile</text>
+<text x="602" y="537">+init()</text>
+<text x="602" y="546">+update()</text>
+<text x="602" y="555">+getParent(string&lt;&lt;typedef&gt;&gt; compName)</text>
+<text x="602" y="564">+clear()</text>
+<text x="602" y="573">+getComponentTree()</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="414" y="602" width="102" height="35" />
@@ -343,98 +379,105 @@
 <text x="415" y="620">oovcde</text>
 <text x="415" y="635">+init(Builder builder)</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="553" y="705" width="213" height="62" />
-<line x1="553" y1="726" x2="766" y2="726" />
-<line x1="553" y1="729" x2="766" y2="729" />
+<rect x="588" y="721" width="213" height="62" />
+<line x1="588" y1="742" x2="801" y2="742" />
+<line x1="588" y1="745" x2="801" y2="745" />
 </g>
 <g stroke="none">
-<text x="554" y="714">JournalListener</text>
-<text x="554" y="723">oovcde</text>
-<text x="554" y="738">+~JournalListener()</text>
-<text x="554" y="747">+displayClass(OovStringRef className)</text>
-<text x="554" y="756">+displayOperation(OovStringRef className,</text>
-<text x="561" y="765"> OovStringRef operName, bool isConst)</text>
+<text x="589" y="730">JournalListener</text>
+<text x="589" y="739">oovcde</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="589" y="754">+~JournalListener()</text>
+<text x="589" y="763">+displayClass(OovStringRef className)</text>
+<text x="589" y="772">+displayOperation(OovStringRef className,</text>
+<text x="596" y="781"> OovStringRef operName, bool isConst)</text>
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="160" y1="360" x2="164" y2="600" />
-<circle cx="160" cy="373" r="5" style="fill:#ffffff" />
-<circle cx="160" cy="389" r="5" style="fill:#000000" />
-<circle cx="160" cy="389" r="2" style="fill:#000000" />
-<polygon points="160,360 156,367 160,373 164,367 160,360 " style="fill:#000000" />
-<line x1="306" y1="194" x2="367" y2="197" />
-<circle cx="319" cy="194" r="5" style="fill:#ffffff" />
-<circle cx="335" cy="195" r="5" style="fill:#000000" />
-<circle cx="335" cy="195" r="2" style="fill:#000000" />
-<polygon points="306,194 313,198 319,194 314,190 306,194 " style="fill:#000000" />
-<line x1="154" y1="360" x2="131" y2="1081" />
-<circle cx="153" cy="373" r="5" style="fill:#ffffff" />
-<circle cx="153" cy="389" r="5" style="fill:#000000" />
-<circle cx="153" cy="389" r="2" style="fill:#000000" />
-<polygon points="154,360 150,367 154,373 158,367 154,360 " style="fill:#000000" />
-<line x1="151" y1="360" x2="123" y2="895" />
-<circle cx="150" cy="373" r="5" style="fill:#ffffff" />
-<circle cx="149" cy="389" r="5" style="fill:#000000" />
-<circle cx="149" cy="389" r="2" style="fill:#000000" />
-<polygon points="151,360 147,367 151,373 155,368 151,360 " style="fill:#000000" />
-<line x1="140" y1="360" x2="133" y2="412" />
-<circle cx="138" cy="373" r="5" style="fill:#ffffff" />
-<circle cx="135" cy="389" r="5" style="fill:#000000" />
-<circle cx="135" cy="389" r="2" style="fill:#000000" />
-<polygon points="140,360 135,367 139,373 143,368 140,360 " style="fill:#000000" />
-<line x1="263" y1="600" x2="426" y2="387" />
-<circle cx="417" cy="398" r="5" style="fill:#ffffff" />
-<circle cx="407" cy="410" r="5" style="fill:#000000" />
-<circle cx="407" cy="410" r="2" style="fill:#000000" />
-<polygon points="426,387 418,390 418,398 425,395 426,387 " style="fill:#ffffff" />
-<line x1="154" y1="860" x2="134" y2="1081" />
-<circle cx="152" cy="873" r="5" style="fill:#ffffff" />
-<circle cx="151" cy="889" r="5" style="fill:#000000" />
-<circle cx="151" cy="889" r="2" style="fill:#000000" />
-<polygon points="154,860 149,867 153,873 157,868 154,860 " style="fill:#000000" />
-<line x1="558" y1="387" x2="536" y2="813" />
-<circle cx="557" cy="400" r="5" style="fill:#ffffff" />
-<circle cx="556" cy="416" r="5" style="fill:#000000" />
-<circle cx="556" cy="416" r="2" style="fill:#000000" />
-<polygon points="558,387 554,394 558,400 562,395 558,387 " style="fill:#000000" />
-<line x1="608" y1="387" x2="648" y2="556" />
-<circle cx="611" cy="400" r="5" style="fill:#ffffff" />
-<circle cx="614" cy="416" r="5" style="fill:#000000" />
-<circle cx="614" cy="416" r="2" style="fill:#000000" />
-<polygon points="608,387 606,395 611,400 614,393 608,387 " style="fill:#000000" />
-<line x1="505" y1="387" x2="470" y2="490" />
-<circle cx="500" cy="400" r="5" style="fill:#ffffff" />
-<circle cx="495" cy="415" r="5" style="fill:#000000" />
-<circle cx="495" cy="415" r="2" style="fill:#000000" />
-<polygon points="505,387 499,392 501,400 506,395 505,387 " style="fill:#000000" />
-<line x1="486" y1="387" x2="415" y2="546" />
-<circle cx="480" cy="399" r="5" style="fill:#ffffff" />
-<circle cx="473" cy="414" r="5" style="fill:#000000" />
-<circle cx="473" cy="414" r="2" style="fill:#000000" />
-<polygon points="486,387 479,392 481,399 486,395 486,387 " style="fill:#000000" />
-<line x1="442" y1="387" x2="406" y2="438" />
-<circle cx="433" cy="398" r="5" style="fill:#ffffff" />
-<circle cx="424" cy="411" r="5" style="fill:#000000" />
-<circle cx="424" cy="411" r="2" style="fill:#000000" />
-<polygon points="442,387 434,390 434,398 442,395 442,387 " style="fill:#000000" />
-<line x1="630" y1="387" x2="647" y2="433" />
-<circle cx="634" cy="400" r="5" style="fill:#ffffff" />
-<circle cx="640" cy="415" r="5" style="fill:#000000" />
-<circle cx="640" cy="415" r="2" style="fill:#000000" />
-<polygon points="630,387 629,395 634,400 636,392 630,387 " style="fill:#000000" />
-<line x1="522" y1="387" x2="469" y2="602" />
-<circle cx="518" cy="400" r="5" style="fill:#ffffff" />
-<circle cx="514" cy="416" r="5" style="fill:#000000" />
-<circle cx="514" cy="416" r="2" style="fill:#000000" />
-<polygon points="522,387 516,393 519,400 524,395 522,387 " style="fill:#000000" />
-<line x1="598" y1="387" x2="654" y2="705" />
-<circle cx="648" cy="675" r="5" style="fill:#ffffff" />
-<circle cx="648" cy="675" r="2" style="fill:#ffffff" />
-<polygon points="654,705 657,692 647,694 654,705 " style="fill:#ffffff" />
-<line x1="620" y1="813" x2="644" y2="767" />
-<circle cx="626" cy="800" r="5" style="fill:#ffffff" />
-<circle cx="633" cy="786" r="5" style="fill:#000000" />
-<circle cx="633" cy="786" r="2" style="fill:#000000" />
-<polygon points="620,813 627,809 626,801 620,805 620,813 " style="fill:#ffffff" />
+<line x1="160" y1="370" x2="164" y2="600" />
+<circle cx="160" cy="383" r="5" style="fill:#ffffff" />
+<circle cx="160" cy="399" r="5" style="fill:#000000" />
+<circle cx="160" cy="399" r="2" style="fill:#000000" />
+<polygon points="160,370 156,377 160,383 164,377 160,370 " style="fill:#000000" />
+<line x1="306" y1="208" x2="354" y2="214" />
+<circle cx="319" cy="209" r="5" style="fill:#ffffff" />
+<circle cx="335" cy="211" r="5" style="fill:#000000" />
+<circle cx="335" cy="211" r="2" style="fill:#000000" />
+<polygon points="306,208 313,213 319,209 314,205 306,208 " style="fill:#000000" />
+<line x1="154" y1="370" x2="128" y2="1083" />
+<circle cx="153" cy="383" r="5" style="fill:#ffffff" />
+<circle cx="153" cy="390" r="2" style="fill:#ffffff" />
+<circle cx="152" cy="399" r="5" style="fill:#000000" />
+<circle cx="152" cy="399" r="2" style="fill:#000000" />
+<polygon points="154,370 150,377 154,383 158,377 154,370 " style="fill:#000000" />
+<line x1="151" y1="370" x2="123" y2="905" />
+<circle cx="150" cy="383" r="5" style="fill:#ffffff" />
+<circle cx="149" cy="399" r="5" style="fill:#000000" />
+<circle cx="149" cy="399" r="2" style="fill:#000000" />
+<polygon points="151,370 147,377 151,383 155,378 151,370 " style="fill:#000000" />
+<line x1="130" y1="370" x2="122" y2="412" />
+<circle cx="127" cy="383" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="399" r="5" style="fill:#000000" />
+<circle cx="124" cy="399" r="2" style="fill:#000000" />
+<polygon points="130,370 125,376 128,383 132,378 130,370 " style="fill:#000000" />
+<line x1="283" y1="600" x2="409" y2="445" />
+<circle cx="400" cy="455" r="5" style="fill:#ffffff" />
+<circle cx="395" cy="461" r="2" style="fill:#ffffff" />
+<circle cx="390" cy="468" r="5" style="fill:#000000" />
+<circle cx="390" cy="468" r="2" style="fill:#000000" />
+<polygon points="409,445 401,448 401,455 408,453 409,445 " style="fill:#ffffff" />
+<line x1="151" y1="896" x2="132" y2="1083" />
+<circle cx="149" cy="909" r="5" style="fill:#ffffff" />
+<circle cx="147" cy="925" r="5" style="fill:#000000" />
+<circle cx="147" cy="925" r="2" style="fill:#000000" />
+<polygon points="151,896 146,903 150,909 154,904 151,896 " style="fill:#000000" />
+<line x1="565" y1="445" x2="540" y2="813" />
+<circle cx="564" cy="458" r="5" style="fill:#ffffff" />
+<circle cx="562" cy="474" r="5" style="fill:#000000" />
+<circle cx="562" cy="474" r="2" style="fill:#000000" />
+<polygon points="565,445 560,452 565,458 568,453 565,445 " style="fill:#000000" />
+<line x1="637" y1="445" x2="683" y2="606" />
+<circle cx="640" cy="458" r="5" style="fill:#ffffff" />
+<circle cx="645" cy="473" r="5" style="fill:#000000" />
+<circle cx="645" cy="473" r="2" style="fill:#000000" />
+<polygon points="637,445 635,453 640,458 643,451 637,445 " style="fill:#000000" />
+<line x1="488" y1="445" x2="466" y2="494" />
+<circle cx="482" cy="457" r="5" style="fill:#ffffff" />
+<circle cx="475" cy="472" r="5" style="fill:#000000" />
+<circle cx="475" cy="472" r="2" style="fill:#000000" />
+<polygon points="488,445 481,450 483,457 488,453 488,445 " style="fill:#000000" />
+<line x1="469" y1="445" x2="416" y2="546" />
+<circle cx="462" cy="457" r="5" style="fill:#ffffff" />
+<circle cx="455" cy="471" r="5" style="fill:#000000" />
+<circle cx="455" cy="471" r="2" style="fill:#000000" />
+<polygon points="469,445 462,449 463,457 469,453 469,445 " style="fill:#000000" />
+<line x1="366" y1="445" x2="328" y2="482" />
+<circle cx="355" cy="454" r="5" style="fill:#ffffff" />
+<circle cx="344" cy="465" r="5" style="fill:#000000" />
+<circle cx="344" cy="465" r="2" style="fill:#000000" />
+<polygon points="366,445 358,447 356,454 364,453 366,445 " style="fill:#000000" />
+<line x1="667" y1="445" x2="685" y2="486" />
+<circle cx="672" cy="457" r="5" style="fill:#ffffff" />
+<circle cx="679" cy="472" r="5" style="fill:#000000" />
+<circle cx="679" cy="472" r="2" style="fill:#000000" />
+<polygon points="667,445 667,453 672,457 674,450 667,445 " style="fill:#000000" />
+<line x1="517" y1="445" x2="469" y2="602" />
+<circle cx="512" cy="458" r="5" style="fill:#ffffff" />
+<circle cx="508" cy="473" r="5" style="fill:#000000" />
+<circle cx="508" cy="473" r="2" style="fill:#000000" />
+<polygon points="517,445 511,451 513,458 519,453 517,445 " style="fill:#000000" />
+<line x1="625" y1="445" x2="688" y2="721" />
+<circle cx="681" cy="691" r="5" style="fill:#ffffff" />
+<circle cx="681" cy="691" r="2" style="fill:#ffffff" />
+<polygon points="688,721 690,708 680,710 688,721 " style="fill:#ffffff" />
+<line x1="653" y1="813" x2="674" y2="783" />
+<circle cx="661" cy="801" r="5" style="fill:#ffffff" />
+<circle cx="665" cy="795" r="2" style="fill:#ffffff" />
+<circle cx="670" cy="788" r="5" style="fill:#000000" />
+<circle cx="670" cy="788" r="2" style="fill:#000000" />
+<polygon points="653,813 661,810 661,802 653,805 653,813 " style="fill:#ffffff" />
 </g>
 </svg>

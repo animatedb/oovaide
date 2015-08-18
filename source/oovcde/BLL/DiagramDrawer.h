@@ -23,8 +23,22 @@ size_t findSplitPos(std::string const &str, size_t minLength,
         size_t maxLength);
 inline const char *getSplitStringPrefix()
     { return "  "; }
+
+/// @param originalIndices Use the new string index to get the original index.
 void splitStrings(OovStringVec &strs, size_t minLength,
-        size_t maxLength=std::string::npos);
+    size_t maxLength=std::string::npos,
+	std::vector<size_t> *originalIndices=nullptr);
+
+struct DrawString
+    {
+    DrawString()
+        {}
+    DrawString(GraphPoint p, OovStringRef const s):
+        pos(p), str(s)
+        {}
+    GraphPoint pos;
+    OovString str;
+    };
 
 class DiagramArrow
     {
@@ -69,7 +83,7 @@ class DiagramDrawer
         virtual void groupShapes(bool /*start*/, Color /*lineColor*/,
             Color /*fillColor*/)
             {}
-        virtual void groupText(bool /*start*/)
+        virtual void groupText(bool /*start*/, bool /*italics*/)
             {}
         /// Gets the width of a wide character, and divides by the divisor.
         /// Returns a minimum of one.

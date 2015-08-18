@@ -9,6 +9,7 @@
 #include "OovString.h"
 #include <string.h>
 #include "File.h"       // For sleepMs at the moment.
+#include "Debug.h"
 #ifdef __linux__
 #include <unistd.h>
 #else
@@ -17,6 +18,20 @@
 #include <direct.h>
 #endif
 
+#define DEBUG_PATHS 0
+#if(DEBUG_PATHS)
+#define CHECKSIZE(file, line, strSize, pos) checkSize(file, line, strSize, pos)
+static void checkSize(OovStringRef const file, int line, size_t strSize, size_t pos)
+    {
+    if(pos > strSize)
+        {
+        assert(false);
+        LogAssertFile(file, line, "size");
+        }
+    }
+#else
+#define CHECKSIZE(file, line, strSize, pos)
+#endif
 
 // returns std::string::npos if not found.
 static size_t findPathSep(OovStringRef const path, size_t startPos = 0)
@@ -301,8 +316,12 @@ bool FileEnsurePathExists(OovStringRef const path)
 
 void FilePathRemovePathSep(std::string &path, size_t pos)
     {
+    CHECKSIZE(__FILE__, __LINE__, path.size(), pos);
     if(path[pos] == '/' || path[pos] == '\\' )
+        {
+        CHECKSIZE(__FILE__, __LINE__, path.size(), pos);
         path.erase(path.begin() + pos);
+        }
     }
 
 void FilePathQuoteCommandLinePath(std::string &str)
@@ -518,9 +537,13 @@ void FilePath::appendPathAtPos(OovStringRef const pathPart, size_t pos)
         if(FilePathIsPathSep(pp, 0))
             pp++;
         if(FilePathIsPathSep(pathStdStr(), pos))
+            {
+            CHECKSIZE(__FILE__, __LINE__, size(), pos+1);
             pathStdStr().erase(pos+1);
+            }
         else
             {
+            CHECKSIZE(__FILE__, __LINE__, size(), pos);
             pathStdStr().erase(pos);
             }
         }
@@ -551,9 +574,15 @@ void FilePath::discardTail(size_t pos)
     {
     // Keep the end sep so that this is still indicated as a directory.
     if(FilePathIsPathSep(pathStdStr(), pos))
+        {
+        CHECKSIZE(__FILE__, __LINE__, size(), pos+1);
         pathStdStr().erase(pos+1);
+        }
     else
+        {
+        CHECKSIZE(__FILE__, __LINE__, size(), pos);
         pathStdStr().erase(pos);
+        }
     }
 
 void FilePath::appendFile(OovStringRef const fileName)
@@ -613,6 +642,7 @@ void FilePath::discardExtension()
 
 void FilePath::discardHead(size_t pos)
     {
+    CHECKSIZE(__FILE__, __LINE__, size(), pos+1);
     pathStdStr().erase(0, pos+1);
     }
 
@@ -625,11 +655,13 @@ int FilePath::discardLeadingRelSegments()
         OovString seg = getPathSegment(0);
         if(seg.compare("..") == 0)
             {
+            CHECKSIZE(__FILE__, __LINE__, size(), 3);
             pathStdStr().erase(0, 3);
             count++;
             }
         else if(seg.compare(".") == 0)
             {
+            CHECKSIZE(__FILE__, __LINE__, size(), 2);
             pathStdStr().erase(0, 2);
             }
         else
@@ -645,6 +677,7 @@ void FilePath::discardMatchingHead(OovStringRef const pathPart)
     std::string part(pathPart);
     if(pathStdStr().compare(0, part.length(), part) == 0)
         {
+        CHECKSIZE(__FILE__, __LINE__, size(), part.length());
         pathStdStr().erase(0, part.length());
         }
     }

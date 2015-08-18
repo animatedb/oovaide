@@ -1,5 +1,5 @@
 DrawingName|OperationDiagram
 FileType|Class
 Names|Oov-Key;OperationDiagram;ModelData;OperationDrawOptions;OperationGraph;OperationDrawer;OperationDiagramParams;std::vector<OperationClass,std::allocator<OperationClass> >;std::vector<OperationDefinition,std::allocator<OperationDefinition> >;OperationClass;OperationDefinition;OperationCall;OperationStatement;
-XPositions|11;15;24;147;12;419;419;207;542;533;460;177;460;
-YPositions|767;12;298;304;377;88;15;267;533;413;575;748;801;
+XPositions|8;15;24;147;12;419;419;207;542;533;463;179;464;
+YPositions|758;12;298;304;377;88;15;267;533;413;575;750;804;

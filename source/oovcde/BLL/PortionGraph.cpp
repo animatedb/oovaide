@@ -36,7 +36,8 @@ void PortionGraph::clearAndAddClass(OovStringRef classname)
                 }
             for(auto const &oper : cls->getOperations())
                 {
-                mNodes.push_back(PortionNode(oper->getName(), PNT_Operation));
+                mNodes.push_back(PortionNode(oper->getName(), PNT_Operation,
+                    oper->isVirtual()));
                 }
             for(auto const &oper : cls->getOperations())
                 {

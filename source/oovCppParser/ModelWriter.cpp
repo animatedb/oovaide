@@ -226,20 +226,13 @@ void ModelWriter::writeOperation(ModelOperation const &oper)
         snprintf(locStr, sizeof(locStr), "line=\"%d\"", oper.getLineNum());
     else
         locStr[0] = '\0';
-#if(OPER_RET_TYPE)
     ModelTypeRef const &retType = oper.getReturnType();
-    fprintf(mFp, "  <Oper name=\"%s\" access=\"%s\" const=\"%s\" %s "
+    fprintf(mFp, "  <Oper name=\"%s\" access=\"%s\" const=\"%s\" virt=\"%s\" %s "
             "ret=\"%d\" retconst=\"%s\" retref=\"%s\">\n",
-#else
-    fprintf(mFp, "  <Oper name=\"%s\" access=\"%s\" const=\"%s\" %s>\n",
-#endif
         oper.getName().getStr(), oper.getAccess().asUmlStr().getStr(),
-        boolStr(oper.isConst()), locStr
-#if(OPER_RET_TYPE)
-        ,
+        boolStr(oper.isConst()), boolStr(oper.isVirtual()), locStr,
         getObjectModelId(retType.getDeclType()->getName()),
         boolStr(retType.isConst()), boolStr(retType.isRefer())
-#endif
         );
 
     if(oper.getParams().size() > 0)

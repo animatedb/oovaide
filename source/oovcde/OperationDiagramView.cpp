@@ -52,6 +52,17 @@ void OperationDiagramView::gotoClass(OovStringRef const className)
         }
     }
 
+void OperationDiagramView::gotoOperation(OperationCall const *opcall)
+	{
+    std::string className = getDiagram().getClassName(*opcall);
+    if(mListener)
+        {
+        mListener->gotoOperation(className, opcall->getName(), opcall->isConst());
+        }
+//    clearGraphAndAddOperation(className, opcall->getName(), opcall->isConst());
+//    requestRedraw();
+	}
+
 void OperationDiagramView::graphButtonPressEvent(const GdkEventButton *event)
     {
     gOperationDiagramView = this;
@@ -135,10 +146,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoOperationmenuitem_activate(
             gStartPosInfo.x, gStartPosInfo.y);
     if(opcall)
         {
-        std::string className = gOperationDiagramView->getDiagram().getClassName(*opcall);
-        gOperationDiagramView->clearGraphAndAddOperation(className,
-                opcall->getName(), opcall->isConst());
-        gOperationDiagramView->requestRedraw();
+        gOperationDiagramView->gotoOperation(opcall);
         }
     }
 

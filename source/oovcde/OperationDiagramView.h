@@ -18,6 +18,8 @@ class OperationDiagramListener
     public:
         virtual ~OperationDiagramListener();
         virtual void gotoClass(OovStringRef const className) = 0;
+        virtual void gotoOperation(OovStringRef const className,
+                OovStringRef const operName, bool isConst) = 0;
     };
 
 
@@ -58,6 +60,7 @@ class OperationDiagramView
         void drawToDrawingArea();
         void drawSvgDiagram(FILE *fp);
         void gotoClass(OovStringRef const className);
+        void gotoOperation(OperationCall const *oper);
         bool isModified() const
             { return mOperationDiagram.isModified(); }
         void requestRedraw()
