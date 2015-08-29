@@ -735,6 +735,9 @@ void FileEditView::buttonPressSelect(int leftMarginWidth, double buttonX, double
     {
     int bufX;
     int bufY;
+#ifdef __linux__
+    leftMarginWidth = 0;
+#endif
     gtk_text_view_window_to_buffer_coords(mTextView, GTK_TEXT_WINDOW_WIDGET,
         leftMarginWidth + buttonX, buttonY, &bufX, &bufY);
     GtkTextIter iter;
