@@ -28,8 +28,20 @@ std::string BuildConfig::getAnalysisPathUsingCRC(OovStringRef const crcStr) cons
 
 std::string BuildConfig::getAnalysisPath() const
     {
-    return getAnalysisPathUsingCRC(getCrcAsStr(BuildConfigAnalysis,
-            CT_AnalysisArgsCrc));
+    // If a build is being performed, it is possible that an analysis was never
+    // done, so there will be no analysis string. So get the one from the
+    // debug or release build.  They should normally be all the same since
+    // it is mainly a CRC of the project related paths.
+    OovString crcStr = getCrcAsStr(BuildConfigAnalysis, CT_AnalysisArgsCrc);
+    if(crcStr.length() == 0)
+        {
+        crcStr = getCrcAsStr(BuildConfigDebug, CT_AnalysisArgsCrc);
+        if(crcStr.length() == 0)
+            {
+            crcStr = getCrcAsStr(BuildConfigRelease, CT_AnalysisArgsCrc);
+            }
+        }
+    return getAnalysisPathUsingCRC(crcStr);
     }
 
 std::string BuildConfig::getIncDepsFilePath() const

@@ -2,8 +2,7 @@
 
 set gtk=C:\Program Files\GTK+-Bundle-3.6.4
 set clang=C:\Program Files\LLVM
-; rem set mingw=C:\Program files\mingw-builds\x32-4.8.1-posix-dwarf-rev5\mingw32
-set mingw=C:\Program Files\mingw-w64\i686-4.9.2-posix-dwarf-rt_v3-rev1\mingw32
+set mingw=C:\Program Files\mingw-w64\i686-5.1.0-posix-dwarf-rt_v4-rev0\mingw32
 set trnk=..
 set dst=..\..\..\backup\oovcde
 rd /s /q %dst%

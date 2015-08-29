@@ -73,13 +73,16 @@ static std::string makeRelative(std::string const &rootDir, OovStringRef const a
     return fp;
     }
 
-static void appendStr(std::string &val, OovString const &str)
+static void appendStr(std::string &baseStr, OovString const &str)
     {
-    OovStringVec vec = CompoundValueRef::parseString(val);
-    if(std::find(vec.begin(), vec.end(), str) == vec.end())
+    if(str.length() > 0)
         {
-        val += str;
-        val += ';';
+        CompoundValue val(baseStr);
+        if(std::find(val.begin(), val.end(), str) == val.end())
+            {
+            val.addArg(str);
+            }
+        baseStr = val.getAsString();
         }
     }
 

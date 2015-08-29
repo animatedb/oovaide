@@ -118,10 +118,10 @@ static std::string getFileLoc(CXCursor cursor, unsigned int *retLine = nullptr)
     return fn;
     }
 
-class cCrashDiagnostics
+class CrashDiagnostics
     {
     public:
-        cCrashDiagnostics():
+        CrashDiagnostics():
             mCrashed(false), mEnableDumpCursor(true)
             {}
         void saveMostRecentParseLocation(char const * const diagStr, CXCursor cursor)
@@ -158,7 +158,7 @@ class cCrashDiagnostics
         std::string mDiagStr;
         CXCursor mMostRecentCursor;
     };
-static cCrashDiagnostics sCrashDiagnostics;
+static CrashDiagnostics sCrashDiagnostics;
 
 
 static CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent,
@@ -394,6 +394,22 @@ void CppParser::addCondStatement(CXCursor condStmtCursor, int condExprIndex,
     // depending on the expression logic.
     visitFunctionAddStatements(condExprCursor, condStmtCursor);
     CXCursor bodyCursor = getNthChildCursor(condStmtCursor, mainBodyIndex);
+// The body cursor can be things such as call expressions, unary operators, etc.
+/*
+    if(!clang_isStatement(bodyCursor.kind))
+        {
+        OovString str;
+        str += " ";
+        CXStringDisposer spstr = clang_getCursorKindSpelling(clang_getCursorKind(condStmtCursor));
+        str += spstr;
+        str += " ";
+        spstr = clang_getCursorKindSpelling(clang_getCursorKind(bodyCursor));
+        str += spstr;
+        LogAssertFile(__FILE__, __LINE__, str.getStr());
+//        LogAssertFile(__FILE__, __LINE__,
+//            mParserModelData.getParsedModule()->getName().getStr());
+        }
+*/
 #if(DEBUG_PARSE)
     dumpCursor(sLog.mFp, "body visited", bodyCursor);
 #endif
@@ -441,7 +457,7 @@ static unsigned int makeHash(OovStringRef const text)
     return hash;
     }
 
-void cDupHashFile::append(OovStringRef const text, unsigned int line)
+void DupHashFile::append(OovStringRef const text, unsigned int line)
     {
     if(text.numBytes() > 0)
         {
@@ -519,17 +535,15 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
             break;
 
         case CXCursor_DoStmt:
+            // addCondstatement visits children using clang_visitChildren.
             addCondStatement(cursor, 1, 0);
-            // No need to recurse - tested that do/while expression can have calls.
-            // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
             break;
 
 //      case CXCursor_GotoStmt, break, continue, return, CXCursor_DefaultStmt
         /// Conditional statements
         case CXCursor_WhileStmt:        //   enum { VAR, COND, BODY, END_EXPR };
+            // addCondstatement visits children using clang_visitChildren.
             addCondStatement(cursor, 0, 1);     // cond body
-            // No need to recurse - tested that while expression can have calls.
-            // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
             break;
 
         case CXCursor_CaseStmt:
@@ -563,21 +577,19 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
             break;
 
         case CXCursor_CXXForRangeStmt:
-            addCondStatement(cursor, 1, 5);
-            // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
+            // addCondstatement visits children using clang_visitChildren.
+            addCondStatement(cursor, 1, 2);
             break;
 
         case CXCursor_ForStmt:
+            // addCondstatement visits children using clang_visitChildren.
             addCondStatement(cursor, 1, 3);
-            // No need to recurse - tested that for expression can have calls.
-            // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
             break;
 
         case CXCursor_IfStmt:           //    enum { VAR, COND, THEN, ELSE, END_EXPR };
+            // addCondstatement visits children using clang_visitChildren.
             addCondStatement(cursor, 0, 1);     // cond=0, ifbody=1, [elsebody]=2
             addElseStatement(cursor, 2);
-            // @todo - No need to recurse?
-            // clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
             break;
 
         // When a call expression is like member.func(), the first child is a
@@ -585,8 +597,6 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
         // ref expression as a new type ref in the model.
         case CXCursor_CallExpr:
             {
-//debugDumpCursor(stdout, parent);
-//debugDumpCursor(stdout, cursor);
             clang_visitChildren(cursor, ::visitFunctionAddStatements, this);
             CXStringDisposer functionName = clang_getCursorDisplayName(cursor);
             if(functionName.length() != 0)

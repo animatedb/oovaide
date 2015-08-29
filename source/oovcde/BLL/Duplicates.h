@@ -20,10 +20,10 @@ class DuplicateOptions
         size_t mNumTokenMatches;
     };
 
-class cDuplicateLineInfo
+class DuplicateLineInfo
     {
     public:
-        cDuplicateLineInfo():
+        DuplicateLineInfo():
             mTotalDupLines(0), mFile1StartLine(0), mFile2StartLine(0)
             {}
 
@@ -37,6 +37,6 @@ class cDuplicateLineInfo
 
 
 bool getDuplicateLineInfo(DuplicateOptions const &options,
-        std::vector<cDuplicateLineInfo> &dupLineInfo);
+        std::vector<DuplicateLineInfo> &dupLineInfo);
 
 #endif

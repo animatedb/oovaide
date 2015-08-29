@@ -132,42 +132,43 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
     return GraphSize(rectx, recty);
     }
 
-class BlockPolygon:public OovPolygon
+// This only stores points for the right side of the blocks.
+void BlockPolygon::incDepth(int y)
     {
-    public:
-        BlockPolygon(int centerLineX, int pad):
-            mCenterLineX(centerLineX), mPad(pad)
-            {}
-        // This only stores points for the right side of the blocks.
-        void changeBlockCondDepth(int oldDepth, int newDepth, int y)
-            {
-            push_back(GraphPoint(mCenterLineX + oldDepth*mPad, y));
-            push_back(GraphPoint(mCenterLineX + newDepth*mPad, y));
-            }
-        // This replicates the right side block to the left side, from bottom to top.
-        void finishBlock()
-            {
-            int rightSize = static_cast<int>(size());
-            for(int i=rightSize-1; i>=0; i--)
-                {
-                push_back(GraphPoint(mCenterLineX - (at(static_cast<size_t>(i)).x -
-                    mCenterLineX), at(static_cast<size_t>(i)).y));
-                }
-            }
-        void startChildBlock(int depth, int y)
-            {
-            push_back(GraphPoint(mCenterLineX + depth*mPad, y));
-            push_back(GraphPoint(mCenterLineX, y));
-            }
-        void endChildBlock(int depth, int y)
-            {
-            push_back(GraphPoint(mCenterLineX, y));
-            push_back(GraphPoint(mCenterLineX + depth*mPad, y));
-            }
-    private:
-        int mCenterLineX;
-        int mPad;
-    };
+    push_back(GraphPoint(mCenterLineX + mDepth*mPad, y));
+    push_back(GraphPoint(mCenterLineX + ++mDepth*mPad, y));
+    }
+
+// This only stores points for the right side of the blocks.
+void BlockPolygon::decDepth(int y)
+    {
+    push_back(GraphPoint(mCenterLineX + mDepth*mPad, y));
+    push_back(GraphPoint(mCenterLineX + --mDepth*mPad, y));
+    }
+
+// This replicates the right side block to the left side, from bottom to top.
+void BlockPolygon::finishBlock()
+    {
+    int rightSize = static_cast<int>(size());
+    for(int i=rightSize-1; i>=0; i--)
+        {
+        push_back(GraphPoint(mCenterLineX - (at(static_cast<size_t>(i)).x -
+            mCenterLineX), at(static_cast<size_t>(i)).y));
+        }
+    }
+/*
+void BlockPolygon::startChildBlock(int depth, int y)
+    {
+    push_back(GraphPoint(mCenterLineX + depth*mPad, y));
+    push_back(GraphPoint(mCenterLineX, y));
+    }
+
+void BlockPolygon::endChildBlock(int depth, int y)
+    {
+    push_back(GraphPoint(mCenterLineX, y));
+    push_back(GraphPoint(mCenterLineX + depth*mPad, y));
+    }
+*/
 
 static void drawCall(DiagramDrawer &drawer, GraphPoint source,
         GraphPoint target, bool isConst, int arrowLen)
@@ -186,19 +187,26 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
         OperationDefinition &operDef, const OperationGraph &graph,
         const OperationDrawOptions &options,
         std::set<const OperationDefinition*> &drawnOperations,
-        std::vector<DrawString> &drawStrings, bool draw)
+        std::vector<DrawString> &drawStrings, bool draw, int callDepth)
     {
     GraphPoint startpos = pos;
     int starty = startpos.y+mPad;
     int y=starty;
     size_t sourceIndex = operDef.getOperClassIndex();
     int arrowLen = mCharHeight * 7 / 10;
-    int condDepth = 0;
     std::vector<int> condStartPosY;
 
     drawnOperations.insert(&operDef);
     const OperationClass &cls = graph.getClass(sourceIndex);
-    BlockPolygon poly(cls.getLifelinePosX(), mPad);
+    if(callDepth == 0)
+        {
+        // Reinit all polys to initial conditions.
+        mLifelinePolygons.clear();
+        mLifelinePolygons.resize(graph.getClasses().size());
+        }
+    BlockPolygon &poly = mLifelinePolygons[sourceIndex];
+    poly.setup(cls.getLifelinePosX(), mPad);
+
     if(!graph.isOperCalled(operDef))
         {
         // Show starting operation
@@ -217,7 +225,7 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
         }
     for(const auto &stmt : operDef.getStatements())
         {
-        int condOffset = condDepth * mPad;
+        int condOffset = poly.getDepth() * mPad;
         switch(stmt->getStatementType())
             {
             case ST_Call:
@@ -273,16 +281,20 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
                 OperationDefinition *childDef = graph.getOperDefinition(*call);
                 if(childDef)
                     {
-                    poly.startChildBlock(condDepth, y);
+//                    poly.startChildBlock(condDepth, y);
                     if(drawnOperations.find(childDef) == drawnOperations.end())
                         {
+                        poly.incDepth(y);
                         GraphSize childSize = drawOperationNoText(drawer,
                             GraphPoint(pos.x, y), *childDef, graph, options,
-                            drawnOperations, drawStrings, draw);
+                            drawnOperations, drawStrings, draw, callDepth+1);
                         y += childSize.y + mPad * 2;
+                        poly.decDepth(y);
                         }
                     else
                         {
+                        // This draws a rectangle to signify that it is defined
+                        // elsewhere in the diagram.
                         GraphRect rect(targetx + mPad*2, callPos.y + mPad*2,
                             mCharHeight+mPad, mCharHeight+mPad);
                         if(draw)
@@ -291,7 +303,7 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
                             }
                         y += mCharHeight+mPad;
                         }
-                    poly.endChildBlock(condDepth, y);
+//                    poly.endChildBlock(condDepth, y);
                     }
                 }
                 break;
@@ -364,23 +376,27 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
                 condStartPosY.push_back(y);
                 y += mCharHeight*2;
 
-                poly.changeBlockCondDepth(condDepth, condDepth+1, y);
-                condDepth++;
+                poly.incDepth(y);
                 }
                 break;
 
             case ST_CloseNest:
                 {
-                poly.changeBlockCondDepth(condDepth, condDepth-1, y);
-                condDepth--;
+                poly.decDepth(y);
                 }
                 break;
             }
         }
-    poly.finishBlock();
-    if(draw)
+    if(callDepth == 0)
         {
-        drawer.drawPoly(poly, Color(245,245,255));
+        for(auto &poly : mLifelinePolygons)
+            {
+            poly.finishBlock();
+            if(draw)
+                {
+                drawer.drawPoly(poly, Color(245,245,255));
+                }
+            }
         }
 
     return GraphSize(0, y - startpos.y);

@@ -2990,7 +2990,7 @@ important for analysis.
 Use the External Project Packages to specify some include
 and library files.  Enter a superset since Oovcde will figure
 out which includes and libraries are needed for each
-subdirectory.
+subdirectory. Packages should be in link order.
 
 Arguments are passed to the compiler and linker.
 Special arguments are:

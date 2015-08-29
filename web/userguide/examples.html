@@ -7,29 +7,26 @@
     <!-- DC Blaha - 1/1/2014 -->
     <title>Oovcde Examples</title>
   </head>
-  <body>
-    <font size="+3">Oovcde Examples<br>
+  <body> <font size="+3">Oovcde Examples<br>
     </font>
-    <hr style="width: 100%; height: 3px;">
-    Last updated: Sept 23, 2014<br>
+    <hr style="width: 100%; height: 3px;"> Last updated: Aug 18, 2015<br>
     <br>
     <img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
-    <div class="content">
-    </div>
-    <h1>Contents</h1>
+    <div class="content"> </div>
+    <h1><a class="mozTocH1" id="mozTocId564252"></a>Contents</h1>
     <ol id="mozToc">
       <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId564252">Contents</a></li>
       <li><a href="#mozTocId985581">Example Notes</a></li>
-      <li><a href="#mozTocId81887">Simple Example
-        </a>
+      <li><a href="#mozTocId81887">Simple Example</a>
         <ol>
           <li><a href="#mozTocId87333">Classes</a></li>
           <li><a href="#mozTocId748070">Sequences</a></li>
+          <li><a href="#mozTocId748070">Portion</a></li>
           <li><a href="#mozTocId525410">Code Test Coverage</a></li>
         </ol>
       </li>
-      <li><a href="#mozTocId621873">StaticLib Example
-        </a>
+      <li><a href="#mozTocId621873">StaticLib Example</a>
         <ol>
           <li><a href="#mozTocId632627">Components</a></li>
           <li><a href="#mozTocId416335">Classes</a></li>
@@ -43,14 +40,15 @@
           <li><a href="#mozTocId212466">Sequences</a></li>
         </ol>
       </li>
+      <li><a href="#mozTocId999987">Namespaces, Templates and Typedefs Example</a></li>
       <li><a href="#mozTocId382189">Oovcde Example</a></li>
     </ol>
-    <h1><a class="mozTocH2" name="mozTocId985581"></a>Example Notes</h1>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId985581"></a>Example Notes</h1>
     It should be fairly simple to analyze the samples with the downloadable
     Oovcde packages.&nbsp; The Build may take more setup depending on the
-    configuration. If the builds fail, the build configuration can be set
-    up in the Analysis/Settings menu.<br>
-    <h1><a class="mozTocH2" name="mozTocId81887"></a>Simple Example<br>
+    configuration. If the builds fail, the build configuration can be set up in
+    the Analysis/Settings menu.<br>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId81887"></a>Simple Example<br>
     </h1>
     This example creates a single executable file. It only has two source files,
     and has a dependency on STL.<br>
@@ -64,12 +62,12 @@
       <li>View the "Class" tab, and click on "Lamb". The class diagram will
         display.</li>
       <li>Right click on the Lamb or other classes, and select Add Standard
-	Relations or Add All Relations to see more of the related classes
-	to the selected class.</li>
-      <li>Depending on the compiler and libraries installed on the system, performing
-        a full analysis can be set up by using Analysis/Settings and using "External
-        Project Packages" to define other include paths. For example, mingw-w64
-        may be needed on Windows for stdio.h.</li>
+        Relations or Add All Relations to see more of the related classes to the
+        selected class.</li>
+      <li>Depending on the compiler and libraries installed on the system,
+        performing a full analysis can be set up by using Analysis/Settings and
+        using "External Project Packages" to define other include paths. For
+        example, mingw-w64 may be needed on Windows for stdio.h.</li>
       <li>Select Build/Settings from the menu. Select the Component Type of
         Program/Executable.</li>
       <li>Select Build/Build Debug to create a debug version of the program. The
@@ -81,7 +79,7 @@
     </ol>
     Additional files can be added to the component, and are automatically built
     into the executable.<br>
-    <h2><a class="mozTocH3" name="mozTocId87333"></a>Classes</h2>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId87333"></a>Classes</h2>
     The class diagram looks something like the following.<br>
     <embed src="Example1Classes.svg" type="image/svg+xml"> <br>
     <br>
@@ -113,27 +111,26 @@
         <tr>
           <td style="vertical-align: top;">Mary and Mammal<br>
           </td>
-          <td style="vertical-align: top;">The
-            inheritance symbol (triangle) is a standard UML symbol, and means
-            that
-            the Mary object inherits from the Mammal object.&nbsp; The Mammal
-            object is a superclass of Mary, and has public inheritance, as shown
-            by the visibility symbol (nested circles).<br>
+          <td style="vertical-align: top;">The inheritance symbol (triangle) is
+            a standard UML symbol, and means that the Mary object inherits from
+            the Mammal object.&nbsp; The Mammal object is a superclass of Mary,
+            and has public inheritance, as shown by the visibility symbol
+            (nested circles).<br>
           </td>
         </tr>
         <tr>
           <td style="vertical-align: top;">Lamb and Mammal<br>
           </td>
-          <td style="vertical-align: top;">The function parameter symbol
-            (big circle with little circle) means that a function parameter
-            refers to the Mammal
-            object, and the V symbol means that this is a const reference.<br>
+          <td style="vertical-align: top;">The function parameter symbol (big
+            circle with little circle) means that a function parameter refers to
+            the Mammal object, and the V symbol means that this is a const
+            reference.<br>
           </td>
         </tr>
       </tbody>
     </table>
     <br>
-    <h2><a class="mozTocH3" name="mozTocId748070"></a>Sequences</h2>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId748070"></a>Sequences</h2>
     The Sequence diagram looks like the following.<br>
     <embed src="Example1Seq.svg" type="image/svg+xml"><br>
     <br>
@@ -147,22 +144,20 @@
         <tr>
           <td style="vertical-align: top;">World::World</td>
           <td style="vertical-align: top;">The World object provides a World
-            method constructor. The constructor
-            constructs a Location object, then the move method is called to set
-            the
-            location of the MoveableThing. In this case, Mary is the
-            MoveableThing that is moved.<br>
+            method constructor. The constructor constructs a Location object,
+            then the move method is called to set the location of the
+            MoveableThing. In this case, Mary is the MoveableThing that is
+            moved.<br>
           </td>
         </tr>
         <tr>
           <td style="vertical-align: top;">Lamb::follows<br>
           </td>
-          <td style="vertical-align: top;">The
-            World object then calls the Lamb follows method, which gets the
-            location of the Mary object, and sets the location of the Lamb
-            object.
-            The getLocation operation is shown as a dashed line, since it is a
-            const operation, and will not modify the MoveableThing object.<br>
+          <td style="vertical-align: top;">The World object then calls the Lamb
+            follows method, which gets the location of the Mary object, and sets
+            the location of the Lamb object. The getLocation operation is shown
+            as a dashed line, since it is a const operation, and will not modify
+            the MoveableThing object.<br>
           </td>
         </tr>
         <tr>
@@ -182,9 +177,8 @@
         </tr>
       </tbody>
     </table>
-    <p/>
-
-    <h2><a class="mozTocH3" name="mozTocId748070"></a>Portion</h2>
+    <p> </p>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId748070"></a>Portion</h2>
     The Portion diagram for the Lamb class looks like the following.<br>
     <embed src="Example1Portion.svg" type="image/svg+xml"><br>
     <table border="1">
@@ -195,20 +189,19 @@
         </tr>
         <tr>
           <td>follows</td>
-          <td>The follows method calls the move method, and interacts with
-		the MoveableThing class.</td>
+          <td>The follows method calls the move method, and interacts with the
+            MoveableThing class.</td>
         </tr>
         <tr>
           <td>showLocation</td>
-          <td>The follows method either reads or writes the mFleece
-		member variable, and interacts with
-		the MoveableThing class.</td>
+          <td>The follows method either reads or writes the mFleece member
+            variable, and interacts with the MoveableThing class.</td>
         </tr>
       </tbody>
     </table>
-    <p/>
-
-    <h2><a class="mozTocH3" name="mozTocId525410"></a>Code Test Coverage</h2>
+    <p> </p>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId525410"></a>Code Test
+      Coverage</h2>
     The Oovcde program contains tools to support flow path test coverage
     analysis. This shows the percentage of paths that have <br>
     been tested in each source file and shows the number of times that each
@@ -228,16 +221,14 @@
         program and generates a file that contains the number of times each
         instrumented line was executed.<br>
       </li>
-      <li>Select
-        Coverage/Statistics from the command line. The
+      <li>Select Coverage/Statistics from the command line. The
         oov-cov-oovcde/oovCovStats.txt file contains the percentage of coverage
         for each file. In addition, theoov-cov-oovcde directory contains all
-        source code with indications of which lines have been executed.
-        Search for "//&lt;space&gt;" to find lines that have not been executed.
-      </li>
+        source code with indications of which lines have been executed. Search
+        for "//&lt;space&gt;" to find lines that have not been executed. </li>
     </ol>
     <br>
-    <h1><a class="mozTocH2" name="mozTocId621873"></a>StaticLib Example<br>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId621873"></a>StaticLib Example<br>
     </h1>
     This example creates an executable file with a static library.<br>
     <br>
@@ -266,7 +257,7 @@
       <li>The executable and static library will be in
         trunk/examples/simple-oovcde/out-Debug.</li>
     </ol>
-    <h2><a class="mozTocH3" name="mozTocId632627"></a>Components</h2>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId632627"></a>Components</h2>
     <embed src="Example2Comps.svg" type="image/svg+xml"><br>
     <ul>
       <li>The BlackSheep component is a library that supplies classes for the
@@ -276,22 +267,22 @@
         statically dependent on the BlackSheep component. <br>
       </li>
     </ul>
-    <h2><a class="mozTocH3" name="mozTocId416335"></a>Classes</h2>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId416335"></a>Classes</h2>
     The class diagram looks like the following.<br>
     <embed src="Example2Classes.svg" type="image/svg+xml"> <br>
     <br>
     The BlackSheep and the WoolBag classes are in the BlackSheep Component. The
     other classes are in the MainClients component.<br>
-    <h2><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h2>
-    The Sequence diagram looks like the following.
-    <br>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId212466"></a>Sequences</h2>
+    The Sequence diagram looks like the following. <br>
     <embed src="Example2Seq.svg" type="image/svg+xml"> <br>
     <br>
     The lower takeBag operations are shown with square boxes to indicate that
     the definition has already been shown above.<br>
     <br>
     <br>
-    <h1><a class="mozTocH2" name="mozTocId621873"></a>SharedLib GTK Example</h1>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId621873"></a>SharedLib GTK
+      Example</h1>
     This example shows a more complex directory structure and contains shared
     libraries. (Known in Windows as DLL's).<br>
     <br>
@@ -308,26 +299,22 @@
       <li>To prevent __builtin_... errors, add "-Iclang/3.6.0/include" so that
         it is on a line before any -EP arguments.</li>
       <li>Depending on the compiler and libraries installed on the system,
-	performing a full analysis can be set up by using Analysis/Settings and
-	selecting "External Project Packages" to define other include paths.
-	For example, GTK3 may be needed on Windows for gmodule.h.</li>
+        performing a full analysis can be set up by using Analysis/Settings and
+        selecting "External Project Packages" to define other include paths. For
+        example, GTK3 may be needed on Windows for gmodule.h.</li>
       <li>Select Analysis/Settings in the Build Arguments tab, and click on
-        Extern
-        Project Packages. Press the Add button to add packages. Be
-        sure to download the packages if they do not exist on your machine.
-        Include paths are scanned in the order that packages and external
-        references are specified. During the link, the libraries are scanned in
-        opposite order. Project package order is determined by the builder.<br>
+        Extern Project Packages. Press the Add button to add packages. Be sure
+        to download the packages if they do not exist on your machine. Include
+        paths are scanned in the order that packages and external references are
+        specified. During the link, the libraries are scanned in opposite order.
+        Project package order is determined by the builder.<br>
       </li>
       <ol>
         <li>On Windows select gtk+-3.0.&nbsp; View the packages to check if the
-          directories and
-          settings are correct. Remember that external references are recursive.
-        </li>
-        <li>In
-          Linux
-          add gmodule-2.0. Add the -fPIC and -lnk-rdynamic flags also to the
-          build arguments.<br>
+          directories and settings are correct. Remember that external
+          references are recursive. </li>
+        <li>In Linux add gmodule-2.0. Add the -fPIC and -lnk-rdynamic flags also
+          to the build arguments.<br>
         </li>
       </ol>
       <li>If the External Project Packages method does not work, the Linux
@@ -355,13 +342,11 @@
       <li>The executable and static library will be in
         trunk/examples/simple-oovcde/out-Debug.</li>
     </ol>
-    <h2><a class="mozTocH3" name="mozTocId576588"></a>Components</h2>
-    The components only show relationships to the external GTK package
-    since they only
-    have dynamic relationships between themselves. This dependency is on
-    Windows where the GTK package includes the gmodule package. The two
-    shared libraries are loaded by one
-    program.<br>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId576588"></a>Components</h2>
+    The components only show relationships to the external GTK package since
+    they only have dynamic relationships between themselves. This dependency is
+    on Windows where the GTK package includes the gmodule package. The two
+    shared libraries are loaded by one program.<br>
     <embed src="Example3Comps.svg" type="image/svg+xml"><br>
     <br>
     On Linux, the dependencies look like the following:<br>
@@ -370,14 +355,25 @@
     <br>
     <br>
     This project directory structure looks like the following:<br>
-    <pre>	sharedlibgtk<br>		kingdom<br>			kingdom.cpp<br>			kingdom.h<br>		resources<br>			horses<br>				horses.cpp<br>				horses.h<br>			men<br>				men.cpp<br>				men.h</pre>
+    <pre>        sharedlibgtk
+	    kingdom
+                kingdom.cpp
+                kingdom.h
+            resources
+                horses
+                    horses.cpp
+                    horses.h
+                men
+                    men.cpp
+                    men.h
+    </pre>
     <br>
-    <h2><a class="mozTocH3" name="mozTocId723251"></a>Classes</h2>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId723251"></a>Classes</h2>
     The following is the class diagram. Only the main executable class diagram
     is shown here.<br>
     <br>
     <embed src="Example3Classes.svg" type="image/svg+xml"> <br>
-    <h2><a class="mozTocH3" name="mozTocId212466"></a>Sequences</h2>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId212466"></a>Sequences</h2>
     <embed src="Example3Seq.svg" type="image/svg+xml"><br>
     <br>
     <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
@@ -391,14 +387,10 @@
         <tr>
           <td style="vertical-align: top;">Kingdom::open<br>
           </td>
-          <td style="vertical-align: top;">Before
-            the open, the *[:resources] is the C++ range-based for loop
-            indication.
-            The increasing lifeline width is showing the nesting of
-            conditionals.
-            This shows that if putTogether returns false, that then
-            getResourceName
-            is called.<br>
+          <td style="vertical-align: top;">Before the open, the *[:resources] is
+            the C++ range-based for loop indication. The increasing lifeline
+            width is showing the nesting of conditionals. This shows that if
+            putTogether returns false, that then getResourceName is called.<br>
           </td>
         </tr>
         <tr>
@@ -420,19 +412,29 @@
       </tbody>
     </table>
     <br>
-    <h1><a class="mozTocH2" name="mozTocId382189"></a>Oovcde Example</h1>
-    The Oovcde example will build all of the Oovcde programs, which
-    includes multiple libraries and executables. This example has multiple
-    processes and threads, graphics, and many other features.<br>
+    <h1><a class="mozTocH1" id="mozTocId999987"></a>Namespaces, Templates and
+      Typedefs Example</h1>
+    This is a complex example showing nested namespaces, typedefs of templates,
+    relations of typedefs to other classes, and many other features.
+    <p> Template relations are shown as a UML dependency arrow, which is a
+      dashed line with an arrow. Template definitions are shown with a "&lt;&lt;
+      template&gt;&gt;" stereotype. </p>
+    <p> Typedefs are shown using a "&lt;&lt; typedef&gt;&gt;" stereotype, and is
+      shown as being inherited from the class that is being renamed. </p>
+    <p> <embed src="ExampleNamesClasses.svg" type="image/svg+xml"><br>
+    </p>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId382189"></a>Oovcde Example</h1>
+    The Oovcde example will build all of the Oovcde programs, which includes
+    multiple libraries and executables. This example has multiple processes and
+    threads, graphics, and many other features.<br>
     This example is under the test directory, and there is a version for Windows
     and one for Linux.<br>
     <br>
     Open either project, and use Analysis/Settings and run "External Project
-    Packages".&nbsp; On Linux, it may be required to remove and add the gtk
-    +-3 package so that it is updated for your machine. Linux uses
-    pkg-config, which should be on many distributions of Linux. On Windows,
-    the Scan button may find the correct location, otherwise enter the
-    directory manually.<br>
+    Packages".&nbsp; On Linux, it may be required to remove and add the gtk +-3
+    package so that it is updated for your machine. Linux uses pkg-config, which
+    should be on many distributions of Linux. On Windows, the Scan button may
+    find the correct location, otherwise enter the directory manually.<br>
     <br>
     To set the component types, use Build/Settings, and set the oovBuilder,
     oovCMaker, oovCppParser, and oovEdit to Program/Executable, and set the
@@ -442,11 +444,10 @@
     <br>
     Some extra points:<br>
     <ul>
-      <li>Under Linux, add "-lnk-Wl,-rpath=./" to the Build Arguments
-        so that the
-        executables will first search the local directory for shared libraries.
-        For the Oovcde project, this is only needed if CLang is not installed,
-        and the local version of libclang.so will be used.<br>
+      <li>Under Linux, add "-lnk-Wl,-rpath=./" to the Build Arguments so that
+        the executables will first search the local directory for shared
+        libraries. For the Oovcde project, this is only needed if CLang is not
+        installed, and the local version of libclang.so will be used.<br>
       </li>
       <li>Add "-lnk-mwindows" to the Build Arguments in Microsoft Windows to
         that graphical applications do not start a command window.</li>

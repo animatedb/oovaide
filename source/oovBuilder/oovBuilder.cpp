@@ -142,8 +142,8 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         mCompFinder.getProjectBuildArgs().getAllCrcCompileArgs(),
         mCompFinder.getProjectBuildArgs().getAllCrcLinkArgs());
 
-    if(cfg.isConfigDifferent(buildConfigName,
-            BuildConfig::CT_ExtPathArgsCrc))
+    if(cfg.isConfigDifferent(buildConfigName, BuildConfig::CT_ExtPathArgsCrc) ||
+            !FileIsFileOnDisk(Project::getBuildPackagesFilePath()))
         {
         // This is for the -ER switch.
         for(auto const &arg : mCompFinder.getProjectBuildArgs().getExternalArgs())
@@ -206,6 +206,9 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
             deleteDirs.push_back(Project::getOutputDir(buildConfigName));
             }
         cfg.saveConfig(buildConfigName);
+// This isn't needed because the CRC will be different and save the analysis
+// results to a different directory.
+/*
         // This must be after the saveConfig, because it uses the new CRC's
         // to delete the new analysis path.
         OovString analysisPath = cfg.getAnalysisPath();
@@ -213,6 +216,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
             {
             deleteDirs.push_back(analysisPath);
             }
+*/
         for(auto const &dir : deleteDirs)
             {
             printf("Deleting %s\n", dir.getStr());
@@ -222,12 +226,14 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
                 }
             }
         fflush(stdout);
-
+// See comment above.
+/*
         if(analysisDifferent)
             {
             // Windows returns before the directory is actually deleted.
             FileWaitForDirDeleted(analysisPath);
             }
+*/
         }
 
     OovString analysisPath = cfg.getAnalysisPath();

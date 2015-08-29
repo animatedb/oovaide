@@ -12,7 +12,7 @@ eDupReturn createDuplicatesFile(/*OovStringRef const projDir,*/ std::string &out
     {
     eDupReturn ret = DR_NoDupFilesFound;
     DuplicateOptions options;
-    std::vector<cDuplicateLineInfo> dupLineInfo;
+    std::vector<DuplicateLineInfo> dupLineInfo;
     if(getDuplicateLineInfo(options, dupLineInfo))
         {
         FilePath outPath(Project::getProjectDirectory(), FP_Dir);

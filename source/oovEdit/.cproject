@@ -454,19 +454,21 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Linux-Release">
+		<configuration configurationName="Linux-Debug">
 			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
 		</configuration>
-		<configuration configurationName="Windows-Release">
+		<configuration configurationName="Linux-Release">
 			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
 		</configuration>
 		<configuration configurationName="Windows-Debug">
 			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
 		</configuration>
-		<configuration configurationName="Linux-Debug">
+		<configuration configurationName="Windows-Release">
 			<resource resourceType="PROJECT" workspacePath="/oovEdit"/>
 		</configuration>
 	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.781893133;cdt.managedbuild.config.gnu.mingw.exe.debug.781893133.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.debug.1935697941;cdt.managedbuild.tool.gnu.c.compiler.input.2124901927">
@@ -478,11 +480,11 @@
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927;cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927.;cdt.managedbuild.tool.gnu.cpp.compiler.base.2047690623;cdt.managedbuild.tool.gnu.cpp.compiler.input.904671300">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
 		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927;cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927.;cdt.managedbuild.tool.gnu.c.compiler.base.962252081;cdt.managedbuild.tool.gnu.c.compiler.input.1176189632">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
-		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.194714185;cdt.managedbuild.config.gnu.mingw.exe.release.194714185.;cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.1345152371;cdt.managedbuild.tool.gnu.cpp.compiler.input.859031413">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileCPP"/>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927;cdt.managedbuild.config.gnu.mingw.exe.debug.1112204012.1217687782.261159472.761386582.1062783927.;cdt.managedbuild.tool.gnu.c.compiler.base.962252081;cdt.managedbuild.tool.gnu.c.compiler.input.1176189632">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="cdt.managedbuild.config.gnu.mingw.exe.release.194714185;cdt.managedbuild.config.gnu.mingw.exe.release.194714185.;cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.2015740557;cdt.managedbuild.tool.gnu.c.compiler.input.489997062">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
@@ -494,5 +496,4 @@
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="org.eclipse.cdt.managedbuilder.core.GCCManagedMakePerProjectProfileC"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
-	<storageModule moduleId="org.eclipse.cdt.make.core.buildtargets"/>
 </cproject>

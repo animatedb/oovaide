@@ -132,6 +132,7 @@ class DebuggerBase
         virtual void resume()=0;
         virtual void interrupt()=0;     // pause
         virtual void stop()=0;
+        virtual bool isDebuggerRunning()=0;
         /// This allows the user to send a typed in debugger command.
         virtual void sendCommand(OovStringRef const command) = 0;
         std::string const &getDebuggerFilePath() const
@@ -144,7 +145,7 @@ class DebuggerBase
         eDebuggerChangeStatus getChangeStatus();
         DebuggerChildStates getChildState();
         OovString getStack();
-        OovString getVarValue();
+        DebugResult const getVarValue();
         // Returns empty filename if not stopped.
         DebuggerLocation getStoppedLocation();
 
@@ -160,7 +161,7 @@ class DebuggerBase
         // Thread protected data
         std::string mDebuggerOutputBuffer;
         OovString mStack;
-        std::string mVarValue;
+        DebugResult mVarValue;
         DebuggerChildStates mDebuggerChildState;
         InProcMutex mStatusLock;
         std::queue<eDebuggerChangeStatus> mChangeStatusQueue;
@@ -186,6 +187,8 @@ class DebuggerGdb:public OovProcessListener, public DebuggerBase
         void resume() override;
         void interrupt() override;      // pause
         void stop() override;
+        bool isDebuggerRunning() override
+            { return !mBkgPipeProc.isIdle(); }
 
         /// This allows the user to send a typed in debugger command.
         void sendCommand(OovStringRef const command) override;

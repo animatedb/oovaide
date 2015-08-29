@@ -41,6 +41,8 @@
 <text x="20" y="78">-Mary mary</text>
 <text x="20" y="90">+World()</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="44" y="247" width="82" height="44" />
 <line x1="44" y1="268" x2="126" y2="268" />
@@ -50,6 +52,8 @@
 <text x="45" y="256">Mary</text>
 <text x="45" y="265">examples/simple</text>
 <text x="45" y="277">+Lamb lamb</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="45" y="289">+showLocation()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
@@ -61,8 +65,10 @@
 <text x="298" y="213">Lamb</text>
 <text x="298" y="222">examples/simple</text>
 <text x="298" y="234">+MoveableThing mFleece</text>
-<text x="298" y="246">+move(Location loc)</text>
 <text x="298" y="255">+follows(Mammal leader)</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="298" y="246">+move(Location loc)</text>
 <text x="298" y="264">+showLocation()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
@@ -74,6 +80,8 @@
 <text x="151" y="192">Mammal</text>
 <text x="151" y="201">examples/simple</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="178" y="11" width="102" height="62" />
 <line x1="178" y1="32" x2="280" y2="32" />
@@ -83,17 +91,11 @@
 <text x="179" y="20">MoveableThing</text>
 <text x="179" y="29">examples/simple</text>
 <text x="179" y="41">-Location mLocation</text>
-<text x="179" y="53">+move(Location loc)</text>
 <text x="179" y="62">+getLocation()</text>
 <text x="179" y="71">+getLocationString()</text>
 </g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="372" y="309" width="110" height="17" />
-<line x1="372" y1="321" x2="482" y2="321" />
-<line x1="372" y1="324" x2="482" y2="324" />
-</g>
-<g stroke="none">
-<text x="373" y="318">std::basic_string&lt;char&gt;</text>
+<g stroke="none" font-style="italic">
+<text x="179" y="53">+move(Location loc)</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="412" y="95" width="127" height="71" />
@@ -108,6 +110,8 @@
 <text x="413" y="146">+setPosition(Location loc)</text>
 <text x="413" y="155">+getLocationString()</text>
 <text x="413" y="164">+Location(int x, int y)</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
 <line x1="62" y1="92" x2="83" y2="247" />
@@ -131,8 +135,6 @@
 <polygon points="173,209 160,211 166,220 173,209 " style="fill:#ffffff" />
 <line x1="98" y1="247" x2="210" y2="73" />
 <circle cx="105" cy="235" r="5" style="fill:#ffffff" />
-<line x1="126" y1="274" x2="372" y2="310" />
-<circle cx="139" cy="276" r="5" style="fill:#ffffff" />
 <line x1="297" y1="221" x2="232" y2="205" />
 <polygon points="297,221 291,214 294,221 288,224 297,221 " style="fill:#ffffff" />
 <circle cx="283" cy="217" r="5" style="fill:#ffffff" />
@@ -145,22 +147,18 @@
 <circle cx="323" cy="179" r="5" style="fill:#ffffff" />
 <circle cx="323" cy="179" r="2" style="fill:#ffffff" />
 <polygon points="341,204 341,196 334,193 333,201 341,204 " style="fill:#000000" />
-<line x1="386" y1="266" x2="421" y2="309" />
-<circle cx="394" cy="276" r="5" style="fill:#ffffff" />
 <line x1="395" y1="204" x2="438" y2="165" />
 <circle cx="405" cy="194" r="5" style="fill:#ffffff" />
-<circle cx="417" cy="183" r="5" style="fill:#000000" />
-<circle cx="417" cy="183" r="2" style="fill:#000000" />
+<circle cx="410" cy="189" r="2" style="fill:#ffffff" />
 <line x1="194" y1="183" x2="222" y2="73" />
 <circle cx="214" cy="102" r="5" style="fill:#ffffff" />
 <circle cx="214" cy="102" r="2" style="fill:#ffffff" />
 <polygon points="222,73 214,84 224,86 222,73 " style="fill:#ffffff" />
 <line x1="280" y1="60" x2="412" y2="108" />
 <circle cx="293" cy="64" r="5" style="fill:#ffffff" />
+<circle cx="299" cy="67" r="2" style="fill:#ffffff" />
 <circle cx="308" cy="70" r="5" style="fill:#000000" />
 <circle cx="308" cy="70" r="2" style="fill:#000000" />
 <polygon points="280,60 285,66 293,64 288,59 280,60 " style="fill:#000000" />
-<line x1="429" y1="309" x2="467" y2="165" />
-<circle cx="463" cy="178" r="5" style="fill:#ffffff" />
 </g>
 </svg>

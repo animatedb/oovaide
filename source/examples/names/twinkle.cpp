@@ -22,7 +22,7 @@ class MyThoughts
     {
     public:
         MyThoughts();
-        void displaySomeThoughts(Teaching::Star const &teachingStar,
+        void displaySomeMoreThoughts(Teaching::Star const &teachingStar,
             Imaginary::FakeStar fakeStar, char const * const noStar);
 
     private:
@@ -41,20 +41,24 @@ MyThoughts::MyThoughts():
     DisplayStar littleStar;
     Teaching::Star teachingStar;
     Imaginary::FakeStar fakeStar;
+    IdentityDisplayer<Awards::Star> awardStar;
 
-    mMovieStarDisplay.displayIdentity();
+    printf("My thoughts are:\n");
     littleStar.displayIdentity();
-    displaySomeThoughts(teachingStar, fakeStar, "noStar");
+    mMovieStarDisplay.displayIdentity();
+    awardStar.displayIdentity();
+    displaySomeMoreThoughts(teachingStar, fakeStar, "noStar");
     }
 
-void MyThoughts::displaySomeThoughts(Teaching::Star const &teachingStar,
+void MyThoughts::displaySomeMoreThoughts(Teaching::Star const &teachingStar,
     Imaginary::FakeStar fakeStar, char const * const noStar)
     {
     Awards::Star anotherStar;
-    printf("My thoughts are:\n");
+    printf("More thoughts are:\n");
     printf("  I think I am a Teaching::Star, I am a %s\n", teachingStar.whatAreYou());
     printf("  I think I am a Award::Star, I am a %s\n", anotherStar.whatAreYou());
-    printf("  I think I am a Imaginary::Star, I don't know what I am\n");
+    // The whatAreYou method is not available for the Imaginary star.
+    printf("  I think I am a Imaginary::FakeStar, I don't know what I am\n");
     }
 
 
@@ -83,7 +87,8 @@ class MyOtherThoughts
 int main(int argc, const char* argv[])
     {
     MyThoughts thoughts;
-    MyOtherThoughts myOtherThoughts;	// These thoughts are not revealed.
+    // These thoughts are not revealed during construction.
+    MyOtherThoughts myOtherThoughts;
     Movies::Star moviesStar;
     myOtherThoughts.displayOtherThoughts(moviesStar);
     }

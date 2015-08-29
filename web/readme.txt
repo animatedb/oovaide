@@ -5,14 +5,14 @@ The Oovcde web site is at http://oovcde.sourceforge.net or
 	The Features shows a current list of functionality.
 
 
-Analysis - Windows Versions:
+Analyzing Programs - Windows Versions:
 	The oovcde-*-win downloads include parts of GTK-3.0 and CLang
 	so running analysis does not require any additional
 	downloads. Using Oovcde for more complete analysis usually
 	requires some MinGW or other package so that CLang can find
 	standard include files.
 
-Analysis - Linux Versions:
+Analyzing Programs - Linux Versions:
 	The oovcde-*-linux downloads require GTK3 and a 64 bit OS.
 	Part of CLang is included so running analysis does not
 	require any additional downloads. Using Oovcde for more
@@ -20,7 +20,7 @@ Analysis - Linux Versions:
 	that CLang can find standard include files.
 
 
-Building - Windows Versions:
+Building Programs - Windows Versions:
 	Using Oovcde to build requires MinGW, MinGW-builds or
 	MinGW-W64 because they supply the nm and ld tools.
 
@@ -60,10 +60,10 @@ Building - Windows Versions:
 			Install to C:\Program Files\LLVM
 
 
-Building - Linux Versions:
+Building Programs - Linux Versions:
 	Either the Gnu or CLang compiler is required for building.
 
-	The easiest way to build is using git and is described
+	The easiest way to build Oovcde is using git and is described
 	at https://github.com/animatedb/oovcde.
 	Eclipse or CMake is supported for building Oovcde.
 
@@ -78,7 +78,11 @@ Building - Linux Versions:
 		- Run "make" from the same directory
 
 
-Reporting bugs:
+Requesting Features and Bug Fixes:
 	Some bugs are listed under Tickets, in the sourceforge web
 	site. In addition, release notes and issues can be seen under
-	"Code" in trunk/docs/releaseNotes.txt.
+	"Code" in trunk/docs/releaseNotes.txt.  Add new requests
+	to either the SourceForge or Github issue pages.
+
+Contribute:
+	If you would like to contribute, contact me at either web site.

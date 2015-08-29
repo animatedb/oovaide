@@ -31,7 +31,7 @@ TEST_F(gDebugUnitTest, DebugResultIntTest)
     // Variable encoded in c++
     char const * const dbgVar = "value=\"1\"";
 
-    cDebugResult debRes;
+    DebugResult debRes;
     debRes.parseResult(dbgVar);
     std::string str = debRes.getAsString();
     EXPECT_EQ(str.compare("value = 1") == 0, true);
@@ -48,7 +48,7 @@ TEST_F(gDebugUnitTest, DebugResultVarStringTest)
     char const * const dbgVar = "value="
         " 0x40d139 <_ZStL19piecewise_construct+41> \\\"{curly}\\\"";
 
-    cDebugResult debRes;
+    DebugResult debRes;
     debRes.parseResult(dbgVar);
     std::string str = debRes.getAsString();
     EXPECT_EQ(str.find(quoteStr(var)) != std::string::npos, true);
@@ -85,7 +85,7 @@ TEST_F(gDebugUnitTest, DebugResultVarArrayTest)
         "0x40d220 <_ZStL19piecewise_construct+272> \\\"test2\\\""
         "}\"";
 
-    cDebugResult debRes;
+    DebugResult debRes;
     debRes.parseResult(dbgVar);
     std::string str = debRes.getAsString();
     EXPECT_EQ(str.find(quoteStr(escapeStr(var[0]).c_str())) != std::string::npos, true);
@@ -140,7 +140,7 @@ TEST_F(gDebugUnitTest, DebugResultNestedTest)
     var.mDerivedVar = 10;
     char const *const dbgVar = "value=\"{<Base> = {mBaseVar = 5}, mDerivedVar = 10}\"";
 
-    cDebugResult debRes;
+    DebugResult debRes;
     debRes.parseResult(dbgVar);
     std::string str = debRes.getAsString();
     EXPECT_EQ(str.find("mBaseVar = 5") != std::string::npos, true);

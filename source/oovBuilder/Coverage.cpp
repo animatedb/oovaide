@@ -56,32 +56,41 @@ static bool makeCoverageComponentTypesFile(OovStringRef const srcFn, OovStringRe
     return success;
     }
 
-static bool copyPackageFile(OovStringRef const srcFn, OovStringRef const dstFn)
+
+/// The package file is only copied if it doesn't exist or is old.  If it was
+/// always copied, then the date would be updated which would cause a full
+/// rebuild of all analysis and build files.
+static bool copyPackageFileIfNeeded(OovStringRef const srcFn, OovStringRef const dstFn)
     {
-    bool success = false;
-    File srcFile(srcFn, "r");
-    if(FileIsFileOnDisk(srcFn))
+    bool success = true;
+
+    if(FileStat::isOutputOld(dstFn, srcFn))
         {
-        if(srcFile.isOpen())
+        success = false;
+        File srcFile(srcFn, "r");
+        if(FileIsFileOnDisk(srcFn))
             {
-            FileEnsurePathExists(dstFn);
-            File dstFile(dstFn, "w");
-            if(dstFile.isOpen())
+            if(srcFile.isOpen())
                 {
-                char buf[10000];
-                while(fgets(buf, sizeof(buf), srcFile.getFp()))
+                FileEnsurePathExists(dstFn);
+                File dstFile(dstFn, "w");
+                if(dstFile.isOpen())
                     {
-                    fputs(buf, dstFile.getFp());
-                    success = true;
+                    char buf[10000];
+                    while(fgets(buf, sizeof(buf), srcFile.getFp()))
+                        {
+                        fputs(buf, dstFile.getFp());
+                        success = true;
+                        }
                     }
                 }
             }
-        }
-    else
-        success = true;
-    if(!success)
-        {
-        fprintf(stderr, "Unable to copy package file %s\n", srcFn.getStr());
+        else
+            success = true;
+        if(!success)
+            {
+            fprintf(stderr, "Unable to copy package file %s\n", srcFn.getStr());
+            }
         }
     return success;
     }
@@ -108,7 +117,7 @@ bool makeCoverageBuildProject()
         }
     if(success)
         {
-        success = copyPackageFile(origPackagesFilePath,
+        success = copyPackageFileIfNeeded(origPackagesFilePath,
             Project::getPackagesFilePath());
         }
     return success;

@@ -17,7 +17,7 @@ Explanations
 Missing Features
 ----------------
 - General
-	- Sometimes analysis path is analysis-
+	- Multiple matching mingw dirs causes package problems.
 	- "OovStringRef const buildStr = mConfigFile.getValue(buildType)" is
 		optimized where buildStr contains garbage.
 	- Preserve state between sessions
@@ -35,6 +35,7 @@ Missing Features
 	- remove mingw dependencies from common - Sleep/chrono/pthread-gthread
 	- BUG: need to clean up analysis dir when files are deleted.
 	- BUG: doing File/New on an existing project doesn't delete package config.
+	- Need to clean up package config if user reenters data.
 	- link to https://rawgit.com/animatedb/oovcde/master/web/articles/PortionDiagrams.html
 	- Add UML notes to diagrams, allow color/font selection
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
@@ -66,7 +67,8 @@ Missing Features
 	- Show related classes for a selected class
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 - Class Diagrams/List
-	- moviesStar.whatAreYou() causes displayOtherThoughts to show method (not param)
+	- example names: member NotAStar typedef with base type int not shown
+	  when drawing is loaded. Shouldn't show in add selected list?
 	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
 	- Allow add all classes in module
 	- Saved drawings don't save preferences for each class
@@ -112,6 +114,7 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- Build/Settings per component don't seem to work for -lnk-static-libstdc++
 	- Add global functions?
 	- Some header file changes don't reanalyze new dependent source files?
 		(cause is due to errors don't get reanalyzed?)
@@ -126,11 +129,6 @@ Missing Features
 	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
 	- analysis - doesn't work on filenames with spaces
 	- Complexity - could show module and component complexity
-	- Coverage tool - fix switch/case fall throughs
-	- Coverage tool - fix precompiled header before include oovcoverage.h
-	- Coverage tool - filenames with underscore has stats, but not lines covered
-	- Coverage tool - space before semicolon under if with no braces? -
-		Search ZoneDiagram.cpp "mZoom /= 1.5 ;"
 	- Analysis/component lists should ignore coverage directories
 	- The oovcde-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
@@ -141,7 +139,6 @@ Missing Features
 	- oovcde-incdeps once got corrupted during debugging and slowed down and
 	  prevented parsing.
 	- BUG: Drive letters in path unable to write to bad filename.
-	- Templates don't list operations
 	- Typedefs not listed, define as inheritance? (oovCommon/Filepaths)
 	- function return type not listed
 	- Multiple case statements without breaks appear nested.
@@ -160,6 +157,13 @@ Missing Features
 	  For now, if not, delete out/bld directory for clean build.
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
+- Coverage
+	- Not working for gtk libraries with non-gtk programs
+	- fix switch/case fall throughs
+	- fix precompiled header before include oovcoverage.h
+	- filenames with underscore has stats, but not lines covered
+	- space before semicolon under if with no braces? -
+		Search ZoneDiagram.cpp "mZoom /= 1.5 ;"
 - CMaker
 	- BUG: discards directories in CMaker::getCompSources
 	- Allow debug/release and cross compile in cmake
@@ -193,18 +197,30 @@ Missing Features
 	- refactor-rename
 
 - Debugger (In editor)
+	- starting debugger too quickly can crash
+		- find using coverage tool
+		- set_terminate(handler)	void my_terminate_handler()
+		http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
+		_gtk_text_btree_insert assertion failed: (eol <= len)
+		 Gtktextbtree.c gtk_text_buffer_real_insert_text
+	- expanding variable children:
+		- data-evaluate-expression	Gets child names
+		- var-list-children [varname]
+		    59-var-list-children var2
+			59^done,numchild="1",children=[child={name="var2.private",exp="private",numchild="6"}],has_m\
+		    60-var-list-children var2.private
+		- var-info-path-expression
+		    61-var-info-path-expression var2.private.mBuilder
+			61^done,path_expr="((gOovGui)->mBuilder)"
+		- var-set-format [varname] (decimal, natural, hexadecimal)
+	- Doing 'print' std::string says "no member named _M_dataplus".
+		- Compiling and linking with g++ instead of clang++ works.
+	- Need stdout program output window
+		- http://visualgdb.com/gdbreference/commands/set_new-console
 	http://blogs.msdn.com/b/vcblog/archive/2015/04/29/open-sourcing-visual-studio-s-gdb-lldb-debug-engine.aspx
 	https://github.com/facebook/ds2
-	std::string says "incomplete type" .gdbinit?
-		- libstdc++ is not debug?
-		- use -gstabs3
-		- use -static, -lnk-static-libgcc, and -lnk/ -static-libstdc++?
-		 http://help.lockergnome.com/linux/GDB-capabilities-exploring-STL-classes--ftopict279673.html
-	- Right click menu in editor while debugging should show toggle breakpoint.
 	- Stopping debugger should remove code location indicator arrow. (redraw problem)
-	- variable display should not show "value = ", but should name variable.
-	- Can't paste into control window
-	- No way to debug editor using itself. Add cmd switch to start with new window?
+	- Can't use Crl-C to paste into control window
 	- add remote debug (cross debug) gdbserver
 		ssh <hostip> -l <username> "cd ~/yourdir && gdbserver :2345 ~/yourprogram"
 		target machine: gdbserver hostip:2345 yourprogram
@@ -212,21 +228,21 @@ Missing Features
 		host machine:
 			start gdb as normal with yourprogram as arg
 			(gdb) target remote <dev or target:2345>
-	- need output window for running program
 	- view variable results not parsed well for complex values
-	- Adding variable to view should scroll to end
 	- stopped, reason="watchpoint-trigger" doesn't enable Debug/Go
 	- When view variables in call stack, show call stack location in editor?
 	- Need to switch tabs and raise window when view source / hit breakpoint
 	- Breakpoints not set in spawned executables?
-	- Current exec position doesn't go away/update at some times
-	- display variable doesn't work (wrong page?)
 	- Debug data could display graphs, unicode, etc.
 	- Debug data could be bound to functions in code
 	- Could execute functions in code with parameters
 	- Control window requires that entering commands must enter on blank line
 	- When build starts, should stop debugger
 	- GDB docs are gdb.info, "The GDB/MI Interface"
+- CLangViewer
+	- Search for name
+	- View tokens
+
 
 - Cleanup
 	- separate gui from backend - humble dialog
@@ -300,6 +316,7 @@ Missing Features
 	- abstract interpretation (show ranges of variables)
 	- C Intermediate Language - http://www.cs.berkeley.edu/~necula/cil/cil016.html
 	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
+		nsis
 		CMake - ExternalProject_Add
 		fpm deb/rpm
 		biicode

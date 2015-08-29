@@ -326,10 +326,31 @@ void FilePathRemovePathSep(std::string &path, size_t pos)
 
 void FilePathQuoteCommandLinePath(std::string &str)
     {
+// In Windows, something like "-I\te st\" must be quoted as "-I\te st\\".
+// So for now, this function does not quote all arguments correctly.
+
+//#ifndef __linux__
     if(str.length() > 0)
         {
         if(str[0] != '\"')
             {
+/*
+            for(size_t i=0; i<str.length(); i++)
+                {
+printf("%d %c\n", i, str[i]);
+                if(str[i] == '\\')
+                    {
+                    str.insert(i, 1, '\\');
+                    i++;
+printf(" ADD %d %c\n", i, str[i]);
+                    }
+                if(str[i] == '\"')
+                    {
+                    str.insert(i, 1, '\\');
+                    i++;
+                    }
+                }
+*/
             if(str.find(' ') != std::string::npos)
                 {
                 str.insert(0, 1, '\"');
@@ -337,6 +358,7 @@ void FilePathQuoteCommandLinePath(std::string &str)
                 }
             }
         }
+//#endif
     }
 
 #ifdef __linux__
@@ -483,6 +505,43 @@ bool FileGetFileTime(OovStringRef const path, time_t &time)
     if(success)
         time = srcFileStat.st_mtime;
     return success;
+    }
+
+///////////
+
+bool FileStat::isOutputOld(OovStringRef const outputFn,
+        OovStringRef const inputFn)
+    {
+    time_t outTime;
+    time_t inTime;
+    bool success = FileGetFileTime(outputFn, outTime);
+    bool old = !success;
+    if(success)
+        {
+        success = FileGetFileTime(inputFn, inTime);
+        if(success)
+            old = inTime > outTime;
+        else
+            old = true;
+        }
+    return old;
+    }
+
+bool FileStat::isOutputOld(OovStringRef const outputFn,
+        OovStringVec const &inputs, size_t *oldIndex)
+    {
+    bool old = false;
+    for(size_t i=0; i<inputs.size(); i++)
+        {
+        if(isOutputOld(outputFn, inputs[i]))
+            {
+            old = true;
+            if(oldIndex)
+                *oldIndex = i;
+            break;
+            }
+        }
+    return old;
     }
 
 

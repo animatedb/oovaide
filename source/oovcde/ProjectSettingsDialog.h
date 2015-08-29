@@ -21,24 +21,30 @@ class ProjectSettingsDialog: public Dialog
                 bool newProject);
         virtual ~ProjectSettingsDialog();
         bool runDialog();
+        OovString const getProjectDir() const;
         CompoundValue const &getExcludeDirs() const
             { return mExcludeDirs; }
-        OovString const &getProjectDir() const
-            { return mProjectDir; }
-        ProjectReader &getProjectOptions()
-            { return mProjectOptions; }
-        GuiOptions &getGuiOptions()
-            { return mGuiOptions; }
-        GtkWindow *getParentWindow()
-            { return mParentWindow; }
+
+        // Called by extern functions
+        void rootSourceDirButtonClicked();
+        void oovcdeProjectDirButtonClicked();
+        void excludeDirsButtonClicked();
+        void rootSourceDirEntryChanged();
 
     private:
         ProjectReader &mProjectOptions;
         GuiOptions &mGuiOptions;
         GtkWindow *mParentWindow;
         CompoundValue mExcludeDirs;
-        OovString mProjectDir;
         bool mNewProject;
+
+        OovString getRootSrcDir() const;
+        ProjectReader &getProjectOptions()
+            { return mProjectOptions; }
+        GuiOptions &getGuiOptions()
+            { return mGuiOptions; }
+        GtkWindow *getParentWindow()
+            { return mParentWindow; }
     };
 
 

@@ -37,7 +37,7 @@ DebuggerBase::~DebuggerBase()
 
 
 DebuggerBase::DebuggerBase():
-    mDebuggerListener(nullptr)
+    mDebuggerListener(nullptr), mDebuggerChildState(DCS_ChildNotRunning)
     {
     }
 
@@ -78,11 +78,11 @@ OovString DebuggerBase::getStack()
     return str;
     }
 
-OovString DebuggerBase::getVarValue()
+DebugResult const DebuggerBase::getVarValue()
     {
     LockGuard lock(mStatusLock);
-    std::string str = mVarValue;
-    return str;
+    DebugResult res(std::move(mVarValue));
+    return res;
     }
 
 void DebuggerBase::updateChangeStatus(eDebuggerChangeStatus status)
@@ -125,7 +125,7 @@ bool DebuggerGdb::runDebuggerProcess()
         {
         OovProcessChildArgs args;
         args.addArg(mDebuggerFilePath);
-        args.addArg(mDebuggeeFilePath);
+//        args.addArg(mDebuggeeFilePath);
         args.addArg("--interpreter=mi");
         mBkgPipeProc.startProcess(mDebuggerFilePath, args.getArgv(), false);
 #if(DEBUG_DBG)
@@ -221,6 +221,28 @@ void DebuggerGdb::ensureGdbChildRunning()
     {
     if(runDebuggerProcess())
         {
+        /*
+        Eclipse also sets these:
+        sendMiCommand("-gdb-set host-charset UTF-8");
+        sendMiCommand("-gdb-set target-charset UTF-8");
+        sendMiCommand("-gdb-set target-wide-charset UTF-32");
+        sendMiCommand("-gdb-set --thread-group i1 args /home/.../names/twinkle.cpp");
+        sendMiCommand("-gdb-set --thread-group i1 language c");
+        sendMiCommand("-gdb-set dprintf-style call");
+        sendMiCommand("-gdb-set python print-stack none");
+        sendMiCommand("-gdb-set print object on");
+        sendMiCommand("-gdb-set print sevenbit-strings on");
+        sendMiCommand("-gdb-set auto-solib-add on");
+        sendMiCommand("-interpreter-exec --thread-group i1 console \"p/x (char)-1\"");
+        sendMiCommand("-gdb-set --thread-group i1 language auto");
+        sendMiCommand("-file-exec-and-symbols --thread-group i1 /home/.../bin-linux/oovEdit");
+//        sendMiCommand("-file-exec-and-symbols /home/dave/software/oovcde/2.0/code/trunk/bin-linux/oovEdit");
+        */
+        sendMiCommand("-enable-pretty-printing");
+        std::string argCmd = "-file-exec-and-symbols ";
+        argCmd += mDebuggeeFilePath;
+        sendMiCommand(argCmd);
+
         for(auto const &br : mBreakpoints)
             sendAddBreakpoint(br);
         }
@@ -433,15 +455,21 @@ void DebuggerGdb::handleBreakpoint(const std::string &resultStr)
 
 void DebuggerGdb::handleValue(const std::string &resultStr)
     {
-    cDebugResult debRes;
-    debRes.parseResult(resultStr);
-    mVarValue = mGetVariableName;
+    mVarValue.parseResult(resultStr);
+//    DebugResult debRes;
+//    debRes.parseResult(resultStr);
+//    mVarValue = mGetVariableName;
+//    mGetVariableName.clear();
+//    mVarValue += " : ";
+//    mVarValue += debRes.getAsString();
+
+    // The normal top level variable returned by GDB is "value", which seems
+    // pretty useless, so just change it to the requested variable name.
+    mVarValue.setVarName(mGetVariableName);
     mGetVariableName.clear();
-    mVarValue += " : ";
-    mVarValue += debRes.getAsString();
     updateChangeStatus(DCS_Value);
-    if(mDebuggerListener)
-        mDebuggerListener->DebugOutput(mVarValue);
+//    if(mDebuggerListener)
+//        mDebuggerListener->DebugOutput(mVarValue.getAsString());
     }
 
 // 99^done,stack=[

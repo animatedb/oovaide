@@ -63,41 +63,6 @@ std::string ToolPathFile::getCovInstrToolPath()
     return(path);
     }
 
-bool FileStat::isOutputOld(OovStringRef const outputFn,
-        OovStringRef const inputFn)
-    {
-    time_t outTime;
-    time_t inTime;
-    bool success = FileGetFileTime(outputFn, outTime);
-    bool old = !success;
-    if(success)
-        {
-        success = FileGetFileTime(inputFn, inTime);
-        if(success)
-            old = inTime > outTime;
-        else
-            old = true;
-        }
-    return old;
-    }
-
-bool FileStat::isOutputOld(OovStringRef const outputFn,
-        OovStringVec const &inputs, size_t *oldIndex)
-    {
-    bool old = false;
-    for(size_t i=0; i<inputs.size(); i++)
-        {
-        if(isOutputOld(outputFn, inputs[i]))
-            {
-            old = true;
-            if(oldIndex)
-                *oldIndex = i;
-            break;
-            }
-        }
-    return old;
-    }
-
 void ScannedComponent::saveComponentSourcesToFile(OovStringRef const compName,
     ComponentTypesFile &compFile) const
     {

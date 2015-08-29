@@ -16,7 +16,7 @@
 ///              ..........2345...34..
 ///
 /// The comparison should not output: ABCD, BCD, CD, D,    BC, C
-class cFilterOutputHashIndices
+class FilterOutputHashIndices
     {
     public:
         void init(size_t size);
@@ -43,8 +43,8 @@ class HashFile
     public:
         bool readHashFile(OovStringRef filePath);
         void compareHashFiles(HashFile const &refFile,
-            cFilterOutputHashIndices &outHashIndices,
-            DuplicateOptions const &options, std::vector<cDuplicateLineInfo> &mDupLineInfo);
+            FilterOutputHashIndices &outHashIndices,
+            DuplicateOptions const &options, std::vector<DuplicateLineInfo> &mDupLineInfo);
 
     private:
         OovString mFilePath;
@@ -58,7 +58,7 @@ class HashFile
     };
 
 
-void cFilterOutputHashIndices::init(size_t size)
+void FilterOutputHashIndices::init(size_t size)
     {
     if(size > mFile2HashIndices.size())
         {
@@ -67,7 +67,7 @@ void cFilterOutputHashIndices::init(size_t size)
     memset(&mFile2HashIndices[0], 0, size);
     }
 
-void cFilterOutputHashIndices::markAlreadyOutput(
+void FilterOutputHashIndices::markAlreadyOutput(
         size_t startIndexFile1, size_t len,
     size_t startIndexFile2)
     {
@@ -77,7 +77,7 @@ void cFilterOutputHashIndices::markAlreadyOutput(
         }
     }
 
-bool cFilterOutputHashIndices::isAlreadyOutput(size_t startIndexFile1, size_t startIndexFile2)
+bool FilterOutputHashIndices::isAlreadyOutput(size_t startIndexFile1, size_t startIndexFile2)
     {
     return(mFile2HashIndices[startIndexFile2] == startIndexFile1);
     }
@@ -111,8 +111,8 @@ bool HashFile::readHashFile(OovStringRef const filePath)
     }
 
 void HashFile::compareHashFiles(HashFile const &refFile,
-    cFilterOutputHashIndices &outHashIndices, DuplicateOptions const &options,
-    std::vector<cDuplicateLineInfo> &mDupLineInfo)
+    FilterOutputHashIndices &outHashIndices, DuplicateOptions const &options,
+    std::vector<DuplicateLineInfo> &mDupLineInfo)
     {
 //    fprintf(outFile.getFp(), "Compare %s\n   %s\n", mFilePath.getStr(),
 //          refFile.mFilePath.getStr());
@@ -137,7 +137,7 @@ void HashFile::compareHashFiles(HashFile const &refFile,
                         {
                         outHashIndices.markAlreadyOutput(i1, inc, i2);
                         size_t totalLines = (mHashItems[i1+inc-1].mLineNum - mHashItems[i1].mLineNum) + 1;
-                        cDuplicateLineInfo info;
+                        DuplicateLineInfo info;
                         info.mTotalDupLines = static_cast<int>(totalLines);
                         info.mFile1 = getRelativeFileName().getStr();
                         info.mFile1StartLine = static_cast<int>(mHashItems[i1].mLineNum);
@@ -198,22 +198,22 @@ OovString HashFile::getRelativeFileName() const
     }
 
 
-class cDuplicates
+class Duplicates
     {
     public:
-        cDuplicates(std::vector<std::string> const &filePaths);
+        Duplicates(std::vector<std::string> const &filePaths);
         /// Compare every file with every other file, including itself
         void compareAllFiles(DuplicateOptions const &options,
-                std::vector<cDuplicateLineInfo> &dupLineInfo);
+                std::vector<DuplicateLineInfo> &dupLineInfo);
 
     private:
         std::vector<HashFile> mHashFiles;
         // This is here to reduce the number of memory allocations.
-        cFilterOutputHashIndices mFilterOutputHashIndices;
+        FilterOutputHashIndices mFilterOutputHashIndices;
     };
 
 
-cDuplicates::cDuplicates(std::vector<std::string> const &filePaths):
+Duplicates::Duplicates(std::vector<std::string> const &filePaths):
     mHashFiles(filePaths.size())
     {
     for(size_t i=0; i<filePaths.size(); i++)
@@ -222,8 +222,8 @@ cDuplicates::cDuplicates(std::vector<std::string> const &filePaths):
         }
     }
 
-void cDuplicates::compareAllFiles(DuplicateOptions const &options,
-        std::vector<cDuplicateLineInfo> &dupLineInfo)
+void Duplicates::compareAllFiles(DuplicateOptions const &options,
+        std::vector<DuplicateLineInfo> &dupLineInfo)
     {
     for(size_t i1=0; i1<mHashFiles.size(); i1++)
         {
@@ -236,7 +236,7 @@ void cDuplicates::compareAllFiles(DuplicateOptions const &options,
     }
 
 bool getDuplicateLineInfo(DuplicateOptions const &options,
-        std::vector<cDuplicateLineInfo> &dupLineInfo)
+        std::vector<DuplicateLineInfo> &dupLineInfo)
     {
     bool processedFiles = false;
     FilePath path(Project::getProjectDirectory(), FP_Dir);
@@ -245,7 +245,7 @@ bool getDuplicateLineInfo(DuplicateOptions const &options,
     std::vector<std::string> filePaths;
     if(getDirListMatchExt(path, ext, filePaths))
         {
-        cDuplicates hashFiles(filePaths);
+        Duplicates hashFiles(filePaths);
         hashFiles.compareAllFiles(options, dupLineInfo);
         processedFiles = true;
         }

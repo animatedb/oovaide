@@ -233,6 +233,15 @@ void FileWaitForDirDeleted(OovStringRef const path, int waitMs=10000);
 /// @param newPath The new path name.
 void FileRename(OovStringRef const oldPath, OovStringRef const newPath);
 
+class FileStat
+    {
+    public:
+        static bool isOutputOld(OovStringRef const outputFn,
+                OovStringRef const inputFn);
+        static bool isOutputOld(OovStringRef const outputFn,
+                OovStringVec const &inputs, size_t *oldIndex=nullptr);
+    };
+
 template<typename T_Str> class FilePathRefInterface
     {
     public:

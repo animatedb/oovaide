@@ -18,7 +18,7 @@ void LogAssertFile(OovStringRef const file, int line, char const *diagStr)
         str = ' ';
         str += diagStr;
         }
-    debugAssertFile.printflush("%s %d%s\n", file.getStr(), line, diagStr);
+    debugAssertFile.printflush("%s %d%s\n", file.getStr(), line, str.c_str());
     }
 
 DebugFile::DebugFile(char const *fn, bool append):

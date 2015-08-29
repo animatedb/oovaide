@@ -28,11 +28,16 @@
 //      Imaginary::FakeStar
 //      Imaginary::PretendStar
 
+
+// @param T This requires a class that has a whatAreYou() method.
 template<class T> class IdentityDisplayer:public T
     {
     public:
         void displayIdentity()
-            { printf("I am a %s\n", this->whatAreYou()); }
+            {
+            printf("I am a %s and I%s twinkle\n", this->whatAreYou(),
+                this->haveTwinkle() ? "" : " don't");
+            }
     };
 
 
@@ -45,6 +50,8 @@ namespace Universe
         public:
             char const *whatAreYou() const
                 { return("movie star"); }
+            bool haveTwinkle() const
+                { return true; }
         };
     };
 
@@ -55,6 +62,8 @@ namespace Universe
         public:
             char const *whatAreYou() const
                 { return("award star"); }
+            bool haveTwinkle() const
+                { return false; }
         };
     };
 
@@ -63,6 +72,8 @@ class Star
     public:
         char const *whatAreYou() const
             { return("little star"); }
+        bool haveTwinkle() const
+            { return true; }
     };
 
 class DisplayStar:public Star, public IdentityDisplayer<Star>
@@ -79,6 +90,7 @@ class Galaxy
         DisplayStar mStar;
         Awards::Star mAwardStar;
         Movies::Star mMovieStar;
+        IdentityDisplayer<Awards::Star> mOtherAwardStar;
     };
 
 

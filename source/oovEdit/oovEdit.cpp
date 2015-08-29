@@ -397,6 +397,27 @@ gboolean Editor::onIdle(gpointer data)
     return true;
     }
 
+static void appendTree(GuiTree &varView, GuiTreeItem &parentItem,
+        DebugResult const &debResult)
+    {
+    OovString str = debResult.getVarName();
+    if(debResult.getValue().length() > 0)
+        {
+        str += " : ";
+        str += debResult.getValue();
+        }
+    GuiTreeItem item = varView.appendText(parentItem, str);
+    for(auto const &childRes : debResult.getChildResults())
+        {
+        appendTree(varView, item, *childRes.get());
+        }
+    int numChildren = varView.getNumChildren(GuiTreeItem());
+    OovString numPathStr;
+    numPathStr.appendInt(numChildren-1);
+    GuiTreePath path(numPathStr);
+    varView.expandRow(path);
+    }
+
 void Editor::idleDebugStatusChange(eDebuggerChangeStatus st)
     {
     if(st == DCS_RunState)
@@ -416,25 +437,21 @@ void Editor::idleDebugStatusChange(eDebuggerChangeStatus st)
         }
     else if(st == DCS_Value)
         {
-        mVarView.appendText(GuiTreeItem(), mDebugger.getVarValue());
+//        mVarView.appendText(GuiTreeItem(), mDebugger.getVarValue().getAsString());
+        GuiTreeItem item;
+        appendTree(mVarView, item, mDebugger.getVarValue());
+
+        int numChildren = mVarView.getNumChildren(GuiTreeItem());
+        OovString numPathStr;
+        numPathStr.appendInt(numChildren-1);
+        GuiTreePath path(numPathStr);
+        mVarView.scrollToPath(path);
         }
     }
 
 void Editor::debugSetStackFrame(OovStringRef const frameLine)
     {
     mDebugger.setStackFrame(frameLine);
-    }
-
-void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
-        gchar *text, gint len, gpointer user_data)
-    {
-    gEditor->bufferInsertText(textbuffer, location, text, len);
-    }
-
-void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
-        GtkTextIter *end, gpointer user_data)
-    {
-    gEditor->bufferDeleteRange(textbuffer, start, end);
     }
 
 /*

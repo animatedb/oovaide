@@ -116,20 +116,6 @@ class Editor:public DebuggerListener
             { mEditFiles.gotoLine(lineNum); }
         void gotoLineDialog();
         void gotoFileLine(std::string const &lineBuf);
-        void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
-                gchar *text, gint len)
-            {
-            FileEditView *editView = mEditFiles.getEditView(textbuffer);
-            if(editView)
-                { editView->bufferInsertText(textbuffer, location, text, len); }
-            }
-        void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
-                GtkTextIter *end)
-            {
-            FileEditView *editView = mEditFiles.getEditView(textbuffer);
-            if(editView)
-                { editView->bufferDeleteRange(textbuffer, start, end); }
-            }
 /*
         void drawHighlight()
             {

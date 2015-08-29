@@ -71,6 +71,16 @@ class GraphPoint
             result.sub(p);
             return result;
             }
+        // Define an arbitrary convention so that insertion into sets can
+        // be performed.
+        bool operator<(GraphPoint const &rhs) const
+            {
+            return(y < rhs.y || (y == rhs.y && x < rhs.x));
+            }
+        bool operator==(GraphPoint const &rhs) const
+            {
+            return(y == rhs.y && x == rhs.x);
+            }
 
     public:
         int x;
@@ -79,11 +89,31 @@ class GraphPoint
 
 typedef GraphPoint GraphSize;
 
+class GraphLine
+    {
+    public:
+        GraphLine()
+            {}
+        GraphLine(int startx, int starty, int endx, int endy):
+            start(startx, starty), end(endx, endy)
+            {}
+        GraphLine(GraphPoint startPoint, GraphPoint endPoint):
+            start(startPoint), end(endPoint)
+            {}
+        // Define an arbitrary convention so that insertion into sets can
+        // be performed.
+        bool operator<(GraphLine const &rhs) const
+            {
+            return(start < rhs.start || (start == rhs.start && end < rhs.end));
+            }
+        GraphPoint start;
+        GraphPoint end;
+    };
+
 class GraphRect
     {
     public:
-        GraphRect():
-            start(0, 0), size(0, 0)
+        GraphRect()
             {}
         GraphRect(int x, int y, int xsize, int ysize)
             {

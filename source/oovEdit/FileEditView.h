@@ -159,7 +159,8 @@ class FileEditView
             wnd = GTK_WINDOW(mTextView);
             return wnd;
             }
-            // Return = true if find def/decl has results.
+
+        // Return = true if find def/decl has results.
         bool idleHighlight();
         void gotoLine(int lineNum);
 
@@ -168,11 +169,21 @@ class FileEditView
                 gchar *text, gint len);
         void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
                 GtkTextIter *end);
+
+        /// This selects an identifier at the specified position. This should
+        /// normally be called from a double click.
+        /// @param leftMarginWidth This is an offset applied to the x position.
+        /// @param x The button/cursor click x position.
+        /// @param x The button/cursor click y position.
+        void buttonPressSelect(int leftMarginWidth, double x, double y);
+
         /// Used to process keys that require special handling.  These are
         /// things like code completion, indenting, home key, etc.
         bool handleKeys(GdkEvent *event);
+
         std::string getFilePath() const
             { return mFilePath; }
+
         // Only the name part of the file path
         std::string getFileName() const;
         GtkTextBuffer *getTextBuffer() const

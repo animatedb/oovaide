@@ -71,6 +71,8 @@ class ScrolledFileView
         // WARNING: This path was entered by the user, so it may not have the
         FilePath const &getFilename() const
             { return mFilename; }
+        LeftMargin const &getLeftMargin() const
+            { return mLeftMargin; }
         void drawMargins(cairo_t *cr);
 
     public:
@@ -90,6 +92,7 @@ class EditFiles:public FileEditViewListener
     {
     public:
         EditFiles(Debugger &debugger, EditOptions &editOptions);
+        static EditFiles &getEditFiles();
         void init(Builder &builder);
         // This prevents a crash if called before the windows
         // are shut down. See Tokenizer::~Tokenizer().
@@ -111,7 +114,8 @@ class EditFiles:public FileEditViewListener
         /// return = true if it is ok to exit.
         bool checkExitSave();
         FileEditView *getEditView();
-        FileEditView *getEditView(GtkTextBuffer *textbuffer);
+        static ScrolledFileView *getScrolledFileView(GtkTextView *textView);
+        static ScrolledFileView *getScrolledFileView(GtkTextBuffer *textbuffer);
         std::string getEditViewSelectedText();
         // For signal handlers
         void setFocusEditTextView(GtkTextView *editTextView);
@@ -125,8 +129,12 @@ class EditFiles:public FileEditViewListener
         /// Displays an error if the debugger has not been setup in options.
         bool checkDebugger();
         void showInteractNotebookTab(char const * const tabName);
-        ScrolledFileView *getScrolledFileView(GtkTextView *textView);
         bool saveAsTextFileWithDialog();
+        static void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
+                gchar *text, gint len);
+        static void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
+                GtkTextIter *end);
+        static bool handleButtonPress(GtkWidget *widget, GdkEventButton const &button);
 
     private:
         EditOptions &mEditOptions;

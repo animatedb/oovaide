@@ -57,7 +57,7 @@
           <li><a href="#mozTocId90631">OovGuiCommon</a></li>
         </ol>
       </li>
-      <li><a href="#mozTocId68299">Processing</a>
+      <li><a href="#mozTocId68299">Build Processing</a>
         <ol>
           <li><a href="#mozTocId599543">Analysis Mode</a></li>
           <li><a href="#mozTocId848189">Build Mode</a></li>
@@ -272,7 +272,10 @@
     </ul>
     <h2><a class="mozTocH2" name="mozTocId565763"></a>OovBuilder</h2>
     OovBuilder is a command line tool. The Oovcde program invokes the OovBuilder
-    from the command line. The OovBuilder works in two modes.<br>
+    from the command line. The OovBuilder works in two modes.
+    For detailed information on processing, see <a href="OovcdeBuildDesign.html">Oovcde
+ Build Design</a>.
+    <p/>
     <ul>
       <li>Analysis Mode - To extract drawing information, OovBuilder recursively
         parses a directory to find C++ files, and runs the Oov CPP parser on
@@ -712,7 +715,7 @@
     The following shows the sequence diagram for adding class nodes to the
     graph.<br>
     <br>
-    <img style="width: 526px; height: 1085px;" alt="SeqAddRelatedNodes diagram"      src="SeqAddRelatedNodes.png"><br>
+    <img alt="SeqAddRelatedNodes diagram" src="SeqAddRelatedNodes.svg"><br>
     <br>
     Drawing notes:<br>
     <ul>
@@ -1205,7 +1208,7 @@
     replaced type will need to point to the new object. The
     ModelData::replaceType function does this operation.<br>
     <br>
-    <img style="width: 495px; height: 665px;" alt="Replace Type sequence" src="SeqReplaceType.png"><br>
+    <img alt="Replace Type sequence" src="SeqReplaceType.svg"><br>
     <br>
     <br>
     Drawing Notes:<br>
@@ -1315,9 +1318,10 @@
     The OovGuiCommon library provides code that can be used by all user
     interface components.<br>
     <br>
-    <h1><a class="mozTocH1" name="mozTocId68299"></a>Processing</h1>
-    For detailes information on processing, see <a href="OovcdeBuildDesign.html">Oovcde
-      Build Design</a>. The analysis mode described below is often run as part
+    <h1><a class="mozTocH1" name="mozTocId68299"></a>Build Processing</h1>
+    For detailed information on processing, see <a href="OovcdeBuildDesign.html">Oovcde
+ Build Design</a>.
+    The analysis mode described below is often run as part
     of the build mode.<br>
     <br>
     <h2><a class="mozTocH2" name="mozTocId599543"></a>Analysis Mode</h2>

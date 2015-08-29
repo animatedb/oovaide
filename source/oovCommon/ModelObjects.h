@@ -432,6 +432,7 @@ class ModelType:public ModelObject
             ModelObject(name), mDataType(type)
             {}
         static bool isTemplateDefType(OovString const &name);
+        static bool isTypedefType(OovString const &name);
         static char const *getTemplateStereotype()
             { return "<<template>>"; }
         static char const *getTypedefStereotype()
@@ -775,11 +776,6 @@ class ModelData
         /// @param typeName The name of the type to retrieve.
         const ModelType *findType(OovStringRef const typeName) const;
 
-        /// Find a template definition type.  This discards the parameters
-        /// to find the template class type.
-        /// @param typeName The name of the type to retrieve.
-        const ModelType *findTemplateType(OovStringRef const typeName) const;
-
         /// Replace a type.
         /// For all pointers to the old type, sets to the new type, then
         /// deletes the old type.
@@ -851,6 +847,12 @@ class ModelData
                 ModelClassifier *newType);
         /// Erase a type.
         void eraseType(ModelType *existingType);
+        /// Find a template definition type.  This discards the parameters
+        /// to find the template class type.
+        /// @param baseIdentName The identifier part of the name of the type
+        ///     to retrieve.
+        const ModelType *findTemplateType(OovStringRef const baseIdentName) const;
+
     };
 
 #endif

@@ -10,12 +10,17 @@
 #include "File.h"
 #include "OovString.h"
 #include "Builder.h"
+#include "EditFiles.h"
 #include <string.h>
 
 
 #include "IncludeMap.h"
 #include "BuildConfigReader.h"
 #include "OovProcess.h"
+
+static CompletionList *sCurrentCompleteList;
+
+
 // This currently does not get the package command line arguments,
 // but usually these won't be needed for compilation.
 static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
@@ -44,11 +49,22 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     }
 
 
+static void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
+        gchar *text, gint len, gpointer user_data)
+    {
+    EditFiles::getEditFiles().bufferInsertText(textbuffer, location, text, len);
+    }
 
-void signalBufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
-        gchar *text, gint len, gpointer user_data);
-void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
-        GtkTextIter *end, gpointer user_data);
+static void signalBufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
+        GtkTextIter *end, gpointer user_data)
+    {
+    EditFiles::getEditFiles().bufferDeleteRange(textbuffer, start, end);
+    }
+
+static bool signalButtonPressEvent(GtkWidget *widget, GdkEvent *event, gpointer user_data)
+    {
+    return EditFiles::getEditFiles().handleButtonPress(widget, event->button);
+    }
 
 
 void CompletionList::init(GtkTextBuffer *textBuffer)
@@ -90,7 +106,6 @@ static bool isModifierKey(int key)
     return(key == GDK_KEY_Shift_R || key == GDK_KEY_Shift_L || isControlKey(key));
     }
 
-static CompletionList *sCurrentCompleteList;
 bool CompletionList::handleEditorKey(int key, int modKeys)
     {
     sCurrentCompleteList = this;
@@ -409,6 +424,8 @@ void FileEditView::init(GtkTextView *textView, FileEditViewListener *listener)
           G_CALLBACK(signalBufferInsertText), NULL);
     g_signal_connect(G_OBJECT(mTextBuffer), "delete-range",
           G_CALLBACK(signalBufferDeleteRange), NULL);
+    g_signal_connect(G_OBJECT(mTextView), "button-press-event",
+          G_CALLBACK(signalButtonPressEvent), NULL);
 //          g_signal_connect(G_OBJECT(mBuilder.getWidget("EditTextScrolledwindow")),
 //                  "scroll-child", G_CALLBACK(scrollChild), NULL);
     g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), this);
@@ -712,6 +729,52 @@ void FileEditView::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *sta
         }
     highlightRequest();
     setModified(true);
+    }
+
+void FileEditView::buttonPressSelect(int leftMarginWidth, double buttonX, double buttonY)
+    {
+    int bufX;
+    int bufY;
+    gtk_text_view_window_to_buffer_coords(mTextView, GTK_TEXT_WINDOW_WIDGET,
+        leftMarginWidth + buttonX, buttonY, &bufX, &bufY);
+    GtkTextIter iter;
+    gtk_text_view_get_iter_at_location(mTextView, &iter, bufX, bufY);
+    GtkTextIter startIter = iter;
+    GtkTextIter endIter = iter;
+    while(1)
+        {
+        char c = gtk_text_iter_get_char(&iter);
+        if(isIdentC(c))
+            {
+            startIter = iter;
+            if(!gtk_text_iter_backward_char(&iter))
+                {
+                break;
+                }
+            }
+        else
+            {
+            break;
+            }
+        }
+    iter = endIter;
+    while(1)
+        {
+        char c = gtk_text_iter_get_char(&iter);
+        if(isIdentC(c))
+            {
+            if(!gtk_text_iter_forward_char(&iter))
+                {
+                break;
+                }
+            endIter = iter;
+            }
+        else
+            {
+            break;
+            }
+        }
+    gtk_text_buffer_select_range(mTextBuffer, &startIter, &endIter);
     }
 
 bool FileEditView::idleHighlight()

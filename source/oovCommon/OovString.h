@@ -115,7 +115,9 @@ OovStringVec StringSplit(char const * const str, char const * const delimiterStr
 /// Get a vector of strings by parsing the string for multiple delimiter strings.
 /// @param str The string to parse.
 /// @param delimiters The strings to use as delimiters.
-OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters);
+/// @param keepZeroLengthStrings Keep all strings in the returned vector.
+OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters,
+        bool keepZeroLengthStrings);
 
 /// Convert a string to lower case.
 /// This only works for ASCII strings.
@@ -207,8 +209,10 @@ template<typename T_Str> class OovStringRefInterface
         /// strings.
         /// @param str The string to parse.
         /// @param delimiters The strings to use as delimiters.
-        OovStringVec split(OovStringVec const &delimiters) const
-            { return StringSplit(getThisStr(), delimiters); }
+        /// @param keepZeroLengthStrings Keep all strings in the returned vector.
+        OovStringVec split(OovStringVec const &delimiters,
+            bool keepZeroLengthStrings) const
+            { return StringSplit(getThisStr(), delimiters, keepZeroLengthStrings); }
 
     protected:
         char const * getThisStr() const

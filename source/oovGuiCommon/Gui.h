@@ -203,6 +203,70 @@ class GuiTextBuffer:public GuiTextIter
         static void moveCursorToEnd(GtkTextBuffer *buf);
     };
 
+class GuiTreePath
+    {
+    public:
+        GuiTreePath(GtkTreeModel *model, GtkTreeIter *iter)
+            {
+            mOwnPath = true;
+            mTreePath = gtk_tree_model_get_path(model, iter);
+            }
+        GuiTreePath(GtkTreePath *path)
+            {
+            mOwnPath = false;
+            mTreePath = path;
+            }
+        GuiTreePath(OovStringRef path)
+            {
+            mOwnPath = true;
+            mTreePath = gtk_tree_path_new_from_string(path);
+            }
+        ~GuiTreePath()
+            {
+            if(mOwnPath)
+                {
+                gtk_tree_path_free(mTreePath);
+                }
+            }
+        GtkTreePath *getPath()
+            { return mTreePath; }
+        /// Returns a colon separated list of numbers.
+        /// Use OovString::split(':') to get a vector.
+        OovString getStr() const
+            {
+            char *str = gtk_tree_path_to_string(mTreePath);
+            OovString oovstr = str;
+            g_free(str);
+            return oovstr;
+            }
+
+    private:
+        bool mOwnPath;
+        GtkTreePath *mTreePath;
+    };
+
+class GuiTreeItem
+    {
+    public:
+        GuiTreeItem(bool root=true)
+            { setRoot(root); }
+        bool isRoot() const
+            { return(mIter.stamp == 0); }
+        void setRoot(bool root=true)
+            {
+            // If not root, set to non-zero so getPtr returns the actual pointer.
+            if(root)
+                mIter.stamp = 0;
+            else
+                mIter.stamp = 1;
+            }
+        GtkTreeIter *getPtr()
+            { return(isRoot() ? nullptr : &mIter); }
+
+    private:
+        GtkTreeIter mIter;
+    };
+
 /// This wraps a GtkTreeView.  A tree view is used for both trees and lists.
 class GuiTreeView
     {
@@ -216,6 +280,9 @@ class GuiTreeView
         void removeSelected();
         GtkTreeView *getTreeView()
             { return mTreeView; }
+        void scrollToPath(GuiTreePath &path);
+        /// A default item will return the number of children at the root.
+        int getNumChildren(GuiTreeItem const &item) const;
 
     protected:
         GtkTreeView *mTreeView;
@@ -268,28 +335,6 @@ class GuiList:public GuiTreeView
         OovString getSelected() const;
         int getSelectedIndex() const;
         void setSelected(OovStringRef const str);
-    };
-
-class GuiTreeItem
-    {
-    public:
-        GuiTreeItem(bool root=true)
-            { setRoot(root); }
-        bool isRoot() const
-            { return(mIter.stamp == 0); }
-        void setRoot(bool root=true)
-            {
-            // If not root, set to non-zero so getPtr returns the actual pointer.
-            if(root)
-                mIter.stamp = 0;
-            else
-                mIter.stamp = 1;
-            }
-        GtkTreeIter *getPtr()
-            { return(isRoot() ? nullptr : &mIter); }
-
-    private:
-        GtkTreeIter mIter;
     };
 
 /// This only supports a few types of trees.  A tree where each item is a
@@ -352,12 +397,13 @@ class GuiTree:public GuiTreeView
             GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
             return GTK_IS_TREE_STORE(model) ? GTK_TREE_STORE(model) : nullptr;
             }
+        bool getSelectedItem(GuiTreeItem &item) const;
+        void expandRow(GuiTreePath &path);
 
     private:
         bool findNodeItem(GuiTreeItem parent, OovString const &name,
                 char delimiter, GuiTreeItem &item);
         void setChildCheckboxes(GuiTreeItem item, bool set);
-        bool getSelectedItem(GuiTreeItem &item) const;
         /// First element is parent, second is child,...
         /// The returned string is the elements joined together using the
         /// delimiter passed in.

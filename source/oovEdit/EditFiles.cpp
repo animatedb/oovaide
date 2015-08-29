@@ -156,6 +156,11 @@ void EditFiles::closeAll()
     mFileViews.clear();
     }
 
+EditFiles &EditFiles::getEditFiles()
+    {
+    return *sEditFiles;
+    }
+
 void EditFiles::onIdle()
     {
     idleHighlight();
@@ -175,21 +180,34 @@ void EditFiles::onIdle()
         }
     }
 
-FileEditView *EditFiles::getEditView(GtkTextBuffer *textBuffer)
+ScrolledFileView *EditFiles::getScrolledFileView(GtkTextBuffer *textBuffer)
     {
-    FileEditView *view = nullptr;
+    ScrolledFileView *scrolledView = nullptr;
 
-    auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
+    auto fvIter = std::find_if(sEditFiles->mFileViews.begin(), sEditFiles->mFileViews.end(),
             [&textBuffer](std::unique_ptr<ScrolledFileView> const &fv) -> bool
                 { return(fv->getFileEditView().getTextBuffer() == textBuffer); });
-    ScrolledFileView *scrolledView = nullptr;
-    if(fvIter != mFileViews.end())
+    if(fvIter != sEditFiles->mFileViews.end())
         {
         scrolledView = fvIter->get();
-        view = &scrolledView->getFileEditView();
         }
-    return view;
+    return scrolledView;
     }
+
+ScrolledFileView *EditFiles::getScrolledFileView(GtkTextView *textView)
+    {
+    ScrolledFileView *scrolledView = nullptr;
+
+    auto fvIter = std::find_if(sEditFiles->mFileViews.begin(), sEditFiles->mFileViews.end(),
+            [&textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
+                { return(fv->getFileEditView().getTextView() == textView); });
+    if(fvIter != sEditFiles->mFileViews.end())
+        {
+        scrolledView = fvIter->get();
+        }
+    return scrolledView;
+    }
+
 
 FileEditView *EditFiles::getEditView()
     {
@@ -363,19 +381,6 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget("DebugViewVariable")),
             state != DCS_ChildRunning);
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
-    }
-
-ScrolledFileView *EditFiles::getScrolledFileView(GtkTextView *textView)
-    {
-    auto fvIter = std::find_if(mFileViews.begin(), mFileViews.end(),
-            [&textView](std::unique_ptr<ScrolledFileView> const &fv) -> bool
-                { return(fv->getTextView() == textView); });
-    ScrolledFileView *scrolledView = nullptr;
-    if(fvIter != mFileViews.end())
-        {
-        scrolledView = fvIter->get();
-        }
-    return scrolledView;
     }
 
 #if(USE_DRAW_LAYER)
@@ -793,6 +798,53 @@ void EditFiles::textBufferModified(FileEditView *editView, bool modified)
         text += '*';
     setTabText(editView, text);
     }
+
+void EditFiles::bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
+        gchar *text, gint len)
+    {
+    ScrolledFileView *scrolledView = getScrolledFileView(textbuffer);
+    if(scrolledView)
+        {
+        scrolledView->getFileEditView().bufferInsertText(
+                textbuffer, location, text, len);
+        }
+    }
+
+void EditFiles::bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,
+        GtkTextIter *end)
+    {
+    ScrolledFileView *scrolledView = getScrolledFileView(textbuffer);
+    if(scrolledView)
+        {
+        scrolledView->getFileEditView().bufferDeleteRange(
+                textbuffer, start, end);
+        }
+    }
+
+bool EditFiles::handleButtonPress(GtkWidget *widget, GdkEventButton const &button)
+    {
+    bool handled = false;
+    if(button.type == GDK_2BUTTON_PRESS)
+        {
+        ScrolledFileView *scrolledView = getScrolledFileView(GTK_TEXT_VIEW(widget));
+        if(scrolledView)
+            {
+            scrolledView->getFileEditView().buttonPressSelect(
+                    scrolledView->getLeftMargin().getMarginWidth(),
+                    button.x, button.y);
+            Debugger &deb = sEditFiles->getDebugger();
+            if(deb.isDebuggerRunning())
+                {
+                sEditFiles->showInteractNotebookTab("Data");
+                deb.startGetVariable(Gui::getSelectedText(
+                        scrolledView->getTextView()));
+                }
+            }
+        handled = true;
+        }
+    return handled;
+    }
+
 
 
 extern "C" G_MODULE_EXPORT gboolean on_DebugGo_activate(GtkWidget *widget,

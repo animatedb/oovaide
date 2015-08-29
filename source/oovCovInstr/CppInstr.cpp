@@ -178,10 +178,10 @@ void CppFileContents::insert(OovStringRef const str, int origFileOffset)
 
 
 
-class cCrashDiagnostics
+class CrashDiagnostics
     {
     public:
-        cCrashDiagnostics():
+        CrashDiagnostics():
             mCrashed(false)
             {}
         void saveMostRecentParseLocation(char const * const diagStr, CXCursor cursor)
@@ -215,7 +215,7 @@ class cCrashDiagnostics
         std::string mDiagStr;
         CXCursor mMostRecentCursor;
     };
-static cCrashDiagnostics sCrashDiagnostics;
+static CrashDiagnostics sCrashDiagnostics;
 
 
 static CXChildVisitResult visitTranslationUnit(CXCursor cursor, CXCursor parent,

@@ -77,6 +77,7 @@ class RootDirPackage
         OovStringVec getLibraryNames() const;
 
         /// Get the library paths that were found during scanning for the package.
+        /// Returns the absolute path.
         OovStringVec getScannedLibraryFilePaths() const;
 
         /// The the include paths for the package.
@@ -139,6 +140,8 @@ class RootDirPackage
 
         /// This is delimited with the default CompoundValue delimiter.
         /// This is relative to root
+        /// CHANGE? - This may get updated by setOrderedLibs(), makeRelative(),
+        /// since scanned directories are related to the root package directory.
         OovString mLibDirs;
 
         /// This is delimited with the default CompoundValue delimiter.
@@ -149,6 +152,7 @@ class RootDirPackage
 
         /// If this contains paths, then the library directories are not ordered.
         /// This is delimited with the default CompoundValue delimiter.
+        /// These paths are relative to the root directory.
         OovString mScannedLibFilePaths;
 
         OovStringVec getValAddRootToVector(OovStringRef const tagName,

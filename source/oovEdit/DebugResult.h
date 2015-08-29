@@ -27,13 +27,22 @@
 //  A list is a comma separated list of values or results
 //  A result is a name and value(s) separated with equal sign
 //  A value is a result without a name
-class cDebugResult
+class DebugResult
     {
     public:
-        void setVarName(char const *str, size_t len)
-            { mVarName.assign(str, len); }
+        DebugResult()
+            {}
+        DebugResult(DebugResult &&src);
         char const *parseResult(OovStringRef const resultStr);
         std::string getAsString(int level=0) const;
+        void setVarName(OovStringRef name)
+            { mVarName = name; }
+        std::string const &getVarName() const
+            { return mVarName; }
+        std::string const &getValue() const
+            { return mValue; }
+        std::deque<std::unique_ptr<class DebugResult>> const &getChildResults() const
+            { return mChildResults; }
 
     private:
         std::string mVarName;
@@ -41,18 +50,13 @@ class cDebugResult
         // If child results is empty, then it contains a const.
         std::string mValue;
         // Using deque because it allows const reading.
-        std::deque<std::unique_ptr<class cDebugResult>> mChildResults;
+        std::deque<std::unique_ptr<class DebugResult>> mChildResults;
         char const *parseVarName(char const *resultStr);
         char const *parseValue(char const *resultStr);
         char const *parseList(char const *resultStr);
         char const *parseConst(char const *resultStr);
-        cDebugResult &addResult()
-            {
-            cDebugResult *newRes = new cDebugResult();
-           /// @todo - use make_unique when supported.
-            mChildResults.push_back(std::unique_ptr<cDebugResult>(newRes));
-            return *newRes;
-            }
+        DebugResult &addResult();
+        void clear();
     };
 
 

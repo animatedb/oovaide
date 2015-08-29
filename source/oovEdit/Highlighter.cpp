@@ -143,6 +143,7 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             mTransUnit = clang_parseTranslationUnit(index, fileName,
                 clang_args, static_cast<int>(num_clang_args), 0, 0, options);
             }
+            clang_disposeIndex(index);
 
 #if(0)
             printf("%s\n", fileName);

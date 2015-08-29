@@ -28,6 +28,20 @@ ProjectSettingsDialog::~ProjectSettingsDialog()
     {
     }
 
+OovString const ProjectSettingsDialog::getProjectDir() const
+    {
+    GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
+            "OovcdeProjectDirEntry"));
+    return gtk_entry_get_text(projDirEntry);
+    }
+
+OovString ProjectSettingsDialog::getRootSrcDir() const
+    {
+    GtkEntry *srcDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
+            "RootSourceDirEntry"));
+    return gtk_entry_get_text(srcDirEntry);
+    }
+
 bool ProjectSettingsDialog::runDialog()
     {
     GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
@@ -62,20 +76,21 @@ bool ProjectSettingsDialog::runDialog()
     bool ok = run(true);
     if(ok)
         {
-        mProjectDir = gtk_entry_get_text(projDirEntry);
         mExcludeDirs.parseString(Gui::getText(excDirsTextView), '\n');
         mExcludeDirs.deleteEmptyStrings();
-        }
-    else
-        {
-        Project::setSourceRootDirectory(origSourceDir);
+        Project::setSourceRootDirectory(getRootSrcDir());
+
+        // Update the project options.
+        OptionsDefaults optionDefaults(getProjectOptions());
+        optionDefaults.setDefaultOptions();
+        sProjectSettingsDialog->getGuiOptions().setDefaultOptions();
+        FilePath rootSrcText(getRootSrcDir(), FP_Dir);
+        getProjectOptions().setNameValue(OptSourceRootDir, rootSrcText);
         }
     return ok;
     }
 
-
-extern "C" G_MODULE_EXPORT void on_RootSourceDirButton_clicked(
-        GtkWidget *button, gpointer data)
+void ProjectSettingsDialog::rootSourceDirButtonClicked()
     {
     PathChooser ch;
     OovString srcRootDir;
@@ -89,8 +104,7 @@ extern "C" G_MODULE_EXPORT void on_RootSourceDirButton_clicked(
         }
     }
 
-extern "C" G_MODULE_EXPORT void on_OovcdeProjectDirButton_clicked(
-        GtkWidget *button, gpointer data)
+void ProjectSettingsDialog::oovcdeProjectDirButtonClicked()
     {
     PathChooser ch;
     OovString projectDir;
@@ -105,27 +119,7 @@ extern "C" G_MODULE_EXPORT void on_OovcdeProjectDirButton_clicked(
         }
     }
 
-extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
-        GtkWidget *button, gpointer data)
-    {
-    OptionsDefaults optionDefaults(sProjectSettingsDialog->getProjectOptions());
-    optionDefaults.setDefaultOptions();
-    sProjectSettingsDialog->getGuiOptions().setDefaultOptions();
-    GtkEntry *dirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget("RootSourceDirEntry"));
-    FilePath rootSrcText(gtk_entry_get_text(dirEntry), FP_Dir);
-    sProjectSettingsDialog->getProjectOptions().setNameValue(OptSourceRootDir, rootSrcText);
-
-    GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
-            "OovcdeProjectDirEntry"));
-
-    FilePathRemovePathSep(rootSrcText, rootSrcText.length()-1);
-    Project::setSourceRootDirectory(rootSrcText);
-    rootSrcText.appendFile("-oovcde");
-    gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
-    }
-
-extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
-        GtkWidget *button, gpointer data)
+void ProjectSettingsDialog::excludeDirsButtonClicked()
     {
     PathChooser ch;
     OovString dir;
@@ -136,9 +130,44 @@ extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
         GtkTextView *dirTextView = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(
                 "ExcludeDirsTextview"));
         std::string relDir;
-        relDir = Project::getSrcRootDirRelativeSrcFileDir(dir);
+        relDir = Project::getSrcRootDirRelativeSrcFileDir(getRootSrcDir(), dir);
         relDir += '\n';
         Gui::appendText(dirTextView, relDir);
         }
+    }
+
+void ProjectSettingsDialog::rootSourceDirEntryChanged()
+    {
+    GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
+            "OovcdeProjectDirEntry"));
+
+    FilePath rootSrcText(getRootSrcDir(), FP_Dir);
+    FilePathRemovePathSep(rootSrcText, rootSrcText.length()-1);
+    rootSrcText.appendFile("-oovcde");
+    gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
+    }
+
+extern "C" G_MODULE_EXPORT void on_RootSourceDirButton_clicked(
+        GtkWidget *button, gpointer data)
+    {
+    sProjectSettingsDialog->rootSourceDirButtonClicked();
+    }
+
+extern "C" G_MODULE_EXPORT void on_OovcdeProjectDirButton_clicked(
+        GtkWidget *button, gpointer data)
+    {
+    sProjectSettingsDialog->oovcdeProjectDirButtonClicked();
+    }
+
+extern "C" G_MODULE_EXPORT void on_RootSourceDirEntry_changed(
+        GtkWidget *button, gpointer data)
+    {
+    sProjectSettingsDialog->rootSourceDirEntryChanged();
+    }
+
+extern "C" G_MODULE_EXPORT void on_ExcludeDirsButton_clicked(
+        GtkWidget *button, gpointer data)
+    {
+    sProjectSettingsDialog->excludeDirsButtonClicked();
     }
 

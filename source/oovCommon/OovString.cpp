@@ -318,7 +318,8 @@ OovStringVec StringSplit(char const * const str, char const * const delimiterStr
     return tokens;
     }
 
-OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters)
+OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters,
+    bool keepZeroLengthStrings)
     {
     OovString tempStr = str;
     OovStringVec tokens;
@@ -341,7 +342,7 @@ OovStringVec StringSplit(char const * const str, OovStringVec const &delimiters)
         end = lowestEnd;
         /// Don't add zero length strings when two delimiters are next to each other.
         size_t len = (end == std::string::npos) ? std::string::npos : end - start;
-        if(len > 0)
+        if(keepZeroLengthStrings || len > 0)
             {
             OovString splitStr = tempStr.substr(start, len);
             if(splitStr.length() > 0)

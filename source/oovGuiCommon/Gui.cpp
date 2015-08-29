@@ -289,7 +289,7 @@ void GuiTreeView::removeSelected()
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     if(sel)
         {
-        if (gtk_tree_selection_get_selected(sel, &model, &iter))
+        if(gtk_tree_selection_get_selected(sel, &model, &iter))
             {
             if(GTK_IS_LIST_STORE(model))
                 {
@@ -302,6 +302,19 @@ void GuiTreeView::removeSelected()
             }
         }
     }
+
+void GuiTreeView::scrollToPath(GuiTreePath &path)
+    {
+    gtk_tree_view_scroll_to_cell(mTreeView, path.getPath(), nullptr, false, 0, 0);
+    }
+
+int GuiTreeView::getNumChildren(GuiTreeItem const &item) const
+    {
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    return gtk_tree_model_iter_n_children(model, nullptr);
+    }
+
+
 
 void GuiList::init(Builder &builder, OovStringRef const widgetName,
         OovStringRef const title)
@@ -552,6 +565,11 @@ bool GuiTree::getSelectedItem(GuiTreeItem &childItem) const
         haveSel = gtk_tree_selection_get_selected(sel, &model, childItem.getPtr());
         }
     return haveSel;
+    }
+
+void GuiTree::expandRow(GuiTreePath &path)
+    {
+    gtk_tree_view_expand_row(mTreeView, path.getPath(), false);
     }
 
 #if(1)

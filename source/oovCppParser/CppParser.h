@@ -98,10 +98,10 @@ class SwitchContexts:public std::vector<SwitchContext>
         SwitchContext mDummyContext;
     };
 
-class cDupHashFile
+class DupHashFile
     {
     public:
-        cDupHashFile():
+        DupHashFile():
             mAlreadyAddedBreak(true)
             {}
         void open(OovStringRef const fn)
@@ -151,7 +151,7 @@ class CppParser
     private:
         /// This contains all parsed information.
         ParserModelData mParserModelData;
-        cDupHashFile mDupHashFile;
+        DupHashFile mDupHashFile;
         ModelClassifier *mClassifier;    /// Current class being parsed.
         ModelOperation *mOperation;      /// Current operation being parsed.
         ModelStatements *mStatements;    /// Current statements of a function.

@@ -99,6 +99,11 @@ bool ModelType::isTemplateDefType(OovString const &name)
     return(name.find("<<templ") != std::string::npos);
     }
 
+bool ModelType::isTypedefType(OovString const &name)
+    {
+    return(name.find("<<type") != std::string::npos);
+    }
+
 bool ModelType::isTemplateDefType() const
     {
     return(isTemplateDefType(getName()));
@@ -106,7 +111,7 @@ bool ModelType::isTemplateDefType() const
 
 bool ModelType::isTypedefType() const
     {
-    return(getName().find("<<type") != std::string::npos);
+    return(isTypedefType(getName()));
     }
 
 bool ModelTypeRef::match(ModelTypeRef const &typeRef) const
@@ -969,8 +974,7 @@ void ModelData::addType(std::unique_ptr<ModelType> &&type)
 #endif
     }
 
-/// This discards the template type parameters
-static OovString getTemplateBaseName(OovString const &name)
+static OovString getTemplateDefBaseName(OovString const &name)
     {
     OovString templName;
     if(ModelType::isTemplateDefType(name))
@@ -978,26 +982,65 @@ static OovString getTemplateBaseName(OovString const &name)
         size_t pos = name.find('<');
         templName = name.substr(0, pos);
         }
-    else
+    return templName;
+    }
+
+/*
+static OovString getTemplateUseBaseName(OovString const &name)
+    {
+    OovString templName;
+    if(!ModelType::isTypedefType(name))
+        {
+        size_t pos = name.find('<');
+        templName = name.substr(0, pos);
+        }
+    return templName;
+    }
+*/
+
+/// Gets the template definition name, or the regular name if it
+/// is not a template definition. Template definitions have the template
+/// stereotype.
+/// This discards the template type parameters
+/// This must return most of the name otherwise the binary search will fail.
+static OovString getTemplateSortedBaseName(OovString const &name)
+    {
+    OovString templName = getTemplateDefBaseName(name);
+    if(templName.length() == 0)
         {
         templName = name;
         }
     return templName;
     }
 
-const ModelType *ModelData::findTemplateType(OovStringRef const name) const
+const ModelType *ModelData::findTemplateType(OovStringRef const baseIdentName) const
     {
     const ModelType *type = nullptr;
+#if(BINARYSPEED)
     // This comparison must produce the same sort order as addType.
-    std::string baseTypeName = getBaseType(name);
-    auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseTypeName,
+    auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseIdentName,
         [](std::unique_ptr<ModelType> const &mod1, OovStringRef const mod2Name) -> bool
-        { return(compareStrs(getTemplateBaseName(mod1->getName()), mod2Name)); } );
-    if(iter != mTypes.end())
+        { return(compareStrs(getTemplateSortedBaseName(mod1->getName()), mod2Name)); } );
+    while(iter != mTypes.end())
         {
-        if(baseTypeName.compare(getTemplateBaseName((*iter)->getName())) == 0)
+        // At this point, the iterator should be at the first template name of
+        // either the usage or define, so search linearly to the end.
+        // This relies on the fact that the template base name is alphabetically
+        // less than all other uses, which it will be since it is shorter.
+        // This also expects that there will always be a definition, so it
+        // shouldn't take long to iterate until it is found instead of trying
+        // to stop when the base name changes. It should be very rare to reach
+        // the end.
+        OovString templName = getTemplateSortedBaseName((*iter)->getName());
+        if(templName.compare(baseIdentName) == 0)
+            {
             type = (*iter).get();
+            break;
+            }
+        iter++;
         }
+#else
+#endif
     return type;
     }
 
@@ -1117,19 +1160,18 @@ void ModelData::getRelatedTypeArgClasses(const ModelType &type,
     delimiters.push_back(">");
     delimiters.push_back(",");
 
-    OovStringVec idents = name.split(delimiters);
+    OovStringVec idents = name.split(delimiters, false);
     for(auto &id : idents)
         {
         if(id.findNonSpace() != OovString::npos)
             {
-            const ModelClassifier *tempCl = ModelClassifier::getClass(findType(id));
-            if(!tempCl)
+            const ModelClassifier *cl = ModelClassifier::getClass(findType(id));
+            if(!cl)
                 {
-                // find template
-                tempCl = ModelClassifier::getClass(findTemplateType(id));
+                cl = ModelClassifier::getClass(findTemplateType(id));
                 }
-            if(tempCl)
-                classes.addUnique(tempCl);
+            if(cl)
+                classes.addUnique(cl);
             }
         }
     /*

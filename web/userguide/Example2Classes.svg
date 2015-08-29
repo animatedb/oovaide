@@ -44,6 +44,8 @@
 <text x="13" y="71">-LittleBoy boy</text>
 <text x="13" y="83">+WoolWorld()</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="403" y="220" width="146" height="26" />
 <line x1="403" y1="241" x2="549" y2="241" />
@@ -53,6 +55,8 @@
 <text x="404" y="229">BlackSheep</text>
 <text x="404" y="238">examples/staticlib/BlackSheep</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="12" y="149" width="147" height="35" />
 <line x1="12" y1="170" x2="159" y2="170" />
@@ -61,6 +65,8 @@
 <g stroke="none">
 <text x="13" y="158">Master</text>
 <text x="13" y="167">examples/staticlib/MainClients</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="13" y="182">+getName()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
@@ -71,6 +77,8 @@
 <g stroke="none">
 <text x="204" y="160">Dame</text>
 <text x="204" y="169">examples/staticlib/MainClients</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="204" y="184">+getName()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
@@ -81,6 +89,8 @@
 <g stroke="none">
 <text x="389" y="159">LittleBoy</text>
 <text x="389" y="168">examples/staticlib/MainClients</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="389" y="183">+getName()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
@@ -92,6 +102,8 @@
 <text x="193" y="267">Client</text>
 <text x="193" y="276">examples/staticlib/MainClients</text>
 <text x="193" y="291">+takeBag(BlackSheep sheep)</text>
+</g>
+<g stroke="none" font-style="italic">
 <text x="193" y="300">+getName()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
@@ -103,6 +115,8 @@
 <text x="212" y="349">WoolBag</text>
 <text x="212" y="358">examples/staticlib/BlackSheep</text>
 </g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="382" y="309" width="169" height="26" />
 <line x1="382" y1="330" x2="551" y2="330" />
@@ -111,6 +125,8 @@
 <g stroke="none">
 <text x="383" y="318">std::vector&lt;WoolBag,std::allocator&lt;</text>
 <text x="383" y="327">  WoolBag&gt; &gt;</text>
+</g>
+<g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
 <line x1="160" y1="83" x2="449" y2="220" />
@@ -134,8 +150,7 @@
 <circle cx="121" cy="95" r="5" style="fill:#ffffff" />
 <line x1="418" y1="246" x2="340" y2="264" />
 <circle cx="353" cy="260" r="5" style="fill:#ffffff" />
-<circle cx="369" cy="257" r="5" style="fill:#000000" />
-<circle cx="369" cy="257" r="2" style="fill:#000000" />
+<circle cx="360" cy="259" r="2" style="fill:#ffffff" />
 <line x1="456" y1="246" x2="304" y2="340" />
 <circle cx="444" cy="253" r="5" style="fill:#ffffff" />
 <line x1="475" y1="246" x2="467" y2="309" />
@@ -157,6 +172,8 @@
 <polygon points="303,258 316,257 311,247 303,258 " style="fill:#ffffff" />
 <line x1="271" y1="302" x2="281" y2="340" />
 <circle cx="274" cy="315" r="5" style="fill:#ffffff" />
-<line x1="357" y1="341" x2="390" y2="335" />
+<line x1="390" y1="335" x2="357" y2="341" style="stroke-dasharray: 4, 4 "/>
+<line x1="357" y1="341" x2="370" y2="343" />
+<line x1="357" y1="341" x2="368" y2="334" />
 </g>
 </svg>

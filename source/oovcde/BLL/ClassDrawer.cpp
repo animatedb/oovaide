@@ -8,6 +8,7 @@
 #include "ClassDrawer.h"
 #include "Project.h"
 #include <algorithm>
+#include <utility>
 
 static void getLeafPath(std::string &moduleStr)
     {
@@ -733,6 +734,22 @@ void ClassDrawer::setZoom(double desiredZoom)
     mActualZoomY = desiredZoom;
     }
 
+class DrawnLines
+    {
+    public:
+        /// Returns true if line was not present, and was added
+        bool addLine(GraphPoint p1, GraphPoint p2)
+            {
+            if(!(p1 < p2))
+                {
+                std::swap(p1, p2);
+                }
+            return(mLines.insert(GraphLine(p1, p2)).second == true);
+            }
+    private:
+        std::set<GraphLine> mLines;
+    };
+
 void ClassDrawer::drawDiagram(const ClassGraph &graph)
     {
     if(graph.getNodes().size() > 0)
@@ -744,24 +761,40 @@ void ClassDrawer::drawDiagram(const ClassGraph &graph)
             drawNode(graph.getNodes()[ni1]);
             }
         mDrawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
+        // Prevent duplicate dashed lines since multiple dashed lines can
+        // draw as solid in some cases.
+        DrawnLines drawnDashedLines;
         for(size_t ni1=0; ni1<graph.getNodes().size(); ni1++)
             {
             for(size_t ni2=ni1+1; ni2<graph.getNodes().size(); ni2++)
                 {
                 const ClassConnectItem *ci1 = graph.getNodeConnection(ni1, ni2);
                 const ClassConnectItem *ci2 = graph.getNodeConnection(ni2, ni1);
+                GraphPoint p1 = graph.getNodes()[ni1].getPosition();
+                GraphPoint p2 = graph.getNodes()[ni2].getPosition();
                 const ClassConnectItem *conn = (ci1 != nullptr) ? ci1 : ci2;
                 if(conn)
                     {
+                    bool drawSolid = false;
                     bool drawDashed = false;
                     // If there are relationships in addition to a template, then
                     // draw a solid line.
                     if(conn->mConnectType == ctTemplateDependency)
                         {
-                        drawDashed = true;
+                        if(!drawnDashedLines.addLine(p1, p2))
+                            {
+                            drawDashed = true;
+                            }
                         }
-                    drawConnectionLine(graph.getNodes()[ni1], graph.getNodes()[ni2],
-                        drawDashed);
+                    else
+                        {
+                        drawSolid = true;
+                        }
+                    if(drawSolid || drawDashed)
+                        {
+                        drawConnectionLine(graph.getNodes()[ni1], graph.getNodes()[ni2],
+                            drawDashed);
+                        }
                     }
                 if(ci1)
                     {

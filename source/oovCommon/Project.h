@@ -88,6 +88,8 @@ class Project
         /// Returns a filename relative to the root source directory.
         static OovString getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileName,
                 OovStringRef const srcRootDir);
+        static OovString getSrcRootDirRelativeSrcFileDir(OovStringRef const srcRootDir,
+                OovStringRef const srcFileName);
         static OovString getSrcRootDirRelativeSrcFileDir(OovStringRef const absSrcFileDir);
         static OovString getAbsoluteDirFromSrcRootDirRelativeDir(OovStringRef const relSrcFileDir);
 

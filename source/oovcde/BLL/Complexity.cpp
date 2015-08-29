@@ -261,13 +261,13 @@ void SingleStatementConditional::splitConditions(OovString const fullCond)
     // Remove first and last char []
     OovString cond = fullCond.substr(1, fullCond.size()-2);
     OovStringVec delims = { "&&", "||" };
-    OovStringVec condExpressions = cond.split(delims);
+    OovStringVec condExpressions = cond.split(delims, false);
     mNumConditionalExpressions = condExpressions.size();
     for(auto const &condExpr : condExpressions)
         {
         // Split strings based on relational operators.
         OovStringVec relDelims = { "==", "!=", ">=", "<=", ">", "<" };
-        OovStringVec sideExprs = discardJunkChars(condExpr).split(relDelims);
+        OovStringVec sideExprs = discardJunkChars(condExpr).split(relDelims, false);
         for(auto const &expr : sideExprs)
             {
             mSideExpressions.insert(expr);

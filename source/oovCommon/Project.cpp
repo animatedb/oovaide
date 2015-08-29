@@ -156,10 +156,10 @@ OovString Project::getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileNa
     return relSrcFileName;
     }
 
-OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcFileName)
+OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcRootDir,
+        OovStringRef const srcFileName)
     {
     FilePath relSrcFileDir(srcFileName, FP_Dir);
-    OovStringRef srcRootDir = Project::getSrcRootDirectory();
     size_t pos = relSrcFileDir.find(srcRootDir);
     if(pos != std::string::npos)
         {
@@ -167,6 +167,11 @@ OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcFileNam
         FilePathRemovePathSep(relSrcFileDir, 0);
         }
     return relSrcFileDir;
+    }
+
+OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcFileName)
+    {
+    return getSrcRootDirRelativeSrcFileDir(Project::getSrcRootDirectory(), srcFileName);
     }
 
 static OovString getAbsoluteDirFromSrcRootDirRelativeDir(

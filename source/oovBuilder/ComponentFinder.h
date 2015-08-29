@@ -15,14 +15,6 @@
 #include "Packages.h"
 #include "IncludeMap.h"
 
-class FileStat
-    {
-    public:
-        static bool isOutputOld(OovStringRef const outputFn,
-                OovStringRef const inputFn);
-        static bool isOutputOld(OovStringRef const outputFn,
-                OovStringVec const &inputs, size_t *oldIndex=nullptr);
-    };
 
 class ToolPathFile:public NameValueFile
     {

@@ -42,6 +42,24 @@ ModelType *ParserModelData::createOrGetBaseTypeRef(CXCursor cursor, RefType &rt)
             }
             break;
 
+        /// For members that are base on templates, the cursorType.kind is
+        /// CXType_Unexposed, so get the type declaration, and the type is
+        /// CXCursor_ClassDecl.
+        /// Just treat any other unexposed data as a simple datatype.
+        case CXType_Unexposed:
+            {
+            CXCursor tc = clang_getTypeDeclaration(cursorType);
+            if(tc.kind == CXCursor_ClassDecl)
+                {
+                dType = DT_Class;
+                }
+            else
+                {
+                dType = DT_DataType;
+                }
+            }
+            break;
+
         default:
             dType = DT_DataType;
             break;
