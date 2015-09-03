@@ -634,6 +634,7 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
                 //
                 // A call to the parent class does not have a child cursor of the memberRefExpr.
                 bool haveMemberRef = false;
+                bool addedStatement = false;
                 CXCursor child = getNthChildCursor(cursor, 0);
                 // Global functions and constructors do not have a child member ref expr.
                 if(child.kind == CXCursor_MemberRefExpr)
@@ -648,6 +649,29 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
                         haveMemberRef = true;
                         }
                     }
+// Calls through templates are confusing.
+// Some of this code could be used to build the typeref?  template<class>->call()
+#define CALL_TYPEREF 0
+#if(CALL_TYPEREF)
+    // Constructor called through templates come here????
+                /// typedef std::pair<xx, yy> zz
+                else if(child.kind == CXCursor_TypeRef)
+                    {
+/*
+CXStringDisposer sp = clang_getCursorSpelling(child);
+if(sp == "ZoneConnection")
+    {
+    printf("a");
+    }
+*/
+addedStatement = true;
+                    RefType rt;
+                    const ModelType *classType = mParserModelData.createOrGetBaseTypeRef(child, rt);
+                    ModelStatement stmt(functionName, ST_Call);
+                    stmt.getClassDecl().setDeclType(classType);
+                    mStatements->addStatement(stmt);
+                    }
+#endif
                 bool haveConstructor = (parent.kind == CXCursor_VarDecl);
                 if(haveMemberRef)
                     {
@@ -675,19 +699,22 @@ CXChildVisitResult CppParser::visitFunctionAddStatements(CXCursor cursor,
                         }
                     }
 
-                // This returns the CXCursor_CXXMethod cursor
-                CXCursor cursorDef = clang_getCursorDefinition(cursor);
-                if(cursorDef.kind == CXCursor_FirstInvalid)
-                    cursorDef = clang_getCursorReferenced(cursor);
-                /// @todo - fix to support class1.class2.call(). This is tricky because
-                /// the sequence diagram needs to know the type of class2 for class2.call,
-                /// but complexity or class relations know the type of the class1 relation.
-                CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
-                RefType rt;
-                const ModelType *classType = mParserModelData.createOrGetBaseTypeRef(classCursor, rt);
-                ModelStatement stmt(functionName, ST_Call);
-                stmt.getClassDecl().setDeclType(classType);
-                mStatements->addStatement(stmt);
+                if(!addedStatement)
+                    {
+                    // This returns the CXCursor_CXXMethod cursor
+                    CXCursor cursorDef = clang_getCursorDefinition(cursor);
+                    if(cursorDef.kind == CXCursor_FirstInvalid)
+                        cursorDef = clang_getCursorReferenced(cursor);
+                    /// @todo - fix to support class1.class2.call(). This is tricky because
+                    /// the sequence diagram needs to know the type of class2 for class2.call,
+                    /// but complexity or class relations know the type of the class1 relation.
+                    CXCursor classCursor = clang_getCursorSemanticParent(cursorDef);
+                    RefType rt;
+                    const ModelType *classType = mParserModelData.createOrGetBaseTypeRef(classCursor, rt);
+                    ModelStatement stmt(functionName, ST_Call);
+                    stmt.getClassDecl().setDeclType(classType);
+                    mStatements->addStatement(stmt);
+                    }
                 }
             }
             break;

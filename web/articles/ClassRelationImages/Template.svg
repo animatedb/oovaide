@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="315" height="119">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="113" y="101" width="158" height="17" />
+<line x1="113" y1="113" x2="271" y2="113" />
+<line x1="113" y1="116" x2="271" y2="116" />
+</g>
+<g stroke="none">
+<text x="114" y="110">IdentityDisplayer&lt;Universe::Star&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="25" y="24" width="166" height="35" />
+<line x1="25" y1="45" x2="191" y2="45" />
+<line x1="25" y1="48" x2="191" y2="48" />
+</g>
+<g stroke="none">
+<text x="26" y="33">IdentityDisplayer&lt;T&gt;&lt;&lt;template&gt;&gt;</text>
+<text x="26" y="42">examples/names</text>
+<text x="26" y="57">+void displayIdentity()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="231" y="23" width="83" height="26" />
+<line x1="231" y1="44" x2="314" y2="44" />
+<line x1="231" y1="47" x2="314" y2="47" />
+</g>
+<g stroke="none">
+<text x="232" y="32">Universe::Star</text>
+<text x="232" y="41">examples/names</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="183" y1="101" x2="128" y2="58" style="stroke-dasharray: 4, 4 "/>
+<line x1="128" y1="58" x2="134" y2="70" />
+<line x1="128" y1="58" x2="141" y2="61" />
+<line x1="200" y1="101" x2="258" y2="49" style="stroke-dasharray: 4, 4 "/>
+<line x1="258" y1="49" x2="245" y2="53" />
+<line x1="258" y1="49" x2="252" y2="61" />
+</g>
+</svg>

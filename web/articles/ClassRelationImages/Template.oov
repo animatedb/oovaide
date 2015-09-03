@@ -1,0 +1,5 @@
+DrawingName|IdentityDisplayer<Universe::Star>
+FileType|Class
+Names|IdentityDisplayer<Universe::Star>;IdentityDisplayer<T><<template>>;Universe::Star;
+XPositions|113;25;231;
+YPositions|101;24;23;

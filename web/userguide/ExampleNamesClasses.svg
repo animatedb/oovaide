@@ -1,0 +1,331 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="710" height="556">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="11" y="412" width="133" height="143" />
+<line x1="11" y1="425" x2="144" y2="425" />
+<polygon points="124,433 136,438 136,428 124,433 " style="fill:#ffffff" />
+<polygon points="124,447 131,451 138,447 131,443 124,447 " style="fill:#ffffff" />
+<polygon points="124,461 131,465 138,461 131,457 124,461 " style="fill:#000000" />
+<polygon points="124,475 132,480 128,475 132,470 124,475 " style="fill:#ffffff" />
+<circle cx="124" cy="489" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="503" r="5" style="fill:#ffffff" />
+<circle cx="131" cy="503" r="2" style="fill:#ffffff" />
+<circle cx="124" cy="517" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="517" r="2" style="fill:#ffffff" />
+<circle cx="124" cy="531" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="531" r="2" style="fill:#000000" />
+<circle cx="124" cy="545" r="5" style="fill:#000000" />
+<circle cx="124" cy="545" r="2" style="fill:#000000" />
+</g>
+<g stroke="none">
+<text x="12" y="421">Relations Key</text>
+<text x="12" y="435">Generalization</text>
+<text x="12" y="449">Aggregation(reference)</text>
+<text x="12" y="463">Composition(owned)</text>
+<text x="12" y="477">Const</text>
+<text x="12" y="491">Method Variable</text>
+<text x="12" y="505">Method Parameter</text>
+<text x="12" y="519">Public</text>
+<text x="12" y="533">Protected</text>
+<text x="12" y="547">Private</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="8" y="188" width="109" height="44" />
+<line x1="8" y1="209" x2="117" y2="209" />
+<line x1="8" y1="212" x2="117" y2="212" />
+</g>
+<g stroke="none">
+<text x="9" y="197">Universe::Awards::Star</text>
+<text x="9" y="206">examples/names</text>
+<text x="9" y="221">+whatAreYou()</text>
+<text x="9" y="230">+haveTwinkle()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="154" y="177" width="103" height="17" />
+<line x1="154" y1="189" x2="257" y2="189" />
+<line x1="154" y1="192" x2="257" y2="192" />
+</g>
+<g stroke="none">
+<text x="155" y="186">Universe::DisplayStar</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="10" y="21" width="177" height="80" />
+<line x1="10" y1="42" x2="187" y2="42" />
+<line x1="10" y1="90" x2="187" y2="90" />
+</g>
+<g stroke="none">
+<text x="11" y="30">Universe::Galaxy</text>
+<text x="11" y="39">examples/names</text>
+<text x="11" y="51">-Universe::DisplayStar mStar</text>
+<text x="11" y="60">-Universe::Awards::Star mAwardStar</text>
+<text x="11" y="69">-Universe::Movies::Star mMovieStar</text>
+<text x="11" y="78">-IdentityDisplayer&lt;Universe::Awards::</text>
+<text x="18" y="87">Star&gt; mOtherAwardStar</text>
+<text x="11" y="99">+Galaxy()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="285" y="182" width="109" height="44" />
+<line x1="285" y1="203" x2="394" y2="203" />
+<line x1="285" y1="206" x2="394" y2="206" />
+</g>
+<g stroke="none">
+<text x="286" y="191">Universe::Movies::Star</text>
+<text x="286" y="200">examples/names</text>
+<text x="286" y="215">+whatAreYou()</text>
+<text x="286" y="224">+haveTwinkle()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="611" y="47" width="84" height="44" />
+<line x1="611" y1="68" x2="695" y2="68" />
+<line x1="611" y1="71" x2="695" y2="71" />
+</g>
+<g stroke="none">
+<text x="612" y="56">Universe::Star</text>
+<text x="612" y="65">examples/names</text>
+<text x="612" y="80">+whatAreYou()</text>
+<text x="612" y="89">+haveTwinkle()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="593" y="180" width="116" height="26" />
+<line x1="593" y1="201" x2="709" y2="201" />
+<line x1="593" y1="204" x2="709" y2="204" />
+</g>
+<g stroke="none">
+<text x="594" y="189">AlteredStar&lt;&lt;typedef&gt;&gt;</text>
+<text x="594" y="198">examples/names</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="469" y="149" width="158" height="17" />
+<line x1="469" y1="161" x2="627" y2="161" />
+<line x1="469" y1="164" x2="627" y2="164" />
+</g>
+<g stroke="none">
+<text x="470" y="158">IdentityDisplayer&lt;Universe::Star&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="60" y="281" width="228" height="116" />
+<line x1="60" y1="302" x2="288" y2="302" />
+<line x1="60" y1="359" x2="288" y2="359" />
+</g>
+<g stroke="none">
+<text x="61" y="290">MyThoughts</text>
+<text x="61" y="299">examples/names</text>
+<text x="61" y="311">-Universe::Awards::Star mTeachingStar</text>
+<text x="61" y="320">-Universe::Awards::Star mTeachingStarRef</text>
+<text x="61" y="329">-Imaginary::PretendStar mPretendStar</text>
+<text x="61" y="338">-Universe::Movies::Star mMovieStar</text>
+<text x="61" y="347">-IdentityDisplayer&lt;Universe::Movies::</text>
+<text x="68" y="356">Star&gt; mMovieStarDisplay</text>
+<text x="61" y="368">+MyThoughts()</text>
+<text x="61" y="377">+displaySomeMoreThoughts(Universe::Awards::</text>
+<text x="68" y="386">Star teachingStar, Imaginary::FakeStar </text>
+<text x="68" y="395">fakeStar, char noStar)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="288" y="428" width="113" height="26" />
+<line x1="288" y1="449" x2="401" y2="449" />
+<line x1="288" y1="452" x2="401" y2="452" />
+</g>
+<g stroke="none">
+<text x="289" y="437">Imaginary::PretendStar</text>
+<text x="289" y="446">examples/names</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="336" y="264" width="197" height="17" />
+<line x1="336" y1="276" x2="533" y2="276" />
+<line x1="336" y1="279" x2="533" y2="279" />
+</g>
+<g stroke="none">
+<text x="337" y="273">IdentityDisplayer&lt;Universe::Movies::Star&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="166" y="428" width="98" height="26" />
+<line x1="166" y1="449" x2="264" y2="449" />
+<line x1="166" y1="452" x2="264" y2="452" />
+</g>
+<g stroke="none">
+<text x="167" y="437">Imaginary::FakeStar</text>
+<text x="167" y="446">examples/names</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="548" y="265" width="159" height="17" />
+<line x1="548" y1="277" x2="707" y2="277" />
+<line x1="548" y1="280" x2="707" y2="280" />
+</g>
+<g stroke="none">
+<text x="549" y="274">NewTypeDisplayStar&lt;&lt;typedef&gt;&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="419" y="367" width="248" height="71" />
+<line x1="419" y1="388" x2="667" y2="388" />
+<line x1="419" y1="418" x2="667" y2="418" />
+</g>
+<g stroke="none">
+<text x="420" y="376">MyOtherThoughts</text>
+<text x="420" y="385">examples/names</text>
+<text x="420" y="397">-NotAStar&lt;&lt;typedef&gt;&gt; mNotAStar</text>
+<text x="420" y="406">-NewNameDisplayStar&lt;&lt;typedef&gt;&gt; mNewNameStar</text>
+<text x="420" y="415">-NewTypeDisplayStar&lt;&lt;typedef&gt;&gt; mNewTypeStar</text>
+<text x="420" y="427">+displayOtherThoughts(Universe::Movies::</text>
+<text x="427" y="436">Star moviesStar)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="292" y="324" width="163" height="17" />
+<line x1="292" y1="336" x2="455" y2="336" />
+<line x1="292" y1="339" x2="455" y2="339" />
+</g>
+<g stroke="none">
+<text x="293" y="333">NewNameDisplayStar&lt;&lt;typedef&gt;&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="388" y="19" width="166" height="35" />
+<line x1="388" y1="40" x2="554" y2="40" />
+<line x1="388" y1="43" x2="554" y2="43" />
+</g>
+<g stroke="none">
+<text x="389" y="28">IdentityDisplayer&lt;T&gt;&lt;&lt;template&gt;&gt;</text>
+<text x="389" y="37">examples/names</text>
+<text x="389" y="52">+displayIdentity()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="219" y="95" width="197" height="17" />
+<line x1="219" y1="107" x2="416" y2="107" />
+<line x1="219" y1="110" x2="416" y2="110" />
+</g>
+<g stroke="none">
+<text x="220" y="104">IdentityDisplayer&lt;Universe::Awards::Star&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="67" y1="188" x2="89" y2="101" />
+<circle cx="81" cy="130" r="5" style="fill:#000000" />
+<circle cx="81" cy="130" r="2" style="fill:#000000" />
+<polygon points="89,101 83,107 86,114 91,109 89,101 " style="fill:#000000" />
+<line x1="81" y1="232" x2="124" y2="281" />
+<circle cx="114" cy="270" r="5" style="fill:#ffffff" />
+<circle cx="110" cy="265" r="2" style="fill:#ffffff" />
+<circle cx="104" cy="258" r="5" style="fill:#000000" />
+<circle cx="104" cy="258" r="2" style="fill:#000000" />
+<polygon points="124,281 123,273 115,271 116,279 124,281 " style="fill:#000000" />
+<line x1="298" y1="111" x2="114" y2="188" style="stroke-dasharray: 4, 4 "/>
+<line x1="114" y1="188" x2="127" y2="188" />
+<line x1="114" y1="188" x2="123" y2="179" />
+<line x1="199" y1="177" x2="132" y2="101" />
+<circle cx="151" cy="123" r="5" style="fill:#000000" />
+<circle cx="151" cy="123" r="2" style="fill:#000000" />
+<polygon points="132,101 133,109 141,111 140,103 132,101 " style="fill:#000000" />
+<line x1="235" y1="177" x2="611" y2="79" />
+<circle cx="581" cy="86" r="5" style="fill:#ffffff" />
+<circle cx="581" cy="86" r="2" style="fill:#ffffff" />
+<polygon points="611,79 598,78 600,87 611,79 " style="fill:#ffffff" />
+<line x1="256" y1="181" x2="469" y2="163" />
+<circle cx="439" cy="165" r="5" style="fill:#ffffff" />
+<circle cx="439" cy="165" r="2" style="fill:#ffffff" />
+<polygon points="469,163 456,159 457,169 469,163 " style="fill:#ffffff" />
+<line x1="204" y1="193" x2="185" y2="281" />
+<circle cx="187" cy="267" r="5" style="fill:#ffffff" />
+<line x1="214" y1="193" x2="364" y2="324" />
+<circle cx="236" cy="212" r="5" style="fill:#000000" />
+<circle cx="236" cy="212" r="2" style="fill:#000000" />
+<polygon points="214,193 220,205 227,197 214,193 " style="fill:#ffffff" />
+<line x1="165" y1="101" x2="302" y2="182" />
+<circle cx="190" cy="116" r="5" style="fill:#000000" />
+<circle cx="190" cy="116" r="2" style="fill:#000000" />
+<polygon points="165,101 169,108 177,108 173,101 165,101 " style="fill:#000000" />
+<line x1="108" y1="101" x2="159" y2="281" />
+<circle cx="155" cy="267" r="5" style="fill:#ffffff" />
+<line x1="186" y1="77" x2="276" y2="95" />
+<circle cx="215" cy="82" r="5" style="fill:#000000" />
+<circle cx="215" cy="82" r="2" style="fill:#000000" />
+<polygon points="186,77 192,82 199,79 194,75 186,77 " style="fill:#000000" />
+<line x1="313" y1="226" x2="244" y2="281" />
+<circle cx="267" cy="262" r="5" style="fill:#000000" />
+<circle cx="267" cy="262" r="2" style="fill:#000000" />
+<polygon points="244,281 252,280 254,273 247,273 244,281 " style="fill:#000000" />
+<line x1="423" y1="264" x2="369" y2="226" style="stroke-dasharray: 4, 4 "/>
+<line x1="369" y1="226" x2="376" y2="237" />
+<line x1="369" y1="226" x2="382" y2="229" />
+<line x1="361" y1="226" x2="507" y2="367" />
+<polygon points="507,367 506,358 505,365 498,366 507,367 " style="fill:#ffffff" />
+<circle cx="496" cy="357" r="5" style="fill:#ffffff" />
+<circle cx="491" cy="352" r="2" style="fill:#ffffff" />
+<line x1="653" y1="91" x2="651" y2="180" />
+<circle cx="652" cy="120" r="5" style="fill:#000000" />
+<circle cx="652" cy="120" r="2" style="fill:#000000" />
+<polygon points="653,91 648,103 658,104 653,91 " style="fill:#ffffff" />
+<line x1="557" y1="149" x2="627" y2="91" style="stroke-dasharray: 4, 4 "/>
+<line x1="627" y1="91" x2="614" y2="95" />
+<line x1="627" y1="91" x2="621" y2="103" />
+<line x1="532" y1="165" x2="288" y2="284" />
+<circle cx="300" cy="277" r="5" style="fill:#ffffff" />
+<line x1="553" y1="165" x2="622" y2="265" />
+<circle cx="570" cy="189" r="5" style="fill:#000000" />
+<circle cx="570" cy="189" r="2" style="fill:#000000" />
+<polygon points="553,165 555,178 564,172 553,165 " style="fill:#ffffff" />
+<line x1="548" y1="165" x2="543" y2="367" />
+<circle cx="543" cy="353" r="5" style="fill:#ffffff" />
+<line x1="543" y1="149" x2="481" y2="53" style="stroke-dasharray: 4, 4 "/>
+<line x1="481" y1="53" x2="483" y2="66" />
+<line x1="481" y1="53" x2="492" y2="60" />
+<line x1="270" y1="397" x2="323" y2="428" />
+<circle cx="295" cy="412" r="5" style="fill:#000000" />
+<circle cx="295" cy="412" r="2" style="fill:#000000" />
+<polygon points="270,397 274,404 282,404 278,397 270,397 " style="fill:#ffffff" />
+<line x1="288" y1="310" x2="403" y2="280" />
+<circle cx="301" cy="306" r="5" style="fill:#ffffff" />
+<circle cx="317" cy="302" r="5" style="fill:#000000" />
+<circle cx="317" cy="302" r="2" style="fill:#000000" />
+<polygon points="288,310 296,312 301,307 294,304 288,310 " style="fill:#000000" />
+<line x1="197" y1="397" x2="210" y2="428" />
+<circle cx="202" cy="409" r="5" style="fill:#ffffff" />
+<circle cx="205" cy="416" r="2" style="fill:#ffffff" />
+<line x1="209" y1="281" x2="313" y2="111" />
+<circle cx="216" cy="269" r="5" style="fill:#ffffff" />
+<line x1="435" y1="264" x2="469" y2="53" style="stroke-dasharray: 4, 4 "/>
+<line x1="469" y1="53" x2="462" y2="64" />
+<line x1="469" y1="53" x2="472" y2="66" />
+<line x1="622" y1="281" x2="565" y2="367" />
+<circle cx="581" cy="341" r="5" style="fill:#000000" />
+<circle cx="581" cy="341" r="2" style="fill:#000000" />
+<polygon points="565,367 573,363 572,356 565,359 565,367 " style="fill:#000000" />
+<line x1="459" y1="367" x2="392" y2="340" />
+<circle cx="431" cy="355" r="5" style="fill:#000000" />
+<circle cx="431" cy="355" r="2" style="fill:#000000" />
+<polygon points="459,367 454,360 447,362 451,368 459,367 " style="fill:#000000" />
+<line x1="335" y1="95" x2="432" y2="53" style="stroke-dasharray: 4, 4 "/>
+<line x1="432" y1="53" x2="419" y2="53" />
+<line x1="432" y1="53" x2="423" y2="63" />
+</g>
+</svg>

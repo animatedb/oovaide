@@ -171,6 +171,76 @@ class DebuggerBase
     };
 
 
+// Longer term, LLDB may be used, so this code may never be used.
+#define OBJ_VARS 0
+#if(OBJ_VARS)
+/// The real name for these in gdb is "Variable Objects".  This is a confusing
+/// name in this program since these have nothing to do with objects.  These
+/// are variables that keep updating on the client when a variable changes.
+class UpdatedVariableGdb
+    {
+    public:
+        /// Only the top level variable name needs to be created.  So
+        /// the top level will have a mGdbReferenceName, but no children will.
+        void createVariable(class DebuggerGdb *dbg, OovStringRef name)
+            {
+            mVarName = name;
+            OovString cmd = "-var-create " + mVarName;
+            dbg->sendCommand(cmd);
+            }
+        void deleteVariable(class DebuggerGdb *dbg)
+            {
+            OovString cmd = "-var-delete " + mVarName;
+            dbg->sendCommand(cmd);
+            }
+        /// Only sets the format for the specified variable, not the children.
+        void setFormat(class DebuggerGdb *dbg)
+            {
+            OovString cmd = "-var-set-format " + mVarName + ' ' + "hexadecimal";
+            dbg->sendCommand(cmd);
+            }
+        void getChildren(class DebuggerGdb *dbg)
+            {
+            OovString cmd = "-var-list-children " + mVarName;
+            dbg->sendCommand(cmd);
+            }
+        void evaluateExpression(class DebuggerGdb *dbg)
+            {
+            // If type is pointer, then evaluate mVarName[0-5]
+            OovString cmd = "-var-evaluate-expression " + mVarName;
+            dbg->sendCommand(cmd);
+            }
+        /// Typical responses:
+        /// done,name="var1",numchild="2",value="{...}",type="Editor",thread-id="1",has_more="0"
+        /// done,name="var1",numchild="1",value="0x280c4c8",type="char **",thread-id="1",has_more="0"
+        void handleVarCreateResult(OovStringRef resultStr)
+            {
+            // mGdbReferenceName = // "name";
+            }
+        /// Typical response:
+        /// done,numchild="1",children=[child={name="var2.private",exp="private",numchild="6"}],has_m...
+        void handleVarListChildrenResult(OovStringRef resultStr)
+            {
+
+            }
+        void handleEvaluateExpressionResult(OovStringRef resultStr)
+            {
+
+            }
+//        - var-info-path-expression
+//            61-var-info-path-expression var2.private.mBuilder
+//                61^done,path_expr="((gOovGui)->mBuilder)"
+
+    private:
+        OovString mGdbReferenceName;
+        OovString mVarName;
+        OovString mType;
+        OovString mValue;
+        std::vector<std::unique_ptr<UpdatedVariableGdb*>> mChildVariables;
+    };
+#endif
+
+
 #if(!USE_LLDB)
 class DebuggerGdb:public OovProcessListener, public DebuggerBase
     {

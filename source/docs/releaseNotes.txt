@@ -12,6 +12,8 @@ Explanations
 	  (changing switches or files will rerun)
 	- If editor doesn't go to many defs, make sure include paths are correct
 	  for analysis.
+	- NewNameDisplayStar name not shown in displayOtherThoughts sequence.
+	  The typedef where the function is defined is shown.
 
 
 Missing Features
@@ -69,7 +71,6 @@ Missing Features
 - Class Diagrams/List
 	- example names: member NotAStar typedef with base type int not shown
 	  when drawing is loaded. Shouldn't show in add selected list?
-	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
 	- Allow add all classes in module
 	- Saved drawings don't save preferences for each class
 	- BUG: forward class definitions mess up source line numbers
@@ -97,7 +98,6 @@ Missing Features
 	- Should show connections to this/super
 	- Overloaded methods don't work
 - Sequence Diagrams
-	- NewNameDisplayStar name not shown in displayOtherThoughts sequence
 	- Show class members in different color?
 	- Don't discard current operation when switching between class and operation view
 	- Allow restoring diagrams
@@ -114,6 +114,12 @@ Missing Features
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
 - Analysis/Build System (Build not required for displaying diagrams)
+	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
+		- not in xmi file
+		- CLangView shows:
+			CompStmt, CallExpr "insert", UnexposedExpr, CallExpr "pair", TypeRef "ZoneConnection"
+		visitFunctionAddStatements case CXCursor_CallExpr
+
 	- Build/Settings per component don't seem to work for -lnk-static-libstdc++
 	- Add global functions?
 	- Some header file changes don't reanalyze new dependent source files?
@@ -158,7 +164,6 @@ Missing Features
 	- Cache file times or monitor file changes
 	- For linux, don't getPackage if not in available list.
 - Coverage
-	- Not working for gtk libraries with non-gtk programs
 	- fix switch/case fall throughs
 	- fix precompiled header before include oovcoverage.h
 	- filenames with underscore has stats, but not lines covered
@@ -203,16 +208,7 @@ Missing Features
 		http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
 		_gtk_text_btree_insert assertion failed: (eol <= len)
 		 Gtktextbtree.c gtk_text_buffer_real_insert_text
-	- expanding variable children:
-		- data-evaluate-expression	Gets child names
-		- var-list-children [varname]
-		    59-var-list-children var2
-			59^done,numchild="1",children=[child={name="var2.private",exp="private",numchild="6"}],has_m\
-		    60-var-list-children var2.private
-		- var-info-path-expression
-		    61-var-info-path-expression var2.private.mBuilder
-			61^done,path_expr="((gOovGui)->mBuilder)"
-		- var-set-format [varname] (decimal, natural, hexadecimal)
+	- expand debugger variable children
 	- Doing 'print' std::string says "no member named _M_dataplus".
 		- Compiling and linking with g++ instead of clang++ works.
 	- Need stdout program output window
@@ -240,11 +236,16 @@ Missing Features
 	- When build starts, should stop debugger
 	- GDB docs are gdb.info, "The GDB/MI Interface"
 - CLangViewer
-	- Search for name
 	- View tokens
 
 
 - Cleanup
+	- catch run-time error (see debugger section above)
+		std::runtime_error, SEH, set_terminate
+		http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
+		http://stackoverflow.com/questions/3899870/print-call-stack-in-c-or-c
+			backtrace, backtrace_symbols
+		http://stackoverflow.com/questions/2443135/how-do-i-find-where-an-exception-was-thrown-in-c
 	- separate gui from backend - humble dialog
 		- domain/presentation, business, backend, Business Logic Layer, Domain Logic
 	- redesign:
@@ -316,6 +317,7 @@ Missing Features
 	- abstract interpretation (show ranges of variables)
 	- C Intermediate Language - http://www.cs.berkeley.edu/~necula/cil/cil016.html
 	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
+		nullsoft
 		nsis
 		CMake - ExternalProject_Add
 		fpm deb/rpm

@@ -1,0 +1,150 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="511" height="423">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="16" y="279" width="133" height="143" />
+<line x1="16" y1="292" x2="149" y2="292" />
+<polygon points="129,300 141,305 141,295 129,300 " style="fill:#ffffff" />
+<polygon points="129,314 136,318 143,314 136,310 129,314 " style="fill:#ffffff" />
+<polygon points="129,328 136,332 143,328 136,324 129,328 " style="fill:#000000" />
+<polygon points="129,342 137,347 133,342 137,337 129,342 " style="fill:#ffffff" />
+<circle cx="129" cy="356" r="5" style="fill:#ffffff" />
+<circle cx="129" cy="370" r="5" style="fill:#ffffff" />
+<circle cx="136" cy="370" r="2" style="fill:#ffffff" />
+<circle cx="129" cy="384" r="5" style="fill:#ffffff" />
+<circle cx="129" cy="384" r="2" style="fill:#ffffff" />
+<circle cx="129" cy="398" r="5" style="fill:#ffffff" />
+<circle cx="129" cy="398" r="2" style="fill:#000000" />
+<circle cx="129" cy="412" r="5" style="fill:#000000" />
+<circle cx="129" cy="412" r="2" style="fill:#000000" />
+</g>
+<g stroke="none">
+<text x="17" y="288">Relations Key</text>
+<text x="17" y="302">Generalization</text>
+<text x="17" y="316">Aggregation(reference)</text>
+<text x="17" y="330">Composition(owned)</text>
+<text x="17" y="344">Const</text>
+<text x="17" y="358">Method Variable</text>
+<text x="17" y="372">Method Parameter</text>
+<text x="17" y="386">Public</text>
+<text x="17" y="400">Protected</text>
+<text x="17" y="414">Private</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="15" y="202" width="151" height="53" />
+<line x1="15" y1="223" x2="166" y2="223" />
+<line x1="15" y1="235" x2="166" y2="235" />
+</g>
+<g stroke="none">
+<text x="16" y="211">ThreadedBackgroundQueue</text>
+<text x="16" y="220">test/TestCpp</text>
+<text x="16" y="232">+int[10] mItems</text>
+<text x="16" y="244">+ThreadedBackgroundQueue()</text>
+<text x="16" y="253">+processItem(int item)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="15" y="120" width="164" height="26" />
+<line x1="15" y1="141" x2="179" y2="141" />
+<line x1="15" y1="144" x2="179" y2="144" />
+</g>
+<g stroke="none">
+<text x="16" y="129">ThreadedWorkBackgroundQueue&lt;</text>
+<text x="16" y="138">  ThreadedBackgroundQueue,int&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="16" y="18" width="188" height="26" />
+<line x1="16" y1="39" x2="204" y2="39" />
+<line x1="16" y1="42" x2="204" y2="42" />
+</g>
+<g stroke="none">
+<text x="17" y="27">OovThreadedBackgroundQueuePrivate</text>
+<text x="17" y="36">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="260" y="19" width="154" height="26" />
+<line x1="260" y1="40" x2="414" y2="40" />
+<line x1="260" y1="43" x2="414" y2="43" />
+</g>
+<g stroke="none">
+<text x="261" y="28">OovThreadedWaitQueuePrivate</text>
+<text x="261" y="37">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="258" y="204" width="117" height="53" />
+<line x1="258" y1="225" x2="375" y2="225" />
+<line x1="258" y1="237" x2="375" y2="237" />
+</g>
+<g stroke="none">
+<text x="259" y="213">ThreadedWaitQueue</text>
+<text x="259" y="222">test/TestCpp</text>
+<text x="259" y="234">+int[10] mItems</text>
+<text x="259" y="246">+ThreadedWaitQueue()</text>
+<text x="259" y="255">+processItem(int item)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="260" y="123" width="250" height="17" />
+<line x1="260" y1="135" x2="510" y2="135" />
+<line x1="260" y1="138" x2="510" y2="138" />
+</g>
+<g stroke="none">
+<text x="261" y="132">ThreadedWorkWaitQueue&lt;int,ThreadedWaitQueue&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="15" y="68" width="224" height="26" />
+<line x1="15" y1="89" x2="239" y2="89" />
+<line x1="15" y1="92" x2="239" y2="92" />
+</g>
+<g stroke="none">
+<text x="16" y="77">ThreadedWorkBackgroundQueue&lt;&lt;template&gt;&gt;</text>
+<text x="16" y="86">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="260" y="66" width="190" height="26" />
+<line x1="260" y1="87" x2="450" y2="87" />
+<line x1="260" y1="90" x2="450" y2="90" />
+</g>
+<g stroke="none">
+<text x="261" y="75">ThreadedWorkWaitQueue&lt;&lt;template&gt;&gt;</text>
+<text x="261" y="84">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="91" y1="202" x2="97" y2="146" />
+<line x1="97" y1="146" x2="91" y2="202" style="stroke-dasharray: 4, 4 "/>
+<line x1="91" y1="202" x2="97" y2="190" />
+<line x1="91" y1="202" x2="88" y2="189" />
+<circle cx="93" cy="175" r="5" style="fill:#ffffff" />
+<circle cx="93" cy="175" r="2" style="fill:#ffffff" />
+<polygon points="97,146 91,158 100,159 97,146 " style="fill:#ffffff" />
+<line x1="104" y1="120" x2="120" y2="94" style="stroke-dasharray: 4, 4 "/>
+<line x1="104" y1="120" x2="120" y2="94" style="stroke-dasharray: 4, 4 "/>
+<line x1="120" y1="94" x2="109" y2="102" />
+<line x1="120" y1="94" x2="118" y2="107" />
+<line x1="334" y1="204" x2="380" y2="139" />
+<line x1="380" y1="139" x2="334" y2="204" style="stroke-dasharray: 4, 4 "/>
+<line x1="334" y1="204" x2="345" y2="197" />
+<line x1="334" y1="204" x2="337" y2="191" />
+<circle cx="362" cy="163" r="5" style="fill:#ffffff" />
+<circle cx="362" cy="163" r="2" style="fill:#ffffff" />
+<polygon points="380,139 369,146 377,152 380,139 " style="fill:#ffffff" />
+<line x1="381" y1="123" x2="362" y2="92" style="stroke-dasharray: 4, 4 "/>
+<line x1="381" y1="123" x2="362" y2="92" style="stroke-dasharray: 4, 4 "/>
+<line x1="362" y1="92" x2="364" y2="105" />
+<line x1="362" y1="92" x2="373" y2="100" />
+</g>
+</svg>

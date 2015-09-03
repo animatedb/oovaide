@@ -45,6 +45,15 @@ namespace Universe
 {
     namespace Movies
     {
+    class Movie
+        {
+        };
+    class InProductionMovie:public Movie
+        {
+        };
+    class ReleasedMovie
+        {
+        };
     class Star
         {
         public:
@@ -52,6 +61,25 @@ namespace Universe
                 { return("movie star"); }
             bool haveTwinkle() const
                 { return true; }
+            void performInScene(Movie &movie)
+                {}
+            void watchScene(ReleasedMovie const &movie)
+                {}
+        };
+    class JunkyStudio
+        {
+        public:
+            void createJunkyMovie()
+                { Movie movie; }
+        };
+    class MoneyMakingStudio
+        {
+        public:
+            ReleasedMovie mGoodMovie;
+        protected:
+            InProductionMovie mFutureGoodMovie;
+        private:
+            Movie mBadMovie;
         };
     };
 
@@ -76,7 +104,11 @@ class Star
             { return true; }
     };
 
-class DisplayStar:public Star, public IdentityDisplayer<Star>
+class Gas
+    {
+    };
+
+class DisplayStar:public Gas, public IdentityDisplayer<Star>
     {
     };
 

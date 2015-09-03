@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="184" height="129">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="25" y="30" width="158" height="17" />
+<line x1="25" y1="42" x2="183" y2="42" />
+<line x1="25" y1="45" x2="183" y2="45" />
+</g>
+<g stroke="none">
+<text x="26" y="39">IdentityDisplayer&lt;Universe::Star&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="53" y="111" width="103" height="17" />
+<line x1="53" y1="123" x2="156" y2="123" />
+<line x1="53" y1="126" x2="156" y2="126" />
+</g>
+<g stroke="none">
+<text x="54" y="120">Universe::DisplayStar</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="104" y1="46" x2="104" y2="111" />
+<circle cx="104" cy="76" r="5" style="fill:#ffffff" />
+<circle cx="104" cy="76" r="2" style="fill:#ffffff" />
+<polygon points="104,46 99,58 109,58 104,46 " style="fill:#ffffff" />
+</g>
+</svg>

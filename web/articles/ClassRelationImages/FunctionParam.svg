@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="463" height="91">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="29" y="28" width="239" height="62" />
+<line x1="29" y1="49" x2="268" y2="49" />
+<line x1="29" y1="52" x2="268" y2="52" />
+</g>
+<g stroke="none">
+<text x="30" y="37">Universe::Movies::Star</text>
+<text x="30" y="46">examples/names</text>
+<text x="30" y="61">+whatAreYou()</text>
+<text x="30" y="70">+haveTwinkle()</text>
+<text x="30" y="79">+performInScene(Universe::Movies::Movie movie)</text>
+<text x="30" y="88">+watchScene(Universe::Movies::Movie movie)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="345" y="46" width="117" height="26" />
+<line x1="345" y1="67" x2="462" y2="67" />
+<line x1="345" y1="70" x2="462" y2="70" />
+</g>
+<g stroke="none">
+<text x="346" y="55">Universe::Movies::Movie</text>
+<text x="346" y="64">examples/names</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="267" y1="59" x2="345" y2="59" />
+<circle cx="281" cy="59" r="5" style="fill:#ffffff" />
+<circle cx="288" cy="59" r="2" style="fill:#ffffff" />
+</g>
+</svg>

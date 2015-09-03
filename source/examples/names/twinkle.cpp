@@ -22,7 +22,7 @@ class MyThoughts
     {
     public:
         MyThoughts();
-        void displaySomeMoreThoughts(Teaching::Star const &teachingStar,
+        void displaySomeThoughts(Teaching::Star const &teachingStar,
             Imaginary::FakeStar fakeStar, char const * const noStar);
 
     private:
@@ -47,10 +47,10 @@ MyThoughts::MyThoughts():
     littleStar.displayIdentity();
     mMovieStarDisplay.displayIdentity();
     awardStar.displayIdentity();
-    displaySomeMoreThoughts(teachingStar, fakeStar, "noStar");
+    displaySomeThoughts(teachingStar, fakeStar, "noStar");
     }
 
-void MyThoughts::displaySomeMoreThoughts(Teaching::Star const &teachingStar,
+void MyThoughts::displaySomeThoughts(Teaching::Star const &teachingStar,
     Imaginary::FakeStar fakeStar, char const * const noStar)
     {
     Awards::Star anotherStar;

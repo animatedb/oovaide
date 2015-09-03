@@ -171,6 +171,7 @@ void GuiOptions::setDefaultOptions()
     setNameValueBool(OptGuiShowOperTypes, true);
     setNameValueBool(OptGuiShowPackageName, true);
     setNameValueBool(OptGuiShowOovSymbols, true);
+    setNameValueBool(OptGuiShowTemplateRelations, true);
     setNameValueBool(OptGuiShowOperParamRelations, true);
     setNameValueBool(OptGuiShowOperBodyVarRelations, true);
     setNameValueBool(OptGuiShowRelationKey, true);

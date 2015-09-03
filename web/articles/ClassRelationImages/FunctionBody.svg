@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="350" height="65">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="26" y="29" width="145" height="35" />
+<line x1="26" y1="50" x2="171" y2="50" />
+<line x1="26" y1="53" x2="171" y2="53" />
+</g>
+<g stroke="none">
+<text x="27" y="38">Universe::Movies::JunkyStudio</text>
+<text x="27" y="47">examples/names</text>
+<text x="27" y="62">+createJunkyMovie()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="232" y="33" width="117" height="26" />
+<line x1="232" y1="54" x2="349" y2="54" />
+<line x1="232" y1="57" x2="349" y2="57" />
+</g>
+<g stroke="none">
+<text x="233" y="42">Universe::Movies::Movie</text>
+<text x="233" y="51">examples/names</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="170" y1="46" x2="232" y2="46" />
+<circle cx="184" cy="46" r="5" style="fill:#ffffff" />
+</g>
+</svg>

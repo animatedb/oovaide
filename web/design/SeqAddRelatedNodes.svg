@@ -1,0 +1,276 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
+  width="1010" height="968">
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="7" y="7" width="58" height="9" />
+</g>
+<text x="9" y="14">ClassGraph</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="84" y="7" width="59" height="9" />
+</g>
+<text x="86" y="14">ModelType</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="150" y="7" width="54" height="9" />
+</g>
+<text x="152" y="14">ClassNode</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="211" y="7" width="78" height="9" />
+</g>
+<text x="213" y="14">ModelClassifier</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="296" y="7" width="76" height="9" />
+</g>
+<text x="298" y="14">ModelTypeRef</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="379" y="7" width="88" height="9" />
+</g>
+<text x="381" y="14">ModelAssociation</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="474" y="7" width="134" height="9" />
+</g>
+<text x="476" y="14">ConstModelClassifierVector</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="615" y="7" width="57" height="9" />
+</g>
+<text x="617" y="14">ModelData</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="679" y="7" width="117" height="9" />
+</g>
+<text x="681" y="14">ConstModelDeclClasses</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="803" y="7" width="81" height="9" />
+</g>
+<text x="805" y="14">ModelDeclClass</text>
+</g>
+<g stroke="none">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="891" y="7" width="112" height="9" />
+</g>
+<text x="893" y="14">OovTaskStatusListener</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="7" y1="29" x2="42" y2="29" />
+<line x1="38" y1="25" x2="42" y2="29" />
+<line x1="38" y1="33" x2="42" y2="29" />
+<line x1="42" y1="36" x2="63" y2="36" />
+<line x1="63" y1="36" x2="63" y2="39" />
+<line x1="42" y1="39" x2="63" y2="39" />
+<line x1="46" y1="69" x2="113" y2="69" />
+<line x1="109" y1="65" x2="113" y2="69" />
+<line x1="109" y1="73" x2="113" y2="69" />
+<line x1="48" y1="97" x2="69" y2="97" />
+<line x1="69" y1="97" x2="69" y2="100" />
+<line x1="48" y1="100" x2="69" y2="100" />
+<line x1="48" y1="114" x2="177" y2="114" />
+<line x1="173" y1="110" x2="177" y2="114" />
+<line x1="173" y1="118" x2="177" y2="114" />
+<line x1="48" y1="128" x2="69" y2="128" />
+<line x1="69" y1="128" x2="69" y2="131" />
+<line x1="48" y1="131" x2="69" y2="131" />
+<line x1="52" y1="173" x2="250" y2="173" />
+<line x1="246" y1="169" x2="250" y2="173" />
+<line x1="246" y1="177" x2="250" y2="173" />
+<line x1="52" y1="187" x2="334" y2="187" style="stroke-dasharray: 4, 4 "/>
+<line x1="330" y1="183" x2="334" y2="187" />
+<line x1="330" y1="191" x2="334" y2="187" />
+<line x1="52" y1="201" x2="73" y2="201" />
+<line x1="73" y1="201" x2="73" y2="204" />
+<line x1="52" y1="204" x2="73" y2="204" />
+<rect x="46" y="204" width="9" height="9" />
+<line x1="54" y1="269" x2="423" y2="269" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="265" x2="423" y2="269" />
+<line x1="419" y1="273" x2="423" y2="269" />
+<line x1="54" y1="283" x2="423" y2="283" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="279" x2="423" y2="283" />
+<line x1="419" y1="287" x2="423" y2="283" />
+<line x1="56" y1="311" x2="423" y2="311" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="307" x2="423" y2="311" />
+<line x1="419" y1="315" x2="423" y2="311" />
+<line x1="56" y1="325" x2="423" y2="325" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="321" x2="423" y2="325" />
+<line x1="419" y1="329" x2="423" y2="325" />
+<line x1="56" y1="339" x2="77" y2="339" />
+<line x1="77" y1="339" x2="77" y2="342" />
+<line x1="56" y1="342" x2="77" y2="342" />
+<rect x="46" y="342" width="9" height="9" />
+<line x1="54" y1="407" x2="423" y2="407" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="403" x2="423" y2="407" />
+<line x1="419" y1="411" x2="423" y2="407" />
+<line x1="54" y1="421" x2="423" y2="421" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="417" x2="423" y2="421" />
+<line x1="419" y1="425" x2="423" y2="421" />
+<line x1="56" y1="449" x2="423" y2="449" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="445" x2="423" y2="449" />
+<line x1="419" y1="453" x2="423" y2="449" />
+<line x1="56" y1="463" x2="423" y2="463" style="stroke-dasharray: 4, 4 "/>
+<line x1="419" y1="459" x2="423" y2="463" />
+<line x1="419" y1="467" x2="423" y2="463" />
+<line x1="56" y1="477" x2="77" y2="477" />
+<line x1="77" y1="477" x2="77" y2="480" />
+<line x1="56" y1="480" x2="77" y2="480" />
+<rect x="46" y="480" width="9" height="9" />
+<line x1="50" y1="517" x2="541" y2="517" />
+<line x1="537" y1="513" x2="541" y2="517" />
+<line x1="537" y1="521" x2="541" y2="517" />
+<line x1="50" y1="531" x2="643" y2="531" style="stroke-dasharray: 4, 4 "/>
+<line x1="639" y1="527" x2="643" y2="531" />
+<line x1="639" y1="535" x2="643" y2="531" />
+<line x1="52" y1="559" x2="73" y2="559" />
+<line x1="73" y1="559" x2="73" y2="562" />
+<line x1="52" y1="562" x2="73" y2="562" />
+<rect x="46" y="562" width="9" height="9" />
+<line x1="50" y1="599" x2="737" y2="599" />
+<line x1="733" y1="595" x2="737" y2="599" />
+<line x1="733" y1="603" x2="737" y2="599" />
+<line x1="50" y1="613" x2="643" y2="613" style="stroke-dasharray: 4, 4 "/>
+<line x1="639" y1="609" x2="643" y2="613" />
+<line x1="639" y1="617" x2="643" y2="613" />
+<line x1="52" y1="641" x2="843" y2="641" style="stroke-dasharray: 4, 4 "/>
+<line x1="839" y1="637" x2="843" y2="641" />
+<line x1="839" y1="645" x2="843" y2="641" />
+<line x1="52" y1="655" x2="73" y2="655" />
+<line x1="73" y1="655" x2="73" y2="658" />
+<line x1="52" y1="658" x2="73" y2="658" />
+<rect x="46" y="658" width="9" height="9" />
+<line x1="50" y1="709" x2="113" y2="709" style="stroke-dasharray: 4, 4 "/>
+<line x1="109" y1="705" x2="113" y2="709" />
+<line x1="109" y1="713" x2="113" y2="709" />
+<line x1="50" y1="723" x2="541" y2="723" />
+<line x1="537" y1="719" x2="541" y2="723" />
+<line x1="537" y1="727" x2="541" y2="723" />
+<line x1="50" y1="737" x2="643" y2="737" style="stroke-dasharray: 4, 4 "/>
+<line x1="639" y1="733" x2="643" y2="737" />
+<line x1="639" y1="741" x2="643" y2="737" />
+<line x1="52" y1="765" x2="73" y2="765" />
+<line x1="73" y1="765" x2="73" y2="768" />
+<line x1="52" y1="768" x2="73" y2="768" />
+<rect x="46" y="768" width="9" height="9" />
+<line x1="50" y1="791" x2="71" y2="791" />
+<line x1="71" y1="791" x2="71" y2="794" />
+<line x1="50" y1="794" x2="71" y2="794" />
+<line x1="50" y1="808" x2="177" y2="808" />
+<line x1="173" y1="804" x2="177" y2="808" />
+<line x1="173" y1="812" x2="177" y2="808" />
+<line x1="50" y1="822" x2="71" y2="822" />
+<line x1="71" y1="822" x2="71" y2="825" />
+<line x1="50" y1="825" x2="71" y2="825" />
+<line x1="48" y1="853" x2="947" y2="853" />
+<line x1="943" y1="849" x2="947" y2="853" />
+<line x1="943" y1="857" x2="947" y2="853" />
+<line x1="48" y1="881" x2="69" y2="881" />
+<line x1="69" y1="881" x2="69" y2="884" />
+<line x1="48" y1="884" x2="69" y2="884" />
+<line x1="52" y1="926" x2="947" y2="926" />
+<line x1="943" y1="922" x2="947" y2="926" />
+<line x1="943" y1="930" x2="947" y2="926" />
+<line x1="48" y1="954" x2="947" y2="954" />
+<line x1="943" y1="950" x2="947" y2="954" />
+<line x1="943" y1="958" x2="947" y2="954" />
+<polygon points="42,42 44,42 44,58 46,58 46,86 48,86 48,148 50,148 50,162 52,162 52,216 50,216 50,216 48,216 48,230 50,230 50,244 52,244 52,258 54,258 54,300 56,300 56,354 54,354 54,354 52,354 52,354 50,354 50,354 48,354 48,368 50,368 50,382 52,382 52,396 54,396 54,438 56,438 56,492 54,492 54,492 52,492 52,492 50,492 50,492 48,492 48,506 50,506 50,548 52,548 52,574 50,574 50,574 48,574 48,588 50,588 50,630 52,630 52,670 50,670 50,670 48,670 48,670 46,670 46,684 48,684 48,698 50,698 50,754 52,754 52,780 50,780 50,828 48,828 48,828 46,828 46,842 48,842 48,856 46,856 46,870 48,870 48,901 50,901 50,915 52,915 52,929 50,929 50,929 48,929 48,929 46,929 46,943 48,943 48,957 46,957 46,957 44,957 44,961 42,961 42,961 40,961 40,957 38,957 38,957 36,957 36,943 38,943 38,929 36,929 36,929 34,929 34,929 32,929 32,915 34,915 34,901 36,901 36,870 38,870 38,856 36,856 36,842 38,842 38,828 36,828 36,828 34,828 34,780 32,780 32,754 34,754 34,698 36,698 36,684 38,684 38,670 36,670 36,670 34,670 34,670 32,670 32,630 34,630 34,588 36,588 36,574 34,574 34,574 32,574 32,548 34,548 34,506 36,506 36,492 34,492 34,492 32,492 32,492 30,492 30,492 28,492 28,438 30,438 30,396 32,396 32,382 34,382 34,368 36,368 36,354 34,354 34,354 32,354 32,354 30,354 30,354 28,354 28,300 30,300 30,258 32,258 32,244 34,244 34,230 36,230 36,216 34,216 34,216 32,216 32,162 34,162 34,148 36,148 36,86 38,86 38,58 40,58 40,42 42,42 " style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+<polygon points="" style="fill:#f5f5ff" />
+</g>
+<g stroke="none">
+<text x="7" y="25">addRelatedNodesRecurse</text>
+<text x="44" y="35">getRelatedNodesRecurse</text>
+<text x="46" y="51">[ maxDepth &gt;= 0 &amp;&amp; type]</text>
+<text x="48" y="65">getClass</text>
+<text x="48" y="79">[ classifier ]</text>
+<text x="50" y="96">getComponentOptions</text>
+<text x="50" y="110">ClassNode</text>
+<text x="50" y="127">addNodeToVector</text>
+<text x="50" y="141">[ ( addType &amp; AN_MemberChildren ) &gt; 0 ]</text>
+<text x="52" y="155">*[ classifier -&gt; getAttributes ( ) ]</text>
+<text x="54" y="169">getAttributes</text>
+<text x="54" y="183">getDeclType</text>
+<text x="54" y="200">getRelatedNodesRecurse</text>
+<text x="50" y="223">[ ( addType &amp; AN_Superclass ) &gt; 0 ]</text>
+<text x="52" y="237">*[ model . mAssociations ]</text>
+<text x="54" y="251">[ assoc -&gt; getChild ( ) != nullptr &amp;&amp; assoc -&gt; getParent ( ) != nullptr ]</text>
+<text x="56" y="265">getChild</text>
+<text x="56" y="279">getParent</text>
+<text x="56" y="293">[ assoc -&gt; getChild ( ) == classifier ]</text>
+<text x="58" y="307">getChild</text>
+<text x="58" y="321">getParent</text>
+<text x="58" y="338">getRelatedNodesRecurse</text>
+<text x="50" y="361">[ ( addType &amp; AN_Subclass ) &gt; 0 ]</text>
+<text x="52" y="375">*[ model . mAssociations ]</text>
+<text x="54" y="389">[ assoc -&gt; getChild ( ) != nullptr &amp;&amp; assoc -&gt; getParent ( ) != nullptr ]</text>
+<text x="56" y="403">getChild</text>
+<text x="56" y="417">getParent</text>
+<text x="56" y="431">[ assoc -&gt; getParent ( ) == classifier ]</text>
+<text x="58" y="445">getParent</text>
+<text x="58" y="459">getChild</text>
+<text x="58" y="476">getRelatedNodesRecurse</text>
+<text x="50" y="499">[ ( addType &amp; AN_FuncParamsUsing ) &gt; 0 ]</text>
+<text x="52" y="513">ConstModelClassifierVector</text>
+<text x="52" y="527">getRelatedFuncInterfaceClasses</text>
+<text x="52" y="541">*[ relatedClasses ]</text>
+<text x="54" y="558">getRelatedNodesRecurse</text>
+<text x="50" y="581">[ ( addType &amp; AN_FuncBodyUsing ) &gt; 0 ]</text>
+<text x="52" y="595">ConstModelDeclClasses</text>
+<text x="52" y="609">getRelatedBodyVarClasses</text>
+<text x="52" y="623">*[ relatedDeclClasses ]</text>
+<text x="54" y="637">getClass</text>
+<text x="54" y="654">getRelatedNodesRecurse</text>
+<text x="48" y="677">[ ( addType &amp; AN_Templates ) &gt; 0 ]</text>
+<text x="50" y="691">[ type -&gt; isTemplateUseType ( ) ]</text>
+<text x="52" y="705">isTemplateUseType</text>
+<text x="52" y="719">ConstModelClassifierVector</text>
+<text x="52" y="733">getRelatedTypeArgClasses</text>
+<text x="52" y="747">*[ relatedClassifiers ]</text>
+<text x="54" y="764">getRelatedNodesRecurse</text>
+<text x="52" y="790">getComponentOptions</text>
+<text x="52" y="804">ClassNode</text>
+<text x="52" y="821">addNodeToVector</text>
+<text x="48" y="835">[ mBackgroundTaskLevel == 1 ]</text>
+<text x="50" y="849">startTask</text>
+<text x="48" y="863">*[ i &lt; model . mTypes . size ( ) ;]</text>
+<text x="50" y="880">addRelatedNodesRecurseUserToVector</text>
+<text x="50" y="894">[ mBackgroundTaskLevel == 1 ]</text>
+<text x="52" y="908">[ ! mForegroundTaskStatusListener -&gt; updateProgressIteration ( taskId , i , nullptr ) ]</text>
+<text x="54" y="922">updateProgressIteration</text>
+<text x="48" y="936">[ mBackgroundTaskLevel == 1 ]</text>
+<text x="50" y="950">endTask</text>
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="42" y1="16" x2="42" y2="968" />
+<line x1="113" y1="16" x2="113" y2="968" />
+<line x1="177" y1="16" x2="177" y2="968" />
+<line x1="250" y1="16" x2="250" y2="968" />
+<line x1="334" y1="16" x2="334" y2="968" />
+<line x1="423" y1="16" x2="423" y2="968" />
+<line x1="541" y1="16" x2="541" y2="968" />
+<line x1="643" y1="16" x2="643" y2="968" />
+<line x1="737" y1="16" x2="737" y2="968" />
+<line x1="843" y1="16" x2="843" y2="968" />
+<line x1="947" y1="16" x2="947" y2="968" />
+</g>
+</svg>

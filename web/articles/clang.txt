@@ -1,0 +1,71 @@
+http://clang.llvm.org/doxygen/group__CINDEX.html
+libclang
+
+ARGUMENT DEPENDENT LOOKUP! (ADL)
+	DeclContext?
+
+
+WORKS FOR NAMESPACES!!
+	CINDEX_LINKAGE CXCursor clang_getCursorSemanticParent(CXCursor cursor)
+
+
+
+
+Orig:
+	MyThoughts:
+		Aggr:	Hollywood::Star mHollywoodStar
+		Aggr:	Imaginary::PretendStar mPretendStar
+		Func:	displayThoughts(InkStar::Star inkStar,
+				Imaginary::FakeStar fakeStar, char noStar)
+
+	   relationships:
+		Owns:	Imaginary::PretendStar
+		FuncP:	Imaginary::FakeStar
+		FuncB:	Star
+
+
+Correct:
+	MyThoughts:
+		Aggr:	Universe::Hollywood::Star mHollywoodStar
+		Aggr:	Imaginary::PretendStar mPretendStar
+		Func:	displayThoughts(Universe::Teaching::Star inkStar,
+				Imaginary::FakeStar fakeStar, char noStar)
+
+	   relationships:
+		Owns:	Universe::Hollywood::Star
+		Refers:	Imaginary::PretendStar
+		FuncP:	Universe::Teaching::Star
+		FuncP:	Imaginary::FakeStar
+		FuncB:	Universe::Star
+		FuncB:	World ???
+
+oovCppParser crash
+------------------
+-Xlinker -Map -Xlinker \output.map
+	release mode
+		0043aceb	std::string::insert
+	debug mode
+		00435d3b	std::string::assign
+		call stack - may be wrong:
+		00435b32	std::string::assign
+		00430e3b	ModelWriter.o	bool __gnu_cxx::operator!=<ModelStatement* 
+		004171bf	atexit/mingw_onexit
+		004013db
+
+__throw_bad_exception is a function in the std namespace
+
+	writeStatements()
+		ModelOperationCall refers to bad decltype
+
+	oovcde_ComponentGraph_cpp.xmi - crashes while writing types
+		class name "" (should be ComponentGraph), oper updateConnections
+
+/Dave/Mine/software/oovcde/svn/trunk/oovcde/ComponentGraph.cpp /Dave/Mine/software/oovcde/svn/trunk/test/trunk-oovcde-win/ /Dave/Mine/software/oovcde/svn/trunk/test/trunk-oovcde-win/analysis-47583/ -c -x c++ -std=c++11  -I"C:\Dave\Mine\software\oovcde\svn\trunk\oovBuilder/../oovCommon"
+
+	oovcde_Xmi2Object_cpp.xmi
+		oper find
+
+	oovEdit_Debugger_cpp.xmi
+
+oovcde crash
+------------

@@ -1,0 +1,44 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha  -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <!-- DC Blaha - 1/1/2014 -->
+    <title>Oovcde Examples</title>
+  </head>
+  <body> <font size="+3">CLangView Help<br>
+    </font>
+    <hr style="width: 100%; height: 3px;"> Last updated: Aug 31, 2015<br>
+    <br>
+    <img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
+
+    <h1>Summary</h1>
+	The CLangViewer will display the AST as a tree where the nodes in the
+	tree can be expanded.  In addition to the standard nodes, CLang provides
+	an interface that can display other related information for a given
+	AST node.  For example, a function such as getCursorSemanticParent can
+	be selected to display the semantic parent of the selected AST node.
+
+    <h1>Command Line</h1>
+	The command line arguments are passed directly to the CLang parser.
+	This means that standard compile arguments such as -I to define an
+	include directory that is passed to the CLangView program.
+<p/>
+	Synopsis:
+<pre>
+        CLangView [args] [filename]
+</pre>
+	In addition to the compile command line arguments, the -p argument can
+	be used to specify an Oovcde project directory. An example is:
+<pre>
+        CLangView -p/test/test-oovcde testSource.cpp
+</pre>
+    <h1>Find</h1>
+	Performing a Find will search the AST for the specified text.
+
+    <h1>Add (Plus)</h1>
+	An add can be performed to follow a related type.
+    <br>
+  </body>
+</html>

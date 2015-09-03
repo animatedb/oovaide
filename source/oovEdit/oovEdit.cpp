@@ -712,6 +712,44 @@ int main(int argc, char **argv)
 
 #else
 
+#define CATCH_EXCEPTIONS 0
+
+#if(CATCH_EXCEPTIONS)
+
+#ifdef __linux__
+static void dumpExceptions()
+    {
+    backtrace();
+    }
+
+#else
+
+#include <DbgHelp.h>
+// Requires DbgHelp.dll/dbghelp.lib
+static void dumpExceptions()
+    {
+    unsigned int   i;
+    void *stack[ 100 ];
+    unsigned short frames;
+    SYMBOL_INFO *symbol;
+    HANDLE process;
+
+    process = GetCurrentProcess();
+    SymInitialize(process, NULL, TRUE);
+    frames = CaptureStackBackTrace(0, 100, stack, NULL);
+    symbol = (SYMBOL_INFO*)calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1 );
+    symbol->MaxNameLen = 255;
+    symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+    for( i = 0; i < frames; i++ )
+        {
+        SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+        printf("%i: %s - 0x%0X\n", frames-i-1, symbol->Name, symbol->Address);
+        }
+    free(symbol);
+    #endif
+    }
+#endif
+
 int main(int argc, char *argv[])
     {
     gtk_init (&argc, &argv);
@@ -720,6 +758,9 @@ int main(int argc, char *argv[])
     Editor editor;
     gEditor = &editor;
     Project::setArgv0(argv[0]);
+#if(CATCH_EXCEPTIONS)
+    std::set_terminate(dumpExceptions);
+#endif
     if(editor.getBuilder().addFromFile("oovEdit.glade"))
         {
         char const *fn = nullptr;

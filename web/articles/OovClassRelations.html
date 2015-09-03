@@ -1,0 +1,93 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha - 9/2/2015 -->
+  <!-- Last Update: 9/2/2015 -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>OOV Class Relations</title>
+  </head>
+  <body>
+    <h1>OOV Class Relations</h1>
+	Standard UML does not show all of the relations that can occur between
+	classes.  Since they are not shown, it may be difficult to find
+	all related classes.  There are also many important relation attributes
+	that are not shown, that visually can used to quickly identify errors.
+	<p/>
+
+	For example, a class could be instantiated in a function or method
+	of another class. Typically these relations could be shown as an
+	association or dependency, but many times are not shown on typical
+	UML diagrams.
+	<p/>
+
+	Another example is a method that takes an argument that is a reference
+	to a class, and these also are not shown.
+	<p/>
+
+	In C++, there are other examples such as when a template is passed a
+	class as an argument to create a bound element.  The bound element
+	has a template binding association, but the associations to the template
+	parameters are often not shown.
+
+    <h1>OOV Symbols</h1>
+	The OOV symbols are used to show some of these other relationships, and
+	to show extra information about relationships.
+	<p/>
+
+    <h2>OOV Relation Symbols</h2>
+	The function body replationship symbol is simply a circle.<br/>
+	<i>The movie created by this junky studio is so bad that it is never
+	distributed.  The movie is instantiated and destructed in the
+	createJunkyMovie method, but never used in an interface.</i>
+	<p/>
+    	<embed src="ClassRelationImages/FunctionBody.svg" type="image/svg+xml"> <br>
+	<p/>
+
+	The function parameter replationship symbol is two different sized circles.
+	The symbol represents the function body with an argument.<br/>
+	<i>An actor may perform some method acting within a scene of a movie,
+	but the actor does not own the movie. The movie is used as a parameter
+	in the performInScene method.</i>
+	<p/>
+    	<embed src="ClassRelationImages/FunctionParam.svg" type="image/svg+xml"> <br>
+	<p/>
+
+	In UML diagrams, the relationship to a template is shown, but the
+	relationship to a template argument is typically not shown.  There are no
+	new Oov symbols to show this relationship since the template specification
+	in the class name is clear.<br/>
+	<i>The IdentityDisplayer template adds the displayIdentity function to
+	the Universe::Star class.</i>
+	<p/>
+    	<embed src="ClassRelationImages/Template.svg" type="image/svg+xml"> <br>
+	<p/>
+
+	Typedefs are usually not shown in UML diagrams.  The meaning of a template
+	is the same as inheritance with no new attributes or methods.<br/>
+	<i>The Universe::DisplayStar is a new name for
+	IdentityDisplayer&lt;Universe::Star&gt;</i>
+	<p/>
+    	<embed src="ClassRelationImages/Typedef.svg" type="image/svg+xml"> <br>
+	<p/>
+
+    <h2>OOV Relation Attribute Symbols</h2>
+	An important relationship in C++ is the &quot;const&quot; relationship.
+	This is shown as a V shape.<br/>
+	<i>A movie star may watch a released movie, but does not modify the
+	movie, but when a movie star is performing in a movie, they do modify
+	the movie.</i>
+	<p/>
+    	<embed src="ClassRelationImages/Const.svg" type="image/svg+xml"> <br>
+
+	<p/>
+	Another important relationship is the visibility of members and
+	inheritance.  This is shown as nested circles. Unfilled circles are
+	public, filled are private, and partially filled are protected.<br/>
+	<i>Released movies are public, bad movies are private, and future
+	good movies are protected.</i>
+	<p/>
+    	<embed src="ClassRelationImages/Visibility.svg" type="image/svg+xml"> <br>
+
+  </body>
+</html>
