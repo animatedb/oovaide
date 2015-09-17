@@ -486,6 +486,8 @@ static void drawOovSymbol(DiagramDrawer &drawer, GraphPoint consumer,
     {
     RelationDrawInfo drawInfo(consumer, producer, zoom);
     if((connectItem.mConnectType & ctAggregation) ||
+// Don't ever display func var with const symbol.
+//            (connectItem.mConnectType & ctFuncVar)
             (connectItem.mConnectType & ctFuncParam))
         {
         // Draw const symbol

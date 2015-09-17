@@ -55,7 +55,8 @@ class ZoneNode
             {}
 
         ModelType const *mType;
-        int getChordWeight(ModelType const *mType);
+// DEAD CODE
+//        int getChordWeight(ModelType const *mType);
         void setMappedName(OovStringRef name)
             { mMappedName = name; }
         void clearMappedName()

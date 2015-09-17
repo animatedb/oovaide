@@ -281,6 +281,9 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
         OovString(char const * const str, size_t len):
             std::string(str, len)
             {}
+        OovString(size_t n, char c):
+            std::string(n, c)
+            {}
         /// These can prevent temporary OovStrings from being created.
         void operator=(char const * const str)
             { std::string::operator=(str); }

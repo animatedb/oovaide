@@ -19,10 +19,12 @@ class ClassDrawer
                 mDrawer(drawer), mActualZoomX(1.0), mActualZoomY(1.0)
                 {}
         void setZoom(double zoom);
-        double getActualZoomX() const
-                { return(mActualZoomX); }
-        double getActualZoomY() const
-                { return(mActualZoomY); }
+// DEAD CODE
+//        double getActualZoomX() const
+//                { return(mActualZoomX); }
+//        double getActualZoomY() const
+//                { return(mActualZoomY); }
+
         void drawDiagram(const ClassGraph &graph);
         // This is used publicly to calculate node sizes.
         GraphSize drawNode(const ClassNode &node);

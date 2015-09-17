@@ -104,11 +104,13 @@ class BaseSimpleFile
         int getSize() const;
         /// Set the file descriptor
         /// @param fd The file descriptor
-        void setFd(int fd)
-            { mFd = fd; }
+// DEAD CODE
+//        void setFd(int fd)
+//            { mFd = fd; }
         /// Get the file descriptor
-        int getFd()
-            { return mFd; }
+// DEAD CODE
+//        int getFd()
+//            { return mFd; }
         /// Truncate the file to a smaller size.
         /// @param the size of the file to set to.
         void truncate(int size=0);

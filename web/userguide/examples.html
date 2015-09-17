@@ -64,10 +64,14 @@
       <li>Right click on the Lamb or other classes, and select Add Standard
         Relations or Add All Relations to see more of the related classes to the
         selected class.</li>
-      <li>Depending on the compiler and libraries installed on the system,
-        performing a full analysis can be set up by using Analysis/Settings and
-        using "External Project Packages" to define other include paths. For
-        example, mingw-w64 may be needed on Windows for stdio.h.</li>
+      <li>Performing a full analysis on some projects requires that the system
+	include directories are found and other external directories are
+	specified. This depends on the compiler and libraries installed on the
+	system. For example, clang searches for some standard mingw or mingw-builds
+	directories.  Performing a full analysis can be set up by using
+	Analysis/Settings and using "External Project Packages" to define
+	other include paths.
+	For example, mingw-w64 may be needed on Windows for stdio.h.</li>
       <li>Select Build/Settings from the menu. Select the Component Type of
         Program/Executable.</li>
       <li>Select Build/Build Debug to create a debug version of the program. The

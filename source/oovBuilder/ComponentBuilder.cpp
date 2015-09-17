@@ -74,8 +74,6 @@ bool ComponentBuilder::anyIncDirsMatch(OovStringRef const compName,
 void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName)
     {
     bool didAnything = false;
-    OovStringVec libDirs;       // not in library search order, eliminate dups.
-    OovStringVec sortedLibNames;
     BuildPackages &buildPackages = mComponentFinder.getProjectBuildArgs().getBuildPackages();
     std::vector<Package> packages = buildPackages.getPackages();
     for(auto &pkg : packages)
@@ -84,6 +82,9 @@ void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName)
             {
             if(!pkg.areLibraryNamesOrdered())
                 {
+                OovStringVec libDirs;       // not in library search order, eliminate dups.
+                OovStringVec sortedLibNames;
+
                 didAnything = true;
                 OovStringVec libNames = pkg.getScannedLibraryFilePaths();
                 makeLibSymbols(pkg.getPkgName(), libNames);
@@ -350,6 +351,7 @@ void ComponentBuilder::buildComponents()
             mComponentFinder.getComponentTypesFile();
     OovStringVec compNames = compTypesFile.getComponentNames();
 
+    sVerboseDump.logProgress("Generating package dependencies");
     generateDependencies();
     sVerboseDump.logProgress("Compile objects");
     // Compile all objects.
@@ -397,7 +399,7 @@ void ComponentBuilder::buildComponents()
             projectLibFileNames);
     if(compNames.size() > 0)
         {
-        sVerboseDump.logProgress("Order external libraries");
+        sVerboseDump.logProgress("Order external package libraries");
 
         for(const auto &name : compNames)
             {

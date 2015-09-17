@@ -103,8 +103,10 @@ class OperationCall:public OperationStatement
         virtual ~OperationCall();
         size_t getOperClassIndex() const
             { return mOperClassIndex; }
-        OovString const &getName() const
+        OovString const getName() const
             { return mOperation.getName(); }
+        OovString getOverloadFuncName() const
+            { return mOperation.getOverloadFuncName(); }
         bool isConst() const
             { return mOperation.isConst(); }
         void setRect(const GraphPoint &pos, const GraphSize &size)

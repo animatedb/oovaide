@@ -189,8 +189,7 @@ int OovComplexity::getDataFunctionCallComplexity()
             ModelClassifier const *cls = stmt.getClassDecl().getDeclType()->getClass();
             if(cls)
                 {
-                const ModelOperation *oper = cls->getOperationAnyConst(
-                        stmt.getFuncName(), false);
+                const ModelOperation *oper = cls->getMatchingOperation(stmt);
                 if(oper)
                     {
                     int opComplexity = getOperationComplexity(oper);

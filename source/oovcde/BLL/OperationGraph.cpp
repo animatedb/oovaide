@@ -56,8 +56,7 @@ OperationCall::~OperationCall()
 bool OperationCall::compareOperation(const OperationCall &call) const
     {
     return(getOperClassIndex() == call.getOperClassIndex() &&
-            std::string(getName()).compare(call.getName()) == 0 &&
-            isConst() == call.isConst());
+            ModelStatement::compareFuncNames(getOverloadFuncName(), call.getOverloadFuncName()));
     }
 
 OperationDefinition::~OperationDefinition()
@@ -303,23 +302,22 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
                 size_t classIndex = addOrGetClass(cls, gc);
                 if(classIndex != NO_INDEX)
                     {
-                    const ModelOperation *targetOper = cls->getOperationAnyConst(
-                            stmt.getFuncName(), stmt.getClassDecl().isConst());
+                    const ModelOperation *targetOper = cls->getMatchingOperation(stmt);
                     if(targetOper)
                         {
                         /// @todo - use make_unique when supported.
                         opDef.addStatement(std::unique_ptr<OperationStatement>(
                                 new OperationCall(classIndex, *targetOper)));
-    #if(DEBUG_OPERGRAPH)
+#if(DEBUG_OPERGRAPH)
                         fprintf(sLog.mFp, "%d %s\n", classIndex, targetOper->getName().c_str());
-    #endif
+#endif
                         }
                     else
                         {
                         opDef.addStatement(std::unique_ptr<OperationStatement>(
-                                new DummyOperationCall(classIndex, stmt.getFullName(),
+                                new DummyOperationCall(classIndex, stmt.getFuncName(),
                                 stmt.getClassDecl().isConst())));
-    #if(DEBUG_OPERGRAPH)
+#if(DEBUG_OPERGRAPH)
                         fprintf(sLog.mFp, "Bad Oper %d %s %d\n", classIndex,
                                 call->getName().c_str(), call->getDecl().isConst());
                         for(const auto oper : cls->getOperations())
@@ -327,14 +325,14 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
                             fprintf(sLog.mFp, "  %s %d\n", oper->getName().c_str(),
                                     oper->isConst());
                             }
-    #endif
+#endif
                         }
                     }
                 else
                     {
-    #if(DEBUG_OPERGRAPH)
+#if(DEBUG_OPERGRAPH)
                     fprintf(sLog.mFp, "Bad Class %d\n", classIndex);
-    #endif
+#endif
                     }
                 }
             }
@@ -374,11 +372,18 @@ void OperationGraph::clearGraphAndAddOperation(const ModelData &model,
     const ModelClassifier *sourceClass = model.getTypeRef(className)->getClass();
     if(sourceClass)
         {
-        const ModelOperation *sourceOper = sourceClass->getOperation(operName, isConst);
+        std::vector<const ModelOperation*> opers = sourceClass->getOperationsByName(operName);
+        for(auto const &oper : opers)
+            {
+            addRelatedOperations(*sourceClass, *oper, OperationGraph::AO_All, 2);
+            }
+/*
+        const ModelOperation *sourceOper = sourceClass->getOperationByName(operName, isConst);
         if(sourceOper)
             {
             addRelatedOperations(*sourceClass, *sourceOper, OperationGraph::AO_All, 2);
             }
+*/
         }
     mModified = false;
     }
@@ -485,8 +490,7 @@ void OperationGraph::addOperDefinition(const OperationCall &opcall)
     {
     const ModelClassifier *cls = mOpClasses[opcall.getOperClassIndex()].
             getType()->getClass();
-    const ModelOperation *targetOper = cls->getOperation(opcall.getName(),
-            opcall.isConst());
+    const ModelOperation *targetOper = cls->getMatchingOperation(opcall.getOperation());
     if(!isOperDefined(opcall) && targetOper)
         addDefinition(opcall.getOperClassIndex(), *targetOper);
     }
@@ -529,7 +533,7 @@ void OperationGraph::removeOperDefinition(const OperationCall &opcall)
     {
     const ModelClassifier *cls = mOpClasses[opcall.getOperClassIndex()].getType()->
             getClass();
-    const ModelOperation *targetOper = cls->getOperation(opcall.getName(),
+    const ModelOperation *targetOper = cls->getOperationByName(opcall.getName(),
             opcall.isConst());
     if(targetOper)
         {

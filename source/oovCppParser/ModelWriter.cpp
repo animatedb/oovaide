@@ -166,7 +166,7 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
         {
         fprintf(mFp, "%s", "   <Statements list=\"");
         bool firstTime = true;
-        for(auto &stmt : stmts)
+        for(auto const &stmt : stmts)
             {
             if(!firstTime)
                 {
@@ -186,9 +186,19 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
                 case ST_Call:
                     {
                     std::string className;
-                    if(stmt.getClassDecl().getDeclType())
-                        className = stmt.getClassDecl().getDeclType()->getName();
-                    fprintf(mFp, "c=%s@%d", translate(stmt.getFullName()).c_str(),
+                    std::string funcName = stmt.getFullName();
+                    ModelType const *type = stmt.getClassDecl().getDeclType();
+                    if(type)
+                        {
+                        className = type->getName();
+                        ModelClassifier const *classifier = ModelType::getClass(type);
+                        if(classifier && !classifier->isOperOverloaded(
+                                stmt.getFuncName()))
+                            {
+                            ModelStatement::eraseOverloadKey(funcName);
+                            }
+                        }
+                    fprintf(mFp, "c=%s@%d", translate(funcName).c_str(),
                         getObjectModelId(className));
                     }
                     break;
@@ -218,18 +228,25 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 //      parameter name @ type ID @ is const @ is reference
 // Example:
 //    <Parms list="symbolName@120@true@true#symbol@121@false@true" />
-void ModelWriter::writeOperation(ModelOperation const &oper)
+void ModelWriter::writeOperation(ModelClassifier const &classifier, ModelOperation const &oper)
     {
     char locStr[50];
-//    snprintf(locStr, sizeof(locStr), "module=\"%d\" line=\"%d\"", MIO_Module, oper.getLineNum());
     if(oper.getLineNum() > 0)
         snprintf(locStr, sizeof(locStr), "line=\"%d\"", oper.getLineNum());
     else
         locStr[0] = '\0';
     ModelTypeRef const &retType = oper.getReturnType();
-    fprintf(mFp, "  <Oper name=\"%s\" access=\"%s\" const=\"%s\" virt=\"%s\" %s "
+    OovString symStr;
+    if(classifier.isOperOverloaded(oper.getName()))
+        {
+        symStr = "sym=\"";
+        symStr += oper.getOverloadKey();
+        symStr += '\"';
+        }
+    fprintf(mFp, "  <Oper name=\"%s\" %s access=\"%s\" const=\"%s\" virt=\"%s\" %s "
             "ret=\"%d\" retconst=\"%s\" retref=\"%s\">\n",
-        oper.getName().getStr(), oper.getAccess().asUmlStr().getStr(),
+        oper.getName().getStr(), symStr.getStr(),
+        oper.getAccess().asUmlStr().getStr(),
         boolStr(oper.isConst()), boolStr(oper.isVirtual()), locStr,
         getObjectModelId(retType.getDeclType()->getName()),
         boolStr(retType.isConst()), boolStr(retType.isRefer())
@@ -293,7 +310,7 @@ void ModelWriter::writeClassDefinition(const ModelClassifier &classifier, bool i
         {
         if(oper->getModule())
             {
-            writeOperation(*oper);
+            writeOperation(classifier, *oper);
             }
         }
     }

@@ -51,12 +51,15 @@ std::string BuildConfig::getIncDepsFilePath() const
     return fp;
     }
 
+/*
+DEAD CODE
 std::string BuildConfig::getComponentsFilePath() const
     {
     FilePath fp(getAnalysisPath(), FP_Dir);
     fp.appendFile(Project::getAnalysisComponentsFilename());
     return fp;
     }
+*/
 
 std::string BuildConfig::getCrcAsStr(OovStringRef const buildType, CrcTypes crcType) const
     {

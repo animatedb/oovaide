@@ -26,6 +26,7 @@
 #include <list>
 #include <vector>
 #include <memory>
+#include <string.h>
 #include "OovString.h"
 
 #define UNDEFINED_ID -1
@@ -231,6 +232,9 @@ class ModelStatement:private ModelObject
             { return getName(); }
         /// Get the function name for an ST_Call statement.
         OovString getFuncName() const;
+        /// Get the function name used to identify overloaded functions.
+        /// This should never be displayed to the user.
+        OovString getOverloadFuncName() const;
         /// Get the attribute name for an ST_Call or ST_VarRef statement.
         OovString getAttrName() const;
         /// Check if the operations match.
@@ -260,13 +264,31 @@ class ModelStatement:private ModelObject
         /// Get whether the variable access is writeable
         bool getVarAccessWrite() const
             { return mVarAccessWrite; }
-        /// Just stick a symbol in the name to indicate it is
-        /// a base class member reference.
-        bool hasBaseClassMemberRef() const;
+
+        /// Symbols are stuck in the name to indicate it a base class member
+        /// reference.
+        bool hasBaseClassRef() const;
+
+        /// WARNING: These are carefully chosen to work with
+        /// getRightSidePosFromMemberRefExpr().
+        /// There is no reason to distinguish between base member refs and calls,
+        /// so they are the same at this time.
+        /// A reference to a base class member.
         static char const *getBaseClassMemberRefSep()
             { return "+:"; }
+        /// A reference to a base class call.
         static char const *getBaseClassMemberCallSep()
             { return "+:"; }
+        /// @param operStr The USR form of the operator string from CLang.
+        static OovString makeOverloadKeyFromOperUSR(OovStringRef operStr);
+        static char const *getOverloadKeySep()
+            { return "+;"; }
+        /// This does a comparison where the overload key is optional.
+        static bool compareFuncNames(OovStringRef operName1,
+                OovStringRef operName2);
+        bool compareFuncName(OovStringRef operName) const
+            { return compareFuncNames(getName(), operName); }
+        static void eraseOverloadKey(std::string &operName);
 
     private:
         eModelStatementTypes mStatementType;
@@ -294,7 +316,6 @@ class ModelStatements:public std::vector<ModelStatement>
         bool checkAttrUsed(OovStringRef attrName) const;
     };
 
-
 /// This represents an operation in the code.
 /// This container owns all pointers (parameters, etc.) given to it, except for
 /// types used to define parameters/variables.
@@ -307,6 +328,16 @@ public:
         mModule(nullptr), mLineNum(0), mReturnType(nullptr),
         mConst(isConst), mVirtual(isVirtual)
         {}
+    /// Use the clang_getCursorUSR function to get an operation USR.
+    void setOverloadKeyFromOperUSR(OovStringRef operStr)
+        { mOverloadKey = ModelStatement::makeOverloadKeyFromOperUSR(operStr); }
+    void setOverloadKeyFromKey(OovStringRef keyStr)
+        { mOverloadKey = keyStr; }
+    OovString getOverloadFuncName() const;
+    /// This should not be used to compare functions. Use
+    /// ModelStatement::compareFuncName(s).
+    OovString getOverloadKey() const
+        { return mOverloadKey; }
     /// Add a method parameter to the operation.
     /// Returns a pointer to the added parameter so that it can be modified.
     ModelFuncParam *addMethodParameter(const std::string &name, const ModelType *type,
@@ -386,10 +417,9 @@ public:
     /// Get the line number in the module that the operation is defined in
     unsigned int getLineNum() const
         { return mLineNum; }
-    /// Check if the parameters match the parameters of this operation
-    bool paramsMatch(std::vector<std::unique_ptr<ModelFuncParam>> const &params) const;
 
 private:
+    OovString mOverloadKey;
     std::vector<std::unique_ptr<ModelFuncParam>> mParameters;
     std::vector<std::unique_ptr<ModelBodyVarDecl>> mBodyVarDeclarators;
     ModelStatements mStatements;
@@ -473,6 +503,7 @@ public:
     explicit ModelClassifier(OovStringRef const name):
         ModelType(name, DT_Class), mModule(nullptr), mLineNum(0)
         {}
+    bool isOperOverloaded(OovStringRef operName) const;
     /// Erase all of the operations
     void clearOperations();
     /// Erase all of the attributes
@@ -527,34 +558,20 @@ public:
     /// @param name The name of the attribute
     const ModelAttribute *getAttribute(const std::string &name) const;
 
-    static const size_t NoIndex = static_cast<size_t>(-1);
     /// Find a matching operation and get the index. This finds by name,
     /// whether the operation is const, and the parameters decltypes, names, etc.
     /// @param op The operation to find
-    size_t findExactMatchingOperationIndex(const ModelOperation &op) const;
+    const ModelOperation *getMatchingOperation(const ModelOperation &op) const
+        { return findExactMatchingOperation(op.getOverloadFuncName()); }
 
-    /// Find a matching operation and get the index. This finds by name,
-    /// whether the operation is const, and the parameters decltypes, names, etc.
-    /// @param op The operation to find
-    const ModelOperation *findExactMatchingOperation(const ModelOperation &op) const;
+    /// This requires that the model statement is a call statement.
+    const ModelOperation *getMatchingOperation(const ModelStatement &ms) const
+        { return findExactMatchingOperation(ms.getOverloadFuncName()); }
 
-    /// Do a poor job of getting an operation.
-    /// @todo - this doesn't work for overloaded functions.
-    const ModelOperation *getOperation(OovStringRef const name, bool isConst) const;
+    std::vector<const ModelOperation*> getOperationsByName(OovStringRef const name) const;
 
-    /// Do a poor job of getting an operation.
     /// @todo - this doesn't work for overloaded functions.
-    size_t getOperationIndex(OovStringRef const name, bool isConst) const;
-    /// Do a poor job of getting an operation.
-    /// @todo - this doesn't work for overloaded functions.
-    ModelOperation *getOperation(OovStringRef const name, bool isConst)
-        {
-        return const_cast<ModelOperation*>(
-                static_cast<const ModelClassifier*>(this)->getOperation(name, isConst));
-        }
-    /// Do a poor job of getting an operation.
-    /// @todo - This isn't really correct.
-    const ModelOperation *getOperationAnyConst(const std::string &name, bool isConst) const;
+    const ModelOperation *getOperationByName(OovStringRef const name, bool isConst) const;
 
     /// Get the attributes of the class.
     std::vector<std::unique_ptr<ModelAttribute>> &getAttributes()
@@ -590,6 +607,14 @@ private:
     std::vector<std::unique_ptr<ModelOperation>> mOperations;
     const class ModelModule *mModule;
     unsigned int mLineNum;
+    static const size_t NoIndex = static_cast<size_t>(-1);
+    /// Find a matching operation and get the index. This finds by name,
+    /// whether the operation is const, and the parameters decltypes, names, etc.
+    /// @param op The operation to find
+    size_t getMatchingOperationIndex(const ModelOperation &op) const
+        { return findExactMatchingOperationIndex(op.getOverloadFuncName()); }
+    size_t findExactMatchingOperationIndex(OovStringRef overloadFuncName) const;
+    const ModelOperation *findExactMatchingOperation(OovStringRef overloadFuncName) const;
 };
 
 /// This is used for class inheritance

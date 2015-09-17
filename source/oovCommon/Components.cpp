@@ -346,11 +346,16 @@ void ComponentsFile::parseProjRefs(OovStringRef const arg, OovString &rootDir,
         }
     }
 
+// DEAD CODE
+/*
 OovString ComponentsFile::getProjectIncludeDirsStr() const
     {
     return getValue("Components-init-proj-incs");
     }
+*/
 
+// DEAD CODE
+/*
 OovStringVec ComponentsFile::getAbsoluteIncludeDirs() const
     {
     OovString val = getProjectIncludeDirsStr();
@@ -363,3 +368,4 @@ OovStringVec ComponentsFile::getAbsoluteIncludeDirs() const
         });
     return incs;
     }
+*/

@@ -126,9 +126,15 @@ class CppInstr
         void insertNonCompoundInstr(CXCursor cursor);
 //      void instrChildNonCompoundStatements(CXCursor cursor);
 
-        /// @todo - fn isn't used.
+        /// This will create a header file that will be included by the project
+        /// that will be tested for coverage.  It defines a macro that will
+        /// increment an offset into an array for a particular file and line index.
         static void updateCoverageHeader(OovStringRef const fn, OovStringRef const covDir,
                 int numInstrLines);
+        /// This will create a source file that must be linked into the project
+        /// that will be tested for coverage.  This file reads the existing
+        /// coverage information, and updates it with the new coverage info.
+        /// This allows multiple program runs to be accumulated.
         static void updateCoverageSource(OovStringRef const fn, OovStringRef const covDir);
     };
 

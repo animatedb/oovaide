@@ -8,10 +8,88 @@
 #include "StaticAnalysis.h"
 #include "FilePath.h"
 #include "Project.h"
+#include "XmlWriter.h"
 
 
-static void createStyleTransform(const std::string &fullPath)
+static void createMemberVarUsageStyleTransform(const std::string &fullPath)
     {
+    using namespace XML;
+
+    Writer xml;
+    {
+    XmlHeader header(xml);
+    }
+    {
+    XslStyleSheet ss(xml);
+        {
+        XslOutputHtml out(xml);
+        }
+        {
+            {
+            XslTemplate tplroot(xml, "match=\"/\"");
+                {
+                Element html(xml, "html");
+                    {
+                    Element head(xml, "head");
+                        {
+                        Element title(xml, "title");
+                            { XslText(xml, "Data Member Attribute Usage Report"); }
+                        }
+                    }
+                    {
+                    Element body(xml, "body");
+                        {
+                            {
+                            Element headmem(xml, "h1");
+                                { XslText(xml, "Data Member Usage"); }
+                            }
+                            XslText(xml, "See the output directory for"
+                                " the text file output.");
+                            XslText(xml, "The usage count is the count "
+                                "of the number of methods in the same class "
+                                "that refer to the attribute.");
+                        Table tab(xml);
+                            {
+                                {
+                                TableRow rowhead(xml);
+                                    { TableHeader(xml, "Class Name"); }
+                                    { TableHeader(xml, "Attribute Name"); }
+                                    { TableHeader(xml, "Use Count"); }
+                                }
+                                {
+                                XslApplyTemplates app(xml, "select=\"MemberAttrUseReport/Attr\"");
+                                    {
+                                    XslSort(xml, "select=\"UseCount\" data-type=\"number\"");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            {
+            XslTemplate tplattr(xml, "match=\"Attr\"");
+                {
+                    {
+                    TableRow rowval(xml);
+                        {
+                        TableCol colclass(xml);
+                            { XslValueOf(xml, "select=\"ClassName\""); }
+                        }
+                        {
+                        TableCol colattr(xml);
+                            { XslValueOf(xml, "select=\"AttrName\""); }
+                        }
+                        {
+                        TableCol coluse(xml);
+                            { XslValueOf(xml, "select=\"UseCount\""); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+/*
     static const char *text =
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
             "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
@@ -37,8 +115,8 @@ static void createStyleTransform(const std::string &fullPath)
             "            <th>Use Count</th>\n"
             "          </tr>\n"
             "          <xsl:apply-templates select=\"MemberAttrUseReport/Attr\">\n"
-            "       <xsl:sort select=\"UseCount\" data-type=\"number\" />\n"
-            "     </xsl:apply-templates>\n"
+            "             <xsl:sort select=\"UseCount\" data-type=\"number\" />\n"
+            "          </xsl:apply-templates>\n"
             "        </table>\n"
             "      </body>\n"
             "    </html>\n"
@@ -58,18 +136,19 @@ static void createStyleTransform(const std::string &fullPath)
             "    </tr>\n"
             "  </xsl:template>\n"
             "</xsl:stylesheet>\n";
+*/
     File transformFile(fullPath, "w");
-    fprintf(transformFile.getFp(), "%s", text);
+    fprintf(transformFile.getFp(), "%s", xml.getStr());
     }
 
-bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
+bool createMemberVarUsageStaticAnalysisFile(ModelData const &modelData, std::string &fn)
     {
     FilePath fp(Project::getProjectDirectory(), FP_Dir);
     fp.appendDir("output");
-    fp.appendFile("StaticAnalysis");
+    fp.appendFile("MemberVarUsage");
 
     FileEnsurePathExists(fp);
-    createStyleTransform(fp + ".xslt");
+    createMemberVarUsageStyleTransform(fp + ".xslt");
 
     fp.appendFile(".xml");
     fn = fp;
@@ -78,7 +157,7 @@ bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
         {
         static const char *header =
                 "<?xml version=\"1.0\"?>\n"
-                "<?xml-stylesheet type=\"text/xsl\" href=\"StaticAnalysis.xslt\"?>\n"
+                "<?xml-stylesheet type=\"text/xsl\" href=\"MemberVarUsage.xslt\"?>\n"
                 "<MemberAttrUseReport>\n";
         fprintf(useFile.getFp(), "%s", header);
         for(auto const &type : modelData.mTypes)
@@ -107,6 +186,217 @@ bool createStaticAnalysisFile(ModelData const &modelData, std::string &fn)
             }
 
         static const char *footer = "</MemberAttrUseReport>\n";
+        fprintf(useFile.getFp(), "%s", footer);
+        }
+    return useFile.isOpen();
+    }
+
+
+static void createMethodUsageStyleTransform(const std::string &fullPath)
+    {
+    using namespace XML;
+
+    Writer xml;
+    {
+    XmlHeader header(xml);
+    }
+    {
+    XslStyleSheet ss(xml);
+        {
+        XslOutputHtml out(xml);
+        }
+        {
+            {
+            XslTemplate tplroot(xml, "match=\"/\"");
+                {
+                Element html(xml, "html");
+                    {
+                    Element head(xml, "head");
+                        {
+                        Element title(xml, "title");
+                            { XslText(xml, "Method Usage Report"); }
+                        }
+                    }
+                    {
+                    Element body(xml, "body");
+                        {
+                            {
+                            Element headmem(xml, "h1");
+                                { XslText(xml, "Method Usage"); }
+                            }
+                            XslText(xml, "See the output directory for"
+                                " the text file output.");
+                            XslText(xml, "The usage count is the global "
+                                "count of usage by any other method.");
+                        Table tab(xml);
+                            {
+                                {
+                                TableRow rowhead(xml);
+                                    { TableHeader(xml, "Class Name"); }
+                                    { TableHeader(xml, "Attribute Name"); }
+                                    { TableHeader(xml, "Type"); }
+                                    { TableHeader(xml, "Use Count"); }
+                                }
+                                {
+                                XslApplyTemplates app(xml, "select=\"MethodUseReport/Oper\"");
+                                    {
+                                    XslSort(xml, "select=\"UseCount\" data-type=\"number\"");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            {
+            XslTemplate tplattr(xml, "match=\"Oper\"");
+                {
+                    {
+                    TableRow rowval(xml);
+                        {
+                        TableCol colclass(xml);
+                            { XslValueOf(xml, "select=\"ClassName\""); }
+                        }
+                        {
+                        TableCol colattr(xml);
+                            { XslValueOf(xml, "select=\"OperName\""); }
+                        }
+                        {
+                        TableCol colattr(xml);
+                            { XslValueOf(xml, "select=\"Type\""); }
+                        }
+                        {
+                        TableCol coluse(xml);
+                            { XslValueOf(xml, "select=\"UseCount\""); }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    File transformFile(fullPath, "w");
+    fprintf(transformFile.getFp(), "%s", xml.getStr());
+    }
+
+
+/// Keeps counts of operations.
+typedef std::map<class ModelOperation const *, int> ModelOperationCounts;
+
+/// Appends the immediate operations that are called by this operation.
+static void appendOperationCounts(ModelData const &model,
+        ModelOperation const &srchOper, ModelOperationCounts &operCounts)
+    {
+/*
+if(srchOper.getName().find("name of func") != std::string::npos)
+    {
+    }
+*/
+    for(auto const &stmt : srchOper.getStatements())
+        {
+        if(stmt.getStatementType() == ST_Call)
+            {
+            ModelType const *modelType = stmt.getClassDecl().getDeclType();
+            ModelClassifier const *classifier = ModelType::getClass(modelType);
+            if(classifier)
+                {
+                ModelOperation const *calledOper = classifier->getMatchingOperation(
+                    stmt);
+                auto const &it = operCounts.find(calledOper);
+                if(it != operCounts.end())
+                    {
+                    it->second++;
+                    }
+                else
+                    {
+                    operCounts.insert(std::pair<ModelOperation const *, int>(
+                            calledOper, 1));
+                    }
+                }
+            }
+        }
+    }
+
+bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
+        ModelData const &model, std::string &fn)
+    {
+    FilePath fp(Project::getProjectDirectory(), FP_Dir);
+    fp.appendDir("output");
+    fp.appendFile("MethodUsage");
+
+    FileEnsurePathExists(fp);
+    createMethodUsageStyleTransform(fp + ".xslt");
+
+    fp.appendFile(".xml");
+    fn = fp;
+    File useFile(fp, "w");
+    if(useFile.isOpen())
+        {
+        static const char *header =
+                "<?xml version=\"1.0\"?>\n"
+                "<?xml-stylesheet type=\"text/xsl\" href=\"MethodUsage.xslt\"?>\n"
+                "<MethodUseReport>\n";
+        fprintf(useFile.getFp(), "%s", header);
+
+        TaskBusyDialog progressDlg;
+        progressDlg.setParentWindow(parentWindow);
+        // Find the counts of all operations.
+        ModelOperationCounts operCounts;
+        size_t totalTypes = model.mTypes.size();
+        progressDlg.startTask("Searching Operations", totalTypes);
+        bool keepGoing = true;
+        time_t updateTime = 0;
+        for(size_t i=0; i<totalTypes && keepGoing; i++)
+            {
+            time_t curTime;
+            time(&curTime);
+            if(updateTime != curTime)
+                {
+                keepGoing = progressDlg.updateProgressIteration(i, nullptr, true);
+                updateTime = curTime;
+                }
+            ModelType const *modelType = model.mTypes[i].get();
+            ModelClassifier const *classifier = ModelType::getClass(modelType);
+            if(classifier)
+                {
+                for(auto const &oper : classifier->getOperations())
+                    {
+                    appendOperationCounts(model, *oper, operCounts);
+                    }
+                }
+            }
+        progressDlg.endTask();
+
+        // Output the counts.
+        for(auto const &type : model.mTypes)
+            {
+            ModelClassifier *classifier = ModelType::getClass(type.get());
+            if(classifier)
+                {
+                for(auto const &oper : classifier->getOperations())
+                    {
+                    int usageCount = 0;
+                    auto const &it = operCounts.find(oper.get());
+                    if(it != operCounts.end())
+                        {
+                        usageCount = (*it).second;
+                        }
+                    OovString operTypeStr = (oper->isVirtual()) ? "virt" : "";
+                    static const char *item =
+                        "  <Oper>\n"
+                        "    <ClassName>%s</ClassName>\n"
+                        "    <OperName>%s</OperName>\n"
+                        "    <Type>%s</Type>\n"
+                        "    <UseCount>%d</UseCount>\n"
+                        "  </Oper>\n";
+                    fprintf(useFile.getFp(), item,
+                        classifier->getName().makeXml().getStr(),
+                        oper->getName().makeXml().getStr(), operTypeStr.getStr(),
+                        usageCount);
+                    }
+                }
+            }
+
+        static const char *footer = "</MethodUseReport>\n";
         fprintf(useFile.getFp(), "%s", footer);
         }
     return useFile.isOpen();

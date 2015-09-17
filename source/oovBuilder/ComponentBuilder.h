@@ -92,10 +92,15 @@ class ComponentBuilder:public ComponentTaskQueue
         ToolPathFile mToolPathFile;
         ObjSymbols mObjSymbols;
         IncDirDependencyMapReader mIncDirMap;
+        /// A map of all packages required to build each component.
         ComponentPkgDeps mComponentPkgDeps;
 
         void buildComponents();
         void processSourceForComponents(eProcessModes pm);
+        /// Saves a map of all packages required to build each component.
+        /// Goes through all non-unknown components in the project and searches
+        /// the include paths to see if any came from any of the packages. The
+        /// map that is saved is mComponentPkgDeps.
         void generateDependencies();
         void processSourceFile(eProcessModes pm, OovStringRef const srcFile,
                 const OovStringVec &incDirs, const OovStringVec &incFiles,
@@ -114,7 +119,6 @@ class ComponentBuilder:public ComponentTaskQueue
             { return(mIntermediatePath + "oovcde-BuildOut.txt"); }
         bool anyIncDirsMatch(OovStringRef const compName,
                 RootDirPackage const &pkg);
-        void makePackageLibSymbols(OovStringRef const compName);
         void makeOrderedPackageLibs(OovStringRef const compName);
         /// For the specified component, get the library directories and library names
         /// from the external build packages.

@@ -14,12 +14,20 @@ Explanations
 	  for analysis.
 	- NewNameDisplayStar name not shown in displayOtherThoughts sequence.
 	  The typedef where the function is defined is shown.
-
+	- Function body variables display const symbols by design.
+	  See OovClassRelations.html.
+	- If the error "undeclared identifier __builtin_ia32_bsrsi" displays,
+	  this means that the clang headers are not found or the libclang.dll
+	  version is different and not searching the same way. Windows libclang
+	  3.6 allowed the clang library includes to be under bin, but 3.7 does
+	  not. The depends.exe shows that oovCppParser finds libclang.dll in bin
+	  directory.
+	- If the error, "Never use <adxintrin.h> directly", displays, the
+	  Oovcde project must be set to exclude lib dir for analysis.
 
 Missing Features
 ----------------
 - General
-	- Multiple matching mingw dirs causes package problems.
 	- "OovStringRef const buildStr = mConfigFile.getValue(buildType)" is
 		optimized where buildStr contains garbage.
 	- Preserve state between sessions
@@ -48,16 +56,25 @@ Missing Features
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
 		- window might be busy and is not responding (oovCommon/PackagesProcess?)
 	- Changing preferences should update drawings
+	- For linux, don't getPackage if not in available list.
+
 - Source/project management
 	- Make it clear which files must be saved to save project settings. (add clean)
 	- Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
+
 - Journal
 	- Provide MRU list of drawings from previous sessions?
 	- Allow more copies of diagrams?
+
 - Component Diagrams
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
+
+- Include Diagrams
+	- BUG: adds extra node when using "Add Suppliers". Fails on Gui.h.
+	- Add remove node
+
 - Zone Diagrams
 	- Don't cause redraw while mouse is moving
 	- Allow restoring diagrams
@@ -68,6 +85,7 @@ Missing Features
 	- Show unused classes - for visible drawing?
 	- Show related classes for a selected class
 	- Use genetic algorithm to optimize for shortest dependencies in each module
+
 - Class Diagrams/List
 	- example names: member NotAStar typedef with base type int not shown
 	  when drawing is loaded. Shouldn't show in add selected list?
@@ -89,15 +107,19 @@ Missing Features
 	- Allow multiple selection to add relations, remove, properties
 	- Grid for class placement, option for grid size
 	- Add filter for class list (GTK search feature exists)
+
 - Portion Diagrams
+	- BUG: ClassConnectItem not showing constructors properly?
 	- Allow move with multiple selection
 	- Grid for placement, option for grid size
 	- View source should go to selected function
 	- Could provide go to class for member variables
 	- Why does example Lamb class show MoveableThing?
 	- Should show connections to this/super
-	- Overloaded methods don't work
+
 - Sequence Diagrams
+	- Find substring call from selected call with max depth of search
+	- List of operations does selects multiple overloaded functions
 	- Show class members in different color?
 	- Don't discard current operation when switching between class and operation view
 	- Allow restoring diagrams
@@ -107,13 +129,47 @@ Missing Features
 	- View source only working on top level operation
 	- Improve drawing of nested calls to same class
 	- Diagram width not correct in svg diagrams for long operation names
-	- Const calls aren't shown correctly for overloaded functions?
 	- Add depth
 	- Add option to display parameters.
 	- Option for not replicating operation definitions if already displayed. New ... notation?
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
-- Analysis/Build System (Build not required for displaying diagrams)
+
+- Analysis (builder and parser)
+	- Method usage:
+		- EditFiles::viewFile calls GUI:: appendPage not shown, XML ok
+		- Editor::onIdle calls Gui::scrollToCursor
+		  not listed in sequence diagram, varref is before call, GUI:: namespace
+		  loaded in XMI, parser should create GUI:: class with methods.
+		  inline functions are not shown in namespaces (Gui.h), other inlines
+		  are shown (ComponentBuilder ComponentPkgDeps::addPkgDep)
+		  what about classes with all inline funcs - probably ok since GUI has non-inlines
+		- dup function names
+			- appendCursorTokenString() calls ConditionTerminator
+			- getAccess() calls setVis in CppParser.cpp
+		- activateApp calls gEditor->loadSettings (#ifdef)
+	- Use clang_Location_isFromMainFile if it works for header source files.
+	- Some header file changes don't reanalyze new dependent source files?
+		(cause is due to errors don't get reanalyzed)
+	- Duplicates info is not updated if some duplicate is removed. (hsh file not updated)
+	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
+	- analysis - doesn't work on filenames with spaces
+	- Complexity - could show module and component complexity
+	- Analysis/component lists should ignore coverage directories
+	- Generate a version error when the analysis dir has version problems
+	- Fast loading XMI, parse func defs later (first store statement string)
+	- Multiple case statements without breaks appear nested.
+	- Some statements not parsed: else (currently faked), goto, default, return, etc.
+	- Save complete type info (explicit const, *, &, etc) in the XMI files?
+	- Change class def/decl description in XMI file to find correct source module
+		for empty classes.
+	- Component specific build args not used to recalculate crc's for rebuild
+	- Changing package does not cause reanalysis? (glib to gmodule)
+	- Add -Wall, --analyzer
+	- When a source file changes, or new file, the dependency list is typically updated.
+	  For now, if not, delete out/bld directory for clean build.
+
+- Build System (Build not required for displaying diagrams)
 	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
 		- not in xmi file
 		- CLangView shows:
@@ -121,61 +177,48 @@ Missing Features
 		visitFunctionAddStatements case CXCursor_CallExpr
 
 	- Build/Settings per component don't seem to work for -lnk-static-libstdc++
-	- Add global functions?
-	- Some header file changes don't reanalyze new dependent source files?
-		(cause is due to errors don't get reanalyzed?)
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
 		- Changing edit/preferences deletes analysis, but not debug/release
-	- Duplicates info is not updated if some duplicate is removed. (hsh file not updated)
 	- Add pthread to link if in compile switch? (external packages already does this)
 	- Build with relative paths doesn't include obj files (TestCpp)
 	- Adding pthreads-stubs to analysis settings in linux hangs
 	- Build of components within/under component directories not supported.
 	- Scan CMake files to find external pkg-config package dependencies
-	- Missing MemberRefExpr for ClassGraph.UpdateNodeSizes, Saves .x instead of mPad.x
-	- analysis - doesn't work on filenames with spaces
-	- Complexity - could show module and component complexity
-	- Analysis/component lists should ignore coverage directories
 	- The oovcde-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
-	- Generate a version error when the analysis dir has version problems
 	- A static lib without source should not be on link lines
-	- Fast loading XMI, parse func defs later (first store statement string)
 	- Should include mingw-builds includes so that threading errors don't occur
-	- oovcde-incdeps once got corrupted during debugging and slowed down and
-	  prevented parsing.
 	- BUG: Drive letters in path unable to write to bad filename.
-	- Typedefs not listed, define as inheritance? (oovCommon/Filepaths)
-	- function return type not listed
-	- Multiple case statements without breaks appear nested.
-	- Some statements not parsed: else (currently faked), goto, default, return, etc.
-	- Save complete type info (explicit const, *, &, etc) in the XMI files?
-	- Change class def/decl description in XMI file to find correct source module
-		for empty classes.
 	- Build sometimes must have objects specified before or after other libs/objects
 	- split source of libraries into separate file for each function for release mode
-	- Component specific build args not used to recalculate crc's for rebuild
-	- Changing package does not cause reanalysis (glib to gmodule)
-	- Add -Wall, --analyzer
 	- Cross compiling: http://www.cmake.org/Wiki/CMake_Cross_Compiling
 	- date compares should not be for older, but even if date changed (in case of restore files)
-	- When a source file changes, or new file, the dependency list is typically updated.
-	  For now, if not, delete out/bld directory for clean build.
 	- Cache file times or monitor file changes
-	- For linux, don't getPackage if not in available list.
+
 - Coverage
+	- Instead of coverage, change macro to log every instrumented line to
+	  find crash sequence/threads.
 	- fix switch/case fall throughs
 	- fix precompiled header before include oovcoverage.h
 	- filenames with underscore has stats, but not lines covered
 	- space before semicolon under if with no braces? -
 		Search ZoneDiagram.cpp "mZoom /= 1.5 ;"
+
 - CMaker
 	- BUG: discards directories in CMaker::getCompSources
 	- Allow debug/release and cross compile in cmake
 		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
 		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
+
 - Editor
+	- CRASHES: LLVM 3.7
+		Editor is UNUSABLE!!! - parse/tokenize/parse(reparse) fails with single file.
+		- all calls to clang are protected with mutex.
+	- BUG: LLVM 3.7 - Pressing . displays context and makes runtime error:
+		Concurrent access to ASTUnit	 CLang3.7 ASTUnit.cpp 2848
+		HighlighterBackgroundThreadData::processItem / codeCompleteAt
+
 	- Tab close button does not ask to save when tab is closed if modified
 	- Make find in files a background task
 	- Add history list of lines of last go to defs, go to method, etc.
@@ -235,9 +278,10 @@ Missing Features
 	- Control window requires that entering commands must enter on blank line
 	- When build starts, should stop debugger
 	- GDB docs are gdb.info, "The GDB/MI Interface"
+
 - CLangViewer
 	- View tokens
-
+	- add switch to only show from main file
 
 - Cleanup
 	- catch run-time error (see debugger section above)

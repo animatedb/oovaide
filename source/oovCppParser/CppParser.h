@@ -180,6 +180,7 @@ class CppParser
         // statement is "[else]". This recurses to find all child
         // conditionals and calls.
         void addElseStatement(CXCursor condStmtCursor, int elseBodyIndex);
+        void handleCallExprCursor(CXCursor cursor, CXCursor parent);
     };
 
 

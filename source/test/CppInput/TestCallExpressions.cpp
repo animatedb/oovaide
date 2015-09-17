@@ -12,7 +12,7 @@ class parent
         parent()
             {}
         parent(int x)
-            {}
+            { parentFunc(x); }
         int parentFunc(int x)
             { return x; }
     };
@@ -23,6 +23,7 @@ void globalFunc1()
 
 void globalFunc2(parent c)
     {
+	globalFunc1();
     }
 
 static parent gparent;

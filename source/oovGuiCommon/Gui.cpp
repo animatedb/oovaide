@@ -894,7 +894,7 @@ bool TaskBusyDialog::updateProgressIteration(size_t currentIter,
                 {
                 // Allow progress update to display.
                 // For some reason, gtk_events_pending never quits.
-                for(size_t i=0; i<50 && gtk_events_pending(); i++)
+                for(size_t i=0; i<50 && g_main_context_pending(NULL); i++)
                     {
                     gtk_main_iteration();
                     }

@@ -275,8 +275,10 @@ class BuildPackages
 
         /// Get a package by name.
         /// @param name The package to get.
-        Package getPackage(OovStringRef const name) const
-            { return mPackages.getPackage(name); }
+
+// DEAD CODE
+//        Package getPackage(OovStringRef const name) const
+//            { return mPackages.getPackage(name); }
 
         /// Get all packages.
         std::vector<Package> getPackages() const

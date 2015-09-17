@@ -33,8 +33,9 @@
 class CompoundValueRef
     {
     public:
-        static void addArg(OovStringRef const arg, OovStringVec &vec)
-            { vec.push_back(arg); }
+// DEAD CODE
+//        static void addArg(OovStringRef const arg, OovStringVec &vec)
+//            { vec.push_back(arg); }
         /// The delimiter is '\n' for editing in an editor, and a semicolon
         /// for passing on the command line or saved in the file.
         static OovString getAsString(const OovStringVec &vec,

@@ -5,7 +5,7 @@ add_executable(oovcde BLL/ClassDiagram.cpp BLL/ClassDrawer.cpp BLL/ClassGenes.cp
   BLL/Duplicates.cpp BLL/EditorContainer.cpp BLL/FastGene.cpp BLL/Graph.cpp BLL/IncludeDiagram.cpp 
   BLL/IncludeDrawer.cpp BLL/IncludeGraph.cpp BLL/OperationDiagram.cpp 
   BLL/OperationDrawer.cpp BLL/OperationGraph.cpp BLL/PortionDiagram.cpp 
-  BLL/PortionDrawer.cpp BLL/PortionGraph.cpp BLL/ZoneDiagram.cpp BLL/ZoneDrawer.cpp 
+  BLL/PortionDrawer.cpp BLL/PortionGraph.cpp BLL/XmlWriter.cpp BLL/ZoneDiagram.cpp BLL/ZoneDrawer.cpp 
   BLL/ZoneGraph.cpp BuildSettingsDialog.cpp CairoDrawer.cpp ClassDiagramView.cpp 
   ComplexityView.cpp ComponentDiagramView.cpp ComponentList.cpp Contexts.cpp 
   DuplicatesView.cpp IncludeDiagramView.cpp Journal.cpp oovcde.cpp OovProject.cpp 

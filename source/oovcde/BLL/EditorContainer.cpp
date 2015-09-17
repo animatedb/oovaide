@@ -121,7 +121,7 @@ void EditorContainer::handleMessage(OovIpcMsg const &cmd)
             if(classifier)
                 {
                 ModelOperation const *operation = classifier->
-                        getOperationAnyConst(cmd.getArg(2), false);
+                        getOperationByName(cmd.getArg(2), false);
                 if(operation)
                     {
                     ModelModule const *module = operation->getModule();

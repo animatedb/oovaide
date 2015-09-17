@@ -23,14 +23,19 @@ xcopy /s %trnk%\*.project %dst%
 rd /s /q %dst%\.metadata
 rd /s /q %dst%\RemoteSystemsTempFiles
 
-xcopy /s "%gtk%\share\glib-2.0\schemas" %dst%\share\glib-2.0\schemas\
-xcopy /s /Y "%clang%\bin\libclang.dll" %dst%\bin\
-xcopy /s /Y "%clang%\lib\*.*" %dst%\bin\
-
-; rem also copy to non-release build directory
+rem copy clang to source directory
 rd /s /q .\clang
 xcopy /s /Y "%clang%\bin\libclang.dll" .\
+rem This is for LLVM 3.6 and before
 xcopy /s /Y /i "%clang%\lib\*.*" .\
+rem This is for LLVM 3.7
+rem xcopy /s /Y /i "%clang%\lib\*.*" ..\lib
+del ..\lib\LTO.dll
+
+xcopy /s /Y .\ %dst%\bin\
+xcopy /s /Y ..\lib %dst%\lib\
+
+xcopy /s "%gtk%\share\glib-2.0\schemas" %dst%\share\glib-2.0\schemas\
 
 copy "%gtk%\bin\libatk-1.0-0.dll" %dst%\bin
 copy "%gtk%\bin\libcairo-2.dll" %dst%\bin

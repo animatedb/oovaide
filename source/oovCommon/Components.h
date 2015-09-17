@@ -156,13 +156,14 @@ class ComponentsFile:public NameValueFile
         /// Reads the specified components file.
         /// @param fn The path of the file to open.
         void read(OovStringRef const fn);
-        /// Get the include paths for the project.
-        OovStringVec getProjectIncludeDirs() const
-            {
-            return CompoundValueRef::parseString(getProjectIncludeDirsStr());
-            }
-        /// Gets the absolute include paths for the project.
-        OovStringVec getAbsoluteIncludeDirs() const;
+// DEAD CODE
+//        /// Get the include paths for the project.
+//        OovStringVec getProjectIncludeDirs() const
+//            {
+//            return CompoundValueRef::parseString(getProjectIncludeDirsStr());
+//            }
+//        /// Gets the absolute include paths for the project.
+//        OovStringVec getAbsoluteIncludeDirs() const;
 
         /// This splits the root search dir into a root dir and exclude directories.
         /// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
@@ -179,6 +180,7 @@ class ComponentsFile:public NameValueFile
                 OovStringVec const &excludes);
 
     private:
+        // DEAD CODE
         OovString getProjectIncludeDirsStr() const;
     };
 

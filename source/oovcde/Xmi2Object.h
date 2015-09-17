@@ -105,7 +105,8 @@ class XmiParser:private XmlParser
         void addClass(const ModelClassifier *obj);
         void addAttrs(const ModelClassifier *obj);
         void addOpers(const ModelClassifier *obj);
-        void dumpTypeMap(char const * const str1, char const * const str2);
+// DEAD CODE
+//        void dumpTypeMap(char const * const str1, char const * const str2);
         ModelObject *findParentInStack(XmiElementTypes type, bool afterAddingSelf = true);
         void setDeclAttr(const std::string &attrName,
                 const std::string &attrVal, ModelDeclarator &decl);

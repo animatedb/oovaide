@@ -30,11 +30,39 @@ struct Token
 class TokenRange:public std::vector<Token>
     {
     public:
-            void tokenize(CXTranslationUnit transUnit);
+        void tokenize(CXTranslationUnit transUnit);
     };
 
 enum eFindTokenTypes { FT_FindDecl, FT_FindDef };
 
+class CLangLock
+    {
+    friend class CLangAutoLock;
+    public:
+        void lock(int line, class Tokenizer *tok);
+        void unlock();
+    };
+
+// Similar to std::lock_guard except there is a line number for debugging.
+class CLangAutoLock
+    {
+    public:
+        CLangAutoLock(CLangLock &lock, int line, class Tokenizer *tok):
+            mLock(lock)
+            { mLock.lock(line, tok); }
+        ~CLangAutoLock()
+            { mLock.unlock(); }
+
+    private:
+        CLangLock &mLock;
+    };
+
+/// The CLang translation unit must be protected from multithreading.
+/// This class protects it using a mutex. All access to functions starting
+/// with "clang_" must be protected using the lock.  Remember that there is
+/// a separate tokenizer for each source file, so there are multiple locks.
+///
+/// All public functions are protected with a lock.
 class Tokenizer
     {
     public:
@@ -47,10 +75,10 @@ class Tokenizer
         // line numbers are 1 based.
         void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
         bool findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
-                size_t &offset);
+            size_t &offset);
         OovString getClassNameAtLocation(size_t origOffset);
         void getMethodNameAtLocation(size_t origOffset, OovString &className,
-                OovString &methodName);
+            OovString &methodName);
 #if(CODE_COMPLETE)
         OovStringVec codeComplete(size_t offset);
 #else
@@ -59,9 +87,11 @@ class Tokenizer
 
     private:
         CXTranslationUnit mTransUnit;
-        std::mutex mTransUnitMutex;
+        CLangLock mCLangLock;
         CXFile mSourceFile;
         OovString mSourceFilename;
+        CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
+            unsigned desiredOffset);
         void getLineColumn(size_t charOffset, unsigned int &line, unsigned int &column);
     };
 

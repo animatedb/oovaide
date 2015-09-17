@@ -627,6 +627,49 @@ void CppInstr::updateCoverageHeader(OovStringRef const fn, OovStringRef const co
     header.update(header.getFn(covDir), fn, numInstrLines);
     }
 
+// This is for updating coverage information.  An alternative is to create a
+// log that updates run-time info. The problem with this is that it can
+// generate huge logs.  The user can comment out instrumentation lines, but
+// it might be better if the user could select parts of source code to instrument.
+// That code would look something like the following.
+/*
+class OovMonitorWriter
+        {
+        public:
+                OovMonitorWriter():
+                        mFp(0)
+                        {}
+                ~OovMonitorWriter()
+                        {
+                        fclose(mFp);
+                        }
+                void append(int fileIndex, int instrIndex)
+                        {
+                        if(!mFp)
+                                {
+                                mFp = fopen("OovMonitor.txt", "a");
+                                }
+                                {
+//                              std::lock_guard<std::mutex> writeMutexLock(mWriteMutex);
+                                std::stringstream id;
+                                id << std::this_thread::get_id();
+                                fprintf(mFp, "%s %d %d\n", id.str().c_str(), fileIndex, instrIndex);
+                                fflush(mFp);
+                                }
+                        }
+
+        private:
+                FILE *mFp;
+//              std::mutex mWriteMutex;
+        };
+
+OovMonitorWriter sOovMonitor;
+
+void OovMonitor(int fileIndex, int instrIndex)
+        {
+        sOovMonitor.append(fileIndex, instrIndex);
+        }
+*/
 void CppInstr::updateCoverageSource(OovStringRef const /*fn*/, OovStringRef const covDir)
     {
     FilePath outFn(covDir, FP_Dir);

@@ -160,8 +160,13 @@ directories.
 	</pre>
 
 	The CLang compiler requires intrinsics from its own header file,
-	and cannot use the one from mingw. This may or may not happen, but if it
-	is a problem, use "-Iclang/3.6.0/include" before the
+	and cannot use the one from mingw. The CLang compiler searches some paths
+	which can be seen by adding the -v switch to the compiler options.
+	The first files that CLang is searching for are shipped in the CLang package under
+	the LLVM/lib directory.  These must be found before the mingw directories.
+	The best option is NOT to add the mingw directories to a project, since CLang
+	will normally find them.
+	Another option may be to use "-Iclang/3.6.0/include" before the other
 	external package ref arguments ("-EP").
 	<pre>
 	/gtkmm340_mingw462/lib/gcc/mingw32/4.6.2/include\ia32intrin.h:41:10:

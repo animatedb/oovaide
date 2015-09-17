@@ -126,7 +126,8 @@ const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     }
 
 
-/// @todo - code copied from ParseBase.cpp
+/// Get the position of the right side of the expression.  This will remove
+/// left class names, and return the member of function name of the class.
 static size_t getRightSidePosFromMemberRefExpr(std::string &expr, bool afterSep)
     {
     size_t pos = expr.rfind('.');
@@ -150,13 +151,29 @@ static size_t getRightSidePosFromMemberRefExpr(std::string &expr, bool afterSep)
     return pos;
     }
 
-OovString ModelStatement::getFuncName() const
+void ModelStatement::eraseOverloadKey(std::string &name)
+    {
+    size_t pos = name.find(ModelStatement::getOverloadKeySep());
+    if(pos != std::string::npos)
+        {
+        name.erase(pos);
+        }
+    }
+
+OovString ModelStatement::getOverloadFuncName() const
     {
     OovString opName = getName();
 
     size_t pos = getRightSidePosFromMemberRefExpr(opName, true);
     if(pos != std::string::npos)
         opName.erase(0, pos);
+    return opName;
+    }
+
+OovString ModelStatement::getFuncName() const
+    {
+    OovString opName = getOverloadFuncName();
+    ModelStatement::eraseOverloadKey(opName);
     return opName;
     }
 
@@ -174,11 +191,15 @@ OovString ModelStatement::getAttrName() const
     return attrName;
     }
 
-bool ModelStatement::hasBaseClassMemberRef() const
+bool ModelStatement::hasBaseClassRef() const
     {
     OovString attrName = getName();
-    size_t pos = getRightSidePosFromMemberRefExpr(attrName, false);
-    return(attrName[pos] == '+');
+    bool present = attrName.find(getBaseClassMemberRefSep()) != std::string::npos;
+    if(!present)
+        {
+        present = attrName.find(getBaseClassMemberCallSep()) != std::string::npos;
+        }
+    return(present);
     }
 
 bool ModelStatements::checkAttrUsed(OovStringRef attrName) const
@@ -207,6 +228,63 @@ bool ModelStatements::checkAttrUsed(OovStringRef attrName) const
     return used;
     }
 
+/// @todo - This is duplicate code.
+static unsigned int makeHash(OovStringRef const text)
+    {
+    // djb2 hash function
+    unsigned int hash = 5381;
+    char const *str = text;
+
+    while(*str)
+        {
+        int c = *str++;
+        hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
+        }
+    return hash;
+    }
+
+OovString ModelStatement::makeOverloadKeyFromOperUSR(OovStringRef operStr)
+    {
+    OovString sym;
+#define DEBUG_KEY 0
+#if(DEBUG_KEY)
+    sym = operStr;
+    // Remove symbols that conflict with either the CompoundValue class or
+    // ModelStatement name separator characters.
+    sym.replaceStrs("@", "-");
+    sym.replaceStrs("#", "-");
+    sym.replaceStrs(":", "-");
+    sym.appendInt(makeHash(operStr), 16);
+#else
+    sym.appendInt(makeHash(operStr), 16);
+#endif
+    return sym;
+    }
+
+bool ModelStatement::compareFuncNames(OovStringRef operName1,
+        OovStringRef operName2)
+    {
+    OovString opName1 = operName1;
+    OovString opName2 = operName2;
+    if(opName1.find(ModelStatement::getOverloadKeySep()) == std::string::npos ||
+            opName2.find(ModelStatement::getOverloadKeySep()) == std::string::npos)
+        {
+        ModelStatement::eraseOverloadKey(opName1);
+        ModelStatement::eraseOverloadKey(opName2);
+        }
+    return(opName1 == opName2);
+    }
+
+OovString ModelOperation::getOverloadFuncName() const
+    {
+    OovString name = getName();
+    if(mOverloadKey.size() > 0)
+        {
+        name += ModelStatement::getOverloadKeySep();
+        name += mOverloadKey;
+        }
+    return name;
+    }
 
 ModelFuncParam *ModelOperation::addMethodParameter(const std::string &name, const ModelType *type,
     bool isConst)
@@ -234,24 +312,6 @@ bool ModelOperation::isDefinition() const
     return(mStatements.size() > 0);
     }
 
-bool ModelOperation::paramsMatch(std::vector<std::unique_ptr<ModelFuncParam>> const &params) const
-    {
-    bool match = false;
-    if(mParameters.size() == params.size())
-        {
-        match = true;
-        for(size_t i=0; i<mParameters.size(); i++)
-            {
-            match = mParameters[i]->match(*params[i]);
-            if(!match)
-                {
-                break;
-                }
-            }
-        }
-    return match;
-    }
-
 void ModelClassifier::clearAttributes()
     {
     mAttributes.clear();
@@ -265,6 +325,15 @@ void ModelClassifier::clearOperations()
 bool ModelClassifier::isDefinition() const
     {
     return(getAttributes().size() + getOperations().size() > 0);
+    }
+
+bool ModelClassifier::isOperOverloaded(OovStringRef operName) const
+    {
+    int count = std::count_if(mOperations.begin(), mOperations.end(),
+            [operName](const std::unique_ptr<ModelOperation> &oper)
+                { return(oper.get()->getName().compare(operName) == 0); }
+        );
+    return(count > 1);
     }
 
 ModelAttribute *ModelClassifier::addAttribute(const std::string &name,
@@ -287,7 +356,7 @@ ModelOperation *ModelClassifier::addOperation(const std::string &name,
 void ModelClassifier::replaceOperation(ModelOperation const * const operToReplace,
             std::unique_ptr<ModelOperation> &&newOper)
         {
-        size_t index = findExactMatchingOperationIndex(*operToReplace);
+        size_t index = getMatchingOperationIndex(*operToReplace);
         if(index != NoIndex)
             {
 //          mOperations.erase(mOperations.begin() + index);
@@ -363,14 +432,14 @@ const ModelAttribute *ModelClassifier::getAttribute(const std::string &name) con
     return attr;
     }
 
-size_t ModelClassifier::getOperationIndex(OovStringRef const name,
-    bool isConst) const
+size_t ModelClassifier::findExactMatchingOperationIndex(
+        OovStringRef overFunc) const
     {
     size_t index = NoIndex;
     for(size_t i=0; i<mOperations.size(); i++)
         {
-        if(mOperations[i]->getName().compare(name) == 0 &&
-                mOperations[i]->isConst() == isConst)
+        ModelOperation const &arrayOp = *mOperations[i];
+        if(ModelStatement::compareFuncNames(arrayOp.getOverloadFuncName(), overFunc))
             {
             index = i;
             break;
@@ -379,31 +448,11 @@ size_t ModelClassifier::getOperationIndex(OovStringRef const name,
     return index;
     }
 
-size_t ModelClassifier::findExactMatchingOperationIndex(
-    const ModelOperation &matchOp) const
-    {
-    size_t index = NoIndex;
-    for(size_t i=0; i<mOperations.size(); i++)
-        {
-        ModelOperation const &arrayOp = *mOperations[i];
-        if(matchOp.getName().compare(arrayOp.getName()) == 0 &&
-                matchOp.isConst() == arrayOp.isConst())
-            {
-            if(matchOp.paramsMatch(arrayOp.getParams()))
-                {
-                index = i;
-                break;
-                }
-            }
-        }
-    return index;
-    }
-
 const ModelOperation *ModelClassifier::findExactMatchingOperation(
-    const ModelOperation &op) const
+        OovStringRef overloadFuncName) const
     {
     ModelOperation *oper = nullptr;
-    size_t index = findExactMatchingOperationIndex(op);
+    size_t index = findExactMatchingOperationIndex(overloadFuncName);
     if(index != NoIndex)
         {
         oper = mOperations[index].get();
@@ -411,24 +460,34 @@ const ModelOperation *ModelClassifier::findExactMatchingOperation(
     return oper;
     }
 
-const ModelOperation *ModelClassifier::getOperation(OovStringRef const name,
+const ModelOperation *ModelClassifier::getOperationByName(OovStringRef const name,
     bool isConst) const
     {
-    ModelOperation *oper = nullptr;
-    size_t index = getOperationIndex(name, isConst);
-    if(index != NoIndex)
+    const ModelOperation *oper = nullptr;
+    for(size_t i=0; i<mOperations.size(); i++)
         {
-        oper = mOperations[index].get();
+        if(mOperations[i]->getName().compare(name) == 0 &&
+                mOperations[i]->isConst() == isConst)
+            {
+            oper = mOperations[i].get();
+            break;
+            }
         }
     return oper;
     }
 
-const ModelOperation *ModelClassifier::getOperationAnyConst(const std::string &name, bool isConst) const
+std::vector<const ModelOperation*> ModelClassifier::getOperationsByName(
+        OovStringRef const name) const
     {
-    const ModelOperation *oper = getOperation(name, isConst);
-    if(!oper)
-        oper = getOperation(name, !isConst);
-    return oper;
+    std::vector<const ModelOperation*> operations;
+    for(size_t i=0; i<mOperations.size(); i++)
+        {
+        if(mOperations[i]->getName().compare(name) == 0)
+            {
+            operations.push_back(mOperations[i].get());
+            }
+        }
+    return operations;
     }
 
 void ModelData::clear()
@@ -681,7 +740,7 @@ void ModelData::takeAttributes(ModelClassifier *sourceType, ModelClassifier *des
         }
     for(auto &oper : sourceType->getOperations())
         {
-        ModelOperation const *destOper = destType->findExactMatchingOperation(*oper.get());
+        ModelOperation const *destOper = destType->getMatchingOperation(*oper.get());
         if(destOper && destOper->isDefinition())
             {
             // dest operation already has a good definition.

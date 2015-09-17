@@ -142,6 +142,7 @@ class oovGui
 
         void makeComplexityFile();
         void makeMemberUseFile();
+        void makeMethodUseFile();
         void makeDuplicatesFile();
         void displayProjectStats();
         void makeLineStats();

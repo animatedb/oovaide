@@ -63,11 +63,14 @@ class PortionGraph
         PortionGraph():
             mModel(nullptr)
             {}
+// DEAD CODE
+/*
         void clearGraph()
             {
             mNodes.clear();
             mConnections.clear();
             }
+*/
         // The source must exist for the lifetime of the graph.
         void setGraphDataSource(const ModelData &model)
             { mModel = &model; }
@@ -80,9 +83,12 @@ class PortionGraph
         PortionConnections const &getConnections() const
             { return mConnections; }
         bool isModified() const;
+// DEAD CODE
+/*
         PortionDrawOptions const &getDrawOptions() const
             { return mDrawOptions; }
         void setDrawOptions(PortionDrawOptions const &options);
+*/
 
     private:
         std::vector<PortionNode> mNodes;

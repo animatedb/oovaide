@@ -42,7 +42,8 @@ analysis statistics.
 - The multithreaded build system uses analysis information for easy setup.
 - The code editor has syntax highlighting, and a debugger.
 - Code test coverage instruments the code and produces coverage information.
-- Complexity measurements are provided for each method of a class.
+- Complexity measurements are provided for methods and classes.
+- Dead code can be found using static or dynamic analysis.
 - Duplicate code is found and listed.
 
 

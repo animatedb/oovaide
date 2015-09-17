@@ -53,9 +53,9 @@ static CXChildVisitResult debugDumpCursorVisitor(CXCursor cursor,
 enum eMatchTypes { MT_None=0, MT_Kind=0x01, MT_TypeSpelling=0x02, MT_NotTypeSpelling=0x04 };
 struct ChildKindVisitor
     {
-    ChildKindVisitor(eMatchTypes mt):
+    ChildKindVisitor(eMatchTypes mt, bool recurse):
         mMatchType(mt), mCursKind(CXCursor_UnexposedDecl),
-        mFoundCursor(clang_getNullCursor())
+        mRecurse(recurse), mFoundCursor(clang_getNullCursor())
         {}
     void setKind(CXCursorKind kind)
         { mCursKind = kind; }
@@ -65,6 +65,7 @@ struct ChildKindVisitor
         { mCursTypeSpelling = typeSp; }
     eMatchTypes mMatchType;
     CXCursorKind mCursKind;
+    bool mRecurse;
 //    std::string mCursName;
     std::string mCursTypeSpelling;
     CXCursor mFoundCursor;
@@ -90,7 +91,11 @@ static CXChildVisitResult GetChildKindVisitor(CXCursor cursor,
         CXStringDisposer typeSp = clang_getTypeSpelling(clang_getCursorType(cursor));
         match = (typeSp != context->mCursTypeSpelling);
         }
-    CXChildVisitResult visitRes = CXChildVisit_Recurse;
+    CXChildVisitResult visitRes = CXChildVisit_Continue;
+    if(context->mRecurse)
+        {
+        visitRes = CXChildVisit_Recurse;
+        }
     if(match)
         {
         context->mFoundCursor = cursor;
@@ -99,9 +104,9 @@ static CXChildVisitResult GetChildKindVisitor(CXCursor cursor,
     return visitRes;
     }
 
-CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind)
+CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind, bool recurse)
     {
-    ChildKindVisitor visitorData(MT_Kind);
+    ChildKindVisitor visitorData(MT_Kind, recurse);
     visitorData.setKind(cursKind);
     clang_visitChildren(cursor, GetChildKindVisitor, &visitorData);
     return visitorData.mFoundCursor;
@@ -110,7 +115,7 @@ CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind)
 CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
         const char *typeSp)
     {
-    ChildKindVisitor visitorData(static_cast<eMatchTypes>(MT_Kind | MT_TypeSpelling));
+    ChildKindVisitor visitorData(static_cast<eMatchTypes>(MT_Kind | MT_TypeSpelling), true);
     visitorData.setKind(cursKind);
     visitorData.setTypeSpelling(typeSp);
     clang_visitChildren(cursor, GetChildKindVisitor, &visitorData);
@@ -120,7 +125,7 @@ CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKin
 CXCursor getCursorChildKindAndNotTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
         const char *typeSp)
     {
-    ChildKindVisitor visitorData(static_cast<eMatchTypes>(MT_Kind | MT_NotTypeSpelling));
+    ChildKindVisitor visitorData(static_cast<eMatchTypes>(MT_Kind | MT_NotTypeSpelling), true);
     visitorData.setKind(cursKind);
     visitorData.setTypeSpelling(typeSp);
     clang_visitChildren(cursor, GetChildKindVisitor, &visitorData);
@@ -369,10 +374,19 @@ std::string getFullBaseTypeName(CXCursor cursor)
         name += '>';
         name += ModelType::getTemplateStereotype();
         }
+    else if(cursor.kind == CXCursor_Namespace)
+        {
+        CXStringDisposer sp(clang_getCursorSpelling(cursor));
+        name = sp;
+        name += "::";
+        }
     else
         {
         CXType cursorType = clang_getCursorType(cursor);
-        name = getFullBaseTypeName(cursorType);
+        if(cursorType.kind != CXType_Invalid)
+            {
+            name = getFullBaseTypeName(cursorType);
+            }
         }
     return name;
     }

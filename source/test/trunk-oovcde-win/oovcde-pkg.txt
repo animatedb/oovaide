@@ -1,6 +1,6 @@
 Pkg-gtk+-3.0-I|*
 Pkg-gtk+-3.0-L|lib
-Pkg-gtk+-3.0-Root|C:/Program Files/GTK+-Bundle-3.6.4/
+Pkg-gtk+-3.0-Root|/Program Files/GTK+-Bundle-3.6.4/
 Pkg-gtk+-3.0-l|*
 Pkg-llvm-I|include
 Pkg-llvm-L|lib

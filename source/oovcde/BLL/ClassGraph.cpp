@@ -403,21 +403,33 @@ void ClassGraph::getRelatedNodesRecurse(const ModelData &model, const ModelType 
     mBackgroundTaskLevel--;
     }
 
+// Const is handled specially since we want to use it to show whether external
+// classes will be modified. See web/articles/OovClassRelations.html.
 void ClassGraph::insertConnection(int node1, int node2,
         const ClassConnectItem &connectItem)
     {
     nodePair_t key(node1, node2);
+    bool addingFuncVar = (connectItem.mConnectType == ctFuncVar);
     auto cmi = mConnectMap.find(key);
     if(cmi != mConnectMap.end())
         {
         mConnectMap[key].mConnectType = static_cast<eDiagramConnectType>
             (mConnectMap[key].mConnectType | connectItem.mConnectType);
+        if(!connectItem.mConst && !addingFuncVar)
+            {
+            mConnectMap[key].mConst = false;
+            }
         }
     else
         {
         if(!mNodes[node1].isKey() && !mNodes[node2].isKey())
             {
-            mConnectMap.insert(std::make_pair(key, connectItem));
+            ClassConnectItem newItem(connectItem);
+            if(addingFuncVar)
+                {
+                newItem.mConst = true;
+                }
+            mConnectMap.insert(std::make_pair(key, newItem));
             }
         }
     }

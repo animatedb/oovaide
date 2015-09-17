@@ -62,8 +62,8 @@ class BuildConfig
         /// Get the path of the include dependency file that resides in the
         /// analysis directory from the build configuration file.
         std::string getIncDepsFilePath() const;
-        /// Get the components file path from the build configuration file
-        std::string getComponentsFilePath() const;
+        /// DEAD CODE - Get the components file path from the build configuration file
+//        std::string getComponentsFilePath() const;
         /// Get the CRC of the specified CRC and build type from the build
         /// configuration file.
         /// @param buildType The type of build such as analysis, debug, or custom.

@@ -44,7 +44,7 @@ class MethodQualifiers
 	};
 
 CXCursor getNthChildCursor(CXCursor cursor, int nth);
-CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind);
+CXCursor getCursorChildKind(CXCursor cursor, CXCursorKind cursKind, bool recurse);
 CXCursor getCursorChildKindAndTypeSpelling(CXCursor cursor, CXCursorKind cursKind,
         const char *type);
 CXCursor getCursorChildKindAndNotTypeSpelling(CXCursor cursor, CXCursorKind cursKind,

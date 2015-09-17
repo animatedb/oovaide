@@ -255,6 +255,8 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
     gtk_widget_set_sensitive(
             builder->getWidget("MemberUsageMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
+            builder->getWidget("MethodUsageMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
             builder->getWidget("DuplicatesMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
             builder->getWidget("ProjectStatsMenuitem"), idle && analRdy);
@@ -463,7 +465,21 @@ void oovGui::makeComplexityFile()
 void oovGui::makeMemberUseFile()
     {
     std::string fn;
-    if(createStaticAnalysisFile(mProject.getModelData(), fn))
+    if(createMemberVarUsageStaticAnalysisFile(mProject.getModelData(), fn))
+        {
+        displayBrowserFile(fn);
+        }
+    else
+        {
+        displayWriteError(fn);
+        }
+    }
+
+void oovGui::makeMethodUseFile()
+    {
+    std::string fn;
+    if(createMethodUsageStaticAnalysisFile(Gui::getMainWindow(),
+            mProject.getModelData(), fn))
         {
         displayBrowserFile(fn);
         }
@@ -839,6 +855,12 @@ extern "C" G_MODULE_EXPORT void on_MemberUsageMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
     gOovGui->makeMemberUseFile();
+    }
+
+extern "C" G_MODULE_EXPORT void on_MethodUsageMenuitem_activate(
+        GtkWidget * /*button*/, gpointer /*data*/)
+    {
+    gOovGui->makeMethodUseFile();
     }
 
 extern "C" G_MODULE_EXPORT void on_DuplicatesMenuitem_activate(

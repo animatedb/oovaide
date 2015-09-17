@@ -16,15 +16,43 @@ HighlighterSharedQueue Highlighter::sSharedQueue;
 #endif
 
 
-class CXStringDisposer:public std::string
+
+#define DEBUG_LOCK 0
+#if(DEBUG_LOCK)
+#include <sstream>
+#endif
+
+std::mutex mTransUnitMutex;
+void CLangLock::lock(int line, class Tokenizer *tok)
     {
-    public:
-        CXStringDisposer(const CXString &xstr):
-            std::string(clang_getCString(xstr))
-            {
-            clang_disposeString(xstr);
-            }
-    };
+    mTransUnitMutex.lock();
+#if(DEBUG_LOCK)
+    printf("{\n");
+    fflush(stdout);
+    std::stringstream id;
+    id << std::this_thread::get_id();
+    printf("%s %p %d\n", id.str().c_str(), tok, line);
+    fflush(stdout);
+#endif
+    }
+
+void CLangLock::unlock()
+    {
+#if(DEBUG_LOCK)
+    printf("}\n");
+    fflush(stdout);
+#endif
+    mTransUnitMutex.unlock();
+    }
+
+/// This does not have to be lock protected if it is called from functions
+/// that are already protected with a lock in the Tokenizer class.
+static std::string getDisposedString(CXString const &xstr)
+    {
+    std::string str(clang_getCString(xstr));
+    clang_disposeString(xstr);
+    return str;
+    }
 
 #define DEBUG_PARSE 0
 #define DEBUG_HIGHLIGHT 0
@@ -115,6 +143,7 @@ void TokenRange::tokenize(CXTranslationUnit transUnit)
 
 Tokenizer::~Tokenizer()
     {
+    CLangAutoLock lock(mCLangLock, __LINE__, this);
     if(mTransUnit)
         {
         clang_disposeTranslationUnit(mTransUnit);
@@ -124,13 +153,11 @@ Tokenizer::~Tokenizer()
 void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
         char const * const clang_args[], size_t num_clang_args)
     {
+    CLangAutoLock lock(mCLangLock, __LINE__, this);
     try
         {
-//    unsigned options = clang_defaultEditingTranslationUnitOptions();
-    // This is needed to support include directives.
-//    options |= CXTranslationUnit_DetailedPreprocessingRecord;
-// These options are not for the parse function, they are for the code complete at func.
-//    unsigned options = clang_defaultCodeCompleteOptions();
+        // The clang_defaultCodeCompleteOptions() options are not for the parse
+        // function, they are for the clang_codeCompleteAt func.
         unsigned options = clang_defaultEditingTranslationUnitOptions();
         // This is required to allow go to definition to work with #include.
         options |= CXTranslationUnit_DetailedPreprocessingRecord;
@@ -139,7 +166,6 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             mSourceFilename = fileName;
             CXIndex index = clang_createIndex(1, 1);
             {
-            std::lock_guard<std::mutex> lock(mTransUnitMutex);
             mTransUnit = clang_parseTranslationUnit(index, fileName,
                 clang_args, static_cast<int>(num_clang_args), 0, 0, options);
             }
@@ -166,14 +192,12 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             file.Filename = mSourceFilename.c_str();
             file.Contents = buffer;
             file.Length = bufLen;
-            std::lock_guard<std::mutex> lock(mTransUnitMutex);
+
+            int stat = clang_reparseTranslationUnit(mTransUnit, 1, &file, options);
+            if(stat != 0)
                 {
-                int stat = clang_reparseTranslationUnit(mTransUnit, 1, &file, options);
-                if(stat != 0)
-                    {
-                    clang_disposeTranslationUnit(mTransUnit);
-                    mTransUnit = nullptr;
-                    }
+                clang_disposeTranslationUnit(mTransUnit);
+                mTransUnit = nullptr;
                 }
             }
         mSourceFile = clang_getFile(mTransUnit, fileName);
@@ -186,9 +210,9 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
 
 void Tokenizer::tokenize(/*int startLine, int endLine, */TokenRange &tokens)
     {
-    std::lock_guard<std::mutex> lock(mTransUnitMutex);
     if(mTransUnit)
         {
+        CLangAutoLock lock(mCLangLock, __LINE__, this);
         tokens.tokenize(mTransUnit/*, mSourceFile, startLine, endLine*/);
         }
     }
@@ -307,7 +331,7 @@ static CXCursor myGetCursorAtOffset(CXTranslationUnit tu, CXFile file, unsigned 
 // error.
 // If it returns CXCursor_NoDeclFound on an include directive, then the options for
 // clang_parseTranslationUnit do not support it.
-static CXCursor getCursorAtOffset(CXTranslationUnit tu, CXFile file,
+CXCursor Tokenizer::getCursorAtOffset(CXTranslationUnit tu, CXFile file,
         unsigned desiredOffset)
     {
     CXSourceLocation loc = clang_getLocationForOffset(tu, file, desiredOffset);
@@ -330,7 +354,7 @@ void Tokenizer::getLineColumn(size_t charOffset, unsigned int &line, unsigned in
 bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
         size_t &line)
     {
-    std::lock_guard<std::mutex> lock(mTransUnitMutex);
+    CLangAutoLock lock(mCLangLock, __LINE__, this);
     CXCursor startCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
     DUMP_PARSE("find:start cursor", startCursor);
     // Instantiating type - <class> <type> - CXCursor_TypeRef
@@ -345,8 +369,7 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
         CXFile file = clang_getIncludedFile(startCursor);
         if(file)
             {
-            CXStringDisposer cfn = clang_getFileName(file);
-            fn = cfn;
+            fn = getDisposedString(clang_getFileName(file));
             line = 1;
             }
         else
@@ -397,8 +420,7 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
             if(file)
                 {
                 line = uline;
-                CXStringDisposer cfn = clang_getFileName(file);
-                fn = cfn;
+                fn = getDisposedString(clang_getFileName(file));
                 }
             }
         }
@@ -407,16 +429,18 @@ bool Tokenizer::findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn
 
 OovString Tokenizer::getClassNameAtLocation(size_t origOffset)
     {
+    CLangAutoLock lock(mCLangLock, __LINE__, this);
     CXCursor classCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
-    CXStringDisposer className = clang_getCursorDisplayName(classCursor);
+    std::string className = getDisposedString(clang_getCursorDisplayName(classCursor));
     return ModelData::getBaseType(className);
     }
 
 void Tokenizer::getMethodNameAtLocation(size_t origOffset, OovString &className,
         OovString &methodName)
     {
+    CLangAutoLock lock(mCLangLock, __LINE__, this);
     CXCursor startCursor = getCursorAtOffset(mTransUnit, mSourceFile, origOffset);
-    CXStringDisposer method = clang_getCursorDisplayName(startCursor);
+    std::string method = getDisposedString(clang_getCursorDisplayName(startCursor));
     size_t pos = method.find('(');
     if(pos != std::string::npos)
         {
@@ -459,7 +483,7 @@ void Tokenizer::getMethodNameAtLocation(size_t origOffset, OovString &className,
             }
         }
 
-    CXStringDisposer classCursorStr = clang_getCursorDisplayName(classCursor);
+    std::string classCursorStr = getDisposedString(clang_getCursorDisplayName(classCursor));
     className = classCursorStr;
     }
 
@@ -498,7 +522,7 @@ static CXChildVisitResult visitClass(CXCursor cursor, CXCursor /*parent*/,
         case CXCursor_CXXMethod:
         case CXCursor_FieldDecl:
             {
-            CXStringDisposer name(clang_getCursorSpelling(cursor));
+            std::string name(getDisposedString(clang_getCursorSpelling(cursor)));
             data->mMembers.push_back(name);
             }
             break;
@@ -514,6 +538,7 @@ static CXChildVisitResult visitClass(CXCursor cursor, CXCursor /*parent*/,
 #if(CODE_COMPLETE)
 OovStringVec Tokenizer::codeComplete(size_t offset)
     {
+    CLangAutoLock lock(mCLangLock, __LINE__, this);
     OovStringVec strs;
     unsigned options = 0;
 // This gets more than we want.
@@ -541,7 +566,7 @@ OovStringVec Tokenizer::codeComplete(size_t offset)
                 // discarded easily.
                 if(chunkKind == CXCompletionChunk_TypedText || str.length())
                     {
-                    CXStringDisposer chunkStr = clang_getCompletionChunkText(compStr, ci);
+                    std::string chunkStr = getDisposedString(clang_getCompletionChunkText(compStr, ci));
                     if(str.length() != 0)
                     str += ' ';
                     str += chunkStr;
@@ -556,12 +581,12 @@ OovStringVec Tokenizer::codeComplete(size_t offset)
 
 #else
 
-OovStringVec Tokenizer::getMembers(int offset)
+OovStringVec Tokenizer::getMembers(size_t offset)
     {
+    CLangAutoLock lock(mCLangLock, __LINE__);
     OovStringVec members;
     visitClassData data(members);
     // The start cursor is probably a MemberRefExpr.
-    std::lock_guard<std::mutex> lock(mTransUnitMutex);
     CXCursor memberRefCursor = getCursorAtOffset(mTransUnit, mSourceFile, offset);
     DUMP_PARSE_INT("getMembers", offset);
     DUMP_PARSE("getMembers:memberref", memberRefCursor);

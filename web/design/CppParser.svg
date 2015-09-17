@@ -39,7 +39,7 @@
 <text x="19" y="40">CppParser</text>
 <text x="19" y="49">oovCppParser</text>
 <text x="19" y="61">-ParserModelData mParserModelData</text>
-<text x="19" y="70">-cDupHashFile mDupHashFile</text>
+<text x="19" y="70">-DupHashFile mDupHashFile</text>
 <text x="19" y="79">-ModelClassifier mClassifier</text>
 <text x="19" y="88">-ModelOperation mOperation</text>
 <text x="19" y="97">-ModelStatements mStatements</text>
@@ -100,25 +100,6 @@
 <text x="19" y="835">+setLineStats(ModelModuleLineStats lineStats)</text>
 <text x="19" y="844">+writeModel(OovStringRef fileName)</text>
 <text x="19" y="853">+DebugGetModelData()</text>
-</g>
-<g stroke="none" font-style="italic">
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="443" y="157" width="136" height="98" />
-<line x1="443" y1="178" x2="579" y2="178" />
-<line x1="443" y1="199" x2="579" y2="199" />
-</g>
-<g stroke="none">
-<text x="444" y="166">cDupHashFile</text>
-<text x="444" y="175">oovCppParser</text>
-<text x="444" y="187">-File mFile</text>
-<text x="444" y="196">-bool mAlreadyAddedBreak</text>
-<text x="444" y="208">+append(OovStringRef text,</text>
-<text x="451" y="217"> unsigned int line)</text>
-<text x="444" y="226">+cDupHashFile()</text>
-<text x="444" y="235">+open(OovStringRef fn)</text>
-<text x="444" y="244">+isOpen()</text>
-<text x="444" y="253">+appendBreak()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -233,13 +214,14 @@
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="27" y="367" width="85" height="26" />
-<line x1="27" y1="388" x2="112" y2="388" />
-<line x1="27" y1="391" x2="112" y2="391" />
+<rect x="27" y="367" width="217" height="35" />
+<line x1="27" y1="388" x2="244" y2="388" />
+<line x1="27" y1="391" x2="244" y2="391" />
 </g>
 <g stroke="none">
 <text x="28" y="376">CXStringDisposer</text>
-<text x="28" y="385">oovEdit</text>
+<text x="28" y="385">oovCppParser</text>
+<text x="28" y="400">+CXStringDisposer(CXString&lt;&lt;typedef&gt;&gt; xstr)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -251,31 +233,6 @@
 <g stroke="none">
 <text x="405" y="451">Project</text>
 <text x="405" y="460">oovCommon</text>
-</g>
-<g stroke="none" font-style="italic">
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="306" y="519" width="207" height="152" />
-<line x1="306" y1="540" x2="513" y2="540" />
-<line x1="306" y1="606" x2="513" y2="606" />
-</g>
-<g stroke="none">
-<text x="307" y="528">cCrashDiagnostics</text>
-<text x="307" y="537">oovCppParser</text>
-<text x="307" y="549">-bool mCrashed</text>
-<text x="307" y="558">-string&lt;&lt;typedef&gt;&gt; mDiagStr</text>
-<text x="307" y="567">-CXCursor&lt;&lt;typedef&gt;&gt; mMostRecentCursor</text>
-<text x="307" y="576">-bool mCrashed</text>
-<text x="307" y="585">-bool mEnableDumpCursor</text>
-<text x="307" y="594">-string&lt;&lt;typedef&gt;&gt; mDiagStr</text>
-<text x="307" y="603">-CXCursor&lt;&lt;typedef&gt;&gt; mMostRecentCursor</text>
-<text x="307" y="615">+cCrashDiagnostics()</text>
-<text x="307" y="624">+saveMostRecentParseLocation(char </text>
-<text x="314" y="633">diagStr, CXCursor&lt;&lt;typedef&gt;&gt; cursor)</text>
-<text x="307" y="642">+setCrashed()</text>
-<text x="307" y="651">+hasCrashed()</text>
-<text x="307" y="660">+dumpCrashed(FILE&lt;&lt;typedef&gt;&gt; fp)</text>
-<text x="307" y="669">+enableDumpCursor(bool enable)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -294,13 +251,13 @@
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="167" y="399" width="83" height="26" />
-<line x1="167" y1="420" x2="250" y2="420" />
-<line x1="167" y1="423" x2="250" y2="423" />
+<rect x="166" y="414" width="83" height="26" />
+<line x1="166" y1="435" x2="249" y2="435" />
+<line x1="166" y1="438" x2="249" y2="438" />
 </g>
 <g stroke="none">
-<text x="168" y="408">ModelStatement</text>
-<text x="168" y="417">oovCommon</text>
+<text x="167" y="423">ModelStatement</text>
+<text x="167" y="432">oovCommon</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -336,12 +293,12 @@
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="269" y="450" width="47" height="17" />
-<line x1="269" y1="462" x2="316" y2="462" />
-<line x1="269" y1="465" x2="316" y2="465" />
+<rect x="264" y="451" width="47" height="17" />
+<line x1="264" y1="463" x2="311" y2="463" />
+<line x1="264" y1="466" x2="311" y2="466" />
 </g>
 <g stroke="none">
-<text x="270" y="459">CXCursor</text>
+<text x="265" y="460">CXCursor</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -356,17 +313,37 @@
 </g>
 <g stroke="none" font-style="italic">
 </g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="304" y="527" width="207" height="152" />
+<line x1="304" y1="548" x2="511" y2="548" />
+<line x1="304" y1="614" x2="511" y2="614" />
+</g>
+<g stroke="none">
+<text x="305" y="536">CrashDiagnostics</text>
+<text x="305" y="545">oovCppParser</text>
+<text x="305" y="557">-bool mCrashed</text>
+<text x="305" y="566">-string&lt;&lt;typedef&gt;&gt; mDiagStr</text>
+<text x="305" y="575">-CXCursor&lt;&lt;typedef&gt;&gt; mMostRecentCursor</text>
+<text x="305" y="584">-bool mCrashed</text>
+<text x="305" y="593">-bool mEnableDumpCursor</text>
+<text x="305" y="602">-string&lt;&lt;typedef&gt;&gt; mDiagStr</text>
+<text x="305" y="611">-CXCursor&lt;&lt;typedef&gt;&gt; mMostRecentCursor</text>
+<text x="305" y="623">+CrashDiagnostics()</text>
+<text x="305" y="632">+saveMostRecentParseLocation(char </text>
+<text x="312" y="641">diagStr, CXCursor&lt;&lt;typedef&gt;&gt; cursor)</text>
+<text x="305" y="650">+setCrashed()</text>
+<text x="305" y="659">+hasCrashed()</text>
+<text x="305" y="668">+dumpCrashed(FILE&lt;&lt;typedef&gt;&gt; fp)</text>
+<text x="305" y="677">+enableDumpCursor(bool enable)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
 <line x1="184" y1="345" x2="145" y2="658" />
 <circle cx="182" cy="358" r="5" style="fill:#ffffff" />
 <circle cx="180" cy="374" r="5" style="fill:#000000" />
 <circle cx="180" cy="374" r="2" style="fill:#000000" />
 <polygon points="184,345 179,352 183,358 187,353 184,345 " style="fill:#000000" />
-<line x1="388" y1="198" x2="443" y2="203" />
-<circle cx="401" cy="199" r="5" style="fill:#ffffff" />
-<circle cx="417" cy="200" r="5" style="fill:#000000" />
-<circle cx="417" cy="200" r="2" style="fill:#000000" />
-<polygon points="388,198 395,203 401,199 396,195 388,198 " style="fill:#000000" />
 <line x1="173" y1="345" x2="147" y2="472" />
 <circle cx="170" cy="358" r="5" style="fill:#ffffff" />
 <circle cx="168" cy="365" r="2" style="fill:#ffffff" />
@@ -406,24 +383,24 @@
 <polygon points="381,345 383,353 391,354 389,346 381,345 " style="fill:#000000" />
 <line x1="388" y1="298" x2="564" y2="403" />
 <circle cx="400" cy="305" r="5" style="fill:#ffffff" />
-<line x1="94" y1="345" x2="78" y2="367" />
-<circle cx="85" cy="356" r="5" style="fill:#ffffff" />
+<line x1="149" y1="345" x2="140" y2="367" />
+<circle cx="143" cy="357" r="5" style="fill:#ffffff" />
 <line x1="339" y1="345" x2="424" y2="442" />
 <circle cx="348" cy="355" r="5" style="fill:#ffffff" />
-<line x1="282" y1="345" x2="371" y2="519" />
-<circle cx="288" cy="357" r="5" style="fill:#ffffff" />
 <line x1="118" y1="345" x2="70" y2="431" />
 <circle cx="111" cy="357" r="5" style="fill:#ffffff" />
-<line x1="206" y1="345" x2="208" y2="399" />
-<circle cx="206" cy="358" r="5" style="fill:#ffffff" />
+<line x1="205" y1="345" x2="207" y2="414" />
+<circle cx="205" cy="358" r="5" style="fill:#ffffff" />
 <line x1="388" y1="249" x2="510" y2="291" />
 <circle cx="401" cy="253" r="5" style="fill:#ffffff" />
 <line x1="388" y1="114" x2="528" y2="58" />
 <circle cx="400" cy="108" r="5" style="fill:#ffffff" />
-<line x1="254" y1="345" x2="290" y2="450" />
-<circle cx="258" cy="358" r="5" style="fill:#ffffff" />
+<line x1="251" y1="345" x2="285" y2="451" />
+<circle cx="255" cy="358" r="5" style="fill:#ffffff" />
 <line x1="144" y1="345" x2="60" y2="564" />
 <circle cx="138" cy="358" r="5" style="fill:#ffffff" />
+<line x1="280" y1="345" x2="370" y2="527" />
+<circle cx="286" cy="357" r="5" style="fill:#ffffff" />
 <line x1="137" y1="658" x2="145" y2="498" />
 <polygon points="137,658 143,651 137,655 132,650 137,658 " style="fill:#ffffff" />
 <circle cx="137" cy="644" r="5" style="fill:#ffffff" />
@@ -431,8 +408,8 @@
 <line x1="177" y1="658" x2="224" y2="556" />
 <circle cx="182" cy="645" r="5" style="fill:#ffffff" />
 <circle cx="185" cy="638" r="2" style="fill:#ffffff" />
-<line x1="117" y1="658" x2="71" y2="393" />
-<circle cx="114" cy="644" r="5" style="fill:#ffffff" />
+<line x1="133" y1="658" x2="135" y2="401" />
+<circle cx="133" cy="644" r="5" style="fill:#ffffff" />
 <line x1="108" y1="658" x2="62" y2="483" />
 <circle cx="104" cy="644" r="5" style="fill:#ffffff" />
 <circle cx="102" cy="637" r="2" style="fill:#ffffff" />
@@ -445,7 +422,6 @@
 <circle cx="174" cy="505" r="5" style="fill:#ffffff" />
 <circle cx="180" cy="509" r="2" style="fill:#ffffff" />
 <line x1="133" y1="498" x2="68" y2="564" />
-<polygon points="133,498 124,499 131,500 132,507 133,498 " style="fill:#ffffff" />
 <circle cx="123" cy="507" r="5" style="fill:#ffffff" />
 <circle cx="118" cy="512" r="2" style="fill:#ffffff" />
 <circle cx="89" cy="542" r="5" style="fill:#ffffff" />
@@ -465,10 +441,9 @@
 <polygon points="214,622 208,615 211,621 205,625 214,622 " style="fill:#ffffff" />
 <circle cx="200" cy="618" r="5" style="fill:#ffffff" />
 <circle cx="193" cy="616" r="2" style="fill:#ffffff" />
-<line x1="304" y1="419" x2="249" y2="414" />
-<polygon points="304,419 297,413 301,419 296,424 304,419 " style="fill:#ffffff" />
-<circle cx="290" cy="417" r="5" style="fill:#ffffff" />
-<circle cx="283" cy="417" r="2" style="fill:#ffffff" />
+<line x1="304" y1="423" x2="248" y2="426" />
+<circle cx="290" cy="423" r="5" style="fill:#ffffff" />
+<circle cx="283" cy="424" r="2" style="fill:#ffffff" />
 <line x1="388" y1="409" x2="510" y2="371" />
 <circle cx="496" cy="375" r="5" style="fill:#ffffff" />
 <circle cx="489" cy="377" r="2" style="fill:#ffffff" />
@@ -485,7 +460,6 @@
 <circle cx="608" cy="72" r="2" style="fill:#ffffff" />
 <polygon points="582,58 590,68 595,59 582,58 " style="fill:#ffffff" />
 <line x1="456" y1="354" x2="557" y2="472" />
-<polygon points="557,472 557,463 555,469 548,470 557,472 " style="fill:#ffffff" />
 <circle cx="547" cy="461" r="5" style="fill:#ffffff" />
 <circle cx="543" cy="456" r="2" style="fill:#ffffff" />
 <line x1="445" y1="354" x2="436" y2="442" />
@@ -497,13 +471,12 @@
 <polygon points="589,429 589,442 598,439 589,429 " style="fill:#ffffff" />
 <line x1="547" y1="425" x2="466" y2="447" />
 <circle cx="479" cy="443" r="5" style="fill:#ffffff" />
-<line x1="345" y1="519" x2="298" y2="466" />
-<circle cx="335" cy="508" r="5" style="fill:#ffffff" />
-<line x1="249" y1="405" x2="510" y2="355" />
-<circle cx="496" cy="357" r="5" style="fill:#ffffff" />
-<line x1="622" y1="279" x2="563" y2="58" style="stroke-dasharray: 4, 4 "/>
+<line x1="248" y1="418" x2="510" y2="359" />
+<circle cx="496" cy="362" r="5" style="fill:#ffffff" />
 <line x1="563" y1="58" x2="622" y2="279" style="stroke-dasharray: 4, 4 "/>
 <line x1="622" y1="279" x2="623" y2="266" />
 <line x1="622" y1="279" x2="614" y2="268" />
+<line x1="293" y1="467" x2="344" y2="527" />
+<circle cx="334" cy="516" r="5" style="fill:#ffffff" />
 </g>
 </svg>

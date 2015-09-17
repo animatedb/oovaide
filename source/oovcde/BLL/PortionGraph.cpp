@@ -44,7 +44,7 @@ void PortionGraph::clearAndAddClass(OovStringRef classname)
                 ModelStatements const &statements = oper->getStatements();
                 for(auto const &stmt : statements)
                     {
-                    if(stmt.hasBaseClassMemberRef())
+                    if(stmt.hasBaseClassRef())
                         {
                         OovString operName = stmt.getFuncName();
                         /// @todo - this doesn't work in the case of overloading a
@@ -118,9 +118,7 @@ void PortionGraph::addOperationConnections(ModelClassifier const *classifier,
             ModelClassifier const *cls = stmt.getClassDecl().getDeclType()->getClass();
             if(cls == classifier)
                 {
-                /// @todo - have to handle overloaded operators.
-                const ModelOperation *oper = cls->getOperationAnyConst(
-                        stmt.getFuncName(), false);
+                const ModelOperation *oper = cls->getMatchingOperation(stmt);
                 if(oper)
                     {
                     PortionConnection conn(getNodeIndex(getNode(oper->getName(),

@@ -32,6 +32,7 @@
 #include "Debug.h"
 
 
+#define DEBUG_CLASS 0
 #define DEBUG_LOAD 0
 #if(DEBUG_LOAD)
     static DebugFile sLog("DebugXmiParse.txt");
@@ -487,11 +488,21 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
                 {
                 ModelOperation *oper = static_cast<ModelOperation*>(elItem.mModelObject);
                 if(strcmp(attrName.c_str(), "access") == 0)
+                    {
                     oper->setAccess(getAccess(attrVal.c_str()));
+                    }
+                else if(strcmp(attrName.c_str(), "sym") == 0)
+                    {
+                    oper->setOverloadKeyFromKey(attrVal);
+                    }
                 else if(strcmp(attrName.c_str(), "const") == 0)
+                    {
                     oper->setConst(isTrue(attrVal));
+                    }
                 else if(strcmp(attrName.c_str(), "virt") == 0)
+                    {
                     oper->setVirtual(isTrue(attrVal));
+                    }
                 else if(strcmp(attrName.c_str(), "line") == 0)
                     {
                     if(mModel.mModules.size() > 0)
@@ -883,6 +894,26 @@ bool loadXmiFile(FILE *fp, ModelData &graph, OovStringRef const fn, int &typeInd
 #if(DEBUG_LOAD)
     dumpTypes(graph);
     dumpRelations(graph);
+#endif
+#if(DEBUG_CLASS)
+    ModelType *type = graph.findType("Gui::");
+    if(type)
+        {
+        printf("XMI %s\n", fn.getStr());
+        ModelClassifier *classifier = ModelType::getClass(type);
+        if(classifier)
+            {
+            for(auto const &oper : classifier->getOperations())
+                {
+//                if(oper->getName().find("appendPage") != std::string::npos)
+                    {
+//                    printf("A");
+                    }
+                printf("%s\n", oper->getName().getStr());
+                }
+            fflush(stdout);
+            }
+        }
 #endif
     return success;
     };

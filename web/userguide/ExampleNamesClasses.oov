@@ -1,5 +1,5 @@
 DrawingName|Universe::Awards::Star
 FileType|Class
-Names|Oov-Key;Universe::Awards::Star;Universe::DisplayStar;Universe::Galaxy;Universe::Movies::Star;Universe::Star;AlteredStar<<typedef>>;IdentityDisplayer<Universe::Star>;MyThoughts;Imaginary::PretendStar;IdentityDisplayer<Universe::Movies::Star>;Imaginary::FakeStar;NewTypeDisplayStar<<typedef>>;MyOtherThoughts;NewNameDisplayStar<<typedef>>;IdentityDisplayer<T><<template>>;IdentityDisplayer<Universe::Awards::Star>;
-XPositions|11;8;145;10;300;611;594;478;60;288;335;166;553;419;292;388;219;
-YPositions|412;188;158;21;178;47;189;156;281;428;276;428;276;367;324;19;95;
+Names|Oov-Key;Universe::Awards::Star;Universe::DisplayStar;Universe::Galaxy;Universe::Movies::Star;Universe::Star;AlteredStar<<typedef>>;IdentityDisplayer<Universe::Star>;MyThoughts;Imaginary::PretendStar;IdentityDisplayer<Universe::Movies::Star>;Imaginary::FakeStar;NewTypeDisplayStar<<typedef>>;MyOtherThoughts;NewNameDisplayStar<<typedef>>;IdentityDisplayer<T><<template>>;IdentityDisplayer<Universe::Awards::Star>;Universe::Movies::Movie;Universe::Movies::ReleasedMovie;Universe::Movies::InProductionMovie;Universe::Movies::JunkyStudio;Universe::Movies::MoneyMakingStudio;
+XPositions|14;8;145;10;300;611;594;478;60;307;344;166;553;467;292;388;219;383;185;473;546;168;
+YPositions|429;188;158;21;178;47;189;156;281;427;286;428;276;367;330;19;95;469;469;554;466;539;

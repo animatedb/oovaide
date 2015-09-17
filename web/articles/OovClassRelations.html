@@ -10,29 +10,28 @@
   <body>
     <h1>OOV Class Relations</h1>
 	Standard UML does not show all of the relations that can occur between
-	classes.  Since they are not shown, it may be difficult to find
-	all related classes.  There are also many important relation attributes
-	that are not shown, that visually can used to quickly identify errors.
+	classes.  Since they are not shown, it may be difficult to find	all related
+	classes.  There are also many important relation attributes that are not
+	shown, that visually can used to quickly identify errors.
 	<p/>
 
-	For example, a class could be instantiated in a function or method
-	of another class. Typically these relations could be shown as an
-	association or dependency, but many times are not shown on typical
-	UML diagrams.
+	For example, a class could be instantiated in a function or method of
+	another class. Typically these relations could be shown as an association or
+	dependency, but many times are not shown on typical UML diagrams.
 	<p/>
 
-	Another example is a method that takes an argument that is a reference
-	to a class, and these also are not shown.
+	Another example is a method that takes an argument that is a reference to a
+	class, and these also are not shown.
 	<p/>
 
-	In C++, there are other examples such as when a template is passed a
-	class as an argument to create a bound element.  The bound element
-	has a template binding association, but the associations to the template
-	parameters are often not shown.
+	In C++, there are other examples such as when a template is passed a class as
+	an argument to create a bound element.  The bound element has a template
+	binding association, but the associations to the template parameters are often
+	not shown.
 
     <h1>OOV Symbols</h1>
-	The OOV symbols are used to show some of these other relationships, and
-	to show extra information about relationships.
+	The OOV symbols are used to show some of these other relationships, and to
+	show extra information about relationships.
 	<p/>
 
     <h2>OOV Relation Symbols</h2>
@@ -46,25 +45,25 @@
 
 	The function parameter replationship symbol is two different sized circles.
 	The symbol represents the function body with an argument.<br/>
-	<i>An actor may perform some method acting within a scene of a movie,
-	but the actor does not own the movie. The movie is used as a parameter
-	in the performInScene method.</i>
+	<i>An actor may perform some method acting within a scene of a movie, but the
+	actor does not own the movie. The movie is used as a parameter in the
+	performInScene method.</i>
 	<p/>
     	<embed src="ClassRelationImages/FunctionParam.svg" type="image/svg+xml"> <br>
 	<p/>
 
-	In UML diagrams, the relationship to a template is shown, but the
-	relationship to a template argument is typically not shown.  There are no
-	new Oov symbols to show this relationship since the template specification
-	in the class name is clear.<br/>
-	<i>The IdentityDisplayer template adds the displayIdentity function to
-	the Universe::Star class.</i>
+	In UML diagrams, the relationship to a template is shown, but the relationship
+	to a template argument is typically not shown.  There are no new Oov symbols
+	to show this relationship since the template specification in the class name
+	is clear.<br/>
+	<i>The IdentityDisplayer template adds the displayIdentity function to the
+	Universe::Star class.</i>
 	<p/>
     	<embed src="ClassRelationImages/Template.svg" type="image/svg+xml"> <br>
 	<p/>
 
-	Typedefs are usually not shown in UML diagrams.  The meaning of a template
-	is the same as inheritance with no new attributes or methods.<br/>
+	Typedefs are usually not shown in UML diagrams.  The meaning of a template is
+	the same as inheritance with no new attributes or methods.<br/>
 	<i>The Universe::DisplayStar is a new name for
 	IdentityDisplayer&lt;Universe::Star&gt;</i>
 	<p/>
@@ -73,21 +72,91 @@
 
     <h2>OOV Relation Attribute Symbols</h2>
 	An important relationship in C++ is the &quot;const&quot; relationship.
-	This is shown as a V shape.<br/>
-	<i>A movie star may watch a released movie, but does not modify the
-	movie, but when a movie star is performing in a movie, they do modify
-	the movie.</i>
+	A class that does not modify another external class is shown as a V shape.<br/>
+	<i>A movie star may watch a released movie, but does not modify the movie,
+	but when a movie star is performing in a movie, they do modify the movie.</i>
 	<p/>
     	<embed src="ClassRelationImages/Const.svg" type="image/svg+xml"> <br>
 
 	<p/>
-	Another important relationship is the visibility of members and
-	inheritance.  This is shown as nested circles. Unfilled circles are
-	public, filled are private, and partially filled are protected.<br/>
-	<i>Released movies are public, bad movies are private, and future
-	good movies are protected.</i>
+	Another important relationship is the visibility of members and inheritance.
+	This is shown as nested circles. Unfilled circles are public, filled are
+	private, and partially filled are protected.<br/>
+	<i>Released movies are public, bad movies are private, and future good movies
+	are protected.</i>
 	<p/>
     	<embed src="ClassRelationImages/Visibility.svg" type="image/svg+xml"> <br>
+
+    <h2>Combinations</h2>
+	The Oovcde program draws class diagrams from C++ source code.  The Oovcde
+	program does not draw multiple instances of a class when there are multiple
+	relations to the same class. It also does not draw multiple relationship
+	lines. Instead, many of the symbols are drawn on a single line. For example,
+	if a class has both an aggregation relation and a function parameter
+	relation to another class, both symbols are drawn.
+	<p/>
+	If a class has both a function body and function parameter relation, only the
+	function parameter relation is shown, since that is the more accessible
+	interface.
+	<p/>
+	If a class has both a const and non-const relation, then the const symbol will
+	not be displayed.
+	If a class has both function body variables and function arguments, then
+	the const symbol is shown if all arguments to the class are const.
+
+
+Maybe it is better to change to a symbol that means "modify the external class". Change
+the const arrow direction to point to the modified class. Any class that has a non-const
+reference as either aggregation or func parameter will do the modification.
+
+	<table border="1">
+	<tr><td>Aggregation/Comp</td><td>Func Body</td><td>Func Param</td><td>External Modify / Body(encapsulated) Modify</td></tr>
+
+	<!-- FP None -->
+	<tr><td>None</td><td>None</td><td>None</td><td>N / N</td></tr>
+	<tr><td>Non-ref</td><td>None</td><td>None</td><td>N / Y</td></tr>
+	<tr><td>Ref const</td><td>None</td><td>None</td><td>N / N</td></tr>
+	<tr><td>Ref non-const</td><td>None</td><td>None</td><td>Y / Y</td></tr>
+
+	<tr><td>None</td><td>Non-ref</td><td>None</td><td>N / Y</td></tr>
+	<tr><td>Non-ref</td><td>Non-ref</td><td>None</td><td>N / Y</td></tr>
+	<tr><td>Ref const</td><td>Non-ref</td><td>None</td><td>N / Y</td></tr>
+	<tr><td>Ref non-const</td><td>Non-ref</td><td>None</td><td>Y / Y</td></tr>
+
+	<!-- FP Non-ref -->
+	<tr><td>None</td><td>None</td><td>Non-ref</td><td></td></tr>
+	<tr><td>Non-ref</td><td>None</td><td>Non-ref</td><td></td></tr>
+	<tr><td>Ref const</td><td>None</td><td>Non-ref</td><td></td></tr>
+	<tr><td>Ref non-const</td><td>None</td><td>Non-ref</td><td></td></tr>
+
+	<tr><td>None</td><td>Non-ref</td><td>Non-ref</td><td></td></tr>
+	<tr><td>Non-ref</td><td>Non-ref</td><td>Non-ref</td><td></td></tr>
+	<tr><td>Ref const</td><td>Non-ref</td><td>Non-ref</td><td></td></tr>
+	<tr><td>Ref non-const</td><td>Non-ref</td><td>Non-ref</td><td></td></tr>
+
+	<!-- FP Ref const -->
+	<tr><td>None</td><td>None</td><td>Ref const</td><td></td></tr>
+	<tr><td>Non-ref</td><td>None</td><td>Ref const</td><td></td></tr>
+	<tr><td>Ref const</td><td>None</td><td>Ref const</td><td></td></tr>
+	<tr><td>Ref non-const</td><td>None</td><td>Ref const</td><td></td></tr>
+
+	<tr><td>None</td><td>Non-ref</td><td>Ref const</td><td></td></tr>
+	<tr><td>Non-ref</td><td>Non-ref</td><td>Ref const</td><td></td></tr>
+	<tr><td>Ref const</td><td>Non-ref</td><td>Ref const</td><td></td></tr>
+	<tr><td>Ref non-const</td><td>Non-ref</td><td>Ref const</td><td></td></tr>
+
+	<!-- FP Ref non-const -->
+	<tr><td>None</td><td>None</td><td>Ref non-const</td><td></td></tr>
+	<tr><td>Non-ref</td><td>None</td><td>Ref non-const</td><td></td></tr>
+	<tr><td>Ref const</td><td>None</td><td>Ref non-const</td><td></td></tr>
+	<tr><td>Ref non-const</td><td>None</td><td>Ref non-const</td><td></td></tr>
+
+	<tr><td>None</td><td>Non-ref</td><td>Ref non-const</td><td></td></tr>
+	<tr><td>Non-ref</td><td>Non-ref</td><td>Ref non-const</td><td></td></tr>
+	<tr><td>Ref const</td><td>Non-ref</td><td>Ref non-const</td><td></td></tr>
+	<tr><td>Ref non-const</td><td>Non-ref</td><td>Ref non-const</td><td></td></tr>
+	</table>
+
 
   </body>
 </html>

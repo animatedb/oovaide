@@ -133,18 +133,23 @@ class ComponentFinder:public dirRecurser
 
         OovString getComponentName(OovStringRef const filePath) const;
 
-        const ProjectReader &getProject() const
-            { return mProject; }
-        ProjectReader &getProject()
-            { return mProject; }
+// DEAD CODE
+//        const ProjectReader &getProject() const
+//            { return mProject; }
+//        ProjectReader &getProject()
+//            { return mProject; }
+
         ProjectBuildArgs &getProjectBuildArgs()
             { return mProjectBuildArgs; }
         ProjectBuildArgs const &getProjectBuildArgs() const
             { return mProjectBuildArgs; }
         const ComponentTypesFile &getComponentTypesFile() const
             { return mComponentTypesFile; }
-        const ComponentsFile &getComponentsFile() const
-            { return mComponentsFile; }
+
+// DEAD CODE
+//        const ComponentsFile &getComponentsFile() const
+//            { return mComponentsFile; }
+
         const ScannedComponentsInfo &getScannedInfo() const
             { return mScannedInfo; }
         OovStringVec getAllIncludeDirs() const;

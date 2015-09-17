@@ -34,8 +34,8 @@ static void createStyleTransform(const std::string &fullPath)
             "    </h1>\n"
             "    <xsl:text>This document contains tables for class and operation complexity.</xsl:text><br/>\n"
             "    See <xsl:element name=\"a\">\n"
-            "        <xsl:attribute name=\"href\">http://oovcde.sourceforge.net/articles/Complexity.shtml</xsl:attribute>\n"
-            "        <xsl:text>http://oovcde.sourceforge.net/articles/Complexity.shtml</xsl:text>\n"
+            "        <xsl:attribute name=\"href\">http://oovcde.sourceforge.net/articles/Complexity.html</xsl:attribute>\n"
+            "        <xsl:text>http://oovcde.sourceforge.net/articles/Complexity.html</xsl:text>\n"
             "        </xsl:element> for more information.\n\n"
 
 // Class table
