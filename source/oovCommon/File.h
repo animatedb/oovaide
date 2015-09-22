@@ -24,6 +24,7 @@ class File
         File():
             mFp(nullptr)
             {}
+
         /// Open a file
         /// @param fn The name of the file to open
         /// @param mode The fopen mode
@@ -33,6 +34,7 @@ class File
             }
         ~File()
             { close(); }
+
         /// Open a file
         /// @param fn The name of the file to open
         /// @param mode The fopen mode
@@ -41,6 +43,7 @@ class File
             if(!mFp)
                 mFp = fopen(fn, mode);
             }
+
         /// Close the file. The destructor will also ensure the file is closed.
         void close()
             {
@@ -48,13 +51,51 @@ class File
                 fclose(mFp);
             mFp = nullptr;
             }
-        /// Set a file to the specified size.  This is meant for truncation and
-        /// not for groiwing a file.
-        /// @param size The size to set the file to.
-        void truncate(int size=0);
+
         /// Check if a file is open.
         bool isOpen() const
             { return(mFp != nullptr); }
+
+        /// Gets the size of the file.
+        /// @param size The returned size.
+        bool getFileSize(int &size) const;
+
+        /// Reads the file into a buffer at the current seek position.
+        /// @param buf The buffer to fill
+        /// @param size The number of bytes to read.
+        bool read(char *buf, int size) const
+            {
+            size_t actualSize = fread(buf, 1, size, mFp);
+            return(ferror(mFp) == 0 && actualSize > 0);
+            }
+
+        /// Write a string. This does not append an end of line indicator.
+        /// @param str The string to write.
+        bool putString(OovStringRef const &str) const
+            {
+            return(fputs(str.getStr(), mFp) >= 0);
+            }
+
+        /// Read a string up to the end of line.
+        /// @param buf The place to put the string. The size must be greater or
+        //      equal to bufBytes
+        /// @param bufBytes the maximum number of bytes to read.
+        /// @param success True if no error was encountered.
+        bool getString(char *buf, int bufBytes, bool &success);
+
+        /// Set a file to the specified size.  This is meant for truncation and
+        /// not for growing a file.
+        /// @param size The size in bytes to set the file to.
+        void truncate(int size=0);
+
+        /// Seek to the beginning of the file
+        bool seekBegin() const
+            { return(fseek(mFp, 0, SEEK_SET) == 0); }
+
+        /// Seek to the end of the file
+        bool seekEnd() const
+            { return(fseek(mFp, 0, SEEK_END) == 0); }
+
         /// Get the file pointer of the open file. Null if not opened.
         FILE *getFp()
             { return mFp; }

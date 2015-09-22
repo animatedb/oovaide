@@ -104,12 +104,12 @@ void ClassDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-void ClassDiagramView::drawSvgDiagram(FILE *fp)
+bool ClassDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(fp, cairo.getCairo());
-
+    SvgDrawer svgDrawer(file, cairo.getCairo());
     mClassDiagram.drawDiagram(svgDrawer);
+    return svgDrawer.writeFile();
     }
 
 void ClassDiagramView::buttonPressEvent(const GdkEventButton *event)

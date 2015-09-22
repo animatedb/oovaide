@@ -8,6 +8,7 @@
 #include "EditFiles.h"
 #include "FilePath.h"
 #include "Project.h"
+#include "OovError.h"
 #include <algorithm>
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -721,7 +722,12 @@ bool EditFiles::checkDebugger()
     bool ok = false;
 
     NameValueFile projFile(Project::getProjectFilePath());
-    projFile.readFile();
+    if(!projFile.readFile())
+        {
+        OovString str = "Unable to get project file to get debugger: ";
+        str += Project::getProjectFilePath();
+        OovError::report(ET_Error, str);
+        }
     getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath));
     getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee));
     getDebugger().setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs));

@@ -14,10 +14,12 @@
 class SvgDrawer:public DiagramDrawer
     {
     public:
-        SvgDrawer(FILE *fp, cairo_t *c):
-            mFp(fp), mFontSize(10.0), cr(c), mOutputHeader(true)
+        SvgDrawer(File &file, cairo_t *c):
+            mFile(file), mSuccess(true), mFontSize(10.0), cr(c), mOutputHeader(true)
             {}
-        virtual ~SvgDrawer();
+        /// This finishes up writing the file, and indicates if any errors
+        /// occurred during writing.
+        bool writeFile();
 
         // These should be called before the drawing functions.
         virtual void setDiagramSize(GraphSize size) override;
@@ -38,7 +40,8 @@ class SvgDrawer:public DiagramDrawer
         virtual float getTextExtentHeight(OovStringRef const name) const override;
 
     private:
-        FILE *mFp;
+        File &mFile;
+        bool mSuccess;
         double mFontSize;
         cairo_t *cr;
         GraphSize mDrawingSize;

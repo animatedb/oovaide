@@ -126,13 +126,13 @@ class NameValueRecord
         const std::map<OovString, OovString> &getNameValues() const
             { return mNameValues; }
 
-        /// Write all items to the file pointer.
-        /// @param fp The file pointer to write to.
-        void write(FILE *fp);
+        /// Write all items to the file.
+        /// @param file The file to write to.
+        bool write(File &file);
 
-        /// Read all items from the file pointer.
-        /// @param fp The file pointer to read from.
-        void read(FILE *fp);
+        /// Read all items from the file.
+        /// @param file The file to read from.
+        bool read(File &file);
 
         /// Take a string with '\n' and add the items to the collection.
         /// @param buf The buffer to read and add to the collection.
@@ -150,7 +150,7 @@ class NameValueRecord
     private:
         bool mSaveNullValues;
         std::map<OovString, OovString> mNameValues;
-        bool getLine(FILE *fp, OovString &str);
+        bool getLine(File &file, OovString &str, bool &success);
         void insertLine(OovString line);
     };
 
@@ -179,13 +179,13 @@ class NameValueFile:public NameValueRecord
         /// Write the file from the map of items.
         bool writeFile();
 
-        /// Read the file using the file poniter. This does not use the filename.
-        void readFile(FILE *fp);
-        /// Write the file using the file poniter. This does not use the filename.
-        void writeFile(FILE *fp);
+        /// Read the file. This does not use the filename.
+        bool readFile(File &file);
+        /// Write the file. This does not use the filename.
+        bool writeFile(File &file);
         /// Seek to the beginning of the file.
-        void seekStart(FILE *fp)
-            { fseek(fp, 0, SEEK_SET); }
+        bool seekBegin(File &file)
+            { return file.seekBegin(); }
 
         /// Read the file using shared file access.  This may take some time
         /// if the file is being written.

@@ -309,7 +309,8 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
 
         /// Append a float. This does not append any whitespace.
         /// @param val The floating value to append.
-        void appendFloat(float val);
+        /// @param precision The default printf precision is 6.
+        void appendFloat(float val, int precision=6);
 
         /// Concatenate a string together by interspersing the delimiter.
         /// @param tokens The tokens to combine.

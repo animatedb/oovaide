@@ -7,6 +7,7 @@
 #include "ComponentFinder.h"
 #include "Project.h"
 #include "Debug.h"
+#include "OovError.h"
 #include <set>
 
 #define DEBUG_FINDER 0
@@ -184,7 +185,12 @@ void ComponentFinder::saveProject(OovStringRef const compFn)
     mScannedInfo.setProjectComponentsFileValues(mComponentsFile);
     mScannedInfo.initializeComponentTypesFileValues(mComponentTypesFile);
     mComponentTypesFile.writeFile();
-    mComponentsFile.writeFile();
+    if(!mComponentsFile.writeFile())
+        {
+        OovString errStr = "Unable to write components file: ";
+        errStr += mComponentsFile.getFilename();
+        OovError::report(ET_Error, errStr);
+        }
     }
 
 OovString ComponentFinder::getComponentName(OovStringRef const filePath) const

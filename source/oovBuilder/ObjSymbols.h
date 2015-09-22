@@ -30,7 +30,7 @@ class ObjSymbols
         static void appendOrderedLibs(OovStringRef const clumpName,
                 OovStringRef const outPath, OovStringVec &libDirs,
                 OovStringVec &sortedLibNames);
-        static void appendOrderedLibFileNames(OovStringRef const clumpName,
+        static bool appendOrderedLibFileNames(OovStringRef const clumpName,
                 OovStringRef const outPath,
                 OovStringVec &sortedLibFileNames);
 

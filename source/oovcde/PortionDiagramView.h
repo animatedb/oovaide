@@ -45,13 +45,13 @@ class PortionDiagramView
             }
 
         void drawToDrawingArea();
-        void drawSvgDiagram(FILE *fp);
-        void saveDiagram(FILE *fp)
-            { mPortionDiagram.saveDiagram(fp); }
-        void loadDiagram(FILE *fp)
+        bool drawSvgDiagram(File &file);
+        bool saveDiagram(File &file)
+            { return mPortionDiagram.saveDiagram(file); }
+        bool loadDiagram(File &file)
             {
             setCairoContext();
-            mPortionDiagram.loadDiagram(fp, mNullDrawer);
+            return mPortionDiagram.loadDiagram(file, mNullDrawer);
             }
         void gotoClass(OovStringRef const className);
         bool isModified() const

@@ -7,6 +7,7 @@
 
 #include "Project.h"
 #include "Packages.h"
+#include "OovError.h"
 
 OovString Project::sProjectDirectory;
 OovString Project::sSourceRootDirectory;
@@ -68,7 +69,12 @@ OovStringRef const Project::getSrcRootDirectory()
     if(sSourceRootDirectory.length() == 0)
         {
         NameValueFile file(getProjectFilePath());
-        file.readFile();
+        if(!file.readFile())
+            {
+            OovString str = "Unable to read project file to get source: ";
+            str += getProjectFilePath();
+            OovError::report(ET_Error, str);
+            }
         sSourceRootDirectory = file.getValue(OptSourceRootDir);
         }
     return sSourceRootDirectory;

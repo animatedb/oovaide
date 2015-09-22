@@ -39,7 +39,7 @@ class IncludeDiagramView
             { return mIncludeDiagram; }
 
         void drawToDrawingArea();
-        void drawSvgDiagram(FILE *fp);
+        bool drawSvgDiagram(File &file);
         void restart();
         void relayout()
             {

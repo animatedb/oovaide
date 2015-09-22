@@ -25,6 +25,7 @@
 
 #include "ModelWriter.h"
 #include "OovString.h"
+#include "OovError.h"
 
 // Writes the following format:
 //  <DataType stereotype="datatype" type="typeid1" name="typeName" />
@@ -79,14 +80,22 @@ bool ModelWriter::openFile(OovStringRef const filename)
 #if(DEBUG_WRITE)
     writeDebugStr(std::string("**** File ****") + filename);
 #endif
-    mFp = fopen(filename, "w");
-    if(mFp)
+    bool success = false;
+    mFile.open(filename, "w");
+    if(mFile.isOpen())
         {
-        fputs("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n", mFp);
-        fputs("<XMI xmi.version=\"1.2\" xmlns:UML=\"http://schema.omg.org/spec/UML/1.3\" >\n", mFp);
-        fputs(" <XMI.content>\n", mFp);
+        success = mFile.putString("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        if(success)
+            {
+            success = mFile.putString("<XMI xmi.version=\"1.2\""
+                    " xmlns:UML=\"http://schema.omg.org/spec/UML/1.3\" >\n");
+            }
+        if(success)
+            {
+            success = mFile.putString(" <XMI.content>\n");
+            }
         }
-    return(mFp != nullptr);
+    return(success);
     }
 
 static int sModelId = MIO_NoLookup;
@@ -160,27 +169,29 @@ static std::string translate(const std::string &str)
 //      {[ c1 ]         Open nesting with conditional on variable c1
 //      c=a@2           Call to function a() with type id=2
 //      }               Close nesting
-void ModelWriter::writeStatements(const ModelStatements &stmts)
+bool ModelWriter::writeStatements(const ModelStatements &stmts)
     {
+    bool success = true;
     if(stmts.size() > 0)
         {
-        fprintf(mFp, "%s", "   <Statements list=\"");
+        OovString outStr = "   <Statements list=\"";
         bool firstTime = true;
         for(auto const &stmt : stmts)
             {
             if(!firstTime)
                 {
-                fprintf(mFp, "#");      // # statement separator
+                outStr += '#';      // # statement separator
                 }
             firstTime = false;
             switch(stmt.getStatementType())
                 {
                 case ST_OpenNest:
-                    fprintf(mFp, "{%s", translate(stmt.getCondName()).c_str());
+                    outStr += '{';
+                    outStr += translate(stmt.getCondName()).c_str();
                     break;
 
                 case ST_CloseNest:
-                    fprintf(mFp, "}");
+                    outStr += '}';
                     break;
 
                 case ST_Call:
@@ -198,8 +209,10 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
                             ModelStatement::eraseOverloadKey(funcName);
                             }
                         }
-                    fprintf(mFp, "c=%s@%d", translate(funcName).c_str(),
-                        getObjectModelId(className));
+                    outStr += "c=";
+                    outStr += translate(funcName);
+                    outStr += '@';
+                    outStr.appendInt(getObjectModelId(className));
                     }
                     break;
 
@@ -211,15 +224,38 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
                         className = stmt.getClassDecl().getDeclType()->getName();
                     if(stmt.getVarDecl().getDeclType())
                         varType = stmt.getVarDecl().getDeclType()->getName();
-                    fprintf(mFp, "v=%s@%d@%d@%s", translate(stmt.getAttrName()).c_str(),
-                        getObjectModelId(className), getObjectModelId(varType),
-                        boolStr(stmt.getVarAccessWrite()));
+                    outStr += "v=";
+                    outStr += translate(stmt.getAttrName());
+                    outStr += '@';
+                    outStr.appendInt(getObjectModelId(className));
+                    outStr += '@';
+                    outStr.appendInt(getObjectModelId(varType));
+                    outStr += '@';
+                    outStr += boolStr(stmt.getVarAccessWrite());
                     }
                     break;
                 }
             }
-        fprintf(mFp, "\"/>\n");
+        outStr += "\"/>\n";
+        success = mFile.putString(outStr);
         }
+    return success;
+    }
+
+static void appendAttr(OovStringRef attrName, OovStringRef attrVal, OovString &outStr)
+    {
+    outStr += ' ';
+    outStr += attrName;
+    outStr += "=\"";
+    outStr += attrVal;
+    outStr += '\"';
+    }
+
+static void appendIntAttr(OovStringRef attrName, int val, OovString &outStr)
+    {
+    OovString numStr;
+    numStr.appendInt(val);
+    appendAttr(attrName, numStr, outStr);
     }
 
 // # symbol is between parameters.
@@ -228,42 +264,33 @@ void ModelWriter::writeStatements(const ModelStatements &stmts)
 //      parameter name @ type ID @ is const @ is reference
 // Example:
 //    <Parms list="symbolName@120@true@true#symbol@121@false@true" />
-void ModelWriter::writeOperation(ModelClassifier const &classifier, ModelOperation const &oper)
+bool ModelWriter::writeOperation(ModelClassifier const &classifier, ModelOperation const &oper)
     {
-    char locStr[50];
-    if(oper.getLineNum() > 0)
-        snprintf(locStr, sizeof(locStr), "line=\"%d\"", oper.getLineNum());
-    else
-        locStr[0] = '\0';
     ModelTypeRef const &retType = oper.getReturnType();
-    OovString symStr;
+    OovString outStr = "  <Oper";
+    appendAttr("name", oper.getName(), outStr);
     if(classifier.isOperOverloaded(oper.getName()))
         {
-        symStr = "sym=\"";
-        symStr += oper.getOverloadKey();
-        symStr += '\"';
+        appendAttr("sym", oper.getOverloadKey(), outStr);
         }
-    fprintf(mFp, "  <Oper name=\"%s\" %s access=\"%s\" const=\"%s\" virt=\"%s\" %s "
-            "ret=\"%d\" retconst=\"%s\" retref=\"%s\">\n",
-        oper.getName().getStr(), symStr.getStr(),
-        oper.getAccess().asUmlStr().getStr(),
-        boolStr(oper.isConst()), boolStr(oper.isVirtual()), locStr,
-        getObjectModelId(retType.getDeclType()->getName()),
-        boolStr(retType.isConst()), boolStr(retType.isRefer())
-        );
+    appendAttr("access", oper.getAccess().asUmlStr(), outStr);
+    appendAttr("const", boolStr(oper.isConst()), outStr);
+    appendAttr("virt", boolStr(oper.isVirtual()), outStr);
+    if(oper.getLineNum() > 0)
+        {
+        appendIntAttr("line", oper.getLineNum(), outStr);
+        }
+    appendIntAttr("ret", getObjectModelId(retType.getDeclType()->getName()), outStr);
+    appendAttr("retconst", boolStr(retType.isConst()), outStr);
+    appendAttr("retref", boolStr(retType.isRefer()), outStr);
+    outStr += ">\n";
 
-    if(oper.getParams().size() > 0)
+    bool success = mFile.putString(outStr);
+    if(success && oper.getParams().size() > 0)
         {
         OovString parmStr="";
         for(const auto &param : oper.getParams())
             {
-            /*
-            fprintf(mFp, "   <Parm name=\"%s\" type=\"%d\" "
-                "const=\"%s\" ref=\"%s\" />\n",
-                param->getName().c_str(),
-                getObjectModelId(param->getDeclType()->getName()),
-                boolStr(param->isConst()), boolStr(param->isRefer()));
-                */
             if(parmStr.length() != 0)
                 {
                 parmStr += '#';
@@ -276,182 +303,232 @@ void ModelWriter::writeOperation(ModelClassifier const &classifier, ModelOperati
             parmStr += '@';
             parmStr += boolStr(param->isRefer());
             }
-        fprintf(mFp, "   <Parms list=\"%s\" />\n", parmStr.c_str());
+        OovString parmOutStr;
+        parmOutStr += "   <Parms";
+        appendAttr("list", parmStr, parmOutStr);
+        parmOutStr += " />\n";
+        success = mFile.putString(parmOutStr);
         }
-
-    for(const auto &decl : oper.getBodyVarDeclarators())
+    if(success)
         {
-        fprintf(mFp, "   <BodyVarDecl name=\"%s\" type=\"%d\" "
-            "const=\"%s\" ref=\"%s\" />\n",
-            decl->getName().c_str(),
-            getObjectModelId(decl->getDeclType()->getName()),
-            boolStr(decl->isConst()), boolStr(decl->isRefer()));
+        for(const auto &decl : oper.getBodyVarDeclarators())
+            {
+            OovString declOutStr = "   <BodyVarDecl";
+            appendAttr("name", decl->getName(), declOutStr);
+            appendIntAttr("type", getObjectModelId(decl->getDeclType()->getName()), declOutStr);
+            appendAttr("const", boolStr(decl->isConst()), declOutStr);
+            appendAttr("ref", boolStr(decl->isRefer()), declOutStr);
+            declOutStr +=  " />\n";
+            success = mFile.putString(declOutStr);
+            }
         }
-    writeStatements(oper.getStatements());
-    fprintf(mFp, "  </Oper>\n");
+    if(success)
+        {
+        success = writeStatements(oper.getStatements());
+        }
+    if(success)
+        {
+        success = mFile.putString("  </Oper>\n");
+        }
+    return success;
     }
 
-void ModelWriter::writeClassDefinition(const ModelClassifier &classifier, bool isClassDef)
+bool ModelWriter::writeClassDefinition(const ModelClassifier &classifier, bool isClassDef)
     {
+    bool success = true;
     if(isClassDef)
         {
         for(const auto &attr : classifier.getAttributes())
             {
-            fprintf(mFp, "  <Attr name=\"%s\" type=\"%d\" "
-                "const=\"%s\" ref=\"%s\" access=\"%s\" />\n",
-                attr->getName().c_str(),
-                getObjectModelId(attr->getDeclType()->getName()),
-                boolStr(attr->isConst()), boolStr(attr->isRefer()),
-                attr->getAccess().asUmlStr().getStr());
+            OovString outStr = "  <Attr";
+            appendAttr("name", attr->getName(), outStr);
+            appendIntAttr("type", getObjectModelId(attr->getDeclType()->getName()), outStr);
+            appendAttr("const", boolStr(attr->isConst()), outStr);
+            appendAttr("ref", boolStr(attr->isRefer()), outStr);
+            appendAttr("access", attr->getAccess().asUmlStr().getStr(), outStr);
+            outStr += " />\n";
+            success = mFile.putString(outStr);
             }
         }
 
-    for(const auto &oper : classifier.getOperations())
+    if(success)
         {
-        if(oper->getModule())
+        for(const auto &oper : classifier.getOperations())
             {
-            writeOperation(classifier, *oper);
+            if(oper->getModule())
+                {
+                success = writeOperation(classifier, *oper);
+                if(!success)
+                    {
+                    break;
+                    }
+                }
             }
         }
+    return success;
     }
 
-void ModelWriter::writeType(const ModelType &mtype)
+bool ModelWriter::writeType(const ModelType &mtype)
     {
-    if(mFp)
+    int classXmiId = getObjectModelId(mtype.getName());
+    bool isDefinedClass = false;
+    bool isDefinedOpers = false;
+    bool success = true;
+    const ModelClassifier *cl = mtype.getClass();
+    if(cl)
         {
-        int classXmiId = getObjectModelId(mtype.getName());
-        bool isDefinedClass = false;
-        bool isDefinedOpers = false;
-        const ModelClassifier *cl = mtype.getClass();
-        if(cl)
+        if(cl->getModule())
+            isDefinedClass = true;
+        for(const auto &oper : cl->getOperations())
             {
-            if(cl->getModule())
-                isDefinedClass = true;
-            for(const auto &oper : cl->getOperations())
-                {
-                if(oper->getModule())
-                    isDefinedOpers = true;
-                }
+            if(oper->getModule())
+                isDefinedOpers = true;
             }
-        if(isDefinedClass || isDefinedOpers ||
-            mModelData.isTypeReferencedByDefinedObjects(mtype))
+        }
+    if(isDefinedClass || isDefinedOpers ||
+        mModelData.isTypeReferencedByDefinedObjects(mtype))
+        {
+        char const *typeName;
+        char lineNumStr[50];
+        if(mtype.getDataType() == DT_Class)
             {
-            char const *typeName;
-            char lineNumStr[50];
-            if(mtype.getDataType() == DT_Class)
+            typeName = "Class";
+            const ModelClassifier *typeCl = mtype.getClass();
+            snprintf(lineNumStr, sizeof(lineNumStr), "line=\"%d\"",
+                typeCl->getLineNum());
+            }
+        else
+            {
+            typeName = "DataType";
+            lineNumStr[0] = '\0';
+            }
+        // Only defined classes in the parsed translation unit have a module.
+        OovString moduleStr;
+        std::string earlyTermStr;
+        if(mtype.getDataType() == DT_Class)
+            {
+            const ModelClassifier *typeCl = mtype.getClass();
+            if(typeCl->getModule())
                 {
-                typeName = "Class";
-                const ModelClassifier *typeCl = mtype.getClass();
-                snprintf(lineNumStr, sizeof(lineNumStr), "line=\"%d\"",
-                    typeCl->getLineNum());
+                moduleStr = "module=\"";
+                moduleStr.appendInt(MIO_Module);
+                moduleStr += "\" ";
                 }
-            else
-                {
-                typeName = "DataType";
-                lineNumStr[0] = '\0';
-                }
-            // Only defined classes in the parsed translation unit have a module.
-            OovString moduleStr;
-            std::string earlyTermStr;
-            if(mtype.getDataType() == DT_Class)
-                {
-                const ModelClassifier *typeCl = mtype.getClass();
-                if(typeCl->getModule())
-                    {
-                    moduleStr = "module=\"";
-                    moduleStr.appendInt(MIO_Module);
-                    moduleStr += "\" ";
-                    }
-                if(typeCl->getAttributes().size() == 0 &&
-                    typeCl->getOperations().size() == 0)
-                    {
-                    earlyTermStr = "/";
-                    }
-                }
-            else
+            if(typeCl->getAttributes().size() == 0 &&
+                typeCl->getOperations().size() == 0)
                 {
                 earlyTermStr = "/";
                 }
-            fprintf(mFp, "  <%s id=\"%d\" name=\"%s\" %s%s%s>\n",
-                typeName, classXmiId, translate(mtype.getName()).c_str(),
-                moduleStr.c_str(), lineNumStr, earlyTermStr.c_str());
-
+            }
+        else
+            {
+            earlyTermStr = "/";
+            }
+        OovString outStr = "  <";
+        outStr += typeName;
+        appendIntAttr("id", classXmiId, outStr);
+        appendAttr("name", translate(mtype.getName()), outStr);
+        outStr += ' ';
+        outStr += moduleStr;
+        outStr += lineNumStr;
+        outStr += earlyTermStr;
+        outStr += ">\n";
+        success = mFile.putString(outStr);
+        if(success)
+            {
             if(mtype.getDataType() == DT_Class)
                 {
                 const ModelClassifier &classifier = static_cast<const ModelClassifier&>(mtype);
-                writeClassDefinition(classifier, isDefinedClass);
+                success = writeClassDefinition(classifier, isDefinedClass);
                 }
+            }
+        if(success)
+            {
             if(earlyTermStr.length() == 0)
                 {
-                fprintf(mFp, "  </%s>\n", typeName);
+                OovString outStr = "  </";
+                outStr += typeName;
+                outStr += ">\n";
+                success = mFile.putString(outStr);
                 }
             }
         }
+    return success;
     }
 
-void ModelWriter::writeAssociation(const ModelAssociation &assoc)
+bool ModelWriter::writeAssociation(const ModelAssociation &assoc)
     {
-    if(mFp)
-        {
-        fprintf(mFp, "  <Genrl id=\"%d\" child=\"%d\" parent=\"%d\" "
-            "access=\"%s\" />\n",
-            newModelId(), getObjectModelId(assoc.getChild()->getName()),
-            getObjectModelId(assoc.getParent()->getName()),
-            assoc.getAccess().asUmlStr().getStr());
-        }
+    OovString outStr = "  <Genrl";
+    appendIntAttr("id", newModelId(), outStr);
+    appendIntAttr("child", getObjectModelId(assoc.getChild()->getName()), outStr);
+    appendIntAttr("parent", getObjectModelId(assoc.getParent()->getName()), outStr);
+    appendAttr("access", assoc.getAccess().asUmlStr(), outStr);
+    outStr += " />\n";
+    return mFile.putString(outStr);
     }
 
 bool ModelWriter::writeFile(OovStringRef const filename)
-{
+    {
     bool success = openFile(filename);
     if(success)
         {
         int moduleXmiId=MIO_Module;
         ModelModule const *module = mModelData.mModules[0].get();
-        fprintf(mFp, "  <Module id=\"%d\" module=\"%s\" codeLines=\"%d\" "
-                "commentLines=\"%d\" moduleLines=\"%d\" >\n",
-            moduleXmiId, module->getModulePath().c_str(),
-            module->mLineStats.mNumCodeLines,
-            module->mLineStats.mNumCommentLines,
-            module->mLineStats.mNumModuleLines
-            );
-        fprintf(mFp, "  </Module>\n");
+        OovString outStr = "  <Module";
+        appendIntAttr("id", moduleXmiId, outStr);
+        appendAttr("module", module->getModulePath(), outStr);
+        appendIntAttr("codeLines", module->mLineStats.mNumCodeLines, outStr);
+        appendIntAttr("commentLines", module->mLineStats.mNumCommentLines, outStr);
+        appendIntAttr("moduleLines", module->mLineStats.mNumModuleLines, outStr);
+        outStr += " >\n";
+        outStr += "  </Module>\n";
+        mFile.putString(outStr);
 #if(DEBUG_WRITE)
         writeDebugStr(std::string("     Types"));
 #endif
+        }
+    if(success)
+        {
         for(auto &type : mModelData.mTypes)
             {
-            /*
-            ModelClassifier *cl = ModelObject::getClass(type.get());
-            if(cl)
+            success = writeType(*type);
+            if(!success)
                 {
-                if(!(cl->getOutput() & ModelClassifier::O_DefineOperations))
-                    cl->clearOperations();
-                if(!(cl->getOutput() & ModelClassifier::O_DefineAttributes))
-                    cl->clearAttributes();
+                break;
                 }
-                */
-            writeType(*type);
             }
+        }
+    if(success)
+        {
 #if(DEBUG_WRITE)
         writeDebugStr(std::string("     Assocs"));
 #endif
         for(auto &assoc : mModelData.mAssociations)
-            writeAssociation(*assoc);
+            {
+            success = writeAssociation(*assoc);
+            if(!success)
+                {
+                break;
+                }
+            }
 #if(DEBUG_WRITE)
         writeDebugStr(std::string("     Done"));
 #endif
         }
+    if(!success)
+        {
+        OovString str = "Unable to save model data file: ";
+        str += filename;
+        OovError::report(ET_Error, str);
+        }
     return success;
-}
+    }
 
 ModelWriter::~ModelWriter()
-{
-    if(mFp)
+    {
+    if(mFile.isOpen())
         {
-        fputs(" </XMI.content>\n", mFp);
-        fputs("</XMI>\n", mFp);
-        fclose(mFp);
+        mFile.putString(" </XMI.content>\n</XMI>\n");
         }
-}
+    }
 

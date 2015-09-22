@@ -1,0 +1,5 @@
+DrawingName|Highlighter
+FileType|Portion
+Names|mBackgroundThreadData;mHighlightTags;mHighlightTokens;mTokenState;highlightRequest;highlightUpdate;showMembers;findToken;applyTags;Highlighter;getShowMembers;getFindTokenResults;getClassNameAtLocation;getMethodNameAtLocation;
+XPositions|18;20;20;19;198;196;193;194;201;202;195;193;193;191;
+YPositions|212;41;93;138;148;189;250;223;58;106;302;370;336;401;

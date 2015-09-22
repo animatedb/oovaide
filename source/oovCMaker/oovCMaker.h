@@ -7,14 +7,13 @@
 #include "Packages.h"
 #include "Project.h"
 #include "BuildConfigReader.h"
+#include "OovError.h"
 
 
 class CMaker
     {
     public:
-        CMaker(OovStringRef const projName, bool verbose):
-            mProjectName(projName), mBuildPkgs(false), mVerbose(verbose)
-            {}
+        CMaker(OovStringRef const projName, bool verbose);
         std::string getAnalysisPath() const
             {
             return mConfig.getAnalysisPath();
@@ -27,7 +26,7 @@ class CMaker
         void makeToolchainFiles(OovStringRef const outDir);
         void makeComponentFiles(bool writeToProject, OovStringRef const outDir,
                 OovStringVec const &compNames);
-        void writeFile(OovStringRef const destName, OovStringRef const str);
+        bool writeFile(OovStringRef const destName, OovStringRef const str);
         // A cached version of the function in ComponentTypesFile.
         // This doesn't make a big enough difference at this time.
         // OovString getComponentAbsolutePath(OovStringRef const compName);

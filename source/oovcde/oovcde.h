@@ -12,6 +12,7 @@
 #include "Builder.h"
 #include "OovProject.h"
 #include "Contexts.h"
+#include "OovError.h"
 #include <atomic>
 
 class WindowBuildListener:public OovProcessListener
@@ -114,7 +115,7 @@ class WindowProjectStatusListener: public OovTaskStatusListener
         TaskBusyDialog mBackDlg;
     };
 
-class oovGui
+class oovGui:public OovErrorListener
     {
     friend class Menu;
     public:
@@ -147,12 +148,12 @@ class oovGui
         void displayProjectStats();
         void makeLineStats();
 
-        void loadFile(FILE *drawFp)
-            { mContexts.loadFile(drawFp); }
-        void saveFile(FILE *drawFp)
-            { mContexts.saveFile(drawFp); }
-        void exportFile(FILE *svgFp)
-            { mContexts.exportFile(svgFp); }
+        bool loadFile(File &drawFile)
+            { return mContexts.loadFile(drawFile); }
+        bool saveFile(File &drawFile)
+            { return mContexts.saveFile(drawFile); }
+        bool exportFile(File &svgFile)
+            { return mContexts.exportFile(svgFile); }
         // true = ok to exit
         bool okToExit()
             { return mContexts.okToExit(); }
@@ -169,6 +170,7 @@ class oovGui
         ProjectStatus &getLastProjectStatus()
             { return mLastProjectStatus; }
         void showProjectSettingsDialog();
+        virtual void errorListener(OovStringRef str, OovErrorTypes et) override;
 
     private:
         Builder &mBuilder;

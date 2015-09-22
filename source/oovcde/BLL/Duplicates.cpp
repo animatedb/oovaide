@@ -6,6 +6,7 @@
 #include "Project.h"
 #include "DirList.h"
 #include "Duplicates.h"
+#include "OovError.h"
 #include <memory.h>
 
 
@@ -86,28 +87,44 @@ bool FilterOutputHashIndices::isAlreadyOutput(size_t startIndexFile1, size_t sta
 bool HashFile::readHashFile(OovStringRef const filePath)
     {
     mFilePath = filePath;
-    FILE *fp = fopen(filePath.getStr(), "r");
-    if(fp)
+    File file(filePath.getStr(), "r");
+    bool success = file.isOpen();
+    if(success)
         {
         char buf[60];
-        while(fgets(buf, sizeof(buf), fp))
+        bool success = true;
+        while(file.getString(buf, sizeof(buf), success))
             {
             HashItem item;
             if(strlen(buf) > 0)
                 {
                 int iHash;
                 int iLineNum;
-                sscanf(buf, "%x %u", &iHash, &iLineNum);
-                item.mHash = iHash;
-                item.mLineNum = iLineNum;
+                char dummyC;
+                int matchCount = sscanf(buf, "%x %u %c", &iHash, &iLineNum, &dummyC);
+                if(matchCount == 2)
+                    {
+                    item.mHash = iHash;
+                    item.mLineNum = iLineNum;
+                    }
+                else if(matchCount > 0)        // Allow empty whitespace.
+                    {
+                    success = false;
+                    break;
+                    }
                 }
             /// @todo - This could be more efficient if we knew the
             /// file size.
             mHashItems.push_back(item);
             }
-        fclose(fp);
         }
-    return(fp != nullptr);
+    if(!success)
+        {
+        OovString str = "Unable to read hash file: ";
+        str += filePath;
+        OovError::report(ET_Error, str);
+        }
+    return(success);
     }
 
 void HashFile::compareHashFiles(HashFile const &refFile,

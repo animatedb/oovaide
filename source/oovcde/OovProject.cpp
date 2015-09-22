@@ -13,6 +13,7 @@
 #include "DirList.h"
 #include "Xmi2Object.h"
 #include "Debug.h"
+#include "OovError.h"
 
 #define DEBUG_PROJ 0
 #if(DEBUG_PROJ)
@@ -53,7 +54,12 @@ bool OovProject::newProject(OovString projectDir, CompoundValue const &excludeDi
                 mProjectOptions.setNameValue(OptProjectExcludeDirs, excludeDirs.getAsString(';'));
                 if(mProjectOptions.writeFile())
                     {
-                    mGuiOptions.writeFile();
+                    if(!mGuiOptions.writeFile())
+                        {
+                        OovString errStr = "Unable to write GUI options file: ";
+                        errStr += mGuiOptions.getFilename();
+                        OovError::report(ET_Error, errStr);
+                        }
                     bool openedProject = false;
                     // Return is discarded because isProjectIdle was checked previously.
                     openProject(projectDir, openedProject);
@@ -169,7 +175,7 @@ void OovProject::processAnalysisFiles()
             File file(fileNames[i], "r");
             if(file.isOpen())
                 {
-                loadXmiFile(file.getFp(), mModelData, fileNames[i], typeIndex);
+                loadXmiFile(file, mModelData, fileNames[i], typeIndex);
                 }
             }
     logProj(" processAnalysisFiles - loaded");

@@ -35,12 +35,13 @@ static void translateText(OovStringRef const text, std::string &str)
     str = StringMakeXml(text);
     }
 
-SvgDrawer::~SvgDrawer()
+bool SvgDrawer::writeFile()
     {
-    if(mFp)
+    if(mSuccess)
         {
-        fprintf(mFp, "</svg>");
+        mSuccess = mFile.putString("</svg>");
         }
+    return mSuccess;
     }
 
 void SvgDrawer::setDiagramSize(GraphSize size)
@@ -56,15 +57,41 @@ void SvgDrawer::setFontSize(double size)
     mFontSize = size;
     }
 
+static void outArg(OovStringRef argName, OovStringRef argVal, OovString &outStr)
+    {
+    outStr += ' ';
+    outStr += argName;
+    outStr += "=\"";
+    outStr += argVal;
+    outStr += '\"';
+    }
+
+static void outArgInt(OovStringRef argName, int argVal, OovString &outStr)
+    {
+    OovString argValStr;
+    argValStr.appendInt(argVal);
+    outArg(argName, argValStr, outStr);
+    }
+
+static void outArgFloat(OovStringRef argName, double argVal, int precision, OovString &outStr)
+    {
+    OovString argValStr;
+    argValStr.appendFloat(argVal, precision);
+    outArg(argName, argValStr, outStr);
+    }
+
 void SvgDrawer::maybeOutputHeader()
     {
-    if(mOutputHeader)
+    if(mOutputHeader && mSuccess)
         {
         const char *fontFamily = "Arial, Helvetica, sans-serif";
-        fprintf(mFp, "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"\n"
-                "  font-family=\"%s\" font-size=\"%f\" \n"
-                "  width=\"%d\" height=\"%d\">\n",
-                fontFamily, mFontSize, mDrawingSize.x, mDrawingSize.y);
+        OovString str = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"\n";
+        outArg("font-family", fontFamily, str);
+        outArgFloat("font-size", mFontSize, 2, str);
+        outArgInt("width", mDrawingSize.x, str);
+        outArgInt("height", mDrawingSize.y, str);
+        str += ">\n";
+        mSuccess = mFile.putString(str);
         mOutputHeader = false;
         }
     }
@@ -72,27 +99,55 @@ void SvgDrawer::maybeOutputHeader()
 void SvgDrawer::drawRect(const GraphRect &rect)
     {
     maybeOutputHeader();
-    fprintf(mFp, "<rect x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" />\n",
-            rect.start.x, rect.start.y, rect.size.x, rect.size.y);
+    if(mSuccess)
+        {
+        OovString str = "<rect";
+        outArgInt("x", rect.start.x, str);
+        outArgInt("y", rect.start.y, str);
+        outArgInt("width", rect.size.x, str);
+        outArgInt("height", rect.size.y, str);
+        str += " />\n";
+        mSuccess = mFile.putString(str);
+        }
     }
 
 void SvgDrawer::drawLine(const GraphPoint &p1, const GraphPoint &p2, bool dashed)
     {
-    char const * style = "";
-    if(dashed)
-        {
-        style = "style=\"stroke-dasharray: 4, 4 \"";
-        }
     maybeOutputHeader();
-    fprintf(mFp, "<line x1=\"%d\" y1=\"%d\" x2=\"%d\" y2=\"%d\" %s/>\n",
-            p1.x, p1.y, p2.x, p2.y, style);
+    if(mSuccess)
+        {
+        OovString str = "<line";
+        outArgInt("x1", p1.x, str);
+        outArgInt("y1", p1.y, str);
+        outArgInt("x2", p2.x, str);
+        outArgInt("y2", p2.y, str);
+        if(dashed)
+            {
+            str += " style=\"stroke-dasharray: 4, 4 \"";
+            }
+        str += " />\n";
+        mSuccess = mFile.putString(str);
+        }
     }
 
 void SvgDrawer::drawCircle(const GraphPoint &p, int radius, Color fillColor)
     {
     maybeOutputHeader();
-    fprintf(mFp, "<circle cx=\"%d\" cy=\"%d\" r=\"%d\" style=\"fill:#%06x\" />\n",
-            p.x, p.y, radius, fillColor.getRGB());
+    if(mSuccess)
+        {
+        OovString str = "<circle";
+        outArgInt("cx", p.x, str);
+        outArgInt("cy", p.y, str);
+        outArgInt("r", radius, str);
+
+        OovString style = " style=\"fill:#";
+        style.appendInt(fillColor.getRGB(), 16);
+        style += '\"';
+
+        str += style;
+        str += " />\n";
+        mSuccess = mFile.putString(str);
+        }
     }
 
 void SvgDrawer::drawEllipse(const GraphRect &rect)
@@ -100,8 +155,16 @@ void SvgDrawer::drawEllipse(const GraphRect &rect)
     int halfX = rect.size.x/2;
     int halfY = rect.size.y/2;
     maybeOutputHeader();
-    fprintf(mFp, "<ellipse cx=\"%d\" cy=\"%d\" rx=\"%d\" ry=\"%d\" />\n",
-            rect.start.x+halfX, rect.start.y+halfY, halfX, halfY);
+    if(mSuccess)
+        {
+        OovString str = "<ellipse";
+        outArgInt("cx", rect.start.x+halfX, str);
+        outArgInt("cy", rect.start.y+halfY, str);
+        outArgInt("rx", halfX, str);
+        outArgInt("ry", halfY, str);
+        str += " />\n";
+        mSuccess = mFile.putString(str);
+        }
     }
 
 void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
@@ -116,56 +179,86 @@ void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
         pointsStr += str;
         }
     maybeOutputHeader();
-    fprintf(mFp, "<polygon points=\"%s\" style=\"fill:#%06x\" />\n",
-            pointsStr.c_str(), fillColor.getRGB());
+    if(mSuccess)
+        {
+        OovString str = "<polygon";
+        outArg("points", pointsStr, str);
+
+        OovString styleArg = "fill:#";
+        styleArg.appendInt(fillColor.getRGB(), 16);
+        addArg(str, "style", styleArg);
+
+        str += " />\n";
+        mSuccess = mFile.putString(str);
+        }
     }
 
 void SvgDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
     {
     maybeOutputHeader();
-    if(start)
+    if(mSuccess)
         {
-        std::string argStr;
-        char temp[40];
-        snprintf(temp, sizeof(temp), "#%06x", fillColor.getRGB());
-        addArg(argStr, "fill", temp);
-        snprintf(temp, sizeof(temp), "#%06x", lineColor.getRGB());
-        addArg(argStr, "stroke", temp);
-        addArg(argStr, "style", "stroke-width:1");
-        fprintf(mFp, "<g %s>\n", argStr.c_str());
-        }
-    else
-        {
-        fprintf(mFp, "</g>\n");
+        if(start)
+            {
+            std::string argStr;
+            char temp[40];
+            snprintf(temp, sizeof(temp), "#%06x", fillColor.getRGB());
+            addArg(argStr, "fill", temp);
+            snprintf(temp, sizeof(temp), "#%06x", lineColor.getRGB());
+            addArg(argStr, "stroke", temp);
+            addArg(argStr, "style", "stroke-width:1");
+
+            OovString str = "<g ";
+            str += argStr;
+            str += ">\n";
+            mSuccess = mFile.putString(str);
+            }
+        else
+            {
+            mSuccess = mFile.putString("</g>\n");
+            }
         }
     }
 
 void SvgDrawer::groupText(bool start, bool italic)
     {
     maybeOutputHeader();
-    char const *style = "";
-    // stroke none means no outline, only fill
-    if(italic)
+    if(mSuccess)
         {
-        style = " font-style=\"italic\"";
+        if(start)
+            {
+            // stroke none means no outline, only fill
+            OovString str = "<g stroke=\"none\"";
+            if(italic)
+                {
+                str += " font-style=\"italic\"";
+                }
+            str += ">\n";
+            mSuccess = mFile.putString(str);
+            }
+        else
+            {
+            mSuccess = mFile.putString("</g>\n");
+            }
         }
-    if(start)
-    	{
-        fprintf(mFp, "<g stroke=\"none\"%s>\n", style);
-    	}
-    else
-    	{
-        fprintf(mFp, "</g>\n");
-    	}
     }
 
 void SvgDrawer::drawText(const GraphPoint &p, OovStringRef const text)
     {
     maybeOutputHeader();
-    std::string str;
-    translateText(text, str);
-    fprintf(mFp, "<text x=\"%d\" y=\"%d\">%s</text>\n",
-            p.x, p.y, str.c_str());
+    if(mSuccess)
+        {
+        std::string textStr;
+        translateText(text, textStr);
+
+        OovString str = "<text";
+        outArgInt("x", p.x, str);
+        outArgInt("y", p.y, str);
+        str += '>';
+        str += textStr;
+        str += "</text>\n";
+        mSuccess = mFile.putString(str);
+        }
     }
 
 float SvgDrawer::getTextExtentWidth(OovStringRef const name) const

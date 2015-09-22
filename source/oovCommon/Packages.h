@@ -292,8 +292,7 @@ class BuildPackages
             { pkg.saveToMap(mPackages.getFile()); }
 
         /// Save all packages for the build.
-        void savePackages()
-            { mPackages.getFile().writeFile(); }
+        void savePackages();
 
     protected:
         Packages mPackages;

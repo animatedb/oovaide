@@ -112,6 +112,7 @@ void oovGui::init()
     mWindowBuildListener.initListener(mBuilder);
     mBuilder.connectSignals();
     mContexts.init(mProjectStatusListener);
+    OovError::setListener(this);
     g_idle_add(onIdle, this);
     updateMenuEnables(ProjectStatus());
     }
@@ -122,6 +123,18 @@ oovGui::~oovGui()
     mContexts.stopAndWaitForBackgroundComplete();
     clearAnalysis();
     g_idle_remove_by_data(this);
+    }
+
+void oovGui::errorListener(OovStringRef str, OovErrorTypes et)
+    {
+    if(et == ET_Error)
+        {
+        mWindowBuildListener.onStdErr(str, str.numBytes());
+        }
+    else
+        {
+        mWindowBuildListener.onStdOut(str, str.numBytes());
+        }
     }
 
 void oovGui::clearAnalysis()
@@ -788,8 +801,16 @@ extern "C" G_MODULE_EXPORT void on_OpenDrawingMenuitem_activate(
             GTK_FILE_CHOOSER_ACTION_OPEN, fn))
         {
         DrawingFile drawFile(fn, false);
-        gOovGui->loadFile(drawFile.getFp());
-        gOovGui->setDiagramName(fn);
+        if(gOovGui->loadFile(drawFile))
+            {
+            gOovGui->setDiagramName(fn);
+            }
+        else
+            {
+            OovString str = "Unable to open drawing: ";
+            str += fn;
+            Gui::messageBox(str);
+            }
         }
     }
 
@@ -798,7 +819,12 @@ extern "C" G_MODULE_EXPORT void on_SaveDrawingMenuitem_activate(
     {
     OovString fn = gOovGui->getDiagramName("oov");
     DrawingFile drawFile(fn, true);
-    gOovGui->saveFile(drawFile.getFp());
+    if(!gOovGui->saveFile(drawFile))
+        {
+        OovString str = "Unable to save drawing: ";
+        str += fn;
+        Gui::messageBox(str);
+        }
     }
 
 extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
@@ -816,7 +842,12 @@ extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
             }
         gOovGui->setDiagramName(fn);
         DrawingFile drawFile(fn, true);
-        gOovGui->saveFile(drawFile.getFp());
+        if(!gOovGui->saveFile(drawFile))
+            {
+            OovString str = "Unable to save drawing: ";
+            str += fn;
+            Gui::messageBox(str);
+            }
         }
     }
 
@@ -834,7 +865,12 @@ extern "C" G_MODULE_EXPORT void on_ExportDrawingAsMenuitem_activate(
             fn.appendExtension("svg");
             }
         DrawingFile svg(fn, true);
-        gOovGui->exportFile(svg.getFp());
+        if(!gOovGui->exportFile(svg))
+            {
+            OovString str = "Unable to export drawing: ";
+            str += fn;
+            Gui::messageBox(str);
+            }
         }
     }
 

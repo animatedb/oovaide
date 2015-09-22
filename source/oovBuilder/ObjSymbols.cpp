@@ -11,6 +11,7 @@
 #include <algorithm>
 #include "OovProcess.h"
 #include "ComponentBuilder.h"
+#include "OovError.h"
 
 class FileSymbol
     {
@@ -105,32 +106,54 @@ class FileSymbols:public std::set<FileSymbol>
 
 bool FileSymbols::writeSymbols(OovStringRef const symFileName)
     {
-    FILE *outFp = fopen(symFileName, "w");
-    if(outFp)
+    bool success = false;
+    File file(symFileName, "w");
+    if(file.isOpen())
         {
         for(const auto &symbol : *this)
             {
-            fprintf(outFp, "%s %d\n", symbol.mSymbolName.getStr(),
-                    static_cast<int>(symbol.mFileIndex));
+            OovString str = symbol.mSymbolName;
+            str += ' ';
+            str.appendInt(static_cast<int>(symbol.mFileIndex));
+            str += '\n';
+            success = file.putString(str);
+            if(!success)
+                {
+                break;
+                }
             }
-        fclose(outFp);
         }
-    return(outFp != NULL);
+    if(!success)
+        {
+        OovString errStr = "Unable to write symbol file: ";
+        errStr += symFileName;
+        OovError::report(ET_Error, errStr);
+        }
+    return(success);
     }
 
 
 class FileList:public OovStringVec
     {
     public:
-        void writeFile(FILE *outFp) const;
+        bool writeFile(File const &file) const;
     };
 
-void FileList::writeFile(FILE *outFp) const
+bool FileList::writeFile(File const &file) const
     {
+    bool success = true;
     for(const auto &fn : (*this))
         {
-        fprintf(outFp, "f:%s\n", fn.getStr());
+        OovString str = "f:";
+        str += fn;
+        str += '\n';
+        success = file.putString(str);
+        if(!success)
+            {
+            break;
+            }
         }
+    return success;
     }
 
 
@@ -149,7 +172,7 @@ class ClumpSymbols
         // U referenced objects, but not defined
         // D global data object
         // T global function object
-        void addSymbols(OovStringRef const libFilePath, OovStringRef const outFileName);
+        bool addSymbols(OovStringRef const libFilePath, OovStringRef const outFileName);
         void writeClumpFiles(OovStringRef const clumpName,
                 OovStringRef const outPath);
     private:
@@ -160,7 +183,7 @@ class ClumpSymbols
         FileIndices mOrderedDependencies;
         std::mutex mDataMutex;
         void resolveUndefinedSymbols();
-        void readRawSymbolFile(OovStringRef const outRawFileName, size_t fileIndex);
+        bool readRawSymbolFile(OovStringRef const outRawFileName, size_t fileIndex);
     };
 
 
@@ -192,28 +215,50 @@ std::vector<size_t>::iterator FileIndices::findValue(size_t val)
 static bool writeDepFileInfo(OovStringRef const symFileName, const FileList &fileIndices,
         const FileDependencies &fileDeps, const FileIndices &orderedDeps)
     {
-    FILE *outFp = fopen(symFileName, "w");
-    if(outFp)
+    File file(symFileName, "w");
+    bool success = false;
+    if(file.isOpen())
         {
-        fileIndices.writeFile(outFp);
-        for(const auto &dep : fileDeps)
+        success = fileIndices.writeFile(file);
+        if(success)
             {
-            fprintf(outFp, "d:%d ", static_cast<int>(dep.first));
-            for(const auto &sup : dep.second)
+            for(const auto &dep : fileDeps)
                 {
-                fprintf(outFp, "%d ", static_cast<int>(sup));
+                OovString str = "d:";
+                str.appendInt(static_cast<int>(dep.first));
+                str += ' ';
+                for(const auto &sup : dep.second)
+                    {
+                    str.appendInt(static_cast<int>(sup));
+                    str += ' ';
+                    }
+                str += '\n';
+                success = file.putString(str);
+                if(!success)
+                    {
+                    break;
+                    }
                 }
-            fprintf(outFp, "\n");
             }
-        fprintf(outFp, "o:");
-        for(const auto &dep : orderedDeps)
+        if(success)
             {
-            fprintf(outFp, "%d ", static_cast<int>(dep));
+            OovString str = "o:";
+            for(const auto &dep : orderedDeps)
+                {
+                str.appendInt(static_cast<int>(dep));
+                str += ' ';
+                }
+            str += '\n';
+            success = file.putString(str);
             }
-        fprintf(outFp, "\n");
-        fclose(outFp);
         }
-    return(outFp != NULL);
+    if(!success)
+        {
+        OovString str = "Unable to write dependency symbol file: ";
+        str += symFileName;
+        OovError::report(ET_Error, str);
+        }
+    return(success);
     }
 
 static void orderDependencies(size_t numFiles, const FileDependencies &fileDependencies,
@@ -252,14 +297,15 @@ static void orderDependencies(size_t numFiles, const FileDependencies &fileDepen
         }
     }
 
-void ClumpSymbols::readRawSymbolFile(OovStringRef const outRawFileName,
+bool ClumpSymbols::readRawSymbolFile(OovStringRef const outRawFileName,
     size_t fileIndex)
     {
-    FILE *inFp = fopen(outRawFileName, "r");
-    if(inFp)
+    bool success = false;
+    File inFile(outRawFileName, "r");
+    if(inFile.isOpen())
         {
         char buf[2000];
-        while(fgets(buf, sizeof(buf), inFp))
+        while(inFile.getString(buf, sizeof(buf), success))
             {
             char const *p = buf;
             while(isspace(*p) || isxdigit(*p))
@@ -283,8 +329,14 @@ void ClumpSymbols::readRawSymbolFile(OovStringRef const outRawFileName,
                 mUndefinedSymbols.add(p, static_cast<size_t>(endP-p), fileIndex);
                 }
             }
-        fclose(inFp);
         }
+    if(!success)
+        {
+        OovString str = "Unable to read raw symbol file: ";
+        str += outRawFileName;
+        OovError::report(ET_Error, str);
+        }
+    return success;
     }
 
 void ClumpSymbols::resolveUndefinedSymbols()
@@ -306,13 +358,13 @@ void ClumpSymbols::resolveUndefinedSymbols()
         }
     }
 
-void ClumpSymbols::addSymbols(OovStringRef const libFilePath, OovStringRef const outRawFileName)
+bool ClumpSymbols::addSymbols(OovStringRef const libFilePath, OovStringRef const outRawFileName)
     {
         {
         std::unique_lock<std::mutex> lock(mDataMutex);
         mFileIndices.push_back(libFilePath);
         }
-    readRawSymbolFile(outRawFileName, mFileIndices.size()-1);
+    return readRawSymbolFile(outRawFileName, mFileIndices.size()-1);
     }
 
 void ClumpSymbols::writeClumpFiles(OovStringRef const clumpName,
@@ -478,7 +530,7 @@ bool ObjSymbols::makeClumpSymbols(OovStringRef const clumpName,
     return success;
     }
 
-void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
+bool ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
         OovStringRef const outPath,
         OovStringVec &sortedLibFileNames)
     {
@@ -487,13 +539,14 @@ void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
     depSymFileName += clumpName;
     depSymFileName += "-Dep.txt";
 
-    FILE *fp = fopen(depSymFileName.getStr(), "r");
-    if(fp)
+    bool success = false;
+    File file(depSymFileName.getStr(), "r");
+    if(file.isOpen())
         {
         std::vector<std::string> filenames;
         std::vector<size_t> indices;
         char buf[500];
-        while(fgets(buf, sizeof(buf), fp))
+        while(file.getString(buf, sizeof(buf), success))
             {
             if(buf[0] == 'f')
                 {
@@ -528,8 +581,14 @@ void ObjSymbols::appendOrderedLibFileNames(OovStringRef const clumpName,
             {
             sortedLibFileNames.push_back(filenames[fileIndex]);
             }
-        fclose(fp);
         }
+    if(!success)
+        {
+        OovString errStr = "Unable to read dependency symbol file: ";
+        errStr += depSymFileName;
+        OovError::report(ET_Error, errStr);
+        }
+    return success;
     }
 
 void ObjSymbols::appendOrderedLibs(OovStringRef const clumpName,

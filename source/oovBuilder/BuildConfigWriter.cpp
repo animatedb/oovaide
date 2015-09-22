@@ -7,6 +7,7 @@
 
 #include "BuildConfigWriter.h"
 #include "Project.h"
+#include "OovError.h"
 #include <stdio.h>      // For snprintf
 
 // CRC CCITT Lookup Table
@@ -266,6 +267,11 @@ void BuildConfigWriter::saveConfig(OovStringRef const buildType)
         snprintf(tempStr, sizeof(tempStr), "%u", otherCrc);
         mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mOtherArgsConfig);
 
-        mConfigFile.writeFile();
+        if(!mConfigFile.writeFile())
+            {
+            OovString errStr = "Unable to write build config file: ";
+            errStr += mConfigFile.getFilename();
+            OovError::report(ET_Error, errStr);
+            }
         }
     }

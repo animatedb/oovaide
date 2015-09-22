@@ -29,9 +29,9 @@ void PortionDiagram::drawDiagram(DiagramDrawer &diagDrawer)
     mPortionDrawer.drawGraph(diagDrawer);
     }
 
-void PortionDiagram::saveDiagram(FILE *fp)
+bool PortionDiagram::saveDiagram(File &file)
     {
-    NameValueFile file;
+    NameValueFile nameValFile;
 
     CompoundValue names;
     CompoundValue xPositions;
@@ -51,43 +51,47 @@ void PortionDiagram::saveDiagram(FILE *fp)
         yPositions.addArg(num);
         }
 
-    DiagramStorage::setDrawingHeader(file, DST_Portion, getCurrentClassName());
-    file.setNameValue("Names", names.getAsString());
-    file.setNameValue("XPositions", xPositions.getAsString());
-    file.setNameValue("YPositions", yPositions.getAsString());
-    file.writeFile(fp);
+    DiagramStorage::setDrawingHeader(nameValFile, DST_Portion, getCurrentClassName());
+    nameValFile.setNameValue("Names", names.getAsString());
+    nameValFile.setNameValue("XPositions", xPositions.getAsString());
+    nameValFile.setNameValue("YPositions", yPositions.getAsString());
+    return nameValFile.writeFile(file);
     }
 
-void PortionDiagram::loadDiagram(FILE *fp, DiagramDrawer &diagDrawer)
+bool PortionDiagram::loadDiagram(File &file, DiagramDrawer &diagDrawer)
     {
-    NameValueFile file;
-    file.readFile(fp);
-    CompoundValue names;
-    names.parseString(file.getValue("Names"));
-    CompoundValue xPositions;
-    xPositions.parseString(file.getValue("XPositions"));
-    CompoundValue yPositions;
-    yPositions.parseString(file.getValue("YPositions"));
-
-    eDiagramStorageTypes drawingType;
-    OovString drawingName;
-    DiagramStorage::getDrawingHeader(file, drawingType, drawingName);
-    clearGraphAndAddClass(diagDrawer, drawingName);
-    for(size_t i=0; i<names.size(); i++)
+    NameValueFile nameValFile;
+    bool success = nameValFile.readFile(file);
+    if(success)
         {
-        std::vector<PortionNode> const &nodes = getNodes();
-        OovString name = names[i];
-        auto nodeIter = std::find_if(nodes.begin(), nodes.end(),
-            [&name](PortionNode const &node)
-            { return(name == node.getName()); });
-        if(nodeIter != nodes.end())
+        CompoundValue names;
+        names.parseString(nameValFile.getValue("Names"));
+        CompoundValue xPositions;
+        xPositions.parseString(nameValFile.getValue("XPositions"));
+        CompoundValue yPositions;
+        yPositions.parseString(nameValFile.getValue("YPositions"));
+
+        eDiagramStorageTypes drawingType;
+        OovString drawingName;
+        DiagramStorage::getDrawingHeader(nameValFile, drawingType, drawingName);
+        clearGraphAndAddClass(diagDrawer, drawingName);
+        for(size_t i=0; i<names.size(); i++)
             {
-            int i = nodeIter - nodes.begin();
-            int x=0;
-            int y=0;
-            xPositions[i].getInt(0, INT_MAX, x);
-            yPositions[i].getInt(0, INT_MAX, y);
-            setPosition(i, GraphPoint(x, y));
+            std::vector<PortionNode> const &nodes = getNodes();
+            OovString name = names[i];
+            auto nodeIter = std::find_if(nodes.begin(), nodes.end(),
+                [&name](PortionNode const &node)
+                { return(name == node.getName()); });
+            if(nodeIter != nodes.end())
+                {
+                int i = nodeIter - nodes.begin();
+                int x=0;
+                int y=0;
+                xPositions[i].getInt(0, INT_MAX, x);
+                yPositions[i].getInt(0, INT_MAX, y);
+                setPosition(i, GraphPoint(x, y));
+                }
             }
         }
+    return success;
     }

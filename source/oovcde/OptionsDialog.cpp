@@ -8,6 +8,7 @@
 #include "OptionsDialog.h"
 #include "Options.h"
 #include "Gui.h"
+#include "OovError.h"
 #include <gtk/gtk.h>
 #include <memory>       // For unique_ptr
 #include <algorithm>
@@ -379,8 +380,18 @@ void OptionsDialog::saveScreen()
     ScreenOptions options(mCurrentBuildConfig, mProjectOptions, mGuiOptions);
     options.screenToOptions();
 
-    mProjectOptions.writeFile();
-    mGuiOptions.writeFile();
+    if(!mProjectOptions.writeFile())
+        {
+        OovString errStr = "Unable to write project options file: ";
+        errStr += mProjectOptions.getFilename();
+        OovError::report(ET_Error, errStr);
+        }
+    if(!mGuiOptions.writeFile())
+        {
+        OovString errStr = "Unable to write GUI options file: ";
+        errStr += mGuiOptions.getFilename();
+        OovError::report(ET_Error, errStr);
+        }
     updateOptions();
     }
 

@@ -56,9 +56,10 @@ void ClassDiagram::drawDiagram(DiagramDrawer &diagDrawer)
     drawer.drawDiagram(mClassGraph);
     }
 
-void ClassDiagram::saveDiagram(FILE *fp)
+bool ClassDiagram::saveDiagram(File &file)
     {
-    NameValueFile file;
+    bool success = false;
+    NameValueFile nameValFile;
 
     CompoundValue names;
     CompoundValue xPositions;
@@ -89,67 +90,72 @@ void ClassDiagram::saveDiagram(FILE *fp)
 
     if(drawingName.length() > 0)
         {
-        DiagramStorage::setDrawingHeader(file, DST_Class, drawingName);
-        file.setNameValue("Names", names.getAsString());
-        file.setNameValue("XPositions", xPositions.getAsString());
-        file.setNameValue("YPositions", yPositions.getAsString());
-        file.writeFile(fp);
+        DiagramStorage::setDrawingHeader(nameValFile, DST_Class, drawingName);
+        nameValFile.setNameValue("Names", names.getAsString());
+        nameValFile.setNameValue("XPositions", xPositions.getAsString());
+        nameValFile.setNameValue("YPositions", yPositions.getAsString());
+        success = nameValFile.writeFile(file);
         }
+    return success;
     }
 
-void ClassDiagram::loadDiagram(FILE *fp)
+bool ClassDiagram::loadDiagram(File &file)
     {
-    NameValueFile file;
-    file.readFile(fp);
-    CompoundValue names;
-    names.parseString(file.getValue("Names"));
-    CompoundValue xPositions;
-    xPositions.parseString(file.getValue("XPositions"));
-    CompoundValue yPositions;
-    yPositions.parseString(file.getValue("YPositions"));
-    std::vector<ClassNode> &nodes = getNodes();
-    for(size_t i=0; i<names.size(); i++)
+    NameValueFile nameValFile;
+    bool success = nameValFile.readFile(file);
+    if(success)
         {
-        OovString name = names[i];
-        if(i == 0)
+        CompoundValue names;
+        names.parseString(nameValFile.getValue("Names"));
+        CompoundValue xPositions;
+        xPositions.parseString(nameValFile.getValue("XPositions"));
+        CompoundValue yPositions;
+        yPositions.parseString(nameValFile.getValue("YPositions"));
+        std::vector<ClassNode> &nodes = getNodes();
+        for(size_t i=0; i<names.size(); i++)
             {
-            // The node at index zero is the graph key, and is not stored in
-            // the graph with a name or type.
-            // The node at index one is the first class, which is typically the
-            // same as the drawing name.
-            eDiagramStorageTypes drawingType;
-            OovString drawingName;
-            DiagramStorage::getDrawingHeader(file, drawingType, drawingName);
-            // This adds the key automatically as item index zero.
-            // Call this function to set the last selected class name for the journal.
-            clearGraphAndAddClass(drawingName, ClassGraph::AN_All,
+            OovString name = names[i];
+            if(i == 0)
+                {
+                // The node at index zero is the graph key, and is not stored in
+                // the graph with a name or type.
+                // The node at index one is the first class, which is typically the
+                // same as the drawing name.
+                eDiagramStorageTypes drawingType;
+                OovString drawingName;
+                DiagramStorage::getDrawingHeader(nameValFile, drawingType, drawingName);
+                // This adds the key automatically as item index zero.
+                // Call this function to set the last selected class name for the journal.
+                clearGraphAndAddClass(drawingName, ClassGraph::AN_All,
+                        ClassDiagram::DEPTH_SINGLE_CLASS, false);
+                int x=0;
+                int y=0;
+                xPositions[i].getInt(0, INT_MAX, x);
+                yPositions[i].getInt(0, INT_MAX, y);
+                nodes[0].setPosition(GraphPoint(x, y));
+                }
+            else
+                {
+                // This will not add duplicates, so if the name is different
+                // from the drawingName, it will be added.
+                addClass(name, ClassGraph::AN_All,
                     ClassDiagram::DEPTH_SINGLE_CLASS, false);
-            int x=0;
-            int y=0;
-            xPositions[i].getInt(0, INT_MAX, x);
-            yPositions[i].getInt(0, INT_MAX, y);
-            nodes[0].setPosition(GraphPoint(x, y));
-            }
-        else
-            {
-            // This will not add duplicates, so if the name is different
-            // from the drawingName, it will be added.
-            addClass(name, ClassGraph::AN_All,
-                ClassDiagram::DEPTH_SINGLE_CLASS, false);
-            }
+                }
 
-        auto nodeIter = std::find_if(nodes.begin(), nodes.end(),
-            [&name](ClassNode &node)
-            { return(node.getType() && name == node.getType()->getName()); });
-        if(nodeIter != nodes.end())
-            {
-            int x=0;
-            int y=0;
-            xPositions[i].getInt(0, INT_MAX, x);
-            yPositions[i].getInt(0, INT_MAX, y);
-            nodeIter->setPosition(GraphPoint(x, y));
+            auto nodeIter = std::find_if(nodes.begin(), nodes.end(),
+                [&name](ClassNode &node)
+                { return(node.getType() && name == node.getType()->getName()); });
+            if(nodeIter != nodes.end())
+                {
+                int x=0;
+                int y=0;
+                xPositions[i].getInt(0, INT_MAX, x);
+                yPositions[i].getInt(0, INT_MAX, y);
+                nodeIter->setPosition(GraphPoint(x, y));
+                }
             }
         }
+    return success;
     }
 
 ClassNode *ClassDiagram::getNode(int x, int y)

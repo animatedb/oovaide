@@ -156,14 +156,15 @@ static bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInByt
     return success;
     }
 
-static bool FloatToAsciiString(float value, char * const buffer, size_t dstSizeInBytes)
+static bool FloatToAsciiString(float value, char * const buffer, size_t dstSizeInBytes,
+        int precision)
     {
     bool success = false;
     if(dstSizeInBytes > 0)
         {
         const size_t numBufSize = 30;
         char numBuf[numBufSize];
-        snprintf(numBuf, sizeof(numBuf), "%f", value);
+        snprintf(numBuf, sizeof(numBuf), "%.*f", precision, value);
         if(isAsciiLenOk(numBuf, dstSizeInBytes))
             {
             copyString(buffer, dstSizeInBytes, numBuf, numBufSize);
@@ -287,10 +288,10 @@ void OovString::appendInt(int val, int radix)
     append(buf);
     }
 
-void OovString::appendFloat(float val)
+void OovString::appendFloat(float val, int precision)
     {
     char buf[30];
-    FloatToAsciiString(val, buf, sizeof(buf));
+    FloatToAsciiString(val, buf, sizeof(buf), precision);
     append(buf);
     }
 

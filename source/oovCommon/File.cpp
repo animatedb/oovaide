@@ -34,6 +34,18 @@ void sleepMs(int ms)
     }
 
 
+bool File::getFileSize(int &size) const
+    {
+    size = 0;
+    bool success = seekEnd();
+    if(success)
+        {
+        size = ftell(mFp);
+        }
+    rewind(mFp);
+    return success;
+    }
+
 void File::truncate(int size)
     {
 #ifdef __linux__
@@ -44,6 +56,20 @@ void File::truncate(int size)
 #else
     _chsize(fileno(mFp), size);
 #endif
+    }
+
+bool File::getString(char *buf, int bufBytes, bool &success)
+    {
+    success = true;
+    bool keepGoing = fgets(buf, bufBytes, mFp);
+    if(!keepGoing)
+        {
+        if(ferror(mFp) != 0)
+            {
+            success = false;
+            }
+        }
+    return(keepGoing);
     }
 
 

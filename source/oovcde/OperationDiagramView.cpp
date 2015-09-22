@@ -29,12 +29,12 @@ void OperationDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-void OperationDiagramView::drawSvgDiagram(FILE *fp)
+bool OperationDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(fp, cairo.getCairo());
-
+    SvgDrawer svgDrawer(file, cairo.getCairo());
     mOperationDiagram.drawDiagram(svgDrawer);
+    return svgDrawer.writeFile();
     }
 
 void OperationDiagramView::updateDrawingAreaSize()

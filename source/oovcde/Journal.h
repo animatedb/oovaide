@@ -45,9 +45,9 @@ class JournalRecord
             {}
         virtual void cppArgOptionsChangedUpdateDrawings()
             {}
-        virtual void saveFile(FILE *drawFp) = 0;
-        virtual void exportFile(FILE *svgFp) = 0;
-        virtual void loadFile(FILE *drawFp) = 0;
+        virtual bool saveFile(File &drawFile) = 0;
+        virtual bool exportFile(File &svgFile) = 0;
+        virtual bool loadFile(File &drawFile) = 0;
         virtual bool isModified() const = 0;
         OovStringRef const getName() const
             { return mName; }
@@ -102,12 +102,12 @@ class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListene
             { mClassDiagram.drawToDrawingArea(); }
         virtual void cppArgOptionsChangedUpdateDrawings() override
             { mClassDiagram.updateGraph(true); }
-        virtual void saveFile(FILE *drawFp) override
-            { mClassDiagram.saveDiagram(drawFp); }
-        virtual void exportFile(FILE *svgFp) override
-            { mClassDiagram.drawSvgDiagram(svgFp); }
-        virtual void loadFile(FILE *drawFp) override
-            { mClassDiagram.loadDiagram(drawFp); }
+        virtual bool saveFile(File &drawFile) override
+            { return mClassDiagram.saveDiagram(drawFile); }
+        virtual bool exportFile(File &svgFile) override
+            { return mClassDiagram.drawSvgDiagram(svgFile); }
+        virtual bool loadFile(File &drawFile) override
+            { return mClassDiagram.loadDiagram(drawFile); }
         virtual bool isModified() const override
             { return mClassDiagram.isModified(); }
     };
@@ -139,12 +139,15 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
             { mOperationDiagram.graphButtonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mOperationDiagram.drawToDrawingArea(); }
-        virtual void saveFile(FILE *drawFp) override
-            { Gui::messageBox("Saving this drawing type is not supported yet, but exporting is."); }
-        virtual void exportFile(FILE *svgFp) override
-            { mOperationDiagram.drawSvgDiagram(svgFp); }
-        virtual void loadFile(FILE *drawFp) override
-            {}
+        virtual bool saveFile(File &drawFile) override
+            {
+            Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
+            return false;
+            }
+        virtual bool exportFile(File &svgFile) override
+            { return mOperationDiagram.drawSvgDiagram(svgFile); }
+        virtual bool loadFile(File &drawFile) override
+            { return false; }
         virtual bool isModified() const override
             { return mOperationDiagram.isModified(); }
     };
@@ -171,12 +174,15 @@ class JournalRecordComponentDiagram:public JournalRecord
             { mComponentDiagram.buttonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mComponentDiagram.drawToDrawingArea(); }
-        virtual void saveFile(FILE *drawFp) override
-            { Gui::messageBox("Saving this drawing type is not supported yet, but exporting is."); }
-        virtual void exportFile(FILE *svgFp) override
-            { mComponentDiagram.drawSvgDiagram(svgFp); }
-        virtual void loadFile(FILE *drawFp) override
-            {}
+        virtual bool saveFile(File &drawFile) override
+            {
+            Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
+            return false;
+            }
+        virtual bool exportFile(File &svgFile) override
+            { return mComponentDiagram.drawSvgDiagram(svgFile); }
+        virtual bool loadFile(File &drawFile) override
+            { return false; }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
             { return mComponentDiagram.isModified(); }
@@ -213,12 +219,15 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
             }
         virtual void drawingLostPointerEvent() override
             { mZoneDiagram.handleDrawingAreaLostPointer(); }
-        virtual void saveFile(FILE *drawFp) override
-            { Gui::messageBox("Saving this drawing type is not supported yet, but exporting is."); }
-        virtual void exportFile(FILE *svgFp) override
-            { mZoneDiagram.drawSvgDiagram(svgFp); }
-        virtual void loadFile(FILE *drawFp) override
-            {}
+        virtual bool saveFile(File &drawFile) override
+            {
+            Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
+            return false;
+            }
+        virtual bool exportFile(File &svgFile) override
+            { return mZoneDiagram.drawSvgDiagram(svgFile); }
+        virtual bool loadFile(File &drawFile) override
+            { return false; }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
             { return true; }
@@ -247,12 +256,12 @@ class JournalRecordPortionDiagram:public JournalRecord
             { mPortionDiagram.graphButtonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mPortionDiagram.drawToDrawingArea(); }
-        virtual void saveFile(FILE *drawFp) override
-            { mPortionDiagram.saveDiagram(drawFp); }
-        virtual void exportFile(FILE *svgFp) override
-            { mPortionDiagram.drawSvgDiagram(svgFp); }
-        virtual void loadFile(FILE *drawFp) override
-            { mPortionDiagram.loadDiagram(drawFp); }
+        virtual bool saveFile(File &drawFile) override
+            { return mPortionDiagram.saveDiagram(drawFile); }
+        virtual bool exportFile(File &svgFile) override
+            { return mPortionDiagram.drawSvgDiagram(svgFile); }
+        virtual bool loadFile(File &drawFile) override
+            { return mPortionDiagram.loadDiagram(drawFile); }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
             { return true; }
@@ -282,12 +291,15 @@ class JournalRecordIncludeDiagram:public JournalRecord
             { mIncludeDiagram.graphButtonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mIncludeDiagram.drawToDrawingArea(); }
-        virtual void saveFile(FILE *drawFp) override
-            { Gui::messageBox("Saving this drawing type is not supported yet, but exporting is."); }
-        virtual void exportFile(FILE *drawFp) override
-            { mIncludeDiagram.drawSvgDiagram(drawFp); }
-        virtual void loadFile(FILE *drawFp) override
-            {}
+        virtual bool saveFile(File &drawFile) override
+            {
+            Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
+            return false;
+            }
+        virtual bool exportFile(File &drawFile) override
+            { return mIncludeDiagram.drawSvgDiagram(drawFile); }
+        virtual bool loadFile(File &drawFile) override
+            { return false; }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
             { return true; }
@@ -327,9 +339,9 @@ class Journal
         void displayWorldZone();
         void displayPortion(OovStringRef const className);
         void displayInclude(OovStringRef const incName);
-        void loadFile(FILE *drawFp);
-        void saveFile(FILE *drawFp);
-        void exportFile(FILE *svgFp);
+        bool loadFile(File &drawFile);
+        bool saveFile(File &drawFile);
+        bool exportFile(File &svgFile);
         void cppArgOptionsChangedUpdateDrawings();
         void setCurrentRecord(size_t index)
             {

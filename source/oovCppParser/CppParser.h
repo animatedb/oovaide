@@ -12,6 +12,7 @@
 #include "ParserModelData.h"
 #include <set>
 #include "OovString.h"
+#include "OovError.h"
 
 #define DEBUG_PARSE 0
 
@@ -104,8 +105,7 @@ class DupHashFile
         DupHashFile():
             mAlreadyAddedBreak(true)
             {}
-        void open(OovStringRef const fn)
-            { mFile.open(fn, "w"); }
+        void open(OovStringRef const fn);
         bool isOpen() const
             { return mFile.isOpen(); }
         void append(OovStringRef const text, unsigned int line);

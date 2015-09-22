@@ -8,13 +8,19 @@
 #include "BuildConfigReader.h"
 #include "Project.h"
 #include "OovString.h"
+#include "OovError.h"
 #include <stdio.h>      // For snprintf
 
 
 BuildConfig::BuildConfig()
     {
     mConfigFile.setFilename(getBuildConfigFilename());
-    mConfigFile.readFile();
+    if(!mConfigFile.readFile())
+        {
+        OovString str = "Unable to read build configuration: ";
+        str += getBuildConfigFilename();
+        OovError::report(ET_Error, str);
+        }
     }
 
 std::string BuildConfig::getAnalysisPathUsingCRC(OovStringRef const crcStr) const

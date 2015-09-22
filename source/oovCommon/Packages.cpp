@@ -7,6 +7,7 @@
 
 #include "Packages.h"
 #include "Project.h"
+#include "OovError.h"
 #include <algorithm>
 
 #define TagPkgNames "PkgNames"
@@ -318,7 +319,12 @@ std::vector<Package> Packages::getPackages() const
 void Packages::read(OovStringRef const fn)
     {
     mFile.setFilename(fn);
-    mFile.readFile();
+    if(!mFile.readFile())
+        {
+        OovString str = "Unable to read build packages: ";
+        str += fn;
+        OovError::report(ET_Error, str);
+        }
     }
 #endif
 
@@ -341,7 +347,14 @@ OovString ProjectPackages::getFilename()
 bool ProjectPackages::read()
     {
     mFile.setFilename(getFilename());
-    return mFile.readFile();
+    bool success = mFile.readFile();
+    if(!success)
+        {
+        OovString str = "Unable to read project packages: ";
+        str += getFilename();
+        OovError::report(ET_Error, str);
+        }
+    return success;
     }
 
 ////////////////
@@ -366,6 +379,15 @@ bool BuildPackages::doesPackageExist(OovStringRef pkgName)
             [&pkgName](Package const &pkg)
                 { return(pkg.getPkgName() == pkgName.getStr()); });
     return(iter != packages.end());
+    }
+
+void BuildPackages::savePackages()
+    {
+    if(!mPackages.getFile().writeFile())
+        {
+        OovString str = "Unable to save build packages";
+        OovError::report(ET_Error, str);
+        }
     }
 
 

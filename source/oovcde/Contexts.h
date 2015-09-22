@@ -69,15 +69,19 @@ class Contexts:public JournalListener, public EditorListener
         /// Once the project files are loaded, then the lists that depend on the
         /// project can be updated.
         void updateContextAfterProjectLoaded();
-        void loadFile(FILE *drawFp)
+        bool loadFile(File &drawFile)
             {
-            mJournal.loadFile(drawFp);
-            updateJournalList();
+            bool success = mJournal.loadFile(drawFile);
+            if(success)
+                {
+                updateJournalList();
+                }
+            return success;
             }
-        void saveFile(FILE *drawFp)
-            { mJournal.saveFile(drawFp); }
-        void exportFile(FILE *svgFp)
-            { mJournal.exportFile(svgFp); }
+        bool saveFile(File &drawFile)
+            { return mJournal.saveFile(drawFile); }
+        bool exportFile(File &svgFile)
+            { return mJournal.exportFile(svgFile); }
         void cppArgOptionsChangedUpdateDrawings()
             { mJournal.cppArgOptionsChangedUpdateDrawings(); }
         const JournalRecord *getCurrentJournalRecord() const

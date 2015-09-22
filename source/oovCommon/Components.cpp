@@ -9,6 +9,7 @@
 #include "FilePath.h"
 #include "Project.h"
 #include "OovString.h"  // For split
+#include "OovError.h"
 #include <algorithm>
 
 FilePaths getHeaderExtensions()
@@ -132,6 +133,34 @@ void ComponentTypesFile::coerceParentComponents(OovStringRef const compName)
             }
         }
     }
+
+void ComponentTypesFile::writeFile()
+    {
+    if(!mCompTypesFile.writeFile())
+        {
+        OovString str = "Unable to write component types file: ";
+        str += mCompTypesFile.getFilename();
+        OovError::report(ET_Error, str);
+        }
+    if(!mCompSourceListFile.writeFile())
+        {
+        OovString str = "Unable to write source list file: ";
+        str += mCompSourceListFile.getFilename();
+        OovError::report(ET_Error, str);
+        }
+    }
+
+void ComponentTypesFile::writeTypesOnly(OovStringRef const fn)
+    {
+    mCompTypesFile.setFilename(fn);
+    if(!mCompTypesFile.writeFile())
+        {
+        OovString str = "Unable to write source list file: ";
+        str += mCompTypesFile.getFilename();
+        OovError::report(ET_Error, str);
+        }
+    }
+
 
 // This should match "Parameter"="Parameter/PLib", but not match "Comm"!="CommSim"
 static bool compareComponentNames(std::string const &parentName, std::string const &childName)

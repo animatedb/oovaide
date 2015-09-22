@@ -1,0 +1,5 @@
+DrawingName|Tokenizer
+FileType|Portion
+Names|mTransUnit;mCLangLock;mSourceFile;mSourceFilename;parse;tokenize;findToken;getClassNameAtLocation;getMethodNameAtLocation;codeComplete;getCursorAtOffset;getLineColumn;Tokenizer;~Tokenizer;
+XPositions|31;33;27;31;240;248;390;373;376;382;222;247;164;232;
+YPositions|222;137;60;294;247;171;162;72;108;306;35;208;15;350;

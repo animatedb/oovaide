@@ -30,6 +30,7 @@
 #include <algorithm>
 #include <limits.h>
 #include "Debug.h"
+#include "OovError.h"
 
 
 #define DEBUG_CLASS 0
@@ -868,53 +869,59 @@ static bool loadXmiBuf(char const * const buf, ModelData &model, int &typeIndex)
     return(parsed);
     }
 
-bool loadXmiFile(FILE *fp, ModelData &graph, OovStringRef const fn, int &typeIndex)
+bool loadXmiFile(File const &file, ModelData &graph, OovStringRef const fn, int &typeIndex)
     {
-    bool success = false;
-    fseek(fp , 0 , SEEK_END);
-    int size = ftell(fp);
-    rewind(fp);
-
-#if(DEBUG_LOAD)
-    std::string srcFn = fn;
-    sDumpFile = true;
-    // sDumpFile = (srcFn.find("ModelObjects_h") != std::string::npos);
-    dumpFilename(fn, typeIndex);
-#endif
-    // allocate memory to contain the whole file plus a null byte
-    char *buf = new char[size+1];
-    if(buf)
+    int size = 0;
+    bool success = file.getFileSize(size);
+    if(success)
         {
-        buf[size] = 0;
-        size_t actualSize = fread(buf, 1, size, fp);
-        if(ferror(fp) == 0 && actualSize > 0)
-            success = loadXmiBuf(buf, graph, typeIndex);
-        delete [] buf;
-        }
 #if(DEBUG_LOAD)
-    dumpTypes(graph);
-    dumpRelations(graph);
+        std::string srcFn = fn;
+        sDumpFile = true;
+        // sDumpFile = (srcFn.find("ModelObjects_h") != std::string::npos);
+        dumpFilename(fn, typeIndex);
+#endif
+        // allocate memory to contain the whole file plus a null byte
+        char *buf = new char[size+1];
+        if(buf)
+            {
+            buf[size] = 0;
+            success = file.read(buf, size);
+            if(success)
+                success = loadXmiBuf(buf, graph, typeIndex);
+            delete [] buf;
+            }
+#if(DEBUG_LOAD)
+        dumpTypes(graph);
+        dumpRelations(graph);
 #endif
 #if(DEBUG_CLASS)
-    ModelType *type = graph.findType("Gui::");
-    if(type)
-        {
-        printf("XMI %s\n", fn.getStr());
-        ModelClassifier *classifier = ModelType::getClass(type);
-        if(classifier)
+        ModelType *type = graph.findType("Gui::");
+        if(type)
             {
-            for(auto const &oper : classifier->getOperations())
+            printf("XMI %s\n", fn.getStr());
+            ModelClassifier *classifier = ModelType::getClass(type);
+            if(classifier)
                 {
-//                if(oper->getName().find("appendPage") != std::string::npos)
+                for(auto const &oper : classifier->getOperations())
                     {
-//                    printf("A");
+    //                if(oper->getName().find("appendPage") != std::string::npos)
+                        {
+    //                    printf("A");
+                        }
+                    printf("%s\n", oper->getName().getStr());
                     }
-                printf("%s\n", oper->getName().getStr());
+                fflush(stdout);
                 }
-            fflush(stdout);
             }
-        }
 #endif
+        }
+    if(!success)
+        {
+        OovString err = "Unable to read file: ";
+        err += fn;
+        OovError::report(ET_Error, err);
+        }
     return success;
     };
 

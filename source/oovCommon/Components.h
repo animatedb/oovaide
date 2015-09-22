@@ -116,17 +116,10 @@ class ComponentTypesFile
         OovString getComponentAbsolutePath(OovStringRef const compName) const;
 
         /// Write the files to disk.
-        void writeFile()
-            {
-            mCompTypesFile.writeFile();
-            mCompSourceListFile.writeFile();
-            }
+        void writeFile();
+
         /// Only write the component types file to disk.
-        void writeTypesOnly(OovStringRef const fn)
-            {
-            mCompTypesFile.setFilename(fn);
-            mCompTypesFile.writeFile();
-            }
+        void writeTypesOnly(OovStringRef const fn);
 
     private:
         NameValueFile mCompTypesFile;

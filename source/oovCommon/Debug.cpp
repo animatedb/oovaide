@@ -7,18 +7,21 @@
 #include "Debug.h"
 #include <assert.h>
 #include <string>
+#include "OovError.h"
 
 
 void LogAssertFile(OovStringRef const file, int line, char const *diagStr)
     {
-    DebugFile debugAssertFile("OovAsserts.txt", true);
-    std::string str;
+    OovString errStr = "ASSERT: ";
+    errStr += file;
+    errStr += ' ';
+    errStr.appendInt(line);
     if(diagStr)
         {
-        str = ' ';
-        str += diagStr;
+        errStr += ' ';
+        errStr += diagStr;
         }
-    debugAssertFile.printflush("%s %d%s\n", file.getStr(), line, str.c_str());
+    OovError::report(ET_Diagnostic, errStr);
     }
 
 DebugFile::DebugFile(char const *fn, bool append):

@@ -457,15 +457,32 @@ static unsigned int makeHash(OovStringRef const text)
     return hash;
     }
 
+void DupHashFile::open(OovStringRef const fn)
+    {
+    mFile.open(fn, "w");
+    if(!mFile.isOpen())
+        {
+        fprintf(stderr, "Unable to open hash file");
+        }
+    }
+
 void DupHashFile::append(OovStringRef const text, unsigned int line)
     {
-    if(text.numBytes() > 0)
+    if(mFile.isOpen() && text.numBytes() > 0)
         {
+        OovString str;
+        str.appendInt(makeHash(text), 16);
+        str += ' ';
+        str.appendInt(line);
 #if(DEBUG_HASH)
-        fprintf(mFile.getFp(), "%x %u %s\n", makeHash(text), line, text.getStr());
-#else
-        fprintf(mFile.getFp(), "%x %u\n", makeHash(text), line);
+        str += ' ';
+        str += text.getStr());
 #endif
+        str += '\n';
+        if(!mFile.putString(str))
+            {
+            fprintf(stderr, "Unable to append to hash file");
+            }
         mAlreadyAddedBreak = false;
         }
     }

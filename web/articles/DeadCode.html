@@ -1,0 +1,45 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha - 9/15/2015 -->
+  <!-- Last Update: 9/15/2015 -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Oovcde Dead Code Detection</title>
+  </head>
+  <body>
+    <h1>Detecting Dead C++ Code</h1>
+    Oovcde has both static (compile-time) and dynamic (run-time) dead code detection.
+
+    <h2>Static Dead Code Detection</h2>
+    Oovcde uses CLang to parse C++ files.  It finds all methods and functions,
+    and determines with a call graph which functions are not called by another
+    function.  It outputs a table of the number of times each method or function
+    is called.  The table is viewable in a brower, and is also output as XML.
+    <p/>
+    One of the limitations of the tool is that it cannot determine which
+    virtual functions are called, so these show up as having a call count of zero.
+    <p/>
+    The tool can handle methods with the same name as long as they have unique
+    signatures or are in different namespaces.  But if there are multiple
+    functions with the same name because they used for different components
+    in a project, then only one of them is used as the definition of the function,
+    and the other called functions from the duplicately named functions will
+    show up as not being called.
+    <p/>
+    Both of these issues only cause the problem that too many functions
+    are listed as dead code, and therefore the tool is still usefull
+    for identifying true dead code.
+    <p/>
+    The tool was run on the Oovcde project, and found many instances of dead
+    code.  This was a bit of a surprise since the project is written by a
+    single author and the project has only about 40K lines of code.
+
+    <h2>Dynamic Dead Code Detection</h2>
+    Oovcde has a code coverage tool that is also built using CLang.
+    It requires extensive tests written for the target project in order
+    to be able to identify which code is not used.  The description
+    of the coverage tool is here. <a href="TestCoverage.html">TestCoverage.html</a>
+
+  </body>
+</html>

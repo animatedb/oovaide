@@ -54,8 +54,8 @@ class PortionDiagram
             { return mPortionGraph.getNodes(); }
         GraphPoint getNodePosition(size_t nodeIndex) const
             { return mPortionDrawer.getNodePosition(nodeIndex); }
-        void saveDiagram(FILE *fp);
-        void loadDiagram(FILE *fp, DiagramDrawer &diagDrawer);
+        bool saveDiagram(File &file);
+        bool loadDiagram(File &file, DiagramDrawer &diagDrawer);
 
     private:
         const ModelData *mModelData;

@@ -25,6 +25,7 @@
 
 #include <stdio.h>
 #include "ModelObjects.h"
+#include "File.h"
 
 
 /**
@@ -34,20 +35,20 @@ class ModelWriter
 {
 public:
     ModelWriter(const ModelData &modelData):
-        mFp(nullptr), mModelData(modelData)
+        mModelData(modelData)
         {}
     bool writeFile(OovStringRef const filename);
     ~ModelWriter();
 
 private:
-    FILE *mFp;
+    File mFile;
     const ModelData &mModelData;
 
     bool openFile(OovStringRef const filename);
     int getObjectModelId(const std::string &name);
-    void writeType(const ModelType &type);
-    void writeClassDefinition(const ModelClassifier &classifier, bool isClassDef);
-    void writeOperation(ModelClassifier const &classifier, ModelOperation const &oper);
-    void writeStatements(const ModelStatements &stmts);
-    void writeAssociation(const ModelAssociation &assoc);
+    bool writeType(const ModelType &type);
+    bool writeClassDefinition(const ModelClassifier &classifier, bool isClassDef);
+    bool writeOperation(ModelClassifier const &classifier, ModelOperation const &oper);
+    bool writeStatements(const ModelStatements &stmts);
+    bool writeAssociation(const ModelAssociation &assoc);
 };

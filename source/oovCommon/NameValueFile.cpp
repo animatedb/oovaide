@@ -8,6 +8,7 @@
 #include "FilePath.h"
 #include "File.h"
 #include "Debug.h"
+#include "OovError.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -123,23 +124,30 @@ bool NameValueRecord::getValueBool(OovStringRef const optionName) const
     return(getValue(optionName) == "Yes");
     }
 
-void NameValueRecord::write(FILE *fp)
+bool NameValueRecord::write(File &file)
     {
+    bool success = true;
     for(const auto &pair : mNameValues)
         {
         if(pair.second.length() > 0 || mSaveNullValues)
             {
-            fprintf(fp, "%s%c%s\n", pair.first.getStr(), mapDelimiter, pair.second.getStr());
+            OovString str = pair.first;
+            str += mapDelimiter;
+            str += pair.second;
+            str += '\n';
+            file.putString(str);
             }
         }
+    return success;
     }
 
-bool NameValueRecord::getLine(FILE *fp, OovString &str)
+bool NameValueRecord::getLine(File &file, OovString &str, bool &success)
     {
     char lineBuf[1000];
     str.resize(0);
+    success = true;
     // Read many times until the \n is found.
-    while(fgets(lineBuf, sizeof(lineBuf), fp))
+    while(file.getString(lineBuf, sizeof(lineBuf), success))
         {
         str += lineBuf;
         size_t len = str.length();
@@ -156,13 +164,15 @@ bool NameValueRecord::getLine(FILE *fp, OovString &str)
     return(str.length() > 0);
     }
 
-void NameValueRecord::read(FILE *fp)
+bool NameValueRecord::read(File &file)
     {
     OovString lineBuf;
-    while(getLine(fp, lineBuf))
+    bool success = true;
+    while(getLine(file, lineBuf, success))
         {
         insertLine(lineBuf);
         }
+    return success;
     }
 
 void NameValueRecord::insertLine(OovString lineBuf)
@@ -209,38 +219,38 @@ void NameValueRecord::readMapToBuf(OovString &buf)
 
 //////////
 
-void NameValueFile::writeFile(FILE *fp)
+bool NameValueFile::writeFile(File &file)
     {
-    write(fp);
+    return write(file);
     }
 
 bool NameValueFile::writeFile()
-        {
-        FILE *fp = fopen(mFilename.getStr(), "w");
-        if(fp)
-            {
-            writeFile(fp);
-            fclose(fp);
-            }
-        return(fp != nullptr);
-        }
-
-void NameValueFile::readFile(FILE *fp)
     {
-    read(fp);
+    bool success = false;
+    File file(mFilename.getStr(), "w");
+    if(file.isOpen())
+        {
+        success = writeFile(file);
+        }
+    return success;
+    }
+
+bool NameValueFile::readFile(File &file)
+    {
+    return read(file);
     }
 
 bool NameValueFile::readFile()
+    {
+    bool success = false;
+    File file(mFilename.getStr(), "r");
+    if(file.isOpen())
         {
-        FILE *fp = fopen(mFilename.getStr(), "r");
-        if(fp)
-            {
-            clear();
-            readFile(fp);
-            fclose(fp);
-            }
-        return(fp != nullptr);
+        clear();
+        success = readFile(file);
         }
+    return success;
+    }
 
 bool NameValueFile::readOpenedFile(SharedFile &file)
     {

@@ -37,12 +37,12 @@ void ComponentDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-void ComponentDiagramView::drawSvgDiagram(FILE *fp)
+bool ComponentDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(fp, cairo.getCairo());
-
+    SvgDrawer svgDrawer(file, cairo.getCairo());
     mComponentDiagram.drawDiagram(svgDrawer);
+    return svgDrawer.writeFile();
     }
 
 void ComponentDiagramView::buttonPressEvent(const GdkEventButton *event)

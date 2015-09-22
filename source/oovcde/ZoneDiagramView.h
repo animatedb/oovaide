@@ -97,7 +97,7 @@ class ZoneDiagramView
             { return mZoneDiagram.getDrawOptions(); }
 
         void drawToDrawingArea();
-        void drawSvgDiagram(FILE *fp);
+        bool drawSvgDiagram(File &file);
 
         void gotoClass(OovStringRef const className);
         void showChildComponents(bool show);

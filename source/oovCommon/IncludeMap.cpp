@@ -7,13 +7,19 @@
 
 #include "IncludeMap.h"
 #include "Components.h" // For isHeader
-#include <algorithm>
 #include "Debug.h"
+#include "OovError.h"
+#include <algorithm>
 
 void IncDirDependencyMapReader::read(OovStringRef const fn)
     {
     setFilename(fn);
-    readFile();
+    if(!readFile())
+        {
+        OovString str = "Unable to read include map: ";
+        str += fn;
+        OovError::report(ET_Error, str);
+        }
     }
 
 void discardDirs(OovStringVec &paths)

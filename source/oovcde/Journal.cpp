@@ -279,50 +279,58 @@ void Journal::removeRecord(size_t index)
     mRecords.erase(mRecords.begin() + index);
     }
 
-void Journal::loadFile(FILE *drawFp)
+bool Journal::loadFile(File &drawFile)
     {
-    NameValueFile drawFile;
-    drawFile.read(drawFp);
-    eDiagramStorageTypes fileType;
-    OovString drawingName;
-    DiagramStorage::getDrawingHeader(drawFile, fileType, drawingName);
-    drawFile.seekStart(drawFp);
-    JournalRecord *rec = nullptr;
-    switch(fileType)
+    NameValueFile nameValFile;
+    bool success = nameValFile.read(drawFile);
+    if(success)
         {
-        case DST_Class:
-            rec = newClassRecord(drawingName);
-            break;
+        eDiagramStorageTypes fileType;
+        OovString drawingName;
+        DiagramStorage::getDrawingHeader(nameValFile, fileType, drawingName);
+        nameValFile.seekBegin(drawFile);
+        JournalRecord *rec = nullptr;
+        switch(fileType)
+            {
+            case DST_Class:
+                rec = newClassRecord(drawingName);
+                break;
 
-        case DST_Portion:
-            rec = newPortionRecord(drawingName);
-            break;
+            case DST_Portion:
+                rec = newPortionRecord(drawingName);
+                break;
 
-        default:
-            break;
+            default:
+                break;
+            }
+        if(rec)
+            {
+            rec->loadFile(drawFile);
+            }
         }
-    if(rec)
-        {
-        rec->loadFile(drawFp);
-        }
+    return success;
     }
 
-void Journal::saveFile(FILE *drawFp)
+bool Journal::saveFile(File &drawFp)
     {
+    bool success = false;
     JournalRecord *rec = getCurrentRecord();
     if(rec)
         {
-        rec->saveFile(drawFp);
+        success = rec->saveFile(drawFp);
         }
+    return success;
     }
 
-void Journal::exportFile(FILE *svgFp)
+bool Journal::exportFile(File &svgFile)
     {
+    bool success = false;
     JournalRecord *rec = getCurrentRecord();
     if(rec)
         {
-        rec->exportFile(svgFp);
+        success = rec->exportFile(svgFile);
         }
+    return success;
     }
 
 void Journal::cppArgOptionsChangedUpdateDrawings()

@@ -7,6 +7,7 @@
 
 #include "IncDirMap.h"
 #include "IncludeMap.h"
+#include "OovError.h"
 #include <algorithm>            // For find
 #include <time.h>
 #include <limits.h>     // For UINT_MAX
@@ -25,7 +26,9 @@ void IncDirDependencyMap::read(char const * const outDir, char const * const inc
         fprintf(stderr, "\nOovCppParser - Read file sharing error\n");
         }
 #else
-    readFile();
+    if(!readFile())
+        {
+        }
 #endif
     }
 
@@ -84,7 +87,11 @@ void IncDirDependencyMap::write()
     if(file.isOpen() && anyChanges)
         {
 #if(SHARED_FILE)
-        writeFileExclusive(file);
+        if(!writeFileExclusive(file))
+            {
+            OovString str = "Unable to write include map file";
+            OovError::report(ET_Error, str);
+            }
 #else
         writeFile();
 #endif

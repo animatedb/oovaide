@@ -25,9 +25,26 @@ Explanations
 	- If the error, "Never use <adxintrin.h> directly", displays, the
 	  Oovcde project must be set to exclude lib dir for analysis.
 
+Code Guidelines
+-----------
+	- Error handling strategy
+	  Errors are not reported (OovError::report) in low level file handling
+	  (File and NameValueFile) in OovCommon. Only booleans are returned. Failure
+	  reports are not on parts of files, only whole files.  OovError::report
+	  sends scrolling data to the user that they do not have to acknowledge with
+	  a button press, for example printf or a scrolling window in gtk apps.
+	  High level files such as component types are reported, but no GUI/gtk
+	  message boxes until the GUI layer.
+
 Missing Features
 ----------------
 - General
+	- File error handling
+		ComplexityView.cpp
+		DuplicatesView.cpp
+		oovcde.cpp - on_NewModuleOkButton_clicked
+		StaticAnalysis.cpp
+		CppInstr.cpp
 	- "OovStringRef const buildStr = mConfigFile.getValue(buildType)" is
 		optimized where buildStr contains garbage.
 	- Preserve state between sessions

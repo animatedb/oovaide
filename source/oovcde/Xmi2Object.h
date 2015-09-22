@@ -32,6 +32,7 @@
 #include <map>
 #include <vector>
 #include "OovString.h"
+#include "File.h"
 
 
 enum XmiElementTypes
@@ -116,7 +117,7 @@ class XmiParser:private XmlParser
                 OovStringRef const &attrVal, ModelOperation &oper);
     };
 
-bool loadXmiFile(FILE *fp, ModelData &model, OovStringRef const fn, int &typeIndex);
+bool loadXmiFile(File const &file, ModelData &model, OovStringRef const fn, int &typeIndex);
 
 #endif
 

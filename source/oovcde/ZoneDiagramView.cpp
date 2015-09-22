@@ -134,12 +134,12 @@ void ZoneDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-void ZoneDiagramView::drawSvgDiagram(FILE *fp)
+bool ZoneDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(fp, cairo.getCairo());
-
+    SvgDrawer svgDrawer(file, cairo.getCairo());
     mZoneDiagram.drawDiagram(svgDrawer);
+    return svgDrawer.writeFile();
     }
 
 void ZoneDiagramView::updateDrawingAreaSize()
