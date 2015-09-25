@@ -1020,19 +1020,20 @@ CXChildVisitResult CppParser::visitRecord(CXCursor cursor, CXCursor parent)
     return CXChildVisit_Continue;
     }
 
-void CppParser::addVar(CXCursor /*cursor*/)
+// DEAD CODE
+//void CppParser::addVar(CXCursor /*cursor*/)
+/*
     {
 // This could be added at some point to add the static/global variables.
 // The global class could be added using createOrGetClassRef
 // The cursor has two children, TypeRef and CallExpr.
-/*
     OovString name = getFullBaseTypeName(cursor);
 #if(DEBUG_PARSE)
     dumpCursor(sLog.mFp, "addVar", cursor);
     debugDumpCursor(cursor);
 #endif
-*/
     }
+*/
 
 CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor,
     CXCursor /*parent*/)
@@ -1099,6 +1100,7 @@ CXChildVisitResult CppParser::visitTranslationUnit(CXCursor cursor,
 
         case CXCursor_Constructor:
         case CXCursor_CXXMethod:
+        case CXCursor_Destructor:
 //      case CXType_FunctionProto:      //  CXCursorKind = CXCursor_CXXMethod
             {
             mClassifier = nullptr;

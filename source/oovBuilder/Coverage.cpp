@@ -68,7 +68,7 @@ static bool copyPackageFileIfNeeded(OovStringRef const srcFn, OovStringRef const
         {
         success = false;
         File srcFile(srcFn, "r");
-        if(FileIsFileOnDisk(srcFn))
+        if(FileIsFileOnDisk(srcFn, success))
             {
             if(srcFile.isOpen())
                 {

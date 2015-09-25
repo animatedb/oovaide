@@ -36,7 +36,7 @@
 #define DEBUG_CLASS 0
 #define DEBUG_LOAD 0
 #if(DEBUG_LOAD)
-    static DebugFile sLog("DebugXmiParse.txt");
+    static DebugFile sLog("DebugXmiParse.txt", true);
     static ModelModule const *sCurrentModule;
     static bool sDumpFile = false;
     // This can be used for debugging. FN format is something like "DiagramDrawer_h.xmi".
@@ -60,18 +60,20 @@
                 if(stmt.getStatementType() == ST_OpenNest)
                     {
                     fprintf(sLog.mFp, "  %s OpenStmt   %s\n", ws.c_str(),
-                            stmt.getName());
+                            stmt.getFullName().getStr());
                     }
                 else if(stmt.getStatementType() == ST_Call)
                     {
                     fprintf(sLog.mFp, "  %s Call   %d:%s\n", ws.c_str(),
-                            stmt.getClassDecl().getDeclTypeModelId(), stmt.getName().c_str());
+                            stmt.getClassDecl().getDeclTypeModelId(),
+                            stmt.getFullName().getStr());
                     fflush(sLog.mFp);
                     }
                 else if(stmt.getStatementType() == ST_VarRef)
                     {
                     fprintf(sLog.mFp, "  %s VarRef   %d:%s\n", ws.c_str(),
-                            stmt.getVarDecl().getDeclTypeModelId(), stmt.getName().c_str());
+                            stmt.getVarDecl().getDeclTypeModelId(),
+                            stmt.getFullName().getStr());
                     fflush(sLog.mFp);
                     }
                 }
@@ -336,6 +338,17 @@ void XmiParser::addFuncStatements(OovStringRef const &attrName,
                             typeId += mStartingModuleTypeIndex;
                         modStmt.getClassDecl().setDeclTypeModelId(typeId);
                         oper.getStatements().addStatement(modStmt);
+#if(DEBUG_CLASS)
+                        if(modStmt.getFullName().find("appendPage") != std::string::npos)
+                            {
+                            OovString str;
+                            str = "XMI CALL ";
+                            str += modStmt.getFullName();
+                            str += ' ';
+                            str.appendInt(typeId);
+                            OovError::report(ET_Error, str);
+                            }
+#endif
                         }
                     }
                     break;
@@ -578,7 +591,7 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
                         mModel.replaceType(existingType, static_cast<ModelClassifier*>(newType));
 #if(DEBUG_LOAD)
     if(sDumpFile)
-        fprintf(sLog.mFp, "Replaced and upgraded to class %s\n", newType->getName().c_str());
+        fprintf(sLog.mFp, "Replaced and upgraded to class %s %d\n", newType->getName().c_str(), newType->getModelId());
 #endif
                         }
                     else if(newType->getDataType() == DT_Class &&
@@ -618,7 +631,7 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
                         newType = nullptr;
 #if(DEBUG_LOAD)
     if(sDumpFile)
-        fprintf(sLog.mFp, "Used existing class %s\n", existingType->getName().c_str());
+        fprintf(sLog.mFp, "Used existing class %s %d\n", existingType->getName().c_str(), existingType->getModelId());
 #endif
                         }
                     // If the new type is a datatype, use the old type whether it
@@ -634,7 +647,7 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
                         newType = nullptr;
 #if(DEBUG_LOAD)
     if(sDumpFile)
-        fprintf(sLog.mFp, "Used existing type %s\n", existingType->getName().c_str());
+        fprintf(sLog.mFp, "Used existing type %s %d\n", existingType->getName().c_str(), existingType->getModelId());
 #endif
                         }
                     }
@@ -643,6 +656,10 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
                     /// @todo - use make_unique when supported.
                     mModel.addType(std::unique_ptr<ModelType>(newType));
                     mPotentialRemapIndicesTypes.push_back(newType);
+#if(DEBUG_LOAD)
+    if(sDumpFile)
+        fprintf(sLog.mFp, "New type %s %d\n", newType->getName().c_str(), newType->getModelId());
+#endif
                     }
                 }
                 break;
@@ -723,9 +740,17 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
 
 void XmiParser::updateDeclTypeIndices(ModelTypeRef &decl)
     {
+    // Only certain decl type indices need to be updated. The only case is
+    // when they were previously seen in another file.
     auto const &iter = mFileTypeIndexMap.find(decl.getDeclTypeModelId());
     if(iter != mFileTypeIndexMap.end())
         {
+#if(DEBUG_CLASS)
+        OovString str = "UPDATE DECL ";
+        str.appendInt(decl.getDeclTypeModelId());
+        str += ' ';
+        str.appendInt((*iter).second);
+#endif
         decl.setDeclTypeModelId((*iter).second);
         }
     }
@@ -876,7 +901,7 @@ bool loadXmiFile(File const &file, ModelData &graph, OovStringRef const fn, int 
     if(success)
         {
 #if(DEBUG_LOAD)
-        std::string srcFn = fn;
+        std::string srcFn = fn.getStr();
         sDumpFile = true;
         // sDumpFile = (srcFn.find("ModelObjects_h") != std::string::npos);
         dumpFilename(fn, typeIndex);
@@ -899,19 +924,19 @@ bool loadXmiFile(File const &file, ModelData &graph, OovStringRef const fn, int 
         ModelType *type = graph.findType("Gui::");
         if(type)
             {
-            printf("XMI %s\n", fn.getStr());
             ModelClassifier *classifier = ModelType::getClass(type);
             if(classifier)
                 {
                 for(auto const &oper : classifier->getOperations())
                     {
-    //                if(oper->getName().find("appendPage") != std::string::npos)
+                    if(oper->getName().find("appendPage") != std::string::npos)
                         {
-    //                    printf("A");
+                        OovString str;
+                        str = "XMI OPER DEF ";
+                        str += oper->getName().getStr();
+                        OovError::report(ET_Error, str);
                         }
-                    printf("%s\n", oper->getName().getStr());
                     }
-                fflush(stdout);
                 }
             }
 #endif

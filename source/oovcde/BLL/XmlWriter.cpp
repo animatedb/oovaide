@@ -5,16 +5,17 @@
  */
 
 #include "XmlWriter.h"
+#include <algorithm>
 
 using namespace XML;
 
-void Writer::appendText(OovStringRef str, int atm)
+void XmlWriter::appendText(OovStringRef str, int atm)
     {
     flushOpenElemEnd(false);
     append(str, atm);
     }
 
-void Writer::flushOpenElemEnd(bool closeWithSlash)
+void XmlWriter::flushOpenElemEnd(bool closeWithSlash)
     {
     if(mHaveOpenElemEnd)
         {
@@ -32,7 +33,7 @@ void Writer::flushOpenElemEnd(bool closeWithSlash)
         }
     }
 
-void Writer::append(OovStringRef str, int atm)
+void XmlWriter::append(OovStringRef str, int atm)
     {
     if(atm & ATM_AppendPrespace)
         {
@@ -49,44 +50,99 @@ void Writer::append(OovStringRef str, int atm)
         }
     }
 
-Element::Element(Writer &writer, OovStringRef openStr):
-    mWriter(writer)
+Element::Element(OovStringRef openStr):
+    mParent(nullptr)
     {
-    OovString str = std::string("<");
-    str += openStr;
-
-    mCloseStr = openStr;
-    size_t pos = mCloseStr.find(' ');
-    if(pos != std::string::npos)
+    if(openStr)         // Root does not have any output.
         {
-        mCloseStr.erase(pos);
+        OovString str = std::string("<");
+        str += openStr;
+        mOpenStr = str;
+        mCloseStr = openStr;
+        size_t pos = mCloseStr.find(' ');
+        if(pos != std::string::npos)
+            {
+            mCloseStr.erase(pos);
+            }
         }
+    }
 
-    mWriter.appendText(str, ATM_AppendPrespace | ATM_AppendText);
-    mWriter.setNeedOpenElemEnd();
-    mStartLocation = mWriter.length();
-    mWriter.incLevel();
+Element::Element(Element *parent, OovStringRef openStr):
+    Element(openStr)
+    {
+    setParent(parent);
+    if(parent)
+        {
+        parent->addChild(this);
+        }
     }
 
 Element::~Element()
     {
-    mWriter.decLevel();
-    bool hasChildren = (mStartLocation != mWriter.length());
-    bool closeWithSlash = !hasChildren;
-    if(mCloseStr.length() > 0 && mCloseStr[0] == '?')
+    if(mParent)
         {
-        closeWithSlash = false;
+        mParent->removeChild(this);
         }
-    mWriter.flushOpenElemEnd(closeWithSlash);
-    if(hasChildren)
+    }
+
+void Element::removeChild(Element *child)
+    {
+    mChildren.erase(std::remove(mChildren.begin(), mChildren.end(), child),
+        mChildren.end());
+    }
+
+void Element::writeElementAndChildren(XmlWriter &writer)
+    {
+    writeOpening(writer);
+    writeBody(writer);
+    for(auto const &child : mChildren)
         {
-        OovString str;
-        if(mCloseStr.length() > 0)
+        child->writeElementAndChildren(writer);
+        }
+    writeClosing(writer);
+    }
+
+void Element::writeOpening(XmlWriter &writer)
+    {
+    if(!isNilRootElem())
+        {
+        writer.appendText(mOpenStr, ATM_AppendPrespace | ATM_AppendText);
+            writer.setNeedOpenElemEnd();
+        mStartLocation = writer.length();
+        writer.incLevel();
+        }
+    }
+
+void Element::writeBody(XmlWriter &writer)
+    {
+    if(mBodyStr.length() > 0)
+        {
+        writer.appendText(mBodyStr, ATM_AppendLine);
+        }
+    }
+
+void Element::writeClosing(XmlWriter &writer)
+    {
+    if(!isNilRootElem())
+        {
+        writer.decLevel();
+        bool hasChildren = (mStartLocation != writer.length());
+        bool closeWithSlash = !hasChildren;
+        if(mCloseStr.length() > 0 && mCloseStr[0] == '?')
             {
-            str += "</";
-            str += mCloseStr;
-            str += '>';
+            closeWithSlash = false;
             }
-        mWriter.appendText(str, ATM_AppendLine);
+        writer.flushOpenElemEnd(closeWithSlash);
+        if(hasChildren)
+            {
+            OovString str;
+            if(mCloseStr.length() > 0)
+                {
+                str += "</";
+                str += mCloseStr;
+                str += '>';
+                }
+            writer.appendText(str, ATM_AppendLine);
+            }
         }
     }

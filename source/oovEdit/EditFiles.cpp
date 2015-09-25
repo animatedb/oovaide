@@ -221,6 +221,8 @@ FileEditView *EditFiles::getEditView()
     return view;
     }
 
+// DEAD CODE
+/*
 std::string EditFiles::getEditViewSelectedText()
     {
     FileEditView *view = getEditView();
@@ -231,6 +233,7 @@ std::string EditFiles::getEditViewSelectedText()
         }
     return text;
     }
+*/
 
 void EditFiles::updateDebugMenu()
     {
@@ -742,7 +745,8 @@ bool EditFiles::checkDebugger()
 // The debugger could be on the path.
 //          if(fileExists(debugger))
                 {
-                if(FileIsFileOnDisk(debuggee))
+                bool success = true;
+                if(FileIsFileOnDisk(debuggee, success))
                     {
                     ok = true;
                     }

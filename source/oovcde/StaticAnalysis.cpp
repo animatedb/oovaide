@@ -9,146 +9,145 @@
 #include "FilePath.h"
 #include "Project.h"
 #include "XmlWriter.h"
+#include "OovError.h"
 
 
-static void createMemberVarUsageStyleTransform(const std::string &fullPath)
+static bool createMemberVarUsageStyleTransform(const std::string &fullPath)
     {
     using namespace XML;
 
-    Writer xml;
-    {
-    XmlHeader header(xml);
-    }
-    {
-    XslStyleSheet ss(xml);
-        {
-        XslOutputHtml out(xml);
-        }
-        {
-            {
-            XslTemplate tplroot(xml, "match=\"/\"");
-                {
-                Element html(xml, "html");
-                    {
-                    Element head(xml, "head");
-                        {
-                        Element title(xml, "title");
-                            { XslText(xml, "Data Member Attribute Usage Report"); }
-                        }
-                    }
-                    {
-                    Element body(xml, "body");
-                        {
-                            {
-                            Element headmem(xml, "h1");
-                                { XslText(xml, "Data Member Usage"); }
-                            }
-                            XslText(xml, "See the output directory for"
-                                " the text file output.");
-                            XslText(xml, "The usage count is the count "
-                                "of the number of methods in the same class "
-                                "that refer to the attribute.");
-                        Table tab(xml);
-                            {
-                                {
-                                TableRow rowhead(xml);
-                                    { TableHeader(xml, "Class Name"); }
-                                    { TableHeader(xml, "Attribute Name"); }
-                                    { TableHeader(xml, "Use Count"); }
-                                }
-                                {
-                                XslApplyTemplates app(xml, "select=\"MemberAttrUseReport/Attr\"");
-                                    {
-                                    XslSort(xml, "select=\"UseCount\" data-type=\"number\"");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            {
-            XslTemplate tplattr(xml, "match=\"Attr\"");
-                {
-                    {
-                    TableRow rowval(xml);
-                        {
-                        TableCol colclass(xml);
-                            { XslValueOf(xml, "select=\"ClassName\""); }
-                        }
-                        {
-                        TableCol colattr(xml);
-                            { XslValueOf(xml, "select=\"AttrName\""); }
-                        }
-                        {
-                        TableCol coluse(xml);
-                            { XslValueOf(xml, "select=\"UseCount\""); }
-                        }
-                    }
-                }
-            }
-        }
-    }
-/*
-    static const char *text =
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-            "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            "<xsl:output method=\"html\" />\n"
-            "\n"
-            "  <xsl:template match=\"/\">\n"
-            "    <html>\n"
-            "      <head>\n"
-            "        <title>\n"
-            "          <xsl:text>Member Attribute Usage Report</xsl:text>\n"
-            "        </title>\n"
-            "      </head>\n"
-            "      <body>\n"
-            "        <h1>\n"
-            "          <xsl:text>Member Usage</xsl:text>\n"
-            "        </h1>\n"
-            "        <xsl:text>The usage count is the count of the number of methods in"
-            "           the same class that refer to the attribute.</xsl:text>\n"
-            "        <table border=\"1\">\n"
-            "          <tr>\n"
-            "            <th>Class Name</th>\n"
-            "            <th>Attribute Name</th>\n"
-            "            <th>Use Count</th>\n"
-            "          </tr>\n"
-            "          <xsl:apply-templates select=\"MemberAttrUseReport/Attr\">\n"
-            "             <xsl:sort select=\"UseCount\" data-type=\"number\" />\n"
-            "          </xsl:apply-templates>\n"
-            "        </table>\n"
-            "      </body>\n"
-            "    </html>\n"
-            "  </xsl:template>\n"
-            "\n"
-            "  <xsl:template match=\"Attr\">\n"
-            "    <tr>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"ClassName\" />\n"
-            "      </td>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"AttrName\" />\n"
-            "      </td>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"UseCount\" />\n"
-            "      </td>\n"
-            "    </tr>\n"
-            "  </xsl:template>\n"
-            "</xsl:stylesheet>\n";
-*/
+    XmlRoot root;
+    XmlHeader header(&root);
+    XslStyleSheet ss(&root);
+        XslOutputHtml out(&ss);
+        XslTemplate tplRoot(&ss, "match=\"/\"");
+            Element html(&tplRoot, "html");
+                Element head(&html, "head");
+                    Element title(&head, "title");
+                        XslText titleText(&title, "Data Member Attribute Usage Report");
+                Element body(&html, "body");
+                    Element headMem(&body, "h1");
+                        XslText headText(&headMem, "Data Member Usage");
+                    XslText outText(&body, "See the output directory for the text file "
+                        "output. The class usage count is the count of the "
+                        "number of methods in the same class that refer to the "
+                        " attribute. See");
+                    XslElement link(&body, "name=\"a\"");
+                        OovStringRef linkStr = "http://oovcde.sourceforge.net/articles/DeadCode.html";
+                        XslAttribute attr(&link, "name=\"href\"", linkStr);
+                        XslText linkText(&link, linkStr);
+                    XslText explRemText(&body, " for more information.");
+                    Table table(&body);
+                        TableRow rowHead(&table);
+                            TableHeader rowClass(&rowHead, "Class Name");
+                            TableHeader rowAttr(&rowHead, "Attribute Name");
+                            TableHeader rowUseCount(&rowHead, "Class Use Count");
+                            TableHeader rowAllCount(&rowHead, "All Use Count");
+                        XslApplyTemplates app(&table, "select=\"MemberAttrUseReport/Attr\"");
+                            XslSort sort(&app, "select=\"AllUseCount\" data-type=\"number\"");
+        XslTemplate tplAttr(&ss, "match=\"Attr\"");
+            TableRow rowVal(&tplAttr);
+                TableCol colClass(&rowVal);
+                    XslValueOf valClass(&colClass, "select=\"ClassName\"");
+                TableCol colAttr(&rowVal);
+                    XslValueOf valAttr(&colAttr, "select=\"AttrName\"");
+                TableCol colUse(&rowVal);
+                    XslValueOf valUseCount(&colUse, "select=\"UseCount\"");
+                TableCol colAllUse(&rowVal);
+                    XslValueOf valAllCount(&colAllUse, "select=\"AllUseCount\"");
+
     File transformFile(fullPath, "w");
-    fprintf(transformFile.getFp(), "%s", xml.getStr());
+    XmlWriter writer;
+    root.writeElementAndChildren(writer);
+    bool success = transformFile.putString(writer.getStr());
+    if(!success)
+        {
+        OovString str = "Unable to write member transform: ";
+        str += fullPath;
+        OovError::report(ET_Error, str);
+        }
+    return success;
     }
 
-bool createMemberVarUsageStaticAnalysisFile(ModelData const &modelData, std::string &fn)
+/// Keeps counts of member attribute values.
+typedef std::map<class ModelAttribute const *, int> ModelAttrCounts;
+
+/// Appends the immediate attributes that are referenced by this operation.
+static void appendAttrCounts(ModelData const &model,
+        ModelOperation const &srchOper, ModelAttrCounts &attrCounts)
+    {
+    // This eliminates increasing the count for multiple statements so
+    // that the count only increases once per operation.
+    std::set<ModelAttribute const *> usedAttrs;
+    for(auto const &stmt : srchOper.getStatements())
+        {
+        if(stmt.getStatementType() == ST_VarRef ||
+                stmt.getStatementType() == ST_Call)
+            {
+            ModelType const *modelType = stmt.getClassDecl().getDeclType();
+            ModelClassifier const *classifier = ModelType::getClass(modelType);
+            if(classifier)
+                {
+                usedAttrs.insert(classifier->getAttribute(stmt.getAttrName()));
+                }
+            }
+        }
+    for(auto const &attr : usedAttrs)
+        {
+        auto const &it = attrCounts.find(attr);
+        if(it != attrCounts.end())
+            {
+            it->second++;
+            }
+        else
+            {
+            attrCounts.insert(std::pair<ModelAttribute const *, int>(attr, 1));
+            }
+        }
+    }
+
+static void getAllAttrCounts(GtkWindow *parentWindow,
+    ModelData const &model, ModelAttrCounts &attrCounts)
+    {
+    TaskBusyDialog progressDlg;
+    progressDlg.setParentWindow(parentWindow);
+    size_t totalTypes = model.mTypes.size();
+    progressDlg.startTask("Searching Operations", totalTypes);
+    bool keepGoing = true;
+    time_t updateTime = 0;
+    for(size_t i=0; i<totalTypes && keepGoing; i++)
+        {
+        time_t curTime;
+        time(&curTime);
+        if(updateTime != curTime)
+            {
+            keepGoing = progressDlg.updateProgressIteration(i, nullptr, true);
+            updateTime = curTime;
+            }
+        ModelType const *modelType = model.mTypes[i].get();
+        ModelClassifier const *classifier = ModelType::getClass(modelType);
+        if(classifier)
+            {
+            for(auto const &oper : classifier->getOperations())
+                {
+                appendAttrCounts(model, *oper, attrCounts);
+                }
+            }
+        }
+    progressDlg.endTask();
+    }
+
+bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
+        ModelData const &modelData, std::string &fn)
     {
     FilePath fp(Project::getProjectDirectory(), FP_Dir);
     fp.appendDir("output");
     fp.appendFile("MemberVarUsage");
 
     FileEnsurePathExists(fp);
-    createMemberVarUsageStyleTransform(fp + ".xslt");
+    bool success = createMemberVarUsageStyleTransform(fp + ".xslt");
+    // Attempt to create the xml file anyway.
+    success = false;
 
     fp.appendFile(".xml");
     fn = fp;
@@ -159,7 +158,12 @@ bool createMemberVarUsageStaticAnalysisFile(ModelData const &modelData, std::str
                 "<?xml version=\"1.0\"?>\n"
                 "<?xml-stylesheet type=\"text/xsl\" href=\"MemberVarUsage.xslt\"?>\n"
                 "<MemberAttrUseReport>\n";
-        fprintf(useFile.getFp(), "%s", header);
+        success = useFile.putString(header);
+
+        // Find the counts of all attributes.
+        ModelAttrCounts attrCounts;
+        getAllAttrCounts(parentWindow, modelData, attrCounts);
+
         for(auto const &type : modelData.mTypes)
             {
             ModelClassifier *classifier = type->getClass();
@@ -170,25 +174,44 @@ bool createMemberVarUsageStaticAnalysisFile(ModelData const &modelData, std::str
                     int usageCount = 0;
                     for(auto const &oper : classifier->getOperations())
                         {
-                        if(oper->getStatements().checkAttrUsed(attr->getName()))
+                        if(oper->getStatements().checkAttrUsed(classifier,
+                                attr->getName()))
+                            {
                             usageCount++;
+                            }
+                        }
+                    auto const &attrIter = attrCounts.find(attr.get());
+                    int allUseCount = 0;
+                    if(attrIter != attrCounts.end())
+                        {
+                        allUseCount = (*attrIter).second;
                         }
                     static const char *item =
                         "  <Attr>\n"
                         "    <ClassName>%s</ClassName>\n"
                         "    <AttrName>%s</AttrName>\n"
                         "    <UseCount>%d</UseCount>\n"
+                        "    <AllUseCount>%d</AllUseCount>\n"
                         "  </Attr>\n";
+                    /// @todo - add error checking
                     fprintf(useFile.getFp(), item,
-                        classifier->getName().makeXml().c_str(), attr->getName().c_str(), usageCount);
+                        classifier->getName().makeXml().c_str(),
+                        attr->getName().c_str(), usageCount, allUseCount);
                     }
                 }
             }
-
-        static const char *footer = "</MemberAttrUseReport>\n";
-        fprintf(useFile.getFp(), "%s", footer);
+        if(success)
+            {
+            success = useFile.putString("</MemberAttrUseReport>\n");
+            }
         }
-    return useFile.isOpen();
+    if(!success)
+        {
+        OovString str = "Unable to write member usage: ";
+        str += fn;
+        OovError::report(ET_Error, str);
+        }
+    return success;
     }
 
 
@@ -196,87 +219,58 @@ static void createMethodUsageStyleTransform(const std::string &fullPath)
     {
     using namespace XML;
 
-    Writer xml;
-    {
-    XmlHeader header(xml);
-    }
-    {
-    XslStyleSheet ss(xml);
-        {
-        XslOutputHtml out(xml);
-        }
-        {
-            {
-            XslTemplate tplroot(xml, "match=\"/\"");
-                {
-                Element html(xml, "html");
-                    {
-                    Element head(xml, "head");
-                        {
-                        Element title(xml, "title");
-                            { XslText(xml, "Method Usage Report"); }
-                        }
-                    }
-                    {
-                    Element body(xml, "body");
-                        {
-                            {
-                            Element headmem(xml, "h1");
-                                { XslText(xml, "Method Usage"); }
-                            }
-                            XslText(xml, "See the output directory for"
-                                " the text file output.");
-                            XslText(xml, "The usage count is the global "
-                                "count of usage by any other method.");
-                        Table tab(xml);
-                            {
-                                {
-                                TableRow rowhead(xml);
-                                    { TableHeader(xml, "Class Name"); }
-                                    { TableHeader(xml, "Attribute Name"); }
-                                    { TableHeader(xml, "Type"); }
-                                    { TableHeader(xml, "Use Count"); }
-                                }
-                                {
-                                XslApplyTemplates app(xml, "select=\"MethodUseReport/Oper\"");
-                                    {
-                                    XslSort(xml, "select=\"UseCount\" data-type=\"number\"");
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            {
-            XslTemplate tplattr(xml, "match=\"Oper\"");
-                {
-                    {
-                    TableRow rowval(xml);
-                        {
-                        TableCol colclass(xml);
-                            { XslValueOf(xml, "select=\"ClassName\""); }
-                        }
-                        {
-                        TableCol colattr(xml);
-                            { XslValueOf(xml, "select=\"OperName\""); }
-                        }
-                        {
-                        TableCol colattr(xml);
-                            { XslValueOf(xml, "select=\"Type\""); }
-                        }
-                        {
-                        TableCol coluse(xml);
-                            { XslValueOf(xml, "select=\"UseCount\""); }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    XmlRoot root;
+    XmlHeader header(&root);
+    XslStyleSheet ss(&root);
+        XslOutputHtml out(&ss);
+        XslTemplate tplRoot(&ss, "match=\"/\"");
+            Element html(&tplRoot, "html");
+                Element head(&html, "head");
+                    Element title(&head, "title");
+                        XslText titleText(&title, "Method Usage Report");
+                Element body(&html, "body");
+                    Element headMem(&body, "h1");
+                        XslText headText(&headMem, "Method Usage");
+                    XslText outText(&body, "See the output directory for the "
+                        "text file output. The all usage count is the count of "
+                         "usage by all other methods. See ");
+                    XslElement link(&body, "name=\"a\"");
+                        OovStringRef linkStr = "http://oovcde.sourceforge.net/articles/DeadCode.html";
+                        XslAttribute attr(&link, "name=\"href\"", linkStr);
+                        XslText linkText(&link, "http://oovcde.sourceforge.net/articles/DeadCode.html");
+                    XslText explRemText(&body, " for more information.");
+                    Table table(&body);
+                        TableRow rowHead(&table);
+                            TableHeader rowClass(&rowHead, "Class Name");
+                            TableHeader rowAttr(&rowHead, "Attribute Name");
+                            TableHeader rowType(&rowHead, "Type");
+                            TableHeader rowCount(&rowHead, "All Use Count");
+                            XslApplyTemplates app(&table, "select=\"MethodUseReport/Oper\"");
+                                XslSort sort(&app, "select=\"UseCount\" data-type=\"number\"");
+        XslTemplate tplAttr(&ss, "match=\"Oper\"");
+            TableRow rowVal(&tplAttr);
+                TableCol colClass(&rowVal);
+                    XslValueOf valClass(&colClass, "select=\"ClassName\"");
+                TableCol colOper(&rowVal);
+                    XslValueOf valOper(&colOper, "select=\"OperName\"");
+                TableCol colType(&rowVal);
+                    XslValueOf valType(&colType, "select=\"Type\"");
+                TableCol colCount(&rowVal);
+                    XslValueOf valCount(&colCount, "select=\"UseCount\"");
+
     File transformFile(fullPath, "w");
-    fprintf(transformFile.getFp(), "%s", xml.getStr());
+    XmlWriter writer;
+    root.writeElementAndChildren(writer);
+    bool success = transformFile.putString(writer.getStr());
+    if(!success)
+        {
+        OovString str = "Unable to write member transform: ";
+        str += fullPath;
+        OovError::report(ET_Error, str);
+        }
     }
+
+
 
 
 /// Keeps counts of operations.
@@ -286,11 +280,6 @@ typedef std::map<class ModelOperation const *, int> ModelOperationCounts;
 static void appendOperationCounts(ModelData const &model,
         ModelOperation const &srchOper, ModelOperationCounts &operCounts)
     {
-/*
-if(srchOper.getName().find("name of func") != std::string::npos)
-    {
-    }
-*/
     for(auto const &stmt : srchOper.getStatements())
         {
         if(stmt.getStatementType() == ST_Call)
@@ -316,6 +305,37 @@ if(srchOper.getName().find("name of func") != std::string::npos)
         }
     }
 
+static void getAllOperationCounts(GtkWindow *parentWindow,
+    ModelData const &model, ModelOperationCounts &operCounts)
+    {
+    TaskBusyDialog progressDlg;
+    progressDlg.setParentWindow(parentWindow);
+    size_t totalTypes = model.mTypes.size();
+    progressDlg.startTask("Searching Operations", totalTypes);
+    bool keepGoing = true;
+    time_t updateTime = 0;
+    for(size_t i=0; i<totalTypes && keepGoing; i++)
+        {
+        time_t curTime;
+        time(&curTime);
+        if(updateTime != curTime)
+            {
+            keepGoing = progressDlg.updateProgressIteration(i, nullptr, true);
+            updateTime = curTime;
+            }
+        ModelType const *modelType = model.mTypes[i].get();
+        ModelClassifier const *classifier = ModelType::getClass(modelType);
+        if(classifier)
+            {
+            for(auto const &oper : classifier->getOperations())
+                {
+                appendOperationCounts(model, *oper, operCounts);
+                }
+            }
+        }
+    progressDlg.endTask();
+    }
+
 bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
         ModelData const &model, std::string &fn)
     {
@@ -337,34 +357,9 @@ bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
                 "<MethodUseReport>\n";
         fprintf(useFile.getFp(), "%s", header);
 
-        TaskBusyDialog progressDlg;
-        progressDlg.setParentWindow(parentWindow);
         // Find the counts of all operations.
         ModelOperationCounts operCounts;
-        size_t totalTypes = model.mTypes.size();
-        progressDlg.startTask("Searching Operations", totalTypes);
-        bool keepGoing = true;
-        time_t updateTime = 0;
-        for(size_t i=0; i<totalTypes && keepGoing; i++)
-            {
-            time_t curTime;
-            time(&curTime);
-            if(updateTime != curTime)
-                {
-                keepGoing = progressDlg.updateProgressIteration(i, nullptr, true);
-                updateTime = curTime;
-                }
-            ModelType const *modelType = model.mTypes[i].get();
-            ModelClassifier const *classifier = ModelType::getClass(modelType);
-            if(classifier)
-                {
-                for(auto const &oper : classifier->getOperations())
-                    {
-                    appendOperationCounts(model, *oper, operCounts);
-                    }
-                }
-            }
-        progressDlg.endTask();
+        getAllOperationCounts(parentWindow, model, operCounts);
 
         // Output the counts.
         for(auto const &type : model.mTypes)
@@ -380,7 +375,13 @@ bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
                         {
                         usageCount = (*it).second;
                         }
-                    OovString operTypeStr = (oper->isVirtual()) ? "virt" : "";
+                    OovString operTypeStr = "";
+                    if(oper->getName().find('~') != std::string::npos)
+                        operTypeStr = "destr";
+                    else if(classifier->getName() == oper->getName())
+                        operTypeStr = "constr";
+                    else if(oper->isVirtual())
+                        operTypeStr = "virt";
                     static const char *item =
                         "  <Oper>\n"
                         "    <ClassName>%s</ClassName>\n"
@@ -468,120 +469,105 @@ bool createProjectStats(ModelData const &modelData, std::string &displayStr)
     return true;
     }
 
-static void createLineStatsStyleTransform(const std::string &fullPath)
+static bool createLineStatsStyleTransform(const std::string &fullPath)
     {
-    static const char *text =
-            "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
-            "<xsl:stylesheet version=\"1.0\" xmlns:xsl=\"http://www.w3.org/1999/XSL/Transform\">\n"
-            "<xsl:output method=\"html\" />\n"
-            "\n"
-            "  <xsl:key name=\"ModulesByModuleDir\" match=\"Module\" use=\"ModuleDir\" />\n\n"
+    using namespace XML;
 
-            "  <xsl:template match=\"/\">\n"
-            "    <html>\n"
-            "      <head>\n"
-            "        <title>\n"
-            "          <xsl:text>Line Statistics Report</xsl:text>\n"
-            "        </title>\n"
-            "      </head>\n"
-            "      <body>\n"
+    XmlRoot root;
+    XmlHeader header(&root);
+    XslStyleSheet ss(&root);
+        XslOutputHtml out(&ss);
+        XslKey key(&ss, "name=\"ModulesByModuleDir\" match=\"Module\" use=\"ModuleDir\"");
+        XslTemplate tplRoot(&ss, "match=\"/\"");
+            Element html(&tplRoot, "html");
+                Element head(&html, "head");
+                    Element title(&head, "title");
+                        XslText titleText(&title, "Line Statistics Report");
+                Element body(&html, "body");
+                Element headMem(&body, "h1");
+                    XslText headText(&headMem, "Line Statistics");
+                XslText outText(&body, "Note that code and comments can be "
+                    "on the same line, and will be counted in both counts.");
+                Element pout(&body, "p");
 
-            "  <h1>\n"
-            "    <xsl:text>Line Statistics</xsl:text>\n"
-            "  </h1>\n"
-            "  <xsl:text>Note that code and comments can be on the same line,\n"
-            "     and will be counted in both counts.</xsl:text>\n"
-// Output the total project stats
+                // Output the total project stats
+                XslText code(&body, "Total code lines:");
+                XslCallTemplate callCode(&body, "name=\"SumCodeLines\"");
+                Element brcode(&body, "br");
+                XslText comment(&body, "Total comment lines:");
+                XslCallTemplate commentCode(&body, "name=\"SumCommentLines\"");
+                Element pcomment(&body, "p");
 
-            "    <p/><xsl:text>Total code lines:</xsl:text>\n"
-            "      <xsl:call-template name=\"SumCodeLines\" /><br/>\n"
+                // Output the directory lines table
+                Element headDirMem(&body, "h2");
+                    XslText dirLines(&headDirMem, "Directory Lines");
+                Table dirTable(&body);
+                    TableRow dirHead(&dirTable);
+                        TableHeader dirDir(&dirHead, "Module Dir");
+                        TableHeader dirCode(&dirHead, "Code Lines");
+                        TableHeader dirComment(&dirHead, "Comment Lines");
+                        TableHeader dirModule(&dirHead, "Module Lines");
+                    XslForEach forEach(&dirTable, "select=\"LineStatisticsReport/Module[count(. | "
+                        "key(\'ModulesByModuleDir\', ModuleDir)[1]) = 1]\"");
+                        XslSort sort(&forEach, "select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/ModuleLines)\" "
+                            "data-type=\"number\" order=\"ascending\"");
+                        TableRow rowVal(&forEach);
+                            TableCol dirModuleCol(&rowVal);
+                                XslValueOf valDirModule(&dirModuleCol, "select=\"ModuleDir\"");
+                            TableCol dirCodeCol(&rowVal);
+                                XslValueOf valDirCode(&dirCodeCol,
+                                    "select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/CodeLines)\"");
+                            TableCol dirCommentCol(&rowVal);
+                                XslValueOf valDirComment(&dirCommentCol,
+                                    "select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/CommentLines)\"");
+                            TableCol dirModLinesCol(&rowVal);
+                                XslValueOf valDirModLines(&dirModLinesCol,
+                                    "select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/ModuleLines)\"");
 
-            "    <xsl:text>\n"
-            "      Total comment lines: \n"
-            "    </xsl:text>\n"
-            "      <xsl:call-template name=\"SumCommentLines\" /><p/>\n"
-// Output the directory lines table
-            "  <h2>\n"
-            "    <xsl:text>Directory Lines</xsl:text>\n"
-            "  </h2>\n"
-            "  <table border=\"1\">\n"
-            "    <tr>\n"
-            "      <th>Module Dir</th>\n"
-            "      <th>Code Lines</th>\n"
-            "      <th>Comment Lines</th>\n"
-            "      <th>Module Lines</th>\n"
-            "    </tr>\n"
-            "  <xsl:for-each select=\"LineStatisticsReport/Module[count(. | key(\'ModulesByModuleDir\', ModuleDir)[1]) = 1]\">\n"
-            "      <xsl:sort select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/ModuleLines)\"\n"
-            "      data-type=\"number\" order=\"ascending\" />\n"
-            "      <tr><td>\n"
-            "      <xsl:value-of select=\"ModuleDir\" />\n"
-            "      </td><td>\n"
-            "      <xsl:value-of select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/CodeLines)\" />\n"
-            "      </td><td>\n"
-            "      <xsl:value-of select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/CommentLines)\" />\n"
-            "      </td><td>\n"
-            "      <xsl:value-of select=\"sum(key(\'ModulesByModuleDir\', ModuleDir)/ModuleLines)\" />\n"
-            "      </td></tr>\n"
-            "  </xsl:for-each>\n"
-            "  </table>\n"
+                // Output the individual modules table
+                Element headModMem(&body, "h2");
+                    XslText dirModLines(&headModMem, "Module Lines");
+                Table modTable(&body);
+                    TableRow modHead(&modTable);
+                        TableHeader modName(&modHead, "Module Name");
+                        TableHeader modDir(&modHead, "Module Dir");
+                        TableHeader modCode(&modHead, "Code Lines");
+                        TableHeader modComment(&modHead, "Comment Lines");
+                        TableHeader modModule(&modHead, "Module Lines");
+                        XslApplyTemplates app(&modTable, "select=\"LineStatisticsReport/Module\"");
+                            XslSort sortMod(&app, "select=\"ModuleLines\" data-type=\"number\"");
 
+        // Template function SumCodeLines
+        XslTemplate tplSumCodeLines(&ss, "name=\"SumCodeLines\"");
+            XslValueOf valSumCode(&tplSumCodeLines, "select='sum(//CodeLines)'");
+        XslTemplate tplSumCommentLines(&ss, "name=\"SumCommentLines\"");
+            XslValueOf valSumComment(&tplSumCommentLines, "select='sum(//CommentLines)'");
 
-// Output the individual modules table
-            "  <h2>\n"
-            "    <xsl:text>Module Lines</xsl:text>\n"
-            "  </h2>\n"
-            "    <table border=\"1\">\n"
-            "      <tr>\n"
-            "        <th>Module Name</th>\n"
-            "        <th>Module Dir</th>\n"
-            "        <th>Code Lines</th>\n"
-            "        <th>Comment Lines</th>\n"
-            "        <th>Module Lines</th>\n"
-            "      </tr>\n"
-            "      <xsl:apply-templates select=\"LineStatisticsReport/Module\">\n"
-            "        <xsl:sort select=\"ModuleLines\" data-type=\"number\" />\n"
-            "      </xsl:apply-templates>\n"
-            "    </table>\n"
+        // The Module template match
+        XslTemplate tplModule(&ss, "match=\"Module\"");
+            TableRow moduleRow(&tplModule);
+                TableCol modNameCol(&moduleRow);
+                    XslValueOf modNameVal(&modNameCol, "select=\"ModuleName\"");
+                TableCol modDirCol(&moduleRow);
+                    XslValueOf modDirVal(&modDirCol, "select=\"ModuleDir\"");
+                TableCol modCodeCol(&moduleRow);
+                    XslValueOf modCodeVal(&modCodeCol, "select=\"CodeLines\"");
+                TableCol modCommentCol(&moduleRow);
+                    XslValueOf modCommentVal(&modCommentCol, "select=\"CommentLines\"");
+                TableCol modTotalCol(&moduleRow);
+                    XslValueOf modTotalVal(&modTotalCol, "select=\"ModuleLines\"");
 
-            "      </body>\n"
-            "    </html>\n"
-            "  </xsl:template>\n"
-            "\n"
-
-// Template function SumCodeLines
-            "  <xsl:template name=\"SumCodeLines\">\n"
-            "    <xsl:value-of select='sum(//CodeLines)'/>\n"
-            "  </xsl:template>\n"
-
-            "  <xsl:template name=\"SumCommentLines\">\n"
-            "    <xsl:value-of select='sum(//CommentLines)'/>\n"
-            "  </xsl:template>\n"
-
-// The Module template match
-            "  <xsl:template match=\"Module\">\n"
-            "    <tr>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"ModuleName\" />\n"
-            "      </td>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"ModuleDir\" />\n"
-            "      </td>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"CodeLines\" />\n"
-            "      </td>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"CommentLines\" />\n"
-            "      </td>\n"
-            "      <td>\n"
-            "        <xsl:value-of select=\"ModuleLines\" />\n"
-            "      </td>\n"
-            "    </tr>\n"
-            "  </xsl:template>\n"
-
-            "</xsl:stylesheet>\n";
     File transformFile(fullPath, "w");
-    fprintf(transformFile.getFp(), "%s", text);
+    XmlWriter writer;
+    root.writeElementAndChildren(writer);
+    bool success = transformFile.putString(writer.getStr());
+    if(!success)
+        {
+        OovString str = "Unable to write lines transform: ";
+        str += fullPath;
+        OovError::report(ET_Error, str);
+        }
+    return success;
     }
 
 static OovString getRelativeFileName(OovString const &fullFn)

@@ -347,7 +347,13 @@ OovString ProjectPackages::getFilename()
 bool ProjectPackages::read()
     {
     mFile.setFilename(getFilename());
-    bool success = mFile.readFile();
+    bool success = true;
+    // It is ok if the project package file is not present.  There could
+    // be no packages yet.
+    if(mFile.isFilePresent(success))
+        {
+        success = mFile.readFile();
+        }
     if(!success)
         {
         OovString str = "Unable to read project packages: ";

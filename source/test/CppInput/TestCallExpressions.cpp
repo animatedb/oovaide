@@ -11,6 +11,8 @@ class parent
     public:
         parent()
             {}
+        ~parent()
+            {}
         parent(int x)
             { parentFunc(x); }
         int parentFunc(int x)
@@ -23,6 +25,7 @@ void globalFunc1()
 
 void globalFunc2(parent c)
     {
+	parent d = c;
 	globalFunc1();
     }
 

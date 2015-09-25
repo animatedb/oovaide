@@ -12,11 +12,11 @@
 
 /// Delete the last leaf of a directory.
 /// @param path The path to delete.
-void deleteDir(OovStringRef const path);
+bool deleteDir(OovStringRef const path);
 
 /// Recursively delete directories.  This deletes all files in the directories.
 /// @param path The path to delete.
-void recursiveDeleteDir(OovStringRef const path);
+bool recursiveDeleteDir(OovStringRef const path);
 
 /// Get all filenames with a matching extensions.
 /// @param path The path to search.

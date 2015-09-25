@@ -1,7 +1,7 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
   <!-- DC Blaha - 9/15/2015 -->
-  <!-- Last Update: 9/15/2015 -->
+  <!-- Last Update: 9/24/2015 -->
   <head>
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
     <link rel="stylesheet" type="text/css" href="../style.css">
@@ -17,19 +17,65 @@
     function.  It outputs a table of the number of times each method or function
     is called.  The table is viewable in a brower, and is also output as XML.
     <p/>
-    One of the limitations of the tool is that it cannot determine which
-    virtual functions are called, so these show up as having a call count of zero.
+    Typical output looks like the following:
     <p/>
+<pre>
+    See the output directory for the text file output.
+    The all usage count is the count of usage by all other methods. 
+    <table border="1">
+	<tr><th>Class Name</th><th>Attribute Name</th><th>Type</th><th>All Use Count</th></tr>
+	<tr><td>AddPackageDialog</td><td>~AddPackageDialog</td><td>destr</td><td>0</td></tr>
+	<tr><td>AddPackageDialog</td><td>AddPackageDialog</td><td>constr</td><td>0</td></tr>
+	<tr><td>Editor</td><td>DebugStatusChanged</td><td>virt</td><td>0</td></tr>
+	<tr><td>ModelData</td><td>getBaseType</td><td></td><td>6</td></tr>
+    </table>
+</pre>
+    <p/>
+    Some tool limitations are:
+    <ul>
+    <li>Implicit calls to constructors and destructors or assignment operators
+	are shown as being unreferenced.</li>
+    <li>It is not possible to find out which virtual function is called, so they
+	are displayed as being unreferenced
+        </li>
+    <li>
+    Multiple functions with the same name can exist in a project when they
+    are used to build different components.  Only one of them is used as the
+    definition of the function, and the other called functions from the
+    duplicately named functions will show up as being unreferenced.
     The tool can handle methods with the same name as long as they have unique
-    signatures or are in different namespaces.  But if there are multiple
-    functions with the same name because they used for different components
-    in a project, then only one of them is used as the definition of the function,
-    and the other called functions from the duplicately named functions will
-    show up as not being called.
-    <p/>
-    Both of these issues only cause the problem that too many functions
-    are listed as dead code, and therefore the tool is still usefull
+    signatures or are in different namespaces.  
+    </li>
+    </ul>
+
+    These issues only cause the problem that too many functions
+    are listed as dead code, and therefore the tool is still useful
     for identifying true dead code.
+
+    <h2>Unused Members Detection</h2>
+    Members can be accessed within the class, from other classes or functions.
+    They can also be accessed as a data member or to access a method of the
+    data member.
+    Typical output looks like the following:
+    <p/>
+<pre>
+    See the output directory for the text file output.
+    The class usage count is the count of the number of methods in the same
+    class that refer to the attribute. 
+    <table border="1">
+	<tr><th>Class Name</th><th>Attribute Name</th><th>Class Use Count</th><th>All Use Count</th></tr>
+	<tr><td>ComponentListItem</td><td>mPathName</td><td>1</td><td>2</td></tr>
+	<tr><td>PortionNode</td><td>mNodeType</td><td>2</td><td>2</td></tr>
+    </table>
+</pre>
+    <p/>
+    Some limitations are:
+    <ul>
+    <li>Classes with the same name used in different components within
+	the project may list as having unused members.</li>
+    </li>
+    </ul>
+
     <p/>
     The tool was run on the Oovcde project, and found many instances of dead
     code.  This was a bit of a surprise since the project is written by a

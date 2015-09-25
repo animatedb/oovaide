@@ -8,12 +8,15 @@
 #include "ModelObjects.h"
 #include "OovString.h"
 #include "Debug.h"
+#include "OovError.h"
 #include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <algorithm>
 #include <map>
 
+
+#define DEBUG_OPER 0
 #define DEBUG_TYPES 0
 
 
@@ -202,26 +205,32 @@ bool ModelStatement::hasBaseClassRef() const
     return(present);
     }
 
-bool ModelStatements::checkAttrUsed(OovStringRef attrName) const
+bool ModelStatements::checkAttrUsed(ModelClassifier const *cls,
+        OovStringRef attrName) const
     {
     bool used = false;
     for(auto const &stmt : *this)
         {
-        eModelStatementTypes stateType = stmt.getStatementType();
-        if(stateType == ST_VarRef)
+        ModelType const *modelType = stmt.getClassDecl().getDeclType();
+        ModelClassifier const *classifier = ModelType::getClass(modelType);
+        if(cls == classifier)
             {
-            if(stmt.getAttrName() == attrName.getStr())
+            eModelStatementTypes stateType = stmt.getStatementType();
+            if(stateType == ST_VarRef)
                 {
-                used = true;
-                break;
+                if(stmt.getAttrName() == attrName.getStr())
+                    {
+                    used = true;
+                    break;
+                    }
                 }
-            }
-        else if(stateType == ST_Call)
-            {
-            if(stmt.getAttrName() == attrName.getStr())
+            else if(stateType == ST_Call)
                 {
-                used = true;
-                break;
+                if(stmt.getAttrName() == attrName.getStr())
+                    {
+                    used = true;
+                    break;
+                    }
                 }
             }
         }
@@ -384,6 +393,18 @@ void ModelClassifier::eraseOperation(const ModelOperation *oper)
         {
         if(mOperations[i].get() == oper)
             {
+#if(DEBUG_OPER)
+            if(oper->getName().find("appendPage") != std::string::npos)
+                {
+                OovString str;
+                str = "eraseOper ";
+                str += oper->getName().getStr();
+                str += ' ';
+                str.appendInt(oper->getStatements().size());
+                OovError::report(ET_Error, str);
+                }
+#endif
+
             mOperations.erase(mOperations.begin() +
                 static_cast<int>(i));
             break;
@@ -516,6 +537,12 @@ class TypeIdMap:public std::map<int, ModelType *>
             auto it = find(id);
             if(it != end())
                 type = (*it).second;
+            else
+                {
+                OovString str = "Unable to resolve Decl ID ";
+                str.appendInt(id);
+                OovError::report(ET_Error, str);
+                }
             return type;
             }
     };
@@ -552,6 +579,15 @@ void ModelData::resolveStatements(class TypeIdMap const &typeMap, ModelStatement
         if(stmt.getStatementType() == ST_Call ||
                 stmt.getStatementType() == ST_VarRef)
             {
+#if(DEBUG_OPER)
+if(stmt.getFullName().find("appendPage") != std::string::npos)
+    {
+    OovString str;
+    str = "XMI RESOLVE CALL ";
+    str += stmt.getFullName();
+    OovError::report(ET_Error, str);
+    }
+#endif
             resolveDecl(typeMap, stmt.getClassDecl());
             if(stmt.getStatementType() == ST_VarRef)
                 {

@@ -102,7 +102,7 @@ class DiagramDependencyDrawer
         virtual size_t getNumNodes() const = 0;
         virtual void setNodePosition(size_t nodeIndex, GraphPoint pos) = 0;
         virtual GraphPoint getNodePosition(size_t nodeIndex) const = 0;
-        virtual OovString const &getNodeName(size_t nodeIndex) const = 0;
+        virtual OovString const getNodeName(size_t nodeIndex) const = 0;
         virtual size_t getNumConnections() const = 0;
         virtual void getConnection(size_t ci, size_t &consumerIndex,
                 size_t &supplierIndex) const = 0;
@@ -149,8 +149,8 @@ class DiagramDependencyGenes:public GenePool
         size_t mMaxDistanceQ;
         size_t mMaxOverlapQ;
         size_t mMaxHeightQ;
-        void setupQualityEachGeneration() override;
-        QualityType calculateSingleGeneQuality(size_t geneIndex) const override;
+        virtual void setupQualityEachGeneration() override;
+        virtual QualityType calculateSingleGeneQuality(size_t geneIndex) const override;
         GeneValue getYPosition(size_t geneIndex, size_t nodeIndex) const;
         void setYPosition(size_t geneIndex, size_t nodeIndex, GeneValue val);
         size_t getDrawingHeight(size_t geneIndex) const;

@@ -127,7 +127,8 @@ class Contexts:public JournalListener, public EditorListener
         EditorContainer mEditorContainer;
         std::stack<OovIpcMsg> mEditorMessages;
 
-        void addClass(OovStringRef const className);
+// DEAD CODE
+//        void addClass(OovStringRef const className);
         std::string getSelectedClass() const
             {
             return mClassList.getSelected();

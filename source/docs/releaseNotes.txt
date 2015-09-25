@@ -25,7 +25,7 @@ Explanations
 	- If the error, "Never use <adxintrin.h> directly", displays, the
 	  Oovcde project must be set to exclude lib dir for analysis.
 
-Code Guidelines
+Code/Design Guidelines
 -----------
 	- Error handling strategy
 	  Errors are not reported (OovError::report) in low level file handling
@@ -36,6 +36,8 @@ Code Guidelines
 	  High level files such as component types are reported, but no GUI/gtk
 	  message boxes until the GUI layer.
 
+	- OovCommon is a shared library between many components
+
 Missing Features
 ----------------
 - General
@@ -45,8 +47,7 @@ Missing Features
 		oovcde.cpp - on_NewModuleOkButton_clicked
 		StaticAnalysis.cpp
 		CppInstr.cpp
-	- "OovStringRef const buildStr = mConfigFile.getValue(buildType)" is
-		optimized where buildStr contains garbage.
+	- Warn about overwriting files with save as or last update time (editor)
 	- Preserve state between sessions
 	- https://github.com/rdp/open-source-how-to-popularize-your-project
 	- http://keywordtool.io/search
@@ -126,7 +127,6 @@ Missing Features
 	- Add filter for class list (GTK search feature exists)
 
 - Portion Diagrams
-	- BUG: ClassConnectItem not showing constructors properly?
 	- Allow move with multiple selection
 	- Grid for placement, option for grid size
 	- View source should go to selected function
@@ -154,17 +154,19 @@ Missing Features
 
 - Analysis (builder and parser)
 	- Method usage:
-		- EditFiles::viewFile calls GUI:: appendPage not shown, XML ok
-		- Editor::onIdle calls Gui::scrollToCursor
-		  not listed in sequence diagram, varref is before call, GUI:: namespace
-		  loaded in XMI, parser should create GUI:: class with methods.
-		  inline functions are not shown in namespaces (Gui.h), other inlines
-		  are shown (ComponentBuilder ComponentPkgDeps::addPkgDep)
-		  what about classes with all inline funcs - probably ok since GUI has non-inlines
+		- Builder::addFromFile called from main (multiple main)
+		- ClassGraph::processItem called from template
+		- CLang does not appear to make an AST entry for implicit constructor
+		  or destructor calls
 		- dup function names
 			- appendCursorTokenString() calls ConditionTerminator
 			- getAccess() calls setVis in CppParser.cpp
 		- activateApp calls gEditor->loadSettings (#ifdef)
+	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
+		- not in xmi file
+		- CLangView shows:
+			CompStmt, CallExpr "insert", UnexposedExpr, CallExpr "pair", TypeRef "ZoneConnection"
+		visitFunctionAddStatements case CXCursor_CallExpr
 	- Use clang_Location_isFromMainFile if it works for header source files.
 	- Some header file changes don't reanalyze new dependent source files?
 		(cause is due to errors don't get reanalyzed)
@@ -187,12 +189,6 @@ Missing Features
 	  For now, if not, delete out/bld directory for clean build.
 
 - Build System (Build not required for displaying diagrams)
-	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
-		- not in xmi file
-		- CLangView shows:
-			CompStmt, CallExpr "insert", UnexposedExpr, CallExpr "pair", TypeRef "ZoneConnection"
-		visitFunctionAddStatements case CXCursor_CallExpr
-
 	- Build/Settings per component don't seem to work for -lnk-static-libstdc++
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
 		- Changing edit/preferences deletes analysis, but not debug/release
@@ -329,6 +325,9 @@ Missing Features
 	- BUG: Goto class doesn't change tab to class tab - journal requires this
 
 - Future
+	- Open source rules
+		http://hintjens.com/blog:95
+		http://rfc.zeromq.org/spec:22
 	- dump call stack on crash
 		http://eli.thegreenplace.net/2015/programmatic-access-to-the-call-stack-in-c/
 	- Statistics / Quality measurement

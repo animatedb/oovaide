@@ -174,6 +174,8 @@ class NameValueFile:public NameValueRecord
         void setFilename(OovStringRef const fn)
             { mFilename = fn; }
 
+        /// Indicates whether the file exists on disk
+        bool isFilePresent(bool &success);
         /// Read the file into the map of items.
         bool readFile();
         /// Write the file from the map of items.

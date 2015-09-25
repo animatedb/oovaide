@@ -13,10 +13,13 @@ PortionNode const *PortionGraph::getNode(OovStringRef name, PortionNodeTypes nt)
     PortionNode const *retNode = nullptr;
     for(auto const &node : mNodes)
         {
-        if(node.getNodeType() == nt && node.getName() == name.getStr())
+        if(node.getNodeType() == nt)
             {
-            retNode = &node;
-            break;
+            if(node.getName() == name.getStr())
+                {
+                retNode = &node;
+                break;
+                }
             }
         }
     return retNode;
@@ -36,7 +39,7 @@ void PortionGraph::clearAndAddClass(OovStringRef classname)
                 }
             for(auto const &oper : cls->getOperations())
                 {
-                mNodes.push_back(PortionNode(oper->getName(), PNT_Operation,
+                mNodes.push_back(PortionNode(oper->getOverloadFuncName(), PNT_Operation,
                     oper->isVirtual()));
                 }
             for(auto const &oper : cls->getOperations())
@@ -64,7 +67,7 @@ void PortionGraph::clearAndAddClass(OovStringRef classname)
                                 size_t supIndex = getNodeIndex(getNode(
                                     className, PNT_NonMemberVariable));
                                 size_t consIndex = getNodeIndex(getNode(
-                                    oper->getName(), PNT_Operation));
+                                    oper->getOverloadFuncName(), PNT_Operation));
                                 PortionConnection conn(supIndex, consIndex);
                                 mConnections.push_back(conn);
                                 }
@@ -82,28 +85,39 @@ void PortionGraph::addConnections(ModelClassifier const *cls)
     // Operation to attribute connections
     for(auto const &attr : cls->getAttributes())
         {
-        addAttrOperConnections(attr->getName(), cls->getOperations());
+        addAttrOperConnections(cls, attr->getName(), cls->getOperations());
         }
     // Operation to operation connections.
     for(auto const &oper : cls->getOperations())
         {
         ModelStatements const &statements = oper->getStatements();
-        addOperationConnections(cls, statements, getNode(oper->getName(),
+        addOperationConnections(cls, statements, getNode(oper->getOverloadFuncName(),
                 PNT_Operation));
         }
     }
 
-void PortionGraph::addAttrOperConnections(OovStringRef attrName,
+void PortionGraph::addAttrOperConnections(ModelClassifier const *cls,
+        OovStringRef attrName,
         std::vector<std::unique_ptr<ModelOperation>> const &opers)
     {
     for(auto const &oper : opers)
         {
         ModelStatements const &statements = oper->getStatements();
-        if(statements.checkAttrUsed(attrName))
+        if(statements.checkAttrUsed(cls, attrName))
             {
-            PortionConnection conn(getNodeIndex(getNode(attrName, PNT_Attribute)),
-                getNodeIndex(getNode(oper->getName(), PNT_Operation)));
-            mConnections.push_back(conn);
+            PortionNode const *attrNode = getNode(attrName, PNT_Attribute);
+            PortionNode const *operNode = getNode(oper->getOverloadFuncName(),
+                    PNT_Operation);
+            if(attrNode && operNode)
+                {
+                PortionConnection conn(getNodeIndex(attrNode),
+                        getNodeIndex(operNode));
+                mConnections.push_back(conn);
+                }
+            else
+                {
+                DebugAssert(__FILE__, __LINE__);
+                }
             }
         }
     }
@@ -111,23 +125,26 @@ void PortionGraph::addAttrOperConnections(OovStringRef attrName,
 void PortionGraph::addOperationConnections(ModelClassifier const *classifier,
         ModelStatements const &statements, PortionNode const *callerOperNode)
     {
-    for(auto const &stmt : statements)
+    if(callerOperNode)
         {
-        if(stmt.getStatementType() == ST_Call)
+        for(auto const &stmt : statements)
             {
-            ModelClassifier const *cls = stmt.getClassDecl().getDeclType()->getClass();
-            if(cls == classifier)
+            if(stmt.getStatementType() == ST_Call)
                 {
-                const ModelOperation *oper = cls->getMatchingOperation(stmt);
-                if(oper)
+                ModelClassifier const *cls = stmt.getClassDecl().getDeclType()->getClass();
+                if(cls == classifier)
                     {
-                    PortionConnection conn(getNodeIndex(getNode(oper->getName(),
-                            PNT_Operation)), getNodeIndex(callerOperNode));
-                    mConnections.push_back(conn);
-                    }
-                else
-                    {
-                    DebugAssert(__FILE__, __LINE__);
+                    const ModelOperation *oper = cls->getMatchingOperation(stmt);
+                    if(oper)
+                        {
+                        PortionConnection conn(getNodeIndex(getNode(oper->getName(),
+                                PNT_Operation)), getNodeIndex(callerOperNode));
+                        mConnections.push_back(conn);
+                        }
+                    else
+                        {
+                        DebugAssert(__FILE__, __LINE__);
+                        }
                     }
                 }
             }

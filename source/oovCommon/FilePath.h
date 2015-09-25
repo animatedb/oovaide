@@ -206,11 +206,13 @@ bool FileEnsurePathExists(OovStringRef const path);
 
 /// Check if the specified file is on disk
 /// @param path The path to check.
-bool FileIsFileOnDisk(OovStringRef const path);
+/// @param success True if the check was performed successfully.
+bool FileIsFileOnDisk(OovStringRef const path, bool &success);
 
 /// Check if the specified directory is on disk
 /// @param path The path to check.
-bool FileIsDirOnDisk(OovStringRef const path);
+/// @param success True if the check was performed successfully.
+bool FileIsDirOnDisk(OovStringRef const path, bool &success);
 
 /// Get the modify time of the file.
 /// @param path The path to use to get the time.
@@ -283,10 +285,10 @@ template<typename T_Str> class FilePathRefInterface
             { return FilePathHasExtension(getThisStr()); }
         bool matchExtension(OovStringRef const path) const
             { return FilePathMatchExtension(getThisStr(), path); }
-        bool isDirOnDisk() const
-            { return FileIsDirOnDisk(getThisStr()); }
-        bool isFileOnDisk() const
-            { return FileIsFileOnDisk(getThisStr()); }
+        bool isDirOnDisk(bool &success) const
+            { return FileIsDirOnDisk(getThisStr(), success); }
+        bool isFileOnDisk(bool &success) const
+            { return FileIsFileOnDisk(getThisStr(), success); }
         void deleteFile() const
             { FileDelete(getThisStr()); }
         void ensurePathExists()

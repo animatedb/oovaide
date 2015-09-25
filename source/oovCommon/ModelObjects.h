@@ -244,10 +244,10 @@ class ModelStatement:private ModelObject
         /// Get the statement type.
         eModelStatementTypes getStatementType() const
             { return mStatementType; }
-        /// Get the class declaration. These are only valid for call statements.
+        /// Get the class declaration. These are only valid for call or varref statements.
         ModelTypeRef &getClassDecl()
             { return mClassDecl; }
-        /// Get the class declaration. These are only valid for call statements.
+        /// Get the class declaration. These are only valid for call or varref statements.
         const ModelTypeRef &getClassDecl() const
             { return mClassDecl; }
         /// Get the variable declaration. These are only valid for variable
@@ -312,8 +312,9 @@ class ModelStatements:public std::vector<ModelStatement>
             }
         /// Check whether a variable is used by any of the statements.
         /// The variable could be used by a variable reference or call.
-        /// @param attrName the variable to check
-        bool checkAttrUsed(OovStringRef attrName) const;
+        /// @param cls The class to check.
+        /// @param attrName The variable to check.
+        bool checkAttrUsed(ModelClassifier const *cls, OovStringRef attrName) const;
     };
 
 /// This represents an operation in the code.
@@ -333,6 +334,8 @@ public:
         { mOverloadKey = ModelStatement::makeOverloadKeyFromOperUSR(operStr); }
     void setOverloadKeyFromKey(OovStringRef keyStr)
         { mOverloadKey = keyStr; }
+    // The overload name is the function name along with the appended overload
+    // separator and overload key.
     OovString getOverloadFuncName() const;
     /// This should not be used to compare functions. Use
     /// ModelStatement::compareFuncName(s).
@@ -419,6 +422,8 @@ public:
         { return mLineNum; }
 
 private:
+    // The overload key is an integer hex value stored as a string. It is
+    // used to resolve overloaded functions.
     OovString mOverloadKey;
     std::vector<std::unique_ptr<ModelFuncParam>> mParameters;
     std::vector<std::unique_ptr<ModelBodyVarDecl>> mBodyVarDeclarators;

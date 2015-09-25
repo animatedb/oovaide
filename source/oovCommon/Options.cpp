@@ -107,7 +107,8 @@ void OptionsDefaults::setDefaultOptions()
 #ifdef __linux__
 //    baseArgs.addArg("-ER/usr/include/gtk-3.0");
 //    baseArgs.addArg("-ER/usr/lib/x86_64-linux-gnu/glib-2.0/include");
-    if(FileIsFileOnDisk("/usr/bin/clang++"))
+    bool success;
+    if(FileIsFileOnDisk("/usr/bin/clang++", success))
         useCLangBuild = true;
 #else
     std::string path = getenv("PATH");

@@ -46,8 +46,9 @@ class ComponentDiagramView
             { return true; }
         ComponentDrawOptions &getDrawOptions()
             { return mDrawOptions; }
-        GuiOptions const &getGuiOptions()
-            { return mGuiOptions; }
+// DEAD CODE
+//        GuiOptions const &getGuiOptions()
+//            { return mGuiOptions; }
 
     private:
         GuiOptions const &mGuiOptions;

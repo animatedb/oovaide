@@ -116,7 +116,8 @@ class EditFiles:public FileEditViewListener
         FileEditView *getEditView();
         static ScrolledFileView *getScrolledFileView(GtkTextView *textView);
         static ScrolledFileView *getScrolledFileView(GtkTextBuffer *textbuffer);
-        std::string getEditViewSelectedText();
+// DEAD CODE
+//        std::string getEditViewSelectedText();
         // For signal handlers
         void setFocusEditTextView(GtkTextView *editTextView);
         /// Handles keys where the behavior is modified. The main keys are
@@ -148,7 +149,7 @@ class EditFiles:public FileEditViewListener
         void idleHighlight();
         int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
         void setTabText(FileEditView *view, OovStringRef text);
-        void textBufferModified(FileEditView *view, bool modified);
+        virtual void textBufferModified(FileEditView *view, bool modified) override;
         GtkNotebook *getBook(FileEditView *view);
     };
 

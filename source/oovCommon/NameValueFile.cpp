@@ -235,6 +235,11 @@ bool NameValueFile::writeFile()
     return success;
     }
 
+bool NameValueFile::isFilePresent(bool &success)
+    {
+    return FileIsFileOnDisk(mFilename, success);
+    }
+
 bool NameValueFile::readFile(File &file)
     {
     return read(file);
@@ -242,7 +247,7 @@ bool NameValueFile::readFile(File &file)
 
 bool NameValueFile::readFile()
     {
-    bool success = false;
+    bool success = true;
     File file(mFilename.getStr(), "r");
     if(file.isOpen())
         {

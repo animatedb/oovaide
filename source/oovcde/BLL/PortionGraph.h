@@ -29,10 +29,22 @@ enum PortionNodeTypes
 class PortionNode
     {
     public:
+        // A portion node can contain member data or operations. If it is
+        // an operation, the OverloadFuncName should be saved as the name.
         PortionNode(OovStringRef name, PortionNodeTypes type,
                 bool virtOper = false):
             mName(name), mNodeType(type), mVirtOperation(virtOper)
             {}
+        // For operations, this only returns the function name, and not any
+        // overload key.
+        OovString const getDisplayName() const
+            {
+            OovString dispName = mName;
+            // Since attributes have no overload separator, this won't remove
+            // anything for attributes.
+            ModelStatement::eraseOverloadKey(dispName);
+            return dispName;
+            }
         OovString const &getName() const
             { return mName; }
         PortionNodeTypes getNodeType() const
@@ -97,7 +109,7 @@ class PortionGraph
         PortionDrawOptions mDrawOptions;
 
         void addConnections(ModelClassifier const *cls);
-        void addAttrOperConnections(OovStringRef attrName,
+        void addAttrOperConnections(ModelClassifier const *cls, OovStringRef attrName,
                 std::vector<std::unique_ptr<ModelOperation>> const &opers);
         // Add connections between all operations of this class.
         void addOperationConnections(ModelClassifier const *classifier,

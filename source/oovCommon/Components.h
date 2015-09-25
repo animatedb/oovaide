@@ -174,7 +174,7 @@ class ComponentsFile:public NameValueFile
 
     private:
         // DEAD CODE
-        OovString getProjectIncludeDirsStr() const;
+//        OovString getProjectIncludeDirsStr() const;
     };
 
 #endif /* COMPONENTS_H_ */

@@ -677,7 +677,8 @@ void CppInstr::updateCoverageSource(OovStringRef const /*fn*/, OovStringRef cons
     FileEnsurePathExists(outFn);
     outFn.appendFile("OovCoverage.cpp");
 
-    if(!FileIsFileOnDisk(outFn))
+    bool success = true;
+    if(!FileIsFileOnDisk(outFn, success))
         {
         File file(outFn, "w");
 

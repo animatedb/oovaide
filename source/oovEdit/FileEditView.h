@@ -152,6 +152,8 @@ class FileEditView
             { return mDoingHistory; }
         GtkTextView *getTextView() const
             { return mTextView; }
+// DEAD CODE
+/*
         GtkWindow *getWindow()
             {
             GtkWindow *wnd = nullptr;
@@ -159,6 +161,7 @@ class FileEditView
             wnd = GTK_WINDOW(mTextView);
             return wnd;
             }
+*/
 
         // Return = true if find def/decl has results.
         bool idleHighlight();

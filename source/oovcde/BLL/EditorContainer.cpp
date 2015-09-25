@@ -15,19 +15,20 @@ static EditorContainer *sEditorContainer;
 static OovString getEditor(GuiOptions const &guiOptions)
     {
     FilePath proc(guiOptions.getEditorPath(), FP_File);
-    if(!FileIsFileOnDisk(proc))
+    bool success = true;
+    if(!FileIsFileOnDisk(proc, success))
         {
         // If the path to the user specified editor is not found, then
         // search the standard locations for the executable directory.
         FilePath testProcPath(Project::getBinDirectory(), FP_Dir);
         testProcPath.append(proc.getNameExt());
-        if(FileIsFileOnDisk(testProcPath))
+        if(FileIsFileOnDisk(testProcPath, success))
             {
             proc = testProcPath;
             }
         }
     // If the editor is not present, return an empty string.
-    if(!FileIsFileOnDisk(proc))
+    if(!FileIsFileOnDisk(proc, success))
         {
         proc.clear();
         Gui::messageBox("Use Analysis/Settings to set up an editor to view source");

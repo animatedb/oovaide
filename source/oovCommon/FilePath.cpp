@@ -9,7 +9,7 @@
 #include "OovString.h"
 #include <string.h>
 #include "File.h"       // For sleepMs at the moment.
-#include "Debug.h"
+#include "OovError.h"
 #ifdef __linux__
 #include <unistd.h>
 #else
@@ -288,7 +288,7 @@ bool FileEnsurePathExists(OovStringRef const path)
     while(pos != 0)
         {
         fp.discardTail(pos);
-        if(fp.isDirOnDisk())
+        if(fp.isDirOnDisk(success))
             break;
         else
             pos = fp.getPosLeftPathSep(pos, RP_RetPosFailure);
@@ -300,7 +300,7 @@ bool FileEnsurePathExists(OovStringRef const path)
             {
             OovString partPath = path;
             partPath.resize(pos);
-            if(!FileIsDirOnDisk(partPath))
+            if(!FileIsDirOnDisk(partPath, success))
                 {
 #ifdef __linux__
                 success = (mkdir(partPath.getStr(), 0x1FF) == 0);       // 0777
@@ -455,18 +455,26 @@ bool FilePathAnyExtensionMatch(FilePaths const &paths, OovStringRef const file)
 
 //////////////
 
-bool FileIsFileOnDisk(OovStringRef const path)
+bool FileIsFileOnDisk(OovStringRef const path, bool &success)
     {
     OovString tempPath = path;
     FilePathRemovePathSep(tempPath, tempPath.size()-1);
     struct OovStat32 statval;
-    return(OovStat32(tempPath.getStr(), &statval) == 0 && !S_ISDIR(statval.st_mode));
+    bool statRet = (OovStat32(tempPath.getStr(), &statval) == 0);
+    success = statRet;
+    if(!statRet && errno == ENOENT)
+        success = true;
+    return(statRet && !S_ISDIR(statval.st_mode));
     }
 
-bool FileIsDirOnDisk(OovStringRef const path)
+bool FileIsDirOnDisk(OovStringRef const path, bool &success)
     {
     struct OovStat32 statval;
-    return((OovStat32(path, &statval) == 0 && S_ISDIR(statval.st_mode)));
+    bool statRet = (OovStat32(path, &statval) == 0);
+    success = statRet;
+    if(!statRet && errno == ENOENT)
+        success = true;
+    return(success && S_ISDIR(statval.st_mode));
     }
 
 void FileDelete(OovStringRef const path)
@@ -479,16 +487,25 @@ void FileWaitForDirDeleted(OovStringRef const path, int waitMs)
 #ifndef __linux__
     int minWait = 100;
     int count = waitMs / minWait;
-    for(int tries=0; tries<count; tries++)
+    bool deleted = false;
+    bool success = true;
+    for(int tries=0; tries<count && success; tries++)
         {
-        if(!FileIsDirOnDisk(path))
+        if(!FileIsDirOnDisk(path, success))
             {
+            deleted = true;
             break;
             }
         else
             {
             sleepMs(minWait);
             }
+        }
+    if(!success || !deleted)
+        {
+        OovString str = "Unable to delete directory: ";
+        str += path;
+        OovError::report(ET_Error, str);
         }
 #endif
     }

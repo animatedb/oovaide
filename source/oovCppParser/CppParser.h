@@ -164,7 +164,8 @@ class CppParser
 #endif
         void addOperationParts(CXCursor cursor, bool addParams);
         void addRecord(CXCursor cursor, Visibility vis);
-        void addVar(CXCursor cursor);
+// DEAD CODE
+//        void addVar(CXCursor cursor);
         void addClassFileLoc(CXCursor cursor, ModelClassifier *classifier);
         /// This only adds typedefs of class (or template?) types.
         void addTypedef(CXCursor cursor);

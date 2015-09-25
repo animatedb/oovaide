@@ -26,6 +26,7 @@
 #include "Project.h"
 #include "Packages.h"
 #include "Coverage.h"
+#include "OovError.h"
 #include <stdio.h>
 
 
@@ -127,14 +128,23 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
     // analysis directory should probably be deleted if the include
     // paths have changed.
     OovString bldPkgFilename = Project::getBuildPackagesFilePath();
-    if(FileIsFileOnDisk(bldPkgFilename))
+    bool success = true;
+    bool havePackages = FileIsFileOnDisk(bldPkgFilename, success);
+    if(havePackages)
         {
         if(FileStat::isOutputOld(bldPkgFilename, ProjectPackages::getFilename()))
             {
             printf("Deleting build config\n");
             FileDelete(bldPkgFilename.getStr());
             FileDelete(cfg.getBuildConfigFilename().c_str());
+            havePackages = false;
             }
+        }
+    if(!success)
+        {
+        OovString str = "Unable to check build package file: ";
+        str += bldPkgFilename;
+        OovError::report(ET_Error, str);
         }
 
     cfg.setInitialConfig(buildConfigName,
@@ -142,8 +152,8 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         mCompFinder.getProjectBuildArgs().getAllCrcCompileArgs(),
         mCompFinder.getProjectBuildArgs().getAllCrcLinkArgs());
 
-    if(cfg.isConfigDifferent(buildConfigName, BuildConfig::CT_ExtPathArgsCrc) ||
-            !FileIsFileOnDisk(Project::getBuildPackagesFilePath()))
+    if(success && (cfg.isConfigDifferent(buildConfigName, BuildConfig::CT_ExtPathArgsCrc) ||
+            !havePackages))
         {
         // This is for the -ER switch.
         for(auto const &arg : mCompFinder.getProjectBuildArgs().getExternalArgs())
@@ -170,80 +180,83 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
                 }
             }
         }
-    srcFileParser sfp(mCompFinder);
-    printf("Scanning %s\n", srcRootDir.getStr());
-    mCompFinder.scanProject();
-    fflush(stdout);
-
-    cfg.setProjectConfig(mCompFinder.getScannedInfo().getProjectIncludeDirs());
-    // Is anything different in the current build configuration?
-    if(cfg.isAnyConfigDifferent(buildConfigName))
+    if(success)
         {
-        // Find CRC's that are not used by any build configuration.
-        OovStringVec unusedCrcs;
-        OovStringVec deleteDirs;
-        cfg.getUnusedCrcs(unusedCrcs);
-        for(auto const &crcStr : unusedCrcs)
-            {
-            deleteDirs.push_back(cfg.getAnalysisPathUsingCRC(crcStr));
-            }
-        bool analysisDifferent = (cfg.isConfigDifferent(buildConfigName,
-            BuildConfig::CT_ExtPathArgsCrc) ||
-            cfg.isConfigDifferent(buildConfigName,
-            BuildConfig::CT_ProjPathArgsCrc));
-        bool buildDifferent = (analysisDifferent ||
-            cfg.isConfigDifferent(buildConfigName,
-            BuildConfig::CT_OtherArgsCrc));
-        if(buildDifferent)
-            {
-            if(procMode != PM_Analyze)
-                {
-                deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
-                }
-            }
-        else    // Must be only link arguments.
-            {
-            deleteDirs.push_back(Project::getOutputDir(buildConfigName));
-            }
-        cfg.saveConfig(buildConfigName);
-// This isn't needed because the CRC will be different and save the analysis
-// results to a different directory.
-/*
-        // This must be after the saveConfig, because it uses the new CRC's
-        // to delete the new analysis path.
-        OovString analysisPath = cfg.getAnalysisPath();
-        if(analysisDifferent)
-            {
-            deleteDirs.push_back(analysisPath);
-            }
-*/
-        for(auto const &dir : deleteDirs)
-            {
-            printf("Deleting %s\n", dir.getStr());
-            if(dir.length() > 5)        // Reduce chance of deleting root
-                {
-                recursiveDeleteDir(dir);
-                }
-            }
+        srcFileParser sfp(mCompFinder);
+        printf("Scanning %s\n", srcRootDir.getStr());
+        mCompFinder.scanProject();
         fflush(stdout);
-// See comment above.
-/*
-        if(analysisDifferent)
+
+        cfg.setProjectConfig(mCompFinder.getScannedInfo().getProjectIncludeDirs());
+        // Is anything different in the current build configuration?
+        if(cfg.isAnyConfigDifferent(buildConfigName))
             {
-            // Windows returns before the directory is actually deleted.
-            FileWaitForDirDeleted(analysisPath);
+            // Find CRC's that are not used by any build configuration.
+            OovStringVec unusedCrcs;
+            OovStringVec deleteDirs;
+            cfg.getUnusedCrcs(unusedCrcs);
+            for(auto const &crcStr : unusedCrcs)
+                {
+                deleteDirs.push_back(cfg.getAnalysisPathUsingCRC(crcStr));
+                }
+            bool analysisDifferent = (cfg.isConfigDifferent(buildConfigName,
+                BuildConfig::CT_ExtPathArgsCrc) ||
+                cfg.isConfigDifferent(buildConfigName,
+                BuildConfig::CT_ProjPathArgsCrc));
+            bool buildDifferent = (analysisDifferent ||
+                cfg.isConfigDifferent(buildConfigName,
+                BuildConfig::CT_OtherArgsCrc));
+            if(buildDifferent)
+                {
+                if(procMode != PM_Analyze)
+                    {
+                    deleteDirs.push_back(Project::getIntermediateDir(buildConfigName));
+                    }
+                }
+            else    // Must be only link arguments.
+                {
+                deleteDirs.push_back(Project::getOutputDir(buildConfigName));
+                }
+            cfg.saveConfig(buildConfigName);
+    // This isn't needed because the CRC will be different and save the analysis
+    // results to a different directory.
+    /*
+            // This must be after the saveConfig, because it uses the new CRC's
+            // to delete the new analysis path.
+            OovString analysisPath = cfg.getAnalysisPath();
+            if(analysisDifferent)
+                {
+                deleteDirs.push_back(analysisPath);
+                }
+    */
+            for(auto const &dir : deleteDirs)
+                {
+                printf("Deleting %s\n", dir.getStr());
+                if(dir.length() > 5)        // Reduce chance of deleting root
+                    {
+                    recursiveDeleteDir(dir);
+                    }
+                }
+            fflush(stdout);
+    // See comment above.
+    /*
+            if(analysisDifferent)
+                {
+                // Windows returns before the directory is actually deleted.
+                FileWaitForDirDeleted(analysisPath);
+                }
+    */
             }
-*/
+
+        OovString analysisPath = cfg.getAnalysisPath();
+        FileEnsurePathExists(analysisPath);
+
+        FilePath compFn(analysisPath, FP_Dir);
+        compFn.appendFile(Project::getAnalysisComponentsFilename());
+        mCompFinder.saveProject(compFn);
+
+        sfp.analyzeSrcFiles(srcRootDir, analysisPath);
         }
-
-    OovString analysisPath = cfg.getAnalysisPath();
-    FileEnsurePathExists(analysisPath);
-
-    FilePath compFn(analysisPath, FP_Dir);
-    compFn.appendFile(Project::getAnalysisComponentsFilename());
-    mCompFinder.saveProject(compFn);
-
-    sfp.analyzeSrcFiles(srcRootDir, analysisPath);
     }
 
 // Example test args:

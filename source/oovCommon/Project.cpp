@@ -86,14 +86,15 @@ OovString const &Project::getBinDirectory()
     static OovString path;
     if(path.length() == 0)
         {
+        bool success = true;
 #ifdef __linux__
         // On linux, we could use the "which" command using "which oovcde", but
         // this will probably be ok?
-        if(FileIsFileOnDisk("./oovcde"))
+        if(FileIsFileOnDisk("./oovcde", success))
             {
             path = "./";
             }
-        else if(FileIsFileOnDisk("/usr/local/bin/oovcde"))
+        else if(FileIsFileOnDisk("/usr/local/bin/oovcde", success))
             {
             path = "/usr/local/bin/";
             }
@@ -102,7 +103,7 @@ OovString const &Project::getBinDirectory()
             path = "/usr/bin";
             }
 #else
-        if(FileIsFileOnDisk("./oovcde.exe"))
+        if(FileIsFileOnDisk("./oovcde.exe", success))
             {
             path = "./";
             }

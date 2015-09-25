@@ -17,11 +17,13 @@
 #include <stdio.h>
 
 
-void deleteDir(OovStringRef const path)
+bool deleteDir(OovStringRef const path)
     {
+    bool success = false;
     DIR *dp = opendir(path);
     if(dp)
         {
+        success = true;
         struct dirent *dirp;
         while(((dirp = readdir(dp)) != nullptr))
             {
@@ -33,20 +35,23 @@ void deleteDir(OovStringRef const path)
         closedir(dp);
         }
     rmdir(path);
+    return success;
     }
 
-void recursiveDeleteDir(OovStringRef const path)
+bool recursiveDeleteDir(OovStringRef const path)
     {
+    bool success = false;
     DIR *dp = opendir(path);
     if(dp)
         {
+        success = true;
         struct dirent *dirp;
-        while(((dirp = readdir(dp)) != nullptr))
+        while(((dirp = readdir(dp)) != nullptr) && success)
             {
             FilePath fullName(path, FP_Dir);
             fullName += dirp->d_name;
 
-            if(fullName.isDirOnDisk())
+            if(fullName.isDirOnDisk(success))
 //          if(dirp->d_type == DT_DIR)
                 {
                 if(strcmp(dirp->d_name, ".") != 0 && strcmp(dirp->d_name, "..") != 0)
@@ -58,6 +63,7 @@ void recursiveDeleteDir(OovStringRef const path)
         closedir(dp);
         }
     rmdir(path);
+    return success;
     }
 
 /*
@@ -146,12 +152,12 @@ bool getDirList(OovStringRef const path, eDirListTypes types, std::vector<std::s
         {
         success = true;
         struct dirent *dirp;
-        while(((dirp = readdir(dp)) != nullptr) && success)
+        while((dirp = readdir(dp)) != nullptr)
             {
             FilePath fullName(path, FP_Dir);
             fullName.appendDir(dirp->d_name);
 //          if(dirp->d_type == DT_DIR)          // Some OS's don't have this.
-            if(FileIsDirOnDisk(fullName))
+            if(FileIsDirOnDisk(fullName, success))
                 {
                 if(types & DL_Dirs)
                     {
@@ -169,6 +175,10 @@ bool getDirList(OovStringRef const path, eDirListTypes types, std::vector<std::s
                     fileName.appendFile(dirp->d_name);
                     fn.push_back(fileName);
                     }
+                }
+            if(!success)
+                {
+                break;
                 }
             }
         closedir(dp);
@@ -274,7 +284,7 @@ bool dirRecurser::recurseDirs(OovStringRef const srcDir)
                 {
                 FilePath fullName(srcDir, FP_Dir);
                 fullName += dirp->d_name;
-                if(FileIsDirOnDisk(fullName))
+                if(FileIsDirOnDisk(fullName, success))
                     recurseDirs(fullName);
                 else
                     success = processFile(fullName);

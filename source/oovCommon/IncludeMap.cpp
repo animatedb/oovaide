@@ -14,7 +14,13 @@
 void IncDirDependencyMapReader::read(OovStringRef const fn)
     {
     setFilename(fn);
-    if(!readFile())
+    // It is ok if the include map is not present the first time.
+    bool success = true;
+    if(isFilePresent(success))
+        {
+        success = readFile();
+        }
+    if(!success)
         {
         OovString str = "Unable to read include map: ";
         str += fn;

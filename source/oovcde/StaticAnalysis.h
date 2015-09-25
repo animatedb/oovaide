@@ -12,7 +12,8 @@
 #include "Gui.h"
 
 /// This outputs usage counts of all member variables by their containing class.
-bool createMemberVarUsageStaticAnalysisFile(ModelData const &modelData, std::string &fn);
+bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
+        ModelData const &modelData, std::string &fn);
 
 /// This outputs usage counts of all methods called by all other methods.
 bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,

@@ -171,8 +171,9 @@ class GuiTextIter
             { return gtk_text_iter_get_offset(&iter); }
         static bool decIter(GtkTextIter *iter)
             { return gtk_text_iter_backward_char(iter); }
-        static bool incIter(GtkTextIter *iter)
-            { return gtk_text_iter_forward_char(iter); }
+// DEAD CODE
+//        static bool incIter(GtkTextIter *iter)
+//            { return gtk_text_iter_forward_char(iter); }
     };
 
 class GuiTextBuffer:public GuiTextIter

@@ -34,8 +34,9 @@ class ComponentDiagram
             { return mComponentGraph.getNode(x, y); }
         GraphSize getGraphSize() const
             { return mComponentGraph.getGraphSize(); }
-        bool isModified() const
-            { return mComponentGraph.isModified(); }
+// DEAD CODE
+//        bool isModified() const
+//            { return mComponentGraph.isModified(); }
         void setModified()
             { mComponentGraph.setModified(); }
 

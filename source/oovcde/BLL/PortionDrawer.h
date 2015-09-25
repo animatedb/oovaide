@@ -36,8 +36,8 @@ class PortionDrawer:public DiagramDependencyDrawer
             { mNodePositions[nodeIndex] = pos; }
         virtual GraphPoint getNodePosition(size_t nodeIndex) const override
             { return mNodePositions[nodeIndex]; }
-        virtual OovString const &getNodeName(size_t nodeIndex) const override
-            { return mGraph->getNodes()[nodeIndex].getName(); }
+        virtual OovString const getNodeName(size_t nodeIndex) const override
+            { return mGraph->getNodes()[nodeIndex].getDisplayName(); }
         virtual size_t getNumConnections() const override
             { return mGraph->getConnections().size(); }
         virtual void getConnection(size_t ci, size_t &consumerIndex,

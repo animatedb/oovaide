@@ -216,7 +216,7 @@ void PortionDrawer::getNodeText(DiagramDrawer &drawer,
         rect.start.x += pad;
         rect.start.y += yTextOffset;
         PortionNode const &node = mGraph->getNodes()[i];
-        drawStrings.push_back(DrawString(rect.start, node.getName().getStr()));
+        drawStrings.push_back(DrawString(rect.start, node.getDisplayName().getStr()));
         virtOpers.push_back(node.isVirtualOperation());
         }
     }

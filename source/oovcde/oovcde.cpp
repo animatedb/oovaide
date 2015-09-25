@@ -437,16 +437,17 @@ static void displayHelpFile(OovStringRef const fileName)
     {
     FilePath fullFn;
     static char const *dirs[] = { "help", "..\\..\\web\\userguide" };
+    bool success = true;
     for(auto const dir : dirs)
         {
         fullFn.setPath(dir, FP_Dir);
         fullFn.appendFile(fileName);
-        if(FileIsFileOnDisk(fullFn))
+        if(FileIsFileOnDisk(fullFn, success))
             {
             break;
             }
         }
-    if(!FileIsFileOnDisk(fullFn))
+    if(!FileIsFileOnDisk(fullFn, success))
         {
         fullFn.setPath("http://oovcde.sourceforge.net/userguide", FP_Dir);
         fullFn.appendFile(fileName);
@@ -478,7 +479,8 @@ void oovGui::makeComplexityFile()
 void oovGui::makeMemberUseFile()
     {
     std::string fn;
-    if(createMemberVarUsageStaticAnalysisFile(mProject.getModelData(), fn))
+    if(createMemberVarUsageStaticAnalysisFile(Gui::getMainWindow(),
+            mProject.getModelData(), fn))
         {
         displayBrowserFile(fn);
         }
@@ -724,7 +726,8 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
     // Create the new component directory if it doesn't exist.
     FileEnsurePathExists(compDir);
 
-    if(!FileIsFileOnDisk(interfaceName))
+    bool success = true;
+    if(!FileIsFileOnDisk(interfaceName, success))
         {
         FilePath tempInt(compDir, FP_Dir);
         tempInt.appendFile(interfaceName);
@@ -734,7 +737,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
     else
         Gui::messageBox("Interface already exists", GTK_MESSAGE_INFO);
 
-    if(!FileIsFileOnDisk(implementationName))
+    if(!FileIsFileOnDisk(implementationName, success))
         {
         FilePath tempImp(compDir, FP_Dir);
         tempImp.appendFile(implementationName);

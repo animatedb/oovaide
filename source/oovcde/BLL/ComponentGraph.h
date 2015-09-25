@@ -103,8 +103,9 @@ class ComponentGraph
             { return mConnections; }
         ComponentNode *getNode(int x, int y);
         void removeNode(const ComponentNode &node, const ComponentDrawOptions &options);
-        bool isModified() const
-            { return mModified; }
+// DEAD CODE
+//        bool isModified() const
+//            { return mModified; }
         void setModified()
             { mModified = true; }
 

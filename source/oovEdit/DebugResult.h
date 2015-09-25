@@ -53,8 +53,9 @@ class DebugResult
         std::deque<std::unique_ptr<class DebugResult>> mChildResults;
         char const *parseVarName(char const *resultStr);
         char const *parseValue(char const *resultStr);
-        char const *parseList(char const *resultStr);
-        char const *parseConst(char const *resultStr);
+// DEAD CODE
+//        char const *parseList(char const *resultStr);
+//        char const *parseConst(char const *resultStr);
         DebugResult &addResult();
         void clear();
     };
