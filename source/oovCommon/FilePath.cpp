@@ -460,21 +460,21 @@ bool FileIsFileOnDisk(OovStringRef const path, bool &success)
     OovString tempPath = path;
     FilePathRemovePathSep(tempPath, tempPath.size()-1);
     struct OovStat32 statval;
-    bool statRet = (OovStat32(tempPath.getStr(), &statval) == 0);
-    success = statRet;
-    if(!statRet && errno == ENOENT)
-        success = true;
-    return(statRet && !S_ISDIR(statval.st_mode));
+    int statRet = OovStat32(tempPath.getStr(), &statval);
+    // Indicate there is an error only if the error is not ENOENT.
+    success = ((statRet == 0) || (errno == ENOENT));
+    // Only indicate the file exists if there was no error, and it is a file.
+    return((statRet == 0) && !S_ISDIR(statval.st_mode));
     }
 
 bool FileIsDirOnDisk(OovStringRef const path, bool &success)
     {
     struct OovStat32 statval;
-    bool statRet = (OovStat32(path, &statval) == 0);
-    success = statRet;
-    if(!statRet && errno == ENOENT)
-        success = true;
-    return(success && S_ISDIR(statval.st_mode));
+    int statRet = OovStat32(path, &statval);
+    // Indicate there is an error only if the error is not ENOENT.
+    success = ((statRet == 0) || (errno == ENOENT));
+    // Only indicate the directory exists if there was no error, and it is a directory.
+    return((statRet == 0) && S_ISDIR(statval.st_mode));
     }
 
 void FileDelete(OovStringRef const path)

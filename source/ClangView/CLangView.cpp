@@ -416,16 +416,17 @@ static void displayHelpFile(OovStringRef const fileName)
     {
     FilePath fullFn;
     static char const *dirs[] = { "help", "..\\..\\web\\userguide" };
+    bool success = true;
     for(auto const dir : dirs)
         {
         fullFn.setPath(dir, FP_Dir);
         fullFn.appendFile(fileName);
-        if(FileIsFileOnDisk(fullFn))
+        if(FileIsFileOnDisk(fullFn, success))
             {
             break;
             }
         }
-    if(!FileIsFileOnDisk(fullFn))
+    if(!FileIsFileOnDisk(fullFn, success))
         {
         fullFn.setPath("http://oovcde.sourceforge.net/userguide", FP_Dir);
         fullFn.appendFile(fileName);
