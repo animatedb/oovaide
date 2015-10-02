@@ -37,6 +37,9 @@ pkg_check_modules(GTK REQUIRED gtk+-3.0)
 include_directories(${GTK_INCLUDE_DIRS})
 link_directories(${GTK_LIBRARY_DIRS})
 add_definitions(${GTK_CFLAGS_OTHER})
+# GModule
+pkg_check_modules(GMODULE REQUIRED gmodule-2.0)
+link_directories(${GMODULE_LIBRARY_DIRS})
 # LLVM
 # pkg_check_modules(CLANG REQUIRED libclang-dev)
 # pkg_check_modules(LLVM REQUIRED llvm)

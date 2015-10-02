@@ -15,7 +15,7 @@ add_executable(oovcde BLL/ClassDiagram.cpp BLL/ClassDrawer.cpp BLL/ClassGenes.cp
 
 include_directories(BLL)
 
-target_link_libraries(oovcde oovCommon oovGuiCommon ${GTK_LIBRARIES})
+target_link_libraries(oovcde oovCommon oovGuiCommon ${GTK_LIBRARIES} ${GMODULE_LIBRARIES})
 
 install(TARGETS oovcde
   EXPORT OovcdeTargets
