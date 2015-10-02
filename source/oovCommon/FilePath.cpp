@@ -288,7 +288,8 @@ bool FileEnsurePathExists(OovStringRef const path)
     while(pos != 0)
         {
         fp.discardTail(pos);
-        if(fp.isDirOnDisk(success))
+        bool ignoredSuccess = true;
+        if(fp.isDirOnDisk(ignoredSuccess))
             break;
         else
             pos = fp.getPosLeftPathSep(pos, RP_RetPosFailure);

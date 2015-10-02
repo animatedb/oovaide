@@ -10,14 +10,15 @@ Analyzing Programs - Windows Versions:
 	so running analysis does not require any additional
 	downloads. Using Oovcde for more complete analysis usually
 	requires some MinGW or other package so that CLang can find
-	standard include files.
+	standard include files. Using database export requires sqlite3.
 
 Analyzing Programs - Linux Versions:
 	The oovcde-*-linux downloads require GTK3 and a 64 bit OS.
 	Part of CLang is included so running analysis does not
 	require any additional downloads. Using Oovcde for more
 	complete analysis usually requires some other package so
-	that CLang can find standard include files.
+	that CLang can find standard include files. Using database
+ 	export requires sqlite3.
 
 
 Building Programs - Windows Versions:

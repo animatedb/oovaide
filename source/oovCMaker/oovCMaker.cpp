@@ -677,7 +677,7 @@ int main(int argc, char * argv[])
             }
         else
             {
-            outDir.setPath(Project::getOutputDir("CMake"), FP_Dir);
+            outDir.setPath(Project::getBuildOutputDir("CMake"), FP_Dir);
             FileEnsurePathExists(outDir);
             if(maker.mVerbose)
                 printf("Output directory %s\n", outDir.getStr());

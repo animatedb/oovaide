@@ -69,6 +69,8 @@ Missing Features
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
 	  are the same?
 - Gui
+	- Add .h files to component/module list
+	- Fix component/module list to only contain files for their directory. Or alphabetic
 	- Add improved open recent files
 	- Add External Directories button for Build Arguments dialog.
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
@@ -153,15 +155,8 @@ Missing Features
 	- Allow rearranging class order?
 
 - Analysis (builder and parser)
-	- Method usage:
-		- Builder::addFromFile called from main (multiple main)
-		- ClassGraph::processItem called from template
-		- CLang does not appear to make an AST entry for implicit constructor
-		  or destructor calls
-		- dup function names
-			- appendCursorTokenString() calls ConditionTerminator
-			- getAccess() calls setVis in CppParser.cpp
-		- activateApp calls gEditor->loadSettings (#ifdef)
+	- Deleted files don't get removed from analysis - cause build problems.
+	- Method usage: dup function names, con/destructors
 	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
 		- not in xmi file
 		- CLangView shows:
@@ -325,6 +320,14 @@ Missing Features
 	- BUG: Goto class doesn't change tab to class tab - journal requires this
 
 - Future
+	- Database
+		- MySQL Connector/C++
+		- Reports:
+			http://butleranalytics.com/10-mysql-reporting-tools/
+			http://stackoverflow.com/questions/3582381/mysql-open-source-reporting-services
+			ReportServer
+			Jasper (banded)
+			Birt (item objects)
 	- Open source rules
 		http://hintjens.com/blog:95
 		http://rfc.zeromq.org/spec:22

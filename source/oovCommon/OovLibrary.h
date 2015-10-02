@@ -9,29 +9,40 @@
 #define OOVLIBRARY_H
 
 #include "OovLibrary.h"
+#define USE_GLIB 1
+#if(USE_GLIB)
+#include <gmodule.h>
+#else
 #ifdef __linux__
 #else
 #include "windef.h"
 #include "WinBase.h"
 #endif
+#endif
 
-
+#if(USE_GLIB)
+typedef gpointer OovProcPtr;
+#else
 #ifdef __linux__
 typedef void *OovProcPtr;
 #else
 typedef FARPROC OovProcPtr;
 #endif
+#endif
 
 /// A class that encapsulates a run time or dynamic library.
 /// This encapsulates something similar to GLib's GModule.
-// This class was written to avoid the use of GLib.  This only uses Windows functions on
+// This class was originally written to avoid the use of GLib.  This only uses Windows functions on
 // MS-Windows. It uses the dl... functions on linux.
 // undefined reference to symbol 'dlclose@@GLIBC_2.2.5' on Ubuntu 14-04
 class OovLibrary
     {
     public:
-        OovLibrary();
-        ~OovLibrary();
+        OovLibrary():
+            mLibrary(nullptr)
+            {}
+        ~OovLibrary()
+            { close(); }
         /// @param The file name of the run time library. For both Windows and
         /// linux, a relative filename may search multiple directories.
         bool open(char const *fileName);
@@ -44,10 +55,14 @@ class OovLibrary
             { return(mLibrary != 0); }
 
     private:
+#if(USE_GLIB)
+        GModule *mLibrary;
+#else
 #ifdef __linux__
         void *mLibrary;
 #else
         HMODULE mLibrary;
+#endif
 #endif
     };
 

@@ -81,8 +81,10 @@ class Project
         static OovString getBuildPackagesFilePath();
 
         /// buildDirClass = BuildConfigAnalysis, BuildConfigDebug, etc.
-        static FilePath getOutputDir(OovStringRef const buildDirClass);
+        static FilePath getBuildOutputDir(OovStringRef const buildDirClass);
         static FilePath getIntermediateDir(OovStringRef const buildDirClass);
+
+        static FilePath getOutputDir();
 
         static OovStringRef const getSrcRootDirectory();
         /// Returns a filename relative to the root source directory.

@@ -140,11 +140,9 @@ static void getAllAttrCounts(GtkWindow *parentWindow,
 bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
         ModelData const &modelData, std::string &fn)
     {
-    FilePath fp(Project::getProjectDirectory(), FP_Dir);
-    fp.appendDir("output");
+    FilePath fp = Project::getOutputDir();
     fp.appendFile("MemberVarUsage");
 
-    FileEnsurePathExists(fp);
     bool success = createMemberVarUsageStyleTransform(fp + ".xslt");
     // Attempt to create the xml file anyway.
     success = false;
@@ -339,11 +337,9 @@ static void getAllOperationCounts(GtkWindow *parentWindow,
 bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
         ModelData const &model, std::string &fn)
     {
-    FilePath fp(Project::getProjectDirectory(), FP_Dir);
-    fp.appendDir("output");
+    FilePath fp = Project::getOutputDir();
     fp.appendFile("MethodUsage");
 
-    FileEnsurePathExists(fp);
     createMethodUsageStyleTransform(fp + ".xslt");
 
     fp.appendFile(".xml");
@@ -578,11 +574,9 @@ static OovString getRelativeFileName(OovString const &fullFn)
 
 bool createLineStatsFile(ModelData const &modelData, std::string &fn)
     {
-    FilePath fp(Project::getProjectDirectory(), FP_Dir);
-    fp.appendDir("output");
+    FilePath fp = Project::getOutputDir();
     fp.appendFile("LineStatistics");
 
-    FileEnsurePathExists(fp);
     createLineStatsStyleTransform(fp + ".xslt");
 
     fp.appendFile(".xml");

@@ -1,7 +1,7 @@
-Pkg-glib-2.0-I|/include/glib-2.0;/lib/x86_64-linux-gnu/glib-2.0/include
+Pkg-glib-2.0-I|include/glib-2.0;lib/x86_64-linux-gnu/glib-2.0/include;
 Pkg-glib-2.0-L|lib
-Pkg-glib-2.0-Root|/usr
-Pkg-glib-2.0-l|glib-2.0
+Pkg-glib-2.0-Root|/usr/
+Pkg-glib-2.0-l|glib-2.0;
 Pkg-gmodule-2.0-Cpp|-pthread
 Pkg-gmodule-2.0-I|/include/glib-2.0;/lib/x86_64-linux-gnu/glib-2.0/include
 Pkg-gmodule-2.0-L|lib
@@ -13,4 +13,4 @@ Pkg-gtk+-3.0-I|/include/gtk-3.0;/include/pango-1.0;/include/gio-unix-2.0/;/inclu
 Pkg-gtk+-3.0-L|lib
 Pkg-gtk+-3.0-Root|/usr
 Pkg-gtk+-3.0-l|gtk-3;gdk-3;atk-1.0;gio-2.0;pangocairo-1.0;gdk_pixbuf-2.0;cairo-gobject;pango-1.0;cairo;gobject-2.0;glib-2.0
-PkgNames|gtk+-3.0
+PkgNames|gtk+-3.0;

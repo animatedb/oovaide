@@ -17,6 +17,7 @@
 #include "ComplexityView.h"
 #include "DuplicatesView.h"
 #include "StaticAnalysis.h"
+#include "OovLibrary.h"
 #include <stdlib.h>
 
 
@@ -275,6 +276,8 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
             builder->getWidget("ProjectStatsMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
             builder->getWidget("LineStatsMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
+            builder->getWidget("CreateDatabaseMenuitem"), idle && analRdy);
 
     gtk_widget_set_sensitive(
             builder->getWidget("BuildSettingsMenuitem"), open);
@@ -1001,6 +1004,108 @@ extern "C" G_MODULE_EXPORT void on_LineStatsMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {
     gOovGui->makeLineStats();
+    }
+
+
+// This is the C style interface to the Oov database writer run-time library.
+extern "C"
+{
+struct DatabaseWriterInterface
+    {
+    bool (*OpenDb)(char const *projectDir, void const *modelData);
+    bool (*WriteDb)(int passIndex, int &typeIndex, int maxTypesPerTransaction);
+    char const *(*GetLastError)();
+    void (*CloseDb)();
+    };
+};
+class DatabaseWriter:public DatabaseWriterInterface, public OovLibrary
+    {
+    public:
+        void writeDatabase(ModelData *modelData)
+            {
+            // Linux is interesting here.  If the project directory (a static
+            // string) is read after the library is opened, then the string
+            // is empty in this calling executable code.  So this must be
+            // read before the library is opened, then passed to the library.
+            OovString projDir = Project::getProjectDirectory();
+#ifdef __linux__
+            FilePath reportLibName(Project::getBinDirectory(), FP_Dir);
+            reportLibName.appendFile("libOovDbWriter.so");
+#else
+            OovStringRef reportLibName = "oovDbWriter.dll";
+#endif
+            bool success = OovLibrary::open(reportLibName.getStr());
+            if(success)
+                {
+                loadSymbols();
+                bool success = OpenDb(projDir.getStr(), modelData);
+                if(success)
+                    {
+                    TaskBusyDialog progressDlg;
+                    progressDlg.setParentWindow(Gui::getMainWindow());
+                    bool keepGoing = true;
+                    size_t totalTypes = modelData->mTypes.size();
+                    for(int pass=0; pass<2 && success && keepGoing; pass++)
+                        {
+                        int typeIndex = 0;
+                        OovString str = "Adding Data - Pass ";
+                        str.appendInt(pass+1);
+                        str += " of 2";
+                        progressDlg.startTask(str.getStr(), totalTypes);
+                        while(typeIndex < static_cast<int>(totalTypes) && success && keepGoing)
+                            {
+                            success = WriteDb(pass, typeIndex, 40);
+                            if(success)
+                                {
+                                keepGoing = progressDlg.updateProgressIteration(typeIndex, nullptr, true);
+                                typeIndex++;
+                                }
+                            }
+                        progressDlg.endTask();
+                        }
+                    CloseDb();
+                    }
+                if(!success)
+                    {
+                    Gui::messageBox(GetLastError());
+                    }
+                }
+            else
+                {
+                OovString errStr = "Unable to find ";
+                errStr += reportLibName;
+                Gui::messageBox(errStr.getStr());
+                }
+            }
+
+    private:
+        void loadSymbols()
+            {
+            loadModuleSymbol("OpenDb", (OovProcPtr*)&OpenDb);
+            loadModuleSymbol("WriteDb", (OovProcPtr*)&WriteDb);
+            loadModuleSymbol("GetLastError", (OovProcPtr*)&GetLastError);
+            loadModuleSymbol("CloseDb", (OovProcPtr*)&CloseDb);
+            }
+    };
+
+extern "C" G_MODULE_EXPORT void on_CreateDatabaseMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    OovString str = "This creates an sqlite database. "
+            "It currently does not support appending to the database."
+            "The OovReports.db file will be created in the project output directory.\n";
+#ifdef __linux__
+    str += " The libsqlite3.so must be available in the normal search locations.\n";
+#else
+    str += " The sqlite3.dll must be available in the bin directory or path.\n";
+#endif
+    str += " Continue?";
+    bool success = Gui::messageBox(str, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
+    if(success)
+        {
+        DatabaseWriter writer;
+        writer.writeDatabase(&gOovGui->getProject().getModelData());
+        }
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_MainWindow_delete_event(GtkWidget *button, gpointer data)

@@ -1,4 +1,4 @@
-PkgNames|boost;gtk+-3.0;gtkmm;llvm;Qt;mingw-w64;wxWidgets;VisualStudio;MicrosoftSDK
+PkgNames|boost;gtk+-3.0;gtkmm;llvm;MicrosoftSDK;mingw-w64;MySQL;Qt;VisualStudio;wxWidgets
 Pkg-boost-Root|/boost*
 Pkg-boost-I|.
 Pkg-gtk+-3.0-Root|/GTK*
@@ -20,6 +20,10 @@ Pkg-mingw-w64-Root|/mingw-w64/*/mingw32/i686-w64-mingw32
 Pkg-mingw-w64-I|include;/include/c++;/include/c++/i686-w64-mingw32
 Pkg-mingw-w64-l|*
 Pkg-mingw-w64-L|lib
+Pkg-MySQL-Root|/MySQL/MySQL Server*
+Pkg-MySQL-I|include
+Pkg-MySQL-l|*
+Pkg-MySQL-L|lib
 Pkg-Qt-Root|/Qt/*/*/mingw48_32
 Pkg-Qt-I|include
 Pkg-Qt-l|*

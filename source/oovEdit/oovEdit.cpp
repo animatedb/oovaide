@@ -504,7 +504,7 @@ void Editor::editPreferences()
         {
         if(compFile.getComponentType(name) == ComponentTypesFile::CT_Program)
             {
-            FilePath fp(Project::getOutputDir(BuildConfigDebug), FP_Dir);
+            FilePath fp(Project::getBuildOutputDir(BuildConfigDebug), FP_Dir);
             OovString filename = name;
             if(strcmp(name.c_str(), Project::getRootComponentName()) == 0)
                 filename = Project::getRootComponentFileName();
@@ -555,7 +555,7 @@ void Editor::editPreferences()
 void Editor::setPreferencesWorkingDir()
     {
     PathChooser chooser;
-    chooser.setDefaultPath(Project::getOutputDir(BuildConfigDebug));
+    chooser.setDefaultPath(Project::getBuildOutputDir(BuildConfigDebug));
     OovString dir;
     if(chooser.ChoosePath(Gui::getMainWindow(), "Select Working Directory",
             GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, dir))

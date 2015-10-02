@@ -8,9 +8,19 @@ set dst=..\..\..\backup\oovcde
 rd /s /q %dst%
 mkdir %dst%
 
+rem update clang in source directory area
+rd /s /q .\clang
+xcopy /s /Y "%clang%\bin\libclang.dll" .\
+rem This is for LLVM 3.6 and before
+xcopy /s /Y /i "%clang%\lib\clang\*.*" .\clang\
+rem This is for LLVM 3.7
+rem xcopy /s /Y /i "%clang%\lib\*.*" ..\lib
+del ..\lib\LTO.dll
+
 del /s %dst%\web\*.bak
 xcopy /s %trnk%\..\web\*.* %dst%\web\
 xcopy /s %trnk%\bin\*.* %dst%\bin\
+del %dst%\bin\sqlite3.dll
 xcopy /s /Y %trnk%\bin\data\*.* %dst%\bin\data\
 xcopy /s %trnk%\*.cpp %dst%
 xcopy /s /Y %trnk%\*.h %dst%
@@ -22,15 +32,6 @@ xcopy /s %trnk%\*.cproject %dst%
 xcopy /s %trnk%\*.project %dst%
 rd /s /q %dst%\.metadata
 rd /s /q %dst%\RemoteSystemsTempFiles
-
-rem copy clang to source directory
-rd /s /q .\clang
-xcopy /s /Y "%clang%\bin\libclang.dll" .\
-rem This is for LLVM 3.6 and before
-xcopy /s /Y /i "%clang%\lib\*.*" .\
-rem This is for LLVM 3.7
-rem xcopy /s /Y /i "%clang%\lib\*.*" ..\lib
-del ..\lib\LTO.dll
 
 xcopy /s /Y .\ %dst%\bin\
 xcopy /s /Y ..\lib %dst%\lib\

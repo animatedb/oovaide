@@ -1612,7 +1612,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="ComplexityMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">_Complexity</property>
+                            <property name="label" translatable="yes">_Complexity...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_ComplexityMenuitem_activate" swapped="no"/>
                           </object>
@@ -1621,7 +1621,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="MemberUsageMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">_Member Usage</property>
+                            <property name="label" translatable="yes">_Member Usage...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_MemberUsageMenuitem_activate" swapped="no"/>
                           </object>
@@ -1630,7 +1630,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="MethodUsageMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Method Usage</property>
+                            <property name="label" translatable="yes">Method Usage...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_MethodUsageMenuitem_activate" swapped="no"/>
                           </object>
@@ -1639,7 +1639,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="DuplicatesMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">_Duplicates</property>
+                            <property name="label" translatable="yes">_Duplicates...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_DuplicatesMenuitem_activate" swapped="no"/>
                           </object>
@@ -1648,7 +1648,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="ProjectStatsMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Project Statistics</property>
+                            <property name="label" translatable="yes">Project Statistics...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_ProjectStatsMenuitem_activate" swapped="no"/>
                           </object>
@@ -1657,9 +1657,24 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="LineStatsMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Line Statistics</property>
+                            <property name="label" translatable="yes">Line Statistics...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_LineStatsMenuitem_activate" swapped="no"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparatorMenuItem" id="separator">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="CreateDatabaseMenuitem">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Export Database...</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_CreateDatabaseMenuitem_activate" swapped="no"/>
                           </object>
                         </child>
                       </object>
@@ -1722,7 +1737,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="MakeCMakeMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">_Make CMake</property>
+                            <property name="label" translatable="yes">_Make CMake...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_MakeCMakeMenuitem_activate" swapped="no"/>
                           </object>
@@ -1805,7 +1820,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="HelpContentsMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Contents</property>
+                            <property name="label" translatable="yes">Contents...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_HelpContentsMenuitem_activate" swapped="no"/>
                           </object>

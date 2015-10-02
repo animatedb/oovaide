@@ -27,7 +27,7 @@ void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFileP
         }
     else
         {
-        mOutputPath.setPath(Project::getOutputDir(buildDirClass), FP_Dir);
+        mOutputPath.setPath(Project::getBuildOutputDir(buildDirClass), FP_Dir);
         }
     mIntermediatePath.setPath(Project::getIntermediateDir(buildDirClass), FP_Dir);
 

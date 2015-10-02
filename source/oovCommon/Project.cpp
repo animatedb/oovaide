@@ -140,7 +140,15 @@ static FilePath getDir(OovStringRef prefix, OovStringRef buildDirClass,
     return dir;
     }
 
-FilePath Project::getOutputDir(OovStringRef const buildDirClass)
+FilePath Project::getOutputDir()
+    {
+    FilePath fp(Project::getProjectDirectory(), FP_Dir);
+    fp.appendDir("output");
+    FileEnsurePathExists(fp);
+    return fp;
+    }
+
+FilePath Project::getBuildOutputDir(OovStringRef const buildDirClass)
     {
     return getDir("out-", buildDirClass, getProjectDirectory());
     }

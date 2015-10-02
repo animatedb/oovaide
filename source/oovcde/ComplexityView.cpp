@@ -109,7 +109,9 @@ bool createComplexityFile(ModelData const &modelData, std::string &fn)
     fp.appendFile("Complexity");
 
     FileEnsurePathExists(fp);
-    createStyleTransform(fp + ".xslt");
+    FilePath fpxsl(fp, FP_File);
+    fpxsl.appendExtension("xslt");
+    createStyleTransform(fpxsl);
 
     fp.appendFile(".xml");
     fn = fp;

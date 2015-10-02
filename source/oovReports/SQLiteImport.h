@@ -72,23 +72,23 @@ class SQLite:public SQLiteImporter
             }
         void setListener(SQLiteListener *listener)
             { mListener = listener; }
-#ifdef __linux__
-        bool open(char const *dbName, char const *dllName="libsqlite3.so")
-#else
-        bool open(char const *dbName, char const *dllName="sqlite3.dll")
-#endif
+        // The libName is usually libsqlite3.so.? on linux, and sqlite3.dll on windows.
+        bool loadDbLib(char const *libName)
             {
             close();
-            bool success = OovLibrary::open(dllName);
+            bool success = OovLibrary::open(libName);
             if(success)
                 {
                 loadSymbols();
-                int retCode = sqlite3_open(dbName, &mDb);
-                success = handleRetCode(retCode, "Unable to open database");
                 }
             return success;
             }
-        bool exec(const char *sql)
+        bool openDb(char const *dbName)
+            {
+            int retCode = sqlite3_open(dbName, &mDb);
+            return handleRetCode(retCode, "Unable to open database");
+            }
+        bool execDb(const char *sql)
             {
             char *errMsg = nullptr;
             int retCode = sqlite3_exec(mDb, sql, &resultsCallback, this, &errMsg);
@@ -101,7 +101,7 @@ class SQLite:public SQLiteImporter
             }
         /// This is called from the destructor, so does not need an additional
         /// call unless it must be closed early.
-        void close()
+        void closeDb()
             {
             if(mDb)
                 {

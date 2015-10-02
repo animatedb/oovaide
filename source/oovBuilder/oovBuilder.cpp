@@ -215,7 +215,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
                 }
             else    // Must be only link arguments.
                 {
-                deleteDirs.push_back(Project::getOutputDir(buildConfigName));
+                deleteDirs.push_back(Project::getBuildOutputDir(buildConfigName));
                 }
             cfg.saveConfig(buildConfigName);
     // This isn't needed because the CRC will be different and save the analysis

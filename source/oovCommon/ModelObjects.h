@@ -425,8 +425,8 @@ private:
     // The overload key is an integer hex value stored as a string. It is
     // used to resolve overloaded functions.
     OovString mOverloadKey;
-    std::vector<std::unique_ptr<ModelFuncParam>> mParameters;
-    std::vector<std::unique_ptr<ModelBodyVarDecl>> mBodyVarDeclarators;
+    std::vector<std::unique_ptr<ModelDeclarator>> mParameters;
+    std::vector<std::unique_ptr<ModelDeclarator>> mBodyVarDeclarators;
     ModelStatements mStatements;
     Visibility mAccess;
     /// What module the operation is defined in (not declared)
