@@ -2,7 +2,7 @@
 # Oovcde
 
 An object oriented analysis and code development platform that automatically
-generates build, class, sequence, and component diagrams for C++
+generates build, class, sequence, zone, portion, and component diagrams for C++
 and Objective C languages.
 
 [Oovcde Home Page](http://oovcde.sourceforge.net/)
@@ -20,29 +20,35 @@ and Objective C languages.
 ## Features
 
 - The analysis system searches directories for source code and uses CLang.
-	- Dependencies are generated automatically between files and components.
-	- Object relationships and sequence information is saved for diagrams.
-	- Diagrams can be dynamically generated allowing quick navigation
-	  between objects. Diagrams can be edited in Oovcde, then saved as
-	  SVG and edited using tools such as Inkscape.
+	- Diagrams
+		- Dynamically generated allowing quick navigation between objects.
+		- Edit within in Oovcde and save and restore complex diagrams.
+		- Save as SVG and edit using tools such as Inkscape.
 		- Component dependency diagrams
 		- Zone diagrams (view thousands of classes)
 		- Class diagrams
 		- Portion diagrams (view class attribute/member relations)
 		- Sequence diagrams 
-	- Analysis statistics
+		- Include dependency diagrams
+	- Analysis
+		- Dependencies are generated automatically between files and components.
 		- Code coverage
+			- Instruments code and produces coverage information.
+			- Can be used to find dead code (dynamic).
 		- Code complexity
+			- Provides complexity for methods and classes.
 		- Duplicate code
-		- Class member usage
+		- Dead code detection (static)
+			- Class data member usage
+			- Class method usage
 		- Line counts
 		- Project statistics
-- The multithreaded build system uses analysis information for easy setup.
-- The code editor has syntax highlighting, and a debugger.
-- Code test coverage instruments the code and produces coverage information.
-- Complexity measurements are provided for each method of a class.
-- Duplicate code is found and listed.
-
+		- Export to sqlite database
+	- Build
+		- Analysis information is used for easy setup.
+		- Multithreaded based on number of cores
+	- Code editor
+		- Syntax highlighting and debugging (GDB).
 
 ## Download
 
@@ -80,6 +86,7 @@ The explanation of the examples is here.
 ## Project Goals
 
 - Maximize programmer productivity
+	- visibility of code and design information
 	- simple setup
 	- background operations
 	- fast (written in C++)
