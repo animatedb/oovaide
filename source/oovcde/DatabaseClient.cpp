@@ -17,7 +17,7 @@ void DatabaseWriter::writeDatabase(ModelData *modelData)
     // read before the library is opened, then passed to the library.
     OovString projDir = Project::getProjectDirectory();
 #ifdef __linux__
-    FilePath reportLibName(Project::getBinDirectory(), FP_Dir);
+    FilePath reportLibName(Project::getLibDirectory(), FP_Dir);
     reportLibName.appendFile("libOovDbWriter.so");
 #else
     OovStringRef reportLibName = "oovDbWriter.dll";

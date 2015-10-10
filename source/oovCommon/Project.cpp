@@ -81,6 +81,29 @@ OovStringRef const Project::getSrcRootDirectory()
     return sSourceRootDirectory;
     }
 
+OovString const &Project::getLibDirectory()
+    {
+    static OovString path;
+    if(path.length() == 0)
+        {
+        OovStatus status(true, SC_File);
+#ifdef __linux__
+        path = getBinDirectory();
+        size_t pos = path.find("bin");
+        if(pos != std::string::npos)
+            {
+            path.replace(pos, 3, "lib");
+            }
+#else
+        path = getBinDirectory();
+#endif
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to get lib directory");
+            }
+        }
+    return path;
+    }
 
 OovString const &Project::getBinDirectory()
     {

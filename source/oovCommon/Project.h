@@ -55,6 +55,7 @@ class Project
         static OovString const &getProjectDirectory()
             { return sProjectDirectory; }
         static OovString const &getBinDirectory();
+        static OovString const &getLibDirectory();
         static OovString getProjectFilePath();
 
         static OovString getGuiOptionsFilePath();
