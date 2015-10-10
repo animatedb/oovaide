@@ -18,7 +18,7 @@ void DatabaseWriter::writeDatabase(ModelData *modelData)
     OovString projDir = Project::getProjectDirectory();
 #ifdef __linux__
     FilePath reportLibName(Project::getLibDirectory(), FP_Dir);
-    reportLibName.appendFile("libOovDbWriter.so");
+    reportLibName.appendFile("liboovDbWriter.so");
 #else
     OovStringRef reportLibName = "oovDbWriter.dll";
 #endif
