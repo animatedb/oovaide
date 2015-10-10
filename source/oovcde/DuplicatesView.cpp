@@ -18,22 +18,39 @@ eDupReturn createDuplicatesFile(/*OovStringRef const projDir,*/ std::string &out
         FilePath outPath(Project::getProjectDirectory(), FP_Dir);
         outPath.appendDir(DupsDir);
         outPath.appendFile("Dups.txt");
-        File outFile(outPath, "w");
-        if(outFile.isOpen())
+        File outFile;
+        OovStatus status = outFile.open(outPath, "w");
+        if(status.ok())
             {
             outFn = outPath;
             for(auto const &lineInfo : dupLineInfo)
                 {
-                fprintf(outFile.getFp(), "lines %u  :  %s %u  :  %s %u\n",
-                    lineInfo.mTotalDupLines,
-                    lineInfo.mFile1.getStr(), lineInfo.mFile1StartLine,
-                    lineInfo.mFile2.getStr(), lineInfo.mFile2StartLine);
+                OovString str = "lines ";
+                str.appendInt(lineInfo.mTotalDupLines);
+                str += "  :  ";
+                str += lineInfo.mFile1;
+                str += " ";
+                str.appendInt(lineInfo.mFile1StartLine);
+                str += "  :  ";
+                str += lineInfo.mFile2;
+                str += " ";
+                str.appendInt(lineInfo.mFile2StartLine);
+                str += "\n";
+                status = outFile.putString(str);
+                if(!status.ok())
+                    {
+                    break;
+                    }
                 }
             ret = DR_Success;
             }
         else
             {
             ret = DR_UnableToCreateDirectory;
+            }
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to write to duplicates file");
             }
         }
     return ret;

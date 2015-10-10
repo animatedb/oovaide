@@ -15,25 +15,27 @@ static bool makeCoverageProjectFile(OovStringRef const srcFn, OovStringRef const
         OovStringRef const covSrcDir)
     {
     NameValueFile file(srcFn);
-    bool success = file.readFile();
-    if(success)
+    OovStatus status = file.readFile();
+    if(status.ok())
         {
         file.setFilename(dstFn);
         file.setNameValue(OptSourceRootDir, covSrcDir);
-        file.writeFile();
+        status = file.writeFile();
         }
-    else
+    if(status.needReport())
         {
-        fprintf(stderr, "Unable to make project file %s\n", srcFn.getStr());
+        OovString err = "Unable to make project file ";
+        err += srcFn;
+        status.report(ET_Error, err);
         }
-    return success;
+    return status.ok();
     }
 
 static bool makeCoverageComponentTypesFile(OovStringRef const srcFn, OovStringRef const dstFn)
     {
     ComponentTypesFile file;
-    bool success = file.readTypesOnly(srcFn);
-    if(success)
+    OovStatus status = file.readTypesOnly(srcFn);
+    if(status.ok())
         {
         // Define a static library that contains the code that stores
         // the coverage counts that is compiled into exectuables.
@@ -47,13 +49,15 @@ static bool makeCoverageComponentTypesFile(OovStringRef const srcFn, OovStringRe
                     ComponentTypesFile::getShortComponentTypeName(
                             ComponentTypesFile::CT_StaticLib));
             }
-        file.writeTypesOnly(dstFn);
+        status = file.writeTypesOnly(dstFn);
         }
-    else
+    if(status.needReport())
         {
-        fprintf(stderr, "Unable to make component types file %s\n", srcFn.getStr());
+        OovString err = "Unable to make component types file ";
+        err += srcFn;
+        status.report(ET_Error, err);
         }
-    return success;
+    return status.ok();
     }
 
 
@@ -62,37 +66,46 @@ static bool makeCoverageComponentTypesFile(OovStringRef const srcFn, OovStringRe
 /// rebuild of all analysis and build files.
 static bool copyPackageFileIfNeeded(OovStringRef const srcFn, OovStringRef const dstFn)
     {
-    bool success = true;
-
-    if(FileStat::isOutputOld(dstFn, srcFn))
+    OovStatus status(true, SC_File);
+    if(FileStat::isOutputOld(dstFn, srcFn, status))
         {
-        success = false;
-        File srcFile(srcFn, "r");
-        if(FileIsFileOnDisk(srcFn, success))
+        File srcFile;
+        status = srcFile.open(srcFn, "r");
+        if(status.ok())
             {
-            if(srcFile.isOpen())
+            if(FileIsFileOnDisk(srcFn, status))
                 {
-                FileEnsurePathExists(dstFn);
-                File dstFile(dstFn, "w");
-                if(dstFile.isOpen())
+                if(srcFile.isOpen())
                     {
-                    char buf[10000];
-                    while(fgets(buf, sizeof(buf), srcFile.getFp()))
+                    status = FileEnsurePathExists(dstFn);
+                    if(status.ok())
                         {
-                        fputs(buf, dstFile.getFp());
-                        success = true;
+                        File dstFile;
+                        status = dstFile.open(dstFn, "w");
+                        if(status.ok())
+                            {
+                            char buf[10000];
+                            while(srcFile.getString(buf, sizeof(buf), status))
+                                {
+                                status = dstFile.putString(buf);
+                                if(!status.ok())
+                                    {
+                                    break;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
-        else
-            success = true;
-        if(!success)
+        if(status.needReport())
             {
-            fprintf(stderr, "Unable to copy package file %s\n", srcFn.getStr());
+            OovString err = "Unable to copy package file ";
+            err += srcFn;
+            status.report(ET_Error, err);
             }
         }
-    return success;
+    return status.ok();
     }
 
 bool makeCoverageBuildProject()
@@ -102,25 +115,26 @@ bool makeCoverageBuildProject()
     std::string origPackagesFilePath = Project::getPackagesFilePath();
     std::string covSrcDir = Project::getCoverageSourceDirectory();
     std::string covProjDir = Project::getCoverageProjectDirectory();
-    bool success = FileEnsurePathExists(covProjDir);
-    if(success)
+    bool success = true;
+    OovStatus status = FileEnsurePathExists(covProjDir);
+    if(status.ok())
         {
         Project::setProjectDirectory(covProjDir);
         std::string newProjFilePath = Project::getProjectFilePath();
         success = makeCoverageProjectFile(origProjFilePath,
             newProjFilePath, covSrcDir);
+        if(success)
+            {
+            success = makeCoverageComponentTypesFile(origCompTypesFilePath,
+                Project::getComponentTypesFilePath());
+            }
+        if(success)
+            {
+            success = copyPackageFileIfNeeded(origPackagesFilePath,
+                Project::getPackagesFilePath());
+            }
         }
-    if(success)
-        {
-        success = makeCoverageComponentTypesFile(origCompTypesFilePath,
-            Project::getComponentTypesFilePath());
-        }
-    if(success)
-        {
-        success = copyPackageFileIfNeeded(origPackagesFilePath,
-            Project::getPackagesFilePath());
-        }
-    return success;
+    return status.ok() && success;
     }
 
 class CoverageCountsReader
@@ -142,13 +156,14 @@ class CoverageCountsReader
 
 void CoverageCountsReader::read(OovStringRef const fn)
     {
-    File file(fn, "r");
+    File file;
+    OovStatus status = file.open(fn, "r");
     mInstrCounts.clear();
-    if(file.isOpen())
+    if(status.ok())
         {
         char buf[100];
         int lineCounter = 0;
-        while(fgets(buf, sizeof(buf), file.getFp()))
+        while(file.getString(buf, sizeof(buf), status))
             {
             lineCounter++;
             int val;
@@ -164,6 +179,10 @@ void CoverageCountsReader::read(OovStringRef const fn)
                     }
                 }
             }
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read coverage counts");
         }
     }
 
@@ -191,8 +210,9 @@ static void makeCoverageStats(CoverageHeaderReader const &covHeader,
     {
     FilePath statFn(Project::getCoverageProjectDirectory(), FP_Dir);
     statFn.appendFile("oovCovStats.txt");
-    File statFile(statFn, "w");
-    if(statFile.isOpen())
+    File statFile;
+    OovStatus status = statFile.open(statFn, "w");
+    if(status.ok())
         {
         size_t countIndex = 0;
         std::vector<int> const &counts = covCounts.getCounts();
@@ -223,9 +243,11 @@ static void makeCoverageStats(CoverageHeaderReader const &covHeader,
             fprintf(statFile.getFp(), "%s %d\n", covFn.getStr(), percent);
             }
         }
-    else
+    if(status.needReport())
         {
-        fprintf(stderr, "Unable to open file %s\n", statFn.getStr());
+        OovString err = "Unable to open file ";
+        err += statFn;
+        status.report(ET_Error, err);
         }
     }
 
@@ -236,46 +258,55 @@ static void updateCovSourceCounts(OovStringRef const relSrcFn,
     {
     FilePath srcFn(Project::getCoverageSourceDirectory(), FP_Dir);
     srcFn.appendFile(relSrcFn);
-    File srcFile(srcFn, "r");
-    if(srcFile.isOpen())
+    FilePath dstFn(Project::getCoverageProjectDirectory(), FP_Dir);
+    dstFn.appendFile(relSrcFn);
+    File srcFile;
+    OovStatus status = srcFile.open(srcFn, "r");
+    if(status.ok())
         {
-        FilePath dstFn(Project::getCoverageProjectDirectory(), FP_Dir);
-        dstFn.appendFile(relSrcFn);
-        FileEnsurePathExists(dstFn);
-        File dstFile(dstFn, "w");
-        if(dstFile.isOpen())
+        status = FileEnsurePathExists(dstFn);
+        if(status.ok())
             {
-            char buf[1000];
-            size_t instrCount = 0;
-            while(fgets(buf, sizeof(buf), srcFile.getFp()))
+            File dstFile;
+            status = dstFile.open(dstFn, "w");
+            if(status.ok())
                 {
-                if(strstr(buf, "COV_IN("))
+                char buf[1000];
+                size_t instrCount = 0;
+                while(srcFile.getString(buf, sizeof(buf), status))
                     {
-                    if(instrCount < counts.size())
+                    if(strstr(buf, "COV_IN("))
                         {
-                        OovString countStr = "    // ";
-                        countStr.appendInt(counts[instrCount]);
-                        OovString newStr = buf;
-                        size_t pos = newStr.find('\n');
-                        newStr.insert(pos, countStr);
-                        if(newStr.length() < sizeof(buf)-1)
+                        if(instrCount < counts.size())
                             {
-                            strcpy(buf, newStr.getStr());
+                            OovString countStr = "    // ";
+                            countStr.appendInt(counts[instrCount]);
+                            OovString newStr = buf;
+                            size_t pos = newStr.find('\n');
+                            newStr.insert(pos, countStr);
+                            if(newStr.length() < sizeof(buf)-1)
+                                {
+                                strcpy(buf, newStr.getStr());
+                                }
                             }
+                        instrCount++;
                         }
-                    instrCount++;
+                    status = dstFile.putString(buf);
+                    if(!status.ok())
+                        {
+                        break;
+                        }
                     }
-                fputs(buf, dstFile.getFp());
                 }
             }
-        else
-            {
-            fprintf(stderr, "Unable to write file %s\n", dstFn.getStr());
-            }
         }
-    else
+    if(status.needReport())
         {
-        fprintf(stderr, "Unable to read file %s\n", srcFn.getStr());
+        OovString err = "Unable to transfer coverage ";
+        err += srcFn;
+        err += " ";
+        err += dstFn;
+        status.report(ET_Error, err);
         }
     }
 
@@ -312,7 +343,11 @@ bool makeCoverageStats()
     if(stat == OS_Opened)
         {
         CoverageHeaderReader covHeaderReader;
-        covHeaderReader.read(covHeaderFile);
+        OovStatus status = covHeaderReader.read(covHeaderFile);
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to read coverage header");
+            }
         int headerInstrLines = covHeaderReader.getNumInstrumentedLines();
         if(headerInstrLines > 0)
             {

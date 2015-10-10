@@ -107,9 +107,13 @@ void OptionsDefaults::setDefaultOptions()
 #ifdef __linux__
 //    baseArgs.addArg("-ER/usr/include/gtk-3.0");
 //    baseArgs.addArg("-ER/usr/lib/x86_64-linux-gnu/glib-2.0/include");
-    bool success;
-    if(FileIsFileOnDisk("/usr/bin/clang++", success))
+    OovStatus status(true, SC_File);
+    if(FileIsFileOnDisk("/usr/bin/clang++", status))
         useCLangBuild = true;
+    if(status.needReport())
+        {
+        status.reported();
+        }
 #else
     std::string path = getenv("PATH");
     if(path.find("LLVM") != std::string::npos)
@@ -193,11 +197,13 @@ void GuiOptions::setDefaultOptions()
     setNameValue(OptGuiEditorLineArg, "+");
     }
 
-void GuiOptions::read()
+OovStatusReturn GuiOptions::read()
     {
     setFilename(Project::getGuiOptionsFilePath());
-    if(!NameValueFile::readFile())
+    OovStatus status = NameValueFile::readFile();
+    if(status.ok())
         {
         setDefaultOptions();
         }
+    return status;
     }

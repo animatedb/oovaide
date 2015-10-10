@@ -278,41 +278,56 @@ void FilePathEnsureLastPathSep(std::string &path)
         path += '/';
     }
 
-bool FileEnsurePathExists(OovStringRef const path)
+OovStatusReturn FileMakeSubDir(OovStringRef partPath)
     {
-    bool success = true;
-
-    // Walk up the tree to find a base that exists.
-    FilePath fp(path, FP_File);
-    size_t pos = fp.getPosEndDir();
-    while(pos != 0)
-        {
-        fp.discardTail(pos);
-        bool ignoredSuccess = true;
-        if(fp.isDirOnDisk(ignoredSuccess))
-            break;
-        else
-            pos = fp.getPosLeftPathSep(pos, RP_RetPosFailure);
-        }
-    while(pos != std::string::npos && pos != 0 && success)
-        {
-        pos = findPathSep(path, pos);
-        if(pos != std::string::npos)
-            {
-            OovString partPath = path;
-            partPath.resize(pos);
-            if(!FileIsDirOnDisk(partPath, success))
-                {
 #ifdef __linux__
-                success = (mkdir(partPath.getStr(), 0x1FF) == 0);       // 0777
+    bool success = (mkdir(partPath.getStr(), 0x1FF) == 0);       // 0777
 #else
-                success = (_mkdir(partPath.getStr()) == 0);
+    bool success = (_mkdir(partPath.getStr()) == 0);
 #endif
+    return(OovStatus(success, SC_File));
+    }
+
+OovStatusReturn FileEnsurePathExists(OovStringRef const path)
+    {
+    OovStatus status(true, SC_File);
+    FilePath fullPath(path, FP_Dir);
+    fullPath.getAbsolutePath(path, FP_Dir);
+    FilePath existingPath = fullPath;
+
+    if(fullPath.find('~') == std::string::npos)
+        {
+        // Walk up the tree to find a base that exists.
+        size_t pos = existingPath.getPosEndDir();
+        while(pos != 0 && pos != std::string::npos)
+            {
+            existingPath.discardTail(pos);
+            OovStatus ignoredStatus(true, SC_File);
+            if(existingPath.isDirOnDisk(ignoredStatus))
+                break;
+            else
+                pos = existingPath.getPosLeftPathSep(pos, RP_RetPosFailure);
+            }
+        while(pos != std::string::npos && status.ok())
+            {
+            pos = findPathSep(fullPath, pos);
+            if(pos != std::string::npos)
+                {
+                OovString partPathStr = fullPath;
+                partPathStr.resize(pos);
+                if(!FileIsDirOnDisk(partPathStr, status))
+                    {
+                    status = FileMakeSubDir(partPathStr);
+                    }
+                pos++;
                 }
-            pos++;
             }
         }
-    return success;
+    else
+        {
+        status.set(false, SC_Logic);
+        }
+    return status;
     }
 
 void FilePathRemovePathSep(std::string &path, size_t pos)
@@ -456,43 +471,43 @@ bool FilePathAnyExtensionMatch(FilePaths const &paths, OovStringRef const file)
 
 //////////////
 
-bool FileIsFileOnDisk(OovStringRef const path, bool &success)
+bool FileIsFileOnDisk(OovStringRef const path, OovStatus &status)
     {
     OovString tempPath = path;
     FilePathRemovePathSep(tempPath, tempPath.size()-1);
     struct OovStat32 statval;
     int statRet = OovStat32(tempPath.getStr(), &statval);
     // Indicate there is an error only if the error is not ENOENT.
-    success = ((statRet == 0) || (errno == ENOENT));
+    status.set((statRet == 0) || (errno == ENOENT), SC_File);
     // Only indicate the file exists if there was no error, and it is a file.
     return((statRet == 0) && !S_ISDIR(statval.st_mode));
     }
 
-bool FileIsDirOnDisk(OovStringRef const path, bool &success)
+bool FileIsDirOnDisk(OovStringRef const path, OovStatus &status)
     {
     struct OovStat32 statval;
     int statRet = OovStat32(path, &statval);
     // Indicate there is an error only if the error is not ENOENT.
-    success = ((statRet == 0) || (errno == ENOENT));
+    status.set((statRet == 0) || (errno == ENOENT), SC_File);
     // Only indicate the directory exists if there was no error, and it is a directory.
     return((statRet == 0) && S_ISDIR(statval.st_mode));
     }
 
-void FileDelete(OovStringRef const path)
+OovStatusReturn FileDelete(OovStringRef const path)
     {
-    unlink(path.getStr());
+    return OovStatus(unlink(path.getStr()) == 0 || errno == ENOENT, SC_File);
     }
 
-void FileWaitForDirDeleted(OovStringRef const path, int waitMs)
+OovStatusReturn FileWaitForDirDeleted(OovStringRef const path, int waitMs)
     {
+    OovStatus status(true, SC_File);
 #ifndef __linux__
     int minWait = 100;
     int count = waitMs / minWait;
     bool deleted = false;
-    bool success = true;
-    for(int tries=0; tries<count && success; tries++)
+    for(int tries=0; tries<count && status.ok(); tries++)
         {
-        if(!FileIsDirOnDisk(path, success))
+        if(!FileIsDirOnDisk(path, status))
             {
             deleted = true;
             break;
@@ -502,60 +517,75 @@ void FileWaitForDirDeleted(OovStringRef const path, int waitMs)
             sleepMs(minWait);
             }
         }
-    if(!success || !deleted)
+    if(status.ok() && !deleted)
+        {
+        status.set(false, SC_Time);
+        }
+    if(status.needReport())
         {
         OovString str = "Unable to delete directory: ";
         str += path;
         OovError::report(ET_Error, str);
         }
 #endif
+    return status;
     }
 
-void FileRename(OovStringRef const  oldPath, OovStringRef const  newPath)
+OovStatusReturn FileRename(OovStringRef const  oldPath, OovStringRef const  newPath)
     {
-    rename(oldPath.getStr(), newPath.getStr());
+    return OovStatus(rename(oldPath.getStr(), newPath.getStr()) == 0, SC_File);
     }
 
-bool FileGetFileTime(OovStringRef const path, time_t &time)
+OovStatusReturn FileGetFileTime(OovStringRef const path, time_t &time)
     {
     struct OovStat32 srcFileStat;
-    bool success = (OovStat32(path.getStr(), &srcFileStat) == 0);
-    if(success)
+    OovStatus status(OovStat32(path.getStr(), &srcFileStat) == 0, SC_File);
+    if(status.ok())
         time = srcFileStat.st_mtime;
-    return success;
+    return status;
     }
 
 ///////////
 
 bool FileStat::isOutputOld(OovStringRef const outputFn,
-        OovStringRef const inputFn)
+        OovStringRef const inputFn, OovStatus &status)
     {
-    time_t outTime;
-    time_t inTime;
-    bool success = FileGetFileTime(outputFn, outTime);
-    bool old = !success;
-    if(success)
+    time_t outTime = 0;
+    time_t inTime = 0;
+    status = FileGetFileTime(outputFn, outTime);
+    bool old = !status.ok();
+    if(status.ok())
         {
-        success = FileGetFileTime(inputFn, inTime);
-        if(success)
+        status = FileGetFileTime(inputFn, inTime);
+        if(status.ok())
+            {
             old = inTime > outTime;
+            }
         else
+            {
             old = true;
+            }
+        }
+    else
+        {
+        status.clearError();
         }
     return old;
     }
 
 bool FileStat::isOutputOld(OovStringRef const outputFn,
-        OovStringVec const &inputs, size_t *oldIndex)
+        OovStringVec const &inputs, OovStatus &status, size_t *oldIndex)
     {
     bool old = false;
-    for(size_t i=0; i<inputs.size(); i++)
+    for(size_t i=0; i<inputs.size() && status.ok(); i++)
         {
-        if(isOutputOld(outputFn, inputs[i]))
+        if(isOutputOld(outputFn, inputs[i], status))
             {
             old = true;
             if(oldIndex)
+                {
                 *oldIndex = i;
+                }
             break;
             }
         }

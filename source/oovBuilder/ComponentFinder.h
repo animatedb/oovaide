@@ -71,11 +71,19 @@ class ScannedComponent
             { mSourceFiles.insert(objPath); }
         void addIncludeFileName(OovStringRef const objPath)
             { mIncludeFiles.insert(objPath); }
-        void saveComponentSourcesToFile(OovStringRef const compName,
-            ComponentTypesFile &file) const;
+        void saveComponentSourcesToFile(ProjectReader const &proj,
+            OovStringRef const compName, ComponentTypesFile &file,
+            OovStringRef analysisPath) const;
+        static OovString getComponentName(ProjectReader const &proj,
+            OovStringRef const filePath, OovString *rootPathName=nullptr);
+
     private:
         OovStringSet mSourceFiles;
         OovStringSet mIncludeFiles;
+        void saveComponentFileInfo(ComponentTypesFile::CompFileTypes cft,
+            ProjectReader const &proj, OovStringRef const compName,
+            ComponentTypesFile &compFile, OovStringRef analysisPath,
+            OovStringSet const &newFiles) const;
     };
 
 // Temporary storage while scanning.
@@ -86,7 +94,8 @@ class ScannedComponentsInfo
             { mProjectIncludeDirs.insert(path); }
         void addSourceFile(OovStringRef const compName, OovStringRef const srcFileName);
         void addIncludeFile(OovStringRef const compName, OovStringRef const srcFileName);
-        void initializeComponentTypesFileValues(ComponentTypesFile &file);
+        void initializeComponentTypesFileValues(ProjectReader const &proj,
+            ComponentTypesFile &file, OovStringRef analysisPath);
         void setProjectComponentsFileValues(ComponentsFile &file);
         InsertOrderedSet const &getProjectIncludeDirs() const
             { return mProjectIncludeDirs; }
@@ -117,7 +126,7 @@ class ComponentFinder:public dirRecurser
                 OovStringRef const buildConfigName);
 
         /// Recursively scan a directory for source and include files.
-        void scanProject();
+        OovStatus scanProject();
 
         /// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
         void scanExternalProject(OovStringRef const externalRootSrch,
@@ -129,10 +138,9 @@ class ComponentFinder:public dirRecurser
 
         /// Adds the components and initial includes to the project components
         /// file.
-        void saveProject(OovStringRef const compFn);
+        void saveProject(OovStringRef const compFn, OovStringRef analysisPath);
 
-        OovString getComponentName(OovStringRef const filePath) const;
-
+        OovString getComponentName(OovStringRef const filePath);
 // DEAD CODE
 //        const ProjectReader &getProject() const
 //            { return mProject; }
@@ -163,7 +171,7 @@ class ComponentFinder:public dirRecurser
             }
 
     private:
-        mutable std::string mRootPathName;
+        OovString mRootPathName;
         // This is overwritten for every external project.
         OovStringVec mExcludeDirs;
 

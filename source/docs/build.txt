@@ -93,3 +93,18 @@ graph anywhere. OOvcde now does this automatically.
 
 To solve link errors for GetProcessMemoryInfo@12 and _imp_semSetOptions@4,
 I needed to link with psapi and imagehlp. Also needed pthread.
+
+
+Oovcde build ideas
+------------------
+
+file extensions map to tools
+component file extension contents are used to find component type (C++, Java, etc.)
+	C/C++ common analysis and compile switches
+		analyze
+		debug
+		release
+	link switches
+
+Add source extensions to build arguments along with tools
+split out linker switches from compiler switches?

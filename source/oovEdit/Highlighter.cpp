@@ -791,12 +791,15 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
 #else
             HighlightTaskItem task;
 #endif
-            task.setParseTask(buffer, bufLen);
+            if(bufLen > 0)
+                {
+                task.setParseTask(buffer, bufLen);
 #if(SHARED_QUEUE)
-            sSharedQueue.addTask(task);
+                sSharedQueue.addTask(task);
 #else
-            mBackgroundThreadData.addTask(task);
+                mBackgroundThreadData.addTask(task);
 #endif
+                }
             }
         }
 

@@ -27,7 +27,11 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     {
     ProjectReader proj;
     ProjectBuildArgs buildArgs(proj);
-    proj.readProject(Project::getProjectDirectory());
+    OovStatus status = proj.readProject(Project::getProjectDirectory());
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read project for editor CPP args.");
+        }
     buildArgs.loadBuildArgs(BuildConfigAnalysis);
     OovStringVec cppArgs = buildArgs.getCompileArgs();
     for(auto const &arg : cppArgs)
@@ -431,29 +435,40 @@ void FileEditView::init(GtkTextView *textView, FileEditViewListener *listener)
     g_signal_connect(G_OBJECT(mTextView), "draw", G_CALLBACK(draw), this);
     }
 
-bool FileEditView::openTextFile(OovStringRef const fn)
+OovStatusReturn FileEditView::openTextFile(OovStringRef const fn)
     {
     setFileName(fn);
-    File file(fn, "rb");
-    if(file.isOpen())
+    File file;
+    OovStatus status = file.open(fn, "rb");
+    if(status.ok())
         {
-        fseek(file.getFp(), 0, SEEK_END);
-        long fileSize = ftell(file.getFp());
+        status = file.seekEnd();
+        }
+    if(status.ok())
+        {
+        status = file.getModifyTime(mOpenModifyTime);
+        }
+    if(status.ok())
+        {
+        long fileSize = file.getFileSize();
         if(fileSize >= 0 && fileSize < 10000000)
             {
-            fseek(file.getFp(), 0, SEEK_SET);
-            std::vector<char> buf(fileSize);
-            // actualCount can be less than fileSize on Windows due to /r/n
-            int actualCount = fread(&buf.front(), 1, fileSize, file.getFp());
-            if(actualCount > 0)
+            status = file.seekBegin();
+            if(status.ok())
                 {
-                gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
-                gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+                std::vector<char> buf(fileSize);
+                // actualCount can be less than fileSize on Windows due to /r/n
+                int actualCount = fread(&buf.front(), 1, fileSize, file.getFp());
+                if(actualCount > 0)
+                    {
+                    gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
+                    gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+                    }
+                highlightRequest();
                 }
-            highlightRequest();
             }
         }
-    return(file.isOpen());
+    return(status);
     }
 
 std::string FileEditView::getFileName() const
@@ -461,22 +476,23 @@ std::string FileEditView::getFileName() const
     return FilePath(mFilePath, FP_File).getName();
     }
 
-bool FileEditView::saveTextFile()
+OovStatusReturn FileEditView::saveTextFile()
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     if(mFilePath.length() == 0)
         {
-        success = saveAsTextFileWithDialog();
+        status = saveAsTextFileWithDialog();
         }
-    else
+    if(status.ok())
         {
-        success = true;
+        status = saveAsTextFile(mFilePath);
         }
-    if(success)
+    if(status.needReport())
         {
-        success = saveAsTextFile(mFilePath);
+        status.reported();
+        Gui::messageBox("Unable to save file");
         }
-    return success;
+    return status;
     }
 
 bool FileEditView::viewChange(int &topOffset, int &botOffset)
@@ -559,41 +575,75 @@ void FileEditView::moveToIter(GtkTextIter startIter, GtkTextIter *endIter)
         }
     }
 
-bool FileEditView::saveAsTextFileWithDialog()
+OovStatusReturn FileEditView::saveAsTextFileWithDialog()
     {
     PathChooser ch;
     OovString filename = mFilePath;
-    bool saved = false;
     std::string prompt = "Save ";
     prompt += mFilePath;
     prompt += " As";
+    OovStatus status(true, SC_File);
     if(ch.ChoosePath(GTK_WINDOW(mTextView), prompt,
             GTK_FILE_CHOOSER_ACTION_SAVE, filename))
         {
-        saved = saveAsTextFile(filename);
+        status = saveAsTextFile(filename);
         }
-    return saved;
+    return status;
     }
 
-bool FileEditView::saveAsTextFile(OovStringRef const fn)
+OovStatusReturn FileEditView::saveAsTextFile(OovStringRef const fn)
     {
-    size_t writeSize = -1;
+    // A temporary file is written to so that if the write fails, the original
+    // file will not be partially corrupted.  The user will be notified, and
+    // they can attempt to write somewhere else.
     OovString tempFn = fn;
     setFileName(fn);
     tempFn += ".tmp";
-    File file(tempFn, "wb");
-    if(file.isOpen())
+    File file;
+    OovStatus status = file.open(tempFn, "wb");
+    if(status.ok())
         {
         int size = gtk_text_buffer_get_char_count(mTextBuffer);
         GuiText buf = getBuffer();
-        writeSize = fwrite(buf.c_str(), 1, size, file.getFp());
+        status = file.write(buf.c_str(), size);
+        }
+    if(status.ok())
+        {
         file.close();
-        FileDelete(fn);
-        FileRename(tempFn, fn);
+        time_t fileModifyTime;
+        status = FileGetFileTime(fn, fileModifyTime);
+        if(status.ok() && mOpenModifyTime != 0 && mOpenModifyTime != fileModifyTime)
+            {
+            bool allowOverwrite = Gui::messageBox("The file on disk has been modified externally."
+                "Do you want to overwrite?", GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
+            if(!allowOverwrite)
+                {
+                status.set(false, SC_User);
+                }
+            }
+        }
+    if(status.ok())
+        {
+        status = FileDelete(fn);
+        }
+    if(status.ok())
+        {
+        status = FileRename(tempFn, fn);
+        }
+    if(status.ok())
+        {
         gtk_text_buffer_set_modified(mTextBuffer, FALSE);
         setModified(false);
+
+        // Update the modify time to the updated file time.
+        status = FileGetFileTime(fn, mOpenModifyTime);
         }
-    return(writeSize > 0);
+    if(status.needReport())
+        {
+        status.reported();
+        Gui::messageBox("Unable to save file, check directory for temp file");
+        }
+    return status;
     }
 
 bool FileEditView::checkExitSave()
@@ -611,11 +661,11 @@ bool FileEditView::checkExitSave()
             {
             if(mFilePath.length() > 0)
                 {
-                exitOk = saveTextFile();
+                exitOk = saveTextFile().ok();
                 }
             else
                 {
-                exitOk = saveAsTextFileWithDialog();
+                exitOk = saveAsTextFileWithDialog().ok();
                 }
             }
         else if(result == GTK_RESPONSE_NO)

@@ -12,6 +12,7 @@
 #define FILEPATH_H_
 
 #include "OovString.h"
+#include "OovError.h"
 #include <sys/stat.h>
 #include <vector>
 
@@ -42,6 +43,9 @@ enum eReturnPosition {
     RP_RetPosNatural,   // Return the most natural position in the path.
     RP_RetPosFailure    // Return std::string::npos if the position is not in the path.
 };
+
+enum eFilePathTypes { FP_File, FP_Dir, FP_Ext };
+
 
 //***** non-modifying path functions
 /// Get the start of the directory specification. This is the position after
@@ -200,48 +204,55 @@ std::string FilePathFixFilePath(OovStringRef const path);
 //***** File/disk operations
 
 /// If the path does not exist, create all of the subdirectories required
-/// to match the path.
+/// to match the path.  The path must be a directory.
 /// @param path The path to use to build the directories.
-bool FileEnsurePathExists(OovStringRef const path);
+OovStatusReturn FileEnsurePathExists(OovStringRef const path);
 
 /// Check if the specified file is on disk
 /// @param path The path to check.
-/// @param success True if the check was performed successfully.
-bool FileIsFileOnDisk(OovStringRef const path, bool &success);
+/// @param status True if the check was performed successfully.
+bool FileIsFileOnDisk(OovStringRef const path, OovStatus &status);
 
 /// Check if the specified directory is on disk
 /// @param path The path to check.
-/// @param success True if the check was performed successfully.
-bool FileIsDirOnDisk(OovStringRef const path, bool &success);
+/// @param status True if the check was performed successfully.
+bool FileIsDirOnDisk(OovStringRef const path, OovStatus &status);
+
+OovStatusReturn FileMakeSubDir(OovStringRef partPath);
 
 /// Get the modify time of the file.
+/// This does return an error if the file does not exist.
 /// @param path The path to use to get the time.
 /// @param time The returned time of the file.
-bool FileGetFileTime(OovStringRef const path, time_t &time);
+OovStatusReturn FileGetFileTime(OovStringRef const path, time_t &time);
 
 /// Delete the specified file.
 /// @param path The file to delete.
-void FileDelete(OovStringRef const path);
+OovStatusReturn FileDelete(OovStringRef const path);
 
 /// Wait for a directory to be deleted.
 /// Windows can return from a delete file or directory call before it
 /// is finished being deleted.  It may be related to TortoiseSvn keeping
 /// files open.
 /// @param path The file to wait for deletion.
-void FileWaitForDirDeleted(OovStringRef const path, int waitMs=10000);
+OovStatusReturn FileWaitForDirDeleted(OovStringRef const path, int waitMs=10000);
 
 /// Rename a file
 /// @param oldPath The original path name.
 /// @param newPath The new path name.
-void FileRename(OovStringRef const oldPath, OovStringRef const newPath);
+OovStatusReturn FileRename(OovStringRef const oldPath, OovStringRef const newPath);
 
 class FileStat
     {
     public:
+        /// This does not return an error if the file does not exist. It just
+        /// indicates that the file is old.
         static bool isOutputOld(OovStringRef const outputFn,
-                OovStringRef const inputFn);
+            OovStringRef const inputFn, OovStatus &status);
+        /// This does not return an error if the file does not exist. It just
+        /// indicates that the file is old.
         static bool isOutputOld(OovStringRef const outputFn,
-                OovStringVec const &inputs, size_t *oldIndex=nullptr);
+            OovStringVec const &inputs, OovStatus &status, size_t *oldIndex=nullptr);
     };
 
 template<typename T_Str> class FilePathRefInterface
@@ -285,14 +296,14 @@ template<typename T_Str> class FilePathRefInterface
             { return FilePathHasExtension(getThisStr()); }
         bool matchExtension(OovStringRef const path) const
             { return FilePathMatchExtension(getThisStr(), path); }
-        bool isDirOnDisk(bool &success) const
-            { return FileIsDirOnDisk(getThisStr(), success); }
-        bool isFileOnDisk(bool &success) const
-            { return FileIsFileOnDisk(getThisStr(), success); }
-        void deleteFile() const
-            { FileDelete(getThisStr()); }
-        void ensurePathExists()
-            { FileEnsurePathExists(getThisStr()); }
+        bool isDirOnDisk(OovStatus &status) const
+            { return FileIsDirOnDisk(getThisStr(), status); }
+        bool isFileOnDisk(OovStatus &status) const
+            { return FileIsFileOnDisk(getThisStr(), status); }
+        OovStatusReturn deleteFile() const
+            { return FileDelete(getThisStr()); }
+        OovStatusReturn ensurePathExists()
+            { return FileEnsurePathExists(getThisStr()); }
 
     private:
         char const * getThisStr() const
@@ -303,8 +314,6 @@ template<typename T_Str> class FilePathRefInterface
 class FilePathRef:public FilePathRefInterface<FilePathRef>, OovStringRef
     {
     };
-
-enum eFilePathTypes { FP_File, FP_Dir, FP_Ext };
 
 //// In this class, any path that ends with a path separator indicates it
 /// is a directory.

@@ -8,8 +8,10 @@
 #ifndef FILE_H_
 #define FILE_H_
 
-#include <stdio.h>
 #include "OovString.h"
+#include "OovError.h"
+#include <stdio.h>
+#include <sys/stat.h>
 #define __NO_MINGW_LFS 1
 
 
@@ -24,24 +26,21 @@ class File
         File():
             mFp(nullptr)
             {}
-
-        /// Open a file
-        /// @param fn The name of the file to open
-        /// @param mode The fopen mode
-        File(OovStringRef const fn, OovStringRef const mode)
-            {
-            mFp = fopen(fn, mode);
-            }
         ~File()
             { close(); }
 
         /// Open a file
         /// @param fn The name of the file to open
         /// @param mode The fopen mode
-        void open(OovStringRef const fn, OovStringRef const mode)
+        OovStatusReturn open(OovStringRef const fn, OovStringRef const mode)
             {
+            OovStatus status(true, SC_File);
             if(!mFp)
+                {
                 mFp = fopen(fn, mode);
+                status.set(mFp != nullptr, SC_File);
+                }
+            return status;
             }
 
         /// Close the file. The destructor will also ensure the file is closed.
@@ -58,30 +57,39 @@ class File
 
         /// Gets the size of the file.
         /// @param size The returned size.
-        bool getFileSize(int &size) const;
+        OovStatusReturn getFileSize(int &size) const;
 
         /// Reads the file into a buffer at the current seek position.
         /// @param buf The buffer to fill
         /// @param size The number of bytes to read.
-        bool read(char *buf, int size) const
+        OovStatusReturn read(char *buf, int size) const
             {
             size_t actualSize = fread(buf, 1, size, mFp);
-            return(ferror(mFp) == 0 && actualSize > 0);
+            return(OovStatus(ferror(mFp) == 0 && actualSize > 0, SC_File));
+            }
+
+        /// Writes the file into a buffer at the current seek position.
+        /// @param buf The buffer to read from
+        /// @param size The number of bytes to write.
+        OovStatusReturn write(char const *buf, int size) const
+            {
+            size_t writeSize = fwrite(buf, 1, size, mFp);
+            return(OovStatus(writeSize == static_cast<size_t>(size), SC_File));
             }
 
         /// Write a string. This does not append an end of line indicator.
         /// @param str The string to write.
-        bool putString(OovStringRef const &str) const
+        OovStatusReturn putString(OovStringRef const &str) const
             {
-            return(fputs(str.getStr(), mFp) >= 0);
+            return(OovStatus(fputs(str.getStr(), mFp) >= 0, SC_File));
             }
 
         /// Read a string up to the end of line.
         /// @param buf The place to put the string. The size must be greater or
         //      equal to bufBytes
         /// @param bufBytes the maximum number of bytes to read.
-        /// @param success True if no error was encountered.
-        bool getString(char *buf, int bufBytes, bool &success);
+        /// @param status True if no error was encountered.
+        bool getString(char *buf, int bufBytes, OovStatus &status);
 
         /// Set a file to the specified size.  This is meant for truncation and
         /// not for growing a file.
@@ -89,12 +97,23 @@ class File
         void truncate(int size=0);
 
         /// Seek to the beginning of the file
-        bool seekBegin() const
-            { return(fseek(mFp, 0, SEEK_SET) == 0); }
+        OovStatus seekBegin() const
+            { return(OovStatus(fseek(mFp, 0, SEEK_SET) == 0, SC_File)); }
 
         /// Seek to the end of the file
-        bool seekEnd() const
-            { return(fseek(mFp, 0, SEEK_END) == 0); }
+        OovStatusReturn seekEnd() const
+            { return(OovStatus(fseek(mFp, 0, SEEK_END) == 0, SC_File)); }
+
+        long getFileSize() const
+            { return ftell(mFp); }
+
+        OovStatusReturn getModifyTime(time_t &modifyTime) const
+            {
+            struct stat buf;
+            bool success = (fstat(fileno(mFp), &buf) == 0);
+            modifyTime = buf.st_mtime;
+            return OovStatus(success, SC_File);
+            }
 
         /// Get the file pointer of the open file. Null if not opened.
         FILE *getFp()
@@ -134,13 +153,13 @@ class BaseSimpleFile
         /// @param size The number of bytes to read.
         /// @param actualSize The read number of bytes.  The actual size may
         ///     be less than file size in text mode.
-        bool read(void *buf, int size, int &actualSize);
+        OovStatusReturn read(void *buf, int size, int &actualSize);
         /// Write bytes to a file.
         /// @param buf The data to write
         /// @param size The number of bytes to write
-        bool write(void const *buf, int size);
+        OovStatusReturn write(void const *buf, int size);
         /// Seek to the beginning of the file
-        void seekBegin();
+        OovStatusReturn seekBegin();
         /// Get the size of the file in bytes
         int getSize() const;
         /// Set the file descriptor

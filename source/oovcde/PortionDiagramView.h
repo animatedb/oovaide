@@ -45,10 +45,10 @@ class PortionDiagramView
             }
 
         void drawToDrawingArea();
-        bool drawSvgDiagram(File &file);
-        bool saveDiagram(File &file)
+        OovStatusReturn drawSvgDiagram(File &file);
+        OovStatusReturn saveDiagram(File &file)
             { return mPortionDiagram.saveDiagram(file); }
-        bool loadDiagram(File &file)
+        OovStatusReturn loadDiagram(File &file)
             {
             setCairoContext();
             return mPortionDiagram.loadDiagram(file, mNullDrawer);

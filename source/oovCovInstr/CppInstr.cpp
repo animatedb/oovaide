@@ -114,40 +114,50 @@ static void appendLineEnding(std::string &str)
 
 bool CppFileContents::read(char const *fn)
     {
-    bool success = false;
-    SimpleFile file(fn, M_ReadWriteExclusive, OE_Binary);
-    if(file.isOpen())
+    SimpleFile file;
+    eOpenStatus openStat = file.open(fn, M_ReadWriteExclusive, OE_Binary);
+    OovStatus status(openStat == OS_Opened, SC_File);
+    if(status.ok())
         {
         int size = file.getSize();
         mFileContents.resize(size);
         int actual = 0;
-        success = file.read(mFileContents.data(), size, actual);
+        status = file.read(mFileContents.data(), size, actual);
         }
-    if(!success)
+    if(!status.ok())
         {
-        fprintf(stderr, "Unable to read %s\n", fn);
+        OovString str = "Unable to read %s ";
+        str += fn;
+        str += "\n";
+        status.report(ET_Error, str.getStr());
         }
-    return success;
+    return status.ok();
     }
 
 bool CppFileContents::write(OovStringRef const fn)
     {
-    SimpleFile file(fn, M_WriteExclusiveTrunc, OE_Binary);
-    bool success = false;
-    if(file.isOpen())
+    SimpleFile file;
+    eOpenStatus openStat = file.open(fn, M_WriteExclusiveTrunc, OE_Binary);
+    OovStatus status(openStat == OS_Opened, SC_File);
+    if(status.ok())
         {
         OovString includeCov = "#include \"OovCoverage.h\"";
         appendLineEnding(includeCov);
         updateMemory();
-        file.write(includeCov.c_str(), includeCov.length());
-        success = file.write(mFileContents.data(), mFileContents.size());
+        status = file.write(includeCov.c_str(), includeCov.length());
         }
-    if(!success)
+    if(status.ok())
         {
-        char const * const fnp = fn;
-        fprintf(stderr, "Unable to write %s\n", fnp);
+        status = file.write(mFileContents.data(), mFileContents.size());
         }
-    return success;
+    if(!status.ok())
+        {
+        OovString str = "Unable to write %s ";
+        str += fn;
+        str += "\n";
+        status.report(ET_Error, str.getStr());
+        }
+    return status.ok();
     }
 
 void CppFileContents::updateMemory()
@@ -566,8 +576,15 @@ void CoverageHeader::update(OovStringRef const outDefFn, OovStringRef const srcF
     eOpenStatus stat = outDefFile.open(outDefFn, M_ReadWriteExclusive, OE_Binary);
     if(stat == OS_Opened)
         {
-        read(outDefFile);
-        write(outDefFile, srcFn, numInstrLines);
+        OovStatus status = read(outDefFile);
+        if(status.ok())
+            {
+            write(outDefFile, srcFn, numInstrLines);
+            }
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to update coverage file");
+            }
         }
     }
 
@@ -615,8 +632,15 @@ void CoverageHeader::write(SharedFile &outDefFile, OovStringRef const /*srcFn*/,
             buf += def;
             }
         outDefFile.truncate();
-        outDefFile.seekBegin();
-        outDefFile.write(&buf[0], static_cast<int>(buf.size()));
+        OovStatus status = outDefFile.seekBegin();
+        if(status.ok())
+            {
+            status = outDefFile.write(&buf[0], static_cast<int>(buf.size()));
+            }
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to write coverage source");
+            }
         }
     }
 
@@ -674,95 +698,108 @@ void CppInstr::updateCoverageSource(OovStringRef const /*fn*/, OovStringRef cons
     {
     FilePath outFn(covDir, FP_Dir);
     outFn.appendDir("covLib");
-    FileEnsurePathExists(outFn);
-    outFn.appendFile("OovCoverage.cpp");
-
-    bool success = true;
-    if(!FileIsFileOnDisk(outFn, success))
+    OovStatus status = FileEnsurePathExists(outFn);
+    if(status.ok())
         {
-        File file(outFn, "w");
+        outFn.appendFile("OovCoverage.cpp");
 
-        static char const *lines[] = {
-            "// Automatically generated file by OovCovInstr\n",
-            "// This appends coverage data to either a new or existing file,\n"
-            "// although the number of instrumented lines in the project must match.\n"
-            "// This file must be compiled and linked into the project.\n",
-            "#include <stdio.h>\n",
-            "#include \"OovCoverage.h\"\n",
-            "\n",
-            "unsigned short gCoverage[COV_TOTAL_INSTRS];\n",
-            "\n",
-            "class cCoverageOutput\n",
-            "  {\n",
-            "  public:\n",
-            "  cCoverageOutput()\n",
-            "    {\n",
-            "    // Initialize because some compilers may not initialize statics (TI)\n",
-            "    for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
-            "      gCoverage[i] = 0;\n",
-            "    }\n",
-            "  ~cCoverageOutput()\n",
-            "    {\n",
-            "      update();\n",
-            "    }\n",
-            "  void update()\n",
-            "    {\n",
-            "    read();\n",
-            "    write();\n",
-            "    }\n",
-            "\n",
-            "  private:\n",
-            "  int getFirstIntFromLine(FILE *fp)\n",
-            "    {\n",
-            "   char buf[80];\n",
-            "   fgets(buf, sizeof(buf), fp);\n",
-            "   unsigned int tempInt = 0;\n",
-            "           sscanf(buf, \"%u\", &tempInt);\n",
-            "   return tempInt;\n",
-            "    }\n",
-            "  void read()\n",
-            "    {\n",
-            "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"r\");\n",
-            "    if(fp)\n",
-            "      {\n",
-            "      int numInstrs = getFirstIntFromLine(fp);\n",
-            "      if(numInstrs == COV_TOTAL_INSTRS)\n",
-            "        {\n",
-            "        for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
-            "          {\n",
-            "          gCoverage[i] += getFirstIntFromLine(fp);\n",
-            "          }\n",
-            "        }\n",
-            "      fclose(fp);\n",
-            "      }\n",
-            "    }\n",
-            "  void write()\n",
-            "    {\n",
-            "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"w\");\n",
-            "    if(fp)\n",
-            "      {\n",
-            "      fprintf(fp, \"%d   # Number of instrumented lines\\n\", COV_TOTAL_INSTRS);\n",
-            "      for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
-            "        {\n",
-            "        fprintf(fp, \"%u\", gCoverage[i]);\n",
-            "        gCoverage[i] = 0;\n",
-            "        fprintf(fp, \"\\n\");\n",
-            "        }\n",
-            "      fclose(fp);\n",
-            "      }\n",
-            "    }\n",
-            "  };\n",
-            "\n",
-            "cCoverageOutput coverageOutput;\n"
-            "\n",
-            "void updateCoverage()\n",
-            "  { coverageOutput.update(); }\n"
-
-        };
-        for(size_t i=0; i<sizeof(lines)/sizeof(lines[0]); i++)
+            if(!FileIsFileOnDisk(outFn, status))
             {
-            fprintf(file.getFp(), "%s", lines[i]);
+            File file;
+            status = file.open(outFn, "w");
+
+                static char const *lines[] = {
+                "// Automatically generated file by OovCovInstr\n",
+                "// This appends coverage data to either a new or existing file,\n"
+                "// although the number of instrumented lines in the project must match.\n"
+                "// This file must be compiled and linked into the project.\n",
+                "#include <stdio.h>\n",
+                "#include \"OovCoverage.h\"\n",
+                "\n",
+                "unsigned short gCoverage[COV_TOTAL_INSTRS];\n",
+                "\n",
+                "class cCoverageOutput\n",
+                "  {\n",
+                "  public:\n",
+                "  cCoverageOutput()\n",
+                "    {\n",
+                "    // Initialize because some compilers may not initialize statics (TI)\n",
+                "    for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
+                "      gCoverage[i] = 0;\n",
+                "    }\n",
+                "  ~cCoverageOutput()\n",
+                "    {\n",
+                "      update();\n",
+                "    }\n",
+                "  void update()\n",
+                "    {\n",
+                "    read();\n",
+                "    write();\n",
+                "    }\n",
+                "\n",
+                "  private:\n",
+                "  int getFirstIntFromLine(FILE *fp)\n",
+                "    {\n",
+                "   char buf[80];\n",
+                "   fgets(buf, sizeof(buf), fp);\n",
+                "   unsigned int tempInt = 0;\n",
+                "           sscanf(buf, \"%u\", &tempInt);\n",
+                "   return tempInt;\n",
+                "    }\n",
+                "  void read()\n",
+                "    {\n",
+                "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"r\");\n",
+                "    if(fp)\n",
+                "      {\n",
+                "      int numInstrs = getFirstIntFromLine(fp);\n",
+                "      if(numInstrs == COV_TOTAL_INSTRS)\n",
+                "        {\n",
+                "        for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
+                "          {\n",
+                "          gCoverage[i] += getFirstIntFromLine(fp);\n",
+                "          }\n",
+                "        }\n",
+                "      fclose(fp);\n",
+                "      }\n",
+                "    }\n",
+                "  void write()\n",
+                "    {\n",
+                "    FILE *fp = fopen(\"OovCoverageCounts.txt\", \"w\");\n",
+                "    if(fp)\n",
+                "      {\n",
+                "      fprintf(fp, \"%d   # Number of instrumented lines\\n\", COV_TOTAL_INSTRS);\n",
+                "      for(int i=0; i<COV_TOTAL_INSTRS; i++)\n",
+                "        {\n",
+                "        fprintf(fp, \"%u\", gCoverage[i]);\n",
+                "        gCoverage[i] = 0;\n",
+                "        fprintf(fp, \"\\n\");\n",
+                "        }\n",
+                "      fclose(fp);\n",
+                "      }\n",
+                "    }\n",
+                "  };\n",
+                "\n",
+                "cCoverageOutput coverageOutput;\n"
+                "\n",
+                "void updateCoverage()\n",
+                "  { coverageOutput.update(); }\n"
+
+                };
+            for(size_t i=0; i<sizeof(lines)/sizeof(lines[0]) && status.ok(); i++)
+                {
+                status = file.putString(lines[i]);
+                if(!status.ok())
+                    {
+                    break;
+                    }
+                }
             }
+        }
+    if(!status.ok())
+        {
+        OovString err = "Unable to update coverage source ";
+        err += outFn;
+        status.report(ET_Error, err);
         }
     }
 
@@ -846,7 +883,9 @@ CppInstr::eErrorTypes CppInstr::parse(OovStringRef const srcFn, OovStringRef con
                         static_cast<char const *>(srcRootDir),
                         static_cast<char const *>(outDir));
                 for(int i=0 ; i<num_clang_args; i++)
+                    {
                     fprintf(fp, "%s ", clang_args[i]);
+                    }
                 fprintf(fp, "\n");
 
                 fclose(fp);

@@ -267,11 +267,12 @@ void BuildConfigWriter::saveConfig(OovStringRef const buildType)
         snprintf(tempStr, sizeof(tempStr), "%u", otherCrc);
         mConfigFile.setNameValue(tempStr, mNewBuildConfigStrings.mOtherArgsConfig);
 
-        if(!mConfigFile.writeFile())
+        OovStatus status = mConfigFile.writeFile();
+        if(status.needReport())
             {
             OovString errStr = "Unable to write build config file: ";
             errStr += mConfigFile.getFilename();
-            OovError::report(ET_Error, errStr);
+            status.report(ET_Error, errStr);
             }
         }
     }

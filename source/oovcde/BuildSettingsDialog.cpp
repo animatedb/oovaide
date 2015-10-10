@@ -28,7 +28,8 @@ BuildSettingsDialog::~BuildSettingsDialog()
 
 void BuildSettingsDialog::enterScreen()
     {
-    if(mComponentFile.read())
+    OovStatus status = mComponentFile.read();
+    if(status.ok())
         {
         GtkComboBoxText *typeBox = GTK_COMBO_BOX_TEXT(Builder::getBuilder()->getWidget(
                 "ComponentTypeComboboxtext"));
@@ -54,6 +55,10 @@ void BuildSettingsDialog::enterScreen()
                     ComponentTypesFile::getComponentChildName(name));
             }
         }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read component settings file");
+        }
     mComponentTree.setSelected(mLastCompName, '/');
     }
 
@@ -73,7 +78,11 @@ void BuildSettingsDialog::switchComponent()
 void BuildSettingsDialog::saveScreen()
     {
     saveFromScreen(mLastCompName);
-    mComponentFile.writeFile();
+    OovStatus status = mComponentFile.writeFile();
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to save build settings");
+        }
     }
 
 void BuildSettingsDialog::saveFromScreen(std::string const &compName)

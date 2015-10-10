@@ -56,17 +56,21 @@ static bool createMemberVarUsageStyleTransform(const std::string &fullPath)
                 TableCol colAllUse(&rowVal);
                     XslValueOf valAllCount(&colAllUse, "select=\"AllUseCount\"");
 
-    File transformFile(fullPath, "w");
-    XmlWriter writer;
-    root.writeElementAndChildren(writer);
-    bool success = transformFile.putString(writer.getStr());
-    if(!success)
+    File transformFile;
+    OovStatus status = transformFile.open(fullPath, "w");
+    if(status.ok())
+        {
+        XmlWriter writer;
+        root.writeElementAndChildren(writer);
+        status = transformFile.putString(writer.getStr());
+        }
+    if(status.needReport())
         {
         OovString str = "Unable to write member transform: ";
         str += fullPath;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
-    return success;
+    return status.ok();
     }
 
 /// Keeps counts of member attribute values.
@@ -143,20 +147,20 @@ bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
     FilePath fp = Project::getOutputDir();
     fp.appendFile("MemberVarUsage");
 
-    bool success = createMemberVarUsageStyleTransform(fp + ".xslt");
+    bool successXsl = createMemberVarUsageStyleTransform(fp + ".xslt");
     // Attempt to create the xml file anyway.
-    success = false;
 
     fp.appendFile(".xml");
     fn = fp;
-    File useFile(fp, "w");
-    if(useFile.isOpen())
+    File useFile;
+    OovStatus status = useFile.open(fp, "w");
+    if(status.ok())
         {
         static const char *header =
                 "<?xml version=\"1.0\"?>\n"
                 "<?xml-stylesheet type=\"text/xsl\" href=\"MemberVarUsage.xslt\"?>\n"
                 "<MemberAttrUseReport>\n";
-        success = useFile.putString(header);
+        status = useFile.putString(header);
 
         // Find the counts of all attributes.
         ModelAttrCounts attrCounts;
@@ -198,18 +202,18 @@ bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
                     }
                 }
             }
-        if(success)
+        if(status.ok())
             {
-            success = useFile.putString("</MemberAttrUseReport>\n");
+            status = useFile.putString("</MemberAttrUseReport>\n");
             }
         }
-    if(!success)
+    if(status.needReport())
         {
         OovString str = "Unable to write member usage: ";
         str += fn;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
-    return success;
+    return status.ok() && successXsl;
     }
 
 
@@ -256,15 +260,19 @@ static void createMethodUsageStyleTransform(const std::string &fullPath)
                 TableCol colCount(&rowVal);
                     XslValueOf valCount(&colCount, "select=\"UseCount\"");
 
-    File transformFile(fullPath, "w");
-    XmlWriter writer;
-    root.writeElementAndChildren(writer);
-    bool success = transformFile.putString(writer.getStr());
-    if(!success)
+    File transformFile;
+    OovStatus status = transformFile.open(fullPath, "w");
+    if(status.ok())
+        {
+        XmlWriter writer;
+        root.writeElementAndChildren(writer);
+        status = transformFile.putString(writer.getStr());
+        }
+    if(status.needReport())
         {
         OovString str = "Unable to write member transform: ";
         str += fullPath;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
     }
 
@@ -344,8 +352,9 @@ bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
 
     fp.appendFile(".xml");
     fn = fp;
-    File useFile(fp, "w");
-    if(useFile.isOpen())
+    File useFile;
+    OovStatus status = useFile.open(fp, "w");
+    if(status.ok())
         {
         static const char *header =
                 "<?xml version=\"1.0\"?>\n"
@@ -396,7 +405,11 @@ bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
         static const char *footer = "</MethodUseReport>\n";
         fprintf(useFile.getFp(), "%s", footer);
         }
-    return useFile.isOpen();
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to write method use data");
+        }
+    return status.ok();
     }
 
 
@@ -553,17 +566,21 @@ static bool createLineStatsStyleTransform(const std::string &fullPath)
                 TableCol modTotalCol(&moduleRow);
                     XslValueOf modTotalVal(&modTotalCol, "select=\"ModuleLines\"");
 
-    File transformFile(fullPath, "w");
-    XmlWriter writer;
-    root.writeElementAndChildren(writer);
-    bool success = transformFile.putString(writer.getStr());
-    if(!success)
+    File transformFile;
+    OovStatus status = transformFile.open(fullPath, "w");
+    if(status.ok())
+        {
+        XmlWriter writer;
+        root.writeElementAndChildren(writer);
+        status = transformFile.putString(writer.getStr());
+        }
+    if(status.needReport())
         {
         OovString str = "Unable to write lines transform: ";
         str += fullPath;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
-    return success;
+    return status.ok();
     }
 
 static OovString getRelativeFileName(OovString const &fullFn)
@@ -581,8 +598,9 @@ bool createLineStatsFile(ModelData const &modelData, std::string &fn)
 
     fp.appendFile(".xml");
     fn = fp;
-    File useFile(fp, "w");
-    if(useFile.isOpen())
+    File useFile;
+    OovStatus status = useFile.open(fp, "w");
+    if(status.ok())
         {
         static const char *header =
                 "<?xml version=\"1.0\"?>\n"
@@ -611,5 +629,5 @@ bool createLineStatsFile(ModelData const &modelData, std::string &fn)
         static const char *footer = "</LineStatisticsReport>\n";
         fprintf(useFile.getFp(), "%s", footer);
         }
-    return useFile.isOpen();
+    return status.ok();
     }

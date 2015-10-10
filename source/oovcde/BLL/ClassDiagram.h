@@ -72,8 +72,8 @@ class ClassDiagram
         /// Redraw the graph. Does not change the graph or change or access the model.
         /// This can be used to paint to a window, or to an SVG file.
         void drawDiagram(DiagramDrawer &drawer);
-        bool saveDiagram(File &file);
-        bool loadDiagram(File &file);
+        OovStatusReturn saveDiagram(File &file);
+        OovStatusReturn loadDiagram(File &file);
 
         ClassNode *getNode(int x, int y);
         const std::vector<ClassNode> &getNodes() const

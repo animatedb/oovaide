@@ -472,8 +472,11 @@ void EditFiles::removeNotebookPage(GtkWidget *pageWidget)
     auto const &iter = std::find_if(mFileViews.begin(), mFileViews.end(),
             [pageWidget](std::unique_ptr<ScrolledFileView> const &fv) -> bool
                 { return fv->getViewTopParent() == pageWidget; });
-    mFileViews.erase(iter);
-    gtk_notebook_remove_page(book, page);
+    if((*iter).get()->getFileEditView().checkExitSave())
+        {
+        mFileViews.erase(iter);
+        gtk_notebook_remove_page(book, page);
+        }
     }
 
 extern "C" G_MODULE_EXPORT gboolean onTabLabelCloseClicked(GtkButton *button,
@@ -562,7 +565,13 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
             /// @todo - use make_unique when supported.
             ScrolledFileView *scrolledView = new ScrolledFileView(mDebugger);
             scrolledView->mFileView.init(GTK_TEXT_VIEW(editView), this);
-            scrolledView->mFileView.openTextFile(fp);
+            OovStatus status = scrolledView->mFileView.openTextFile(fp);
+            if(status.needReport())
+                {
+                OovString err = "Unable to open file ";
+                err += fp;
+                status.report(ET_Error, err);
+                }
             scrolledView->mScrolled = GTK_SCROLLED_WINDOW(scrolled);
             scrolledView->mFilename = fp;
 
@@ -725,11 +734,12 @@ bool EditFiles::checkDebugger()
     bool ok = false;
 
     NameValueFile projFile(Project::getProjectFilePath());
-    if(!projFile.readFile())
+    OovStatus status = projFile.readFile();
+    if(!status.ok())
         {
         OovString str = "Unable to get project file to get debugger: ";
         str += Project::getProjectFilePath();
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
     getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath));
     getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee));
@@ -745,22 +755,33 @@ bool EditFiles::checkDebugger()
 // The debugger could be on the path.
 //          if(fileExists(debugger))
                 {
-                bool success = true;
-                if(FileIsFileOnDisk(debuggee, success))
+                if(FileIsFileOnDisk(debuggee, status))
                     {
                     ok = true;
                     }
                 else
+                    {
                     Gui::messageBox("Component to debug in Edit/Preferences does not exist");
+                    }
+                if(status.needReport())
+                    {
+                    status.report(ET_Error, "Unable to check debuggee status");
+                    }
                 }
 //          else
-//              Gui::messageBox("Debugger in Oovcde Analysis/Settings does not exist");
+//                {
+//                Gui::messageBox("Debugger in Oovcde Analysis/Settings does not exist");
+//                }
             }
         else
+            {
             Gui::messageBox("Component to debug must be set in Edit/Preferences");
+            }
         }
     else
+        {
         Gui::messageBox("Debugger tool path must be set in Oovcde Analysis/Settings");
+        }
     return ok;
     }
 
@@ -781,24 +802,24 @@ void EditFiles::setTabText(FileEditView *editView, OovStringRef text)
     /// The first child in the box is the label, the second is the close button.
     GList *children = gtk_container_get_children(GTK_CONTAINER(tabLabel));
     if(children)
-		{
+        {
     	/// Set text of first child
     	Gui::setText(GTK_LABEL(children->data), text);
-		}
+        }
     g_list_free(children);
 
 //    gtk_notebook_set_tab_label_text(book, widget, text.getStr());
     }
 
-bool EditFiles::saveAsTextFileWithDialog()
+OovStatusReturn EditFiles::saveAsTextFileWithDialog()
     {
     FileEditView *editView = getEditView();
-    bool saved = editView->saveAsTextFileWithDialog();
-    if(saved)
+    OovStatus status = editView->saveAsTextFileWithDialog();
+    if(status.ok())
         {
         setTabText(editView, editView->getFileName());
         }
-    return saved;
+    return status;
     }
 
 void EditFiles::textBufferModified(FileEditView *editView, bool modified)

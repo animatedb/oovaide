@@ -94,10 +94,10 @@ class ClassDiagramView:public ClassGraphListener
         void buttonPressEvent(const GdkEventButton *event);
         void buttonReleaseEvent(const GdkEventButton *event);
         void drawToDrawingArea();
-        bool drawSvgDiagram(File &file);
-        bool saveDiagram(File &file)
+        OovStatusReturn drawSvgDiagram(File &file);
+        OovStatusReturn saveDiagram(File &file)
             { return mClassDiagram.saveDiagram(file); }
-        bool loadDiagram(File &file)
+        OovStatusReturn loadDiagram(File &file)
             {
             setCairoContext();
             return mClassDiagram.loadDiagram(file);

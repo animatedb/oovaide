@@ -69,11 +69,12 @@ OovStringRef const Project::getSrcRootDirectory()
     if(sSourceRootDirectory.length() == 0)
         {
         NameValueFile file(getProjectFilePath());
-        if(!file.readFile())
+        OovStatus status = file.readFile();
+        if(status.needReport())
             {
             OovString str = "Unable to read project file to get source: ";
             str += getProjectFilePath();
-            OovError::report(ET_Error, str);
+            status.report(ET_Error, str);
             }
         sSourceRootDirectory = file.getValue(OptSourceRootDir);
         }
@@ -86,15 +87,15 @@ OovString const &Project::getBinDirectory()
     static OovString path;
     if(path.length() == 0)
         {
-        bool success = true;
+        OovStatus status(true, SC_File);
 #ifdef __linux__
         // On linux, we could use the "which" command using "which oovcde", but
         // this will probably be ok?
-        if(FileIsFileOnDisk("./oovcde", success))
+        if(FileIsFileOnDisk("./oovcde", status))
             {
             path = "./";
             }
-        else if(FileIsFileOnDisk("/usr/local/bin/oovcde", success))
+        else if(FileIsFileOnDisk("/usr/local/bin/oovcde", status))
             {
             path = "/usr/local/bin/";
             }
@@ -103,7 +104,7 @@ OovString const &Project::getBinDirectory()
             path = "/usr/bin";
             }
 #else
-        if(FileIsFileOnDisk("./oovcde.exe", success))
+        if(FileIsFileOnDisk("./oovcde.exe", status))
             {
             path = "./";
             }
@@ -112,6 +113,10 @@ OovString const &Project::getBinDirectory()
             path = FilePathGetDrivePath(sArgv0);
             }
 #endif
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to get bin directory");
+            }
         }
     return path;
     }
@@ -144,7 +149,13 @@ FilePath Project::getOutputDir()
     {
     FilePath fp(Project::getProjectDirectory(), FP_Dir);
     fp.appendDir("output");
-    FileEnsurePathExists(fp);
+    OovStatus status = FileEnsurePathExists(fp);
+    if(status.needReport())
+        {
+        OovString err = "Unable to create directory ";
+        err += fp;
+        status.report(ET_Error, fp);
+        }
     return fp;
     }
 
@@ -233,6 +244,15 @@ OovString Project::makeTreeOutBaseFileName(OovStringRef const srcFileName,
     return tmpOutFileName;
     }
 
+OovString Project::makeAnalysisFileName(OovStringRef const srcFileName,
+        OovStringRef const srcRootDir, OovStringRef const analysisDir)
+    {
+    OovString outFileName = makeOutBaseFileName(srcFileName,
+            srcRootDir, analysisDir);
+    outFileName += ".xmi";
+    return outFileName;
+    }
+
 OovString Project::getCoverageSourceDirectory()
     {
     FilePath coverageDir(getProjectDirectory(), FP_Dir);
@@ -259,22 +279,32 @@ OovString Project::getCoverageProjectDirectory()
     }
 
 
-bool ProjectReader::readProject(OovStringRef const oovProjectDir)
+OovStatusReturn ProjectReader::readProject(OovStringRef const oovProjectDir)
     {
     Project::setProjectDirectory(oovProjectDir);
     setFilename(Project::getProjectFilePath());
-    bool success = readFile();
-    if(success)
+    OovStatus status = readFile();
+    if(status.ok())
         {
         Project::setSourceRootDirectory(getValue(OptSourceRootDir));
         }
-    return success;
+    return status;
     }
 
 void ProjectBuildArgs::loadBuildArgs(OovStringRef const buildConfigName)
     {
-    mProjectPackages.read();
-    mBuildPackages.read();
+    OovStatus status = mProjectPackages.read();
+    if(status.needReport())
+        {
+        // These packages are optional.
+        status.clearError();
+        }
+    status = mBuildPackages.read();
+    if(status.needReport())
+        {
+        // These packages are optional.
+        status.clearError();
+        }
 
     OovStringVec args;
     CompoundValue baseArgs;

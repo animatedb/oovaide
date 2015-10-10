@@ -57,7 +57,7 @@ class GuiOptions:public NameValueFile
         /// This sets the default GUI (graph) options and the editor path.
         void setDefaultOptions();
         /// Uses the path for the GUI options to read the options.
-        void read();
+        OovStatusReturn read();
 
     private:
         void readFile();        // Not defined to prevent use.

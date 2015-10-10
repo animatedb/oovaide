@@ -479,9 +479,10 @@ void DupHashFile::append(OovStringRef const text, unsigned int line)
         str += text.getStr());
 #endif
         str += '\n';
-        if(!mFile.putString(str))
+        OovStatus status = mFile.putString(str);
+        if(status.needReport())
             {
-            fprintf(stderr, "Unable to append to hash file");
+            status.report(ET_Error, "Unable to append to hash file");
             }
         mAlreadyAddedBreak = false;
         }
@@ -1318,10 +1319,17 @@ CppParser::eErrorTypes CppParser::parse(bool lineHashes, char const * const srcF
         outHashFilePath.discardTail(outHashFilePath.getPosLeftPathSep(
                 outHashFilePath.getPosEndDir(), RP_RetPosNatural));
         outHashFilePath.appendDir(DupsDir);
-        outHashFilePath.ensurePathExists();
-        outHashFilePath.appendFile(fn.getName());
-        outHashFilePath.appendExtension(DupsHashExtension);
-        mDupHashFile.open(outHashFilePath);
+        OovStatus status = outHashFilePath.ensurePathExists();
+        if(status.ok())
+            {
+            outHashFilePath.appendFile(fn.getName());
+            outHashFilePath.appendExtension(DupsHashExtension);
+            mDupHashFile.open(outHashFilePath);
+            }
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to create duplicates dir");
+            }
         }
 
 // This doesn't appear to change anything.

@@ -13,26 +13,32 @@
 void ComponentGraph::updateGraph(const ComponentDrawOptions &options)
     {
     ComponentTypesFile compFile;
-    compFile.read();
-
-    mNodes.clear();
-    for(auto const &name : compFile.getComponentNames())
+    OovStatus status = compFile.read();
+    if(status.ok())
         {
-        ComponentTypesFile::eCompTypes ct = compFile.getComponentType(name);
-        if(ct != ComponentTypesFile::CT_Unknown)
+        mNodes.clear();
+        for(auto const &name : compFile.getComponentNames())
             {
-            mNodes.push_back(ComponentNode(name,
-                    ComponentNode::CNT_Component, ct));
+            ComponentTypesFile::eCompTypes ct = compFile.getComponentType(name);
+            if(ct != ComponentTypesFile::CT_Unknown)
+                {
+                mNodes.push_back(ComponentNode(name,
+                        ComponentNode::CNT_Component, ct));
+                }
             }
+        BuildPackages buildPkgs(true);
+        std::vector<Package> packages = buildPkgs.getPackages();
+        for(auto const &pkg : packages)
+            {
+            mNodes.push_back(ComponentNode(pkg.getPkgName(),
+                    ComponentNode::CNT_ExternalPackage));
+            }
+        updateConnections(compFile, options);
         }
-    BuildPackages buildPkgs(true);
-    std::vector<Package> packages = buildPkgs.getPackages();
-    for(auto const &pkg : packages)
+    if(status.needReport())
         {
-        mNodes.push_back(ComponentNode(pkg.getPkgName(),
-                ComponentNode::CNT_ExternalPackage));
+        status.report(ET_Error, "Unable to update component graph");
         }
-    updateConnections(compFile, options);
     }
 
 void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
@@ -58,8 +64,8 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
         {
         if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
             {
-            OovStringVec srcFiles =
-                    compFile.getComponentSources(mNodes[consumerIndex].getName());
+            OovStringVec srcFiles = compFile.getComponentFiles(
+                ComponentTypesFile::CFT_CppSource, mNodes[consumerIndex].getName());
             for(auto const &srcFile : srcFiles)
                 {
                 FilePath fp;
@@ -192,8 +198,15 @@ void ComponentGraph::removeNode(const ComponentNode &node,
             }
         }
     ComponentTypesFile compFile;
-    compFile.read();
-    updateConnections(compFile, options);
+    OovStatus status = compFile.read();
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read components file to update connections");
+        }
+    if(status.ok())
+        {
+        updateConnections(compFile, options);
+        }
     mModified = true;
     }
 

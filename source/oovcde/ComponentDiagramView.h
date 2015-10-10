@@ -34,7 +34,7 @@ class ComponentDiagramView
             { return mComponentDiagram; }
 
         void drawToDrawingArea();
-        bool drawSvgDiagram(File &file);
+        OovStatusReturn drawSvgDiagram(File &file);
         void restart();
         void relayout()
             {

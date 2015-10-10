@@ -12,20 +12,43 @@
 #include "OovError.h"
 #include <algorithm>
 
-FilePaths getHeaderExtensions()
+
+/*
+FilePaths getAsmSourceExtensions()
+    {
+    .S
+    .asm
+    }
+*/
+
+/*
+FilePaths getJavaSourceExtension()
+    {
+    .java
+    .class - compiled java
+    .dpj - dependency list
+    .jar archived classes (similar to lib)
+    }
+*/
+
+FilePaths getCppHeaderExtensions()
     {
     FilePaths strs;
     strs.push_back(FilePath("h", FP_Ext));
+    strs.push_back(FilePath("hh", FP_Ext));
     strs.push_back(FilePath("hpp", FP_Ext));
     strs.push_back(FilePath("hxx", FP_Ext));
+    strs.push_back(FilePath("inc", FP_Ext));
     return strs;
     }
 
-FilePaths getSourceExtensions()
+FilePaths getCppSourceExtensions()
     {
     FilePaths strs;
-    strs.push_back(FilePath("cpp", FP_Ext));
+    strs.push_back(FilePath("c", FP_Ext));
     strs.push_back(FilePath("cc", FP_Ext));
+    strs.push_back(FilePath("c++", FP_Ext));
+    strs.push_back(FilePath("cpp", FP_Ext));
     strs.push_back(FilePath("cxx", FP_Ext));
     return strs;
     }
@@ -38,25 +61,35 @@ FilePaths getLibExtensions()
     return strs;
     }
 
-bool isHeader(OovStringRef const file)
-    { return(FilePathAnyExtensionMatch(getHeaderExtensions(), file)); }
+bool isCppHeader(OovStringRef const file)
+    { return(FilePathAnyExtensionMatch(getCppHeaderExtensions(), file)); }
 
-bool isSource(OovStringRef const file)
-    { return(FilePathAnyExtensionMatch(getSourceExtensions(), file)); }
+bool isCppSource(OovStringRef const file)
+    { return(FilePathAnyExtensionMatch(getCppSourceExtensions(), file)); }
 
 bool isLibrary(OovStringRef const file)
     { return(FilePathAnyExtensionMatch(getLibExtensions(), file)); }
 
-bool ComponentTypesFile::read()
+OovStatusReturn ComponentTypesFile::read()
     {
     mCompTypesFile.setFilename(Project::getComponentTypesFilePath());
     mCompSourceListFile.setFilename(Project::getComponentSourceListFilePath());
-    // source list file is optional, so ignore return
-    mCompSourceListFile.readFile();
-    return mCompTypesFile.readFile();
+    OovStatus status = mCompSourceListFile.readFile();
+    // For new projects, the files are optional.
+    /// @todo - should detect the difference between missing files and disk errors.
+    if(status.needReport())
+        {
+        status.clearError();
+        }
+    status = mCompTypesFile.readFile();
+    if(status.needReport())
+        {
+        status.clearError();
+        }
+    return status;
     }
 
-bool ComponentTypesFile::readTypesOnly(OovStringRef const fn)
+OovStatusReturn ComponentTypesFile::readTypesOnly(OovStringRef const fn)
     {
     mCompTypesFile.setFilename(fn);
     return mCompTypesFile.readFile();
@@ -134,31 +167,39 @@ void ComponentTypesFile::coerceParentComponents(OovStringRef const compName)
         }
     }
 
-void ComponentTypesFile::writeFile()
+OovStatusReturn ComponentTypesFile::writeFile()
     {
-    if(!mCompTypesFile.writeFile())
+    OovStatus status = mCompTypesFile.writeFile();
+    if(status.needReport())
         {
         OovString str = "Unable to write component types file: ";
         str += mCompTypesFile.getFilename();
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
-    if(!mCompSourceListFile.writeFile())
+    if(status.ok())
         {
-        OovString str = "Unable to write source list file: ";
-        str += mCompSourceListFile.getFilename();
-        OovError::report(ET_Error, str);
+        status = mCompSourceListFile.writeFile();
+        if(status.needReport())
+            {
+            OovString str = "Unable to write source list file: ";
+            str += mCompSourceListFile.getFilename();
+            status.report(ET_Error, str);
+            }
         }
+    return status;
     }
 
-void ComponentTypesFile::writeTypesOnly(OovStringRef const fn)
+OovStatusReturn ComponentTypesFile::writeTypesOnly(OovStringRef const fn)
     {
     mCompTypesFile.setFilename(fn);
-    if(!mCompTypesFile.writeFile())
+    OovStatus status = mCompTypesFile.writeFile();
+    if(status.needReport())
         {
         OovString str = "Unable to write source list file: ";
         str += mCompTypesFile.getFilename();
         OovError::report(ET_Error, str);
         }
+    return status;
     }
 
 
@@ -266,49 +307,47 @@ OovString ComponentTypesFile::getCompTagName(OovStringRef const compName,
     return tagName;
     }
 
-void ComponentTypesFile::setComponentSources(OovStringRef const compName,
-    OovStringSet const &srcs)
+OovStringRef ComponentTypesFile::getCompFileTypeTagName(CompFileTypes cft)
+    {
+    return((cft == CFT_CppSource) ? "src" : "inc");
+    }
+
+void ComponentTypesFile::setComponentFiles(CompFileTypes cft,
+    OovStringRef const compName, OovStringSet const &srcs)
     {
     CompoundValue objArgs;
     for(const auto &src : srcs)
         {
         objArgs.addArg(src);
         }
-    OovString tag = getCompTagName(compName, "src");
+    OovString tag = getCompTagName(compName, getCompFileTypeTagName(cft));
     mCompSourceListFile.setNameValue(tag, objArgs.getAsString());
     }
 
-void ComponentTypesFile::setComponentIncludes(OovStringRef const compName,
-    OovStringSet const &incs)
+OovStringVec ComponentTypesFile::getComponentFiles(CompFileTypes cft,
+        OovStringRef const compName, bool getNested) const
     {
-    CompoundValue incArgs;
-    for(const auto &src : incs)
-        {
-        incArgs.addArg(src);
-        }
-    std::string tag = getCompTagName(compName, "inc");
-    mCompSourceListFile.setNameValue(tag, incArgs.getAsString());
-    }
-
-OovStringVec ComponentTypesFile::getComponentSources(OovStringRef const compName) const
-    {
-    return getComponentFiles(compName, "src");
-    }
-
-OovStringVec ComponentTypesFile::getComponentIncludes(OovStringRef const compName) const
-    {
-    return getComponentFiles(compName, "inc");
+    return getComponentFiles(compName, getCompFileTypeTagName(cft), getNested);
     }
 
 OovStringVec ComponentTypesFile::getComponentFiles(OovStringRef const compName,
-        OovStringRef const tagStr) const
+        OovStringRef const tagStr, bool getNested) const
     {
     OovStringVec files;
     OovStringVec names = getComponentNames();
     OovString parentName = compName;
     for(auto const &name : names)
         {
-        if(compareComponentNames(parentName, name))
+        bool match = false;
+        if(getNested)
+            {
+            match = compareComponentNames(parentName, name);
+            }
+        else
+            {
+            match = (parentName == name);
+            }
+        if(match)
             {
             OovString tag = ComponentTypesFile::getCompTagName(name, tagStr);
             OovString val = mCompSourceListFile.getValue(tag);
@@ -337,10 +376,11 @@ OovString ComponentTypesFile::getComponentAbsolutePath(
         OovStringRef const compName) const
     {
     OovString path;
-    OovStringVec src = getComponentSources(compName);
+    /// @todo - fix: this doesn't work if the component has no immediate files.
+    OovStringVec src = getComponentFiles(CFT_CppSource, compName, true);
     if(src.size() == 0)
         {
-        src = getComponentIncludes(compName);
+        src = getComponentFiles(CFT_CppInclude, compName, true);
         }
     if(src.size() > 0)
         {
@@ -358,7 +398,17 @@ OovString ComponentTypesFile::getComponentAbsolutePath(
 void ComponentsFile::read(OovStringRef const fn)
     {
     setFilename(fn);
-    readFile();
+    OovStatus status = readFile();
+    if(status.needReport())
+        {
+        // The components file is normally optional.
+        status.reported();
+/*
+        OovString err = "Unable to read components file ";
+        err += fn;
+        status.report(ET_Error, err);
+*/
+        }
     }
 
 void ComponentsFile::parseProjRefs(OovStringRef const arg, OovString &rootDir,

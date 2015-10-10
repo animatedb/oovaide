@@ -32,7 +32,11 @@ void EditOptions::saveScreenSize(int width, int height)
         {
         setScreenCoord("ScreenWidth", width);
         setScreenCoord("ScreenHeight", height);
-        writeFile();
+        OovStatus status = writeFile();
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to write edit options");
+            }
         }
     }
 
@@ -53,7 +57,8 @@ bool EditOptions::getScreenCoord(char const * const tag, int &val)
 bool EditOptions::getScreenSize(int &width, int &height)
     {
     bool gotPos = false;
-    if(readFile())
+    OovStatus status = readFile();
+    if(status.ok())
         {
         int tempWidth;
         if(getScreenCoord("ScreenWidth", tempWidth))
@@ -66,6 +71,10 @@ bool EditOptions::getScreenSize(int &width, int &height)
                 gotPos = true;
                 }
             }
+        }
+    else
+        {
+        status.report(ET_Info, "Unable to get screen size");
         }
     return gotPos;
     }

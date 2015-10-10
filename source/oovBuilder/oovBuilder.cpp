@@ -128,23 +128,34 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
     // analysis directory should probably be deleted if the include
     // paths have changed.
     OovString bldPkgFilename = Project::getBuildPackagesFilePath();
-    bool success = true;
-    bool havePackages = FileIsFileOnDisk(bldPkgFilename, success);
+    OovStatus status(true, SC_File);
+    bool havePackages = FileIsFileOnDisk(bldPkgFilename, status);
     if(havePackages)
         {
-        if(FileStat::isOutputOld(bldPkgFilename, ProjectPackages::getFilename()))
+        if(FileStat::isOutputOld(bldPkgFilename, ProjectPackages::getFilename(),
+            status))
             {
             printf("Deleting build config\n");
-            FileDelete(bldPkgFilename.getStr());
-            FileDelete(cfg.getBuildConfigFilename().c_str());
+            if(status.ok())
+                {
+                status = FileDelete(bldPkgFilename.getStr());
+                }
+            if(status.ok())
+                {
+                status = FileDelete(cfg.getBuildConfigFilename().c_str());
+                }
             havePackages = false;
             }
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to clean up packages");
+            }
         }
-    if(!success)
+    if(status.needReport())
         {
         OovString str = "Unable to check build package file: ";
         str += bldPkgFilename;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
 
     cfg.setInitialConfig(buildConfigName,
@@ -152,7 +163,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         mCompFinder.getProjectBuildArgs().getAllCrcCompileArgs(),
         mCompFinder.getProjectBuildArgs().getAllCrcLinkArgs());
 
-    if(success && (cfg.isConfigDifferent(buildConfigName, BuildConfig::CT_ExtPathArgsCrc) ||
+    if(status.ok() && (cfg.isConfigDifferent(buildConfigName, BuildConfig::CT_ExtPathArgsCrc) ||
             !havePackages))
         {
         // This is for the -ER switch.
@@ -180,13 +191,15 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
                 }
             }
         }
-    if(success)
+    if(status.ok())
+        {
+        printf("Scanning %s\n", srcRootDir.getStr());
+        status = mCompFinder.scanProject();
+        fflush(stdout);
+        }
+    if(status.ok())
         {
         srcFileParser sfp(mCompFinder);
-        printf("Scanning %s\n", srcRootDir.getStr());
-        mCompFinder.scanProject();
-        fflush(stdout);
-
         cfg.setProjectConfig(mCompFinder.getScannedInfo().getProjectIncludeDirs());
         // Is anything different in the current build configuration?
         if(cfg.isAnyConfigDifferent(buildConfigName))
@@ -234,7 +247,11 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
                 printf("Deleting %s\n", dir.getStr());
                 if(dir.length() > 5)        // Reduce chance of deleting root
                     {
-                    recursiveDeleteDir(dir);
+                    status = recursiveDeleteDir(dir);
+                    if(status.needReport())
+                        {
+                        status.report(ET_Error, "Unable to clean up directories");
+                        }
                     }
                 }
             fflush(stdout);
@@ -249,13 +266,19 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
             }
 
         OovString analysisPath = cfg.getAnalysisPath();
-        FileEnsurePathExists(analysisPath);
+        status = FileEnsurePathExists(analysisPath);
+        if(status.ok())
+            {
+            FilePath compFn(analysisPath, FP_Dir);
+            compFn.appendFile(Project::getAnalysisComponentsFilename());
+            mCompFinder.saveProject(compFn, analysisPath);
 
-        FilePath compFn(analysisPath, FP_Dir);
-        compFn.appendFile(Project::getAnalysisComponentsFilename());
-        mCompFinder.saveProject(compFn);
-
-        sfp.analyzeSrcFiles(srcRootDir, analysisPath);
+            sfp.analyzeSrcFiles(srcRootDir, analysisPath);
+            }
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to create analysis path");
+            }
         }
     }
 
@@ -267,6 +290,7 @@ int main(int argc, char const * const argv[])
     OovBuilder builder;
     std::string buildConfigName = BuildConfigAnalysis;  // analysis is default.
     eProcessModes processMode = PM_Analyze;
+    OovError::setComponent(EC_OovBuilder);
     bool verbose = false;
     bool success = (argc >= 2);
     if(success)

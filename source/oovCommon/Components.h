@@ -11,12 +11,12 @@
 #include "NameValueFile.h"
 #include "FilePath.h"
 
-FilePaths getHeaderExtensions();
-FilePaths getSourceExtensions();
+FilePaths getCppHeaderExtensions();
+FilePaths getCppSourceExtensions();
 FilePaths getLibExtensions();
 
-bool isHeader(OovStringRef const file);
-bool isSource(OovStringRef const file);
+bool isCppHeader(OovStringRef const file);
+bool isCppSource(OovStringRef const file);
 bool isLibrary(OovStringRef const file);
 
 
@@ -29,7 +29,7 @@ bool isLibrary(OovStringRef const file);
 ///      of component / directories, where each directory can be defined as
 ///      a component, which has a component type.
 ///    - The other file is a NameValue file that defines which source and
-///      header files are in each component.
+///      header files are in each directory.
 class ComponentTypesFile
     {
     public:
@@ -42,9 +42,9 @@ class ComponentTypesFile
             };
 
         /// This reads both component files.
-        bool read();
+        OovStatusReturn read();
         /// This reads the component type information only.
-        bool readTypesOnly(OovStringRef const fn);
+        OovStatusReturn readTypesOnly(OovStringRef const fn);
         /// Set the component names for a project.
         /// @param compNames A list of component names using the default
         ///     CompoundValue separator.
@@ -74,22 +74,22 @@ class ComponentTypesFile
         /// @param typeName The component type to set.
         void setComponentType(OovStringRef const compName, OovStringRef const typeName);
 
-        /// Set the list of C++ source files for a component.
+        /// Set the list of C++ files for a component.
+        /// @param cft The component file type.
         /// @param compName The component name.
         /// @param srcs The list of sources with CompoundValue default delimeters.
-        void setComponentSources(OovStringRef const compName,
+        enum CompFileTypes { CFT_CppSource, CFT_CppInclude };
+        void setComponentFiles(CompFileTypes cft, OovStringRef const compName,
                 OovStringSet const &srcs);
-        /// Set the list of C++ include files for a component.
+
+        /// Get the list of C++ files for a component. This matches files
+        /// in subdirectories of the component.
+        /// @param cft The component file type.
         /// @param compName The component name.
-        /// @param srcs The list of sources with CompoundValue default delimeters.
-        void setComponentIncludes(OovStringRef const compName,
-            OovStringSet const &incs);
-        /// Get the list of C++ source files for a component.
-        /// @param compName The component name.
-        OovStringVec getComponentSources(OovStringRef const compName) const;
-        /// Get the list of C++ include files for a component.
-        /// @param compName The component name.
-        OovStringVec getComponentIncludes(OovStringRef const compName) const;
+        /// @param getNested Set true to get all files for a component. Set
+        ///        false to get the files in the specified directory/component.
+        OovStringVec getComponentFiles(CompFileTypes cft,
+            OovStringRef const compName, bool getNested=true) const;
 
         /// Gets the build arguments that are specific for a component.
         /// @param compName The component name.
@@ -116,17 +116,17 @@ class ComponentTypesFile
         OovString getComponentAbsolutePath(OovStringRef const compName) const;
 
         /// Write the files to disk.
-        void writeFile();
+        OovStatusReturn writeFile();
 
         /// Only write the component types file to disk.
-        void writeTypesOnly(OovStringRef const fn);
+        OovStatusReturn writeTypesOnly(OovStringRef const fn);
 
     private:
         NameValueFile mCompTypesFile;
         NameValueFile mCompSourceListFile;
 
         OovStringVec getComponentFiles(OovStringRef const compName,
-                OovStringRef const tagStr) const;
+                OovStringRef const tagStr, bool getNested=true) const;
         void setComponentType(OovStringRef const compName, eCompTypes ct);
         // Setting a component below some parent must make sure the parents are unknown
         void coerceParentComponents(OovStringRef const compName);
@@ -136,6 +136,7 @@ class ComponentTypesFile
         static OovStringRef const getComponentTypeAsFileValue(eCompTypes ct);
         static enum eCompTypes getComponentTypeFromTypeName(
                 OovStringRef const compTypeName);
+        static OovStringRef getCompFileTypeTagName(CompFileTypes cft);
     };
 
 /// This class stores the directories that contain include files within a project.

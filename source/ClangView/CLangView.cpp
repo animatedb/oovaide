@@ -416,21 +416,22 @@ static void displayHelpFile(OovStringRef const fileName)
     {
     FilePath fullFn;
     static char const *dirs[] = { "help", "..\\..\\web\\userguide" };
-    bool success = true;
+    OovStatus status(true, SC_File);
     for(auto const dir : dirs)
         {
         fullFn.setPath(dir, FP_Dir);
         fullFn.appendFile(fileName);
-        if(FileIsFileOnDisk(fullFn, success))
+        if(FileIsFileOnDisk(fullFn, status))
             {
             break;
             }
         }
-    if(!FileIsFileOnDisk(fullFn, success))
+    if(!FileIsFileOnDisk(fullFn, status))
         {
         fullFn.setPath("http://oovcde.sourceforge.net/userguide", FP_Dir);
         fullFn.appendFile(fileName);
         }
+    status.reported();
     displayBrowserFile(fullFn);
     }
 
@@ -441,7 +442,11 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     {
     ProjectReader proj;
     ProjectBuildArgs buildArgs(proj);
-    proj.readProject(Project::getProjectDirectory());
+    OovStatus status = proj.readProject(Project::getProjectDirectory());
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read project to get CPP args");
+        }
     buildArgs.loadBuildArgs(BuildConfigAnalysis);
     OovStringVec cppArgs = buildArgs.getCompileArgs();
     for(auto const &arg : cppArgs)

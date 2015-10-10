@@ -13,7 +13,7 @@
 #include "EditorIpc.h"
 
 
-class Editor:public DebuggerListener
+class Editor:public DebuggerListener, public OovErrorListener
     {
     public:
         Editor();
@@ -26,8 +26,8 @@ class Editor:public DebuggerListener
         gboolean onIdle(gpointer data);
         void openTextFile(OovStringRef const fn);
         void openTextFile();
-        bool saveTextFile();
-        bool saveAsTextFileWithDialog();
+        OovStatusReturn saveTextFile();
+        OovStatusReturn saveAsTextFileWithDialog();
         void findDialog();
         void findAgain(bool forward);
         void findInFilesDialog();
@@ -126,6 +126,10 @@ class Editor:public DebuggerListener
         void editPreferences();
         void setPreferencesWorkingDir();
         void idleDebugStatusChange(eDebuggerChangeStatus st);
+        virtual void errorListener(OovStringRef str, OovErrorTypes et) override
+            {
+            mDebugOut.append(str);
+            }
         virtual void DebugOutput(OovStringRef const str) override
             {
             mDebugOut.append(str);

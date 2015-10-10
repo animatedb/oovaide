@@ -11,7 +11,13 @@ FilePath CoverageHeaderReader::getFn(OovStringRef const outDir)
     {
     FilePath outFn(outDir, FP_Dir);
     outFn.appendDir("covLib");
-    outFn.ensurePathExists();
+    OovStatus status = outFn.ensurePathExists();
+    if(status.needReport())
+        {
+        OovString err = "Unable to create path for coverage ";
+        err += outFn;
+        status.report(ET_Error, err);
+        }
     outFn.appendFile("OovCoverage.h");
     return outFn;
     }
@@ -56,15 +62,16 @@ void CoverageHeaderReader::insertBufToMap(OovString const &buf)
         }
     }
 
-void CoverageHeaderReader::read(SharedFile &outDefFile)
+OovStatusReturn CoverageHeaderReader::read(SharedFile &outDefFile)
     {
     std::string buf(outDefFile.getSize(), 0);
     int actualSize;
-    bool success = outDefFile.read(&buf[0], static_cast<int>(buf.size()),
+    OovStatus status = outDefFile.read(&buf[0], static_cast<int>(buf.size()),
         actualSize);
-    if(success)
+    if(status.ok())
         {
         insertBufToMap(buf);
         }
+    return status;
     }
 

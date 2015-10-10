@@ -23,13 +23,18 @@ void ZoneDiagramList::init()
 
 void ZoneDiagramList::update()
     {
-    if(mComponentFile.read())
+    OovStatus status = mComponentFile.read();
+    if(status.ok())
         {
         for(auto const &name : mComponentFile.getComponentNames())
             {
             mComponentTree.appendText(getParent(name),
                     ComponentTypesFile::getComponentChildName(name));
             }
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read components for zones");
         }
     mComponentTree.setAllCheckboxes(true);
     }
@@ -134,7 +139,7 @@ void ZoneDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-bool ZoneDiagramView::drawSvgDiagram(File &file)
+OovStatusReturn ZoneDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
     SvgDrawer svgDrawer(file, cairo.getCairo());

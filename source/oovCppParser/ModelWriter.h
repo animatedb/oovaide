@@ -37,18 +37,18 @@ public:
     ModelWriter(const ModelData &modelData):
         mModelData(modelData)
         {}
-    bool writeFile(OovStringRef const filename);
+    OovStatusReturn writeFile(OovStringRef const filename);
     ~ModelWriter();
 
 private:
     File mFile;
     const ModelData &mModelData;
 
-    bool openFile(OovStringRef const filename);
+    OovStatusReturn openFile(OovStringRef const filename);
     int getObjectModelId(const std::string &name);
-    bool writeType(const ModelType &type);
-    bool writeClassDefinition(const ModelClassifier &classifier, bool isClassDef);
-    bool writeOperation(ModelClassifier const &classifier, ModelOperation const &oper);
-    bool writeStatements(const ModelStatements &stmts);
-    bool writeAssociation(const ModelAssociation &assoc);
+    OovStatusReturn writeType(const ModelType &type);
+    OovStatusReturn writeClassDefinition(const ModelClassifier &classifier, bool isClassDef);
+    OovStatusReturn writeOperation(ModelClassifier const &classifier, ModelOperation const &oper);
+    OovStatusReturn writeStatements(const ModelStatements &stmts);
+    OovStatusReturn writeAssociation(const ModelAssociation &assoc);
 };

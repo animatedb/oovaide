@@ -33,7 +33,13 @@ void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFileP
 
     mToolPathFile.setConfig(buildDirClass);
 
-    FileDelete(getDiagFileName());
+    OovStatus status = FileDelete(getDiagFileName());
+    if(status.needReport())
+        {
+        OovString err = "Unable to delete file ";
+        err += getDiagFileName();
+        status.report(ET_Error, err);
+        }
     mIncDirMap.read(incDepsFilePath);
     if(mode == PM_CovInstr)
         {
@@ -97,7 +103,13 @@ void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName)
             }
         }
     if(didAnything)
-        buildPackages.savePackages();
+        {
+        OovStatus status = buildPackages.savePackages();
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to save build packages for libraries");
+            }
+        }
     }
 
 void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
@@ -252,11 +264,12 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
                 compTypesFile);
             if(compTypesFile.getComponentType(name) != ComponentTypesFile::CT_Unknown)
                 {
-                OovStringVec sources = compTypesFile.getComponentSources(name);
+                OovStringVec sources = compTypesFile.getComponentFiles(
+                    ComponentTypesFile::CFT_CppSource, name);
                 if(pm == PM_CovInstr)
                     {
-                    OovStringVec includes =
-                        compTypesFile.getComponentIncludes(name);
+                    OovStringVec includes = compTypesFile.getComponentFiles(
+                        ComponentTypesFile::CFT_CppInclude, name);
                     sources.insert(sources.end(), includes.begin(), includes.end());
                     }
 
@@ -370,7 +383,8 @@ void ComponentBuilder::buildComponents()
             {
             if(compTypesFile.getComponentType(name) == ComponentTypesFile::CT_StaticLib)
                 {
-                OovStringVec sources = compTypesFile.getComponentSources(name);
+                OovStringVec sources = compTypesFile.getComponentFiles(
+                    ComponentTypesFile::CFT_CppSource, name);
                 for(size_t i=0; i<sources.size(); i++)
                     {
                     sources[i] = makeOutputObjectFileName(sources[i]);
@@ -422,7 +436,8 @@ void ComponentBuilder::buildComponents()
                 IndexedStringSet compPkgLinkArgs = getComponentPackageLinkArgs(name,
                         compTypesFile);
 
-                OovStringVec sources = compTypesFile.getComponentSources(name);
+                OovStringVec sources = compTypesFile.getComponentFiles(
+                    ComponentTypesFile::CFT_CppSource, name);
                 makeExe(name, sources, projectLibFileNames,
                         externalLibDirs, externalOrderedPackageLibNames,
                         compPkgLinkArgs, type == ComponentTypesFile::CT_SharedLib);
@@ -440,8 +455,9 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
     {
     FilePath outDir(outFile, FP_File);
     outDir.discardFilename();
-    bool success = FileEnsurePathExists(outDir);
-    if(success)
+    bool success = true;
+    OovStatus status = FileEnsurePathExists(outDir);
+    if(status.ok())
         {
         File stdoutFile;        // This must have a lifetime greater than listener.
         OovString processStr = "oovBuilder Building ";
@@ -454,8 +470,14 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
         if(stdOutFn)
             {
             // The ar tool must send its output to a file.
-            stdoutFile.open(stdOutFn, "a");
+            status = stdoutFile.open(stdOutFn, "a");
             listener.setStdOut(stdoutFile.getFp(), OovProcessStdListener::OP_OutputFile);
+            if(status.needReport())
+                {
+                OovString err = "Unable to open library file output ";
+                err += stdOutFn;
+                status.report(ET_Error, err);
+                }
             }
 /*
         else if(sVerboseDump.isOpen())
@@ -475,14 +497,15 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
             args.printArgs(stderr);
             }
         }
-    else
+    if(status.needReport())
         {
-        fprintf(stderr, "oovBuilder: Unable to create directory %s\n",
-            outDir.getStr());
+        OovString err = "oovBuilder: Unable to create directory ";
+        err += outDir.getStr();
+        status.report(ET_Error, err);
         }
     fflush(stdout);
     fflush(stderr);
-    return success;
+    return status.ok() && success;
     }
 
 bool ComponentTaskQueue::processItem(ProcessArgs const &item)
@@ -507,10 +530,10 @@ void ComponentBuilder::processSourceFile(eProcessModes pm, OovStringRef const sr
         OovStringVec const &incDirs, OovStringVec const &incFiles,
         OovStringSet const &externPkgCompileArgs)
     {
-    bool processFile = isSource(srcFile);
+    bool processFile = isCppSource(srcFile);
     if(pm == PM_CovInstr && !processFile)
         {
-        processFile = isHeader(srcFile);
+        processFile = isCppHeader(srcFile);
         }
     if(processFile)
         {
@@ -525,8 +548,9 @@ void ComponentBuilder::processSourceFile(eProcessModes pm, OovStringRef const sr
             {
             outFileName = makeOutputObjectFileName(srcFile);
             }
-        if(FileStat::isOutputOld(outFileName, srcFile) ||
-                FileStat::isOutputOld(outFileName, incFiles, &incFileOlderIndex))
+        OovStatus status(true, SC_File);
+        if(FileStat::isOutputOld(outFileName, srcFile, status) ||
+                FileStat::isOutputOld(outFileName, incFiles, status, &incFileOlderIndex))
             {
             CppChildArgs ca;
             OovString procPath;
@@ -603,7 +627,8 @@ void ComponentBuilder::makeLib(OovStringRef const libPath,
         OovStringVec const &objectFileNames)
     {
     OovString outFileName = makeLibFn(mOutputPath, libPath);
-    if(FileStat::isOutputOld(outFileName, objectFileNames))
+    OovStatus status(true, SC_File);
+    if(FileStat::isOutputOld(outFileName, objectFileNames, status))
         {
         OovString procPath = mToolPathFile.getLibberPath();
         OovProcessChildArgs ca;
@@ -657,8 +682,9 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
         objects.push_back(objName);
         }
 
-    if(FileStat::isOutputOld(outFileName, projectLibFilePaths) ||
-            FileStat::isOutputOld(outFileName, objects))
+    OovStatus status(true, SC_File);
+    if(FileStat::isOutputOld(outFileName, projectLibFilePaths, status) ||
+            FileStat::isOutputOld(outFileName, objects, status))
         {
         OovString procPath = mToolPathFile.getCompilerPath();
         OovProcessChildArgs ca;

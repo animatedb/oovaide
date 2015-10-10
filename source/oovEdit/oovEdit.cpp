@@ -45,20 +45,24 @@ void Editor::openTextFile()
         }
     }
 
-bool Editor::saveTextFile()
+OovStatusReturn Editor::saveTextFile()
     {
-    bool saved = false;
+    OovStatus status(true, SC_File);
     if(mEditFiles.getEditView())
-        saved = mEditFiles.getEditView()->saveTextFile();
-    return saved;
+        {
+        status = mEditFiles.getEditView()->saveTextFile();
+        }
+    return status;
     }
 
-bool Editor::saveAsTextFileWithDialog()
+OovStatusReturn Editor::saveAsTextFileWithDialog()
     {
-    bool saved = false;
+    OovStatus status(true, SC_File);
     if(mEditFiles.getEditView())
-        saved = mEditFiles.saveAsTextFileWithDialog();
-    return saved;
+        {
+        status = mEditFiles.saveAsTextFileWithDialog();
+        }
+    return status;
     }
 
 class FindDialog:public Dialog
@@ -157,7 +161,7 @@ class FindFiles:public dirRecurser
             mSrchStr(srchStr), mCaseSensitive(caseSensitive), mView(view),
             mNumMatches(0)
             {}
-        bool recurseDirs(char const * const srcDir)
+        OovStatusReturn recurseDirs(char const * const srcDir)
             {
             mNumMatches = 0;
             return dirRecurser::recurseDirs(srcDir);
@@ -212,7 +216,7 @@ bool FindFiles::processFile(OovStringRef const filePath)
     bool success = true;
     FilePath ext(filePath, FP_File);
 
-    if(isHeader(ext) || isSource(ext))
+    if(isCppHeader(ext) || isCppSource(ext))
         {
         FILE *fp = fopen(filePath.getStr(), "r");
         if(fp)
@@ -253,7 +257,13 @@ void Editor::findInFiles(char const * const srchStr, char const * const path,
         bool caseSensitive, GtkTextView *view)
     {
     FindFiles findFiles(srchStr, caseSensitive, view);
-    findFiles.recurseDirs(path);
+    OovStatus status = findFiles.recurseDirs(path);
+    if(status.needReport())
+        {
+        OovString err = "Unable to search path ";
+        err += path;
+        status.report(ET_Error, err);
+        }
     OovString matchStr = "Found ";
     matchStr.appendInt(findFiles.getNumMatches());
     matchStr += " matches";
@@ -494,7 +504,11 @@ void Editor::editPreferences()
     Gui::clear(cb);
 
     ComponentTypesFile compFile;
-    compFile.read();
+    OovStatus status = compFile.read();
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read components file to get types for debugging");
+        }
     bool haveNames = false;
     Gui::setSelected(cb, 0);
     std::string dbgComponent = mEditOptions.getValue(OptEditDebuggee);
@@ -750,13 +764,30 @@ static void dumpExceptions()
     }
 #endif
 
+// Use this to debug "This application has requested the Runtime to terminate it in an unusual way"
+#define DEBUG_RUNTIME 0
+#if(DEBUG_RUNTIME)
+void mysigabort(int signum)
+{
+    printf("SIGABRT\n");
+    return;
+}
+#include <signal.h>
+#endif
+
 int main(int argc, char *argv[])
     {
+#if(DEBUG_RUNTIME)
+    signal(SIGABRT, mysigabort);
+#endif
+
     gtk_init (&argc, &argv);
+    OovError::setComponent(EC_OovEdit);
     // Creating this as not a static means that all code that this initializes
     // will be initialized after statics have been initialized.
     Editor editor;
     gEditor = &editor;
+    OovError::setListener(&editor);
     Project::setArgv0(argv[0]);
 #if(CATCH_EXCEPTIONS)
     std::set_terminate(dumpExceptions);
@@ -828,12 +859,14 @@ extern "C" G_MODULE_EXPORT void on_FileOpenImagemenuitem_activate(GtkWidget *but
 
 extern "C" G_MODULE_EXPORT void on_FileSaveImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor->saveTextFile();
+    OovStatus status = gEditor->saveTextFile();
+    status.checkErrors();
     }
 
 extern "C" G_MODULE_EXPORT void on_FileSaveAsImagemenuitem_activate(GtkWidget *button, gpointer data)
     {
-    gEditor->saveAsTextFileWithDialog();
+    OovStatus status = gEditor->saveAsTextFileWithDialog();
+    status.checkErrors();
     }
 
 extern "C" G_MODULE_EXPORT void on_FileQuitImagemenuitem_activate(GtkWidget *button, gpointer data)

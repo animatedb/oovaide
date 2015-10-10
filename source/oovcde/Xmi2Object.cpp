@@ -897,8 +897,8 @@ static bool loadXmiBuf(char const * const buf, ModelData &model, int &typeIndex)
 bool loadXmiFile(File const &file, ModelData &graph, OovStringRef const fn, int &typeIndex)
     {
     int size = 0;
-    bool success = file.getFileSize(size);
-    if(success)
+    OovStatus status = file.getFileSize(size);
+    if(status.ok())
         {
 #if(DEBUG_LOAD)
         std::string srcFn = fn.getStr();
@@ -911,9 +911,11 @@ bool loadXmiFile(File const &file, ModelData &graph, OovStringRef const fn, int 
         if(buf)
             {
             buf[size] = 0;
-            success = file.read(buf, size);
-            if(success)
-                success = loadXmiBuf(buf, graph, typeIndex);
+            status = file.read(buf, size);
+            if(status.ok())
+                {
+                status.set(loadXmiBuf(buf, graph, typeIndex), SC_Logic);
+                }
             delete [] buf;
             }
 #if(DEBUG_LOAD)
@@ -941,12 +943,12 @@ bool loadXmiFile(File const &file, ModelData &graph, OovStringRef const fn, int 
             }
 #endif
         }
-    if(!success)
+    if(status.needReport())
         {
         OovString err = "Unable to read file: ";
         err += fn;
-        OovError::report(ET_Error, err);
+        status.report(ET_Error, err);
         }
-    return success;
+    return status.ok();
     };
 

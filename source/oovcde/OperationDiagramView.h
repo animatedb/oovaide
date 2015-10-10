@@ -58,7 +58,7 @@ class OperationDiagramView
             { return mOperationDiagram; }
 
         void drawToDrawingArea();
-        bool drawSvgDiagram(File &file);
+        OovStatusReturn drawSvgDiagram(File &file);
         void gotoClass(OovStringRef const className);
         void gotoOperation(OperationCall const *oper);
         bool isModified() const

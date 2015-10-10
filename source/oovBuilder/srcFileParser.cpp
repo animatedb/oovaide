@@ -26,10 +26,10 @@ bool srcFileParser::analyzeSrcFiles(OovStringRef const srcRootDir,
 #endif
     mIncDirArgs = mComponentFinder.getAllIncludeDirs();
     mExcludeDirs = mComponentFinder.getProjectBuildArgs().getProjectExcludeDirs();
-    bool success = recurseDirs(srcRootDir);
+    OovStatus status = recurseDirs(srcRootDir);
     mIncDirArgs.clear();
     waitForCompletion();
-    return success;
+    return status.ok();
     }
 
 VerboseDumper sVerboseDump;
@@ -82,7 +82,7 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
     if(!ComponentsFile::excludesMatch(srcFile, mExcludeDirs))
         {
         FilePath ext(srcFile, FP_File);
-        if(isHeader(ext) || isSource(ext))
+        if(isCppHeader(ext) || isCppSource(ext))
             {
             struct OovStat32 srcFileStat;
             success = (OovStatFunc(srcFile, &srcFileStat) == 0);
@@ -92,7 +92,8 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                 FilePathEnsureLastPathSep(srcRoot);
                 OovString outFileName = Project::makeAnalysisFileName(srcFile,
                         srcRoot, mAnalysisDir);
-                if(FileStat::isOutputOld(outFileName, srcFile))
+                OovStatus status(true, SC_File);
+                if(FileStat::isOutputOld(outFileName, srcFile, status))
                     {
                     std::string procPath = ToolPathFile::getAnalysisToolPath();
                     procPath = FilePathMakeExeFilename(procPath);

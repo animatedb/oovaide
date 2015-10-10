@@ -131,23 +131,30 @@ const class ModelClassifier *ModelDeclarator::getDeclClassType() const
 
 /// Get the position of the right side of the expression.  This will remove
 /// left class names, and return the member of function name of the class.
+/// Returns zero if no separator was found.
 static size_t getRightSidePosFromMemberRefExpr(std::string &expr, bool afterSep)
     {
-    size_t pos = expr.rfind('.');
-    if(pos == std::string::npos)
+    static char sepChars[]
         {
-        pos = expr.rfind(':');          // Find end of ::
+        '.',
+        ':',    // Find end of ::
+        '>'     // Find end of ->
+        };
+    size_t pos = 0;
+    for(auto const c : sepChars)
+        {
+        size_t testPos = expr.rfind(c);
+        if((testPos != std::string::npos) && (testPos > pos))
+            {
+            pos = testPos;
+            }
         }
-    if(pos == std::string::npos)
+    if(pos != 0)
         {
-        pos = expr.rfind('>');          // Find end of ->
-        }
-    if(pos != std::string::npos)
-        {
-        size_t splitLen = (expr[pos] == '.') ? 1 : 2;
-        pos++;
+        pos++;          // This is now after the separator.
         if(!afterSep)
             {
+            size_t splitLen = (expr[pos] == '.') ? 1 : 2;
             pos = static_cast<size_t>(pos - splitLen);
             }
         }
@@ -168,7 +175,7 @@ OovString ModelStatement::getOverloadFuncName() const
     OovString opName = getName();
 
     size_t pos = getRightSidePosFromMemberRefExpr(opName, true);
-    if(pos != std::string::npos)
+    if(pos != 0)
         opName.erase(0, pos);
     return opName;
     }
@@ -186,7 +193,7 @@ OovString ModelStatement::getAttrName() const
     if(mStatementType == ST_Call)
         {
         size_t pos = getRightSidePosFromMemberRefExpr(attrName, false);
-        if(pos != std::string::npos)
+        if(pos != 0)
             attrName.erase(pos);
         else
             attrName.clear();

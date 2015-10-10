@@ -29,7 +29,7 @@ void OperationDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-bool OperationDiagramView::drawSvgDiagram(File &file)
+OovStatusReturn OperationDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
     SvgDrawer svgDrawer(file, cairo.getCairo());

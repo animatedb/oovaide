@@ -29,7 +29,7 @@ void PortionDiagram::drawDiagram(DiagramDrawer &diagDrawer)
     mPortionDrawer.drawGraph(diagDrawer);
     }
 
-bool PortionDiagram::saveDiagram(File &file)
+OovStatusReturn PortionDiagram::saveDiagram(File &file)
     {
     NameValueFile nameValFile;
 
@@ -58,11 +58,11 @@ bool PortionDiagram::saveDiagram(File &file)
     return nameValFile.writeFile(file);
     }
 
-bool PortionDiagram::loadDiagram(File &file, DiagramDrawer &diagDrawer)
+OovStatusReturn PortionDiagram::loadDiagram(File &file, DiagramDrawer &diagDrawer)
     {
     NameValueFile nameValFile;
-    bool success = nameValFile.readFile(file);
-    if(success)
+    OovStatus status = nameValFile.readFile(file);
+    if(status.ok())
         {
         CompoundValue names;
         names.parseString(nameValFile.getValue("Names"));
@@ -93,5 +93,5 @@ bool PortionDiagram::loadDiagram(File &file, DiagramDrawer &diagDrawer)
                 }
             }
         }
-    return success;
+    return status;
     }

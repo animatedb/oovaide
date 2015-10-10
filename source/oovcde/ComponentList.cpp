@@ -15,7 +15,13 @@ static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
         OovStringRef const /*compSrcTagName*/, std::vector<ComponentListItem> &names)
     {
     bool added = false;
-    for(const auto &fn : compFile.getComponentSources(compName))
+
+    OovStringVec sources = compFile.getComponentFiles(
+        ComponentTypesFile::CFT_CppSource, compName);
+    OovStringVec includes = compFile.getComponentFiles(
+        ComponentTypesFile::CFT_CppInclude, compName);
+    sources.insert(sources.end(), includes.begin(), includes.end());
+    for(const auto &fn : sources)
         {
         FilePath modName(fn, FP_File);
         modName.discardDirectory();
@@ -38,24 +44,31 @@ void ComponentList::updateComponentList()
     {
     clear();
     ComponentTypesFile compFile;
-    compFile.read();
-    GuiTreeItem root;
-    for(const auto &compName : compFile.getComponentNames())
+    OovStatus status = compFile.read();
+    if(status.ok())
         {
-/// @todo - 3rd arg is not used.
-        bool addedSrc = addNames(compName, compFile, "Comp-src-", mListMap);
-        bool addedInc = addNames(compName, compFile, "Comp-inc-", mListMap);
-        if(addedSrc || addedInc)
+        GuiTreeItem root;
+        for(const auto &compName : compFile.getComponentNames())
             {
-            GuiTreeItem compParent = appendText(root, compName);
-            for(const auto &item : mListMap)
+/// @todo - 3rd arg is not used.
+            bool addedSrc = addNames(compName, compFile, "Comp-src-", mListMap);
+            bool addedInc = addNames(compName, compFile, "Comp-inc-", mListMap);
+            if(addedSrc || addedInc)
                 {
-                if(item.mComponentName == compName)
+                GuiTreeItem compParent = appendText(root, compName);
+                for(const auto &item : mListMap)
                     {
-                    appendText(compParent, item.mModuleName);
+                    if(item.mComponentName == compName)
+                        {
+                        appendText(compParent, item.mModuleName);
+                        }
                     }
                 }
             }
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to update component list");
         }
     }
 

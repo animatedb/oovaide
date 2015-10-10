@@ -35,9 +35,9 @@ static void translateText(OovStringRef const text, std::string &str)
     str = StringMakeXml(text);
     }
 
-bool SvgDrawer::writeFile()
+OovStatusReturn SvgDrawer::writeFile()
     {
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         mSuccess = mFile.putString("</svg>");
         }
@@ -82,7 +82,7 @@ static void outArgFloat(OovStringRef argName, double argVal, int precision, OovS
 
 void SvgDrawer::maybeOutputHeader()
     {
-    if(mOutputHeader && mSuccess)
+    if(mOutputHeader && mSuccess.ok())
         {
         const char *fontFamily = "Arial, Helvetica, sans-serif";
         OovString str = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"\n";
@@ -99,7 +99,7 @@ void SvgDrawer::maybeOutputHeader()
 void SvgDrawer::drawRect(const GraphRect &rect)
     {
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         OovString str = "<rect";
         outArgInt("x", rect.start.x, str);
@@ -114,7 +114,7 @@ void SvgDrawer::drawRect(const GraphRect &rect)
 void SvgDrawer::drawLine(const GraphPoint &p1, const GraphPoint &p2, bool dashed)
     {
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         OovString str = "<line";
         outArgInt("x1", p1.x, str);
@@ -133,7 +133,7 @@ void SvgDrawer::drawLine(const GraphPoint &p1, const GraphPoint &p2, bool dashed
 void SvgDrawer::drawCircle(const GraphPoint &p, int radius, Color fillColor)
     {
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         OovString str = "<circle";
         outArgInt("cx", p.x, str);
@@ -155,7 +155,7 @@ void SvgDrawer::drawEllipse(const GraphRect &rect)
     int halfX = rect.size.x/2;
     int halfY = rect.size.y/2;
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         OovString str = "<ellipse";
         outArgInt("cx", rect.start.x+halfX, str);
@@ -179,7 +179,7 @@ void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
         pointsStr += str;
         }
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         OovString str = "<polygon";
         outArg("points", pointsStr, str);
@@ -196,7 +196,7 @@ void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
 void SvgDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
     {
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         if(start)
             {
@@ -223,7 +223,7 @@ void SvgDrawer::groupShapes(bool start, Color lineColor, Color fillColor)
 void SvgDrawer::groupText(bool start, bool italic)
     {
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         if(start)
             {
@@ -246,7 +246,7 @@ void SvgDrawer::groupText(bool start, bool italic)
 void SvgDrawer::drawText(const GraphPoint &p, OovStringRef const text)
     {
     maybeOutputHeader();
-    if(mSuccess)
+    if(mSuccess.ok())
         {
         std::string textStr;
         translateText(text, textStr);

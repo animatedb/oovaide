@@ -128,11 +128,11 @@ class NameValueRecord
 
         /// Write all items to the file.
         /// @param file The file to write to.
-        bool write(File &file);
+        OovStatusReturn write(File &file);
 
         /// Read all items from the file.
         /// @param file The file to read from.
-        bool read(File &file);
+        OovStatusReturn read(File &file);
 
         /// Take a string with '\n' and add the items to the collection.
         /// @param buf The buffer to read and add to the collection.
@@ -150,7 +150,7 @@ class NameValueRecord
     private:
         bool mSaveNullValues;
         std::map<OovString, OovString> mNameValues;
-        bool getLine(File &file, OovString &str, bool &success);
+        bool getLine(File &file, OovString &str, OovStatus &success);
         void insertLine(OovString line);
     };
 
@@ -175,23 +175,23 @@ class NameValueFile:public NameValueRecord
             { mFilename = fn; }
 
         /// Indicates whether the file exists on disk
-        bool isFilePresent(bool &success);
+        bool isFilePresent(OovStatus &status);
         /// Read the file into the map of items.
-        bool readFile();
+        OovStatusReturn readFile();
         /// Write the file from the map of items.
-        bool writeFile();
+        OovStatusReturn writeFile();
 
         /// Read the file. This does not use the filename.
-        bool readFile(File &file);
+        OovStatusReturn readFile(File &file);
         /// Write the file. This does not use the filename.
-        bool writeFile(File &file);
+        OovStatusReturn writeFile(File &file);
         /// Seek to the beginning of the file.
-        bool seekBegin(File &file)
+        OovStatusReturn seekBegin(File &file)
             { return file.seekBegin(); }
 
         /// Read the file using shared file access.  This may take some time
         /// if the file is being written.
-        bool readFileShared();
+        OovStatusReturn readFileShared();
 
         /// Clear and update map by reading current file, and lock/open file.
         /// This function is meant to be used with the writeFileExclusive
@@ -200,16 +200,16 @@ class NameValueFile:public NameValueRecord
         /// is written with writeFileExclusive.
         /// @todo - This does not need to reread files if they haven't changed
         /// since the first read.
-        bool writeFileExclusiveReadUpdate(SharedFile &file);
+        OovStatusReturn writeFileExclusiveReadUpdate(SharedFile &file);
 
         /// Write exclusive means that a normal file write is performed with
         /// no sharing, and it will fail if the file is open somewhere else.
         /// THIS WILL NOT SHRINK FILES!
-        bool writeFileExclusive(SharedFile &file);
+        OovStatusReturn writeFileExclusive(SharedFile &file);
 
     private:
         OovString mFilename;
-        bool readOpenedFile(SharedFile &file);
+        OovStatusReturn readOpenedFile(SharedFile &file);
     };
 
 

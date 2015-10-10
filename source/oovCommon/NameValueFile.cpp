@@ -124,9 +124,9 @@ bool NameValueRecord::getValueBool(OovStringRef const optionName) const
     return(getValue(optionName) == "Yes");
     }
 
-bool NameValueRecord::write(File &file)
+OovStatusReturn NameValueRecord::write(File &file)
     {
-    bool success = true;
+    OovStatus status(true, SC_File);
     for(const auto &pair : mNameValues)
         {
         if(pair.second.length() > 0 || mSaveNullValues)
@@ -135,19 +135,22 @@ bool NameValueRecord::write(File &file)
             str += mapDelimiter;
             str += pair.second;
             str += '\n';
-            file.putString(str);
+            status = file.putString(str);
+            }
+        if(!status.ok())
+            {
+            break;
             }
         }
-    return success;
+    return status;
     }
 
-bool NameValueRecord::getLine(File &file, OovString &str, bool &success)
+bool NameValueRecord::getLine(File &file, OovString &str, OovStatus &status)
     {
     char lineBuf[1000];
     str.resize(0);
-    success = true;
     // Read many times until the \n is found.
-    while(file.getString(lineBuf, sizeof(lineBuf), success))
+    while(file.getString(lineBuf, sizeof(lineBuf), status))
         {
         str += lineBuf;
         size_t len = str.length();
@@ -164,15 +167,15 @@ bool NameValueRecord::getLine(File &file, OovString &str, bool &success)
     return(str.length() > 0);
     }
 
-bool NameValueRecord::read(File &file)
+OovStatusReturn NameValueRecord::read(File &file)
     {
     OovString lineBuf;
-    bool success = true;
-    while(getLine(file, lineBuf, success))
+    OovStatus status(true, SC_File);
+    while(getLine(file, lineBuf, status))
         {
         insertLine(lineBuf);
         }
-    return success;
+    return status;
     }
 
 void NameValueRecord::insertLine(OovString lineBuf)
@@ -219,96 +222,108 @@ void NameValueRecord::readMapToBuf(OovString &buf)
 
 //////////
 
-bool NameValueFile::writeFile(File &file)
+OovStatusReturn NameValueFile::writeFile(File &file)
     {
     return write(file);
     }
 
-bool NameValueFile::writeFile()
+OovStatusReturn NameValueFile::writeFile()
     {
-    bool success = false;
-    File file(mFilename.getStr(), "w");
-    if(file.isOpen())
+    File file;
+    OovStatus status = file.open(mFilename.getStr(), "w");
+    if(status.ok())
         {
-        success = writeFile(file);
+        status = writeFile(file);
         }
-    return success;
+    return status;
     }
 
-bool NameValueFile::isFilePresent(bool &success)
+bool NameValueFile::isFilePresent(OovStatus &status)
     {
-    return FileIsFileOnDisk(mFilename, success);
+    return FileIsFileOnDisk(mFilename, status);
     }
 
-bool NameValueFile::readFile(File &file)
+OovStatusReturn NameValueFile::readFile(File &file)
     {
     return read(file);
     }
 
-bool NameValueFile::readFile()
+OovStatusReturn NameValueFile::readFile()
     {
-    bool success = true;
-    File file(mFilename.getStr(), "r");
-    if(file.isOpen())
+    File file;
+    OovStatus status = file.open(mFilename.getStr(), "r");
+    if(status.ok())
         {
         clear();
-        success = readFile(file);
+        status = readFile(file);
         }
-    return success;
+    return status;
     }
 
-bool NameValueFile::readOpenedFile(SharedFile &file)
+OovStatusReturn NameValueFile::readOpenedFile(SharedFile &file)
     {
     clear();
     std::string buf(file.getSize(), 0);
     int actualSize;
-    bool success = file.read(&buf[0], static_cast<int>(buf.size()), actualSize);
-    if(success)
+    OovStatus status = file.read(&buf[0], static_cast<int>(buf.size()), actualSize);
+    if(status.ok())
         {
         buf.resize(static_cast<size_t>(actualSize));
         insertBufToMap(buf);
         }
-    return success;
+    return status;
     }
 
-bool NameValueFile::readFileShared()
+OovStatusReturn NameValueFile::readFileShared()
     {
     SharedFile file;
-    bool success = false;
-    eOpenStatus status = file.open(mFilename.getStr(), M_ReadShared);
-    if(status == OS_Opened)
+    OovStatus status(true, SC_File);
+    eOpenStatus openStat = file.open(mFilename.getStr(), M_ReadShared);
+    if(openStat == OS_Opened)
         {
-        success = readOpenedFile(file);
+        status = readOpenedFile(file);
         }
-    else if(status == OS_NoFile)
+    else if(openStat != OS_NoFile)
         {
-        success = true;
+        status.set(false, SC_File);
         }
-    return(success);
+    return status;
     }
 
-bool NameValueFile::writeFileExclusiveReadUpdate(class SharedFile &file)
+OovStatusReturn NameValueFile::writeFileExclusiveReadUpdate(class SharedFile &file)
     {
-    bool success = false;
-    eOpenStatus status = file.open(mFilename.getStr(), M_ReadWriteExclusive);
-    if(status == OS_Opened)
+    OovStatus status(true, SC_File);
+    eOpenStatus openStat = file.open(mFilename.getStr(), M_ReadWriteExclusive);
+    if(openStat == OS_Opened)
         {
-        success = readOpenedFile(file);
+        status = readOpenedFile(file);
         }
-    return success;
+    else
+        {
+        status.set(false, SC_File);
+        }
+    return status;
     }
 
-bool NameValueFile::writeFileExclusive(class SharedFile &file)
+OovStatusReturn NameValueFile::writeFileExclusive(class SharedFile &file)
     {
+    OovStatus status(true, SC_File);
     bool success = file.isOpen();
     if(success)
         {
         OovString buf;
         readMapToBuf(buf);
         file.truncate();
-        file.seekBegin();
-        success = file.write(&buf[0], static_cast<int>(buf.size()));
+        status = file.seekBegin();
+        if(status.ok())
+            {
+            status = file.write(&buf[0], static_cast<int>(buf.size()));
+            }
         }
-    return success;
+    else
+        {
+        status.set(false, SC_File);
+        }
+    return status;
     }
 

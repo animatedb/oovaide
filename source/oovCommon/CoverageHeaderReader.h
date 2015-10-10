@@ -37,7 +37,7 @@ class CoverageHeaderReader
         /// Reads the coverage header file into memory
         /// @param outDefFile This must contain the full path to the coverage
         ///     header file.
-        void read(SharedFile &outDefFile);
+        OovStatusReturn read(SharedFile &outDefFile);
         /// Returns the map where each item is a #define macro name for each
         /// instrumented file and a count of the number of instrumented lines
         /// for the instrumented file.

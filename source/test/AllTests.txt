@@ -42,3 +42,14 @@ Examples/Sharedlibgtk
 	- Select Edit/Preferences, and in External Packages, Add gtk+-3.0.
 	- Select Build/Debug
 	  - Verify in out-Debug, that kingdom.exe and resource/*.so exist.
+
+
+Testing files
+--------
+	- open project, new project, analyze, build debug
+	- packages, build settings
+	- new module
+	- open, save drawing, export
+	- coverage
+	- edit file
+	- reports

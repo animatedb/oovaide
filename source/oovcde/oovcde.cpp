@@ -17,7 +17,8 @@
 #include "ComplexityView.h"
 #include "DuplicatesView.h"
 #include "StaticAnalysis.h"
-#include "OovLibrary.h"
+#include "DatabaseClient.h"
+#include "NewModule.h"
 #include <stdlib.h>
 
 
@@ -38,6 +39,8 @@ void WindowBuildListener::initListener(Builder &builder)
         }
     Gui::clear(mStatusTextView);
     }
+
+static char const *sSrchErrStr = "error:";
 
 bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
     {
@@ -65,7 +68,7 @@ bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
         size_t pos = 0;
         while(pos != std::string::npos)
             {
-            pos = tempStdStr.find("error:", pos);
+            pos = tempStdStr.find(sSrchErrStr, pos);
             if(pos != std::string::npos)
                 {
                 GtkTextIter startIter = GuiTextBuffer::getIterAtOffset(buf, startOffset + pos);
@@ -75,6 +78,11 @@ bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
                 GuiTextBuffer::getText(buf, startOffset + pos, endOffset);
                 mErrHighlightTag.applyTag(buf, &startIter, &endIter);
                 pos++;
+                if(atEnd && mErrorMode == EM_MoveTopError)
+                    {
+                    GuiTextBuffer::moveCursorToIter(buf, startIter);
+                    atEnd = false;
+                    }
                 }
             }
         }
@@ -88,7 +96,9 @@ bool WindowBuildListener::onBackgroundProcessIdle(bool &complete)
         mComplete = false;
         }
     if(atEnd)
+        {
         GuiTextBuffer::moveCursorToEnd(buf);
+        }
     if(appended)
         {
         Gui::scrollToCursor(mStatusTextView);
@@ -101,10 +111,117 @@ void WindowBuildListener::processComplete()
     mComplete = true;
     }
 
+void WindowBuildListener::searchForErrorFromIter(GtkTextIter iter, bool forward)
+    {
+    GtkTextIter startMatch;
+    GtkTextIter endMatch;
+
+    GtkTextSearchFlags flags = static_cast<GtkTextSearchFlags>(
+        GTK_TEXT_SEARCH_TEXT_ONLY | GTK_TEXT_SEARCH_VISIBLE_ONLY);
+    bool found = false;
+    if(forward)
+        {
+        gtk_text_iter_forward_char(&iter);
+        found = gtk_text_iter_forward_search(&iter, sSrchErrStr, flags,
+            &startMatch, &endMatch, NULL);
+        }
+    else
+        {
+        gtk_text_iter_backward_char(&iter);
+        found = gtk_text_iter_backward_search(&iter, sSrchErrStr, flags,
+            &startMatch, &endMatch, NULL);
+        }
+    if(found)
+        {
+        GtkTextBuffer *buf = getBuffer();
+        GuiTextBuffer::moveCursorToIter(buf, startMatch);
+        Gui::scrollToCursor(mStatusTextView);
+        }
+    }
+
+void WindowBuildListener::moveTopError()
+    {
+    mErrorMode = EM_MoveTopError;
+    GtkTextBuffer *buf = getBuffer();
+    searchForErrorFromIter(GuiTextBuffer::getStartIter(buf), true);
+    }
+
+void WindowBuildListener::moveUpError()
+    {
+    mErrorMode = EM_MoveTopError;
+    GtkTextBuffer *buf = getBuffer();
+    searchForErrorFromIter(GuiTextBuffer::getCursorIter(buf), false);
+    }
+
+void WindowBuildListener::moveDownError()
+    {
+    mErrorMode = EM_MoveTopError;
+    GtkTextBuffer *buf = getBuffer();
+    searchForErrorFromIter(GuiTextBuffer::getCursorIter(buf), true);
+    }
+
+void WindowBuildListener::moveBottomBuffer()
+    {
+    mErrorMode = EM_MoveEndBuffer;
+    GtkTextBuffer *buf = getBuffer();
+    GuiTextBuffer::moveCursorToEnd(buf);
+    Gui::scrollToCursor(mStatusTextView);
+    }
+
+
+
+////////////////////////////
+
 WindowProjectStatusListener::~WindowProjectStatusListener()
     {
     }
 
+OovTaskStatusListenerId WindowProjectStatusListener::startTask(
+        OovStringRef const &text, size_t i)
+    {
+    mState = TS_Running;
+    std::lock_guard<std::mutex> lock(mMutex);
+    mBackDlg.startTask(text, i);
+    return 0;
+    }
+
+bool WindowProjectStatusListener::updateProgressIteration(OovTaskStatusListenerId id,
+        size_t i, OovStringRef const &text)
+    {
+    if(text)
+        {
+        std::lock_guard<std::mutex> lock(mMutex);
+        mUpdateText = text;
+        }
+    mProgressIteration = i;
+    return(mState == TS_Running);
+    }
+
+void WindowProjectStatusListener::idleUpdateProgress()
+    {
+    if(mState == TS_Running)
+        {
+        OovString text;
+            {
+            std::lock_guard<std::mutex> lock(mMutex);
+            text = mUpdateText;
+            }
+        if(!mBackDlg.updateProgressIteration(mProgressIteration,
+                text, false))
+            {
+            mState = TS_Stopping;
+            }
+        }
+    if(mState == TS_Stopping)
+        {
+        std::lock_guard<std::mutex> lock(mMutex);
+        mBackDlg.endTask();
+        mState = TS_Stopped;
+        }
+    }
+
+
+////////////////////////////
 
 void oovGui::init()
     {
@@ -114,8 +231,10 @@ void oovGui::init()
     mBuilder.connectSignals();
     mContexts.init(mProjectStatusListener);
     OovError::setListener(this);
+    OovError::setComponent(EC_Oovcde);
     g_idle_add(onIdle, this);
     updateMenuEnables(ProjectStatus());
+    GlobalSettings::updateRecentFilesMenu();
     }
 
 oovGui::~oovGui()
@@ -303,7 +422,12 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
 static bool checkAnyComponents()
     {
     ComponentTypesFile compFile;
-    compFile.read();
+    OovStatus status = compFile.read();
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read component types file "
+            "to see if there are any components");
+        }
     bool success = compFile.anyComponentsDefined();
     if(!success)
         {
@@ -440,20 +564,24 @@ static void displayHelpFile(OovStringRef const fileName)
     {
     FilePath fullFn;
     static char const *dirs[] = { "help", "..\\..\\web\\userguide" };
-    bool success = true;
+    OovStatus status(true, SC_File);
     for(auto const dir : dirs)
         {
         fullFn.setPath(dir, FP_Dir);
         fullFn.appendFile(fileName);
-        if(FileIsFileOnDisk(fullFn, success))
+        if(FileIsFileOnDisk(fullFn, status))
             {
             break;
             }
         }
-    if(!FileIsFileOnDisk(fullFn, success))
+    if(!FileIsFileOnDisk(fullFn, status))
         {
         fullFn.setPath("http://oovcde.sourceforge.net/userguide", FP_Dir);
         fullFn.appendFile(fileName);
+        }
+    if(status.needReport())
+        {
+        status.reported();
         }
     displayBrowserFile(fullFn);
     }
@@ -564,7 +692,11 @@ void oovGui::showProjectSettingsDialog()
             {
             gOovGui->getProject().getProjectOptions().setNameValue(OptProjectExcludeDirs,
                     dlg.getExcludeDirs().getAsString(';'));
-            gOovGui->getProject().getProjectOptions().writeFile();
+            OovStatus status = gOovGui->getProject().getProjectOptions().writeFile();
+            if(status.needReport())
+                {
+                status.report(ET_Error, "Unable to write project settings");
+                }
             runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
             }
         }
@@ -592,6 +724,226 @@ class OptionsDialogUpdate:public OptionsDialog
 OptionsDialogUpdate::~OptionsDialogUpdate()
     {
     }
+
+void oovGui::newProject()
+    {
+    ProjectSettingsDialog dlg(Gui::getMainWindow(),
+        getProject().getProjectOptions(), getProject().getGuiOptions(), true);
+    if(dlg.runDialog())
+        {
+        if(canStartAnalysis())
+            {
+            OovProject::eNewProjectStatus projStatus;
+            if(getProject().newProject(dlg.getProjectDir(), dlg.getExcludeDirs(),
+                projStatus))
+                {
+                switch(projStatus)
+                    {
+                    case OovProject::NP_CreatedProject:
+                        GlobalSettings::saveOpenProject(dlg.getProjectDir());
+                        runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+                        gtk_widget_hide(getBuilder().getWidget("NewProjectDialog"));
+                        break;
+
+                    case OovProject::NP_CantCreateDir:
+                        Gui::messageBox("Unable to create project directory");
+                        break;
+
+                    case OovProject::NP_CantCreateFile:
+                        Gui::messageBox("Unable to write project file");
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+void oovGui::openProject(OovStringRef projectDir)
+    {
+    bool openedProject = false;
+    if(getProject().openProject(projectDir, openedProject))
+        {
+        if(openedProject)
+            {
+            GlobalSettings::saveOpenProject(projectDir);
+            runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+            }
+        else
+            {
+            Gui::messageBox("Unable to open project file");
+            }
+        }
+    }
+
+void oovGui::openProject()
+    {
+    OovString projectDir;
+    PathChooser ch;
+    if(ch.ChoosePath(Gui::getMainWindow(), "Open OOVCDE Project Directory",
+            GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, projectDir))
+        {
+        if(canStartAnalysis())
+            {
+            openProject(projectDir);
+            }
+        }
+    }
+
+class DrawingFile:public File
+    {
+    public:
+        DrawingFile(OovStringRef fn, bool write)
+            {
+            FilePath fileName(fn, FP_File);
+            if(write)
+                {
+                OovStatus status = open(fileName, "w");
+                if(status.needReport())
+                    {
+                    status.report(ET_Error, "Unable to save drawing");
+                    }
+                }
+            else
+                {
+                OovStatus status = open(fileName, "r");
+                if(status.needReport())
+                    {
+                    status.report(ET_Error, "Unable to open drawing");
+                    }
+                }
+            }
+    };
+
+void oovGui::saveDrawing()
+    {
+    OovString fn = getDiagramName("oov");
+    DrawingFile drawFile(fn, true);
+    if(drawFile.isOpen())
+        {
+        OovStatus status = saveFile(drawFile);
+        if(!status.ok())
+            {
+            status.reported();
+            OovString str = "Unable to save drawing: ";
+            str += fn;
+            Gui::messageBox(str);
+            }
+        }
+    }
+
+void oovGui::openDrawing()
+    {
+    PathChooser ch;
+    OovString fn = getDiagramName("oov");
+    if(ch.ChoosePath(Gui::getMainWindow(), "Open Drawing (.OOV)",
+            GTK_FILE_CHOOSER_ACTION_OPEN, fn))
+        {
+        DrawingFile drawFile(fn, false);
+        if(drawFile.isOpen())
+            {
+            OovStatus status = loadFile(drawFile);
+            if(status.ok())
+                {
+                setDiagramName(fn);
+                }
+            if(!status.ok())
+                {
+                status.reported();
+                OovString str = "Unable to load drawing: ";
+                str += fn;
+                Gui::messageBox(str);
+                }
+            }
+        }
+    }
+
+void oovGui::saveDrawingAs()
+    {
+    PathChooser ch;
+    FilePath fn(getDiagramName("oov"), FP_File);
+    ch.setDefaultPath(fn);
+    if(ch.ChoosePath(Gui::getMainWindow(), "Save Drawing (.OOV)",
+            GTK_FILE_CHOOSER_ACTION_SAVE, fn))
+        {
+        if(!fn.hasExtension())
+            {
+            fn.appendExtension("oov");
+            }
+        setDiagramName(fn);
+        DrawingFile drawFile(fn, true);
+        if(drawFile.isOpen())
+            {
+            OovStatus status = saveFile(drawFile);
+            if(!status.ok())
+                {
+                status.reported();
+                OovString str = "Unable to save drawing: ";
+                str += fn;
+                Gui::messageBox(str);
+                }
+            }
+        }
+    }
+
+void oovGui::exportDrawingAs()
+    {
+    PathChooser ch;
+    FilePath fn(getDiagramName("svg"), FP_File);
+    ch.setDefaultPath(fn);
+    if(ch.ChoosePath(Gui::getMainWindow(), "Export Drawing (.SVG)",
+            GTK_FILE_CHOOSER_ACTION_SAVE, fn))
+        {
+        if(!fn.hasExtension())
+            {
+            fn.appendExtension("svg");
+            }
+        DrawingFile svg(fn, true);
+        OovStatus status = exportFile(svg);
+        if(!status.ok())
+            {
+            status.reported();
+            OovString str = "Unable to export drawing: ";
+            str += fn;
+            Gui::messageBox(str);
+            }
+        }
+    }
+
+void oovGui::makeCmake()
+    {
+    OovProcessChildArgs args;
+    OovString proc = FilePathMakeExeFilename("./oovCMaker");
+
+    OovString projNameArg;
+    Dialog cmakeDlg(GTK_DIALOG(getBuilder().getWidget("CMakeDialog")));
+    if(cmakeDlg.run(true))
+        {
+        GtkEntry *entry = GTK_ENTRY(getBuilder().getWidget("CMakeProjectNameEntry"));
+        projNameArg = OovString("-n") + OovString(Gui::getText(entry));
+        }
+
+    bool putInSource = Gui::messageBox("Put files in source directory?",
+            GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
+    args.addArg(proc);
+    args.addArg(Project::getProjectDirectory());
+    if(putInSource)
+        args.addArg("-w");
+    args.addArg(projNameArg);
+    spawnNoWait(proc, args.getArgv());
+    std::string stat = std::string("Building CMake files for ") +
+            Project::getProjectDirectory() + ".";
+    if(putInSource)
+        stat += "\nCheck the source directory for CMake files.";
+    else
+        stat += "\nCheck the oovcde directory for CMake files.";
+    Gui::messageBox(stat, GTK_MESSAGE_INFO);
+    }
+
+
+
+
+////////////////////////
+
 
 int main(int argc, char *argv[])
     {
@@ -626,62 +978,16 @@ int main(int argc, char *argv[])
 extern "C" G_MODULE_EXPORT void on_NewProjectMenuitem_activate(
         GtkWidget *button, gpointer data)
     {
-    ProjectSettingsDialog dlg(Gui::getMainWindow(),
-            gOovGui->getProject().getProjectOptions(),
-            gOovGui->getProject().getGuiOptions(), true);
-    if(dlg.runDialog())
-        {
-        if(gOovGui->canStartAnalysis())
-            {
-            OovProject::eNewProjectStatus projStatus;
-            if(gOovGui->getProject().newProject(
-                    dlg.getProjectDir(), dlg.getExcludeDirs(), projStatus))
-                {
-                switch(projStatus)
-                    {
-                    case OovProject::NP_CreatedProject:
-                        gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
-                        gtk_widget_hide(gOovGui->getBuilder().getWidget("NewProjectDialog"));
-                        break;
-
-                    case OovProject::NP_CantCreateDir:
-                        Gui::messageBox("Unable to create project directory");
-                        break;
-
-                    case OovProject::NP_CantCreateFile:
-                        Gui::messageBox("Unable to write project file");
-                        break;
-                    }
-                }
-            }
-        }
+    gOovGui->newProject();
     }
+
 
 extern "C" G_MODULE_EXPORT void on_OpenProjectMenuitem_activate(
         GtkWidget *button, gpointer data)
     {
-    OovString projectDir;
-    PathChooser ch;
-    if(ch.ChoosePath(Gui::getMainWindow(), "Open OOVCDE Project Directory",
-            GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER, projectDir))
-        {
-        if(gOovGui->canStartAnalysis())
-            {
-            bool openedProject = false;
-            if(gOovGui->getProject().openProject(projectDir, openedProject))
-                {
-                if(openedProject)
-                    {
-                    gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
-                    }
-                else
-                    {
-                    Gui::messageBox("Unable to open project file");
-                    }
-                }
-            }
-        }
+    gOovGui->openProject();
     }
+
 
 extern "C" G_MODULE_EXPORT void on_ProjectSettingsMenuitem_activate(
         GtkWidget *widget, gpointer data)
@@ -689,195 +995,39 @@ extern "C" G_MODULE_EXPORT void on_ProjectSettingsMenuitem_activate(
     gOovGui->showProjectSettingsDialog();
     }
 
-////// New Module Dialog ////////////
-
-extern "C" G_MODULE_EXPORT void on_NewModule_ModuleEntry_changed(
-        GtkWidget * widget, gpointer /*data*/)
-    {
-    OovString module = Gui::getText(GTK_ENTRY(widget));
-    OovString interfaceName = module + ".h";
-    OovString implementationName = module + ".cpp";
-    Gui::setText(GTK_ENTRY(gOovGui->getBuilder().getWidget(
-            "NewModule_InterfaceEntry")), interfaceName);
-    Gui::setText(GTK_ENTRY(gOovGui->getBuilder().getWidget(
-            "NewModule_ImplementationEntry")), implementationName);
-    }
-
-// In glade, set the callback for the dialog's GtkWidget "delete-event" to
-// gtk_widget_hide_on_delete for the title bar close button to work.
-extern "C" G_MODULE_EXPORT void on_NewModuleCancelButton_clicked(
-        GtkWidget * /*widget*/, gpointer /*data*/)
-    {
-    gtk_widget_hide(gOovGui->getBuilder().getWidget("NewModuleDialog"));
-    }
-
-extern "C" G_MODULE_EXPORT void on_NewModuleOkButton_clicked(
-        GtkWidget * /*widget*/, gpointer /*data*/)
-    {
-    gtk_widget_hide(gOovGui->getBuilder().getWidget("NewModuleDialog"));
-    OovString basePath = Project::getSrcRootDirectory();
-    OovString interfaceName = Gui::getText(GTK_ENTRY(gOovGui->getBuilder().getWidget(
-            "NewModule_InterfaceEntry")));
-    OovString implementationName = Gui::getText(GTK_ENTRY(gOovGui->getBuilder().getWidget(
-            "NewModule_ImplementationEntry")));
-    OovString compName = Gui::getText(GTK_COMBO_BOX_TEXT(gOovGui->getBuilder().getWidget(
-            "NewModule_ComponentComboboxtext")));
-
-    FilePath compDir(basePath, FP_Dir);
-    if(compName != Project::getRootComponentName())
-        compDir.appendDir(compName);
-    // Create the new component directory if it doesn't exist.
-    FileEnsurePathExists(compDir);
-
-    bool success = true;
-    if(!FileIsFileOnDisk(interfaceName, success))
-        {
-        FilePath tempInt(compDir, FP_Dir);
-        tempInt.appendFile(interfaceName);
-        File intFile(tempInt, "w");
-        fprintf(intFile.getFp(), "// %s", interfaceName.c_str());
-        }
-    else
-        Gui::messageBox("Interface already exists", GTK_MESSAGE_INFO);
-
-    if(!FileIsFileOnDisk(implementationName, success))
-        {
-        FilePath tempImp(compDir, FP_Dir);
-        tempImp.appendFile(implementationName);
-        File impFile(tempImp, "w");
-        fprintf(impFile.getFp(), "// %s", implementationName.c_str());
-        impFile.close();
-        viewSource(gOovGui->getProject().getGuiOptions(), tempImp, 1);
-        }
-    else
-        Gui::messageBox("Implementation already exists", GTK_MESSAGE_INFO);
-
-    gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
-    }
-
 extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
         GtkWidget * /*widget*/, gpointer /*data*/)
     {
-    Dialog dlg(GTK_DIALOG(gOovGui->getBuilder().getWidget("NewModuleDialog")));
-    ComponentTypesFile componentsFile;
-    Gui::clear(GTK_COMBO_BOX_TEXT(gOovGui->getBuilder().getWidget(
-            "NewModule_ComponentComboboxtext")));
-    if(componentsFile.read())
+    NewModule newModule;
+    if(newModule.runDialog())
         {
-        OovStringVec names = componentsFile.getComponentNames();
-        if(names.size() == 0)
-            {
-            Gui::appendText(GTK_COMBO_BOX_TEXT(gOovGui->getBuilder().getWidget(
-                    "NewModule_ComponentComboboxtext")), Project::getRootComponentName());
-            }
-        for(auto const &name : names)
-            {
-            Gui::appendText(GTK_COMBO_BOX_TEXT(gOovGui->getBuilder().getWidget(
-                    "NewModule_ComponentComboboxtext")), name);
-            }
-        Gui::setSelected(GTK_COMBO_BOX(gOovGui->getBuilder().getWidget(
-                "NewModule_ComponentComboboxtext")), 0);
+        viewSource(gOovGui->getProject().getGuiOptions(), newModule.getFileName(), 1);
+        gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
         }
-    dlg.run();
     }
-
-class DrawingFile:public File
-    {
-    public:
-        DrawingFile(OovStringRef fn, bool write)
-            {
-            FilePath fileName(fn, FP_File);
-            if(write)
-                {
-                open(fileName, "w");
-                }
-            else
-                {
-                open(fileName, "r");
-                }
-            }
-    };
 
 extern "C" G_MODULE_EXPORT void on_OpenDrawingMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    PathChooser ch;
-    OovString fn = gOovGui->getDiagramName("oov");
-    if(ch.ChoosePath(Gui::getMainWindow(), "Open Drawing (.OOV)",
-            GTK_FILE_CHOOSER_ACTION_OPEN, fn))
-        {
-        DrawingFile drawFile(fn, false);
-        if(gOovGui->loadFile(drawFile))
-            {
-            gOovGui->setDiagramName(fn);
-            }
-        else
-            {
-            OovString str = "Unable to open drawing: ";
-            str += fn;
-            Gui::messageBox(str);
-            }
-        }
+    gOovGui->openDrawing();
     }
 
 extern "C" G_MODULE_EXPORT void on_SaveDrawingMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    OovString fn = gOovGui->getDiagramName("oov");
-    DrawingFile drawFile(fn, true);
-    if(!gOovGui->saveFile(drawFile))
-        {
-        OovString str = "Unable to save drawing: ";
-        str += fn;
-        Gui::messageBox(str);
-        }
+    gOovGui->saveDrawing();
     }
 
 extern "C" G_MODULE_EXPORT void on_SaveDrawingAsMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    PathChooser ch;
-    FilePath fn(gOovGui->getDiagramName("oov"), FP_File);
-    ch.setDefaultPath(fn);
-    if(ch.ChoosePath(Gui::getMainWindow(), "Save Drawing (.OOV)",
-            GTK_FILE_CHOOSER_ACTION_SAVE, fn))
-        {
-        if(!fn.hasExtension())
-            {
-            fn.appendExtension("oov");
-            }
-        gOovGui->setDiagramName(fn);
-        DrawingFile drawFile(fn, true);
-        if(!gOovGui->saveFile(drawFile))
-            {
-            OovString str = "Unable to save drawing: ";
-            str += fn;
-            Gui::messageBox(str);
-            }
-        }
+    gOovGui->saveDrawingAs();
     }
 
 extern "C" G_MODULE_EXPORT void on_ExportDrawingAsMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    PathChooser ch;
-    FilePath fn(gOovGui->getDiagramName("svg"), FP_File);
-    ch.setDefaultPath(fn);
-    if(ch.ChoosePath(Gui::getMainWindow(), "Export Drawing (.SVG)",
-            GTK_FILE_CHOOSER_ACTION_SAVE, fn))
-        {
-        if(!fn.hasExtension())
-            {
-            fn.appendExtension("svg");
-            }
-        DrawingFile svg(fn, true);
-        if(!gOovGui->exportFile(svg))
-            {
-            OovString str = "Unable to export drawing: ";
-            str += fn;
-            Gui::messageBox(str);
-            }
-        }
+    gOovGui->exportDrawingAs();
     }
 
 
@@ -929,6 +1079,30 @@ extern "C" G_MODULE_EXPORT void on_StopBuildMenuitem_activate(
     gOovGui->stopSrcManager();
     }
 
+extern "C" G_MODULE_EXPORT void on_StatusTextTopErrorToolbutton_clicked(
+        GtkWidget * /*button*/, gpointer /*data*/)
+    {
+    gOovGui->statusTopError();
+    }
+
+extern "C" G_MODULE_EXPORT void on_StatusTextUpErrorToolbutton_clicked(
+        GtkWidget * /*button*/, gpointer /*data*/)
+    {
+    gOovGui->statusUpError();
+    }
+
+extern "C" G_MODULE_EXPORT void on_StatusTextDownErrorToolbutton_clicked(
+        GtkWidget * /*button*/, gpointer /*data*/)
+    {
+    gOovGui->statusDownError();
+    }
+
+extern "C" G_MODULE_EXPORT void on_StatusTextBottomBufferToolbutton_clicked(
+        GtkWidget * /*button*/, gpointer /*data*/)
+    {
+    gOovGui->statusBottomError();
+    }
+
 extern "C" G_MODULE_EXPORT void on_InstrumentMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
@@ -950,32 +1124,7 @@ extern "C" G_MODULE_EXPORT void on_CoverageStatsMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_MakeCMakeMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    OovProcessChildArgs args;
-    OovString proc = FilePathMakeExeFilename("./oovCMaker");
-
-    OovString projNameArg;
-    Dialog cmakeDlg(GTK_DIALOG(gOovGui->getBuilder().getWidget("CMakeDialog")));
-    if(cmakeDlg.run(true))
-        {
-        GtkEntry *entry = GTK_ENTRY(gOovGui->getBuilder().getWidget("CMakeProjectNameEntry"));
-        projNameArg = OovString("-n") + OovString(Gui::getText(entry));
-        }
-
-    bool putInSource = Gui::messageBox("Put files in source directory?",
-            GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
-    args.addArg(proc);
-    args.addArg(Project::getProjectDirectory());
-    if(putInSource)
-        args.addArg("-w");
-    args.addArg(projNameArg);
-    spawnNoWait(proc, args.getArgv());
-    std::string stat = std::string("Building CMake files for ") +
-            Project::getProjectDirectory() + ".";
-    if(putInSource)
-        stat += "\nCheck the source directory for CMake files.";
-    else
-        stat += "\nCheck the oovcde directory for CMake files.";
-    Gui::messageBox(stat, GTK_MESSAGE_INFO);
+    gOovGui->makeCmake();
     }
 
 extern "C" G_MODULE_EXPORT gboolean on_StatusTextview_button_press_event(
@@ -1005,88 +1154,6 @@ extern "C" G_MODULE_EXPORT void on_LineStatsMenuitem_activate(
     {
     gOovGui->makeLineStats();
     }
-
-
-// This is the C style interface to the Oov database writer run-time library.
-extern "C"
-{
-struct DatabaseWriterInterface
-    {
-    bool (*OpenDb)(char const *projectDir, void const *modelData);
-    bool (*WriteDb)(int passIndex, int &typeIndex, int maxTypesPerTransaction);
-    char const *(*GetLastError)();
-    void (*CloseDb)();
-    };
-};
-class DatabaseWriter:public DatabaseWriterInterface, public OovLibrary
-    {
-    public:
-        void writeDatabase(ModelData *modelData)
-            {
-            // Linux is interesting here.  If the project directory (a static
-            // string) is read after the library is opened, then the string
-            // is empty in this calling executable code.  So this must be
-            // read before the library is opened, then passed to the library.
-            OovString projDir = Project::getProjectDirectory();
-#ifdef __linux__
-            FilePath reportLibName(Project::getBinDirectory(), FP_Dir);
-            reportLibName.appendFile("libOovDbWriter.so");
-#else
-            OovStringRef reportLibName = "oovDbWriter.dll";
-#endif
-            bool success = OovLibrary::open(reportLibName.getStr());
-            if(success)
-                {
-                loadSymbols();
-                bool success = OpenDb(projDir.getStr(), modelData);
-                if(success)
-                    {
-                    TaskBusyDialog progressDlg;
-                    progressDlg.setParentWindow(Gui::getMainWindow());
-                    bool keepGoing = true;
-                    size_t totalTypes = modelData->mTypes.size();
-                    for(int pass=0; pass<2 && success && keepGoing; pass++)
-                        {
-                        int typeIndex = 0;
-                        OovString str = "Adding Data - Pass ";
-                        str.appendInt(pass+1);
-                        str += " of 2";
-                        progressDlg.startTask(str.getStr(), totalTypes);
-                        while(typeIndex < static_cast<int>(totalTypes) && success && keepGoing)
-                            {
-                            success = WriteDb(pass, typeIndex, 40);
-                            if(success)
-                                {
-                                keepGoing = progressDlg.updateProgressIteration(typeIndex, nullptr, true);
-                                typeIndex++;
-                                }
-                            }
-                        progressDlg.endTask();
-                        }
-                    CloseDb();
-                    }
-                if(!success)
-                    {
-                    Gui::messageBox(GetLastError());
-                    }
-                }
-            else
-                {
-                OovString errStr = "Unable to find ";
-                errStr += reportLibName;
-                Gui::messageBox(errStr.getStr());
-                }
-            }
-
-    private:
-        void loadSymbols()
-            {
-            loadModuleSymbol("OpenDb", (OovProcPtr*)&OpenDb);
-            loadModuleSymbol("WriteDb", (OovProcPtr*)&WriteDb);
-            loadModuleSymbol("GetLastError", (OovProcPtr*)&GetLastError);
-            loadModuleSymbol("CloseDb", (OovProcPtr*)&CloseDb);
-            }
-    };
 
 extern "C" G_MODULE_EXPORT void on_CreateDatabaseMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)

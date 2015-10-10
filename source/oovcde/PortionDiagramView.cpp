@@ -20,7 +20,7 @@ void PortionDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-bool PortionDiagramView::drawSvgDiagram(File &file)
+OovStatusReturn PortionDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
     SvgDrawer svgDrawer(file, cairo.getCairo());

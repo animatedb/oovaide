@@ -43,7 +43,7 @@ void IncludeDiagramView::updateDrawingAreaSize()
     gtk_widget_set_size_request(getDiagramWidget(), size.x, size.y);
     }
 
-bool IncludeDiagramView::drawSvgDiagram(File &file)
+OovStatusReturn IncludeDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
     SvgDrawer svgDrawer(file, cairo.getCairo());

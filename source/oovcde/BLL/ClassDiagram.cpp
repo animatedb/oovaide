@@ -56,9 +56,9 @@ void ClassDiagram::drawDiagram(DiagramDrawer &diagDrawer)
     drawer.drawDiagram(mClassGraph);
     }
 
-bool ClassDiagram::saveDiagram(File &file)
+OovStatusReturn ClassDiagram::saveDiagram(File &file)
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     NameValueFile nameValFile;
 
     CompoundValue names;
@@ -94,16 +94,16 @@ bool ClassDiagram::saveDiagram(File &file)
         nameValFile.setNameValue("Names", names.getAsString());
         nameValFile.setNameValue("XPositions", xPositions.getAsString());
         nameValFile.setNameValue("YPositions", yPositions.getAsString());
-        success = nameValFile.writeFile(file);
+        status = nameValFile.writeFile(file);
         }
-    return success;
+    return status;
     }
 
-bool ClassDiagram::loadDiagram(File &file)
+OovStatusReturn ClassDiagram::loadDiagram(File &file)
     {
     NameValueFile nameValFile;
-    bool success = nameValFile.readFile(file);
-    if(success)
+    OovStatus status = nameValFile.readFile(file);
+    if(status.ok())
         {
         CompoundValue names;
         names.parseString(nameValFile.getValue("Names"));
@@ -155,7 +155,7 @@ bool ClassDiagram::loadDiagram(File &file)
                 }
             }
         }
-    return success;
+    return status;
     }
 
 ClassNode *ClassDiagram::getNode(int x, int y)

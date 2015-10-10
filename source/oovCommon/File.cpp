@@ -34,16 +34,16 @@ void sleepMs(int ms)
     }
 
 
-bool File::getFileSize(int &size) const
+OovStatusReturn File::getFileSize(int &size) const
     {
     size = 0;
-    bool success = seekEnd();
-    if(success)
+    OovStatus status = seekEnd();
+    if(status.ok())
         {
         size = ftell(mFp);
         }
     rewind(mFp);
-    return success;
+    return status;
     }
 
 void File::truncate(int size)
@@ -58,15 +58,14 @@ void File::truncate(int size)
 #endif
     }
 
-bool File::getString(char *buf, int bufBytes, bool &success)
+bool File::getString(char *buf, int bufBytes, OovStatus &status)
     {
-    success = true;
     bool keepGoing = fgets(buf, bufBytes, mFp);
     if(!keepGoing)
         {
         if(ferror(mFp) != 0)
             {
-            success = false;
+            status.set(false, SC_File);
             }
         }
     return(keepGoing);
@@ -147,7 +146,7 @@ eOpenStatus BaseSimpleFile::open(OovStringRef const fn, eOpenModes mode, eOpenEn
     return status;
     }
 
-bool BaseSimpleFile::read(void *buf, int size, int &actualSize)
+OovStatusReturn BaseSimpleFile::read(void *buf, int size, int &actualSize)
     {
 #ifdef __linux__
     actualSize = ::read(mFd, buf, size);
@@ -155,10 +154,10 @@ bool BaseSimpleFile::read(void *buf, int size, int &actualSize)
     actualSize = _read(mFd, buf, size);
 #endif
     // actualSize may be less than size in text mode
-    return(actualSize >= 0);
+    return(OovStatus(actualSize >= 0, SC_File));
     }
 
-bool BaseSimpleFile::write(void const *buf, int size)
+OovStatusReturn BaseSimpleFile::write(void const *buf, int size)
     {
     int bytesWritten;
 #ifdef __linux__
@@ -166,7 +165,7 @@ bool BaseSimpleFile::write(void const *buf, int size)
 #else
     bytesWritten = _write(mFd, buf, size);
 #endif
-    return(bytesWritten == size);
+    return(OovStatus(bytesWritten == size, SC_File));
     }
 
 int BaseSimpleFile::getSize() const
@@ -176,13 +175,14 @@ int BaseSimpleFile::getSize() const
     return filestat.st_size;
     }
 
-void BaseSimpleFile::seekBegin()
+OovStatusReturn BaseSimpleFile::seekBegin()
     {
 #ifdef __linux__
-    lseek(mFd, 0, SEEK_SET);
+    bool success = (lseek(mFd, 0, SEEK_SET) != -1);
 #else
-    _lseek(mFd, 0, SEEK_SET);
+    bool success = (_lseek(mFd, 0, SEEK_SET) != -1);
 #endif
+    return OovStatus(success, SC_File);
     }
 
 void BaseSimpleFile::close()

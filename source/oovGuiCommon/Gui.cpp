@@ -244,6 +244,10 @@ void GuiTextBuffer::moveCursorToEnd(GtkTextBuffer *buf)
     gtk_text_buffer_place_cursor(buf, &endIter);
     }
 
+void GuiTextBuffer::moveCursorToIter(GtkTextBuffer *buf, GtkTextIter iter)
+    {
+    gtk_text_buffer_place_cursor(buf, &iter);
+    }
 
 /////////////
 

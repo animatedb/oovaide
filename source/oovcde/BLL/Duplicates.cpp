@@ -87,13 +87,12 @@ bool FilterOutputHashIndices::isAlreadyOutput(size_t startIndexFile1, size_t sta
 bool HashFile::readHashFile(OovStringRef const filePath)
     {
     mFilePath = filePath;
-    File file(filePath.getStr(), "r");
-    bool success = file.isOpen();
-    if(success)
+    File file;
+    OovStatus status = file.open(filePath.getStr(), "r");
+    if(status.ok())
         {
         char buf[60];
-        bool success = true;
-        while(file.getString(buf, sizeof(buf), success))
+        while(file.getString(buf, sizeof(buf), status))
             {
             HashItem item;
             if(strlen(buf) > 0)
@@ -109,7 +108,7 @@ bool HashFile::readHashFile(OovStringRef const filePath)
                     }
                 else if(matchCount > 0)        // Allow empty whitespace.
                     {
-                    success = false;
+                    status.set(false, SC_Logic);
                     break;
                     }
                 }
@@ -118,13 +117,13 @@ bool HashFile::readHashFile(OovStringRef const filePath)
             mHashItems.push_back(item);
             }
         }
-    if(!success)
+    if(status.needReport())
         {
         OovString str = "Unable to read hash file: ";
         str += filePath;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
-    return(success);
+    return(status.ok());
     }
 
 void HashFile::compareHashFiles(HashFile const &refFile,
@@ -260,11 +259,16 @@ bool getDuplicateLineInfo(DuplicateOptions const &options,
     path.appendDir(DupsDir);
     FilePath ext("hsh", FP_Ext);
     std::vector<std::string> filePaths;
-    if(getDirListMatchExt(path, ext, filePaths))
+    OovStatus status = getDirListMatchExt(path, ext, filePaths);
+    if(status.ok())
         {
         Duplicates hashFiles(filePaths);
         hashFiles.compareAllFiles(options, dupLineInfo);
         processedFiles = true;
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to get duplicate list");
         }
     return processedFiles;
     }

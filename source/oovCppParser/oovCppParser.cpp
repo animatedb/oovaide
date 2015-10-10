@@ -22,6 +22,7 @@ static CppParser sCppParser;
 int main(int argc, char const *const argv[])
     {
     CppParser::eErrorTypes et = CppParser::ET_None;
+    OovError::setComponent(EC_OovCppParser);
     if(argc >= 4)
         {
         bool dupHashes = false;

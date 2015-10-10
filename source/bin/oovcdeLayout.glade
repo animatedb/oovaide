@@ -2269,7 +2269,7 @@ Use this dialog to set up component definitions.</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="orientation">vertical</property>
-                <property name="position">500</property>
+                <property name="position">450</property>
                 <property name="position_set">True</property>
                 <child>
                   <object class="GtkScrolledWindow" id="DiagramScrolledwindow">
@@ -2303,17 +2303,107 @@ Use this dialog to set up component definitions.</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkScrolledWindow" id="StatusTextScrolledwindow">
+                  <object class="GtkBox" id="box20">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="shadow_type">in</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkTextView" id="StatusTextview">
+                      <object class="GtkToolbar" id="toolbar1">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="toolbar_style">icons</property>
+                        <property name="icon_size">2</property>
+                        <child>
+                          <object class="GtkToolButton" id="StatusTextTopErrorToolbutton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="has_tooltip">True</property>
+                            <property name="tooltip_markup" translatable="yes">Move to the first error</property>
+                            <property name="tooltip_text" translatable="yes">Move to the first error</property>
+                            <property name="label" translatable="yes">Top Error</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-goto-top</property>
+                            <signal name="clicked" handler="on_StatusTextTopErrorToolbutton_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolButton" id="StatusTextUpErrorToolbutton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="has_tooltip">True</property>
+                            <property name="tooltip_text" translatable="yes">Move to the previous error</property>
+                            <property name="label" translatable="yes">Up Error</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-go-up</property>
+                            <signal name="clicked" handler="on_StatusTextUpErrorToolbutton_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolButton" id="StatusTextDownErrorToolbutton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="has_tooltip">True</property>
+                            <property name="tooltip_text" translatable="yes">Move to the next error</property>
+                            <property name="label" translatable="yes">Down Error</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-go-down</property>
+                            <signal name="clicked" handler="on_StatusTextDownErrorToolbutton_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkToolButton" id="StatusTextBottomBufferToolbutton">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="has_tooltip">True</property>
+                            <property name="tooltip_text" translatable="yes">Move to the bottom</property>
+                            <property name="label" translatable="yes">Bottom Buffer</property>
+                            <property name="use_underline">True</property>
+                            <property name="stock_id">gtk-goto-bottom</property>
+                            <signal name="clicked" handler="on_StatusTextBottomBufferToolbutton_clicked" swapped="no"/>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="homogeneous">True</property>
+                          </packing>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkScrolledWindow" id="StatusTextScrolledwindow">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="editable">False</property>
-                        <signal name="button-press-event" handler="on_StatusTextview_button_press_event" swapped="no"/>
+                        <property name="shadow_type">in</property>
+                        <child>
+                          <object class="GtkTextView" id="StatusTextview">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="editable">False</property>
+                            <signal name="button-press-event" handler="on_StatusTextview_button_press_event" swapped="no"/>
+                          </object>
+                        </child>
                       </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -2484,7 +2574,6 @@ Use this dialog to set up component definitions.</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_NewModuleCancelButton_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -2499,7 +2588,6 @@ Use this dialog to set up component definitions.</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
-                <signal name="clicked" handler="on_NewModuleOkButton_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -2646,8 +2734,8 @@ Use this dialog to set up component definitions.</property>
       </object>
     </child>
     <action-widgets>
-      <action-widget response="0">NewModuleCancelButton</action-widget>
-      <action-widget response="0">NewModuleOkButton</action-widget>
+      <action-widget response="-6">NewModuleCancelButton</action-widget>
+      <action-widget response="-5">NewModuleOkButton</action-widget>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="NewProjectDialog">
@@ -3007,14 +3095,14 @@ This should normally not be under the Root Source Directory.</property>
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="has_tooltip">True</property>
-                            <property name="tooltip_text" translatable="yes">Common arguments for all build configurations.
-Missing arguments may cause build errors, but may not be
-important for analysis.
+                            <property name="tooltip_text" translatable="yes">Common arguments for all build configurations. Missing arguments may
+cause build errors, but may not be important for some analysis. Compiler
+arguments are important for any function analysis.
 
-Use the External Project Packages to specify some include
-and library files.  Enter a superset since Oovcde will figure
-out which includes and libraries are needed for each
-subdirectory. Packages should be in link order.
+Use the External Project Packages or standard compiler (-I, -L) switches
+to specify some external project include and library files.  Enter a superset
+since Oovcde will figure out which includes and libraries are needed for
+each subdirectory. Packages should be in link order.
 
 Arguments are passed to the compiler and linker.
 Special arguments are:
@@ -3024,9 +3112,9 @@ Special arguments are:
   -EP&lt;package&gt;	External package reference
 
 Examples:
-  -I../oovCommon
-  -lnk-L/mylibdir
-  -lnk../Debug/DebugResult.o</property>
+  -I../externalProjectIncDir
+  -lnk-L/externalProjectLibDir
+  -lnk../externalProjectObjDir/DebugResult.o</property>
                           </object>
                         </child>
                       </object>

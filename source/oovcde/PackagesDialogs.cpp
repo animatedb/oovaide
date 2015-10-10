@@ -115,7 +115,11 @@ void ProjectPackagesDialog::afterRun(bool ok)
     if(ok)
         {
         savePackage(mProjectPackagesList.getSelected());
-        mProjectPackages.savePackages();
+        OovStatus status = mProjectPackages.savePackages();
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to save packages");
+            }
         int len = mBaseBuildArgs.length();
         if(len > 0)
             {
@@ -230,8 +234,8 @@ void ProjectPackagesDialog::displayAddPackageDialog()
 
 void ProjectPackagesDialog::winSetEnableScanning()
     {
-    bool success = true;
-    bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"), success);
+    OovStatus status(true, SC_File);
+    bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"), status);
     Gui::setEnabled(GTK_LABEL(Builder::getBuilder()->getWidget(
             "MissingDirectoryLabel")), missing);
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget(
@@ -240,11 +244,11 @@ void ProjectPackagesDialog::winSetEnableScanning()
 
 bool ProjectPackagesDialog::winCheckDirectoryOk()
     {
-    bool success = true;
-    bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"), success);
-    if(missing)
+    OovStatus status(true, SC_File);
+    bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"), status);
+    if(missing || status.needReport())
         {
-        Gui::messageBox("The root directory is not correct");
+        status.report(ET_Error, "The root directory is not correct");
         }
     return(!missing);
     }

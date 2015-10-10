@@ -183,6 +183,12 @@ class GuiTextBuffer:public GuiTextIter
             { return gtk_text_view_get_buffer(view); }
         /// Iterators are invalid after many types of buffer modifications.
         static GtkTextIter getCursorIter(GtkTextBuffer *buf);
+        static GtkTextIter getStartIter(GtkTextBuffer *buf)
+            {
+            GtkTextIter iter;
+            gtk_text_buffer_get_start_iter(buf, &iter);
+            return iter;
+            }
         static GtkTextIter getEndIter(GtkTextBuffer *buf)
             {
             GtkTextIter iter;
@@ -202,6 +208,7 @@ class GuiTextBuffer:public GuiTextIter
         static void erase(GtkTextBuffer *buf, int startOffset, int endOffset);
         static bool isCursorAtEnd(GtkTextBuffer *buf);
         static void moveCursorToEnd(GtkTextBuffer *buf);
+        static void moveCursorToIter(GtkTextBuffer *buf, GtkTextIter iter);
     };
 
 class GuiTreePath

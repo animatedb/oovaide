@@ -12,31 +12,31 @@
 
 /// Delete the last leaf of a directory.
 /// @param path The path to delete.
-bool deleteDir(OovStringRef const path);
+OovStatusReturn deleteDir(OovStringRef const path);
 
 /// Recursively delete directories.  This deletes all files in the directories.
 /// @param path The path to delete.
-bool recursiveDeleteDir(OovStringRef const path);
+OovStatusReturn recursiveDeleteDir(OovStringRef const path);
 
 /// Get all filenames with a matching extensions.
 /// @param path The path to search.
 /// @param extensions The extensions to match.
 /// @param fn The returned list of filenames.
-bool getDirListMatchExt(OovStringRef const path, const FilePaths &extensions,
+OovStatusReturn getDirListMatchExt(OovStringRef const path, const FilePaths &extensions,
         std::vector<std::string> &fn);
 
 /// Get all filenames with a matching extension.
 /// @param path The path to search.
 /// @param ext The extension to match.
 /// @param fn The returned list of filenames.
-bool getDirListMatchExt(OovStringRef const path, const FilePath &ext,
+OovStatusReturn getDirListMatchExt(OovStringRef const path, const FilePath &ext,
         std::vector<std::string> &fn);
 
 /// Get all filenames with a matching extensions.
 /// @param path The path to search.
 /// @param extensions The extensions to match.
 /// @param fn The returned list of filenames.
-bool getDirListMatchExt(const std::vector<std::string> &paths,
+OovStatusReturn getDirListMatchExt(const std::vector<std::string> &paths,
         const FilePaths &extensions, std::vector<std::string> &fn);
 
 /// Find a directory that matches the wildcard string.
@@ -53,7 +53,7 @@ enum eDirListTypes { DL_Files=0x01, DL_Dirs=0x02, DL_Both=DL_Files|DL_Dirs };
 /// @param path The search path.
 /// @param dt The type of directory entry to list.
 /// @param fn A vector of full path names. The names are appended to the vector.
-bool getDirList(OovStringRef const path, eDirListTypes dt,
+OovStatusReturn getDirList(OovStringRef const path, eDirListTypes dt,
     std::vector<std::string> &fn);
 
 /// Recursivley walks a directory, and calls the processFile
@@ -64,7 +64,7 @@ public:
     virtual ~dirRecurser();
     /// Do a recursive search starting from the path.
     /// @param path The search path.
-    bool recurseDirs(OovStringRef const path);
+    OovStatusReturn recurseDirs(OovStringRef const path);
     /// Override to get called for each file.
     /// Return true while success.
     virtual bool processFile(OovStringRef const filePath) = 0;

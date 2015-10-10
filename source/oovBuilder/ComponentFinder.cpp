@@ -21,7 +21,11 @@ void ToolPathFile::getPaths()
         {
         std::string projFileName = Project::getProjectFilePath();
         setFilename(projFileName);
-        readFile();
+        OovStatus status = readFile();
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to get project paths");
+            }
 
         std::string optStr = makeBuildConfigArgName(OptToolLibPath, mBuildConfig);
         mPathLibber = getValue(optStr);
@@ -64,12 +68,78 @@ std::string ToolPathFile::getCovInstrToolPath()
     return(path);
     }
 
-void ScannedComponent::saveComponentSourcesToFile(OovStringRef const compName,
-    ComponentTypesFile &compFile) const
+void ScannedComponent::saveComponentFileInfo(
+    ComponentTypesFile::CompFileTypes cft, ProjectReader const &proj,
+    OovStringRef const compName, ComponentTypesFile &compFile,
+    OovStringRef analysisPath, OovStringSet const &newFiles) const
     {
-    compFile.setComponentSources(compName, mSourceFiles);
-    compFile.setComponentIncludes(compName, mIncludeFiles);
+    OovStringSet deleteFiles;
+    for(auto const &newFile : newFiles)
+        {
+        OovString newCompName = getComponentName(proj, newFile);
+        OovStringVec origFiles = compFile.getComponentFiles(cft, newCompName, false);
+        for(auto const &origFileName : origFiles)
+            {
+            if(newFiles.find(origFileName) == newFiles.end())
+                {
+                // Found a file that is not in the new set. It must have been
+                // deleted. So delete the analysis file if it exists.
+                OovString analysisFile = Project::makeAnalysisFileName(origFileName,
+                        Project::getSrcRootDirectory(), analysisPath);
+                deleteFiles.insert(analysisFile);
+                }
+            }
+        }
+    // It should be ok to delete analysis files since they should not conflict
+    // with scanning the source directories.
+    for(auto const &file : deleteFiles)
+        {
+        OovStatus status = FileDelete(file.getStr());
+        if(status.needReport())
+            {
+            status.report(ET_Error, "Unable to delete analysis files");
+            }
+        }
+    compFile.setComponentFiles(cft, compName, newFiles);
     }
+
+void ScannedComponent::saveComponentSourcesToFile(ProjectReader const &proj,
+    OovStringRef const compName, ComponentTypesFile &compFile,
+    OovStringRef analysisPath) const
+    {
+    saveComponentFileInfo(ComponentTypesFile::CFT_CppSource, proj, compName,
+        compFile, analysisPath, mSourceFiles);
+    saveComponentFileInfo(ComponentTypesFile::CFT_CppInclude, proj, compName,
+        compFile, analysisPath, mIncludeFiles);
+    }
+
+OovString ScannedComponent::getComponentName(ProjectReader const &proj,
+    OovStringRef const filePath, OovString *rootPathName)
+    {
+    FilePath path(filePath, FP_File);
+    path.discardFilename();
+    OovString compName = Project::getSrcRootDirRelativeSrcFileName(path,
+            proj.getSrcRootDirectory());
+    if(compName.length() == 0)
+        {
+        if(rootPathName)
+            {
+            *rootPathName = Project::getRootComponentFileName();
+            }
+        compName = Project::getRootComponentName();
+        }
+    else
+        {
+        FilePathRemovePathSep(compName, compName.length()-1);
+        }
+    return compName;
+    }
+
+OovString ComponentFinder::getComponentName(OovStringRef const filePath)
+    {
+    return ScannedComponent::getComponentName(mProject, filePath, &mRootPathName);
+    }
+
 
 //////////////
 
@@ -121,13 +191,15 @@ void ScannedComponentsInfo::setProjectComponentsFileValues(ComponentsFile &compF
     }
 
 void ScannedComponentsInfo::initializeComponentTypesFileValues(
-    ComponentTypesFile &compFile)
+    ProjectReader const &proj, ComponentTypesFile &compFile,
+    OovStringRef analysisPath)
     {
     CompoundValue comps;
     for(const auto &comp : mComponents)
         {
         comps.addArg(comp.first);
-        comp.second.saveComponentSourcesToFile(comp.first, compFile);
+        comp.second.saveComponentSourcesToFile(proj, comp.first, compFile,
+            analysisPath);
         }
     compFile.setComponentNames(comps.getAsString());
     }
@@ -137,20 +209,29 @@ void ScannedComponentsInfo::initializeComponentTypesFileValues(
 bool ComponentFinder::readProject(OovStringRef const oovProjectDir,
         OovStringRef const buildConfigName)
     {
-    bool success = mProject.readProject(oovProjectDir);
-    if(success)
+    OovStatus status = mProject.readProject(oovProjectDir);
+    if(status.ok())
         {
         mProjectBuildArgs.loadBuildArgs(buildConfigName);
-        mComponentTypesFile.read();
+        status = mComponentTypesFile.read();
         }
-    return success;
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read project for finding components");
+        }
+    return status.ok();
     }
 
-void ComponentFinder::scanProject()
+OovStatus ComponentFinder::scanProject()
     {
     mScanningPackage = nullptr;
     mExcludeDirs = mProjectBuildArgs.getProjectExcludeDirs();
-    recurseDirs(mProject.getSrcRootDirectory().getStr());
+    OovStatus status = recurseDirs(mProject.getSrcRootDirectory().getStr());
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Error scanning project");
+        }
+    return status;
     }
 
 void ComponentFinder::scanExternalProject(OovStringRef const externalRootSrch,
@@ -168,7 +249,13 @@ void ComponentFinder::scanExternalProject(OovStringRef const externalRootSrch,
     mAddLibs = rootPkg.needLibs();
     rootPkg.clearDirScan();
 
-    recurseDirs(externalRootDir.getStr());
+    OovStatus status = recurseDirs(externalRootDir.getStr());
+    if(status.needReport())
+        {
+        OovString err = "Error scanning external project ";
+        err += externalRootDir;
+        status.report(ET_Error, err);
+        }
 
     addBuildPackage(rootPkg);
     }
@@ -176,41 +263,32 @@ void ComponentFinder::scanExternalProject(OovStringRef const externalRootSrch,
 void ComponentFinder::addBuildPackage(Package const &pkg)
     {
     getProjectBuildArgs().getBuildPackages().insertPackage(pkg);
-    getProjectBuildArgs().getBuildPackages().savePackages();
+    OovStatus status = getProjectBuildArgs().getBuildPackages().savePackages();
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to save build packages");
+        }
     }
 
-void ComponentFinder::saveProject(OovStringRef const compFn)
+void ComponentFinder::saveProject(OovStringRef const compFn, OovStringRef analysisPath)
     {
     mComponentsFile.read(compFn);
     mScannedInfo.setProjectComponentsFileValues(mComponentsFile);
-    mScannedInfo.initializeComponentTypesFileValues(mComponentTypesFile);
-    mComponentTypesFile.writeFile();
-    if(!mComponentsFile.writeFile())
+    mScannedInfo.initializeComponentTypesFileValues(mProject, mComponentTypesFile,
+        analysisPath);
+    OovStatus status = mComponentTypesFile.writeFile();
+    if(status.needReport())
         {
-        OovString errStr = "Unable to write components file: ";
+        OovString errStr = "Unable to save component types file";
+        status.report(ET_Error, errStr);
+        }
+    status = mComponentsFile.writeFile();
+    if(status.needReport())
+        {
+        OovString errStr = "Unable to save components file: ";
         errStr += mComponentsFile.getFilename();
-        OovError::report(ET_Error, errStr);
+        status.report(ET_Error, errStr);
         }
-    }
-
-OovString ComponentFinder::getComponentName(OovStringRef const filePath) const
-    {
-    FilePath path(filePath, FP_File);
-    path.discardFilename();
-    OovString compName = Project::getSrcRootDirRelativeSrcFileName(path,
-            mProject.getSrcRootDirectory());
-    if(compName.length() == 0)
-        {
-        mRootPathName = Project::getRootComponentFileName();
-//      mRootPathName = path.getPathSegment(path.getPosLeftPathSep(path.getPosEndDir(),
-//              RP_RetPosNatural));
-        compName = Project::getRootComponentName();
-        }
-    else
-        {
-        FilePathRemovePathSep(compName, compName.length()-1);
-        }
-    return compName;
     }
 
 bool ComponentFinder::processFile(OovStringRef const filePath)
@@ -218,8 +296,8 @@ bool ComponentFinder::processFile(OovStringRef const filePath)
     /// @todo - find files with no extension? to match things like std::vector include
     if(!ComponentsFile::excludesMatch(filePath, mExcludeDirs))
         {
-        bool inc = isHeader(filePath);
-        bool src = isSource(filePath);
+        bool inc = isCppHeader(filePath);
+        bool src = isCppSource(filePath);
         bool lib = isLibrary(filePath);
         if(mScanningPackage)
             {

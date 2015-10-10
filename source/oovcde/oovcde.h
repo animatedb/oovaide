@@ -13,13 +13,23 @@
 #include "OovProject.h"
 #include "Contexts.h"
 #include "OovError.h"
+#include "GlobalSettings.h"
 #include <atomic>
 
+// The output status window works in two modes.
+// 1. Normally it will stop at the first error that appears. If no error
+//    appears, it keeps displayed the most recent information.
+// 2. This mode always displayed the most recent information even
+//    if there is an error.
+// In either mode if the cursor is not at the end, it will not be moved
+// by the program. This allows the cursor to be moved by the user.
+// The user can transition between modes by pressing either the move to
+// top error button, or the move to bottom buffer button.
 class WindowBuildListener:public OovProcessListener
     {
     public:
         WindowBuildListener():
-            mStatusTextView(nullptr), mComplete(false)
+            mStatusTextView(nullptr), mComplete(false), mErrorMode(EM_MoveTopError)
             {}
         virtual ~WindowBuildListener();
         void initListener(Builder &builder);
@@ -41,13 +51,21 @@ class WindowBuildListener:public OovProcessListener
         /// This is called from the GUI thread.
         /// @return true if something was done.
         bool onBackgroundProcessIdle(bool &complete);
+        void moveTopError();
+        void moveUpError();
+        void moveDownError();
+        void moveBottomBuffer();
 
-        private:
-            GtkTextView *mStatusTextView;
-            std::string mStdOutAndErr;
-            InProcMutex mMutex;
-            GuiHighlightTag mErrHighlightTag;
-            bool mComplete;
+    private:
+        GtkTextView *mStatusTextView;
+        std::string mStdOutAndErr;
+        InProcMutex mMutex;
+        GuiHighlightTag mErrHighlightTag;
+        bool mComplete;
+        enum eErrorModes { EM_MoveTopError, EM_MoveEndBuffer };
+        eErrorModes mErrorMode;
+
+        void searchForErrorFromIter(GtkTextIter iter, bool forward);
     };
 
 
@@ -60,51 +78,15 @@ class WindowProjectStatusListener: public OovTaskStatusListener
             mProgressIteration(0), mState(TS_Stopped)
             {}
         ~WindowProjectStatusListener();
-        virtual OovTaskStatusListenerId startTask(OovStringRef const &text, size_t i) override
-            {
-            mState = TS_Running;
-            std::lock_guard<std::mutex> lock(mMutex);
-            mBackDlg.startTask(text, i);
-            return 0;
-            }
+        virtual OovTaskStatusListenerId startTask(OovStringRef const &text, size_t i) override;
         /// @return true to keep going, false to stop iteration.
         virtual bool updateProgressIteration(OovTaskStatusListenerId id,
-                size_t i, OovStringRef const &text) override
-            {
-            if(text)
-                {
-                std::lock_guard<std::mutex> lock(mMutex);
-                mUpdateText = text;
-                }
-            mProgressIteration = i;
-            return(mState == TS_Running);
-            }
+                size_t i, OovStringRef const &text) override;
         // Set a flag so the GUI idle can close the dialog.
         virtual void endTask(OovTaskStatusListenerId id) override
             { mState = TS_Stopping; }
         // Call this from the onIdle.
-        void idleUpdateProgress()
-            {
-            if(mState == TS_Running)
-                {
-                OovString text;
-                    {
-                    std::lock_guard<std::mutex> lock(mMutex);
-                    text = mUpdateText;
-                    }
-                if(!mBackDlg.updateProgressIteration(mProgressIteration,
-                        text, false))
-                    {
-                    mState = TS_Stopping;
-                    }
-                }
-            if(mState == TS_Stopping)
-                {
-                std::lock_guard<std::mutex> lock(mMutex);
-                mBackDlg.endTask();
-                mState = TS_Stopped;
-                }
-            }
+        void idleUpdateProgress();
 
     private:
         int mProgressIteration;
@@ -115,7 +97,7 @@ class WindowProjectStatusListener: public OovTaskStatusListener
         TaskBusyDialog mBackDlg;
     };
 
-class oovGui:public OovErrorListener
+class oovGui:public OovErrorListener, private GlobalSettingsListener
     {
     friend class Menu;
     public:
@@ -124,8 +106,6 @@ class oovGui:public OovErrorListener
             {}
         ~oovGui();
         void init();
-        void clearAnalysis();
-        bool canStartAnalysis();
         static gboolean onIdle(gpointer data)
             {
             oovGui *gui = reinterpret_cast<oovGui*>(data);
@@ -141,36 +121,46 @@ class oovGui:public OovErrorListener
 
         void updateMenuEnables(ProjectStatus const &projStat);
 
+        void newProject();
+        void openProject();
+        void newModule();
+        void openDrawing();
+        void saveDrawing();
+        void saveDrawingAs();
+        void exportDrawingAs();
+
         void makeComplexityFile();
         void makeMemberUseFile();
         void makeMethodUseFile();
         void makeDuplicatesFile();
         void displayProjectStats();
         void makeLineStats();
+        void makeCmake();
+        void showProjectSettingsDialog();
 
-        bool loadFile(File &drawFile)
-            { return mContexts.loadFile(drawFile); }
-        bool saveFile(File &drawFile)
-            { return mContexts.saveFile(drawFile); }
-        bool exportFile(File &svgFile)
-            { return mContexts.exportFile(svgFile); }
+        void statusTopError()
+            { mWindowBuildListener.moveTopError(); }
+        void statusUpError()
+            { mWindowBuildListener.moveUpError(); }
+        void statusDownError()
+            { mWindowBuildListener.moveDownError(); }
+        void statusBottomError()
+            { mWindowBuildListener.moveBottomBuffer(); }
+
         // true = ok to exit
         bool okToExit()
             { return mContexts.okToExit(); }
         void cppArgOptionsChangedUpdateDrawings()
             { mContexts.cppArgOptionsChangedUpdateDrawings(); }
-        std::string getDiagramName(OovStringRef ext);
-        void setDiagramName(OovStringRef name);
         Builder &getBuilder()
             { return mBuilder; }
         OovProject &getProject()
             { return mProject; }
+        virtual void errorListener(OovStringRef str, OovErrorTypes et) override;
+        virtual void loadProject(OovStringRef projDir) override
+            { openProject(projDir); }
         // fn is only filled if a fn, colons, and line number are found.
         int getStatusSourceFile(std::string &fn);
-        ProjectStatus &getLastProjectStatus()
-            { return mLastProjectStatus; }
-        void showProjectSettingsDialog();
-        virtual void errorListener(OovStringRef str, OovErrorTypes et) override;
 
     private:
         Builder &mBuilder;
@@ -180,6 +170,20 @@ class oovGui:public OovErrorListener
         WindowBuildListener mWindowBuildListener;
         WindowProjectStatusListener mProjectStatusListener;
         gboolean onBackgroundIdle(gpointer data);
+
+        void openProject(OovStringRef projDir);
+        OovStatusReturn loadFile(File &drawFile)
+            { return mContexts.loadFile(drawFile); }
+        OovStatusReturn saveFile(File &drawFile)
+            { return mContexts.saveFile(drawFile); }
+        OovStatusReturn exportFile(File &svgFile)
+            { return mContexts.exportFile(svgFile); }
+        std::string getDiagramName(OovStringRef ext);
+        void setDiagramName(OovStringRef name);
+        ProjectStatus &getLastProjectStatus()
+            { return mLastProjectStatus; }
+        void clearAnalysis();
+        bool canStartAnalysis();
     };
 
 #endif /* OOVCDE_H_ */

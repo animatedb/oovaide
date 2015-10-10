@@ -10,7 +10,7 @@
 #include "FilePath.h"
 #include "Project.h"
 
-static void createStyleTransform(const std::string &fullPath)
+static OovStatusReturn createStyleTransform(const std::string &fullPath)
     {
     static const char *text =
             "<?xml version=\"1.0\" encoding=\"utf-8\"?>\n"
@@ -98,8 +98,20 @@ static void createStyleTransform(const std::string &fullPath)
             "    </tr>\n"
             "  </xsl:template>\n"
             "</xsl:stylesheet>\n";
-    File transformFile(fullPath, "w");
-    fprintf(transformFile.getFp(), "%s", text);
+    File transformFile;
+    OovStatus status = transformFile.open(fullPath, "w");
+    if(status.ok())
+        {
+        status = transformFile.putString(text);
+        }
+    if(status.needReport())
+        {
+        OovString err;
+        err = "Unable to create complexity style transform ";
+        err += fullPath;
+        status.report(ET_Error, err);
+        }
+    return status;
     }
 
 bool createComplexityFile(ModelData const &modelData, std::string &fn)
@@ -108,46 +120,76 @@ bool createComplexityFile(ModelData const &modelData, std::string &fn)
     fp.appendDir("output");
     fp.appendFile("Complexity");
 
-    FileEnsurePathExists(fp);
-    FilePath fpxsl(fp, FP_File);
-    fpxsl.appendExtension("xslt");
-    createStyleTransform(fpxsl);
-
-    fp.appendFile(".xml");
-    fn = fp;
-    File compFile(fp, "w");
-    if(compFile.isOpen())
+    OovStatus status = FileEnsurePathExists(fp);
+    if(status.ok())
         {
-        static const char *header =
-                "<?xml version=\"1.0\"?>\n"
-                "<?xml-stylesheet type=\"text/xsl\" href=\"Complexity.xslt\"?>\n"
-                "<ComplexityReport>\n";
-        fprintf(compFile.getFp(), "%s", header);
-        for(auto const &type : modelData.mTypes)
+        FilePath fpxsl(fp, FP_File);
+        fpxsl.appendExtension("xslt");
+        status = createStyleTransform(fpxsl);
+        }
+    if(status.ok())
+        {
+        fp.appendFile(".xml");
+        fn = fp;
+        File compFile;
+        status = compFile.open(fp, "w");
+        if(status.ok())
             {
-            ModelClassifier *classifier = type->getClass();
-            if(classifier)
+            static const char *header =
+                    "<?xml version=\"1.0\"?>\n"
+                    "<?xml-stylesheet type=\"text/xsl\" href=\"Complexity.xslt\"?>\n"
+                    "<ComplexityReport>\n";
+            status = compFile.putString(header);
+            }
+        if(status.ok())
+            {
+            for(auto const &type : modelData.mTypes)
                 {
-                for(auto const &oper : classifier->getOperations())
+                ModelClassifier *classifier = type->getClass();
+                if(classifier)
                     {
-                    int mcCabe = calcMcCabeComplexity(oper->getStatements());
-                    int oov = calcOovComplexity(*oper);
+                    for(auto const &oper : classifier->getOperations())
+                        {
+                        int mcCabe = calcMcCabeComplexity(oper->getStatements());
+                        int oov = calcOovComplexity(*oper);
 
-                    static const char *item =
-                        "  <Oper>\n"
-                        "    <ClassName>%s</ClassName>\n"
-                        "    <OperName>%s</OperName>\n"
-                        "    <McCabe>%d</McCabe>\n"
-                        "    <Oovcde>%d</Oovcde>\n"
-                        "  </Oper>\n";
-                    fprintf(compFile.getFp(), item, classifier->getName().makeXml().c_str(),
-                            oper->getName().makeXml().c_str(), mcCabe, oov);
+                            OovString str =
+                            "  <Oper>\n"
+                            "    <ClassName>";
+                            str += classifier->getName().makeXml();
+                            str += "</ClassName>\n"
+                            "    <OperName>";
+                            str += oper->getName().makeXml();
+                            str += "</OperName>\n"
+                            "    <McCabe>";
+                            str.appendInt(mcCabe);
+                            str += "</McCabe>\n"
+                            "    <Oovcde>";
+                            str.appendInt(oov);
+                            str += "</Oovcde>\n"
+                            "  </Oper>\n";
+                        status = compFile.putString(str);
+                        if(!status.ok())
+                            {
+                            break;
+                            }
+                        }
                     }
                 }
+            if(status.ok())
+                {
+                status = compFile.putString("</ComplexityReport>\n");
+                }
             }
-        fprintf(compFile.getFp(), "%s", "</ComplexityReport>\n");
         }
-    return(compFile.isOpen());
+    if(status.needReport())
+        {
+        OovString err;
+        err = "Unable to create complexity file ";
+        err += fp;
+        status.report(ET_Error, err);
+        }
+    return(status.ok());
     }
 
 

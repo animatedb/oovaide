@@ -251,7 +251,7 @@ class Packages
         /// Get all packages in the file.
         std::vector<Package> getPackages() const;
 #ifndef __linux__
-        void read(OovStringRef const fn);
+        OovStatusReturn read(OovStringRef const fn);
 #endif
         NameValueFile &getFile()
             { return mFile; }
@@ -271,7 +271,7 @@ class BuildPackages
         BuildPackages(bool readNow);
 
         /// Read from the build package file.
-        bool read();
+        OovStatusReturn read();
 
         /// Get a package by name.
         /// @param name The package to get.
@@ -292,7 +292,7 @@ class BuildPackages
             { pkg.saveToMap(mPackages.getFile()); }
 
         /// Save all packages for the build.
-        void savePackages();
+        OovStatusReturn savePackages();
 
     protected:
         Packages mPackages;
@@ -322,9 +322,9 @@ class ProjectPackages:public Packages
     {
     public:
         ProjectPackages(bool readNow);
-        bool read();
-        void savePackages()
-            { mFile.writeFile(); }
+        OovStatusReturn read();
+        OovStatusReturn savePackages()
+            { return mFile.writeFile(); }
         static OovString getFilename();
     };
 

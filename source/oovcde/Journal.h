@@ -45,9 +45,9 @@ class JournalRecord
             {}
         virtual void cppArgOptionsChangedUpdateDrawings()
             {}
-        virtual bool saveFile(File &drawFile) = 0;
-        virtual bool exportFile(File &svgFile) = 0;
-        virtual bool loadFile(File &drawFile) = 0;
+        virtual OovStatusReturn saveFile(File &drawFile) = 0;
+        virtual OovStatusReturn exportFile(File &svgFile) = 0;
+        virtual OovStatusReturn loadFile(File &drawFile) = 0;
         virtual bool isModified() const = 0;
         OovStringRef const getName() const
             { return mName; }
@@ -102,11 +102,11 @@ class JournalRecordClassDiagram:public JournalRecord, public ClassDiagramListene
             { mClassDiagram.drawToDrawingArea(); }
         virtual void cppArgOptionsChangedUpdateDrawings() override
             { mClassDiagram.updateGraph(true); }
-        virtual bool saveFile(File &drawFile) override
+        virtual OovStatusReturn saveFile(File &drawFile) override
             { return mClassDiagram.saveDiagram(drawFile); }
-        virtual bool exportFile(File &svgFile) override
+        virtual OovStatusReturn exportFile(File &svgFile) override
             { return mClassDiagram.drawSvgDiagram(svgFile); }
-        virtual bool loadFile(File &drawFile) override
+        virtual OovStatusReturn loadFile(File &drawFile) override
             { return mClassDiagram.loadDiagram(drawFile); }
         virtual bool isModified() const override
             { return mClassDiagram.isModified(); }
@@ -139,15 +139,17 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
             { mOperationDiagram.graphButtonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mOperationDiagram.drawToDrawingArea(); }
-        virtual bool saveFile(File &drawFile) override
+        virtual OovStatusReturn saveFile(File &drawFile) override
             {
+            OovStatus status(false, SC_Logic);
+            status.reported();
             Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
-            return false;
+            return status;
             }
-        virtual bool exportFile(File &svgFile) override
+        virtual OovStatusReturn exportFile(File &svgFile) override
             { return mOperationDiagram.drawSvgDiagram(svgFile); }
-        virtual bool loadFile(File &drawFile) override
-            { return false; }
+        virtual OovStatusReturn loadFile(File &drawFile) override
+            { return OovStatus(false, SC_Logic); }
         virtual bool isModified() const override
             { return mOperationDiagram.isModified(); }
     };
@@ -174,15 +176,17 @@ class JournalRecordComponentDiagram:public JournalRecord
             { mComponentDiagram.buttonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mComponentDiagram.drawToDrawingArea(); }
-        virtual bool saveFile(File &drawFile) override
+        virtual OovStatusReturn saveFile(File &drawFile) override
             {
+            OovStatus status(false, SC_Logic);
+            status.reported();
             Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
-            return false;
+            return status;
             }
-        virtual bool exportFile(File &svgFile) override
+        virtual OovStatusReturn exportFile(File &svgFile) override
             { return mComponentDiagram.drawSvgDiagram(svgFile); }
-        virtual bool loadFile(File &drawFile) override
-            { return false; }
+        virtual OovStatusReturn loadFile(File &drawFile) override
+            { return OovStatus(false, SC_Logic); }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
             { return mComponentDiagram.isModified(); }
@@ -219,15 +223,17 @@ class JournalRecordZoneDiagram:public JournalRecord, public ZoneDiagramListener
             }
         virtual void drawingLostPointerEvent() override
             { mZoneDiagram.handleDrawingAreaLostPointer(); }
-        virtual bool saveFile(File &drawFile) override
+        virtual OovStatusReturn saveFile(File &drawFile) override
             {
+            OovStatus status(false, SC_Logic);
+            status.reported();
             Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
-            return false;
+            return status;
             }
-        virtual bool exportFile(File &svgFile) override
+        virtual OovStatusReturn exportFile(File &svgFile) override
             { return mZoneDiagram.drawSvgDiagram(svgFile); }
-        virtual bool loadFile(File &drawFile) override
-            { return false; }
+        virtual OovStatusReturn loadFile(File &drawFile) override
+            { return OovStatus(false, SC_Logic); }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
             { return true; }
@@ -256,11 +262,11 @@ class JournalRecordPortionDiagram:public JournalRecord
             { mPortionDiagram.graphButtonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mPortionDiagram.drawToDrawingArea(); }
-        virtual bool saveFile(File &drawFile) override
+        virtual OovStatusReturn saveFile(File &drawFile) override
             { return mPortionDiagram.saveDiagram(drawFile); }
-        virtual bool exportFile(File &svgFile) override
+        virtual OovStatusReturn exportFile(File &svgFile) override
             { return mPortionDiagram.drawSvgDiagram(svgFile); }
-        virtual bool loadFile(File &drawFile) override
+        virtual OovStatusReturn loadFile(File &drawFile) override
             { return mPortionDiagram.loadDiagram(drawFile); }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
@@ -291,15 +297,17 @@ class JournalRecordIncludeDiagram:public JournalRecord
             { mIncludeDiagram.graphButtonReleaseEvent(event); }
         virtual void drawingAreaDrawEvent() override
             { mIncludeDiagram.drawToDrawingArea(); }
-        virtual bool saveFile(File &drawFile) override
+        virtual OovStatusReturn saveFile(File &drawFile) override
             {
+            OovStatus status(false, SC_Logic);
+            status.reported();
             Gui::messageBox("Saving this drawing type is not supported yet, but exporting is.");
-            return false;
+            return status;
             }
-        virtual bool exportFile(File &drawFile) override
+        virtual OovStatusReturn exportFile(File &drawFile) override
             { return mIncludeDiagram.drawSvgDiagram(drawFile); }
-        virtual bool loadFile(File &drawFile) override
-            { return false; }
+        virtual OovStatusReturn loadFile(File &drawFile) override
+            { return OovStatus(false, SC_Logic); }
         // Indicate it is always modified so the single diagram is kept around.
         virtual bool isModified() const override
             { return true; }
@@ -339,9 +347,9 @@ class Journal
         void displayWorldZone();
         void displayPortion(OovStringRef const className);
         void displayInclude(OovStringRef const incName);
-        bool loadFile(File &drawFile);
-        bool saveFile(File &drawFile);
-        bool exportFile(File &svgFile);
+        OovStatusReturn loadFile(File &drawFile);
+        OovStatusReturn saveFile(File &drawFile);
+        OovStatusReturn exportFile(File &svgFile);
         void cppArgOptionsChangedUpdateDrawings();
         void setCurrentRecord(size_t index)
             {

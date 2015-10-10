@@ -279,16 +279,16 @@ void Journal::removeRecord(size_t index)
     mRecords.erase(mRecords.begin() + index);
     }
 
-bool Journal::loadFile(File &drawFile)
+OovStatusReturn Journal::loadFile(File &drawFile)
     {
     NameValueFile nameValFile;
-    bool success = nameValFile.read(drawFile);
-    if(success)
+    OovStatus status = nameValFile.read(drawFile);
+    if(status.ok())
         {
         eDiagramStorageTypes fileType;
         OovString drawingName;
         DiagramStorage::getDrawingHeader(nameValFile, fileType, drawingName);
-        nameValFile.seekBegin(drawFile);
+        status = nameValFile.seekBegin(drawFile);
         JournalRecord *rec = nullptr;
         switch(fileType)
             {
@@ -303,34 +303,34 @@ bool Journal::loadFile(File &drawFile)
             default:
                 break;
             }
-        if(rec)
+        if(rec && status.ok())
             {
-            rec->loadFile(drawFile);
+            status = rec->loadFile(drawFile);
             }
         }
-    return success;
+    return status;
     }
 
-bool Journal::saveFile(File &drawFp)
+OovStatusReturn Journal::saveFile(File &drawFp)
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     JournalRecord *rec = getCurrentRecord();
     if(rec)
         {
-        success = rec->saveFile(drawFp);
+        status = rec->saveFile(drawFp);
         }
-    return success;
+    return status;
     }
 
-bool Journal::exportFile(File &svgFile)
+OovStatusReturn Journal::exportFile(File &svgFile)
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     JournalRecord *rec = getCurrentRecord();
     if(rec)
         {
-        success = rec->exportFile(svgFile);
+        status = rec->exportFile(svgFile);
         }
-    return success;
+    return status;
     }
 
 void Journal::cppArgOptionsChangedUpdateDrawings()

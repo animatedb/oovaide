@@ -130,7 +130,7 @@ class EditFiles:public FileEditViewListener
         /// Displays an error if the debugger has not been setup in options.
         bool checkDebugger();
         void showInteractNotebookTab(char const * const tabName);
-        bool saveAsTextFileWithDialog();
+        OovStatusReturn saveAsTextFileWithDialog();
         static void bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
                 gchar *text, gint len);
         static void bufferDeleteRange(GtkTextBuffer *textbuffer, GtkTextIter *start,

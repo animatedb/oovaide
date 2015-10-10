@@ -316,15 +316,17 @@ std::vector<Package> Packages::getPackages() const
     }
 
 #ifndef __linux__
-void Packages::read(OovStringRef const fn)
+OovStatusReturn Packages::read(OovStringRef const fn)
     {
     mFile.setFilename(fn);
-    if(!mFile.readFile())
+    OovStatus status = mFile.readFile();
+    if(status.needReport())
         {
         OovString str = "Unable to read build packages: ";
         str += fn;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
+    return status;
     }
 #endif
 
@@ -334,7 +336,14 @@ void Packages::read(OovStringRef const fn)
 ProjectPackages::ProjectPackages(bool readNow)
     {
     if(readNow)
-        read();
+        {
+        OovStatus status = read();
+        if(status.needReport())
+            {
+            // This package is optional.
+            status.reported();
+            }
+        }
     }
 
 OovString ProjectPackages::getFilename()
@@ -344,23 +353,23 @@ OovString ProjectPackages::getFilename()
     return fn;
     }
 
-bool ProjectPackages::read()
+OovStatusReturn ProjectPackages::read()
     {
     mFile.setFilename(getFilename());
-    bool success = true;
     // It is ok if the project package file is not present.  There could
     // be no packages yet.
-    if(mFile.isFilePresent(success))
+    OovStatus status(true, SC_File);
+    if(mFile.isFilePresent(status))
         {
-        success = mFile.readFile();
+        status = mFile.readFile();
         }
-    if(!success)
+    if(status.needReport())
         {
         OovString str = "Unable to read project packages: ";
         str += getFilename();
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
-    return success;
+    return status;
     }
 
 ////////////////
@@ -368,10 +377,17 @@ bool ProjectPackages::read()
 BuildPackages::BuildPackages(bool readNow)
     {
     if(readNow)
-        read();
+        {
+        OovStatus status = read();
+        if(status.needReport())
+            {
+            // This file is optional.
+            status.reported();
+            }
+        }
     }
 
-bool BuildPackages::read()
+OovStatusReturn BuildPackages::read()
     {
     FilePath fn(Project::getBuildPackagesFilePath(), FP_File);
     mPackages.getFile().setFilename(fn);
@@ -387,13 +403,15 @@ bool BuildPackages::doesPackageExist(OovStringRef pkgName)
     return(iter != packages.end());
     }
 
-void BuildPackages::savePackages()
+OovStatusReturn BuildPackages::savePackages()
     {
-    if(!mPackages.getFile().writeFile())
+    OovStatus status(mPackages.getFile().writeFile());
+    if(status.needReport())
         {
         OovString str = "Unable to save build packages";
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
+    return status;
     }
 
 
@@ -402,7 +420,11 @@ void BuildPackages::savePackages()
 AvailablePackages::AvailablePackages()
     {
 #ifndef __linux__
-    mPackages.read("oovcde-allpkgs-win.txt");
+    OovStatus status = mPackages.read("oovcde-allpkgs-win.txt");
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to read available packages");
+        }
 #endif
     }
 

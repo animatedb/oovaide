@@ -17,53 +17,85 @@
 #include <stdio.h>
 
 
-bool deleteDir(OovStringRef const path)
+OovStatusReturn deleteDir(OovStringRef const path)
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     DIR *dp = opendir(path);
     if(dp)
         {
-        success = true;
         struct dirent *dirp;
         while(((dirp = readdir(dp)) != nullptr))
             {
             OovString fullName = path;
             FilePathEnsureLastPathSep(fullName);
             fullName += dirp->d_name;
-            FileDelete(fullName);
+            status = FileDelete(fullName);
+            if(!status.ok())
+                {
+                break;
+                }
             }
         closedir(dp);
         }
-    rmdir(path);
-    return success;
+    else
+        {
+        status.set(false, SC_File);
+        }
+    if(status.ok())
+        {
+        status.set(rmdir(path) == 0, SC_File);
+        }
+    return status;
     }
 
-bool recursiveDeleteDir(OovStringRef const path)
+OovStatusReturn recursiveDeleteDir(OovStringRef const path)
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     DIR *dp = opendir(path);
     if(dp)
         {
-        success = true;
         struct dirent *dirp;
-        while(((dirp = readdir(dp)) != nullptr) && success)
+        while(((dirp = readdir(dp)) != nullptr) && status.ok())
             {
+            if(!status.ok())
+                {
+                break;
+                }
             FilePath fullName(path, FP_Dir);
             fullName += dirp->d_name;
 
-            if(fullName.isDirOnDisk(success))
+            if(fullName.isDirOnDisk(status))
 //          if(dirp->d_type == DT_DIR)
                 {
                 if(strcmp(dirp->d_name, ".") != 0 && strcmp(dirp->d_name, "..") != 0)
-                    recursiveDeleteDir(fullName);
+                    {
+                    status = recursiveDeleteDir(fullName);
+                    if(!status.ok())
+                        {
+                        break;
+                        }
+                    }
                 }
             else
-                fullName.deleteFile();
+                {
+                status = fullName.deleteFile();
+                }
+            if(!status.ok())
+                {
+                break;
+                }
             }
         closedir(dp);
         }
-    rmdir(path);
-    return success;
+    else
+        {
+        status.set(false, SC_File);
+        }
+    if(status.ok())
+        {
+        status.set(rmdir(path) == 0, SC_File);
+        }
+    return status;
     }
 
 /*
@@ -100,16 +132,15 @@ bool recursivegetDirListMatchFileName(OovStringRef const path, const FilePath &f
     }
 */
 
-bool getDirListMatchExt(OovStringRef const path, const FilePaths &extensions,
+OovStatusReturn getDirListMatchExt(OovStringRef const path, const FilePaths &extensions,
         std::vector<std::string> &fn)
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     DIR *dp = opendir(path);
     if(dp)
         {
-        success = true;
         struct dirent *dirp;
-        while(((dirp = readdir(dp)) != nullptr) && success)
+        while(((dirp = readdir(dp)) != nullptr) && status.ok())
             {
             if(FilePathAnyExtensionMatch(extensions, dirp->d_name))
                 {
@@ -120,10 +151,14 @@ bool getDirListMatchExt(OovStringRef const path, const FilePaths &extensions,
             }
         closedir(dp);
         }
-    return success;
+    else
+        {
+        status.set(false, SC_File);
+        }
+    return status;
     }
 
-bool getDirListMatchExt(OovStringRef const path, const FilePath &ext,
+OovStatusReturn getDirListMatchExt(OovStringRef const path, const FilePath &ext,
         std::vector<std::string> &fn)
     {
     FilePaths extensions;
@@ -131,33 +166,34 @@ bool getDirListMatchExt(OovStringRef const path, const FilePath &ext,
     return getDirListMatchExt(path, extensions, fn);
     }
 
-bool getDirListMatchExt(const std::vector<std::string> &paths,
+OovStatusReturn getDirListMatchExt(const std::vector<std::string> &paths,
         const FilePaths &extensions, std::vector<std::string> &fn)
     {
-    bool success = true;
+    OovStatus status(true, SC_File);
     for(const auto &path : paths)
         {
-        success = getDirListMatchExt(path, extensions, fn);
-        if(!success)
+        status = getDirListMatchExt(path, extensions, fn);
+        if(!status.ok())
+            {
             break;
+            }
         }
-    return success;
+    return status;
     }
 
-bool getDirList(OovStringRef const path, eDirListTypes types, std::vector<std::string> &fn)
+OovStatusReturn getDirList(OovStringRef const path, eDirListTypes types, std::vector<std::string> &fn)
     {
-    bool success = false;
+    OovStatus status(true, SC_File);
     DIR *dp = opendir(path);
     if(dp)
         {
-        success = true;
         struct dirent *dirp;
         while((dirp = readdir(dp)) != nullptr)
             {
             FilePath fullName(path, FP_Dir);
             fullName.appendDir(dirp->d_name);
 //          if(dirp->d_type == DT_DIR)          // Some OS's don't have this.
-            if(FileIsDirOnDisk(fullName, success))
+            if(FileIsDirOnDisk(fullName, status))
                 {
                 if(types & DL_Dirs)
                     {
@@ -176,14 +212,18 @@ bool getDirList(OovStringRef const path, eDirListTypes types, std::vector<std::s
                     fn.push_back(fileName);
                     }
                 }
-            if(!success)
+            if(!status.ok())
                 {
                 break;
                 }
             }
         closedir(dp);
         }
-    return success;
+    else
+        {
+        status.set(false, SC_File);
+        }
+    return status;
     }
 
 // The wildcardStr can have an asterisk, but must be at the end of
@@ -223,9 +263,17 @@ bool subDirMatch(OovStringRef const wildCardStr, OovStringRef const pathStr)
 std::vector<std::string> matchDirs(FilePaths const &wildCardDirs)
     {
     std::vector<std::string> subDirs;
+    OovStatus status(true, SC_File);
     for(auto const &wcStr : wildCardDirs)
         {
-        getDirList(wcStr, DL_Dirs, subDirs);
+        status = getDirList(wcStr, DL_Dirs, subDirs);
+        if(!status.ok())
+            {
+            OovString err = "Unable to read dir ";
+            err += wcStr;
+            status.report(ET_Error, err);
+            break;
+            }
         }
     return subDirs;
     }
@@ -271,27 +319,37 @@ OovString const findMatchingDir(FilePaths const &startingDirs, OovStringRef cons
 dirRecurser::~dirRecurser()
     {}
 
-bool dirRecurser::recurseDirs(OovStringRef const srcDir)
+OovStatusReturn dirRecurser::recurseDirs(OovStringRef const srcDir)
     {
-    bool success = true;
+    OovStatus status(true, SC_File);
     DIR *dp = opendir(srcDir);
     if(dp)
         {
         struct dirent *dirp;
-        while(((dirp = readdir(dp)) != nullptr) && success)
+        bool success = true;
+        while(((dirp = readdir(dp)) != nullptr) && success && status.ok())
             {
             if ((strcmp(dirp->d_name, ".") != 0) && (strcmp(dirp->d_name, "..") != 0))
                 {
                 FilePath fullName(srcDir, FP_Dir);
                 fullName += dirp->d_name;
-                if(FileIsDirOnDisk(fullName, success))
-                    recurseDirs(fullName);
+                if(FileIsDirOnDisk(fullName, status))
+                    {
+                    status = recurseDirs(fullName);
+                    }
                 else
+                    {
                     success = processFile(fullName);
+                    }
                 }
             }
         closedir(dp);
         }
-    return success;
+    else
+        {
+        status.set(false, SC_File);
+
+        }
+    return status;
     }
 

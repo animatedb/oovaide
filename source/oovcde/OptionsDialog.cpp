@@ -380,17 +380,22 @@ void OptionsDialog::saveScreen()
     ScreenOptions options(mCurrentBuildConfig, mProjectOptions, mGuiOptions);
     options.screenToOptions();
 
-    if(!mProjectOptions.writeFile())
+    OovStatus status = mProjectOptions.writeFile();
+    if(!status.ok())
         {
         OovString errStr = "Unable to write project options file: ";
         errStr += mProjectOptions.getFilename();
         OovError::report(ET_Error, errStr);
         }
-    if(!mGuiOptions.writeFile())
+    if(status.ok())
         {
-        OovString errStr = "Unable to write GUI options file: ";
-        errStr += mGuiOptions.getFilename();
-        OovError::report(ET_Error, errStr);
+        status = mGuiOptions.writeFile();
+        if(!status.ok())
+            {
+            OovString errStr = "Unable to write GUI options file: ";
+            errStr += mGuiOptions.getFilename();
+            OovError::report(ET_Error, errStr);
+            }
         }
     updateOptions();
     }

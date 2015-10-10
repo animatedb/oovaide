@@ -76,6 +76,26 @@ bool ProjectSettingsDialog::runDialog()
     bool ok = run(true);
     if(ok)
         {
+        OovStatus status(true, SC_File);
+        if(!FileIsDirOnDisk(getRootSrcDir(), status))
+            {
+            ok = Gui::messageBox("The source directory does not exist. "
+                "Do you want to create it?", GTK_MESSAGE_QUESTION,
+                GTK_BUTTONS_YES_NO);
+            if(ok)
+                {
+                FilePath dir(getRootSrcDir(), FP_Dir);
+                status = FileEnsurePathExists(dir);
+                }
+            }
+        if(status.needReport())
+            {
+            ok = false;
+            status.report(ET_Error, "Unable to access directory");
+            }
+        }
+    if(ok)
+        {
         mExcludeDirs.parseString(Gui::getText(excDirsTextView), '\n');
         mExcludeDirs.deleteEmptyStrings();
         Project::setSourceRootDirectory(getRootSrcDir());

@@ -104,7 +104,7 @@ void ClassDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-bool ClassDiagramView::drawSvgDiagram(File &file)
+OovStatusReturn ClassDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
     SvgDrawer svgDrawer(file, cairo.getCairo());

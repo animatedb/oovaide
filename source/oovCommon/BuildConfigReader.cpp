@@ -16,16 +16,16 @@ BuildConfig::BuildConfig()
     {
     mConfigFile.setFilename(getBuildConfigFilename());
     // It is ok if the build config is not present the first time.
-    bool success = true;
-    if(mConfigFile.isFilePresent(success))
+    OovStatus status(true, SC_File);
+    if(mConfigFile.isFilePresent(status))
         {
-        success = mConfigFile.readFile();
+        status = mConfigFile.readFile();
         }
-    if(!success)
+    if(status.needReport())
         {
         OovString str = "Unable to read build configuration: ";
         str += getBuildConfigFilename();
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
     }
 

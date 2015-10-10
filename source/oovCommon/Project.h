@@ -102,13 +102,7 @@ class Project
         /// Make a filename for the compressed content file for each source file.
         /// The analysisDir is retreived from the build configuration.
         static OovString makeAnalysisFileName(OovStringRef const srcFileName,
-                OovStringRef const srcRootDir, OovStringRef const analysisDir)
-            {
-            OovString outFileName = makeOutBaseFileName(srcFileName,
-                    srcRootDir, analysisDir);
-            outFileName += ".xmi";
-            return outFileName;
-            }
+                OovStringRef const srcRootDir, OovStringRef const analysisDir);
 
         // Location for coverage source files
         static OovString getCoverageSourceDirectory();
@@ -160,7 +154,7 @@ class ProjectReader:public NameValueFile
     public:
         ProjectReader()
             {}
-        bool readProject(OovStringRef const oovProjectDir);
+        OovStatusReturn readProject(OovStringRef const oovProjectDir);
         static OovStringRef const getSrcRootDirectory()
             { return Project::getSrcRootDirectory(); }
     };

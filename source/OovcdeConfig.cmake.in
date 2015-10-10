@@ -11,4 +11,5 @@ endif()
 
 # These are IMPORTED targets created by OovcdeTargets.cmake
 set(OOVCDE_LIBRARIES oovCommon oovGuiCommon)
-set(OOVCDE_EXECUTABLE oovBuilder oovCMaker oovCppParser oovEdit oovcde)
+set(OOVCDE_EXECUTABLE ClangView oovBuilder oovCMaker oovCovInstr oovCppParser oovEdit oovcde)
+

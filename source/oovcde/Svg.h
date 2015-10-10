@@ -7,6 +7,7 @@
 
 #include "DiagramDrawer.h"
 #include "File.h"
+#include "OovError.h"
 #include <stdio.h>
 #include <cairo.h>
 
@@ -15,11 +16,12 @@ class SvgDrawer:public DiagramDrawer
     {
     public:
         SvgDrawer(File &file, cairo_t *c):
-            mFile(file), mSuccess(true), mFontSize(10.0), cr(c), mOutputHeader(true)
+            mFile(file), mSuccess(true, SC_File), mFontSize(10.0), cr(c),
+            mOutputHeader(true)
             {}
         /// This finishes up writing the file, and indicates if any errors
         /// occurred during writing.
-        bool writeFile();
+        OovStatusReturn writeFile();
 
         // These should be called before the drawing functions.
         virtual void setDiagramSize(GraphSize size) override;
@@ -41,7 +43,7 @@ class SvgDrawer:public DiagramDrawer
 
     private:
         File &mFile;
-        bool mSuccess;
+        OovStatus mSuccess;
         double mFontSize;
         cairo_t *cr;
         GraphSize mDrawingSize;

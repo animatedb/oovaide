@@ -212,5 +212,11 @@ void ParserModelData::setLineStats(ModelModuleLineStats const &lineStats)
 void ParserModelData::writeModel(OovStringRef fileName)
     {
     ModelWriter writer(mModelData);
-    writer.writeFile(fileName);
+    OovStatus status = writer.writeFile(fileName);
+    if(status.needReport())
+        {
+        OovString err = "Unable to write model file ";
+        err += fileName;
+        status.report(ET_Error, err);
+        }
     }

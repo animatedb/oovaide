@@ -41,7 +41,8 @@ bool OovProject::newProject(OovString projectDir, CompoundValue const &excludeDi
         if(projectDir.length())
             {
             FilePathEnsureLastPathSep(projectDir);
-            if(FileEnsurePathExists(projectDir))
+            OovStatus status = FileEnsurePathExists(projectDir);
+            if(status.ok())
                 {
                 Project::setProjectDirectory(projectDir);
                 mProjectOptions.setFilename(Project::getProjectFilePath());
@@ -52,13 +53,15 @@ bool OovProject::newProject(OovString projectDir, CompoundValue const &excludeDi
                 mGuiOptions.setDefaultOptions();
 
                 mProjectOptions.setNameValue(OptProjectExcludeDirs, excludeDirs.getAsString(';'));
-                if(mProjectOptions.writeFile())
+                status = mProjectOptions.writeFile();
+                if(status.ok())
                     {
-                    if(!mGuiOptions.writeFile())
+                    status = mGuiOptions.writeFile();
+                    if(!status.ok())
                         {
                         OovString errStr = "Unable to write GUI options file: ";
                         errStr += mGuiOptions.getFilename();
-                        OovError::report(ET_Error, errStr);
+                        status.report(ET_Error, errStr);
                         }
                     bool openedProject = false;
                     // Return is discarded because isProjectIdle was checked previously.
@@ -86,16 +89,22 @@ bool OovProject::openProject(OovStringRef projectDir, bool &openedProject)
     {
     bool started = isProjectIdle();
     openedProject = false;
+    OovStatus status(true, SC_File);
     if(started)
         {
         mProjectStatus.clear();
         Project::setProjectDirectory(projectDir);
-        if(mProjectOptions.readProject(projectDir))
+        status = mProjectOptions.readProject(projectDir);
+        if(status.ok())
             {
-            mGuiOptions.read();
+            status = mGuiOptions.read();
             openedProject = true;
             }
         mProjectStatus.mProjectOpen = openedProject;
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to open project");
         }
     return started;
     }
@@ -149,9 +158,9 @@ void OovProject::processAnalysisFiles()
     mProjectStatus.mAnalysisStatus |= ProjectStatus::AS_Loading;
     std::vector<std::string> fileNames;
     BuildConfigReader buildConfig;
-    bool open = getDirListMatchExt(buildConfig.getAnalysisPath(),
-            FilePath(".xmi", FP_File), fileNames);
-    if(open)
+    OovStatus status = getDirListMatchExt(buildConfig.getAnalysisPath(),
+        FilePath(".xmi", FP_File), fileNames);
+    if(status.ok())
         {
         int typeIndex = 0;
         OovTaskStatusListenerId taskId = 0;
@@ -172,10 +181,17 @@ void OovProject::processAnalysisFiles()
                 {
                 break;
                 }
-            File file(fileNames[i], "r");
-            if(file.isOpen())
+            File file;
+            OovStatus status = file.open(fileNames[i], "r");
+            if(status.ok())
                 {
                 loadXmiFile(file, mModelData, fileNames[i], typeIndex);
+                }
+            if(status.needReport())
+                {
+                OovString err = "Unable to read XMI file ";
+                err += fileNames[i];
+                status.report(ET_Error, err);
                 }
             }
     logProj(" processAnalysisFiles - loaded");
@@ -193,6 +209,10 @@ void OovProject::processAnalysisFiles()
                 mStatusListener->endTask(taskId);
                 }
             }
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to get directory for analysis");
         }
     mProjectStatus.mAnalysisStatus |= ProjectStatus::AS_Loaded;
     logProj("-processAnalysisFiles");

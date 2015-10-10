@@ -15,16 +15,16 @@ void IncDirDependencyMapReader::read(OovStringRef const fn)
     {
     setFilename(fn);
     // It is ok if the include map is not present the first time.
-    bool success = true;
-    if(isFilePresent(success))
+    OovStatus status(true, SC_File);
+    if(isFilePresent(status))
         {
-        success = readFile();
+        status = readFile();
         }
-    if(!success)
+    if(status.needReport())
         {
         OovString str = "Unable to read include map: ";
         str += fn;
-        OovError::report(ET_Error, str);
+        status.report(ET_Error, str);
         }
     }
 
@@ -44,7 +44,7 @@ OovStringVec IncDirDependencyMapReader::getIncludeFilesDefinedInDirectory(
     OovStringVec headers;
     std::copy_if(possibleHeaders.begin(), possibleHeaders.end(),
             std::back_inserter(headers),
-            [](std::string const &header) { return isHeader(header); });
+            [](std::string const &header) { return isCppHeader(header); });
     return headers;
     }
 

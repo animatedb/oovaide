@@ -82,12 +82,12 @@ class FileEditView
         FileEditView():
             mTextView(nullptr), mTextBuffer(nullptr), mCurHistoryPos(0),
             mDoingHistory(false), mLastViewTopOffset(0), mLastViewBotOffset(0),
-            mHighlightTextContentChange(false), mListener(nullptr)
+            mHighlightTextContentChange(false), mListener(nullptr), mOpenModifyTime(0)
             {}
         void init(GtkTextView *textView, FileEditViewListener *listener);
-        bool openTextFile(OovStringRef const fn);
-        bool saveTextFile();
-        bool saveAsTextFileWithDialog();
+        OovStatusReturn openTextFile(OovStringRef const fn);
+        OovStatusReturn saveTextFile();
+        OovStatusReturn saveAsTextFileWithDialog();
         bool checkExitSave();
         std::string getSelectedText();
         bool find(char const * const findStr, bool forward, bool caseSensitive);
@@ -211,10 +211,11 @@ class FileEditView
         Indenter mIndenter;
         CompletionList mCompleteList;
         FileEditViewListener *mListener;
+        time_t mOpenModifyTime;
 
         void setFileName(OovStringRef const fn)
             { mFilePath = fn; }
-        bool saveAsTextFile(OovStringRef const fn);
+        OovStatusReturn saveAsTextFile(OovStringRef const fn);
         void highlightRequest();
         void moveToIter(GtkTextIter startIter, GtkTextIter *endIter=NULL);
         GuiText getBuffer();

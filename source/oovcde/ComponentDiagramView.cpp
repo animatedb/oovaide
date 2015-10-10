@@ -37,7 +37,7 @@ void ComponentDiagramView::drawToDrawingArea()
     updateDrawingAreaSize();
     }
 
-bool ComponentDiagramView::drawSvgDiagram(File &file)
+OovStatusReturn ComponentDiagramView::drawSvgDiagram(File &file)
     {
     GtkCairoContext cairo(getDiagramWidget());
     SvgDrawer svgDrawer(file, cairo.getCairo());

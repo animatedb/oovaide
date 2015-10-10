@@ -21,6 +21,7 @@ static CppInstr sCppInstr;
 int main(int argc, char const *const argv[])
     {
     CppInstr::eErrorTypes et = CppInstr::ET_None;
+    OovError::setComponent(EC_OovCovInstr);
     if(argc >= 4)
         {
         // This saves the CPP info in an XMI file.

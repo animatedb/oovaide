@@ -21,9 +21,10 @@ void IncDirDependencyMap::read(char const * const outDir, char const * const inc
     outIncFileName.appendFile(incFn);
     setFilename(outIncFileName);
 #if(SHARED_FILE)
-    if(!readFileShared())
+    OovStatus status = readFileShared();
+    if(status.needReport())
         {
-        fprintf(stderr, "\nOovCppParser - Read file sharing error\n");
+        status.report(ET_Error, "\nOovCppParser - Read file sharing error\n");
         }
 #else
     if(!readFile())
@@ -48,9 +49,13 @@ void IncDirDependencyMap::write()
 
 #if(SHARED_FILE)
     SharedFile file;
-    if(!writeFileExclusiveReadUpdate(file))
+    OovStatus status = writeFileExclusiveReadUpdate(file);
+    if(status.needReport())
         {
-        fprintf(stderr, "\nOovCppParser - Write file sharing error %s\n", getFilename().c_str());
+        OovString err = "\nOovCppParser - Write file sharing error ";
+        err += getFilename().c_str();
+        err += "\n";
+        status.report(ET_Error, err);
         }
 #endif
     // Append new values from parsed includes into the original NameValueFile.
@@ -87,10 +92,10 @@ void IncDirDependencyMap::write()
     if(file.isOpen() && anyChanges)
         {
 #if(SHARED_FILE)
-        if(!writeFileExclusive(file))
+        OovStatus status = writeFileExclusive(file);
+        if(!status.ok())
             {
-            OovString str = "Unable to write include map file";
-            OovError::report(ET_Error, str);
+            status.report(ET_Error, "Unable to write include map file");
             }
 #else
         writeFile();
