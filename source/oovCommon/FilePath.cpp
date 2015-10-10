@@ -292,7 +292,6 @@ OovStatusReturn FileEnsurePathExists(OovStringRef const path)
     {
     OovStatus status(true, SC_File);
     FilePath fullPath(path, FP_Dir);
-    fullPath.getAbsolutePath(path, FP_Dir);
     FilePath existingPath = fullPath;
 
     if(fullPath.find('~') == std::string::npos)
@@ -307,6 +306,10 @@ OovStatusReturn FileEnsurePathExists(OovStringRef const path)
                 break;
             else
                 pos = existingPath.getPosLeftPathSep(pos, RP_RetPosFailure);
+            }
+        if(pos == std::string::npos)
+            {
+            pos = 0;
             }
         while(pos != std::string::npos && status.ok())
             {
