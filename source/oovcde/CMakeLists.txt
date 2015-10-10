@@ -9,7 +9,7 @@ add_executable(oovcde BLL/ClassDiagram.cpp BLL/ClassDrawer.cpp BLL/ClassGenes.cp
   BLL/ZoneDrawer.cpp BLL/ZoneGraph.cpp BuildSettingsDialog.cpp CairoDrawer.cpp 
   ClassDiagramView.cpp ComplexityView.cpp ComponentDiagramView.cpp ComponentList.cpp 
   Contexts.cpp DatabaseClient.cpp DuplicatesView.cpp GlobalSettings.cpp
-  IncludeDiagramView.cpp Journal.cpp newModule.cpp oovcde.cpp 
+  IncludeDiagramView.cpp Journal.cpp NewModule.cpp oovcde.cpp 
   OovProject.cpp OperationDiagramView.cpp OptionsDialog.cpp PackagesDialogs.cpp 
   PortionDiagramView.cpp ProjectSettingsDialog.cpp StaticAnalysis.cpp 
   Svg.cpp Xmi2Object.cpp XmlParser.cpp ZoneDiagramView.cpp)
