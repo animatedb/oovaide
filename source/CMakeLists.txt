@@ -75,6 +75,10 @@ add_subdirectory(oovcde)
 export(TARGETS  ClangView oovBuilder oovCMaker oovCommon oovCovInstr oovCppParser oovDbWriter oovEdit oovGuiCommon oovcde
    FILE "${PROJECT_BINARY_DIR}/OovcdeTargets.cmake")
 
+# Set fpic for run time library code
+set_property(TARGET oovCommon PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+set_property(TARGET oovDbWriter PROPERTY POSITION_INDEPENDENT_CODE TRUE)
+
 # Export the package for use from the build-tree
 # (this registers the build-tree with a global CMake-registry)
 export(PACKAGE Oovcde)
