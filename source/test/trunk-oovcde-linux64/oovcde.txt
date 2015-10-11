@@ -1,4 +1,4 @@
-BuildArgsBase|-c;-x;c++;-std=c++11;-I/usr/lib/llvm-3.5/include;-I/usr/lib/clang/3.5/include;-lnk-L/usr/lib/llvm-3.5/lib;-lnk-lclang;-lnk-Wl,-rpath=./;-lnk-static-libstdc++;-bv;;-EPgtk+-3.0;
+BuildArgsBase|-c;-x;c++;-std=c++11;-I/usr/lib/llvm-3.5/include;-I/usr/lib/clang/3.5/include;-lnk-L/usr/lib/llvm-3.5/lib;-lnk-lclang;-lnk-Wl,-rpath=./;-lnk-static-libstdc++;-bv;;-EPgtk+-3.0;-EPgmodule-2.0;
 BuildArgsExtra-Debug|-O0;-g3;
 BuildArgsExtra-Release|-O3;
 SourceRootDir|/home/dave/software/oovcde/2.0/code/trunk/

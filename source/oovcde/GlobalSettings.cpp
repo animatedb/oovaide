@@ -79,7 +79,8 @@ void GlobalSettings::saveOpenProject(OovStringRef projDir)
 OovString SettingsFile::getSettingsFileName()
     {
 #ifdef __linux__
-    static char const *dirStr = { ".config/Oovcde" };
+    FilePath dirStr(getenv("HOME"), FP_Dir);
+    dirStr.appendDir(".config/Oovcde");
 #else
     OovString dirStr = Project::getBinDirectory();
 #endif
