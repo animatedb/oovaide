@@ -175,10 +175,11 @@ void ClassDiagramView::displayDrawContextMenu(guint button, guint32 acttime, gpo
     ClassNode *node = getNode(static_cast<int>(event->x), static_cast<int>(event->y));
     OovStringRef const nodeMenus[] =
         {
-        "GotoClassMenuitem",
+        "GotoClassMenuitem", "ClassPreferencesMenuitem", "AddSelectedMenuitem",
         "AddStandardMenuitem", "AddAllMenuitem",
         "AddSuperclassesMenuitem", "AddSubclassesMenuitem",
         "AddMembersUsingMenuitem", "AddMemberUsersMenuitem",
+        "AddTemplateMenuItem",
         "AddFuncParamsUsingMenuitem", "AddFuncParamUsersMenuitem",
         "AddFuncBodyVarUsingMenuitem", "AddFuncBodyVarUsersMenuitem",
         "RemoveClassMenuitem", "ViewSourceMenuitem"

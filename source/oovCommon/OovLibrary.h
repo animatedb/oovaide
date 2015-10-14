@@ -9,15 +9,23 @@
 #define OOVLIBRARY_H
 
 #include "OovLibrary.h"
-#define USE_GLIB 1
+#define USE_GLIB 0
 #if(USE_GLIB)
 #include <gmodule.h>
+#define OOV_MODULE_IMPORT G_MODULE_IMPORT
+#define OOV_MODULE_EXPORT G_MODULE_EXPORT
 #else
+
+#define OOV_MODULE_IMPORT extern
+
 #ifdef __linux__
+#define OOV_MODULE_EXPORT
 #else
+#define OOV_MODULE_EXPORT __declspec(dllexport)
 #include "windef.h"
 #include "WinBase.h"
 #endif
+
 #endif
 
 #if(USE_GLIB)

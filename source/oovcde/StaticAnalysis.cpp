@@ -11,16 +11,49 @@
 #include "XmlWriter.h"
 #include "OovError.h"
 
+class XslFile
+    {
+    public:
+        XslFile():
+            mHeader(&mRoot), mStyleSheet(&mRoot), mOut(&mStyleSheet)
+            {
+            }
+        XML::XslStyleSheet &getStyleSheet()
+            { return mStyleSheet; }
+        OovStatus writeXsl(const std::string &fullPath, char const *err);
+
+    private:
+        XML::XmlRoot mRoot;
+        XML::XmlHeader mHeader;
+        XML::XslStyleSheet mStyleSheet;
+            XML::XslOutputHtml mOut;
+    };
+
+OovStatus XslFile::writeXsl(const std::string &fullPath, char const *err)
+    {
+    File transformFile;
+    OovStatus status = transformFile.open(fullPath, "w");
+    if(status.ok())
+        {
+        XML::XmlWriter writer;
+        mRoot.writeElementAndChildren(writer);
+        status = transformFile.putString(writer.getStr());
+        }
+    if(status.needReport())
+        {
+        OovString str = err;
+        str += fullPath;
+        status.report(ET_Error, str);
+        }
+    return status;
+    }
 
 static bool createMemberVarUsageStyleTransform(const std::string &fullPath)
     {
     using namespace XML;
 
-    XmlRoot root;
-    XmlHeader header(&root);
-    XslStyleSheet ss(&root);
-        XslOutputHtml out(&ss);
-        XslTemplate tplRoot(&ss, "match=\"/\"");
+    XslFile xslFile;
+        XslTemplate tplRoot(&xslFile.getStyleSheet(), "match=\"/\"");
             Element html(&tplRoot, "html");
                 Element head(&html, "head");
                     Element title(&head, "title");
@@ -45,7 +78,7 @@ static bool createMemberVarUsageStyleTransform(const std::string &fullPath)
                             TableHeader rowAllCount(&rowHead, "All Use Count");
                         XslApplyTemplates app(&table, "select=\"MemberAttrUseReport/Attr\"");
                             XslSort sort(&app, "select=\"AllUseCount\" data-type=\"number\"");
-        XslTemplate tplAttr(&ss, "match=\"Attr\"");
+        XslTemplate tplAttr(&xslFile.getStyleSheet(), "match=\"Attr\"");
             TableRow rowVal(&tplAttr);
                 TableCol colClass(&rowVal);
                     XslValueOf valClass(&colClass, "select=\"ClassName\"");
@@ -56,20 +89,7 @@ static bool createMemberVarUsageStyleTransform(const std::string &fullPath)
                 TableCol colAllUse(&rowVal);
                     XslValueOf valAllCount(&colAllUse, "select=\"AllUseCount\"");
 
-    File transformFile;
-    OovStatus status = transformFile.open(fullPath, "w");
-    if(status.ok())
-        {
-        XmlWriter writer;
-        root.writeElementAndChildren(writer);
-        status = transformFile.putString(writer.getStr());
-        }
-    if(status.needReport())
-        {
-        OovString str = "Unable to write member transform: ";
-        str += fullPath;
-        status.report(ET_Error, str);
-        }
+    OovStatus status = xslFile.writeXsl(fullPath, "Unable to write member transform: ");
     return status.ok();
     }
 
@@ -113,22 +133,11 @@ static void appendAttrCounts(ModelData const &model,
 static void getAllAttrCounts(GtkWindow *parentWindow,
     ModelData const &model, ModelAttrCounts &attrCounts)
     {
-    TaskBusyDialog progressDlg;
-    progressDlg.setParentWindow(parentWindow);
-    size_t totalTypes = model.mTypes.size();
-    progressDlg.startTask("Searching Operations", totalTypes);
-    bool keepGoing = true;
-    time_t updateTime = 0;
-    for(size_t i=0; i<totalTypes && keepGoing; i++)
+    TaskTimedBusyDialog progressDlg(parentWindow, model.mTypes.size(),
+        "Searching Operations");
+    while(progressDlg.keepGoing())
         {
-        time_t curTime;
-        time(&curTime);
-        if(updateTime != curTime)
-            {
-            keepGoing = progressDlg.updateProgressIteration(i, nullptr, true);
-            updateTime = curTime;
-            }
-        ModelType const *modelType = model.mTypes[i].get();
+        ModelType const *modelType = model.mTypes[progressDlg.getIndex()].get();
         ModelClassifier const *classifier = ModelType::getClass(modelType);
         if(classifier)
             {
@@ -138,7 +147,6 @@ static void getAllAttrCounts(GtkWindow *parentWindow,
                 }
             }
         }
-    progressDlg.endTask();
     }
 
 bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
@@ -161,7 +169,9 @@ bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
                 "<?xml-stylesheet type=\"text/xsl\" href=\"MemberVarUsage.xslt\"?>\n"
                 "<MemberAttrUseReport>\n";
         status = useFile.putString(header);
-
+        }
+    if(status.ok())
+        {
         // Find the counts of all attributes.
         ModelAttrCounts attrCounts;
         getAllAttrCounts(parentWindow, modelData, attrCounts);
@@ -196,9 +206,13 @@ bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
                         "    <AllUseCount>%d</AllUseCount>\n"
                         "  </Attr>\n";
                     /// @todo - add error checking
-                    fprintf(useFile.getFp(), item,
+                    if(fprintf(useFile.getFp(), item,
                         classifier->getName().makeXml().c_str(),
-                        attr->getName().c_str(), usageCount, allUseCount);
+                        attr->getName().c_str(), usageCount, allUseCount) < 0)
+                        {
+                        status.set(false, SC_File);
+                        break;
+                        }
                     }
                 }
             }
@@ -217,15 +231,12 @@ bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
     }
 
 
-static void createMethodUsageStyleTransform(const std::string &fullPath)
+static bool createMethodUsageStyleTransform(const std::string &fullPath)
     {
     using namespace XML;
 
-    XmlRoot root;
-    XmlHeader header(&root);
-    XslStyleSheet ss(&root);
-        XslOutputHtml out(&ss);
-        XslTemplate tplRoot(&ss, "match=\"/\"");
+    XslFile xslFile;
+        XslTemplate tplRoot(&xslFile.getStyleSheet(), "match=\"/\"");
             Element html(&tplRoot, "html");
                 Element head(&html, "head");
                     Element title(&head, "title");
@@ -249,7 +260,7 @@ static void createMethodUsageStyleTransform(const std::string &fullPath)
                             TableHeader rowCount(&rowHead, "All Use Count");
                             XslApplyTemplates app(&table, "select=\"MethodUseReport/Oper\"");
                                 XslSort sort(&app, "select=\"UseCount\" data-type=\"number\"");
-        XslTemplate tplAttr(&ss, "match=\"Oper\"");
+        XslTemplate tplAttr(&xslFile.getStyleSheet(), "match=\"Oper\"");
             TableRow rowVal(&tplAttr);
                 TableCol colClass(&rowVal);
                     XslValueOf valClass(&colClass, "select=\"ClassName\"");
@@ -260,20 +271,8 @@ static void createMethodUsageStyleTransform(const std::string &fullPath)
                 TableCol colCount(&rowVal);
                     XslValueOf valCount(&colCount, "select=\"UseCount\"");
 
-    File transformFile;
-    OovStatus status = transformFile.open(fullPath, "w");
-    if(status.ok())
-        {
-        XmlWriter writer;
-        root.writeElementAndChildren(writer);
-        status = transformFile.putString(writer.getStr());
-        }
-    if(status.needReport())
-        {
-        OovString str = "Unable to write member transform: ";
-        str += fullPath;
-        status.report(ET_Error, str);
-        }
+    OovStatus status = xslFile.writeXsl(fullPath, "Unable to write method transform: ");
+    return status.ok();
     }
 
 
@@ -314,22 +313,11 @@ static void appendOperationCounts(ModelData const &model,
 static void getAllOperationCounts(GtkWindow *parentWindow,
     ModelData const &model, ModelOperationCounts &operCounts)
     {
-    TaskBusyDialog progressDlg;
-    progressDlg.setParentWindow(parentWindow);
-    size_t totalTypes = model.mTypes.size();
-    progressDlg.startTask("Searching Operations", totalTypes);
-    bool keepGoing = true;
-    time_t updateTime = 0;
-    for(size_t i=0; i<totalTypes && keepGoing; i++)
+    TaskTimedBusyDialog progressDlg(parentWindow, model.mTypes.size(),
+        "Searching Operations");
+    while(progressDlg.keepGoing())
         {
-        time_t curTime;
-        time(&curTime);
-        if(updateTime != curTime)
-            {
-            keepGoing = progressDlg.updateProgressIteration(i, nullptr, true);
-            updateTime = curTime;
-            }
-        ModelType const *modelType = model.mTypes[i].get();
+        ModelType const *modelType = model.mTypes[progressDlg.getIndex()].get();
         ModelClassifier const *classifier = ModelType::getClass(modelType);
         if(classifier)
             {
@@ -339,7 +327,6 @@ static void getAllOperationCounts(GtkWindow *parentWindow,
                 }
             }
         }
-    progressDlg.endTask();
     }
 
 bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
@@ -360,8 +347,10 @@ bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
                 "<?xml version=\"1.0\"?>\n"
                 "<?xml-stylesheet type=\"text/xsl\" href=\"MethodUsage.xslt\"?>\n"
                 "<MethodUseReport>\n";
-        fprintf(useFile.getFp(), "%s", header);
-
+        status = useFile.putString(header);
+        }
+    if(status.ok())
+        {
         // Find the counts of all operations.
         ModelOperationCounts operCounts;
         getAllOperationCounts(parentWindow, model, operCounts);
@@ -394,16 +383,21 @@ bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
                         "    <Type>%s</Type>\n"
                         "    <UseCount>%d</UseCount>\n"
                         "  </Oper>\n";
-                    fprintf(useFile.getFp(), item,
+                    if(fprintf(useFile.getFp(), item,
                         classifier->getName().makeXml().getStr(),
                         oper->getName().makeXml().getStr(), operTypeStr.getStr(),
-                        usageCount);
+                        usageCount) < 0)
+                        {
+                        status.set(false, SC_File);
+                        break;
+                        }
                     }
                 }
             }
-
-        static const char *footer = "</MethodUseReport>\n";
-        fprintf(useFile.getFp(), "%s", footer);
+        if(status.ok())
+            {
+            status = useFile.putString("</MethodUseReport>\n");
+            }
         }
     if(status.needReport())
         {
@@ -482,12 +476,10 @@ static bool createLineStatsStyleTransform(const std::string &fullPath)
     {
     using namespace XML;
 
-    XmlRoot root;
-    XmlHeader header(&root);
-    XslStyleSheet ss(&root);
-        XslOutputHtml out(&ss);
-        XslKey key(&ss, "name=\"ModulesByModuleDir\" match=\"Module\" use=\"ModuleDir\"");
-        XslTemplate tplRoot(&ss, "match=\"/\"");
+    XslFile xslFile;
+        XslKey key(&xslFile.getStyleSheet(),
+            "name=\"ModulesByModuleDir\" match=\"Module\" use=\"ModuleDir\"");
+        XslTemplate tplRoot(&xslFile.getStyleSheet(), "match=\"/\"");
             Element html(&tplRoot, "html");
                 Element head(&html, "head");
                     Element title(&head, "title");
@@ -547,13 +539,13 @@ static bool createLineStatsStyleTransform(const std::string &fullPath)
                             XslSort sortMod(&app, "select=\"ModuleLines\" data-type=\"number\"");
 
         // Template function SumCodeLines
-        XslTemplate tplSumCodeLines(&ss, "name=\"SumCodeLines\"");
+        XslTemplate tplSumCodeLines(&xslFile.getStyleSheet(), "name=\"SumCodeLines\"");
             XslValueOf valSumCode(&tplSumCodeLines, "select='sum(//CodeLines)'");
-        XslTemplate tplSumCommentLines(&ss, "name=\"SumCommentLines\"");
+        XslTemplate tplSumCommentLines(&xslFile.getStyleSheet(), "name=\"SumCommentLines\"");
             XslValueOf valSumComment(&tplSumCommentLines, "select='sum(//CommentLines)'");
 
         // The Module template match
-        XslTemplate tplModule(&ss, "match=\"Module\"");
+        XslTemplate tplModule(&xslFile.getStyleSheet(), "match=\"Module\"");
             TableRow moduleRow(&tplModule);
                 TableCol modNameCol(&moduleRow);
                     XslValueOf modNameVal(&modNameCol, "select=\"ModuleName\"");
@@ -566,20 +558,7 @@ static bool createLineStatsStyleTransform(const std::string &fullPath)
                 TableCol modTotalCol(&moduleRow);
                     XslValueOf modTotalVal(&modTotalCol, "select=\"ModuleLines\"");
 
-    File transformFile;
-    OovStatus status = transformFile.open(fullPath, "w");
-    if(status.ok())
-        {
-        XmlWriter writer;
-        root.writeElementAndChildren(writer);
-        status = transformFile.putString(writer.getStr());
-        }
-    if(status.needReport())
-        {
-        OovString str = "Unable to write lines transform: ";
-        str += fullPath;
-        status.report(ET_Error, str);
-        }
+    OovStatus status = xslFile.writeXsl(fullPath, "Unable to write lines transform: ");
     return status.ok();
     }
 
@@ -606,7 +585,10 @@ bool createLineStatsFile(ModelData const &modelData, std::string &fn)
                 "<?xml version=\"1.0\"?>\n"
                 "<?xml-stylesheet type=\"text/xsl\" href=\"LineStatistics.xslt\"?>\n"
                 "<LineStatisticsReport>\n";
-        fprintf(useFile.getFp(), "%s", header);
+        status = useFile.putString(header);
+        }
+    if(status.ok())
+        {
         for(auto const &module : modelData.mModules)
             {
             static const char *item =
@@ -618,16 +600,21 @@ bool createLineStatsFile(ModelData const &modelData, std::string &fn)
                 "    <ModuleLines>%d</ModuleLines>\n"
                 "  </Module>\n";
             FilePath modName(getRelativeFileName(module->getName()), FP_File);
-            fprintf(useFile.getFp(), item,
+            if(fprintf(useFile.getFp(), item,
                 modName.getNameExt().makeXml().c_str(),
                 modName.getDrivePath().makeXml().c_str(),
                 module.get()->mLineStats.mNumCodeLines,
                 module.get()->mLineStats.mNumCommentLines,
-                module.get()->mLineStats.mNumModuleLines);
+                module.get()->mLineStats.mNumModuleLines) < 0)
+                {
+                status.set(false, SC_File);
+                break;
+                }
             }
-
-        static const char *footer = "</LineStatisticsReport>\n";
-        fprintf(useFile.getFp(), "%s", footer);
+        if(status.ok())
+            {
+            status = useFile.putString("</LineStatisticsReport>\n");
+            }
         }
     return status.ok();
     }

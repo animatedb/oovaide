@@ -59,7 +59,9 @@ void BuildSettingsDialog::enterScreen()
         {
         status.report(ET_Error, "Unable to read component settings file");
         }
-    mComponentTree.setSelected(mLastCompName, '/');
+    GuiTreePath path("0");
+    gtk_tree_view_set_cursor(mComponentTree.getTreeView(), path.getPath(),
+            nullptr, false);
     }
 
 GuiTreeItem BuildSettingsDialog::getParent(std::string const &compName)

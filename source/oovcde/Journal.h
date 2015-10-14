@@ -340,7 +340,8 @@ class Journal
             }
         void clear();
         void displayClass(OovStringRef const className);
-        void addClass(OovStringRef const className);
+// DEAD CODE
+//        void addClass(OovStringRef const className);
         void displayOperation(OovStringRef const className, OovStringRef const operName,
                 bool isConst);
         void displayComponents();

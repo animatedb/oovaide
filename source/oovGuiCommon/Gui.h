@@ -268,6 +268,7 @@ class GuiTreeItem
             else
                 mIter.stamp = 1;
             }
+        // The root is the top level, but is invisible and has no text value.
         GtkTreeIter *getPtr()
             { return(isRoot() ? nullptr : &mIter); }
 
@@ -466,6 +467,32 @@ class TaskBusyDialog:public Dialog
         size_t mTotalIters;
         time_t mStartTime;
         void showDialog(bool show);
+    };
+
+/// This updates once a second.
+class TaskTimedBusyDialog
+    {
+    public:
+        TaskTimedBusyDialog(GtkWindow *parentWindow, size_t count,
+            char const *startText):
+            mIndex(0), mTotalCount(count), mUpdateTime(0)
+            {
+            mProgressDlg.setParentWindow(parentWindow);
+            mProgressDlg.startTask(startText, mTotalCount);
+            }
+        ~TaskTimedBusyDialog()
+            {
+            mProgressDlg.endTask();
+            }
+        bool keepGoing();
+        size_t getIndex() const
+            { return(mIndex-1); }
+
+    private:
+        TaskBusyDialog mProgressDlg;
+        size_t mIndex;
+        size_t mTotalCount;
+        time_t mUpdateTime;
     };
 
 class GuiHighlightTag

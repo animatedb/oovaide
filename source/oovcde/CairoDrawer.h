@@ -57,8 +57,9 @@ class NullDrawer:public DiagramDrawer
             {}
         void setGraphicsLib(cairo_t *c)
             { cr = c; }
-        bool haveCr() const
-            { return(cr != nullptr); }
+// DEAD CODE
+//        bool haveCr() const
+//            { return(cr != nullptr); }
         virtual void setDiagramSize(GraphSize /*size*/) override
             {}
         virtual void drawRect(const GraphRect & /*rect*/) override

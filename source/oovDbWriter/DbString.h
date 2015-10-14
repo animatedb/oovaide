@@ -13,22 +13,13 @@
 class DbValue:public OovString
     {
     public:
+        /// This converts the integer into a string and appends to DbValue.
+        /// @param val The value to convert into a string.
         DbValue(int val)
             { appendInt(val); }
-        /// Use nullptr to indicate NULL.
-        DbValue(char const *val)
-            {
-            if(val)
-                {
-                append("\"");
-                append(val);
-                append("\"");
-                }
-            else
-                {
-                append("NULL");
-                }
-            }
+        /// @param val Use nullptr to indicate NULL or pass in a string that
+        ///            will be enclosed within quotes.
+        DbValue(char const *val);
     };
 
 typedef std::vector<OovString> DbNames;
@@ -47,24 +38,35 @@ class DbString:public OovString
         DbString(char const * const str):
             OovString(str)
             {}
-        DbString &SELECT(OovStringRef columns);
+        // Appends "SELECT column"
+        DbString &SELECT(OovStringRef column);
 
+        // Appends "INSERT INTO table"
         DbString &INSERT(OovStringRef table);
+        // Appends " FROM "
         DbString &FROM(OovStringRef table);
-        DbString &INTO(DbNames const &columns);
-        DbString &VALUES(DbValues const &columns);
+        // Appends "(columnName1, columnName2)"
+        DbString &INTO(DbNames const &columnNames);
+        // Appends "VALUES (columnValue1, columnValue2)"
+        DbString &VALUES(DbValues const &columnValues);
 
+        // Appends "UPDATE table"
         DbString &UPDATE(OovStringRef table);
+        // Appends " SET column1, column2 = value1, value2"
+        // The number of columns and values must match.
         DbString &SET(DbNames const &columns, DbValues const &values);
 
+        // Appends " WHERE columnName operStr colVal"
         DbString &WHERE(OovStringRef columnName, OovStringRef operStr,
             DbValue colVal);
+        // Appends " AND columnName operStr colVal"
         DbString &AND(OovStringRef columnName, OovStringRef operStr,
             DbValue colVal);
+        // Appends a semicolon to the returned string.
         OovString getDbStr() const;
 
     private:
-        // Prevent usage. Use getDbStr instead.
+        // Prevent usage. Use getDbStr instead. This is undefined.
         char const *c_str();
     };
 

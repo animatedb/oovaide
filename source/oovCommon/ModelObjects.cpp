@@ -328,6 +328,8 @@ bool ModelOperation::isDefinition() const
     return(mStatements.size() > 0);
     }
 
+// DEAD CODE
+/*
 void ModelClassifier::clearAttributes()
     {
     mAttributes.clear();
@@ -337,6 +339,7 @@ void ModelClassifier::clearOperations()
     {
     mOperations.clear();
     }
+*/
 
 bool ModelClassifier::isDefinition() const
     {
@@ -419,6 +422,8 @@ void ModelClassifier::eraseOperation(const ModelOperation *oper)
         }
     }
 
+// DEAD CODE
+/*
 void ModelClassifier::removeOperation(ModelOperation *oper)
     {
     size_t index = NoIndex;
@@ -434,6 +439,7 @@ void ModelClassifier::removeOperation(ModelOperation *oper)
             static_cast<int>(index));
         }
     }
+*/
 
 size_t ModelClassifier::getAttributeIndex(const std::string &name) const
     {

@@ -8,10 +8,24 @@
 #include "DbString.h"
 #include <ctype.h>
 
-DbString &DbString::SELECT(OovStringRef columns)
+DbValue::DbValue(char const *val)
+    {
+    if(val)
+        {
+        append("\"");
+        append(val);
+        append("\"");
+        }
+    else
+        {
+        append("NULL");
+        }
+    }
+
+DbString &DbString::SELECT(OovStringRef column)
     {
     append("SELECT ");
-    append(columns);
+    append(column);
     return *this;
     }
 
@@ -39,7 +53,8 @@ DbString &DbString::FROM(OovStringRef table)
 DbString &DbString::SET(DbNames const &columns, DbValues const &values)
     {
     append(" SET ");
-    for(size_t i=0; i<columns.size(); i++)
+    size_t numColumns = std::min(columns.size(), values.size());
+    for(size_t i=0; i<numColumns; i++)
         {
         if(i != 0)
             {

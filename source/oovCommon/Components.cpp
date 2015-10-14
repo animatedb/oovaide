@@ -102,8 +102,8 @@ OovStringVec ComponentTypesFile::getComponentNames(bool definedComponentsOnly) c
     if(definedComponentsOnly)
         {
         compNames.erase(std::remove_if(compNames.begin(), compNames.end(),
-            [=](std::string const &name)
-            { return(getComponentType(name) == CT_Unknown); }));
+            [this](OovString &name)
+            { return(getComponentType(name) == CT_Unknown); }), compNames.end());
         }
     return compNames;
     }

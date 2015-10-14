@@ -17,9 +17,9 @@ static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
     bool added = false;
 
     OovStringVec sources = compFile.getComponentFiles(
-        ComponentTypesFile::CFT_CppSource, compName);
+        ComponentTypesFile::CFT_CppSource, compName, false);
     OovStringVec includes = compFile.getComponentFiles(
-        ComponentTypesFile::CFT_CppInclude, compName);
+        ComponentTypesFile::CFT_CppInclude, compName, false);
     sources.insert(sources.end(), includes.begin(), includes.end());
     for(const auto &fn : sources)
         {

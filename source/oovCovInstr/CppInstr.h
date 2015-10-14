@@ -115,7 +115,8 @@ class CppInstr
         CppFileContents mOutputFileContents;
 
         bool isParseFile(SourceLocation const &loc) const;
-        bool isParseFile(CXFile const &file) const;
+        // DEAD CODE
+        // bool isParseFile(CXFile const &file) const;
 
         void makeCovInstr(OovString &covStr);
         void insertOutputText(OovString &covStr, int offset)

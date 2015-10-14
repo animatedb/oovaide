@@ -113,6 +113,8 @@ void Journal::displayClass(OovStringRef const className)
         }
     }
 
+// DEAD CODE
+/*
 void Journal::addClass(OovStringRef const className)
     {
     JournalRecord *rec = getCurrentRecord();
@@ -123,7 +125,7 @@ void Journal::addClass(OovStringRef const className)
         recClass->mClassDiagram.addClass(className, ClassGraph::AN_AllStandard);
         }
     }
-
+*/
 void Journal::displayOperation(OovStringRef const className,
         OovStringRef const operName, bool isConst)
     {

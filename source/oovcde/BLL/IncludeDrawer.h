@@ -43,9 +43,10 @@ class IncludeDrawer:public DiagramDependencyDrawer
             consumerIndex = conn.mConsumerNodeIndex;
             supplierIndex = conn.mSupplierNodeIndex;
             }
+// DEAD CODE
+//        IncludeConnection getConnection(size_t index) const
+//            { return mGraph->getConnections()[index]; }
 
-        IncludeConnection getConnection(size_t index) const
-            { return mGraph->getConnections()[index]; }
 
     private:
         IncludeGraph const *mGraph;

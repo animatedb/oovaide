@@ -75,10 +75,11 @@ class IncludeGraph
             { return mNodes; }
         IncludeConnections const &getConnections() const
             { return mConnections; }
-        bool isModified() const;
-        IncludeDrawOptions const &getDrawOptions() const
-            { return mDrawOptions; }
-        void setDrawOptions(IncludeDrawOptions const &options);
+// DEAD CODE
+//        bool isModified() const;
+//        IncludeDrawOptions const &getDrawOptions() const
+//            { return mDrawOptions; }
+//        void setDrawOptions(IncludeDrawOptions const &options);
 
     private:
         std::vector<IncludeNode> mNodes;

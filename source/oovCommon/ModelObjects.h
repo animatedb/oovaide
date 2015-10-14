@@ -110,13 +110,15 @@ class ModelTypeRef
     {
     public:
         ModelTypeRef(ModelType  const *declType):
-            mDeclType(declType), mDeclTypeModelId(0), mStatic(false),
+            mDeclType(declType), mDeclTypeModelId(0),
+//            mStatic(false),
             mConst(false), mRefer(false)
             {}
+// DEAD CODE
         /// Set the relation as static use of the model type
         /// @param isStatic Indicates whether the reference is static
-        void setStatic(bool isStatic)
-            { mStatic = isStatic; }
+//        void setStatic(bool isStatic)
+//            { mStatic = isStatic; }
         /// Set the relation as const use of the model type
         /// @param isConst Indicates whether the reference is const
         void setConst(bool isConst)
@@ -151,7 +153,7 @@ class ModelTypeRef
     private:
         ModelType const *mDeclType;
         unsigned int mDeclTypeModelId:29;
-        unsigned int mStatic:1;
+//        unsigned int mStatic:1;
         unsigned int mConst:1;
         unsigned int mRefer:1;
     };
@@ -167,11 +169,13 @@ class ModelDeclarator:public ModelObject, public ModelTypeRef
             {}
         /// Get the classifier that this declarator is referring.
         const class ModelClassifier *getDeclClassType() const;
+
+// DEAD CODE
         /// Check if the delcarator matches
         /// Used for operation parameter matching
         /// @param decl the declarator to compare to
-        bool match(ModelDeclarator const &decl) const
-            { return ModelTypeRef::match(decl); }
+//        bool match(ModelDeclarator const &decl) const
+//            { return ModelTypeRef::match(decl); }
     };
 
 
@@ -286,8 +290,9 @@ class ModelStatement:private ModelObject
         /// This does a comparison where the overload key is optional.
         static bool compareFuncNames(OovStringRef operName1,
                 OovStringRef operName2);
-        bool compareFuncName(OovStringRef operName) const
-            { return compareFuncNames(getName(), operName); }
+// DEAD CODE
+//        bool compareFuncName(OovStringRef operName) const
+//            { return compareFuncNames(getName(), operName); }
         static void eraseOverloadKey(std::string &operName);
 
     private:
@@ -509,10 +514,12 @@ public:
         ModelType(name, DT_Class), mModule(nullptr), mLineNum(0)
         {}
     bool isOperOverloaded(OovStringRef operName) const;
+// DEAD CODE
     /// Erase all of the operations
-    void clearOperations();
+//    void clearOperations();
     /// Erase all of the attributes
-    void clearAttributes();
+//    void clearAttributes();
+
     /// Add an attribute to the class
     /// @param name The name of the attribute
     /// @param attrType The model type
@@ -532,9 +539,12 @@ public:
     /// @param isVirtual Indicates whether the operation is virtual.
     ModelOperation *addOperation(const std::string &name, Visibility access,
             bool isConst, bool isVirtual);
+
+// DEAD CODE
     /// Remove an operation
     /// @param oper The operation to remove
-    void removeOperation(ModelOperation *oper);
+//    void removeOperation(ModelOperation *oper);
+
     /// Add an operation to the class
     /// @param oper The operation to add
     void addOperation(std::unique_ptr<ModelOperation> &&oper)

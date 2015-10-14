@@ -69,7 +69,7 @@ void DatabaseWriter::writeDatabase(ModelData *modelData)
             }
         if(!success)
             {
-            Gui::messageBox(GetLastError());
+            Gui::messageBox(GetLastDbError());
             }
         }
     else
@@ -85,6 +85,6 @@ void DatabaseWriter::loadSymbols()
     loadModuleSymbol("OpenDb", (OovProcPtr*)&OpenDb);
     loadModuleSymbol("WriteDb", (OovProcPtr*)&WriteDb);
     loadModuleSymbol("WriteDbComponentTypes", (OovProcPtr*)&WriteDbComponentTypes);
-    loadModuleSymbol("GetLastError", (OovProcPtr*)&GetLastError);
+    loadModuleSymbol("GetLastDbError", (OovProcPtr*)&GetLastDbError);
     loadModuleSymbol("CloseDb", (OovProcPtr*)&CloseDb);
     }

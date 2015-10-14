@@ -463,7 +463,7 @@ SHAREDSHARED_EXPORT bool WriteDb(int passIndex, int &typeIndex, int maxTypesPerT
     { return sDbWriter.writeTypes(passIndex, typeIndex, maxTypesPerTransaction); }
 SHAREDSHARED_EXPORT bool WriteDbComponentTypes(void const *compTypesFile)
     { return sDbWriter.writeComponentsInfo(static_cast<ComponentTypesFile const*>(compTypesFile)); }
-SHAREDSHARED_EXPORT char const *GetLastError()
+SHAREDSHARED_EXPORT char const *GetLastDbError()
     { return sDbWriter.getLastError().getStr(); }
 SHAREDSHARED_EXPORT void CloseDb()
     { sDbWriter.closeDatabase(); }

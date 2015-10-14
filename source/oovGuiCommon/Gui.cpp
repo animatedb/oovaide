@@ -908,6 +908,23 @@ bool TaskBusyDialog::updateProgressIteration(size_t currentIter,
     return mKeepGoing;
     }
 
+bool TaskTimedBusyDialog::keepGoing()
+    {
+    bool keepGoing = (mIndex++ < mTotalCount);
+    if(keepGoing)
+        {
+        time_t curTime;
+        time(&curTime);
+        if(mUpdateTime != curTime)
+            {
+            keepGoing = mProgressDlg.updateProgressIteration(mIndex, nullptr, true);
+            mUpdateTime = curTime;
+            }
+        }
+    return keepGoing;
+    }
+
+
 int Gui::findTab(GtkNotebook *book, OovStringRef const tabName)
     {
     int tabIndex = -1;

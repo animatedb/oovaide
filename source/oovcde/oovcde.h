@@ -178,9 +178,9 @@ class oovGui:public OovErrorListener, private GlobalSettingsListener
             { return mContexts.saveFile(drawFile); }
         OovStatusReturn exportFile(File &svgFile)
             { return mContexts.exportFile(svgFile); }
-        std::string getDiagramName(OovStringRef ext);
+        std::string getDiagramName(OovStringRef ext) const;
         void setDiagramName(OovStringRef name);
-        ProjectStatus &getLastProjectStatus()
+        ProjectStatus const &getLastProjectStatus() const
             { return mLastProjectStatus; }
         void clearAnalysis();
         bool canStartAnalysis();

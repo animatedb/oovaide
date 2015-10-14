@@ -48,7 +48,8 @@ class SQLiteImporter:public SQLiteInterface, public OovLibrary
             }
     };
 
-/// Functions that return errors and results will call functions in this listener.
+/// Functions that return errors and results will call functions in this
+/// listener.
 class SQLiteListener
     {
     public:
@@ -72,7 +73,8 @@ class SQLite:public SQLiteImporter
             }
         void setListener(SQLiteListener *listener)
             { mListener = listener; }
-        // The libName is usually libsqlite3.so.? on linux, and sqlite3.dll on windows.
+        /// Load the SQLite library.
+        /// The libName is usually libsqlite3.so.? on linux, and sqlite3.dll on windows.
         bool loadDbLib(char const *libName)
             {
             close();
@@ -83,11 +85,14 @@ class SQLite:public SQLiteImporter
                 }
             return success;
             }
+        /// The dbName is the name of the file that will be saved.
         bool openDb(char const *dbName)
             {
             int retCode = sqlite3_open(dbName, &mDb);
             return handleRetCode(retCode, "Unable to open database");
             }
+        /// Execute an SQL query.  If there are results, they will be reported
+        /// through the listener.
         bool execDb(const char *sql)
             {
             char *errMsg = nullptr;
@@ -114,16 +119,20 @@ class SQLite:public SQLiteImporter
         sqlite3 *mDb;
         SQLiteListener *mListener;
 
-        static int resultsCallback(void *customData, int argc, char **argv,
-            char **azColName)
+        /// This is called from the sqlite3_exec call, and sends the results to
+        /// the listener.
+        static int resultsCallback(void *customData, int numColumns,
+            char **colValues, char **colNames)
             {
             SQLite *sqlite = static_cast<SQLite*>(customData);
             if(sqlite->mListener)
                 {
-                sqlite->mListener->SQLResultCallback(argc, argv, azColName);
+                sqlite->mListener->SQLResultCallback(numColumns, colValues, colNames);
                 }
             return 0;
             }
+        /// If the retCode indicates an error, then the errStr is sent to the
+        /// listener.
         bool handleRetCode(int retCode, char const *errStr)
             {
             if(retCode != SQLITE_OK && mListener)

@@ -206,9 +206,9 @@ bool OovDatabase::updateModuleWithComponent(OovStringRef name, int componentId)
     return success;
     }
 
-bool OovDatabase::getModuleId(OovStringRef name, bool failMissing, int &typeId)
+bool OovDatabase::getModuleId(OovStringRef name, bool failMissing, int &moduleId)
     {
-    return execSelectId("idModule", "Module", "name", name, failMissing, typeId);
+    return execSelectId("idModule", "Module", "name", name, failMissing, moduleId);
     }
 
 bool OovDatabase::addModule(OovStringRef name, int &moduleId, int codeLines,

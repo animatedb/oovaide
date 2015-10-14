@@ -6,9 +6,10 @@ Comp-type-oovCMaker|Program
 Comp-type-oovCommon|StaticLib
 Comp-type-oovCovInstr|Program
 Comp-type-oovCppParser|Program
+Comp-type-oovDbWriter|SharedLib
 Comp-type-oovEdit|Program
 Comp-type-oovGuiCommon|StaticLib
 Comp-type-oovReports|Program
 Comp-type-oovcde|Program
 Comp-type-test|Unknown
-Components|.metadata;.metadata/.plugins;.metadata/.plugins/org.eclipse.cdt.make.core;.metadata/.plugins/org.eclipse.cdt.managedbuilder.core;ClangView;examples;examples/names;examples/sharedlibgtk;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCovInstr;oovCppParser;oovDbWriter;oovEdit;oovGuiCommon;oovReports;oovcde;oovcde/.metadata;oovcde/.metadata/.plugins;oovcde/.metadata/.plugins/org.eclipse.cdt.make.core;oovcde/BLL;test;test/CppInput;test/TestCpp;test/python;test/python/oovCppParserIn;
+Components|.metadata;.metadata/.plugins;.metadata/.plugins/org.eclipse.cdt.make.core;.metadata/.plugins/org.eclipse.cdt.managedbuilder.core;ClangView;examples;examples/names;examples/sharedlibgtk;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCovInstr;oovCppParser;oovDbWriter;oovEdit;oovGuiCommon;oovcde;oovcde/.metadata;oovcde/.metadata/.plugins;oovcde/.metadata/.plugins/org.eclipse.cdt.make.core;oovcde/BLL;test;test/CppInput;test/TestCpp;test/python;test/python/oovCppParserIn;

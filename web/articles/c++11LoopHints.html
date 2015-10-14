@@ -147,10 +147,36 @@
     lambda can be used.<br>
     <br>
     <h3><a class="mozTocH3" name="mozTocId71778"></a>Modify Collection</h3>
-    Old Code:<br>
-    <pre style="font-style: italic;">static void removeLib(char const * const libName, std::set&lt;std::string&gt; &amp;libDirs)<br>&nbsp;&nbsp;&nbsp; {<br>    for(int i=0; i&lt;libDirs.size(); i++)<br>	{<br>	if(libDirs.compare(libName) == 0)<br>	    clear(libDirs.begin()+i);<br>	}<br>    }</pre>
+    Old Code:
+    <pre>
+    static void removeLib(char const * const libName, std::set&lt;std::string&gt; &amp;libDirs)
+	{
+	for(int i=0; i&lt;libDirs.size(); i++)
+	    {
+	    if(libDirs.compare(libName) == 0)
+	        clear(libDirs.begin()+i);
+	    }
+	}
+    </pre>
+
     New Code:<br>
-    <pre>static void removeLib(char const * const libName, std::set&lt;std::string&gt; &amp;libDirs)<br>&nbsp;&nbsp;&nbsp; {<br>    libDirs.erase(std::remove_if(libDirs.begin(), libDirs.end(),<br>	[=](std::string const &amp;str){ return(str.compare(libName) == 0); }));<br>    }</pre>
+    <pre>
+    static void removeLib(char const * const libName, std::set&lt;std::string&gt; &amp;libDirs)
+	{
+	libDirs.erase(std::remove_if(libDirs.begin(), libDirs.end(),
+	    [=](std::string &amp;str){ return(str.compare(libName) == 0); }), libDirs.end());
+	}
+    </pre>
+    There are two common problems that can occur using remove_if. They can result in
+    duplicate values in the vector.
+	<ul>
+	    <li>The std::vector::erase must be called with two arguments. The erase
+		with a single argument will only erase a single item from the vector.</li>
+	    <li>This may be a compiler bug, but it is possible that the parameters passed
+	   to the lambda may not be const. The remove_if
+	   must be able to modify the contents so that the values can be swapped.</li>
+	</ul>
+    <p/>
     Sort example:<br>
     <br>
     <span style="font-style: italic;">std::sort(mTypes.begin(), mTypes.end(),

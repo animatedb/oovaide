@@ -34,13 +34,16 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
-	- oovCMaker is outputting duplicate info:
-		add_subdirectory
-		export(TARGETS
+	- gtk3
+		- msys2
+		- https://blogs.gnome.org/nacho/2014/06/26/gtk-builder-for-windows/
+			- https://mail.gnome.org/archives/gtkmm-list/2014-January/msg00011.html
+			- https://git.gnome.org/browse/gtk-builder-win
+			- http://win-builds.org
+		- 3.8 - http://sourceforge.net/projects/gtk3win
+	- Shouldn't have to  rebuild everything if project directories change
 	- code count mismatch from database:
 		makeCoverageStats not showing as overloaded. (one is static)
-	- File error handling
-		StaticAnalysis.cpp
 	- Preserve state between sessions
 	- https://github.com/rdp/open-source-how-to-popularize-your-project
 	- http://keywordtool.io/search
@@ -61,7 +64,6 @@ Missing Features
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
 	  are the same?
 - Gui
-	- Fix component/module list to only contain files for their directory. Or alphabetic
 	- Add External Directories button for Build Arguments dialog.
 	- BUG: Sometimes the Add Package dialog doesn't hide/close.
 		- window might be busy and is not responding (oovCommon/PackagesProcess?)

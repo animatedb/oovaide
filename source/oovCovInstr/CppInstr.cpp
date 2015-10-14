@@ -289,13 +289,15 @@ bool CppInstr::isParseFile(SourceLocation const &loc) const
     return(fn == mTopParseFn);
     }
 
+// DEAD CODE
+/*
 bool CppInstr::isParseFile(CXFile const &file) const
     {
     CXStringDisposer fnStr(clang_getFileName(file));
     FilePath fn(fnStr, FP_File);
     return(fn == mTopParseFn);
     }
-
+*/
 
 struct ChildCountVisitor
 {

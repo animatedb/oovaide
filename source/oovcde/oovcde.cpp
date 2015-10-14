@@ -478,7 +478,7 @@ void oovGui::runSrcManager(OovStringRef const buildConfigName,
     updateMenuEnables(mProject.getProjectStatus());
     }
 
-std::string oovGui::getDiagramName(OovStringRef ext)
+std::string oovGui::getDiagramName(OovStringRef ext) const
     {
     const JournalRecord *rec = mContexts.getCurrentJournalRecord();
     FilePath fn;
@@ -920,23 +920,23 @@ void oovGui::makeCmake()
         {
         GtkEntry *entry = GTK_ENTRY(getBuilder().getWidget("CMakeProjectNameEntry"));
         projNameArg = OovString("-n") + OovString(Gui::getText(entry));
-        }
 
-    bool putInSource = Gui::messageBox("Put files in source directory?",
-            GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
-    args.addArg(proc);
-    args.addArg(Project::getProjectDirectory());
-    if(putInSource)
-        args.addArg("-w");
-    args.addArg(projNameArg);
-    spawnNoWait(proc, args.getArgv());
-    std::string stat = std::string("Building CMake files for ") +
-            Project::getProjectDirectory() + ".";
-    if(putInSource)
-        stat += "\nCheck the source directory for CMake files.";
-    else
-        stat += "\nCheck the oovcde directory for CMake files.";
-    Gui::messageBox(stat, GTK_MESSAGE_INFO);
+        bool putInSource = Gui::messageBox("Put files in source directory?",
+                GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO);
+        args.addArg(proc);
+        args.addArg(Project::getProjectDirectory());
+        if(putInSource)
+            args.addArg("-w");
+        args.addArg(projNameArg);
+        spawnNoWait(proc, args.getArgv());
+        std::string stat = std::string("Building CMake files for ") +
+                Project::getProjectDirectory() + ".";
+        if(putInSource)
+            stat += "\nCheck the source directory for CMake files.";
+        else
+            stat += "\nCheck the oovcde directory for CMake files.";
+        Gui::messageBox(stat, GTK_MESSAGE_INFO);
+        }
     }
 
 
