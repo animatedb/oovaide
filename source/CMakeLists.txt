@@ -32,15 +32,17 @@ endforeach()
 
 # External Packages
 if(NOT WIN32)
+
 # GTK
 pkg_check_modules(GTK REQUIRED gtk+-3.0)
 include_directories(${GTK_INCLUDE_DIRS})
 link_directories(${GTK_LIBRARY_DIRS})
 add_definitions(${GTK_CFLAGS_OTHER})
-# GModule
-pkg_check_modules(GMODULE REQUIRED gmodule-2.0)
-link_directories(${GMODULE_LIBRARY_DIRS})
-# LLVM
+
+# DL - This is in libc6-dev package on Ubuntu
+set(DL_LIBRARIES dl)
+
+# LLVM - Neither LLVM or CLANG are in /usr/share/cmake*/Modules at least up to LLVM 3.6
 # pkg_check_modules(CLANG REQUIRED libclang-dev)
 # pkg_check_modules(LLVM REQUIRED llvm)
 include_directories(/usr/lib/llvm-3.5/include)
@@ -50,6 +52,7 @@ set(LLVM_LIBRARIES clang)
 # include_directories(${LLVM_INCLUDE_DIRS})
 # link_directories(${LLVM_LIBRARY_DIRS})
 # add_definitions(${LLVM_CFLAGS_OTHER})
+
 endif()
 
 # set up include directories

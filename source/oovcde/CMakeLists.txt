@@ -14,7 +14,7 @@ add_executable(oovcde BLL/ClassDiagram.cpp BLL/ClassDrawer.cpp BLL/ClassGenes.cp
   PortionDiagramView.cpp ProjectSettingsDialog.cpp StaticAnalysis.cpp 
   Svg.cpp Xmi2Object.cpp XmlParser.cpp ZoneDiagramView.cpp)
 
-target_link_libraries(oovcde oovCommon oovGuiCommon ${GTK_LIBRARIES} ${GMODULE_LIBRARIES})
+target_link_libraries(oovcde oovCommon oovGuiCommon ${GTK_LIBRARIES} ${DL_LIBRARIES})
 
 include_directories(BLL)
 
