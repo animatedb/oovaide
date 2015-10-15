@@ -1,11 +1,12 @@
 
-# Oovcde
+# Oovaide
 
-An object oriented analysis and code development platform that automatically
+An object oriented analysis and integrated development platform that automatically
 generates build, class, sequence, zone, portion, and component diagrams for C++
-and Objective C languages.
+and Objective C languages. Also includes test coverage, complexity and
+analysis statistics.
 
-[Oovcde Home Page](http://oovcde.sourceforge.net/)
+[Oovaide Home Page](http://oovaide.sourceforge.net/)
 
 ## Contents
 
@@ -22,7 +23,7 @@ and Objective C languages.
 - The analysis system searches directories for source code and uses CLang.
 	- Diagrams
 		- Dynamically generated allowing quick navigation between objects.
-		- Edit within in Oovcde and save and restore complex diagrams.
+		- Edit within in Oovaide and save and restore complex diagrams.
 		- Save as SVG and edit using tools such as Inkscape.
 		- Component dependency diagrams
 		- Zone diagrams (view thousands of classes)
@@ -52,22 +53,22 @@ and Objective C languages.
 
 ## Download
 
-Download the Oovcde binaries from the releases or from [Sourceforge]
-(http://sourceforge.net/projects/oovcde/files/). There is a version for Linux,
+Download the Oovaide binaries from the releases or from [Sourceforge]
+(http://sourceforge.net/projects/oovaide/files/). There is a version for Linux,
 and one for Windows.
 
 If you would like to build from source:
-- mkdir oovcde-git
-- cd oovcde-git
-- git clone https://github.com/animatedb/oovcde.git
-- cd oovcde
+- mkdir oovaide-git
+- cd oovaide-git
+- git clone https://github.com/animatedb/oovaide.git
+- cd oovaide
 - cmake source
 - make
 - sudo make install
 
 The following dependencies are required:
-- libclang-dev   (If there are compile error for clang-c/Index.h, change
-  oovcde/source/CMakelists.txt so llvm-x.x matches the version on your system.)
+- libclang-dev   (to fix compile error for clang-c/Index.h, change file
+  oovaide/source/CMakelists.txt so llvm-x.x is the matching version on your system.)
 - lib-gtk-3-dev
 
 Depending on the version of LLVM on your system, it may be required that
@@ -79,8 +80,8 @@ required.
 
 The quickest way to get started is to download the program, then run the examples.
 The explanation of the examples is here.
-[oovcde.sourceforge.net/userguide/examples.shtml]
-(http://oovcde.sourceforge.net/userguide/examples.html)
+[oovaide.sourceforge.net/userguide/examples.html]
+(http://oovaide.sourceforge.net/userguide/examples.html)
 
 
 ## Project Goals
@@ -90,16 +91,16 @@ The explanation of the examples is here.
 	- simple setup
 	- background operations
 	- fast (written in C++)
-	- simple (minimal dependencies)
+	- simple, lightweight (minimal dependencies)
 
 
 ## Other Documentation
 
- - The user guide is [http://oovcde.sourceforge.net/userguide/oovcdeuserguide.shtml]
-	(http://oovcde.sourceforge.net/userguide/oovcdeuserguide.shtml)
- - The design documentation is [http://oovcde.sourceforge.net/design/OovcdeDesign.html]
-	(http://oovcde.sourceforge.net/design/OovcdeDesign.html)
- - The existing Oovcde website is at http://oovcde.sourceforge.net/
+ - The user guide is [http://oovaide.sourceforge.net/userguide/oovaideuserguide.shtml]
+	(http://oovaide.sourceforge.net/userguide/oovaideuserguide.shtml)
+ - The design documentation is [http://oovaide.sourceforge.net/design/OovaideDesign.html]
+	(http://oovaide.sourceforge.net/design/OovaideDesign.html)
+ - The existing Oovaide website is at http://oovaide.sourceforge.net/
 
 
 ## License
