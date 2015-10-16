@@ -1,0 +1,15 @@
+EditorLineArg|+
+EditorPath|./oovEdit
+ShowAttrTypes|Yes
+ShowAttributes|Yes
+ShowCompImplicitRelations|No
+ShowOovSymbols|Yes
+ShowOperBodyVarRelations|Yes
+ShowOperParamRelations|Yes
+ShowOperParams|Yes
+ShowOperReturn|No
+ShowOperTypes|Yes
+ShowOperations|Yes
+ShowPackageName|Yes
+ShowRelationKey|Yes
+ShowTemplateRelations|Yes

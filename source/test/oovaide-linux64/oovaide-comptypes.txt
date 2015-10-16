@@ -1,0 +1,15 @@
+Comp-args-oovReports|-Wl,--no-as-needed -ldl;
+Comp-type-.metadata|Unknown
+Comp-type-ClangView|Program
+Comp-type-oovBuilder|Program
+Comp-type-oovCMaker|Program
+Comp-type-oovCommon|StaticLib
+Comp-type-oovCovInstr|Program
+Comp-type-oovCppParser|Program
+Comp-type-oovDbWriter|SharedLib
+Comp-type-oovEdit|Program
+Comp-type-oovGuiCommon|StaticLib
+Comp-type-oovReports|Program
+Comp-type-oovaide|Program
+Comp-type-test|Unknown
+Components|ClangView;examples;examples/names;examples/sharedlibgtk;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCovInstr;oovCppParser;oovDbWriter;oovEdit;oovGuiCommon;oovaide;oovaide/BLL;test;test/CppInput;test/TestCpp;test/python;test/python/oovCppParserIn;

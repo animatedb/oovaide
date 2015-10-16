@@ -1,0 +1,5 @@
+Debuggee|/home/dave/software/oovaide/2.0/code/trunk/test/trunk-oovaide-linux64/out-Debug/ClangView
+DebuggeeArgs|/home/dave/software/oovaide/2.0/code/trunk/ClangView/CLangView.cpp
+DebuggerWorkDir|/home/dave/software/oovaide/2.0/code/trunk/ClangView
+ScreenHeight|1010
+ScreenWidth|1376

@@ -1,0 +1,664 @@
+687,076 2-environment-cd /home/dave/software/oovaide/2.0/code/trunk/bin-linux
+687,076 2^done
+687,077 (gdb) 
+687,085 3-gdb-set breakpoint pending on
+687,085 3^done
+687,085 (gdb) 
+687,088 4-gdb-set detach-on-fork on
+687,089 4^done
+687,089 (gdb) 
+687,090 5-enable-pretty-printing
+687,090 5^done
+687,090 (gdb) 
+687,093 6-gdb-set python print-stack none
+687,094 6^done
+687,094 (gdb) 
+687,097 7-gdb-set print object on
+687,097 7^done
+687,097 (gdb) 
+687,100 8-gdb-set print sevenbit-strings on
+687,100 8^done
+687,100 (gdb) 
+687,107 9-gdb-set host-charset UTF-8
+687,107 9^done
+687,107 (gdb) 
+687,111 10-gdb-set target-charset UTF-8
+687,111 10^done
+687,111 (gdb) 
+687,112 11-gdb-set target-wide-charset UTF-32
+687,113 11^done
+687,113 (gdb) 
+687,114 12-gdb-set dprintf-style call
+687,114 12^done
+687,114 (gdb) 
+687,120 13source .gdbinit
+687,120 &"source .gdbinit\n"
+687,121 &".gdbinit: No such file or directory.\n"
+687,121 13^error,msg=".gdbinit: No such file or directory."
+687,121 (gdb) 
+687,123 14-gdb-set target-async off
+687,123 14^done
+687,123 (gdb) 
+687,124 15-gdb-set auto-solib-add on
+687,125 15^done
+687,125 (gdb) 
+687,134 16-file-exec-and-symbols --thread-group i1 /home/dave/software/oovaide/2.0/code/trunk/bin-lin\
+ux/oovEdit
+687,333 16^done
+687,334 (gdb) 
+687,337 17-gdb-set --thread-group i1 args /home/dave/software/oovaide/2.0/code/trunk/examples/names/t\
+winkle.cpp
+687,338 17^done
+687,338 (gdb) 
+687,343 18-gdb-show --thread-group i1 language
+687,344 18^done,value="auto"
+687,344 (gdb) 
+687,346 19-gdb-set --thread-group i1 language c
+687,346 19^done
+687,346 (gdb) 
+687,348 20-interpreter-exec --thread-group i1 console "p/x (char)-1"
+687,349 ~"$1 = 0xff\n"
+687,349 20^done
+687,350 (gdb) 
+687,353 21-data-evaluate-expression --thread-group i1 "sizeof (void*)"
+687,353 21^done,value="8"
+687,354 (gdb) 
+687,355 22-gdb-set --thread-group i1 language auto
+687,355 22^done
+687,356 (gdb) 
+687,357 23-interpreter-exec --thread-group i1 console "show endian"
+687,357 ~"The target endianness is set automatically (currently little endian)\n"
+687,358 23^done
+687,358 (gdb) 
+687,377 24-list-thread-groups
+687,377 24^done,groups=[{id="i1",type="process",executable="/home/dave/software/oovaide/2.0/code/trun\
+k/bin-linux/oovEdit"}]
+687,379 (gdb) 
+687,382 25-break-insert -f /home/dave/software/oovaide/2.0/code/trunk/oovEdit/Debugger.cpp:127
+687,451 25^done,bkpt={number="1",type="breakpoint",disp="keep",enabled="y",addr="0x00000000004b7715"\
+,func="DebuggerGdb::runDebuggerProcess()",file="../Debugger.cpp",fullname="/home/dave/software/oovcd\
+e/2.0/code/trunk/oovEdit/Debugger.cpp",line="127",thread-groups=["i1"],times="0",original-location="\
+/home/dave/software/oovaide/2.0/code/trunk/oovEdit/Debugger.cpp:127"}
+687,452 (gdb) 
+687,465 26-break-insert -t -f main
+687,467 26^done,bkpt={number="2",type="breakpoint",disp="del",enabled="y",addr="0x00000000004d7312",\
+func="main(int, char**)",file="../oovEdit.cpp",fullname="/home/dave/software/oovaide/2.0/code/trunk/o\
+ovEdit/oovEdit.cpp",line="699",thread-groups=["i1"],times="0",original-location="main"}
+687,468 (gdb) 
+687,474 27-inferior-tty-set --thread-group i1 /dev/pts/1
+687,474 27^done
+687,474 (gdb) 
+687,485 28-exec-run --thread-group i1
+687,492 =thread-group-started,id="i1",pid="7947"
+687,493 =thread-created,id="1",group-id="i1"
+687,494 29-list-thread-groups --available
+687,516 =library-loaded,id="/lib64/ld-linux-x86-64.so.2",target-name="/lib64/ld-linux-x86-64.so.2",h\
+ost-name="/lib64/ld-linux-x86-64.so.2",symbols-loaded="0",thread-group="i1"
+687,529 28^running
+687,529 *running,thread-id="all"
+687,529 (gdb) 
+687,551 =library-loaded,id="/lib/x86_64-linux-gnu/libpthread.so.0",target-name="/lib/x86_64-linux-gn\
+u/libpthread.so.0",host-name="/lib/x86_64-linux-gnu/libpthread.so.0",symbols-loaded="0",thread-group\
+="i1"
+687,551 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libcairo.so.2",target-name="/usr/lib/x86_64-li\
+nux-gnu/libcairo.so.2",host-name="/usr/lib/x86_64-linux-gnu/libcairo.so.2",symbols-loaded="0",thread\
+-group="i1"
+687,551 =library-loaded,id="/lib/x86_64-linux-gnu/libglib-2.0.so.0",target-name="/lib/x86_64-linux-g\
+nu/libglib-2.0.so.0",host-name="/lib/x86_64-linux-gnu/libglib-2.0.so.0",symbols-loaded="0",thread-gr\
+oup="i1"
+687,551 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0",target-name="/usr/lib/x86\
+_64-linux-gnu/libgobject-2.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libgobject-2.0.so.0",symbols\
+-loaded="0",thread-group="i1"
+687,552 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libgdk-3.so.0",target-name="/usr/lib/x86_64-li\
+nux-gnu/libgdk-3.so.0",host-name="/usr/lib/x86_64-linux-gnu/libgdk-3.so.0",symbols-loaded="0",thread\
+-group="i1"
+687,552 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libgtk-3.so.0",target-name="/usr/lib/x86_64-li\
+nux-gnu/libgtk-3.so.0",host-name="/usr/lib/x86_64-linux-gnu/libgtk-3.so.0",symbols-loaded="0",thread\
+-group="i1"
+687,552 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libclang-3.5.so.1",target-name="/usr/lib/x86_6\
+4-linux-gnu/libclang-3.5.so.1",host-name="/usr/lib/x86_64-linux-gnu/libclang-3.5.so.1",symbols-loade\
+d="0",thread-group="i1"
+687,552 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libpango-1.0.so.0",target-name="/usr/lib/x86_6\
+4-linux-gnu/libpango-1.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libpango-1.0.so.0",symbols-loade\
+d="0",thread-group="i1"
+687,552 =library-loaded,id="/lib/x86_64-linux-gnu/libgcc_s.so.1",target-name="/lib/x86_64-linux-gnu/\
+libgcc_s.so.1",host-name="/lib/x86_64-linux-gnu/libgcc_s.so.1",symbols-loaded="0",thread-group="i1"
+687,553 =library-loaded,id="/lib/x86_64-linux-gnu/libc.so.6",target-name="/lib/x86_64-linux-gnu/libc\
+.so.6",host-name="/lib/x86_64-linux-gnu/libc.so.6",symbols-loaded="0",thread-group="i1"
+687,553 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libpixman-1.so.0",target-name="/usr/lib/x86_64\
+-linux-gnu/libpixman-1.so.0",host-name="/usr/lib/x86_64-linux-gnu/libpixman-1.so.0",symbols-loaded="\
+0",thread-group="i1"
+687,553 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libfontconfig.so.1",target-name="/usr/lib/x86_\
+64-linux-gnu/libfontconfig.so.1",host-name="/usr/lib/x86_64-linux-gnu/libfontconfig.so.1",symbols-lo\
+aded="0",thread-group="i1"
+687,554 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libfreetype.so.6",target-name="/usr/lib/x86_64\
+-linux-gnu/libfreetype.so.6",host-name="/usr/lib/x86_64-linux-gnu/libfreetype.so.6",symbols-loaded="\
+0",thread-group="i1"
+687,554 =library-loaded,id="/lib/x86_64-linux-gnu/libpng12.so.0",target-name="/lib/x86_64-linux-gnu/\
+libpng12.so.0",host-name="/lib/x86_64-linux-gnu/libpng12.so.0",symbols-loaded="0",thread-group="i1"
+687,554 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libxcb-shm.so.0",target-name="/usr/lib/x86_64-\
+linux-gnu/libxcb-shm.so.0",host-name="/usr/lib/x86_64-linux-gnu/libxcb-shm.so.0",symbols-loaded="0",\
+thread-group="i1"
+687,555 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libxcb-render.so.0",target-name="/usr/lib/x86_\
+64-linux-gnu/libxcb-render.so.0",host-name="/usr/lib/x86_64-linux-gnu/libxcb-render.so.0",symbols-lo\
+aded="0",thread-group="i1"
+687,555 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libxcb.so.1",target-name="/usr/lib/x86_64-linu\
+x-gnu/libxcb.so.1",host-name="/usr/lib/x86_64-linux-gnu/libxcb.so.1",symbols-loaded="0",thread-group\
+="i1"
+687,555 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXrender.so.1",target-name="/usr/lib/x86_64-\
+linux-gnu/libXrender.so.1",host-name="/usr/lib/x86_64-linux-gnu/libXrender.so.1",symbols-loaded="0",\
+thread-group="i1"
+687,556 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libX11.so.6",target-name="/usr/lib/x86_64-linu\
+x-gnu/libX11.so.6",host-name="/usr/lib/x86_64-linux-gnu/libX11.so.6",symbols-loaded="0",thread-group\
+="i1"
+687,556 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXext.so.6",target-name="/usr/lib/x86_64-lin\
+ux-gnu/libXext.so.6",host-name="/usr/lib/x86_64-linux-gnu/libXext.so.6",symbols-loaded="0",thread-gr\
+oup="i1"
+687,556 =library-loaded,id="/lib/x86_64-linux-gnu/libz.so.1",target-name="/lib/x86_64-linux-gnu/libz\
+.so.1",host-name="/lib/x86_64-linux-gnu/libz.so.1",symbols-loaded="0",thread-group="i1"
+687,556 =library-loaded,id="/lib/x86_64-linux-gnu/librt.so.1",target-name="/lib/x86_64-linux-gnu/lib\
+rt.so.1",host-name="/lib/x86_64-linux-gnu/librt.so.1",symbols-loaded="0",thread-group="i1"
+687,556 =library-loaded,id="/lib/x86_64-linux-gnu/libm.so.6",target-name="/lib/x86_64-linux-gnu/libm\
+.so.6",host-name="/lib/x86_64-linux-gnu/libm.so.6",symbols-loaded="0",thread-group="i1"
+687,557 =library-loaded,id="/lib/x86_64-linux-gnu/libpcre.so.3",target-name="/lib/x86_64-linux-gnu/l\
+ibpcre.so.3",host-name="/lib/x86_64-linux-gnu/libpcre.so.3",symbols-loaded="0",thread-group="i1"
+687,557 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libffi.so.6",target-name="/usr/lib/x86_64-linu\
+x-gnu/libffi.so.6",host-name="/usr/lib/x86_64-linux-gnu/libffi.so.6",symbols-loaded="0",thread-group\
+="i1"
+687,557 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0",target-name="/usr/lib/\
+x86_64-linux-gnu/libpangocairo-1.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libpangocairo-1.0.so.0\
+",symbols-loaded="0",thread-group="i1"
+687,557 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0",target-name="/usr/lib/\
+x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libgdk_pixbuf-2.0.so.0\
+",symbols-loaded="0",thread-group="i1"
+687,558 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2",target-name="/usr/lib/x\
+86_64-linux-gnu/libcairo-gobject.so.2",host-name="/usr/lib/x86_64-linux-gnu/libcairo-gobject.so.2",s\
+ymbols-loaded="0",thread-group="i1"
+687,558 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0",target-name="/usr/lib/x86_64-\
+linux-gnu/libgio-2.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libgio-2.0.so.0",symbols-loaded="0",\
+thread-group="i1"
+687,558 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXinerama.so.1",target-name="/usr/lib/x86_64\
+-linux-gnu/libXinerama.so.1",host-name="/usr/lib/x86_64-linux-gnu/libXinerama.so.1",symbols-loaded="\
+0",thread-group="i1"
+687,558 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXi.so.6",target-name="/usr/lib/x86_64-linux\
+-gnu/libXi.so.6",host-name="/usr/lib/x86_64-linux-gnu/libXi.so.6",symbols-loaded="0",thread-group="i\
+1"
+687,559 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXrandr.so.2",target-name="/usr/lib/x86_64-l\
+inux-gnu/libXrandr.so.2",host-name="/usr/lib/x86_64-linux-gnu/libXrandr.so.2",symbols-loaded="0",thr\
+ead-group="i1"
+687,559 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXcursor.so.1",target-name="/usr/lib/x86_64-\
+linux-gnu/libXcursor.so.1",host-name="/usr/lib/x86_64-linux-gnu/libXcursor.so.1",symbols-loaded="0",\
+thread-group="i1"
+687,559 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXcomposite.so.1",target-name="/usr/lib/x86_\
+64-linux-gnu/libXcomposite.so.1",host-name="/usr/lib/x86_64-linux-gnu/libXcomposite.so.1",symbols-lo\
+aded="0",thread-group="i1"
+687,559 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXdamage.so.1",target-name="/usr/lib/x86_64-\
+linux-gnu/libXdamage.so.1",host-name="/usr/lib/x86_64-linux-gnu/libXdamage.so.1",symbols-loaded="0",\
+thread-group="i1"
+687,559 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXfixes.so.3",target-name="/usr/lib/x86_64-l\
+inux-gnu/libXfixes.so.3",host-name="/usr/lib/x86_64-linux-gnu/libXfixes.so.3",symbols-loaded="0",thr\
+ead-group="i1"
+687,560 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libwayland-client.so.0",target-name="/usr/lib/\
+x86_64-linux-gnu/libwayland-client.so.0",host-name="/usr/lib/x86_64-linux-gnu/libwayland-client.so.0\
+",symbols-loaded="0",thread-group="i1"
+687,560 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libxkbcommon.so.0",target-name="/usr/lib/x86_6\
+4-linux-gnu/libxkbcommon.so.0",host-name="/usr/lib/x86_64-linux-gnu/libxkbcommon.so.0",symbols-loade\
+d="0",thread-group="i1"
+687,560 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0",target-name="/usr/lib/\
+x86_64-linux-gnu/libwayland-cursor.so.0",host-name="/usr/lib/x86_64-linux-gnu/libwayland-cursor.so.0\
+",symbols-loaded="0",thread-group="i1"
+687,560 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libmirclient.so.8",target-name="/usr/lib/x86_6\
+4-linux-gnu/libmirclient.so.8",host-name="/usr/lib/x86_64-linux-gnu/libmirclient.so.8",symbols-loade\
+d="0",thread-group="i1"
+687,561 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0",target-name="/usr/lib/x86\
+_64-linux-gnu/libgmodule-2.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libgmodule-2.0.so.0",symbols\
+-loaded="0",thread-group="i1"
+687,561 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libatk-1.0.so.0",target-name="/usr/lib/x86_64-\
+linux-gnu/libatk-1.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libatk-1.0.so.0",symbols-loaded="0",\
+thread-group="i1"
+687,561 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0",target-name="/usr/lib/\
+x86_64-linux-gnu/libatk-bridge-2.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libatk-bridge-2.0.so.0\
+",symbols-loaded="0",thread-group="i1"
+687,563 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0",target-name="/usr/lib/x8\
+6_64-linux-gnu/libpangoft2-1.0.so.0",host-name="/usr/lib/x86_64-linux-gnu/libpangoft2-1.0.so.0",symb\
+ols-loaded="0",thread-group="i1"
+687,563 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libLLVM-3.5.so.1",target-name="/usr/lib/x86_64\
+-linux-gnu/libLLVM-3.5.so.1",host-name="/usr/lib/x86_64-linux-gnu/libLLVM-3.5.so.1",symbols-loaded="\
+0",thread-group="i1"
+687,563 =library-loaded,id="/lib/x86_64-linux-gnu/libdl.so.2",target-name="/lib/x86_64-linux-gnu/lib\
+dl.so.2",host-name="/lib/x86_64-linux-gnu/libdl.so.2",symbols-loaded="0",thread-group="i1"
+687,563 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libstdc++.so.6",target-name="/usr/lib/x86_64-l\
+inux-gnu/libstdc++.so.6",host-name="/usr/lib/x86_64-linux-gnu/libstdc++.so.6",symbols-loaded="0",thr\
+ead-group="i1"
+687,564 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libthai.so.0",target-name="/usr/lib/x86_64-lin\
+ux-gnu/libthai.so.0",host-name="/usr/lib/x86_64-linux-gnu/libthai.so.0",symbols-loaded="0",thread-gr\
+oup="i1"
+687,564 =library-loaded,id="/lib/x86_64-linux-gnu/libexpat.so.1",target-name="/lib/x86_64-linux-gnu/\
+libexpat.so.1",host-name="/lib/x86_64-linux-gnu/libexpat.so.1",symbols-loaded="0",thread-group="i1"
+687,564 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXau.so.6",target-name="/usr/lib/x86_64-linu\
+x-gnu/libXau.so.6",host-name="/usr/lib/x86_64-linux-gnu/libXau.so.6",symbols-loaded="0",thread-group\
+="i1"
+687,565 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libXdmcp.so.6",target-name="/usr/lib/x86_64-li\
+nux-gnu/libXdmcp.so.6",host-name="/usr/lib/x86_64-linux-gnu/libXdmcp.so.6",symbols-loaded="0",thread\
+-group="i1"
+687,565 =library-loaded,id="/lib/x86_64-linux-gnu/libselinux.so.1",target-name="/lib/x86_64-linux-gn\
+u/libselinux.so.1",host-name="/lib/x86_64-linux-gnu/libselinux.so.1",symbols-loaded="0",thread-group\
+="i1"
+687,568 =library-loaded,id="/lib/x86_64-linux-gnu/libresolv.so.2",target-name="/lib/x86_64-linux-gnu\
+/libresolv.so.2",host-name="/lib/x86_64-linux-gnu/libresolv.so.2",symbols-loaded="0",thread-group="i\
+1"
+687,568 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libmircommon.so.3",target-name="/usr/lib/x86_6\
+4-linux-gnu/libmircommon.so.3",host-name="/usr/lib/x86_64-linux-gnu/libmircommon.so.3",symbols-loade\
+d="0",thread-group="i1"
+687,569 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libmirprotobuf.so.0",target-name="/usr/lib/x86\
+_64-linux-gnu/libmirprotobuf.so.0",host-name="/usr/lib/x86_64-linux-gnu/libmirprotobuf.so.0",symbols\
+-loaded="0",thread-group="i1"
+687,569 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libboost_system.so.1.55.0",target-name="/usr/l\
+ib/x86_64-linux-gnu/libboost_system.so.1.55.0",host-name="/usr/lib/x86_64-linux-gnu/libboost_system.\
+so.1.55.0",symbols-loaded="0",thread-group="i1"
+687,569 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libprotobuf.so.9",target-name="/usr/lib/x86_64\
+-linux-gnu/libprotobuf.so.9",host-name="/usr/lib/x86_64-linux-gnu/libprotobuf.so.9",symbols-loaded="\
+0",thread-group="i1"
+687,570 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libatspi.so.0",target-name="/usr/lib/x86_64-li\
+nux-gnu/libatspi.so.0",host-name="/usr/lib/x86_64-linux-gnu/libatspi.so.0",symbols-loaded="0",thread\
+-group="i1"
+687,570 =library-loaded,id="/lib/x86_64-linux-gnu/libdbus-1.so.3",target-name="/lib/x86_64-linux-gnu\
+/libdbus-1.so.3",host-name="/lib/x86_64-linux-gnu/libdbus-1.so.3",symbols-loaded="0",thread-group="i\
+1"
+687,570 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libharfbuzz.so.0",target-name="/usr/lib/x86_64\
+-linux-gnu/libharfbuzz.so.0",host-name="/usr/lib/x86_64-linux-gnu/libharfbuzz.so.0",symbols-loaded="\
+0",thread-group="i1"
+687,571 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libedit.so.2",target-name="/usr/lib/x86_64-lin\
+ux-gnu/libedit.so.2",host-name="/usr/lib/x86_64-linux-gnu/libedit.so.2",symbols-loaded="0",thread-gr\
+oup="i1"
+687,571 =library-loaded,id="/lib/x86_64-linux-gnu/libtinfo.so.5",target-name="/lib/x86_64-linux-gnu/\
+libtinfo.so.5",host-name="/lib/x86_64-linux-gnu/libtinfo.so.5",symbols-loaded="0",thread-group="i1"
+687,571 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libdatrie.so.1",target-name="/usr/lib/x86_64-l\
+inux-gnu/libdatrie.so.1",host-name="/usr/lib/x86_64-linux-gnu/libdatrie.so.1",symbols-loaded="0",thr\
+ead-group="i1"
+687,571 =library-loaded,id="/lib/x86_64-linux-gnu/libudev.so.1",target-name="/lib/x86_64-linux-gnu/l\
+ibudev.so.1",host-name="/lib/x86_64-linux-gnu/libudev.so.1",symbols-loaded="0",thread-group="i1"
+687,571 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.55.0",target-name="/u\
+sr/lib/x86_64-linux-gnu/libboost_filesystem.so.1.55.0",host-name="/usr/lib/x86_64-linux-gnu/libboost\
+_filesystem.so.1.55.0",symbols-loaded="0",thread-group="i1"
+687,571 =library-loaded,id="/usr/lib/x86_64-linux-gnu/libgraphite2.so.3",target-name="/usr/lib/x86_6\
+4-linux-gnu/libgraphite2.so.3",host-name="/usr/lib/x86_64-linux-gnu/libgraphite2.so.3",symbols-loade\
+d="0",thread-group="i1"
+687,572 ~"[Thread debugging using libthread_db enabled]\n"
+687,572 ~"Using host libthread_db library \"/lib/x86_64-linux-gnu/libthread_db.so.1\".\n"
+687,975 =breakpoint-modified,bkpt={number="2",type="breakpoint",disp="del",enabled="y",addr="0x00000\
+000004d7312",func="main(int, char**)",file="../oovEdit.cpp",fullname="/home/dave/software/oovaide/2.0\
+/code/trunk/oovEdit/oovEdit.cpp",line="699",thread-groups=["i1"],times="1",original-location="main"}\
+
+687,985 ~"\nTemporary breakpoint "
+687,986 ~"2, main (argc=2, argv=0x7fffffffdfb8) at ../oovEdit.cpp:699\n"
+687,987 ~"699\t    {\n"
+687,987 *stopped,reason="breakpoint-hit",disp="del",bkptno="2",frame={addr="0x00000000004d7312",func\
+="main",args=[{name="argc",value="2"},{name="argv",value="0x7fffffffdfb8"}],file="../oovEdit.cpp",fu\
+llname="/home/dave/software/oovaide/2.0/code/trunk/oovEdit/oovEdit.cpp",line="699"},thread-id="1",sto\
+pped-threads="all",core="1"
+687,987 =breakpoint-deleted,id="2"
+687,987 (gdb) 
+688,008 29^done,groups=[{id="1",type="process",description="/sbin/init nodmraid splash",user="root",\
+cores=["3"]},{id="2",type="process",description="[kthreadd]",user="root",cores=["0"]},{id="3",type="\
+process",description="[ksoftirqd/0]",user="root",cores=["0"]},{id="5",type="process",description="[k\
+worker/0:0H]",user="root",cores=["0"]},{id="6",type="process",description="[kworker/u8:0]",user="roo\
+t",cores=["3"]},{id="7",type="process",description="[rcu_sched]",user="root",cores=["0"]},{id="8",ty\
+pe="process",description="[rcu_bh]",user="root",cores=["0"]},{id="9",type="process",description="[rc\
+uos/0]",user="root",cores=["0"]},{id="10",type="process",description="[rcuob/0]",user="root",cores=[\
+"0"]},{id="11",type="process",description="[migration/0]",user="root",cores=["0"]},{id="12",type="pr\
+ocess",description="[watchdog/0]",user="root",cores=["0"]},{id="13",type="process",description="[wat\
+chdog/1]",user="root",cores=["1"]},{id="14",type="process",description="[migration/1]",user="root",c\
+ores=["1"]},{id="15",type="process",description="[ksoftirqd/1]",user="root",cores=["1"]},{id="17",ty\
+pe="process",description="[kworker/1:0H]",user="root",cores=["1"]},{id="18",type="process",descripti\
+on="[rcuos/1]",user="root",cores=["0"]},{id="19",type="process",description="[rcuob/1]",user="root",\
+cores=["0"]},{id="20",type="process",description="[watchdog/2]",user="root",cores=["2"]},{id="21",ty\
+pe="process",description="[migration/2]",user="root",cores=["2"]},{id="22",type="process",descriptio\
+n="[ksoftirqd/2]",user="root",cores=["2"]},{id="24",type="process",description="[kworker/2:0H]",user\
+="root",cores=["2"]},{id="25",type="process",description="[rcuos/2]",user="root",cores=["0"]},{id="2\
+6",type="process",description="[rcuob/2]",user="root",cores=["0"]},{id="27",type="process",descripti\
+on="[watchdog/3]",user="root",cores=["3"]},{id="28",type="process",description="[migration/3]",user=\
+"root",cores=["3"]},{id="29",type="process",description="[ksoftirqd/3]",user="root",cores=["3"]},{id\
+="31",type="process",description="[kworker/3:0H]",user="root",cores=["3"]},{id="32",type="process",d\
+escription="[rcuos/3]",user="root",cores=["3"]},{id="33",type="process",description="[rcuob/3]",user\
+="root",cores=["0"]},{id="34",type="process",description="[khelper]",user="root",cores=["3"]},{id="3\
+5",type="process",description="[kdevtmpfs]",user="root",cores=["2"]},{id="36",type="process",descrip\
+tion="[netns]",user="root",cores=["3"]},{id="37",type="process",description="[perf]",user="root",cor\
+es=["3"]},{id="38",type="process",description="[khungtaskd]",user="root",cores=["0"]},{id="39",type=\
+"process",description="[writeback]",user="root",cores=["3"]},{id="40",type="process",description="[k\
+smd]",user="root",cores=["3"]},{id="41",type="process",description="[khugepaged]",user="root",cores=\
+["3"]},{id="42",type="process",description="[crypto]",user="root",cores=["2"]},{id="43",type="proces\
+s",description="[kintegrityd]",user="root",cores=["2"]},{id="44",type="process",description="[bioset\
+]",user="root",cores=["2"]},{id="45",type="process",description="[kblockd]",user="root",cores=["2"]}\
+,{id="46",type="process",description="[ata_sff]",user="root",cores=["0"]},{id="47",type="process",de\
+scription="[md]",user="root",cores=["2"]},{id="48",type="process",description="[devfreq_wq]",user="r\
+oot",cores=["3"]},{id="53",type="process",description="[kswapd0]",user="root",cores=["1"]},{id="54",\
+type="process",description="[fsnotify_mark]",user="root",cores=["0"]},{id="55",type="process",descri\
+ption="[ecryptfs-kthrea]",user="root",cores=["1"]},{id="67",type="process",description="[kthrotld]",\
+user="root",cores=["1"]},{id="68",type="process",description="[acpi_thermal_pm]",user="root",cores=[\
+"0"]},{id="69",type="process",description="[kworker/3:1]",user="root",cores=["3"]},{id="71",type="pr\
+ocess",description="[kworker/3:2]",user="root",cores=["3"]},{id="75",type="process",description="[ip\
+v6_addrconf]",user="root",cores=["2"]},{id="94",type="process",description="[deferwq]",user="root",c\
+ores=["2"]},{id="95",type="process",description="[charger_manager]",user="root",cores=["2"]},{id="14\
+6",type="process",description="[scsi_eh_0]",user="root",cores=["2"]},{id="147",type="process",descri\
+ption="[scsi_tmf_0]",user="root",cores=["0"]},{id="148",type="process",description="[scsi_eh_1]",use\
+r="root",cores=["2"]},{id="149",type="process",description="[scsi_tmf_1]",user="root",cores=["3"]},{\
+id="150",type="process",description="[scsi_eh_2]",user="root",cores=["3"]},{id="151",type="process",\
+description="[scsi_tmf_2]",user="root",cores=["3"]},{id="152",type="process",description="[scsi_eh_3\
+]",user="root",cores=["1"]},{id="153",type="process",description="[scsi_tmf_3]",user="root",cores=["\
+1"]},{id="154",type="process",description="[scsi_eh_4]",user="root",cores=["2"]},{id="155",type="pro\
+cess",description="[scsi_tmf_4]",user="root",cores=["1"]},{id="156",type="process",description="[scs\
+i_eh_5]",user="root",cores=["0"]},{id="157",type="process",description="[scsi_tmf_5]",user="root",co\
+res=["1"]},{id="158",type="process",description="[scsi_eh_6]",user="root",cores=["0"]},{id="159",typ\
+e="process",description="[scsi_tmf_6]",user="root",cores=["0"]},{id="160",type="process",description\
+="[scsi_eh_7]",user="root",cores=["1"]},{id="161",type="process",description="[scsi_tmf_7]",user="ro\
+ot",cores=["1"]},{id="169",type="process",description="[kworker/u8:9]",user="root",cores=["3"]},{id=\
+"180",type="process",description="[jbd2/sdb1-8]",user="root",cores=["3"]},{id="181",type="process",d\
+escription="[ext4-rsv-conver]",user="root",cores=["2"]},{id="219",type="process",description="[kaudi\
+td]",user="root",cores=["3"]},{id="232",type="process",description="/lib/systemd/systemd-journald",u\
+ser="root",cores=["0"]},{id="266",type="process",description="/lib/systemd/systemd-udevd",user="root\
+",cores=["2"]},{id="300",type="process",description="[kworker/2:1H]",user="root",cores=["2"]},{id="3\
+01",type="process",description="[kworker/1:1H]",user="root",cores=["1"]},{id="308",type="process",de\
+scription="[edac-poller]",user="root",cores=["2"]},{id="350",type="process",description="[kworker/0:\
+1H]",user="root",cores=["0"]},{id="351",type="process",description="[kworker/3:1H]",user="root",core\
+s=["3"]},{id="366",type="process",description="[led_workqueue]",user="root",cores=["0"]},{id="393",t\
+ype="process",description="[hd-audio0]",user="root",cores=["0"]},{id="396",type="process",descriptio\
+n="[hd-audio1]",user="root",cores=["2"]},{id="399",type="process",description="[kvm-irqfd-clean]",us\
+er="root",cores=["0"]},{id="428",type="process",description="[jbd2/sdb6-8]",user="root",cores=["3"]}\
+,{id="429",type="process",description="[ext4-rsv-conver]",user="root",cores=["3"]},{id="516",type="p\
+rocess",description="/lib/systemd/systemd-timesyncd",user="systemd-timesync",cores=["1","3"]},{id="6\
+13",type="process",description="/lib/systemd/systemd-logind",user="root",cores=["2"]},{id="616",type\
+="process",description="/usr/lib/accountsservice/accounts-daemon",user="root",cores=["2"]},{id="617"\
+,type="process",description="/usr/sbin/cron -f",user="root",cores=["0"]},{id="624",type="process",de\
+scription="/usr/sbin/ModemManager",user="root",cores=["1","3"]},{id="630",type="process",description\
+="/usr/sbin/NetworkManager --no-daemon",user="root",cores=["0","3"]},{id="651",type="process",descri\
+ption="avahi-daemon: running [dave-System-Product-Name.local]",user="avahi",cores=["1"]},{id="655",t\
+ype="process",description="/usr/bin/whoopsie -f",user="whoopsie",cores=["0"]},{id="661",type="proces\
+s",description="/usr/sbin/rsyslogd -n",user="syslog",cores=["1","2"]},{id="676",type="process",descr\
+iption="/usr/bin/dbus-daemon --system --address=systemd: --nofork --nopidfile --systemd-activation",\
+user="messagebus",cores=["3"]},{id="707",type="process",description="/usr/sbin/irqbalance --pid=/var\
+/run/irqbalance.pid",user="root",cores=["0"]},{id="713",type="process",description="avahi-daemon: ch\
+root helper",user="avahi",cores=["2"]},{id="715",type="process",description="/usr/sbin/cups-browsed"\
+,user="root",cores=["3"]},{id="749",type="process",description="/usr/lib/policykit-1/polkitd --no-de\
+bug",user="root",cores=["1","3"]},{id="757",type="process",description="[cfg80211]",user="root",core\
+s=["0"]},{id="784",type="process",description="/usr/sbin/gdm",user="root",cores=["0","2"]},{id="791"\
+,type="process",description="/usr/bin/X :0 -background none -noreset -verbose -auth /var/run/gdm/aut\
+h-for-gdm-yD03S2/database -seat seat0 -nolisten tcp vt7",user="root",cores=["0","1","2","3"]},{id="8\
+10",type="process",description="/sbin/agetty --noclear tty1 linux",user="root",cores=["2"]},{id="815\
+",type="process",description="/lib/systemd/systemd --user",user="gdm",cores=["1"]},{id="816",type="p\
+rocess",description="(sd-pam)",user="gdm",cores=["3"]},{id="849",type="process",description="/usr/li\
+b/upower/upowerd",user="root",cores=["0","2","3"]},{id="889",type="process",description="/usr/lib/co\
+lord/colord",user="colord",cores=["0","1"]},{id="895",type="process",description="/usr/lib/rtkit/rtk\
+it-daemon",user="rtkit",cores=["0","2","3"]},{id="948",type="process",description="/usr/lib/udisks2/\
+udisksd --no-debug",user="root",cores=["1","2","3"]},{id="978",type="process",description="gdm-sessi\
+on-worker [pam/gdm-password]",user="root",cores=["0","2","3"]},{id="981",type="process",description=\
+"/lib/systemd/systemd --user",user="dave",cores=["3"]},{id="982",type="process",description="(sd-pam\
+)",user="dave",cores=["0"]},{id="986",type="process",description="/usr/bin/gnome-keyring-daemon --da\
+emonize --login",user="dave",cores=["0","3"]},{id="990",type="process",description="ibus-daemon --xi\
+m --panel disable",user="gdm",cores=["0","1","3"]},{id="993",type="process",description="/usr/lib/ib\
+us/ibus-dconf",user="gdm",cores=["0","1","2","3"]},{id="995",type="process",description="/usr/lib/ib\
+us/ibus-x11 --kill-daemon",user="gdm",cores=["2","3"]},{id="1004",type="process",description="/sbin/\
+upstart --user",user="dave",cores=["3"]},{id="1081",type="process",description="upstart-udev-bridge \
+--daemon --user",user="dave",cores=["1"]},{id="1091",type="process",description="dbus-daemon --fork \
+--session --address=unix:abstract=/tmp/dbus-B24wxhZYRH",user="dave",cores=["0"]},{id="1103",type="pr\
+ocess",description="/usr/lib/x86_64-linux-gnu/hud/window-stack-bridge",user="dave",cores=["0"]},{id=\
+"1145",type="process",description="upstart-dbus-bridge --daemon --system --user --bus-name system",u\
+ser="dave",cores=["3"]},{id="1146",type="process",description="upstart-dbus-bridge --daemon --sessio\
+n --user --bus-name session",user="dave",cores=["0"]},{id="1147",type="process",description="upstart\
+-file-bridge --daemon --user",user="dave",cores=["1"]},{id="1148",type="process",description="/usr/b\
+in/ibus-daemon --daemonize --xim",user="dave",cores=["0","3"]},{id="1160",type="process",description\
+="/usr/lib/unity-settings-daemon/unity-settings-daemon",user="dave",cores=["0","1","3"]},{id="1162",\
+type="process",description="/usr/lib/gvfs/gvfsd",user="dave",cores=["0","2"]},{id="1167",type="proce\
+ss",description="/usr/lib/gvfs/gvfsd-fuse /run/user/1000/gvfs -f -o big_writes",user="dave",cores=["\
+2","3"]},{id="1170",type="process",description="/usr/lib/ibus/ibus-dconf",user="dave",cores=["1","2"\
+]},{id="1171",type="process",description="/usr/lib/at-spi2-core/at-spi-bus-launcher --launch-immedia\
+tely",user="dave",cores=["0","1","3"]},{id="1172",type="process",description="/usr/lib/ibus/ibus-ui-\
+gtk3",user="dave",cores=["0","2","3"]},{id="1175",type="process",description="gnome-session --sessio\
+n=gnome-classic",user="dave",cores=["0","2","3"]},{id="1179",type="process",description="/usr/lib/ib\
+us/ibus-x11 --kill-daemon",user="dave",cores=["0","1","2"]},{id="1188",type="process",description="/\
+usr/bin/dbus-daemon --config-file=/etc/at-spi2/accessibility.conf --nofork --print-address 3",user="\
+dave",cores=["0"]},{id="1194",type="process",description="/usr/lib/at-spi2-core/at-spi2-registryd --\
+use-gnome-session",user="dave",cores=["2","3"]},{id="1209",type="process",description="/usr/lib/x86_\
+64-linux-gnu/bamf/bamfdaemon",user="dave",cores=["0","2"]},{id="1219",type="process",description="/u\
+sr/lib/ibus/ibus-engine-simple",user="dave",cores=["2","3"]},{id="1241",type="process",description="\
+/usr/bin/pulseaudio --start --log-target=syslog",user="dave",cores=["0","1","2","3"]},{id="1261",typ\
+e="process",description="/usr/sbin/kerneloops",user="kernoops",cores=["3"]},{id="1274",type="process\
+",description="/usr/lib/dconf/dconf-service",user="dave",cores=["1","2","3"]},{id="1278",type="proce\
+ss",description="/usr/bin/gnome-shell",user="dave",cores=["0","1","2","3"]},{id="1295",type="process\
+",description="/usr/lib/gnome-shell/gnome-shell-calendar-server",user="dave",cores=["2","3"]},{id="1\
+299",type="process",description="/usr/lib/evolution/evolution-source-registry",user="dave",cores=["0\
+","1","2"]},{id="1302",type="process",description="/usr/lib/telepathy/mission-control-5",user="dave"\
+,cores=["0","2","3"]},{id="1307",type="process",description="/usr/lib/gvfs/gvfs-udisks2-volume-monit\
+or",user="dave",cores=["0","3"]},{id="1316",type="process",description="/usr/lib/gvfs/gvfs-mtp-volum\
+e-monitor",user="dave",cores=["2"]},{id="1320",type="process",description="/usr/lib/gvfs/gvfs-afc-vo\
+lume-monitor",user="dave",cores=["1","2"]},{id="1325",type="process",description="/usr/lib/gvfs/gvfs\
+-gphoto2-volume-monitor",user="dave",cores=["0","2"]},{id="1331",type="process",description="nm-appl\
+et",user="dave",cores=["0","3"]},{id="1332",type="process",description="nautilus -n",user="dave",cor\
+es=["0","1","2","3"]},{id="1333",type="process",description="/usr/lib/x86_64-linux-gnu/indicator-app\
+lication/indicator-application-service",user="dave",cores=["0","1"]},{id="1347",type="process",descr\
+iption="/usr/lib/x86_64-linux-gnu/gconf/gconfd-2",user="dave",cores=["2"]},{id="1356",type="process"\
+,description="/usr/lib/evolution/evolution-calendar-factory",user="dave",cores=["1","2","3"]},{id="1\
+363",type="process",description="/usr/lib/gvfs/gvfsd-trash --spawner :1.4 /org/gtk/gvfs/exec_spaw/0"\
+,user="dave",cores=["0","2"]},{id="1381",type="process",description="/usr/lib/gvfs/gvfsd-metadata",u\
+ser="dave",cores=["1","2"]},{id="1384",type="process",description="/usr/lib/gvfs/gvfsd-burn --spawne\
+r :1.4 /org/gtk/gvfs/exec_spaw/1",user="dave",cores=["1","3"]},{id="1413",type="process",description\
+="telepathy-indicator",user="dave",cores=["0","2","3"]},{id="1426",type="process",description="zeitg\
+eist-datahub",user="dave",cores=["0","1","2","3"]},{id="1438",type="process",description="/usr/bin/z\
+eitgeist-daemon",user="dave",cores=["1","3"]},{id="1444",type="process",description="/usr/lib/x86_64\
+-linux-gnu/zeitgeist-fts",user="dave",cores=["1","2","3"]},{id="1461",type="process",description="/b\
+in/cat",user="dave",cores=["2"]},{id="1677",type="process",description="update-notifier",user="dave"\
+,cores=["0","1","3"]},{id="2367",type="process",description="/usr/lib/x86_64-linux-gnu/deja-dup/deja\
+-dup-monitor",user="dave",cores=["1"]},{id="2784",type="process",description="/sbin/dhclient -d -q -\
+sf /usr/lib/NetworkManager/nm-dhcp-helper -pf /run/sendsigs.omit.d/network-manager.dhclient-eth1.pid\
+ -lf /var/lib/NetworkManager/dhclient-4eca2195-5762-4f08-b47f-8e4d037244e2-eth1.lease -cf /var/lib/N\
+etworkManager/dhclient-eth1.conf eth1",user="root",cores=["0"]},{id="2789",type="process",descriptio\
+n="/usr/sbin/dnsmasq --no-resolv --keep-in-foreground --no-hosts --bind-interfaces --pid-file=/run/s\
+endsigs.omit.d/network-manager.dnsmasq.pid --listen-address=127.0.1.1 --conf-file=/var/run/NetworkMa\
+nager/dnsmasq.conf --cache-size=0 --proxy-dnssec --enable-dbus=org.freedesktop.NetworkManager.dnsmas\
+q --conf-dir=/etc/NetworkManager/dnsmasq.d",user="nobody",cores=["0"]},{id="3045",type="process",des\
+cription="[kworker/0:2]",user="root",cores=["0"]},{id="3099",type="process",description="[kworker/2:\
+2]",user="root",cores=["2"]},{id="3134",type="process",description="/usr/lib/libunity-webapps/unity-\
+webapps-service",user="dave",cores=["1","3"]},{id="5611",type="process",description="[kworker/2:0]",\
+user="root",cores=["2"]},{id="5612",type="process",description="[kworker/1:2]",user="root",cores=["1\
+"]},{id="5993",type="process",description="/usr/sbin/cupsd -l",user="root",cores=["2"]},{id="6093",t\
+ype="process",description="[kworker/0:0]",user="root",cores=["0"]},{id="6289",type="process",descrip\
+tion="/usr/lib/eclipse/eclipse",user="dave",cores=["0"]},{id="6305",type="process",description="/usr\
+/bin/java -Xms40m -Xmx384m -Dorg.eclipse.equinox.p2.reconciler.dropins.directory=/usr/share/eclipse/\
+dropins -XX:MaxPermSize=256m -jar /usr/lib/eclipse//plugins/org.eclipse.equinox.launcher_1.3.0.dist.\
+jar -os linux -ws gtk -arch x86_64 -showsplash /usr/lib/eclipse//plugins/org.eclipse.platform_3.8.1.\
+dist/splash.bmp -launcher /usr/lib/eclipse/eclipse -name Eclipse --launcher.library /usr/lib/eclipse\
+//plugins/org.eclipse.equinox.launcher.gtk.linux.x86_64_1.1.200.dist/eclipse_1503.so -startup /usr/l\
+ib/eclipse//plugins/org.eclipse.equinox.launcher_1.3.0.dist.jar --launcher.overrideVmargs -exitdata \
+530009 -vm /usr/bin/java -vmargs -Xms40m -Xmx384m -Dorg.eclipse.equinox.p2.reconciler.dropins.direct\
+ory=/usr/share/eclipse/dropins -XX:MaxPermSize=256m -jar /usr/lib/eclipse//plugins/org.eclipse.equin\
+ox.launcher_1.3.0.dist.jar",user="dave",cores=["0","1","2","3"]},{id="6968",type="process",descripti\
+on="/home/dave/software/oovaide/2.0/code/trunk/bin-linux/oovaide",user="dave",cores=["0","1","2"]},{id\
+="7011",type="process",description="[kworker/1:0]",user="root",cores=["1"]},{id="7637",type="process\
+",description="/usr/lib/firefox/firefox",user="dave",cores=["0","1","2","3"]},{id="7930",type="proce\
+ss",description="gdb --interpreter mi2 --nx",user="dave",cores=["1"]},{id="7947",type="process",desc\
+ription="/home/dave/software/oovaide/2.0/code/trunk/bin-linux/oovEdit /home/dave/software/oovaide/2.0/\
+code/trunk/examples/names/twinkle.cpp",user="dave",cores=["1"]}]
+688,019 (gdb) 
+689,006 30-list-thread-groups
+689,007 30^done,groups=[{id="i1",type="process",pid="7947",executable="/home/dave/software/oovaide/2.\
+0/code/trunk/bin-linux/oovEdit",cores=["1"]}]
+689,007 (gdb) 
+689,024 31-list-thread-groups i1
+689,025 31^done,threads=[{id="1",target-id="Thread 0x7ffff7fb99c0 (LWP 7947)",name="oovEdit",frame={\
+level="0",addr="0x00000000004d7312",func="main",args=[{name="argc",value="2"},{name="argv",value="0x\
+7fffffffdfb8"}],file="../oovEdit.cpp",fullname="/home/dave/software/oovaide/2.0/code/trunk/oovEdit/oo\
+vEdit.cpp",line="699"},state="stopped",core="1"}]
+689,026 (gdb) 
+689,034 32-stack-info-depth --thread 1 11
+689,034 32^done,depth="1"
+689,034 (gdb) 
+689,039 33-stack-list-frames --thread 1
+689,039 33^done,stack=[frame={level="0",addr="0x00000000004d7312",func="main",file="../oovEdit.cpp",\
+fullname="/home/dave/software/oovaide/2.0/code/trunk/oovEdit/oovEdit.cpp",line="699"}]
+689,040 (gdb) 
+689,472 34-thread-info 1
+689,472 35-list-thread-groups
+689,473 34^done,threads=[{id="1",target-id="Thread 0x7ffff7fb99c0 (LWP 7947)",name="oovEdit",frame={\
+level="0",addr="0x00000000004d7312",func="main",args=[{name="argc",value="2"},{name="argv",value="0x\
+7fffffffdfb8"}],file="../oovEdit.cpp",fullname="/home/dave/software/oovaide/2.0/code/trunk/oovEdit/oo\
+vEdit.cpp",line="699"},state="stopped",core="1"}]
+689,473 (gdb) 
+689,473 35^done,groups=[{id="i1",type="process",pid="7947",executable="/home/dave/software/oovaide/2.\
+0/code/trunk/bin-linux/oovEdit",cores=["1"]}]
+689,473 (gdb) 
+689,690 36-stack-list-locals --thread 1 --frame 0 1
+689,691 36^done,locals=[]
+689,691 (gdb) 
+689,728 37-stack-info-depth --thread 1
+689,728 37^done,depth="1"
+689,728 (gdb) 
+689,737 38-var-create --thread 1 --frame 0 - * argc
+689,737 39-var-create --thread 1 --frame 0 - * argv
+689,738 38^done,name="var1",numchild="0",value="2",type="int",thread-id="1",has_more="0"
+689,738 (gdb) 
+689,738 39^done,name="var2",numchild="1",value="0x7fffffffdfb8",type="char **",thread-id="1",has_mor\
+e="0"
+689,739 (gdb) 
+707,253 40-interpreter-exec console
+707,253 40^error,msg="-interpreter-exec: Usage: -interpreter-exec interp command"
+707,254 (gdb) 
+719,337 41-interpreter-exec console "info pretty-printer"
+719,341 ~"global pretty-printers:\n"
+719,341 ~"  builtin\n"
+719,341 ~"    mpx_bound128\n"
+719,341 ~"  objfile /usr/lib/x86_64-linux-gnu/libstdc++.so.6 pretty-printers:\n"
+719,342 ~"  libstdc++-v6\n"
+719,342 ~"    __gnu_cxx::_Slist_iterator\n"
+719,342 ~"    __gnu_cxx::__7::_Slist_iterator\n"
+719,342 ~"    __gnu_cxx::__7::__normal_iterator\n"
+719,342 ~"    __gnu_cxx::__7::slist\n"
+719,342 ~"    __gnu_cxx::__normal_iterator\n"
+719,343 ~"    __gnu_cxx::slist\n"
+719,343 ~"    __gnu_debug::_Safe_iterator\n"
+719,343 ~"    std::_Deque_const_iterator\n"
+719,343 ~"    std::_Deque_iterator\n"
+719,343 ~"    std::_List_const_iterator\n"
+719,343 ~"    std::_List_iterator\n"
+719,343 ~"    std::_Rb_tree_const_iterator\n"
+719,344 ~"    std::_Rb_tree_iterator\n"
+719,344 ~"    std::__7::_Deque_const_iterator\n"
+719,344 ~"    std::__7::_Deque_iterator\n"
+719,344 ~"    std::__7::_List_const_iterator\n"
+719,344 ~"    std::__7::_List_iterator\n"
+719,344 ~"    std::__7::_Rb_tree_const_iterator\n"
+719,344 ~"    std::__7::_Rb_tree_iterator\n"
+719,344 ~"    std::__7::basic_string\n"
+719,345 ~"    std::__7::bitset\n"
+719,345 ~"    std::__7::deque\n"
+719,345 ~"    std::__7::forward_list\n"
+719,345 ~"    std::__7::list\n"
+719,345 ~"    std::__7::map\n"
+719,345 ~"    std::__7::multimap\n"
+719,345 ~"    std::__7::multiset\n"
+719,345 ~"    std::__7::priority_queue\n"
+719,346 ~"    std::__7::queue\n"
+719,346 ~"    std::__7::set\n"
+719,346 ~"    std::__7::shared_ptr\n"
+719,346 ~"    std::__7::stack\n"
+719,347 ~"    std::__7::tuple\n"
+719,347 ~"    std::__7::unique_ptr\n"
+719,347 ~"    std::__7::unordered_map\n"
+719,347 ~"    std::__7::unordered_multimap\n"
+719,347 ~"    std::__7::unordered_multiset\n"
+719,347 ~"    std::__7::unordered_set\n"
+719,347 ~"    std::__7::vector\n"
+719,347 ~"    std::__7::weak_ptr\n"
+719,347 ~"    std::__cxx1998::_Deque_const_iterator\n"
+719,348 ~"    std::__cxx1998::_Deque_iterator\n"
+719,348 ~"    std::__cxx1998::_List_const_iterator\n"
+719,348 ~"    std::__cxx1998::_List_iterator\n"
+719,348 ~"    std::__cxx1998::__7::_Deque_const_iterator\n"
+719,348 ~"    std::__cxx1998::__7::_Deque_iterator\n"
+719,348 ~"    std::__cxx1998::__7::_List_const_iterator\n"
+719,348 ~"    std::__cxx1998::__7::_List_iterator\n"
+719,348 ~"    std::__cxx1998::__7::bitset\n"
+719,348 ~"    std::__cxx1998::__7::deque\n"
+719,348 ~"    std::__cxx1998::__7::forward_list\n"
+719,349 ~"    std::__cxx1998::__7::list\n"
+719,349 ~"    std::__cxx1998::__7::map\n"
+719,349 ~"    std::__cxx1998::__7::multimap\n"
+719,349 ~"    std::__cxx1998::__7::multiset\n"
+719,349 ~"    std::__cxx1998::__7::set\n"
+719,349 ~"    std::__cxx1998::__7::unordered_map\n"
+719,353 ~"    std::__cxx1998::__7::unordered_multimap\n"
+719,354 ~"    std::__cxx1998::__7::unordered_multiset\n"
+719,354 ~"    std::__cxx1998::__7::unordered_set\n"
+719,354 ~"    std::__cxx1998::__7::vector\n"
+719,354 ~"    std::__cxx1998::bitset\n"
+719,354 ~"    std::__cxx1998::deque\n"
+719,354 ~"    std::__cxx1998::forward_list\n"
+719,354 ~"    std::__cxx1998::list\n"
+719,354 ~"    std::__cxx1998::map\n"
+719,354 ~"    std::__cxx1998::multimap\n"
+719,354 ~"    std::__cxx1998::multiset\n"
+719,354 ~"    std::__cxx1998::set\n"
+719,354 ~"    std::__cxx1998::unordered_map\n"
+719,355 ~"    std::__cxx1998::unordered_multimap\n"
+719,355 ~"    std::__cxx1998::unordered_multiset\n"
+719,355 ~"    std::__cxx1998::unordered_set\n"
+719,355 ~"    std::__cxx1998::vector\n"
+719,355 ~"    std::__debug::bitset\n"
+719,355 ~"    std::__debug::deque\n"
+719,355 ~"    std::__debug::forward_list\n"
+719,355 ~"    std::__debug::list\n"
+719,355 ~"    std::__debug::map\n"
+719,355 ~"    std::__debug::multimap\n"
+719,355 ~"    std::__debug::multiset\n"
+719,355 ~"    std::__debug::priority_queue\n"
+719,355 ~"    std::__debug::queue\n"
+719,355 ~"    std::__debug::set\n"
+719,355 ~"    std::__debug::stack\n"
+719,356 ~"    std::__debug::unique_ptr\n"
+719,357 ~"    std::__debug::unordered_map\n"
+719,357 ~"    std::__debug::unordered_multimap\n"
+719,357 ~"    std::__debug::unordered_multiset\n"
+719,357 ~"    std::__debug::unordered_set\n"
+719,358 ~"    std::__debug::vector\n"
+719,358 ~"    std::__norm::_Deque_const_iterator\n"
+719,358 ~"    std::__norm::_Deque_iterator\n"
+719,358 ~"    std::__norm::_List_const_iterator\n"
+719,358 ~"    std::__norm::_List_iterator\n"
+719,358 ~"    std::basic_string\n"
+719,358 ~"    std::bitset\n"
+719,358 ~"    std::deque\n"
+719,358 ~"    std::forward_list\n"
+719,358 ~"    std::list\n"
+719,359 ~"    std::map\n"
+719,359 ~"    std::multimap\n"
+719,359 ~"    std::multiset\n"
+719,359 ~"    std::priority_queue\n"
+719,359 ~"    std::queue\n"
+719,359 ~"    std::set\n"
+719,359 ~"    std::shared_ptr\n"
+719,359 ~"    std::stack\n"
+719,359 ~"    std::tr1::__7::shared_ptr\n"
+719,359 ~"    std::tr1::__7::unordered_map\n"
+719,359 ~"    std::tr1::__7::unordered_multimap\n"
+719,359 ~"    std::tr1::__7::unordered_multiset\n"
+719,359 ~"    std::tr1::__7::unordered_set\n"
+719,360 ~"    std::tr1::__7::weak_ptr\n"
+719,360 ~"    std::tr1::shared_ptr\n"
+719,360 ~"    std::tr1::unordered_map\n"
+719,360 ~"    std::tr1::unordered_multimap\n"
+719,360 ~"    std::tr1::unordered_multiset\n"
+719,360 ~"    std::tr1::unordered_set\n"
+719,360 ~"    std::tr1::weak_ptr\n"
+719,360 ~"    std::tuple\n"
+719,360 ~"    std::unique_ptr\n"
+719,360 ~"    std::unordered_map\n"
+719,360 ~"    std::unordered_multimap\n"
+719,360 ~"    std::unordered_multiset\n"
+719,360 ~"    std::unordered_set\n"
+719,360 ~"    std::vector\n"
+719,360 ~"    std::weak_ptr\n"
+719,360 41^done
+719,360 (gdb) 
+748,371 42-data-evaluate-expression --thread 1 --frame 0 \"oovEdit.glade\"
+748,372 42^error,msg="Invalid character '\\' in expression."
+748,372 (gdb) 
+
