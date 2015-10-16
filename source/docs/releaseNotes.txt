@@ -23,7 +23,7 @@ Explanations
 	  not. The depends.exe shows that oovCppParser finds libclang.dll in bin
 	  directory.
 	- If the error, "Never use <adxintrin.h> directly", displays, the
-	  Oovcde project must be set to exclude lib dir for analysis.
+	  Oovaide project must be set to exclude lib dir for analysis.
 
 Code/Design Guidelines
 -----------
@@ -55,11 +55,10 @@ Missing Features
 	- add notes/title box (class name, file name, etc.)
 	- add font size for drawings, display and print
 	- remove sleepMs calls in windowsChildProcessListen
-	- rename oovcde to oovaide?
 	- remove mingw dependencies from common - Sleep/chrono/pthread-gthread
 	- BUG: doing File/New on an existing project doesn't delete package config.
 	- Need to clean up package config if user reenters data.
-	- link to https://rawgit.com/animatedb/oovcde/master/web/articles/PortionDiagrams.html
+	- link to https://rawgit.com/animatedb/oovaide/master/web/articles/PortionDiagrams.html
 	- Add UML notes to diagrams, allow color/font selection
 	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
 	  are the same?
@@ -72,7 +71,6 @@ Missing Features
 
 - Source/project management
 	- Make it clear which files must be saved to save project settings. (add clean)
-	- Gui Options don't get recreated if project is opened instead of newed.
 	- Add more multitasking: library symbols, loading projects
 
 - Journal
@@ -181,7 +179,7 @@ Missing Features
 	- Adding pthreads-stubs to analysis settings in linux hangs
 	- Build of components within/under component directories not supported.
 	- Scan CMake files to find external pkg-config package dependencies
-	- The oovcde-incdeps file should be regenerated if the build settings change
+	- The oovaide-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
 	- A static lib without source should not be on link lines
 	- Should include mingw-builds includes so that threading errors don't occur
@@ -222,7 +220,7 @@ Missing Features
 	- Restore previous session, save loaded files and line numbers when exit
 	- On linux, the line number margin doesn't grow with more digits
 	- Edit/Preferences working directory ... does not display dialog
-	- oovcde/editor - https://en.wikipedia.org/wiki/Inter-process_communication
+	- oovaide/editor - https://en.wikipedia.org/wiki/Inter-process_communication
 	- Hover over tab should display full file path in tooltip
 		http://www.velvetcache.org/2007/08/22/gtk-tooltips-on-notebook-tab-labels
 	- editor doesn't handle two files with same name

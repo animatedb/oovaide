@@ -1,0 +1,5 @@
+DrawingName|ParserModelData
+FileType|Portion
+Names|mModelData;addParsedModule;getParsedModule;createOrGetClassRef;createOrGetBaseTypeRef;createOrGetDataTypeRef+;5624351b;createOrGetDataTypeRef+;2abc9098;createOrGetTypedef;isBaseClass;addAssociation;setLineStats;writeModel;DebugGetModelData;
+XPositions|20;146;147;147;421;146;145;288;147;146;147;146;145;
+YPositions|153;219;189;84;103;17;50;91;284;161;251;312;343;

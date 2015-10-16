@@ -5,5 +5,5 @@ target_link_libraries(ClangView oovCommon oovGuiCommon ${GTK_LIBRARIES}
   ${LLVM_LIBRARIES})
 
 install(TARGETS ClangView
-  EXPORT OovcdeTargets
+  EXPORT OovaideTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)

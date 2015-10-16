@@ -5,5 +5,5 @@ add_executable(oovCppParser CppParser.cpp IncDirMap.cpp ModelWriter.cpp
 target_link_libraries(oovCppParser oovCommon ${LLVM_LIBRARIES})
 
 install(TARGETS oovCppParser
-  EXPORT OovcdeTargets
+  EXPORT OovaideTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)

@@ -97,9 +97,9 @@ class Project
         static OovString getAbsoluteDirFromSrcRootDirRelativeDir(OovStringRef const relSrcFileDir);
 
         static OovStringRef getAnalysisIncDepsFilename()
-            { return "oovcde-incdeps.txt"; }
+            { return "oovaide-incdeps.txt"; }
         static OovStringRef getAnalysisComponentsFilename()
-            { return "oovcde-extdirs.txt"; }
+            { return "oovaide-extdirs.txt"; }
         /// Make a filename for the compressed content file for each source file.
         /// The analysisDir is retreived from the build configuration.
         static OovString makeAnalysisFileName(OovStringRef const srcFileName,

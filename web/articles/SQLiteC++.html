@@ -1,0 +1,193 @@
+<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<!-- DC Blaha - oct 12, 2015 -->
+
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+<title>Oovaide SQLite interface with C++</title>
+
+<style>
+   span { color:green; }
+</style>
+</head>
+
+
+<body>
+	<a href="../index.html">Oovaide Index</a>
+
+<h1>SQLite Interface with C++</h1>
+
+I recently got a request to provide information in a database with the Oovaide project.
+I wanted to make it optional since I want very few dependencies, and very little
+project setup for users that do not need database access.
+<p/>
+It turns out that it is possible to use the SQLite database with no compile or link
+dependencies. For the users that wish to use SQLite, they can download the SQLite
+Windows .dll or Linux .so. This method also does not require any special tools to build a .DEF file or
+an import library. It also does not require any source files from the SQLite project.
+SQLite is nice because it does not require any administration even for users that
+will use the database.
+<p/>
+The minimal C style interface needed to use SQLite is the following.
+<pre>
+    <span>// This is the C style interface to the run-time library.</span>
+    extern "C"
+    {
+    typedef struct sqlite3 sqlite3;
+    typedef int (*SQLite_callback)(void*,int,char**,char**);
+
+    struct SQLiteInterface
+        {
+        int (*sqlite3_open)(const char *filename, sqlite3 **ppDb);
+        int (*sqlite3_close)(sqlite3 *pDb);
+        int (*sqlite3_exec)(sqlite3 *pDb, const char *sql,
+            SQLite_callback callback, void *callback_data,
+            char **errmsg);
+        void (*sqlite3_free)(void*);
+        };
+    };
+</pre>
+
+The method used to load the function pointers is to use gmodule or something
+similar. I haven't shown the exact code for this, but it is similar to using
+g_module_symbol, dlsym, or GetProcAddress. The full source code can be found
+at the Oovaide project.
+
+<pre>
+    class SQLiteImporter:public SQLiteInterface, public OovLibrary
+        {
+        public:
+            void loadSymbols()
+                {
+                loadModuleSymbol("sqlite3_open", (OovProcPtr*)&sqlite3_open);
+                loadModuleSymbol("sqlite3_close", (OovProcPtr*)&sqlite3_close);
+                loadModuleSymbol("sqlite3_exec", (OovProcPtr*)&sqlite3_exec);
+                <span>// This must be called for returned error strings.</span>
+                loadModuleSymbol("sqlite3_free", (OovProcPtr*)&sqlite3_free);
+                }
+        };
+
+</pre>
+
+A callback listener can be defined like the following.  This is called when
+results are returned from a query or an error is generated.
+
+<pre>
+<span>    /// Functions that return errors and results will call functions in this
+    /// listener.</span>
+    class SQLiteListener
+        {
+        public:
+            virtual void SQLError(int retCode, char const *errMsg) = 0;
+            <span>/// This is called for each row returned from a query, so it
+	    /// can be called many times after a single exec call.</span>
+            virtual void SQLResultCallback(int numColumns, char **colVal,
+                char **colName) = 0;
+        };
+</pre>
+
+Errors are returned from SQLite as codes, and as strings. If the numeric
+codes are needed, then it probably will require using sqlite3.h. If the
+error strings are used, then the codes may not be needed.
+
+<pre>
+    <span>// This is normally defined in sqlite3.h, so if more error codes are needed,
+    // get them from there.</span>
+    #define SQLITE_OK 0
+</pre>
+
+
+Then the C++ interface can look something like the following.
+
+<pre>
+    <span>/// This is a wrapper class for the SQLite functions.</span>
+    class SQLite:public SQLiteImporter
+    {
+    public:
+        SQLite():
+            mDb(nullptr), mListener(nullptr)
+            {}
+        ~SQLite()
+            {
+            close();
+            }
+        void setListener(SQLiteListener *listener)
+            { mListener = listener; }
+        <span>// The libName is usually libsqlite3.so.? on linux, and sqlite3.dll on windows.</span>
+        bool loadDbLib(char const *libName)
+            {
+            close();
+            bool success = OovLibrary::open(libName);
+            if(success)
+                {
+                loadSymbols();
+                }
+            return success;
+            }
+        <span>/// The dbName is the name of the file that will be saved.</span>
+        bool openDb(char const *dbName)
+            {
+            int retCode = sqlite3_open(dbName, &mDb);
+            return handleRetCode(retCode, "Unable to open database");
+            }
+        <span>/// Execute an SQL query.  If there are results, they will be reported
+        /// through the listener.</span>
+        bool execDb(const char *sql)
+            {
+            char *errMsg = nullptr;
+            int retCode = sqlite3_exec(mDb, sql, &resultsCallback, this, &errMsg);
+            bool success = handleRetCode(retCode, errMsg);
+            if(errMsg)
+                {
+                sqlite3_free(errMsg);
+                }
+            return success;
+            }
+        <span>/// This is called from the destructor, so does not need an additional
+        /// call unless it must be closed early.</span>
+        void closeDb()
+            {
+            if(mDb)
+                {
+                sqlite3_close(mDb);
+                mDb = nullptr;
+                }
+            }
+
+    private:
+        sqlite3 *mDb;
+        SQLiteListener *mListener;
+
+        <span>/// This is called from the sqlite3_exec call, and sends the results to
+        /// the listener.</span>
+        static int resultsCallback(void *customData, int numColumns,
+            char **colValues, char **colNames)
+            {
+            SQLite *sqlite = static_cast&lt;SQLite*&gt;(customData);
+            if(sqlite->mListener)
+                {
+                sqlite->mListener-&gt;SQLResultCallback(numColumns, colValues, colNames);
+                }
+            return 0;
+            }
+        <span>/// If the retCode indicates an error, then the errStr is sent to the
+        /// listener.</span>
+        bool handleRetCode(int retCode, char const *errStr)
+            {
+            if(retCode != SQLITE_OK && mListener)
+                {
+                mListener->SQLError(retCode, errStr);
+                }
+            return(retCode == SQLITE_OK);
+            }
+    };
+</pre>
+
+
+</html>

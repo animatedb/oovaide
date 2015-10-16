@@ -120,11 +120,11 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         eProcessModes procMode, OovStringRef const buildConfigName,
         OovStringRef const srcRootDir)
     {
-    // @todo - This should probably check the oovcde-pkg.txt include crc to
+    // @todo - This should probably check the oovaide-pkg.txt include crc to
     // see if it is different than what was used to generate the
-    // oovcde-tmp-buildpkg.txt.  This cheat may be ok, but seems to
+    // oovaide-tmp-buildpkg.txt.  This cheat may be ok, but seems to
     // work a bit strange that sometimes the buildpkg file is not recreated
-    // immediately after the oovcde-pkg.txt file is updated.  Also, the
+    // immediately after the oovaide-pkg.txt file is updated.  Also, the
     // analysis directory should probably be deleted if the include
     // paths have changed.
     OovString bldPkgFilename = Project::getBuildPackagesFilePath();
@@ -283,7 +283,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
     }
 
 // Example test args:
-//      ../examples/staticlib ../examples/staticlib-oovcde -bld-Debug
+//      ../examples/staticlib ../examples/staticlib-oovaide -bld-Debug
 int main(int argc, char const * const argv[])
     {
     char const *oovProjDir = NULL;

@@ -1,0 +1,100 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha - 10/1/2015 -->
+  <!-- Last Update: 10/1/2015 -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>OOV Class Relations</title>
+  </head>
+  <body>
+	<a href="../index.html">Oovaide Index</a>
+    <h1>OOV Export Database</h1>
+	The Oovaide program allows exporting to an sqlite database.
+	The database schema looks like the following:
+
+    	<embed src="DatabaseInfo/OovReport.png" type="image/png"> <br>
+
+	The Oovaide program's main purpose is to find all related classes,
+	so it does not contain all code information.
+	<p/>
+	The following describes the tables in the datase.
+	<table border="1">
+	<tr><th>Table</th><th>Description</th></tr>
+	<tr><td>Component</td><td>Components are run-time modules</td></tr>
+	<tr><td>Method</td><td>Contains methods/functions of classes</td></tr>
+	<tr><td>MethodTypeRef</td><td>Contains types that are referred to from methods</td></tr>
+	<tr><td>Module</td><td>Contains the name of the source file</td></tr>
+	<tr><td>Statement</td><td>Contains statements that belong to methods</td></tr>
+	<tr><td>Type</td><td>Contains classes or simple data types</td></tr>
+	<tr><td>TypeRelation</td><td>Contains class aggregation or inheritance relations</td></tr>
+	</table>
+
+    <h2>Component</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>name</td><td>The component name.  Component types must be defined within
+		Oovaide for this to contain entries.</td></tr>
+	</table>
+
+    <h2>Method</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>name</td><td>The function name. If overloaded, it is appended with +;hash.</td></tr>
+	<tr><td>lineNumber</td><td>The line number of the method definition in the source code</td></tr>
+	<tr><td>visibility</td><td>0=public, 1=protected, 2=private</td></tr>
+	<tr><td>const</td><td>Indicates if it is a const method</td></tr>
+	<tr><td>virtual</td><td>Indicates if it is a virtual method</td></tr>
+	<tr><td>idOwningClass</td><td>The ID of the owning class/type</td></tr>
+	<tr><td>idOwningModule</td><td>The ID of the owning module</td></tr>
+	</table>
+
+    <h2>MethodTypeRef</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>name</td><td>The variable name.</td></tr>
+	<tr><td>varRelationDescription</td><td>0=parameter, 1=body variable</td></tr>
+	<tr><td>idOwningMethod</td><td>The ID of the owning method</td></tr>
+	<tr><td>idSupplierType</td><td>The ID of type</td></tr>
+	</table>
+
+    <h2>Module</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>name</td><td>The variable name.</td></tr>
+	<tr><td>codeLines</td><td>The number of lines with code.</td></tr>
+	<tr><td>commentLines</td><td>The number of lines with comments.</td></tr>
+	<tr><td>moduleLines</td><td>The number of lines in the module.</td></tr>
+	<tr><td>idOwningComponent</td><td>The ID of the owning component. Component
+		types must be defined in Oovaide for this to be filled.</td></tr>
+	</table>
+
+    <h2>Statement</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>statementDescription</td><td>2=method call, 3=variable reference</td></tr>
+	<tr><td>lineNumber</td><td>The statement index</td></tr>
+	<tr><td>idOwningMethod</td><td>The method that contains this statement.</td></tr>
+	<tr><td>idSupplierType</td><td>The type that is referenced by this statement</td></tr>
+	<tr><td>idSupplierMethod</td><td>The method that is referenced by this statement</td></tr>
+	</table>
+
+    <h2>Type</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>name</td><td>The name of the type</td></tr>
+	<tr><td>idOwningModule</td><td>The module where the type is defined.</td></tr>
+	<tr><td>lineNumber</td><td>The line number of the type definition in the source code</td></tr>
+	</table>
+
+    <h2>Other Details</h2>
+	<ul>
+	<li>Global methods are treated as if they belong to the class with an empty name.</li>
+	<li>Methods that do not belong to a class may have the name appended with a # character.
+	These can be template calls, or classes that are defined outside of the project.
+	This may change in the future.</li>
+	<li>The value -1 is often used to mean undefined. This may change in the future.</li>
+	</ul>
+
+  </body>
+</html>

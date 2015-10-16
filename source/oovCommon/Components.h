@@ -20,7 +20,7 @@ bool isCppSource(OovStringRef const file);
 bool isLibrary(OovStringRef const file);
 
 
-/// The component types information is read and written by both oovcde and
+/// The component types information is read and written by both oovaide and
 /// oovBuilder.
 ///
 /// This class is made up of two files.

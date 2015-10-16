@@ -236,7 +236,7 @@ void DebuggerGdb::ensureGdbChildRunning()
         sendMiCommand("-interpreter-exec --thread-group i1 console \"p/x (char)-1\"");
         sendMiCommand("-gdb-set --thread-group i1 language auto");
         sendMiCommand("-file-exec-and-symbols --thread-group i1 /home/.../bin-linux/oovEdit");
-//        sendMiCommand("-file-exec-and-symbols /home/dave/software/oovcde/2.0/code/trunk/bin-linux/oovEdit");
+//        sendMiCommand("-file-exec-and-symbols /home/dave/software/oovaide/2.0/code/trunk/bin-linux/oovEdit");
         */
         sendMiCommand("-enable-pretty-printing");
         std::string argCmd = "-file-exec-and-symbols ";

@@ -2,7 +2,7 @@
 
 // Sorry, this may be a bit nebulous.
 //
-// The Oovcde program must show all relationships between the correct
+// The Oovaide program must show all relationships between the correct
 // objects even if a particular namespace is not specified at some point in
 // this source code.
 //

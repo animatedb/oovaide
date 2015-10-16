@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+
+<head>
+<!-- DC Blaha - 6/8/2009 -->
+
+<link rel="stylesheet" type="text/css" href="../style.css"><!--#include virtual="../menu.html" -->
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<title>Oovaide Features</title>
+</head>
+
+
+<body><div class="content">
+
+<h2>OOVAIDE Features</h2>
+<hr style="width: 100%; height: 3px;">
+
+Last update: June 8, 2015
+
+<p>
+<img src="OovLogo.png" style="height:16mm; width:30mm">
+
+</p><h2>Features</h2>
+<h3>General</h3>
+<ul>
+	<li>C++ build system, editor, debugger, diagram tool, code coverage,
+	complexity, and other analysis tools.<br>
+</li>
+  <li>Generates SVG diagrams automatically from C++ files.</li>
+  <li>The build and analysis tools are command line utilities that are invoked from the GUI.</li>
+  <li>Works under Windows or Linux.</li>
+  <li>Uses LLVM/CLang to parse C++ source files.</li>
+  <li>Uses GDB to debug.</li>
+  <li>Uses GTK to display.</li>
+</ul>
+
+<h3>Projects</h3>
+<ul>
+	<li>New projects can be created by selecting the top level directory of the
+	source file tree.  The output directory of the project is specified so that
+	all of the C++ files are parsed and saved in compressed format in this
+	directory.</li>
+	<li>An existing project can be opened by specifying the previously saved
+	output directory, and the compressed files are read and updated if
+	any C++ source files have been altered.</li>
+	<li>When a project is open, the class list displays found classes of
+	all parsed source files.</li>
+</ul>
+
+<h3>C++ parsing</h3>
+<ul>
+	<li>The source directory is recursively parsed for all source and header
+	files.</li>
+	<li>The external include paths can be specified using external package references.
+	 Project include paths are found automatically.</li>
+	<li>The compilation runs in the background ant the error results are displayed in a window.</li>
+	<li>The output files contain</li>
+		<ul>
+		<li>inheritance relationships</li>
+		<li>member variable relationships</li>
+		<li>function members with function parameters, variable	definitions,
+		conditionals and function calls</li>
+		<li>source module names</li>
+		<li>directory/component include path relationships</li>
+		</ul>
+</ul>
+
+<h3>Diagrams</h3>
+The following diagrams are available.
+	<ul>
+	<li>Component dependency diagrams</li>
+	<li>Zone diagrams (view thousands of classes)</li>
+	<li>Class diagrams</li>
+	<li>Portion diagrams (view class attribute/member relations)</li>
+	<li>Sequence diagrams </li>
+	</ul>
+
+<h3>Analysis Statistics</h3>
+	The following analysis can be performed.
+	<ul>
+	<li>Code coverage</li>
+	<li>Code complexity</li>
+	<li>Duplicate code</li>
+	<li>Class member usage</li>
+	<li>Line counts</li>
+	<li>Project statistics</li>
+	</ul>
+
+<h3>Journal</h3>
+	<ul>
+	<li>Modified drawings are saved in a journal list.</li>
+	<li>Selecting a record in the journal will display the diagram, and the
+	diagram can be modified and saved.</li>
+	</ul>
+
+
+<h3>Build System</h3>
+	The goal of the build system is to have a simple and easy to use build system
+	that uses GNU or Clang (Not MSVC) to build projects for Windows or Linux.
+	See the user guide for a complete description of the build system.<br>
+
+<h3>Editor</h3>
+	C++ code editor with syntax highlighting and debugger.
+
+
+</div></body>
+</html>

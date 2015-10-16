@@ -448,7 +448,7 @@ private:
 // compiled file. This is used for references to the type where the full type
 // may not be known.  If the full type is later defined in the program, the
 // type is upgraded to the DT_Class type if it is a record type (class or
-// struct).  The Oovcde program must combine function definitions that could
+// struct).  The Oovaide program must combine function definitions that could
 // be defined in multiple files.
 //
 // A DT_Class (ModelClassifier) is used for records (class or struct) and for
@@ -458,7 +458,7 @@ private:
 /// @todo - a template class should also have member functions/data
 // A template may eventually use the attributes vector to keep relations
 // between the template arguments and other classes.
-// A typedef name is prepended with the UML <<typedef>> stereotype.  The Oovcde
+// A typedef name is prepended with the UML <<typedef>> stereotype.  The Oovaide
 // program does not draw this in a standard manner, since it draws it as
 // being inherited from the original type, but the meaning seems pretty apparent.
 enum eModelDataTypes { DT_DataType, DT_Class };

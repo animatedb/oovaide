@@ -1,0 +1,154 @@
+<html>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+
+<!-- DC Blaha - oct 12, 2015 -->
+
+
+<head>
+
+<link rel="stylesheet" type="text/css" href="../style.css">
+
+<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+
+<title>Oovaide SQL strings with C++</title>
+
+<style>
+   span { color:green; }
+</style>
+</head>
+
+
+
+<body>
+
+	<a href="../index.html">Oovaide Index</a>
+<h1>SQL Strings with C++</h1>
+<p/>
+Recently I was looking for a way to build SQL strings using C++.  There
+is surprisingly little found on the net.
+<p/>
+Some examples of the C++ syntax that will be supported by the following code are shown below:
+<ul>
+<li>dbStr.SELECT("idModule").FROM("Module").WHERE("name", "=", name);</li>
+<li>dbStr.INSERT("Module").INTO({"idModule","name"}).VALUES({nullptr, name});</li>
+<li>dbStr.UPDATE("Module").SET({"idModule","name"}, {nullptr, name});</li>
+</ul>
+I used upper case because C++ has "and" as a keyword.
+<p/>
+These examples use method chaining or the named parameter idiom.  Most of this
+code is pre C++11 code, but it is neat to use initializer lists to fill column
+names and column values.
+<p/>
+One of the advantages of this code is that the values are type safe. Another advantage
+is that it is possible to add more run-time state checking if desired.
+<p/>
+The main class contains the following declarations.
+<pre>
+    class DbString:public std::string
+    {
+    public:
+        DbString()
+            {}
+        DbString(char const * const str):
+            std::string(str)
+            {}
+	<span>// Appends "SELECT column"</span>
+        DbString &SELECT(char const *column);
+
+        <span>// Appends "INSERT INTO table"</span>
+        DbString &INSERT(char const *table);
+        <span>// Appends " FROM "</span>
+        DbString &FROM(char const *table);
+        <span>// Appends "(columnName1, columnName2)"</span>
+        DbString &INTO(DbNames const &columnNames);
+        <span>// Appends "VALUES (columnValue1, columnValue2)"</span>
+        DbString &VALUES(DbValues const &columnValues);
+
+        <span>// Appends "UPDATE table"</span>
+        DbString &UPDATE(char const *table);
+	<span>// Appends " SET column1, column2 = value1, value2"
+	// The number of names and values must match.</span>
+        DbString &SET(DbNames const &names, DbValues const &values);
+
+        <span>// Appends " WHERE columnName operStr colVal"</span>
+        DbString &WHERE(char const *columnName, char const *operStr,
+            DbValue colVal);
+        <span>// Appends " AND columnName operStr colVal"</span>
+        DbString &AND(char const *columnName, char const *operStr,
+            DbValue colVal);
+        <span>// Appends a semicolon to the returned string.</span>
+        std::string getDbStr() const;
+
+    private:
+        <span>// Prevent usage. Use getDbStr instead. This is undefined.</span>
+        char const *c_str();
+    };
+</pre>
+The string values passed in to DbValue will be stored in the std::string
+so that they are contained within quotes.
+The column names are merely strings without any conversions.
+<pre>
+    class DbValue:public std::string
+        {
+        public:
+	    <span>/// This converts the integer into a string and appends to DbValue.
+	    /// @param val The value to convert into a string.</span>
+            DbValue(int val)
+                { appendInt(val); }
+            <span>/// @param val Use nullptr to indicate NULL or pass in a string that
+	    ///            will be enclosed within quotes.</span>
+            DbValue(char const *val);
+        };
+
+    typedef std::vector&lt;std::string&gt; DbNames;
+    typedef std::vector&lt;DbValue&gt; DbValues;
+</pre>
+The vector then allows building something like the following:
+<pre>
+    DbValues vals = { nullptr, 0, "test" };
+</pre>
+These values will create strings in the vector such as:
+	<table border="1">
+	<tr><th>Value</th><th>Length in bytes</th></tr>
+	<tr><td>NULL</td><td>4 + null terminator</td></tr>
+	<tr><td>0</td><td>1 + null terminator</td></tr>
+	<tr><td>"test"</td><td>6 + null terminator</td></tr>
+	</table>
+<p/>
+Some of the functions look like the folowing, where the append functions
+append strings to the DbString.
+<pre>
+    DbString &DbString::SELECT(char const *column)
+        {
+        append("SELECT ");
+        append(column);
+        return *this;
+        }
+</pre>
+The SET function does a bit more, but still uses the basic idea. The INTO
+function is pretty similar, but just appends enclosing parenthesis, and
+does not append values.
+<pre>
+    DbString &DbString::SET(DbNames const &columns, DbValues const &values)
+        {
+        append(" SET ");
+        size_t numColumns = std::min(columns.size(), values.size());
+        for(size_t i=0; i&lt;numColumns; i++)
+            {
+            if(i != 0)
+                {
+                append(",");
+                }
+            append(columns[i]);
+            append("=");
+            append(values[i]);
+            }
+        return *this;
+        }
+</pre>
+The getDbStr function simply appends a semicolon.
+<p>
+The complete source code can be found at the Oovaide project.
+
+</body>
+</html>

@@ -12,7 +12,7 @@ Multithreaded tasks:
 		process status is visible in editor
 		run single highlight thread
 		- highlight text
-	- oovcde
+	- oovaide
 		process status is in background progress dialog
 		could run many worker threads, but depends on paralization ability
 		- load analysis files (if busy, prompts to discard to start another job)
@@ -31,7 +31,7 @@ they could broadcast completion.
 - Where do errors/completion progress go?
 
 Task Error Handling:
-	- Oovcde
+	- Oovaide
 		- DONE - launches editor at error line number
 		- runs OovBuilder (OovSrcManager) constantly in background?
 		- DONE - displays build error info from OovBuilder
@@ -40,12 +40,12 @@ Task Error Handling:
 		- launches debugger
 	- OovBuilder
 		- checks status
-		- DONE - outputs build error info to Oovcde/stdout/stderr
+		- DONE - outputs build error info to Oovaide/stdout/stderr
 		- DONE - OovBuilder runs child compile/build tasks
 
 ideal:
 
-oovcde.txt file changes:
+oovaide.txt file changes:
 	trigger for all object files
 
 inc-deps updating:

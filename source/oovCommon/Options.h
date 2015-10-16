@@ -12,7 +12,7 @@
 #include "Project.h"
 
 
-// These options are saved in the oovcde-gui.txt file
+// These options are saved in the oovaide-gui.txt file
 #define OptGuiShowAttributes "ShowAttributes"
 #define OptGuiShowOperations "ShowOperations"
 #define OptGuiShowOperParams "ShowOperParams"
@@ -33,7 +33,7 @@
 #define OptGuiEditorLineArg "EditorLineArg"
 
 
-// This is for the oovcde.txt file. Typically use ProjectReader directly for options.
+// This is for the oovaide.txt file. Typically use ProjectReader directly for options.
 class OptionsDefaults
     {
     public:
@@ -48,7 +48,7 @@ class OptionsDefaults
         ProjectReader &mProject;
     };
 
-// This is for the oovcde-gui.txt file
+// This is for the oovaide-gui.txt file
 class GuiOptions:public NameValueFile
     {
     public:

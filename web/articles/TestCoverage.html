@@ -7,28 +7,28 @@
 <link rel="stylesheet" type="text/css" href="../style.css">
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 
-<title>Oovcde Test Coverage</title>
+<title>Oovaide Test Coverage</title>
 </head>
 
 
 
 <body>
-	<a href="../index.html">Oovcde Index</a>
+	<a href="../index.html">Oovaide Index</a>
 
 
-<h1>Oovcde C++ Code Coverage</h1>
+<h1>Oovaide C++ Code Coverage</h1>
 Last Updated: Sept. 24, 2014
 <br>
 
 <h2>Test Coverage</h2>
-The Oovcde project has some tools to support
+The Oovaide project has some tools to support
  flow path test coverage analysis. It can show the
 percentage of paths that have 
 been tested in each source file and shows the number of times that
 each instrumented line was executed. This can sometimes be used as a profiler and also to find dead code.
 The CLang compiler is used to parse the source files.
 <br><br>
-The Oovcde program contains a build system that will work on C++ projects that
+The Oovaide program contains a build system that will work on C++ projects that
 will cover many but not all project directory structures.  Even if the build system cannot
 be used to build the project, it should be able to instrument many of the source files.
 <br><br>
@@ -37,10 +37,10 @@ be used to build the project, it should be able to instrument many of the source
 
 <h2>Code Instrumentation</h2>
 
-The Oovcde project has a program named oovCovInstr that will read a source file
+The Oovaide project has a program named oovCovInstr that will read a source file
 
 and produce an instrumented source file. The oovCovInstr is a command line utility that works
-on an individual source file, and the Oovcde program provides a GUI that will run the utility
+on an individual source file, and the Oovaide program provides a GUI that will run the utility
 on all files in a project.
 <br><br>
 An example function in the source file
@@ -128,13 +128,13 @@ running.</li>
 <li>The hit counts could be made a different type to hold higher counts.</li>
 <li>The hit count array file could be saved to a different location.</li>
 </ul>
-The Oovcde program provides a build system that will automatically create a
+The Oovaide program provides a build system that will automatically create a
 new project, and add the OovCoverage files as a library to the link for
 the project.
 <br><br>
 
 <h2>Generating Statistics</h2>
-The Oovcde program provides a menu to run the program that generates
+The Oovaide program provides a menu to run the program that generates
 statistics. This program reads the OovCoverage.h file to get the offsets
 of the instrumented lines for each source file, and reads the hit counts
 file (OovCoverageCounts.h) to get the number of times that each
@@ -162,22 +162,22 @@ To find lines that were never executed, simply search for "//&lt;space&gt;0".
 <br><br>
 
 <h2>Using with Externally Built or Run Systems</h2>
-If the program to be tested cannot be built with Oovcde, or the program
+If the program to be tested cannot be built with Oovaide, or the program
 must run on another system (Ex. embedded systems), then there are some
 simple steps to generating statistics and hit count results.
 <ul>
 <li>First instrument the code as described above. Many times much of the
 code will be instrumented even if not all compile errors can be removed.</li>
 <li>Run the program on the target system.</li>
-<li>Make sure there is an oov-cov-oovcde directory under the oovcde project
-directory. Create an out-Debug directory under the oov-cov-oovcde directory.
-Copy the OovCoverageCounts.txt file to the oov-cov-oovcde/out-Debug directory.</li>
-<li>Run the Oovcde program and select the Coverage/Statistics menu item.</li>
+<li>Make sure there is an oov-cov-oovaide directory under the oovaide project
+directory. Create an out-Debug directory under the oov-cov-oovaide directory.
+Copy the OovCoverageCounts.txt file to the oov-cov-oovaide/out-Debug directory.</li>
+<li>Run the Oovaide program and select the Coverage/Statistics menu item.</li>
 </ul>
 
 
 <h2>Using with Microsoft Code</h2>
-The Analysis/Settings menu item in Oovcde can be used to set build
+The Analysis/Settings menu item in Oovaide can be used to set build
 arguments.&nbsp; These are examples of some of the arguments that may be
 needed for an older version of Visual Studio.<br>
 <br>

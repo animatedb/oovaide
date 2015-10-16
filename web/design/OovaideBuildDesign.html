@@ -1,0 +1,505 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha  -->
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Oovaide Build Design</title>
+  </head>
+  <body>
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId713890"></a>Oovaide Builder
+      Design</h1>
+    Created: Jan 10, 2014<br>
+    Modified: July 17, 2015<br>
+    <br>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId713890">Oovaide Builder Design</a>
+        <ol>
+          <li><a href="#mozTocId663363">Build Design Goals</a></li>
+          <li><a href="#mozTocId337472">Tasks performed by Oovaide (GUI)</a></li>
+          <li><a href="#mozTocId358247">Tasks performed by OovBuilder</a>
+            <ol>
+              <li><a href="#mozTocId236255">Analyze</a>
+                <ol>
+                  <li><a href="#mozTocId881209">Check build configurations</a></li>
+                  <li><a href="#mozTocId164345">Scan external root directories</a></li>
+                  <li><a href="#mozTocId585509">Scan external package
+                      directories</a></li>
+                  <li><a href="#mozTocId672671">Scan project directories</a></li>
+                  <li><a href="#mozTocId498575">Pre-Build Cleanup</a></li>
+                  <li><a href="#mozTocId438495">Generate Analysis Model Data</a></li>
+                </ol>
+              </li>
+              <li><a href="#mozTocId393115">Build</a>
+                <ol>
+                  <li><a href="#mozTocId470900">Determine Component and Package
+                      Dependencies</a></li>
+                  <li><a href="#mozTocId275790">Build object files</a></li>
+                  <li><a href="#mozTocId841934">Build library files</a></li>
+                  <li><a href="#mozTocId948888">Build executables</a></li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId510071">Tasks performed by OovCppParser</a>
+            <ol>
+              <li><a href="#mozTocId982586">Scan project source</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId260876">Other optimizations</a></li>
+        </ol>
+      </li>
+    </ol>
+    <br>
+    <h2><a class="mozTocH2" id="mozTocId663363"></a>Build Design Goals</h2>
+    The design of the build system is to be as easy as possible for the
+    user.&nbsp; The general idea is:<br>
+    <ul>
+      <li>The user selects a root directory of the project that contains the
+        source code.&nbsp; The build tools are found automatically.</li>
+      <li>The user selects a few external packages such as GTK, or LLVM, etc.</li>
+      <li>At this point analysis can be run, which automatically finds the
+        include dependencies.</li>
+      <li>The user defines certain directories as components such as libraries
+        or executables.</li>
+      <li>The user runs the build function, which automatically finds the
+        library dependencies.</li>
+    </ul>
+    <h2><a class="mozTocH2" id="mozTocId337472"></a>Tasks performed by Oovaide
+      (GUI)</h2>
+    This document describes a sequence starting without any preexisting oovaide
+    project files or any type of make files. The Oovaide program performs the
+    following tasks.<br>
+    <ul>
+      <li>Searches the system directories to find build tools. On Windows, the
+        Path environment variable is searched for LLVM, and if found, CLang is
+        used, otherwise G++ is used. On Linux, the /usr/bin/clang++ file is
+        checked, and if present CLang is used.&nbsp; These can be overridden by
+        using the Oovaide menu item Analysis/Settings and selecting the
+        configuration to edit.&nbsp; They can also be changed by editing the
+        oovaide.txt file of the project.</li>
+      <li>Fills some build argument options depending on the build tools that
+        were found</li>
+      <li>When an Oovaide project is created, the user specifies the root
+        directory of the project source code.</li>
+      <li>Allows the user to specify external packages or external root
+        directories that define include and library files. On Linux, the
+        pkg-config utility is used to provide the user with a list of packages.
+        On Windows, the oovaide-allkgs-win.txt file contains some basic
+        definitions for some packages. The user must specify the packages or
+        root directories in the correct link dependency order if they have
+        dependencies between packages.</li>
+      <li>After analysis is performed, the user can set up component types. The
+        component type specifies what output will be produces such as a
+        libraries, executable programs, etc.</li>
+      <li>Allows the user to build different build configurations. Examples of
+        build configurations are Debug and Release. Custom configurations can be
+        created for cross compiling or other uses.</li>
+    </ul>
+    <span style="font-weight: bold;">Output:</span><br>
+    <br>
+    <table style="text-align: left; width: 666px; height: 260px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">File</td>
+          <td style="vertical-align: top;">Content</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovaide.txt</td>
+          <td style="vertical-align: top;">
+            <ul>
+              <li>Project source root directory</li>
+              <li>List of directories to exclude from scanning</li>
+              <li>Tools for each build configuration</li>
+              <li>Arguments specific to each build configuration</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovaide-pkg.txt</td>
+          <td style="vertical-align: top;">Defines every external package (-EP)
+            used by the project. Each package defines:<br>
+            <ul>
+              <li>Package root directory - wildcards must be resolved for
+                analysis.</li>
+              <li>Include directories - can be a wildcard (*)</li>
+              <li>Library directories</li>
+              <li>Library names - can be a wildcard (*)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovaide-comptypes.txt</td>
+          <td style="vertical-align: top;">See the section "Scan project
+            directories" for the details. Oovaide is typically used to set up the
+            component types after the project directory has been scanned.</td>
+        </tr>
+      </tbody>
+    </table>
+    <h2><a class="mozTocH2" id="mozTocId358247"></a>Tasks performed by
+      OovBuilder</h2>
+    The OovBuilder uses the output from the Oovaide program as inputs to define
+    the build.&nbsp; These input files are fairly simple text files, and could
+    potentially be generated by another tool.&nbsp; The OovBuilder command line
+    arguments are simply<br>
+    <ul>
+      <li>the Oovaide project directory</li>
+      <li>the -bld-&lt;configuration&gt;, where the &lt;configuration&gt; is
+        "Debug", "Release", or some custom name</li>
+      <li>the -mode-&lt;function&gt;, where &lt;function&gt; is "analyze",
+        "build", "cov-instr", "cov-build", or "cov-stats", where the cov is for
+        coverage functionality.&nbsp; See the Coverage documentation for more
+        information.</li>
+      <li>a -bv flag for verbose output.</li>
+    </ul>
+    <br>
+    OovBuilder calculates CRC's for sets of build arguments so that unique
+    configurations of build data are regenerated whenever the arguments are
+    changed. This allows switching between build configurations quickly while
+    retaining data.<br>
+    <br>
+    <h3><a class="mozTocH3" id="mozTocId236255"></a>Analyze</h3>
+    The Analyze functionality is performed whenever the mode switch is
+    "-mode-analyze", or "-mode-build".<br>
+    <h4><a class="mozTocH4 mozTocH3" name="mozTocId881209"></a>Check build
+      configurations</h4>
+    CRC's are calculated for the project arguments, so that when the arguments
+    are changed, stale data can be discarded.<br>
+    <br>
+    See the&nbsp;<a href="#BuildCRCs">Build CRC's</a> section for the types of
+    CRC's that are created and compared.<br>
+    <br>
+    If the oovaide-tmp-buildpkg.txt file is older than the oovaide-pkg.txt file,
+    then the output file is deleted.<br>
+    <br>
+    <span style="background-color: rgb(204, 204, 204);"></span><span style="background-color: rgb(204, 204, 204);">[WARNING:
+      At this time, all external project directories are considered
+      non-volatile, user has to erase project analysis contents (including
+      analysis directory, and oovaide-buildpkg.txt) manually if the contents
+      change in a way that will change include or library dependencies.]<br>
+      <br>
+      [WARNING: If source files are deleted, the analysis information needs to
+      be deleted. (include dependencies and source lists must be updated)]<br>
+      <br>
+    </span><span style="background-color: rgb(204, 204, 204);">[WARNING - The
+      analysis directories are not kept unique for the clang and GCC compilers.
+      Only arguments are used to make unique analysis directories. If they are
+      using the same directory and the include dependencies must be created
+      differently, set an argument that is different.</span>]<br>
+    <br>
+    <span style="background-color: rgb(204, 204, 204);">[OPTIMIZE: The project
+      could specify volatile or non-volatile external directories.]</span><span
+      style="font-weight: bold; background-color: rgb(204, 204, 204);"></span><span
+      style="background-color: rgb(204, 204, 204);"></span><br>
+    <br>
+    <h4><a class="mozTocH4" id="mozTocId164345"></a>Scan external root
+      directories</h4>
+    The directories that were specified using -ER in the project are scanned for
+    include files and executables.Scanning the external directories is only done
+    if the "External" CRC config is different for the current build
+    configuration.
+    <h4><a class="mozTocH4 mozTocH3" name="mozTocId585509"></a><span style="font-weight: bold;"></span>Scan
+      external package directories</h4>
+    <p>Makes a copy of the oovaide-pkg.txt file named oovaide-tmp-buildpkg.txt,
+      and updates it with actual include paths and library names found during
+      scanning. If the library names is a wildcard (*), search for libraries
+      below the package root directory and add them as library names. If the
+      include directories is a wildcard, search for header files below the
+      package root directory, and add the include paths to the include
+      directories.<span style=" font-style: italic;"></span></p>
+    <p>Note that the GNU or CLang compiler will automatically search some
+      include paths. These external paths do not have to be specified to Oovaide.
+      See the Oovaide user guide for more information.<span style="background-color: rgb(204, 204, 204);"></span></p>
+    <p><span style="font-weight: bold;">Output:</span></p>
+    <table style="text-align: left; width: 654px; height: 41px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">File</td>
+          <td style="vertical-align: top;">Content</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovaide-tmp-buildpkg.txt</td>
+          <td style="vertical-align: top;">Contains a copy of the project
+            packages where all of the wildcarded include paths and library names
+            are listed.&nbsp; The library names are not in sorted dependency
+            order yet.<br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <h4><a class="mozTocH4" id="mozTocId672671"></a>Scan project directories</h4>
+    Search the project from the project root directory for source and include
+    files. This recusively create include and library paths that are saved in
+    the compsources.txt file.<br>
+    <br>
+    The component names are simply the names of the directories in the
+    project.&nbsp; Each component name can be assigned a component type in the
+    Oovaide program.&nbsp; Examples of component types are static library, executable,
+    etc.<br>
+    <br>
+    <span style="font-weight: bold;">Output:</span><br>
+    <table style="text-align: left; width: 652px; height: 184px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">File<br>
+          </td>
+          <td style="vertical-align: top;">Content<br>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovaide-comptypes.txt</td>
+          <td style="vertical-align: top;">
+            <ul>
+              <li>Component names found during scanning.</li>
+              <li>Component types - the component type starts as the default
+                "Unknown". (Oovaide is used to set the component types)</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>oovaide-tmp-compsources.txt</td>
+          <td>
+            <ul>
+              <li>Source files defined in each component (used by oovaide to
+                display component tree)</li>
+            </ul>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <span style="background-color: rgb(204, 204, 204);">[OPTIMIZE: unused
+      components remain in the oovaide-buildconfig.txt file, but they do not
+      cause any harm.]<br>
+      <br>
+    </span>
+    <h4><a class="mozTocH4 mozTocH3" name="mozTocId498575"></a><span style="background-color: rgb(204, 204, 204);">Pre-Build
+        Cleanup</span></h4>
+    Check the CRC's of arguments to detect changes.<br>
+    <ul>
+      <li>If the analysis crc doesn't match any configuration, create a new
+        directory named analysis-&lt;crc&gt;.</li>
+      <li>If the analysis or other options changed, delete the *.o files.<br>
+      </li>
+      <li>If the link options changed, delete the output directory.</li>
+    </ul>
+    <br>
+    <h4><a class="mozTocH4" id="mozTocId438495"></a>Generate Analysis Model Data<br>
+    </h4>
+    If any analysis (XMI extension) files are out of date compared to the
+    inputs, they are recreated. Analysis of each file is performed by a
+    different thread and process, up to the number of cores or processors in the
+    system.<br>
+    If the analysis content does not exist, create an analysis-&lt;crc&gt;
+    directory for the XMI files, oovaide-incdeps.txt and&nbsp; oovaide-comps.txt
+    file.Each time a build is performed, multiple types of CRC's are saved in
+    the oovaide-tmp-buildconfig.txt file.<span style="background-color: rgb(204, 204, 204);"><br>
+      <br>
+    </span><span style="font-weight: bold;">Output:<br>
+    </span>
+    <table style="text-align: left; width: 650px; height: 252px;" border="1" cellpadding="2"
+      cellspacing="2">
+      <tbody>
+        <tr>
+          <td style="vertical-align: top;">File</td>
+          <td style="vertical-align: top;">Content</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">oovaide-tmp-buildconfig.txt</td>
+          <td style="vertical-align: top;"><span style="font-weight: bold;"></span>Each
+            build configuration has the following CRC's along with the text used
+            to produce the CRC's.<br>
+            <ul>
+              <li>Analysis - This combined from the "External" and the "Project"</li>
+              <li>External (-ER)</li>
+              <li>Project - All include directories in the project</li>
+              <li>Link Arguments (From cppArgs)(-lnk, -L, -l, also from -EP link
+                args)</li>
+              <li>Other Arguments - All other arguments not covered by above.
+                This includes -EP compile arguments.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td>analysis-&lt;crc&gt;/oovaide-extdirs.txt</td>
+          <td>Defines directories that contain include files in the project
+            directories. Contents define:<br>
+            <ul>
+              <li>The initial include paths. These are used during analysis.
+                During compilation, the actual required include paths are used.</li>
+            </ul>
+          </td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">analysis-&lt;crc&gt;/*.xmi</td>
+          <td style="vertical-align: top;">OovBuilder invokes oovCppParser to
+            build these files. See the oovCppParser section.</td>
+        </tr>
+        <tr>
+          <td>analysis-&lt;crc&gt;/*err.txt</td>
+          <td>Lists the errors during the analysis from the OovCppParser.</td>
+        </tr>
+        <tr>
+          <td style="vertical-align: top;">analysis-&lt;crc&gt;/oovaide-incdeps</td>
+          <td style="vertical-align: top;">OovBuilder invokes oovCppParser to
+            build these files. See oovCppParser section.</td>
+        </tr>
+        <tr>
+          <td>dups/*.hsh</td>
+          <td>OovBuilder invokes oovCppParser to build these files. See
+            oovCppParser section.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <br>
+    <span style="background-color: rgb(204, 204, 204);">[WARNING: At this time,
+      all external directories are considered non-volatile]</span><span style="background-color: rgb(204, 204, 204);"></span><br>
+    <br>
+    <h3><a class="mozTocH3" id="mozTocId393115"></a><span style="background-color: rgb(204, 204, 204);">Build</span></h3>
+    The Build functionality is performed whenever the mode switch is
+    "-mode-build".<br>
+    <h4><a class="mozTocH4 mozTocH3" name="mozTocId470900"></a><span style="background-color: rgb(204, 204, 204);">Determine
+        Component and Package Dependencies</span></h4>
+    The include dependencies are used to determine which components are
+    dependent on which packages.&nbsp; This is done before compilation, because
+    some packages have compiler flags that are used to create the object files.<br>
+    <br>
+    <span style="background-color: rgb(204, 204, 204);"></span>
+    <h4><a class="mozTocH4 mozTocH3" name="mozTocId275790"></a>Build object
+      files</h4>
+    Build object files for all components not marked as Unknown. Determine the
+    include paths and order by examining the include dependencies found during
+    the analysis. Only build files if they are older than the files they are
+    dependent on.<br>
+    <br>
+    <table border="1" width="100%">
+      <tbody>
+        <tr>
+          <td>File</td>
+          <td>Content</td>
+        </tr>
+        <tr>
+          <td>bld-&lt;config&gt;/*.o</td>
+          <td>Object files</td>
+        </tr>
+      </tbody>
+    </table>
+    <br style="background-color: rgb(204, 204, 204);">
+    <h4><a class="mozTocH4 mozTocH3" name="mozTocId841934"></a>Build library
+      files</h4>
+    Build libraries for all components marked as a static library. Only build
+    files if they are older than the files they are dependent on. If any project
+    libraries were built, make symbols for them. Use the symbols to determine
+    the project sort library order and which libraries should be used to link.<br>
+    <br>
+    <table border="1" width="100%">
+      <tbody>
+        <tr>
+          <td>File</td>
+          <td>Content</td>
+        </tr>
+        <tr>
+          <td>out-&lt;config&gt;/*.lib</td>
+          <td>Library files</td>
+        </tr>
+        <tr>
+          <td>bld-&lt;config&gt;/sym/&lt;libname.txt</td>
+          <td>Symbols that are in the library files. These symbols are found
+            using the library name tool, which is typically "nm".</td>
+        </tr>
+        <tr>
+          <td>LibSym-&lt;clump&gt;-Def.txt</td>
+          <td>List the symbols that are defined in a clump.&nbsp; A clump is all
+            of the symbols of every library in either a package, or the project.</td>
+        </tr>
+        <tr>
+          <td>LibSym-&lt;clump&gt;-Undef.txt</td>
+          <td>Lists the symbols that are required for the clump.</td>
+        </tr>
+        <tr>
+          <td>LibSym-&lt;clump&gt;-Deps.txt</td>
+          <td>Lists the dependency library order for each library in the clump
+            so that the libraries can be linked in order.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br style="background-color: rgb(204, 204, 204);">
+    <h4><a class="mozTocH4 mozTocH3" name="mozTocId948888"></a>Build executables</h4>
+    Builds executables for all components marked as executables.<br>
+    <br>
+    For each component, there may be multiple packages that it is dependent on.
+    For each package, libraries are either listed in order, or they were scanned
+    using a directory search. The scanned libraries within each package are
+    ordered in the same manner as building project library files.<br>
+    <br>
+    <table border="1" width="100%">
+      <tbody>
+        <tr>
+          <td>File</td>
+          <td>Content</td>
+        </tr>
+        <tr>
+          <td>oovaide-tmp-buildpkg.txt</td>
+          <td>The scanned library names are sorted in dependency order.</td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    Only build files if they are older than the files they are dependent on. <br>
+    <br>
+    <table border="1" width="100%">
+      <tbody>
+        <tr>
+          <td>File</td>
+          <td>Content</td>
+        </tr>
+        <tr>
+          <td>out-&lt;config&gt;/*.exe (or no extension in linux)</td>
+          <td>Executable files</td>
+        </tr>
+        <tr>
+          <td>out-&lt;config&gt;/*.dll (or .s in linux)</td>
+          <td><br>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <br>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId510071"></a>Tasks performed
+      by OovCppParser</h2>
+    <h3><a class="mozTocH4 mozTocH3" name="mozTocId982586"></a>Scan project
+      source</h3>
+    Scan source for includes and drawing info. Compares age of XMI file to
+    source files.<br>
+    <br>
+    <div style="margin-left: 40px;">Output file: analysis-&lt;crc&gt;/*.xmi<br>
+      Output file: analysis-&lt;crc&gt;/*err.txt<br>
+      Output file: analysis-&lt;crc&gt;/oovaide-incdeps (OovBuilder specifies the
+      directory)</div>
+    <br>
+    The incdeps file contains each header file, and the header files in
+    includes. It also contains the times that the files were scanned or changed.<br>
+    <br>
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId260876"></a>Other
+      optimizations</h2>
+    <ul>
+      <li>Only link with used external packages</li>
+      <li>Delete old build info based on unused CRC's</li>
+      <li>Optimize incdeps.txt so updating is less frequent - no need to scan
+        external project headers unless the external project changed.</li>
+      <li>Clean old analysis information if build arguments change. Currently
+        multiple copies are stored so that switching arguments is quick, and
+        multiple configurations may have different include path
+        dependencies.&nbsp; If there are no configurations referring to some
+        analysis information, and the information has not been used for some
+        time, they could be cleaned up.</li>
+    </ul>
+    <br>
+  </body>
+</html>

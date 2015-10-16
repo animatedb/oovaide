@@ -7,5 +7,5 @@ target_link_libraries(oovEdit oovCommon oovGuiCommon ${GTK_LIBRARIES}
   ${LLVM_LIBRARIES})
 
 install(TARGETS oovEdit
-  EXPORT OovcdeTargets
+  EXPORT OovaideTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)

@@ -10,7 +10,7 @@ tricks:
         must be readable by others.
 
 Do not use a space after the comma below:
-[jsmith@linux ~]$     sftp jsmith,oovcde@web.sourceforge.net
+[jsmith@linux ~]$     sftp jsmith,oovaide@web.sourceforge.net
 Connecting to web.sourceforge.net...
 The authenticity of host 'web.sourceforge.net (216.34.181.57)' can't be established.
 RSA key fingerprint is 68:b3:26:02:a0:07:e4:78:d4:ec:7f:2f:6a:4d:32:c5.

@@ -16,7 +16,7 @@ OovString Project::sArgv0;
 #endif
 
 static char sCoverageSourceDir[] = "oov-cov";
-static char sCoverageProjectDir[] = "oov-cov-oovcde";
+static char sCoverageProjectDir[] = "oov-cov-oovaide";
 
 
 
@@ -39,28 +39,28 @@ void Project::setArgv0(OovStringRef arg)
 OovString Project::getComponentTypesFilePath()
     {
     FilePath fn(sProjectDirectory, FP_Dir);
-    fn.appendFile("oovcde-comptypes.txt");
+    fn.appendFile("oovaide-comptypes.txt");
     return fn;
     }
 
 OovString Project::getComponentSourceListFilePath()
     {
     FilePath fn(sProjectDirectory, FP_Dir);
-    fn.appendFile("oovcde-tmp-compsources.txt");
+    fn.appendFile("oovaide-tmp-compsources.txt");
     return fn;
     }
 
 OovString Project::getPackagesFilePath()
     {
     FilePath fn(Project::getProjectDirectory(), FP_Dir);
-    fn.appendFile("oovcde-pkg.txt");
+    fn.appendFile("oovaide-pkg.txt");
     return fn;
     }
 
 OovString Project::getBuildPackagesFilePath()
     {
     FilePath fn(Project::getProjectDirectory(), FP_Dir);
-    fn.appendFile("oovcde-tmp-buildpkg.txt");
+    fn.appendFile("oovaide-tmp-buildpkg.txt");
     return fn;
     }
 
@@ -112,13 +112,13 @@ OovString const &Project::getBinDirectory()
         {
         OovStatus status(true, SC_File);
 #ifdef __linux__
-        // On linux, we could use the "which" command using "which oovcde", but
+        // On linux, we could use the "which" command using "which oovaide", but
         // this will probably be ok?
-        if(FileIsFileOnDisk("./oovcde", status))
+        if(FileIsFileOnDisk("./oovaide", status))
             {
             path = "./";
             }
-        else if(FileIsFileOnDisk("/usr/local/bin/oovcde", status))
+        else if(FileIsFileOnDisk("/usr/local/bin/oovaide", status))
             {
             path = "/usr/local/bin/";
             }
@@ -127,7 +127,7 @@ OovString const &Project::getBinDirectory()
             path = "/usr/bin";
             }
 #else
-        if(FileIsFileOnDisk("./oovcde.exe", status))
+        if(FileIsFileOnDisk("./oovaide.exe", status))
             {
             path = "./";
             }
@@ -147,14 +147,14 @@ OovString const &Project::getBinDirectory()
 OovString Project::getProjectFilePath()
     {
     FilePath fn(sProjectDirectory, FP_Dir);
-    fn.appendFile("oovcde.txt");
+    fn.appendFile("oovaide.txt");
     return fn;
     }
 
 OovString Project::getGuiOptionsFilePath()
     {
     FilePath fn(sProjectDirectory, FP_Dir);
-    fn.appendFile("oovcde-gui.txt");
+    fn.appendFile("oovaide-gui.txt");
     return fn;
     }
 

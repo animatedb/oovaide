@@ -48,7 +48,7 @@ class OovIpcMsg:public OovString
     };
 
 /// The interprocess communication used at this time is the parent/child pipes
-/// between the editor and the editor's container, which is the Oovcde program.
+/// between the editor and the editor's container, which is the Oovaide program.
 class OovIpc
     {
     public:

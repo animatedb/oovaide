@@ -1,15 +1,15 @@
 #!/bin/sh
 
 trnk=..
-dst=../../../backup/oovcde
+dst=../../../backup/oovaide
 #clang=../../../clang+llvm-3.4-x86_64
-dstFromTrunk=../../backup/oovcde
+dstFromTrunk=../../backup/oovaide
 
 rm -r $dst
 mkdir $dst
 
-find ../test/trunk-oovcde-*/analysis* -delete
-find ../test/trunk-oovcde-*/oovcde-tmp* -delete
+find ../test/trunk-oovaide-*/analysis* -delete
+find ../test/trunk-oovaide-*/oovaide-tmp* -delete
 
 rsync -av --exclude='.svn' $trnk/../web/ $dst/web/
 rsync -av --exclude='.svn' $trnk/bin-linux/ $dst/bin/
@@ -25,7 +25,7 @@ find . -name '*.cproject' | cpio -pdm $dstFromTrunk
 find . -name '*.project' | cpio -pdm $dstFromTrunk
 
 rm -r $dstFromTrunk/.metadata
-rm -r $dstFromTrunk/examples/simple-oovcde
-rm -r $dstFromTrunk/examples/staticlib-oovcde
-rm -r $dstFromTrunk/examples/sharedlibgtk-oovcde
+rm -r $dstFromTrunk/examples/simple-oovaide
+rm -r $dstFromTrunk/examples/staticlib-oovaide
+rm -r $dstFromTrunk/examples/sharedlibgtk-oovaide
 

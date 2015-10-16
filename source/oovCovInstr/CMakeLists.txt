@@ -4,5 +4,5 @@ add_executable(oovCovInstr CppInstr.cpp oovCovInstr.cpp)
 target_link_libraries(oovCovInstr oovCommon ${LLVM_LIBRARIES})
 
 install(TARGETS oovCovInstr
-  EXPORT OovcdeTargets
+  EXPORT OovaideTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)

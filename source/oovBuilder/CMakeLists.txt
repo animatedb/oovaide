@@ -5,5 +5,5 @@ add_executable(oovBuilder BuildConfigWriter.cpp ComponentBuilder.cpp ComponentFi
 target_link_libraries(oovBuilder oovCommon)
 
 install(TARGETS oovBuilder
-  EXPORT OovcdeTargets
+  EXPORT OovaideTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)

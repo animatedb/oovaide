@@ -116,7 +116,7 @@ class ComponentBuilder:public ComponentTaskQueue
         OovString makeOutputObjectFileName(OovStringRef const str);
         OovString getSymbolBasePath();
         OovString getDiagFileName() const
-            { return(mIntermediatePath + "oovcde-BuildOut.txt"); }
+            { return(mIntermediatePath + "oovaide-BuildOut.txt"); }
         bool anyIncDirsMatch(OovStringRef const compName,
                 RootDirPackage const &pkg);
         void makeOrderedPackageLibs(OovStringRef const compName);

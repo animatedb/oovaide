@@ -598,7 +598,7 @@ bool Editor::checkExitSave()
     return exitOk;
     }
 
-// Using pipe IPC and editor container to talk between editor and oovcde solves
+// Using pipe IPC and editor container to talk between editor and oovaide solves
 // all problems by launching a single editor. No need to use special GTK stuff,
 // and it works much better since only a single process is launched instead of
 // trying to launch a process, then discovering it is already running.
@@ -697,7 +697,7 @@ static void startupApp(GApplication *gapp)
 
 int main(int argc, char **argv)
     {
-    GtkApplication *app = gtk_application_new("org.oovcde.oovEdit",
+    GtkApplication *app = gtk_application_new("org.oovaide.oovEdit",
             G_APPLICATION_HANDLES_COMMAND_LINE);
     GApplication *gapp = G_APPLICATION(app);
 
@@ -885,7 +885,7 @@ extern "C" G_MODULE_EXPORT gboolean on_MainWindow_delete_event(GtkWidget *button
 extern "C" G_MODULE_EXPORT void on_HelpAboutImagemenuitem_activate(GtkWidget *widget, gpointer data)
     {
     char const * const comments =
-            "This is a simple editor that is part of the Oovcde project";
+            "This is a simple editor that is part of the Oovaide project";
     gtk_show_about_dialog(Gui::getMainWindow(), "program-name", "OovEdit",
             "version", "Version " OOV_VERSION, "comments", comments, nullptr);
     }

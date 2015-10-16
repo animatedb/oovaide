@@ -428,7 +428,7 @@ static void displayHelpFile(OovStringRef const fileName)
         }
     if(!FileIsFileOnDisk(fullFn, status))
         {
-        fullFn.setPath("http://oovcde.sourceforge.net/userguide", FP_Dir);
+        fullFn.setPath("http://oovaide.sourceforge.net/userguide", FP_Dir);
         fullFn.appendFile(fileName);
         }
     status.reported();

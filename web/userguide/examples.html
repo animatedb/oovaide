@@ -5,9 +5,9 @@
     <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
     <link rel="stylesheet" type="text/css" href="../style.css">
     <!-- DC Blaha - 1/1/2014 -->
-    <title>Oovcde Examples</title>
+    <title>Oovaide Examples</title>
   </head>
-  <body> <font size="+3">Oovcde Examples<br>
+  <body> <font size="+3">Oovaide Examples<br>
     </font>
     <hr style="width: 100%; height: 3px;"> Last updated: Aug 18, 2015<br>
     <br>
@@ -41,11 +41,11 @@
         </ol>
       </li>
       <li><a href="#mozTocId999987">Namespaces, Templates and Typedefs Example</a></li>
-      <li><a href="#mozTocId382189">Oovcde Example</a></li>
+      <li><a href="#mozTocId382189">Oovaide Example</a></li>
     </ol>
     <h1><a class="mozTocH2 mozTocH1" name="mozTocId985581"></a>Example Notes</h1>
     It should be fairly simple to analyze the samples with the downloadable
-    Oovcde packages.&nbsp; The Build may take more setup depending on the
+    Oovaide packages.&nbsp; The Build may take more setup depending on the
     configuration. If the builds fail, the build configuration can be set up in
     the Analysis/Settings menu.<br>
     <h1><a class="mozTocH2 mozTocH1" name="mozTocId81887"></a>Simple Example<br>
@@ -54,10 +54,10 @@
     and has a dependency on STL.<br>
     <br>
     <ol>
-      <li>Start Oovcde</li>
+      <li>Start Oovaide</li>
       <li>Select File/New Project from the menu.</li>
       <li>Select trunk/examples/simple using the "..." button. The project
-        directory will default to "simple-oovcde".</li>
+        directory will default to "simple-oovaide".</li>
       <li>Wait for the drawing analysis to complete.</li>
       <li>View the "Class" tab, and click on "Lamb". The class diagram will
         display.</li>
@@ -79,7 +79,7 @@
         system. See the user guide if there are any build configuration
         problems.<br>
       </li>
-      <li>The executable will be in trunk/examples/simple-oovcde/out-Debug.</li>
+      <li>The executable will be in trunk/examples/simple-oovaide/out-Debug.</li>
     </ol>
     Additional files can be added to the component, and are automatically built
     into the executable.<br>
@@ -206,14 +206,14 @@
     <p> </p>
     <h2><a class="mozTocH3 mozTocH2" name="mozTocId525410"></a>Code Test
       Coverage</h2>
-    The Oovcde program contains tools to support flow path test coverage
+    The Oovaide program contains tools to support flow path test coverage
     analysis. This shows the percentage of paths that have <br>
     been tested in each source file and shows the number of times that each
     instrumented line was executed. See <a href="../articles/TestCoverage.html">Test
       Coverage</a> for more details.<br>
     <br>
     <ol>
-      <li>Start Oovcde if it is not already running and open the simple-oovcde
+      <li>Start Oovaide if it is not already running and open the simple-oovaide
         example.<br>
       </li>
       <li>Select Coverage/Instrument from the menu. This adds instrumented lines
@@ -221,13 +221,13 @@
       </li>
       <li>Select Coverage/Build from the menu. This creates a new sub-project
         and builds it.</li>
-      <li>Run the output program in oov-cov-oovcde/out-Debug. This runs the
+      <li>Run the output program in oov-cov-oovaide/out-Debug. This runs the
         program and generates a file that contains the number of times each
         instrumented line was executed.<br>
       </li>
       <li>Select Coverage/Statistics from the command line. The
-        oov-cov-oovcde/oovCovStats.txt file contains the percentage of coverage
-        for each file. In addition, theoov-cov-oovcde directory contains all
+        oov-cov-oovaide/oovCovStats.txt file contains the percentage of coverage
+        for each file. In addition, theoov-cov-oovaide directory contains all
         source code with indications of which lines have been executed. Search
         for "//&lt;space&gt;" to find lines that have not been executed. </li>
     </ol>
@@ -237,10 +237,10 @@
     This example creates an executable file with a static library.<br>
     <br>
     <ol>
-      <li>Start Oovcde</li>
+      <li>Start Oovaide</li>
       <li>Select File/New Project from the menu.</li>
       <li>Select trunk/examples/staticlib using the "..." button. The project
-        directory will default to "staticlib-oovcde".</li>
+        directory will default to "staticlib-oovaide".</li>
       <li>Wait for the analysis to complete.</li>
       <li>View the "Class" tab, and click on "BlackSheep". The class diagram
         will display.</li>
@@ -259,7 +259,7 @@
       <li>Select Build/Build Debug to create a debug version of the program.<br>
       </li>
       <li>The executable and static library will be in
-        trunk/examples/simple-oovcde/out-Debug.</li>
+        trunk/examples/simple-oovaide/out-Debug.</li>
     </ol>
     <h2><a class="mozTocH3 mozTocH2" name="mozTocId632627"></a>Components</h2>
     <embed src="Example2Comps.svg" type="image/svg+xml"><br>
@@ -291,10 +291,10 @@
     libraries. (Known in Windows as DLL's).<br>
     <br>
     <ol>
-      <li>Start Oovcde</li>
+      <li>Start Oovaide</li>
       <li>Select File/New Project from the menu.</li>
       <li>Select trunk/examples/shardlibgtk using the "..." button. The project
-        directory will default to "sharedlibgtk-oovcde".</li>
+        directory will default to "sharedlibgtk-oovaide".</li>
       <li>Wait for the analysis to complete.</li>
       <li>View the "Class" tab, and click on "Kingdom". The class diagram will
         display.</li>
@@ -344,7 +344,7 @@
       <li>Select Build/Build Debug to create a debug version of the program.<br>
       </li>
       <li>The executable and static library will be in
-        trunk/examples/simple-oovcde/out-Debug.</li>
+        trunk/examples/simple-oovaide/out-Debug.</li>
     </ol>
     <h2><a class="mozTocH3 mozTocH2" name="mozTocId576588"></a>Components</h2>
     The components only show relationships to the external GTK package since
@@ -427,8 +427,8 @@
       shown as being inherited from the class that is being renamed. </p>
     <p> <embed src="ExampleNamesClasses.svg" type="image/svg+xml"><br>
     </p>
-    <h1><a class="mozTocH2 mozTocH1" name="mozTocId382189"></a>Oovcde Example</h1>
-    The Oovcde example will build all of the Oovcde programs, which includes
+    <h1><a class="mozTocH2 mozTocH1" name="mozTocId382189"></a>Oovaide Example</h1>
+    The Oovaide example will build all of the Oovaide programs, which includes
     multiple libraries and executables. This example has multiple processes and
     threads, graphics, and many other features.<br>
     This example is under the test directory, and there is a version for Windows
@@ -444,13 +444,13 @@
     oovCMaker, oovCppParser, and oovEdit to Program/Executable, and set the
     oovCommon and oovGuiCommon to static libraries.<br>
     <br>
-    Explanations of the classes and components is in the Oovcde Design document.<br>
+    Explanations of the classes and components is in the Oovaide Design document.<br>
     <br>
     Some extra points:<br>
     <ul>
       <li>Under Linux, add "-lnk-Wl,-rpath=./" to the Build Arguments so that
         the executables will first search the local directory for shared
-        libraries. For the Oovcde project, this is only needed if CLang is not
+        libraries. For the Oovaide project, this is only needed if CLang is not
         installed, and the local version of libclang.so will be used.<br>
       </li>
       <li>Add "-lnk-mwindows" to the Build Arguments in Microsoft Windows to

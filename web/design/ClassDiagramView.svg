@@ -37,7 +37,7 @@
 </g>
 <g stroke="none">
 <text x="12" y="20">ClassDiagramView</text>
-<text x="12" y="29">oovcde</text>
+<text x="12" y="29">oovaide</text>
 <text x="12" y="41">-GuiOptions mGuiOptions</text>
 <text x="12" y="50">-ClassDiagram mClassDiagram</text>
 <text x="12" y="59">-GtkCairoContext mCairoContext</text>
@@ -85,7 +85,7 @@
 </g>
 <g stroke="none">
 <text x="29" y="602">ClassDiagram</text>
-<text x="29" y="611">oovcde/BLL</text>
+<text x="29" y="611">oovaide/BLL</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -96,7 +96,7 @@
 </g>
 <g stroke="none">
 <text x="363" y="495">GtkCairoContext</text>
-<text x="363" y="504">oovcde</text>
+<text x="363" y="504">oovaide</text>
 <text x="363" y="516">-cairo_t&lt;&lt;typedef&gt;&gt; mCr</text>
 <text x="363" y="528">+GtkCairoContext(GtkWidget&lt;&lt;typedef&gt;&gt; widget)</text>
 <text x="363" y="537">+setContext(GtkWidget&lt;&lt;typedef&gt;&gt; widget)</text>
@@ -113,7 +113,7 @@
 </g>
 <g stroke="none">
 <text x="385" y="622">NullDrawer</text>
-<text x="385" y="631">oovcde</text>
+<text x="385" y="631">oovaide</text>
 <text x="385" y="643">#cairo_t&lt;&lt;typedef&gt;&gt; cr</text>
 <text x="385" y="673">+NullDrawer(cairo_t&lt;&lt;typedef&gt;&gt; c)</text>
 <text x="385" y="682">+setGraphicsLib(cairo_t&lt;&lt;typedef&gt;&gt; c)</text>
@@ -137,7 +137,7 @@
 </g>
 <g stroke="none">
 <text x="419" y="416">ClassDiagramListener</text>
-<text x="419" y="425">oovcde</text>
+<text x="419" y="425">oovaide</text>
 </g>
 <g stroke="none" font-style="italic">
 <text x="419" y="440">+~ClassDiagramListener()</text>
@@ -150,7 +150,7 @@
 </g>
 <g stroke="none">
 <text x="129" y="667">ForegroundThreadBusyDialog</text>
-<text x="129" y="676">oovcde</text>
+<text x="129" y="676">oovaide</text>
 <text x="129" y="688">-TaskBusyDialog mDialog</text>
 </g>
 <g stroke="none" font-style="italic">
@@ -169,7 +169,7 @@
 </g>
 <g stroke="none">
 <text x="17" y="416">ClassGraphListener</text>
-<text x="17" y="425">oovcde/BLL</text>
+<text x="17" y="425">oovaide/BLL</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -191,7 +191,7 @@
 </g>
 <g stroke="none">
 <text x="129" y="485">ClassGraph</text>
-<text x="129" y="494">oovcde/BLL</text>
+<text x="129" y="494">oovaide/BLL</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -213,7 +213,7 @@
 </g>
 <g stroke="none">
 <text x="280" y="616">DiagramDrawer</text>
-<text x="280" y="625">oovcde/BLL</text>
+<text x="280" y="625">oovaide/BLL</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>

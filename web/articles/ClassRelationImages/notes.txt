@@ -1,0 +1,35 @@
+
+
+New relations
+------
+	function parameters
+	function variables
+
+	templates:
+	Parameterized class		- uses <<template>> stereotype
+	Bound element (derived type)	- show dependency arrow (dashed line with arrow)
+
+New relation attributes
+-----
+	visibility			- drawn close to inheritance or aggregation symbol
+					  but so it doesn't conflict with func symbols
+	const				- when multiple, any const or all must be const?
+
+Combinations
+------
+	multiple instances can exist, but only a single class is drawn.
+	inheritance, aggr and func symbols are all drawn if any exist
+	func param is drawn if both func parm and var both exist
+
+connection lines
+----
+	if template or other, draw solid
+
+
+namespaces - full namespaces are always displayed
+
+example of crtp
+
+
+
+UML inheritance/aggregation symbols are shown at inconsitent ends

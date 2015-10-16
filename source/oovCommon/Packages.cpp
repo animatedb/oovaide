@@ -349,7 +349,7 @@ ProjectPackages::ProjectPackages(bool readNow)
 OovString ProjectPackages::getFilename()
     {
     FilePath fn(Project::getProjectDirectory(), FP_Dir);
-    fn.appendFile("oovcde-pkg.txt");
+    fn.appendFile("oovaide-pkg.txt");
     return fn;
     }
 
@@ -420,7 +420,7 @@ OovStatusReturn BuildPackages::savePackages()
 AvailablePackages::AvailablePackages()
     {
 #ifndef __linux__
-    OovStatus status = mPackages.read("oovcde-allpkgs-win.txt");
+    OovStatus status = mPackages.read("oovaide-allpkgs-win.txt");
     if(status.needReport())
         {
         status.report(ET_Error, "Unable to read available packages");

@@ -7,7 +7,7 @@
     <title>Viewing Object Oriented Project Dependencies</title>
   </head>
   <body>
-	<a href="../index.html">Oovcde Index</a>
+	<a href="../index.html">Oovaide Index</a>
     <h1>Viewing C++ Project Cohesion (Code Zone Diagrams)</h1>
     Have you ever wanted to view hundreds or thousands of classes of a project
     at one time and their dependencies on each other? Traditional class diagrams
@@ -17,36 +17,36 @@
       where all of the classes are a single point on the circle. The classes are
       grouped by directories. The dependencies are displayed as lines between
       the classes. The lines are colored by the provider directory. <br>
-      <embed src="ZoneImages/ZoneOovcdeClasses.svg" type="image/svg+xml"> </p>
-    <p> This first example shows the small Oovcde project that uses CLang to parse C++
+      <embed src="ZoneImages/ZoneOovaideClasses.svg" type="image/svg+xml"> </p>
+    <p> This first example shows the small Oovaide project that uses CLang to parse C++
       and create these diagrams, but what if we need to display a million line project
       such as LLVM? Showing lines between all classes is too much, so only lines
       between directories are displayed where the classes are related. The
       arrows can be turned on to indicate dependency direction. The following
       diagram is the same project as the diagram above, but only shows class
       dependencies between directories.<br>
-      <embed src="ZoneImages/ZoneOovcdeComponents.svg" type="image/svg+xml"> </p>
-    <p> This makes it easier to see that oovcde and oovEdit are both related to
+      <embed src="ZoneImages/ZoneOovaideComponents.svg" type="image/svg+xml"> </p>
+    <p> This makes it easier to see that oovaide and oovEdit are both related to
       oovGuiCommon, and oovCommon, but the other components are not. </p>
     <p/> Another way to view the classes is to display each directory as a
         separate circle diagram.  This is the same information as the first
         diagram, but is only laid out differently.<br />
-      <embed src="ZoneImages/ZoneOovcdeClassesChild.svg" type="image/svg+xml"> </p>
+      <embed src="ZoneImages/ZoneOovaideClassesChild.svg" type="image/svg+xml"> </p>
       In UML class diagrams, class methods that have a relationship that use
-      other classes are typically not displayed.  The Oovcde program allows
+      other classes are typically not displayed.  The Oovaide program allows
       optionally visualizing these relationhips also.  It also allows hovering
       over the classes to see the class names.
     <p>
 	Run the following to view these diagrams.
 	<ul>
-	    <li>Download the Oovcde Windows or Linux binaries from Sourceforge or
+	    <li>Download the Oovaide Windows or Linux binaries from Sourceforge or
 		download the source from 
-		    <a href="http://sourceforge.net/projects/oovcde/">SourceForge</a>
-		    or <a href="https://github.com/animatedb/oovcde">GitHub</a></li>
+		    <a href="http://sourceforge.net/projects/oovaide/">SourceForge</a>
+		    or <a href="https://github.com/animatedb/oovaide">GitHub</a></li>
 	    <li>Extract the downloaded file to any location</li>
-	    <li>Run the oovcde program from the bin directory</li>
+	    <li>Run the oovaide program from the bin directory</li>
 	    <li>Run File/Open Project from the menu and browse to the
-		trunk/test directory and select the trunk-oovcde-...
+		trunk/test directory and select the trunk-oovaide-...
 		file for linux or windows and press the Open button</li>
 	    <li>Wait for the analysis to complete.</li>
 	    <li>Click on the Zone tab to display the diagram</li>
@@ -62,7 +62,7 @@
     <embed src="ZoneImages/ZoneLlvmClasses.svg" type="image/svg+xml"> <br>
     Viewing just the directory relations is more manageable. It is still messy,
     but now we start to get a view of the whole project.  To toggle
-    classes/components in Oovcde, right click on the diagram and click
+    classes/components in Oovaide, right click on the diagram and click
     on "Show All Classes"<br>
     <embed src="ZoneImages/ZoneLlvmComponents.svg" type="image/svg+xml"> <br>
     Since this project has a directory structure that looks like this:
@@ -91,7 +91,7 @@
     <br>
     <embed src="ZoneImages/ZoneLlvmIncLib.svg" type="image/svg+xml"> <br>
     There are an awful lot of targets that we are not interested in. Lets dump
-    them. In Oovcde, right click on lib/Target and select "Hide Children" to
+    them. In Oovaide, right click on lib/Target and select "Hide Children" to
 	remove them.<br>
     <embed src="ZoneImages/ZoneLlvmIncLibNoTarget.svg" type="image/svg+xml"> <br>
     Now turning on all classes will show more of the cohesion between classes in
@@ -113,7 +113,7 @@
       the dependency indications shows that the AsmPrinter classes are dependent
       on the include/llvm/MC directory and not the other way around.
 	</p>
-    <p>In Oovcde do the following.</p>
+    <p>In Oovaide do the following.</p>
 	<ul>
 	    <li>In the list, right click and select Map Path. Select the items
 		in the path list and press Delete to remove them.</li>

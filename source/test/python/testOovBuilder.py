@@ -15,30 +15,30 @@ def runOovBuilder(projDir, configName, args):
 def testExampleStaticLibAnalysis():
     os.chdir("../../bin")
     # relative to bin dir
-    projDir = os.path.normpath("../examples/staticlib-oovcde")
+    projDir = os.path.normpath("../examples/staticlib-oovaide")
     while os.path.exists(projDir):
         shutil.rmtree(projDir)
         time.sleep(.5)
     os.mkdir(projDir)
-    oovcdeStrs = "BuildArgsBase|-c\n"   \
+    oovaideStrs = "BuildArgsBase|-c\n"   \
         "BuildArgsExtra-Analyze|-x;c++;-std=c++11\n"   \
         "BuildArgsExtra-Debug|-std=c++0x;-O0;-g3\n"   \
         "BuildArgsExtra-Release|-std=c++0x;-O3\n"   \
-        "SourceRootDir|C:/Dave/Mine/software/oovcde/svn/trunk/examples/staticlib/\n"   \
+        "SourceRootDir|C:/Dave/Mine/software/oovaide/svn/trunk/examples/staticlib/\n"   \
         "Tool-CompilerPath-Debug|g++.exe\n"   \
         "Tool-CompilerPath-Release|g++.exe\n"   \
         "Tool-LibPath-Debug|ar.exe\n"   \
         "Tool-LibPath-Release|ar.exe\n"   \
         "Tool-ObjSymbolPath-Debug|nm.exe\n"   \
         "Tool-ObjSymbolPath-Release|nm.exe\n"
-    of = open(projDir + "/oovcde.txt", 'w')
-    of.write(oovcdeStrs)
+    of = open(projDir + "/oovaide.txt", 'w')
+    of.write(oovaideStrs)
     of.close()
 
     compTypes = "Comp-type-BlackSheep|StaticLib\n"    \
         "Comp-type-MainClients|Program\n"     \
         "Components|BlackSheep;MainClients\n"
-    ctf = open(projDir + "/oovcde-comptypes.txt", 'w')
+    ctf = open(projDir + "/oovaide-comptypes.txt", 'w')
     ctf.write(compTypes)
     ctf.close()
 

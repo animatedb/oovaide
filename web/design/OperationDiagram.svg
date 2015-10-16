@@ -37,7 +37,7 @@
 </g>
 <g stroke="none">
 <text x="16" y="21">OperationDiagram</text>
-<text x="16" y="30">oovcde/BLL</text>
+<text x="16" y="30">oovaide/BLL</text>
 <text x="16" y="42">-ModelData mModelData</text>
 <text x="16" y="51">-OperationDrawOptions mOptions</text>
 <text x="16" y="60">-OperationGraph mOpGraph</text>
@@ -81,7 +81,7 @@
 </g>
 <g stroke="none">
 <text x="148" y="313">OperationDrawOptions</text>
-<text x="148" y="322">oovcde/BLL</text>
+<text x="148" y="322">oovaide/BLL</text>
 <text x="148" y="337">-OperationDrawOptions()</text>
 </g>
 <g stroke="none" font-style="italic">
@@ -93,7 +93,7 @@
 </g>
 <g stroke="none">
 <text x="13" y="386">OperationGraph</text>
-<text x="13" y="395">oovcde/BLL</text>
+<text x="13" y="395">oovaide/BLL</text>
 <text x="13" y="407">-std::vector&lt;OperationClass,std::allocator&lt;OperationClass&gt; &gt; mOpClasses</text>
 <text x="13" y="416">-std::vector&lt;OperationDefinition,std::allocator&lt;OperationDefinition&gt; &gt; mOperations</text>
 <text x="13" y="425">-GraphSize&lt;&lt;typedef&gt;&gt; mPad</text>
@@ -139,7 +139,7 @@
 </g>
 <g stroke="none">
 <text x="420" y="97">OperationDrawer</text>
-<text x="420" y="106">oovcde/BLL</text>
+<text x="420" y="106">oovaide/BLL</text>
 <text x="420" y="118">-size_t&lt;&lt;typedef&gt;&gt; NO_INDEX</text>
 <text x="420" y="127">-int mPad</text>
 <text x="420" y="136">-int mCharHeight</text>
@@ -177,7 +177,7 @@
 </g>
 <g stroke="none">
 <text x="420" y="24">OperationDiagramParams</text>
-<text x="420" y="33">oovcde/BLL</text>
+<text x="420" y="33">oovaide/BLL</text>
 <text x="420" y="45">-string&lt;&lt;typedef&gt;&gt; mClassName</text>
 <text x="420" y="54">-string&lt;&lt;typedef&gt;&gt; mOpName</text>
 <text x="420" y="63">-bool mIsConst</text>
@@ -214,7 +214,7 @@
 </g>
 <g stroke="none">
 <text x="534" y="422">OperationClass</text>
-<text x="534" y="431">oovcde/BLL</text>
+<text x="534" y="431">oovaide/BLL</text>
 <text x="534" y="443">-ModelType mType</text>
 <text x="534" y="452">-GraphRect rect</text>
 <text x="534" y="464">+OperationClass(ModelType type)</text>
@@ -234,7 +234,7 @@
 </g>
 <g stroke="none">
 <text x="464" y="584">OperationDefinition</text>
-<text x="464" y="593">oovcde/BLL</text>
+<text x="464" y="593">oovaide/BLL</text>
 <text x="464" y="605">-std::vector&lt;std::unique_ptr&lt;OperationStatement,</text>
 <text x="471" y="614">std::default_delete&lt;OperationStatement&gt; &gt;</text>
 <text x="471" y="623">,std::allocator&lt;std::unique_ptr&lt;OperationStatement</text>
@@ -266,7 +266,7 @@
 </g>
 <g stroke="none">
 <text x="180" y="759">OperationCall</text>
-<text x="180" y="768">oovcde/BLL</text>
+<text x="180" y="768">oovaide/BLL</text>
 <text x="180" y="780">-size_t&lt;&lt;typedef&gt;&gt; mOperClassIndex</text>
 <text x="180" y="789">-ModelOperation mOperation</text>
 <text x="180" y="798">-GraphRect rect</text>
@@ -292,7 +292,7 @@
 </g>
 <g stroke="none">
 <text x="465" y="813">OperationStatement</text>
-<text x="465" y="822">oovcde/BLL</text>
+<text x="465" y="822">oovaide/BLL</text>
 <text x="465" y="834">-eModelStatementTypes mStatementType</text>
 <text x="465" y="846">+getCall()</text>
 <text x="465" y="855">+getVarRef()</text>

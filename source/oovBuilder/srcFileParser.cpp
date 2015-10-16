@@ -19,7 +19,7 @@ bool srcFileParser::analyzeSrcFiles(OovStringRef const srcRootDir,
 
 #define MULTIPLE_THREADS 1
 #if(MULTIPLE_THREADS)
-    // This requires that the oovcde-incdeps file can be updated by multiple processes.
+    // This requires that the oovaide-incdeps file can be updated by multiple processes.
     setupQueue(getNumHardwareThreads());
 #else
     setupQueue(1);
@@ -124,7 +124,7 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                     fflush(stderr);
     */
                     }
-                /// @todo - notify oovcde when files are ready to parse?
+                /// @todo - notify oovaide when files are ready to parse?
                 }
             }
         }

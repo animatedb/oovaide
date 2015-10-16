@@ -8,7 +8,7 @@
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 
 
-<title>Oovcde Task Queue</title>
+<title>Oovaide Task Queue</title>
 
 </head>
 
@@ -16,11 +16,11 @@
 
 <body>
 
-	<a href="../index.html">Oovcde Index</a>
+	<a href="../index.html">Oovaide Index</a>
 <h1>C++11 Task Queue</h1>
 Last updated: May 23, 2014<br>
 <h2>Overview</h2>
-The Oovcde project needed a task queue where a provider could put work items to
+The Oovaide project needed a task queue where a provider could put work items to
  work on in a queue, and multiple consumer threads would process the work items.
  One key point is that the queue should not grow too large as the provider is
  placing items on the queue, in the case that the consumer's are not processing
@@ -124,7 +124,7 @@ When they wake up, they will check the mQuitPopping flag, and can quit the wait
 function.
 
 <h2>Reducing Code Bloat</h2>
-In the Oovcde project, the thread safe queue will be instantiated many times.
+In the Oovaide project, the thread safe queue will be instantiated many times.
 To reduce code bloat, the push and pop functions are moved into a separate
 non-template class, and then a template class is used to call them.
 An example of how to do this is described here:
@@ -138,19 +138,19 @@ threads. The threads can be defined as:
 Then call push_back with a thread constructor. At the end, then set the
 flag to quit the pops after all items have been added to the queue, and
 then call join on all threads.  The complete example can be seen in the
-OovThreadedQueue header and source file in the Oovcde project on both SourceForge
+OovThreadedQueue header and source file in the Oovaide project on both SourceForge
 and GitHub. The files are in Github here:
-<a href="https://github.com/animatedb/oovcde/blob/master/source/oovCommon/OovThreadedQueue.h">
-GitHub/oovcde/OovThreadedQueue.h</a>
+<a href="https://github.com/animatedb/oovaide/blob/master/source/oovCommon/OovThreadedQueue.h">
+GitHub/oovaide/OovThreadedQueue.h</a>
 <br>
-<a href="https://github.com/animatedb/oovcde/blob/master/source/oovCommon/OovThreadedQueue.cpp">
-GitHub/oovcde/OovThreadedQueue.cpp</a>
+<a href="https://github.com/animatedb/oovaide/blob/master/source/oovCommon/OovThreadedQueue.cpp">
+GitHub/oovaide/OovThreadedQueue.cpp</a>
 
 <h2>Other Factors</h2>
 The MinGW project does not support some of these features yet. But the MinGW-builds
 project does, so that the code is portable on both Windows or Linux.
 <br>
-The Oovcde project does not have the cleanest implementation, but is usable and
+The Oovaide project does not have the cleanest implementation, but is usable and
 can be used as an example.  I would like to get rid of more of the virtual functions,
 and instead use template functions, but haven't completed it yet.
 An example is in this article:

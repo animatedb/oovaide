@@ -9,16 +9,16 @@
 
 <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
 
-<title>Oovcde Duplicate Code Detection</title>
+<title>Oovaide Duplicate Code Detection</title>
 
 </head>
 
 
 <body>
-	<a href="../index.html">Oovcde Index</a>
+	<a href="../index.html">Oovaide Index</a>
 
 
-<h1>Oovcde Duplicate Code Detection</h1>
+<h1>Oovaide Duplicate Code Detection</h1>
 <h2>Code Parsing</h2>
 Many duplicate detection programs use a source line as the code chunk size
 (comparison chunk) for comparison.
@@ -27,7 +27,7 @@ each line.  They then compare lines to see where there are matches.
 This could mean that long lines do not show up in the output since multiple
 lines must match to show up in the output.
 <p/>
-The Oovcde project uses CLang to parse the C++ source files.  Oovcde does this at
+The Oovaide project uses CLang to parse the C++ source files.  Oovaide does this at
 the same time as it parses the project for class relationship information during
 the analysis phase if the -dups switch is used during the analysis phase.
 <p/>
@@ -42,7 +42,7 @@ anything else other than statements from the AST is also used as a comparison ch
 <h2>Hashing</h2>
 Each comparison chunk is hashed using the djb2 hash function and saved as
 a 32 bit hash.  The djb2 hash function is a simple function that seems to
-have very few collisions when used with source code.  Since the Oovcde program
+have very few collisions when used with source code.  Since the Oovaide program
 will only output duplicates if it finds some number of hashes in a row, then
 it is very suitable for this use.
 <p/>
@@ -59,11 +59,11 @@ the starting line number of the match for each source file.
 At the moment, the output may look something like the following:
 <pre>
 lines 6  :  oovBuilder/ComponentBuilder.cpp 645  :  oovBuilder/ComponentBuilder.cpp 654
-lines 5  :  oovcde/ClassDrawer.cpp 482  :  oovcde/ClassDrawer.cpp 494
-lines 8  :  oovcde/ClassDrawer.cpp 277  :  oovcde/ZoneDrawer.cpp 547
-lines 11  :  oovcde/ComponentDrawer.cpp 90  :  oovcde/ZoneDrawer.cpp 544
-lines 6  :  oovcde/OperationDrawer.cpp 205  :  oovcde/OperationDrawer.cpp 271
-lines 6  :  oovcde/ZoneDiagram.cpp 211  :  oovcde/ZoneDiagram.cpp 223
+lines 5  :  oovaide/ClassDrawer.cpp 482  :  oovaide/ClassDrawer.cpp 494
+lines 8  :  oovaide/ClassDrawer.cpp 277  :  oovaide/ZoneDrawer.cpp 547
+lines 11  :  oovaide/ComponentDrawer.cpp 90  :  oovaide/ZoneDrawer.cpp 544
+lines 6  :  oovaide/OperationDrawer.cpp 205  :  oovaide/OperationDrawer.cpp 271
+lines 6  :  oovaide/ZoneDiagram.cpp 211  :  oovaide/ZoneDiagram.cpp 223
 lines 5  :  oovCMaker/oovCMaker.cpp 362  :  oovCMaker/oovCMaker.cpp 404
 lines 13  :  oovCommon/IncludeMap.cpp 60  :  oovCommon/IncludeMap.cpp 89
 lines 6  :  oovCommon/ModelObjects.cpp 420  :  oovCommon/ModelObjects.cpp 647

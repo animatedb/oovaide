@@ -770,7 +770,7 @@ bool EditFiles::checkDebugger()
                 }
 //          else
 //                {
-//                Gui::messageBox("Debugger in Oovcde Analysis/Settings does not exist");
+//                Gui::messageBox("Debugger in Oovaide Analysis/Settings does not exist");
 //                }
             }
         else
@@ -780,7 +780,7 @@ bool EditFiles::checkDebugger()
         }
     else
         {
-        Gui::messageBox("Debugger tool path must be set in Oovcde Analysis/Settings");
+        Gui::messageBox("Debugger tool path must be set in Oovaide Analysis/Settings");
         }
     return ok;
     }

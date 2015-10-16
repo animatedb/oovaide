@@ -46,7 +46,7 @@ char const *OovError::getComponentString()
     char const *str = "";
     switch(sErrorComponent)
         {
-        case EC_Oovcde:         str = "Oovcde";         break;
+        case EC_Oovaide:         str = "Oovaide";         break;
         case EC_OovBuilder:     str = "OovBuilder";     break;
         case EC_OovCMaker:      str = "OovCMaker";      break;
         case EC_OovCovInstr:    str = "OovCovInstr";    break;

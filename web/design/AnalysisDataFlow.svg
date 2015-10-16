@@ -157,7 +157,7 @@
          y="235.63501"
          x="364.65796"
          id="tspan3816-4"
-         sodipodi:role="line">analysys-&lt;crc&gt;/oovcde-comps.txt</tspan></text>
+         sodipodi:role="line">analysys-&lt;crc&gt;/oovaide-comps.txt</tspan></text>
     <rect
        y="215.33501"
        x="359.65796"
@@ -175,7 +175,7 @@
          y="275.63501"
          x="364.65796"
          id="tspan3816-4-1"
-         sodipodi:role="line">analysis-&lt;crc&gt;/oovcde-incdeps.txt</tspan></text>
+         sodipodi:role="line">analysis-&lt;crc&gt;/oovaide-incdeps.txt</tspan></text>
     <rect
        y="255.63501"
        x="359.65796"
@@ -288,7 +288,7 @@
          y="70.635002"
          x="109.65794"
          id="tspan3816-74-7-7"
-         sodipodi:role="line">oovcde.txt</tspan></text>
+         sodipodi:role="line">oovaide.txt</tspan></text>
     <text
        sodipodi:linespacing="125%"
        id="text3814-5-1"
@@ -299,7 +299,7 @@
          y="155.63501"
          x="409.65796"
          id="tspan3816-4-7"
-         sodipodi:role="line">oovcde-buildconfig.txt</tspan></text>
+         sodipodi:role="line">oovaide-buildconfig.txt</tspan></text>
     <rect
        y="135.63501"
        x="404.65796"
@@ -330,7 +330,7 @@
          y="195.63501"
          x="409.65796"
          id="tspan3816-4-7-9"
-         sodipodi:role="line">oovcde-comptypes.txt</tspan></text>
+         sodipodi:role="line">oovaide-comptypes.txt</tspan></text>
     <rect
        y="175.63501"
        x="404.65796"

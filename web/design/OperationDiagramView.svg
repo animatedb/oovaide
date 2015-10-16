@@ -37,7 +37,7 @@
 </g>
 <g stroke="none">
 <text x="20" y="23">OperationDiagramView</text>
-<text x="20" y="32">oovcde</text>
+<text x="20" y="32">oovaide</text>
 <text x="20" y="44">-GuiOptions mGuiOptions</text>
 <text x="20" y="53">-OperationDiagram mOperationDiagram</text>
 <text x="20" y="62">-OperationDiagramListener mListener</text>
@@ -72,7 +72,7 @@
 </g>
 <g stroke="none">
 <text x="196" y="305">OperationDiagram</text>
-<text x="196" y="314">oovcde/BLL</text>
+<text x="196" y="314">oovaide/BLL</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -83,7 +83,7 @@
 </g>
 <g stroke="none">
 <text x="318" y="304">OperationDiagramListener</text>
-<text x="318" y="313">oovcde</text>
+<text x="318" y="313">oovaide</text>
 </g>
 <g stroke="none" font-style="italic">
 <text x="318" y="328">+~OperationDiagramListener()</text>
@@ -98,7 +98,7 @@
 </g>
 <g stroke="none">
 <text x="367" y="23">GtkCairoContext</text>
-<text x="367" y="32">oovcde</text>
+<text x="367" y="32">oovaide</text>
 <text x="367" y="44">-cairo_t&lt;&lt;typedef&gt;&gt; mCr</text>
 <text x="367" y="56">+GtkCairoContext(GtkWidget&lt;&lt;typedef&gt;&gt; widget)</text>
 <text x="367" y="65">+setContext(GtkWidget&lt;&lt;typedef&gt;&gt; widget)</text>
@@ -115,7 +115,7 @@
 </g>
 <g stroke="none">
 <text x="388" y="128">NullDrawer</text>
-<text x="388" y="137">oovcde</text>
+<text x="388" y="137">oovaide</text>
 <text x="388" y="149">#cairo_t&lt;&lt;typedef&gt;&gt; cr</text>
 <text x="388" y="179">+NullDrawer(cairo_t&lt;&lt;typedef&gt;&gt; c)</text>
 <text x="388" y="188">+setGraphicsLib(cairo_t&lt;&lt;typedef&gt;&gt; c)</text>

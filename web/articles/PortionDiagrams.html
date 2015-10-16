@@ -7,17 +7,17 @@
     <title>Viewing Object Oriented Project Dependencies</title>
   </head>
   <body>
-	<a href="../index.html">Oovcde Index</a>
+	<a href="../index.html">Oovaide Index</a>
     <h1>Viewing a Class for Composition</h1>
 
 	Sometimes a class grows too large, and needs to be refactored. In
 	some cases, it can be difficult to determine what will result in a
 	clean separation of multiple classes.
 	<p/>
-	The Oovcde program can display all of the data members and functions of
+	The Oovaide program can display all of the data members and functions of
 	a class and show how they are related.  The C++ code is parsed and
 	the diagrams are created automatically.
-	The following shows a class portion diagram in the Oovcde program, and
+	The following shows a class portion diagram in the Oovaide program, and
 	shows an example "Package" class.  The data members are
 	shown in rectangles, and the member functions are shown in ellipses.
 	The arrows show the direction of the dependency.
@@ -39,16 +39,16 @@
 	<p/>
 	Run the following to view these diagrams.
 	<ul>
-	    <li>Download the Oovcde Windows or Linux binaries from Sourceforge or
+	    <li>Download the Oovaide Windows or Linux binaries from Sourceforge or
 		download the source from 
-		    <a href="http://sourceforge.net/projects/oovcde/">SourceForge</a>
-		    or <a href="https://github.com/animatedb/oovcde">GitHub</a></li>
+		    <a href="http://sourceforge.net/projects/oovaide/">SourceForge</a>
+		    or <a href="https://github.com/animatedb/oovaide">GitHub</a></li>
 	    <li>Extract the downloaded file to any location</li>
-	    <li>Run the oovcde program from the bin directory</li>
+	    <li>Run the oovaide program from the bin directory</li>
 	    <li>Run File/New Project from the menu and browse to a C++ project
-		of your choice. To view the Oovcde source, run File/Open Project
+		of your choice. To view the Oovaide source, run File/Open Project
 		from the menu and browse to the	trunk/test directory and select
-		the trunk-oovcde-... file for linux or windows and press the
+		the trunk-oovaide-... file for linux or windows and press the
 		Open button</li>
 	    <li>Wait for the analysis to complete.</li>
 	    <li>Click on the Portion tab and select a class to display a
@@ -57,9 +57,9 @@
     <h2>CppParser Example</h2>
 	<p/>
 	Now we move on to an example of a class that needs to be refactored.
-	This class is used in the Oovcde .cpp parser.  The Oovcde program
+	This class is used in the Oovaide .cpp parser.  The Oovaide program
 	shows that it is in the module with the highest number of lines in
-	all of the Oovcde source code, although the complexity is not the highest.
+	all of the Oovaide source code, although the complexity is not the highest.
 	This class is not the cleanest
 	class to analyze since it uses function pointers to global functions called
 	by the clang visitor functions, but since this class was the inspiration
@@ -129,11 +129,11 @@
 	<li>A method that doesn't use an attribute could be made static if
 	it does not call other non-static methods and is not virtual.</li>
 	</ul>
-	Other notes about the Oovcde program:
+	Other notes about the Oovaide program:
 	<ul>
-	<li>The Oovcde "Member Usage" feature can be used to find classes with
+	<li>The Oovaide "Member Usage" feature can be used to find classes with
 	unused attributes.</li>
-	<li>The Oovcde complexity or line count features can be used to find which classes
+	<li>The Oovaide complexity or line count features can be used to find which classes
 	could be refactored.</li>
 	</ul>
 

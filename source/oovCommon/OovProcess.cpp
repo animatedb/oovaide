@@ -891,7 +891,10 @@ OovBackgroundStdInListener::OovBackgroundStdInListener():
 OovBackgroundStdInListener::~OovBackgroundStdInListener()
     {
     mThreadState = TS_Stopping;
-    mThread.join();
+    if(mThread.joinable())
+        {
+        mThread.join();
+        }
     }
 
 void OovBackgroundStdInListener::start()

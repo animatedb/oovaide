@@ -19,6 +19,6 @@ set(HEADER_FILES  BuildConfigReader.h Components.h CoverageHeaderReader.h
 set_target_properties(oovCommon PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 
 install(TARGETS oovCommon
-  EXPORT OovcdeTargets
+  EXPORT OovaideTargets
   ARCHIVE DESTINATION "${INSTALL_LIB_DIR}" COMPONENT lib
-  PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/Oovcde" COMPONENT dev)
+  PUBLIC_HEADER DESTINATION "${INSTALL_INCLUDE_DIR}/Oovaide" COMPONENT dev)

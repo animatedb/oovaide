@@ -37,7 +37,7 @@
 </g>
 <g stroke="none">
 <text x="15" y="25">Journal</text>
-<text x="15" y="34">oovcde</text>
+<text x="15" y="34">oovaide</text>
 <text x="15" y="46">-GuiOptions mGuiOptions</text>
 <text x="15" y="55">-std::vector&lt;JournalRecord,std::allocator&lt;JournalRecord&gt; &gt; mRecords</text>
 <text x="15" y="64">-size_t&lt;&lt;typedef&gt;&gt; mCurrentRecord</text>
@@ -120,7 +120,7 @@
 </g>
 <g stroke="none">
 <text x="575" y="503">JournalListener</text>
-<text x="575" y="512">oovcde</text>
+<text x="575" y="512">oovaide</text>
 </g>
 <g stroke="none" font-style="italic">
 <text x="575" y="527">+~JournalListener()</text>
@@ -146,7 +146,7 @@
 </g>
 <g stroke="none">
 <text x="463" y="129">JournalRecord</text>
-<text x="463" y="138">oovcde</text>
+<text x="463" y="138">oovaide</text>
 <text x="463" y="150">-OovString mName</text>
 <text x="463" y="159">-OovString mDiagramName</text>
 <text x="463" y="168">-eRecordTypes mRecordType</text>
@@ -183,7 +183,7 @@
 </g>
 <g stroke="none">
 <text x="204" y="548">JournalRecordClassDiagram</text>
-<text x="204" y="557">oovcde</text>
+<text x="204" y="557">oovaide</text>
 <text x="204" y="569">+ClassDiagramView mClassDiagram</text>
 <text x="204" y="581">+JournalRecordClassDiagram(GuiOptions </text>
 <text x="211" y="590">guiOptions, ModelData model, JournalLis</text>
@@ -212,7 +212,7 @@
 </g>
 <g stroke="none">
 <text x="233" y="571">JournalRecordOperationDiagram</text>
-<text x="233" y="580">oovcde</text>
+<text x="233" y="580">oovaide</text>
 <text x="233" y="592">+OperationDiagramView mOperationDiagram</text>
 <text x="233" y="604">+JournalRecordOperationDiagram(GuiOptions</text>
 <text x="240" y="613"> guiOptions, ModelData model, </text>
@@ -241,7 +241,7 @@
 </g>
 <g stroke="none">
 <text x="264" y="593">JournalRecordComponentDiagram</text>
-<text x="264" y="602">oovcde</text>
+<text x="264" y="602">oovaide</text>
 <text x="264" y="614">+ComponentDiagramView mComponentDiagram</text>
 <text x="264" y="626">+JournalRecordComponentDiagram(GuiOptions </text>
 <text x="271" y="635">guiOptions, IncDirDependencyMapReader </text>
@@ -267,7 +267,7 @@
 </g>
 <g stroke="none">
 <text x="293" y="614">JournalRecordZoneDiagram</text>
-<text x="293" y="623">oovcde</text>
+<text x="293" y="623">oovaide</text>
 <text x="293" y="635">+ZoneDiagramView mZoneDiagram</text>
 <text x="293" y="647">+JournalRecordZoneDiagram(GuiOptions </text>
 <text x="300" y="656">guiOptions, ModelData model, JournalLis</text>
@@ -297,7 +297,7 @@
 </g>
 <g stroke="none">
 <text x="318" y="635">JournalRecordPortionDiagram</text>
-<text x="318" y="644">oovcde</text>
+<text x="318" y="644">oovaide</text>
 <text x="318" y="656">+PortionDiagramView mPortionDiagram</text>
 <text x="318" y="668">+JournalRecordPortionDiagram(GuiOptions</text>
 <text x="325" y="677"> guiOptions, ModelData model,</text>
@@ -323,7 +323,7 @@
 </g>
 <g stroke="none">
 <text x="342" y="657">JournalRecordIncludeDiagram</text>
-<text x="342" y="666">oovcde</text>
+<text x="342" y="666">oovaide</text>
 <text x="342" y="678">+IncludeDiagramView mIncludeDiagram</text>
 <text x="342" y="690">+JournalRecordIncludeDiagram(GuiOptions </text>
 <text x="349" y="699">guiOptions, IncDirDependencyMapReader </text>

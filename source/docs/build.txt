@@ -1,7 +1,7 @@
-Building Oovcde projects
+Building Oovaide projects
 ------------------------
 
-	I originally used Eclipse to build Oovcde, but Oovcde can now
+	I originally used Eclipse to build Oovaide, but Oovaide can now
 	build itself.
 
 	I have not figured out how to build a 32 bit version under
@@ -35,12 +35,12 @@ Versions on or before 2014-01
 -----------------------
 Windows:
 	MinGW:
-		From: https://sourceforge.net/projects/oovcde/files/
+		From: https://sourceforge.net/projects/oovaide/files/
 		File: mingw-get-inst-20120426.exe, ver 3.2, g++ 4.6.2
 	GTK-3.0:		
 		From: http://www.tarnyko.net/dl/
 		File: "version 3.6.1 TARNYKO 11-13-2012 for Windows"
-			The oovcde workspace expects GTK to be under
+			The oovaide workspace expects GTK to be under
 			c:/program files/GTK+Bundle-3.6.1
 	Clang 3.2:
 		From: http://llvm.org/releases/download.html
@@ -65,7 +65,7 @@ Ubuntu:
 
 Glade
 -----
-The oovcdeLayout.glade and oovEdit.glade files must be in the bin directories.
+The oovaideLayout.glade and oovEdit.glade files must be in the bin directories.
 
 Problems/Solutions
 --------
@@ -89,13 +89,13 @@ Problems/Solutions
   windows/linux/release/debug name changes.
 
 Link order can take time to work out with clang.  I couldn't find a dependency
-graph anywhere. OOvcde now does this automatically.
+graph anywhere. Oovcde now does this automatically.
 
 To solve link errors for GetProcessMemoryInfo@12 and _imp_semSetOptions@4,
 I needed to link with psapi and imagehlp. Also needed pthread.
 
 
-Oovcde build ideas
+Oovaide build ideas
 ------------------
 
 file extensions map to tools

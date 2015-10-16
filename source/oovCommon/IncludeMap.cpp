@@ -67,7 +67,7 @@ OovStringVec IncDirDependencyMapReader::getFilesDefinedInDirectory(
 
 static void dispMapItemErr(OovStringRef fileMapStr)
     {
-    fprintf(stderr, "Bad entry in oovcde-incdeps.txt:\n   %s\n",
+    fprintf(stderr, "Bad entry in oovaide-incdeps.txt:\n   %s\n",
             fileMapStr.getStr());
     DebugAssert(__FILE__, __LINE__);
 

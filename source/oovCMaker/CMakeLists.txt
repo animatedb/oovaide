@@ -4,5 +4,5 @@ add_executable(oovCMaker oovCMaker.cpp)
 target_link_libraries(oovCMaker oovCommon)
 
 install(TARGETS oovCMaker
-  EXPORT OovcdeTargets
+  EXPORT OovaideTargets
   RUNTIME DESTINATION "${INSTALL_BIN_DIR}" COMPONENT lib)

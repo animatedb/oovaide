@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <!-- DC Blaha - 6/8/2009 -->
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>Oovaide Build Help</title>
+  </head>
+<body>
+<h1>Oovaide Build Help</h1>
+
+<h2>Overview of Oovaide Analysis Process</h2>
+  One goal of Oovaide is to be able to analyze a project by only providing
+  a simple setup for analysis.  This allows analyzing projects where
+  nothing is known about the source code.
+  <p/>
+  Oovaide scans the directories of the project under the source root directory
+  and adds include paths for any directories that contain header files.
+  Exclude directories can be set up for the project if needed.
+  <p/>
+  Oovaide generally uses one set of compiler settings for all directories. This
+  typically means that a superset of all packages must be specified.  For example,
+  if gtk is not needed for some directories, adding it for all directories should
+  not cause a problem for directories that do not require gtk.  It may make
+  analysis slower, but should not fail.
+  <p/>
+  Each header and source file is analyzed independently. This means
+  that each file should be able to include all definitions needed.
+  If the files do not include all needed definitions (they expect the
+  source that includes them to include other files first), then the
+  error limit may need to be increased so that more of the
+  file can be parsed.  The other alternative is to fix the header files
+  so that they include the needed definitions.
+  <p/>
+  Not all compiler errors need to be fixed to generate useful diagrams.
+  Oovaide will still generate references to undefined objects as long as
+  the compiler has parsed beyond the initial errors.
+
+<h2>Packages</h2>
+  Packages are collections of include and library files that are distributed
+  for use by many programs.  Some examples are gtk, Qt, etc.  Oovaide
+  provides an "External Project Packages" button on the build arguments
+  screen that allows selecting packages.
+  <p/>
+  Packages are different on Windows and Linux.  On Linux, the pkg-config tool
+  is used by the Oovaide package dialogs so that packages can be selected
+  and used in each project.
+
+<h2>Windows Packages</h2>
+  On Windows, there is a file called
+  bin/oovaide-allpkgs-win.txt, that defines a few common packages.  This file
+  can be easily read to see how packages are defined, and it
+  is possible to modify and add more packages.
+  <p/>
+  On Windows, Oovaide attempts to find directories using wildcards in the
+  package directory definitions.  If there are multiple versions, then
+  the directory can be specified manually.
+  <p/>
+  If the "Include Directory" setting is blank, then the directories are
+  scanned for include files, and paths are saved.  To prevent this scan,
+  directories can be specified (separated with semicolons) or a single
+  period can be used to specify that only the current directory relative
+  to the root should be used as the path.
+  <p/>
+  The "External References" can be specified with exclude directories
+  the same as in the Build Arguments.
+  
+
+<h2>Oovaide Build Arguments</h2>
+The CLang compiler arguments for Analysis are set up in the Analysis/Settings
+dialog in the Build Arguments tab.  Many arguments are passed directly to the
+compiler, so for example, "-I/dir" will use "/dir" as an include path to
+search.  There are a few special arguments that Oovaide uses as described below.
+<p/>
+The argument order is important if there are files with the same names in different
+directories.
+<p/>
+<table border="1">
+	<tr>
+	<th>Flag</th><th>Name</th><th>Description</th>
+	</tr>
+	<tr>
+	<td>-EP</td><td>External Packages</td>
+	<td>
+	This flag should be added using the "External Project Packages" button.
+	This specifies the name of the package to use for the OovBuilder.
+	</td></tr>
+
+	<tr><td>-ER</td><td>External Recursive Directories</td>
+	<td>
+	This flag allows specifying a root directory to search for includes
+	and libraries.  It also allows specifying exclude directories. An
+	example is "/rootdir/!/test/!/examples/", so that any filepath that
+	matches test or examples will be excluded.
+	</td></tr>
+
+	<tr><td>-lnk</td><td>Link Flag</td>
+	<td>The value following this flag is sent to the linker.
+	Some examples are "-lnk-L/libdir", or "-lnk../dir/objfile.o".
+	</td></tr>
+</table>
+
+<h2>Problem Solving</h2>
+  Oovaide should delete all stale configuration files whenever the build
+  settings are modified.  In the case that it does not, it is possible to
+  delete the following:
+  <ul>
+	<li>oovaide-pkg.txt - keeps project package information</li>
+	<li>oovaide=tmp-* - keeps directory scanned project information</li>
+	<li>analysis directories - keeps object diagram information</li>
+  </ul>
+  An analysis directory is created for each set of build arguments.
+  <p/>
+   See the Inkscape Example for more problem solving information.
+
+
+<h2>Inkscape Example on Windows</h2>
+  This example shows how to analyze a project where little is known about
+  the project.  This example was run on Windows, but some items will
+  be similar on Linux.
+  <p/>
+  For this example, we will attempt to analyze the Inkscape program.  The
+  Inkscape program requires gtkmm and boost, so they need to be added as
+  external packages.  Since gtkmm includes mingw, there is no reason to
+  additionally add a separate mingw package.
+  <p/>
+	I don't know which version of gtkmm is
+	needed, so I just downloaded the Tarnyko gtkmm-3.4.0_mingw-4.6.2 version.
+	Use Oovaide to add gtkmm as an external package.
+	<p/>
+	At first, there was a compile error about a missing config.h.  I never
+	ran the configure command, so I cheated and copied config.h.in to config.h
+	in the Inkscape source code.
+	<p/>
+	The following problem
+	is displayed during analysis, and resolved by adding an include of
+	"gtkmm-3.0/gtkmm.h" to the Inkscape source in
+	src/extension/param/parameter.h. The real problem is that Inkscape does
+	not define all classes before they are referenced in header files. 
+	<pre>
+	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+	  extension/param/parameter.h:42:8: error: use of undeclared identifier 'Glib'
+	</pre>
+	Similar to the first problem, more includes need to be added, so
+	add the following includes to the parameter.h file before
+	the gtkmm include. #include "xml/node.h", #include "extension/extension.h".
+	<pre>
+	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+	  extension/param\string.h:17:28: error: expected class name
+	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+	  extension/param\string.h:27:86: error: use of undeclared identifier 'Parameter'
+	</pre>
+
+	Inkscape defines float.h which conflicts with the external mingw library float.h.
+	This problem can be eliminated by selecting "Analysis/Project Settings", and
+	adding "inkscape-0.91/src/extension/param/" to Exclude Sub-Directories.
+	<pre>
+	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+	extension/param\float.h:32:23: error: unknown type name 'gchar'
+	</pre>
+
+	The CLang compiler requires intrinsics from its own header file,
+	and cannot use the one from mingw. The CLang compiler searches some paths
+	which can be seen by adding the -v switch to the compiler options.
+	The first files that CLang is searching for are shipped in the CLang package under
+	the LLVM/lib directory.  These must be found before the mingw directories.
+	The best option is NOT to add the mingw directories to a project, since CLang
+	will normally find them.
+	Another option may be to use "-Iclang/3.6.0/include" before the other
+	external package ref arguments ("-EP").
+	<pre>
+	/gtkmm340_mingw462/lib/gcc/mingw32/4.6.2/include\ia32intrin.h:41:10:
+	error: use of undeclared identifier '__builtin_ia32_bsrsi'
+	</pre>
+
+	Inscape requires the Boehm garbage collector.  This can be added by
+	defining a new external package, or by using -I with the "include" directory
+	specified.  The sigc++ library can be added in the same manner with the "sigc++"
+	directory specified. These
+	packages are probably not needed to get a pretty good analysis of Inkscape.
+	<pre>
+	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+	  gc-core.h:25:11: fatal error: 'gc.h' file not found
+	</pre>
+	To summarize, by modifying two source files, and creating a simple Oovaide
+	project, it was fairly easy to perform analysis on the Inkscape project.
+
+</body>
+</html>

@@ -24,7 +24,7 @@ enum OovErrorTypes { ET_Error, ET_Info, ET_Diagnostic };
 enum OovStatusShift { SO_ComponentShift=16, SO_ReportShift=15 };
 enum OovErrorComponent
     {
-    EC_Oovcde = 1 << SO_ComponentShift,
+    EC_Oovaide = 1 << SO_ComponentShift,
     EC_OovBuilder = 2 << SO_ComponentShift,
     EC_OovCMaker = 4 << SO_ComponentShift,
     EC_OovCovInstr = 8 << SO_ComponentShift,

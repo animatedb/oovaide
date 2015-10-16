@@ -1,32 +1,32 @@
-The Oovcde web site is at http://oovcde.sourceforge.net or
-	https://github.com/animatedb/oovcde.
-	The User Guide contains Examples that show the use of Oovcde.
+The Oovaide web site is at http://oovaide.sourceforge.net or
+	https://github.com/animatedb/oovaide.
+	The User Guide contains Examples that show the use of Oovaide.
 	The Releases list the features added in each version.
 	The Features shows a current list of functionality.
 
 
 Analyzing Programs - Windows Versions:
-	The oovcde-*-win downloads include parts of GTK-3.0 and CLang
+	The oovaide-*-win downloads include parts of GTK-3.0 and CLang
 	so running analysis does not require any additional
-	downloads. Using Oovcde for more complete analysis usually
+	downloads. Using Oovaide for more complete analysis usually
 	requires some MinGW or other package so that CLang can find
 	standard include files. Using database export requires sqlite3.
 
 Analyzing Programs - Linux Versions:
-	The oovcde-*-linux downloads require GTK3 and a 64 bit OS.
+	The oovaide-*-linux downloads require GTK3 and a 64 bit OS.
 	Part of CLang is included so running analysis does not
-	require any additional downloads. Using Oovcde for more
+	require any additional downloads. Using Oovaide for more
 	complete analysis usually requires some other package so
 	that CLang can find standard include files. Using database
  	export requires sqlite3.
 
 
 Building Programs - Windows Versions:
-	Using Oovcde to build requires MinGW, MinGW-builds or
+	Using Oovaide to build requires MinGW, MinGW-builds or
 	MinGW-W64 because they supply the nm and ld tools.
 
 	MinGW-W64 or MinGW-builds 32 bit:
-		This is required to build Oovcde since it contains
+		This is required to build Oovaide since it contains
 		threading.
 		Set the environment path to the bin directory.
 
@@ -49,7 +49,7 @@ Building Programs - Windows Versions:
 			Add package mingw32-base	2013072200
 			Install to \MinGW
 
-	Also required for building Oovcde:
+	Also required for building Oovaide:
 	GTK-3.0:
 		From: http://www.tarnyko.net/dl/
 		File: "GTK+ 3.6.4 Bundle for Windows"
@@ -64,18 +64,18 @@ Building Programs - Windows Versions:
 Building Programs - Linux Versions:
 	Either the Gnu or CLang compiler is required for building.
 
-	The easiest way to build Oovcde is using git and is described
-	at https://github.com/animatedb/oovcde.
-	Eclipse or CMake is supported for building Oovcde.
+	The easiest way to build Oovaide is using git and is described
+	at https://github.com/animatedb/oovaide.
+	Eclipse or CMake is supported for building Oovaide.
 
 	On ubuntu, external packages gtk+-3.0 and libclang-dev
-	are required in order to build Oovcde.
+	are required in order to build Oovaide.
 
-	To build oovcde on Linux using CMake (Debian/Ubuntu):
+	To build oovaide on Linux using CMake (Debian/Ubuntu):
 		- Run "sudo apt-get install libgtk-3-dev clang libclang-dev"
 		  from a terminal
 		- LLVM include and lib paths are in the top level CMakeLists.txt
-		- Run "cmake ./" from the oovcde top level directory
+		- Run "cmake ./" from the oovaide top level directory
 		- Run "make" from the same directory
 
 

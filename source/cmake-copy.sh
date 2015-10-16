@@ -1,4 +1,4 @@
-cp oovcde/oovcde ./bin
+cp oovaide/oovaide ./bin
 cp oovBuilder/oovBuilder ./bin
 cp oovCMaker/oovCMaker ./bin
 cp oovCppParser/oovCppParser ./bin
