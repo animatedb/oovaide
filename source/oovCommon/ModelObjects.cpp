@@ -550,7 +550,7 @@ class TypeIdMap:public std::map<int, ModelType *>
             auto it = find(id);
             if(it != end())
                 type = (*it).second;
-            else
+            else if(id != 0)
                 {
                 OovString str = "Unable to resolve Decl ID ";
                 str.appendInt(id);

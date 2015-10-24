@@ -76,8 +76,12 @@ static void getStrings(const ClassNode &node,
                 OovString operStr = oper->getAccess().asUmlStr();
                 if(node.getNodeOptions().drawOperReturn)
                     {
-                    operStr += oper->getReturnType().getDeclType()->getName();
-                    operStr += ' ';
+                    ModelType const *type = oper->getReturnType().getDeclType();
+                    if(type)
+                        {
+                        operStr += type->getName();
+                        operStr += ' ';
+                        }
                     }
                 operStr += oper->getName();
                 operStr += "(";

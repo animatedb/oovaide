@@ -12,7 +12,7 @@
 
 
 static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
-        OovStringRef const /*compSrcTagName*/, std::vector<ComponentListItem> &names)
+    std::vector<ComponentListItem> &names)
     {
     bool added = false;
 
@@ -21,6 +21,9 @@ static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
     OovStringVec includes = compFile.getComponentFiles(
         ComponentTypesFile::CFT_CppInclude, compName, false);
     sources.insert(sources.end(), includes.begin(), includes.end());
+    OovStringVec javaSource = compFile.getComponentFiles(
+        ComponentTypesFile::CFT_JavaSource, compName, false);
+    sources.insert(sources.end(), javaSource.begin(), javaSource.end());
     for(const auto &fn : sources)
         {
         FilePath modName(fn, FP_File);
@@ -50,10 +53,9 @@ void ComponentList::updateComponentList()
         GuiTreeItem root;
         for(const auto &compName : compFile.getComponentNames())
             {
-/// @todo - 3rd arg is not used.
-            bool addedSrc = addNames(compName, compFile, "Comp-src-", mListMap);
-            bool addedInc = addNames(compName, compFile, "Comp-inc-", mListMap);
-            if(addedSrc || addedInc)
+            bool addedSrc = addNames(compName, compFile, mListMap);
+//            bool addedInc = addNames(compName, compFile, mListMap);
+            if(addedSrc /*|| addedInc*/)
                 {
                 GuiTreeItem compParent = appendText(root, compName);
                 for(const auto &item : mListMap)

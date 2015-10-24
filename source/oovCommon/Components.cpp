@@ -61,6 +61,16 @@ FilePaths getLibExtensions()
     return strs;
     }
 
+FilePaths getJavaSourceExtensions()
+    {
+    FilePaths strs;
+    strs.push_back(FilePath("java", FP_Ext));
+    return strs;
+    }
+
+bool isJavaSource(OovStringRef const file)
+    { return(FilePathAnyExtensionMatch(getJavaSourceExtensions(), file)); }
+
 bool isCppHeader(OovStringRef const file)
     { return(FilePathAnyExtensionMatch(getCppHeaderExtensions(), file)); }
 
@@ -309,7 +319,14 @@ OovString ComponentTypesFile::getCompTagName(OovStringRef const compName,
 
 OovStringRef ComponentTypesFile::getCompFileTypeTagName(CompFileTypes cft)
     {
-    return((cft == CFT_CppSource) ? "src" : "inc");
+    char const *name = nullptr;
+    switch(cft)
+        {
+        case CFT_CppSource:     name = "cppSrc";   break;
+        case CFT_CppInclude:    name = "cppInc";   break;
+        case CFT_JavaSource:    name = "java";   break;
+        }
+    return(name);
     }
 
 void ComponentTypesFile::setComponentFiles(CompFileTypes cft,

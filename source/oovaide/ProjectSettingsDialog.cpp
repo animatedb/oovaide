@@ -12,14 +12,12 @@
 ProjectSettingsDialog *sProjectSettingsDialog;
 
 ProjectSettingsDialog::ProjectSettingsDialog(GtkWindow *parentWindow,
-        ProjectReader &projectOptions,
-        GuiOptions &guiOptions, bool newProject):
+        ProjectReader &projectOptions, GuiOptions &guiOptions,
+        EditStyles editStyle):
     Dialog(GTK_DIALOG(Builder::getBuilder()->getWidget("NewProjectDialog")),
             parentWindow),
-    mProjectOptions(projectOptions),
-    mGuiOptions(guiOptions),
-    mParentWindow(parentWindow),
-    mNewProject(newProject)
+    mProjectOptions(projectOptions), mGuiOptions(guiOptions),
+    mParentWindow(parentWindow), mEditStyle(editStyle)
     {
     sProjectSettingsDialog = this;
     }
@@ -52,7 +50,7 @@ bool ProjectSettingsDialog::runDialog()
             "RootSourceDirEntry"));
 
     OovString origSourceDir = Project::getSourceRootDirectory();
-    if(mNewProject)
+    if(mEditStyle == PS_NewProject)
         {
         Gui::clear(projDirEntry);
         Gui::clear(srcDirEntry);
@@ -66,12 +64,14 @@ bool ProjectSettingsDialog::runDialog()
         Gui::setText(excDirsTextView, excDirs.getAsString('\n'));
         }
 
-    Gui::setEnabled(srcDirEntry, mNewProject);
+    bool editSrc = (mEditStyle == PS_NewProject ||
+        mEditStyle == PS_OpenProjectEditSource);
+    Gui::setEnabled(srcDirEntry, editSrc);
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget(
-            "RootSourceDirButton")), mNewProject);
+            "RootSourceDirButton")), editSrc);
     Gui::setEnabled(GTK_BUTTON(Builder::getBuilder()->getWidget(
-            "OovaideProjectDirButton")), mNewProject);
-    Gui::setEnabled(projDirEntry, mNewProject);
+            "OovaideProjectDirButton")), mEditStyle == PS_NewProject);
+    Gui::setEnabled(projDirEntry, mEditStyle == PS_NewProject);
 
     bool ok = run(true);
     if(ok)
@@ -101,9 +101,12 @@ bool ProjectSettingsDialog::runDialog()
         Project::setSourceRootDirectory(getRootSrcDir());
 
         // Update the project options.
-        OptionsDefaults optionDefaults(getProjectOptions());
-        optionDefaults.setDefaultOptions();
-        sProjectSettingsDialog->getGuiOptions().setDefaultOptions();
+        if(mEditStyle == PS_NewProject)
+            {
+            OptionsDefaults optionDefaults(getProjectOptions());
+            optionDefaults.setDefaultOptions();
+            sProjectSettingsDialog->getGuiOptions().setDefaultOptions();
+            }
         FilePath rootSrcText(getRootSrcDir(), FP_Dir);
         getProjectOptions().setNameValue(OptSourceRootDir, rootSrcText);
         }
@@ -158,13 +161,16 @@ void ProjectSettingsDialog::excludeDirsButtonClicked()
 
 void ProjectSettingsDialog::rootSourceDirEntryChanged()
     {
-    GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
-            "OovaideProjectDirEntry"));
+    if(mEditStyle != PS_OpenProjectEditSource)
+        {
+        GtkEntry *projDirEntry = GTK_ENTRY(Builder::getBuilder()->getWidget(
+                "OovaideProjectDirEntry"));
 
-    FilePath rootSrcText(getRootSrcDir(), FP_Dir);
-    FilePathRemovePathSep(rootSrcText, rootSrcText.length()-1);
-    rootSrcText.appendFile("-oovaide");
-    gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
+        FilePath rootSrcText(getRootSrcDir(), FP_Dir);
+        FilePathRemovePathSep(rootSrcText, rootSrcText.length()-1);
+        rootSrcText.appendFile("-oovaide");
+        gtk_entry_set_text(projDirEntry, rootSrcText.c_str());
+        }
     }
 
 extern "C" G_MODULE_EXPORT void on_RootSourceDirButton_clicked(

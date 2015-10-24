@@ -13,12 +13,20 @@
 #include "Options.h"
 
 
+/// This does not read or write the project file. It only reads and writes
+/// values in Project.
 class ProjectSettingsDialog: public Dialog
     {
     public:
+        enum EditStyles
+            {
+            PS_NewProject,      // Clears the entry fields, and allows editing
+            PS_OpenProject,     // Fills entry fields and does not allow editing
+            PS_OpenProjectEditSource    // Fills entry fields and allows editing source and excludes
+            };
         ProjectSettingsDialog(GtkWindow *parentWindow,
                 ProjectReader &projectOptions, GuiOptions &guiOptions,
-                bool newProject);
+                EditStyles editStyle);
         virtual ~ProjectSettingsDialog();
         bool runDialog();
         OovString const getProjectDir() const;
@@ -36,7 +44,7 @@ class ProjectSettingsDialog: public Dialog
         GuiOptions &mGuiOptions;
         GtkWindow *mParentWindow;
         CompoundValue mExcludeDirs;
-        bool mNewProject;
+        EditStyles mEditStyle;
 
         OovString getRootSrcDir() const;
         ProjectReader &getProjectOptions()

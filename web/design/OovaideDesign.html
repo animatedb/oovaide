@@ -6,11 +6,11 @@
     <link rel="stylesheet" type="text/css" href="../style.css">
     <title>Oovaide Design</title>
   </head>
-  <body><font size="+3">Oovaide Design<br>
+  <body><font size="+3">OovAide Design<br>
     </font>
-    <hr style="width: 100%; height: 3px;"> Last update: 7-8-2015<br>
+    <hr style="width: 100%; height: 3px;"> Last update: Oct 23, 2015<br>
     BlueGriffon was used to edit this design document.<br>
-    Inkscape may be used to edit .svg diagram files from Oovaide.<br>
+    Inkscape may be used to edit .svg diagram files from OovAide.<br>
     <br>
     <ol id="mozToc">
       <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
@@ -18,6 +18,7 @@
       <li><a href="#mozTocId304148">Components</a>
         <ol>
           <li><a href="#mozTocId89151">OovCppParser</a></li>
+          <li><a href="#mozTocId89151x">OovJavaParser</a></li>
           <li><a href="#mozTocId565763">OovBuilder</a>
             <ol>
               <li><a href="#mozTocId235455">ComponentFinder</a></li>
@@ -66,12 +67,12 @@
       <li><a href="#mozTocId878290">Multitasking</a></li>
     </ol>
     <h1><a class="mozTocH1" name="mozTocId278883"></a>Description</h1>
-    This design document describes the Oovaide program.&nbsp; It also contains
+    This design document describes the oovaide program.&nbsp; It also contains
     examples of the diagrams that have been produced with the program, and it
     contains descriptions of the diagrams.<br>
     <br>
     <h1><a class="mozTocH1" name="mozTocId304148"></a>Components</h1>
-    The following are components used as part of the Oovaide project.<br>
+    The following are components used as part of the OovAide project.<br>
     <br>
     <embed src="Components.svg" type="image/svg+xml"> <br>
     <br>
@@ -112,6 +113,11 @@
           </td>
         </tr>
         <tr>
+          <td>OovJavaParser</td>
+          <td>A command line tool that parses a Java file and produces an XML
+            output file.</td>
+        </tr>
+        <tr>
           <td>OovBuilder<br>
           </td>
           <td>A command line tool that recursively parses a directory to find
@@ -122,7 +128,7 @@
           </td>
         </tr>
         <tr>
-          <td>Oovaide<br>
+          <td>oovaide<br>
           </td>
           <td>Top level GUI that runs the OovBuilder to parse source files. Then
             it displays the information as class and sequence diagrams. This
@@ -132,7 +138,7 @@
         <tr>
           <td>OovEdit<br>
           </td>
-          <td>A simple C++ editor<br>
+          <td>A simple C++ or Java editor<br>
           </td>
         </tr>
         <tr>
@@ -157,7 +163,7 @@
       <li>The External and StaticLib components are sources and binaries. The
         Program components are executables.</li>
       <li>The top three components (mingw-w64, llvm, and gtk+-3.0) are used by
-        Oovaide project, but are provided externally.</li>
+        OovAide project, but are provided externally.</li>
     </ul>
     <br>
     <br>
@@ -267,21 +273,125 @@
     <br>
     Diagram Notes:<br>
     <ul>
-      <li>Note that all Model references are const relationships.<br>
-      </li>
+      <li>Note that all Model references are const relationships.</li>
+    </ul>
+    <p><br>
+    </p>
+    <h2><a class="mozTocH2" name="mozTocId89151x"></a>OovJavaParser</h2>
+    The OovJavaParser is a command line tool based on the Java parser. It is
+    used to parse the Java source files and saves drawing information in one XMI
+    file for each Java source file.There is optional duplicate code detection
+    that is saved in a file for each Java source file.
+    <p> The top level oovJavaParser program objects are shown below.
+    <p/>
+    <embed src="oovJavaParser.svg" type="image/svg+xml">
+    <p/>
+    The part of the oovJavaParser program responsible for parsing is shown below.
+    <p/>
+    <embed src="oovJavaParserParser.svg" type="image/svg+xml">
+    <p> </p>
+    <table border="1">
+      <tbody>
+        <tr>
+          <th>Class<br>
+          </th>
+          <th>Description<br>
+          </th>
+        </tr>
+        <tr>
+          <td>parser.Parser<br>
+          </td>
+          <td>This class gets the Java compiler, initiates the ParserTreeVisitor
+            and runs the scan on the Java source file to collect data into the
+            class model.<br>
+          </td>
+        </tr>
+        <tr>
+          <td>parser.ParserTreeVisitor<br>
+          </td>
+          <td>This class overrides many of the visitor functions to fill the
+            model with data.<br>
+          </td>
+        </tr>
+      </tbody>
+      <tbody>
+      </tbody>
+    </table>
+    <p/>
+    The following portion diagram shows the visitor call tree, and which methods use
+    which member variables. The visitMethod function uses the currentClass
+    variable to add a method to the class.  The statement and method functions
+    update the currentMethod variable. The visit functions are virtual functions that
+    are called while processing the Java file.
+    <p/>
+    <embed src="oovJavaParserVisitorPort.svg" type="image/svg+xml"> </p>
+    <p> Since the Java parser is written in Java, the object model classes from
+      the C++ code cannot be used. A separate set of object model classes were
+      created and are used to write the analysis files. Once the oovaide program
+      reads the objects, they are read into the C++ model classes. </p>
+    <p> <embed src="oovJavaModel.svg" type="image/svg+xml"> </p>
+    <p> </p>
+    <table border="1">
+      <tbody>
+        <tr>
+          <th>Class<br>
+          </th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>parser.Parser</td>
+          <td>This class parses the Java source and fills the class model.</td>
+        </tr>
+        <tr>
+          <td>model.ModelData</td>
+          <td>This class contains the model types (classes)</td>
+        </tr>
+        <tr>
+          <td>model.ModelType</td>
+          <td>A ModelType is all of the information to store a class, and the
+            inheritance relationships from other supplier classes. This model is
+            different from the C++ model since there is no need to search type
+            relations in order to save the file information.</td>
+        </tr>
+        <tr>
+          <td>model.ModelMethod</td>
+          <td>This class a single method for a class. A method has parameters
+            and statements.</td>
+        </tr>
+        <tr>
+          <td>model.ModelStatement</td>
+          <td>Only statements needed for sequence and relationship information
+            are stored. This includes conditional expressions, calls, and
+            variable references.</td>
+        </tr>
+        <tr>
+          <td>model.ModelTypeRef</td>
+          <td>A type reference is a reference to a type, and associated
+            identifier name.</td>
+        </tr>
+        <tr>
+          <td>model.ModelTypeRelation</td>
+          <td>This is for storing inheritance relationships.</td>
+        </tr>
+      </tbody>
+      <tbody>
+      </tbody>
+    </table>
+    <p> </p>
+    <ul>
     </ul>
     <h2><a class="mozTocH2" name="mozTocId565763"></a>OovBuilder</h2>
-    OovBuilder is a command line tool. The Oovaide program invokes the OovBuilder
-    from the command line. The OovBuilder works in two modes.
-    For detailed information on processing, see <a href="OovaideBuildDesign.html">Oovaide
- Build Design</a>.
-    <p/>
+    OovBuilder is a command line tool. The oovaide program invokes the
+    OovBuilder from the command line. The OovBuilder works in two modes. For
+    detailed information on processing, see <a href="OovaideBuildDesign.html">OovAide
+      Build Design</a>.
+    <p> </p>
     <ul>
       <li>Analysis Mode - To extract drawing information, OovBuilder recursively
-        parses a directory to find C++ files, and runs the Oov CPP parser on
-        each file, and saves the information in files. It keeps track of source
-        file modification times so that only newly modified source files are
-        parsed.</li>
+        parses a directory to find C++ and Java files, and runs the OovCppParser
+        or OovJavaParser on each file, and saves the information in files. It
+        keeps track of source file modification times so that only newly
+        modified source files are parsed.</li>
       <li>Build Mode - OovBuilder builds a project including mutliple libraries
         and executables. After the user has defined what each component is, the
         user can use the OovBuilder to build each component.</li>
@@ -390,10 +500,10 @@
     </ul>
     <h3><a class="mozTocH3" id="mozTocId235455"></a>ComponentFinder</h3>
     The ComponentFinder is a class within the OovBuilder program. The
-    ComponentFinder searches the directories for C++ source and header files. A
-    component is the same as a directory, so each ScannedComponent contains all
-    of the source and include files that is in a directory. All of the scanned
-    component information is saved in a file.
+    ComponentFinder searches the directories for C++ or Java source and header
+    files. A component is the same as a directory, so each ScannedComponent
+    contains all of the source and include files that is in a directory. All of
+    the scanned component information is saved in a file.
     <p></p>
     <p> <embed src="ComponentFinder.svg" type="image/svg+xml"> <br>
     </p>
@@ -479,8 +589,8 @@
     </table>
     <p> </p>
     <h2><a class="mozTocH2" name="mozTocId514779"></a>Oovaide</h2>
-    The Oovaide program displays many types of diagrams and analysis information,
-    and provides the main working area for a project.<br>
+    The oovaide program displays many types of diagrams and analysis
+    information, and provides the main working area for a project.<br>
     <br>
     <h3><a class="mozTocH2 mozTocH3" name="mozTocId571076"></a>Oovaide GUI</h3>
     The GUI objects are objects that display information on screens. Some of the
@@ -489,7 +599,8 @@
     <img src="Oovaide.svg"><br>
     <br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <th>Class<br>
@@ -510,9 +621,9 @@
         </tr>
         <tr>
           <td>OovProject</td>
-          <td>This keeps all project related data. Oovaide only works on a single
-            project at a time. The project keeps the data model for the class
-            relations.</td>
+          <td>This keeps all project related data. Oovaide only works on a
+            single project at a time. The project keeps the data model for the
+            class relations.</td>
         </tr>
         <tr>
           <td>Journal</td>
@@ -550,7 +661,7 @@
     </table>
     <br>
     <h3><a class="mozTocH2 mozTocH3" name="mozTocId821661"></a>OovProject</h3>
-    The Oovaide program keeps all of a projects information in the OovProject
+    The oovaide program keeps all of a projects information in the OovProject
     class. <img src="OovProject.svg"><br>
     <p> </p>
     <table border="2">
@@ -759,7 +870,8 @@
     <img src="DiagramDrawer.svg"><br>
     <br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <th>Class<br>
@@ -802,7 +914,8 @@
     <br>
     <embed src="Journal.svg" type="image/svg+xml"><br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <th>Class<br>
@@ -874,7 +987,8 @@
     <br>
     <embed src="oovEdit.svg" type="image/svg+xml"> <br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <th>Class<br>
@@ -917,12 +1031,13 @@
     <br>
     <h3><a class="mozTocH3" name="mozTocId634834"></a>EditFiles</h3>
     The editor edits files selected using tabs. Each file has a buffer of text
-    that is highlighted. An indenter handles keys for indenting.<br>
+    that is highlighted in C++ mode. An indenter handles keys for indenting.<br>
     <br>
     <embed src="oovEditEditFiles.svg" type="image/svg+xml"> <br>
     <br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <th>Class<br>
@@ -959,12 +1074,13 @@
         </tr>
         <tr>
           <td>Highlighter</td>
-          <td>The highlighter gets a set of tokens, and defines tags to apply to
-            the text view. The tags are color attributes to apply to the text.</td>
+          <td>The highlighter gets a set of C++ tokens, and defines tags to
+            apply to the text view. The tags are color attributes to apply to
+            the text.</td>
         </tr>
         <tr>
           <td>Indenter</td>
-          <td>This class handles indenting of C++ using the tab and backspace
+          <td>This class handles indenting of lines using the tab and backspace
             keys. It also handles indent using tab and untab of selected
             regions.</td>
         </tr>
@@ -979,7 +1095,8 @@
     <br>
     <embed src="oovEditDebugger.svg" type="image/svg+xml"> <br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <th>Class<br>
@@ -1020,7 +1137,8 @@
     <br>
     OovCMaker project_directory [-v][-w][-nProjName]<br>
     <br>
-    <table style="text-align: left; width: 473px; height: 116px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 473px; height: 116px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <td>Switch<br>
@@ -1050,9 +1168,10 @@
     </table>
     <br>
     <h1><a class="mozTocH1" name="mozTocId682604"></a> Libraries</h1>
-    The following are the libraries created in the Oovaide project.<br>
+    The following are the libraries created in the OovAide project.<br>
     <br>
-    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"      cellspacing="2">
+    <table style="text-align: left; width: 100%; height: 60px;" border="1" cellpadding="2"
+      cellspacing="2">
       <tbody>
         <tr>
           <th>Library<br>
@@ -1134,7 +1253,8 @@
         </tr>
       </tbody>
     </table>
-    <p> The following shows the classes related to the ModelClassifer. <embed src="ModelClass.svg"        type="image/svg+xml"> <br>
+    <p> The following shows the classes related to the ModelClassifer. <embed src="ModelClass.svg"
+        type="image/svg+xml"> <br>
     </p>
     <table border="1">
       <tbody>
@@ -1236,7 +1356,7 @@
           <td>Lists available packages on the machine. Stored in
             bin/oovaide-allpkgs-win.txt for windows, pkg-config for Linux. The
             Root directory may have wildcards in Windows, and are resolved in
-            the package dialogs in the Oovaide program. On Linux, the pkg-config
+            the package dialogs in the oovaide program. On Linux, the pkg-config
             program already contains full path, include, and library file paths
             and names.</td>
         </tr>
@@ -1268,10 +1388,9 @@
     </table>
     <h3><a class="mozTocH3" name="mozTocId716210"></a>Child Processes</h3>
     Child processes are used by the OovBuilder to run the OovCppParser,
-    compiler, and linker, etc. They are also used by Oovaide to run the
-    OovBuilder, and the editor.
-	<br/>
-	 <embed src="OovProcess.svg" type="image/svg+xml"><br>
+    compiler, and linker, etc. They are also used by oovaide to run the
+    OovBuilder, and the editor. <br>
+    <embed src="OovProcess.svg" type="image/svg+xml"><br>
     <br>
     <table style="text-align: left; width: 100%;" border="1" cellpadding="2" cellspacing="2">
       <tbody>
@@ -1320,12 +1439,11 @@
     <br>
     <h1><a class="mozTocH1" name="mozTocId68299"></a>Build Processing</h1>
     For detailed information on processing, see <a href="OovaideBuildDesign.html">Oovaide
- Build Design</a>.
-    The analysis mode described below is often run as part
+      Build Design</a>. The analysis mode described below is often run as part
     of the build mode.<br>
     <br>
     <h2><a class="mozTocH2" name="mozTocId599543"></a>Analysis Mode</h2>
-    The Oovaide program invokes the OovBuilder to extract drawing information.
+    The oovaide program invokes the OovBuilder to extract drawing information.
     OovBuilder runs the OovCppParser for each file found as it recursively
     navigates the source directory tree.&nbsp; These modified data flow diagrams
     were made using Inkscape.<br>

@@ -24,7 +24,7 @@ class ToolPathFile:public NameValueFile
             mBuildConfig = buildConfig;
             }
         std::string getCompilerPath();
-        static std::string getAnalysisToolPath();
+        static std::string getAnalysisToolCommand(FilePath const &filePath);
         std::string getLibberPath();
         std::string getObjSymbolPath();
         static std::string getCovInstrToolPath();
@@ -67,10 +67,12 @@ public:
 class ScannedComponent
     {
     public:
-        void addSourceFileName(OovStringRef const objPath)
-            { mSourceFiles.insert(objPath); }
-        void addIncludeFileName(OovStringRef const objPath)
-            { mIncludeFiles.insert(objPath); }
+        void addJavaSourceFileName(OovStringRef const objPath)
+            { mJavaSourceFiles.insert(objPath); }
+        void addCppSourceFileName(OovStringRef const objPath)
+            { mCppSourceFiles.insert(objPath); }
+        void addCppIncludeFileName(OovStringRef const objPath)
+            { mCppIncludeFiles.insert(objPath); }
         void saveComponentSourcesToFile(ProjectReader const &proj,
             OovStringRef const compName, ComponentTypesFile &file,
             OovStringRef analysisPath) const;
@@ -78,8 +80,9 @@ class ScannedComponent
             OovStringRef const filePath, OovString *rootPathName=nullptr);
 
     private:
-        OovStringSet mSourceFiles;
-        OovStringSet mIncludeFiles;
+        OovStringSet mJavaSourceFiles;
+        OovStringSet mCppSourceFiles;
+        OovStringSet mCppIncludeFiles;
         void saveComponentFileInfo(ComponentTypesFile::CompFileTypes cft,
             ProjectReader const &proj, OovStringRef const compName,
             ComponentTypesFile &compFile, OovStringRef analysisPath,
@@ -92,8 +95,9 @@ class ScannedComponentsInfo
     public:
         void addProjectIncludePath(OovStringRef const path)
             { mProjectIncludeDirs.insert(path); }
-        void addSourceFile(OovStringRef const compName, OovStringRef const srcFileName);
-        void addIncludeFile(OovStringRef const compName, OovStringRef const srcFileName);
+        void addJavaSourceFile(OovStringRef const compName, OovStringRef const srcFileName);
+        void addCppSourceFile(OovStringRef const compName, OovStringRef const srcFileName);
+        void addCppIncludeFile(OovStringRef const compName, OovStringRef const srcFileName);
         void initializeComponentTypesFileValues(ProjectReader const &proj,
             ComponentTypesFile &file, OovStringRef analysisPath);
         void setProjectComponentsFileValues(ComponentsFile &file);

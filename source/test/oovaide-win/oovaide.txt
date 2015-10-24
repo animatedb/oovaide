@@ -1,8 +1,8 @@
-BuildArgsBase|-c;-x;c++;-std=c++11;
+BuildArgsBase|-c;-x;c++;-std=c++11;-EPgtk+-3.0;-EPllvm;-EPmingw-w64;
 BuildArgsExtra-Debug|-O0;-g3;
 BuildArgsExtra-Release|-O3;
 ExcludeDirs|bin/;test/oovaide-win/;test/python/;lib/clang/;
-SourceRootDir|C:/Dave/Mine/software/oovaide/code/
+SourceRootDir|C:/Dave/Mine/software/oovaide/source/
 Tool-CompilerPath-Analyze|clang++.exe
 Tool-CompilerPath-Debug|clang++.exe
 Tool-CompilerPath-Release|clang++.exe

@@ -82,7 +82,7 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
     if(!ComponentsFile::excludesMatch(srcFile, mExcludeDirs))
         {
         FilePath ext(srcFile, FP_File);
-        if(isCppHeader(ext) || isCppSource(ext))
+        if(isCppHeader(ext) || isCppSource(ext) || isJavaSource(ext))
             {
             struct OovStat32 srcFileStat;
             success = (OovStatFunc(srcFile, &srcFileStat) == 0);
@@ -95,8 +95,7 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                 OovStatus status(true, SC_File);
                 if(FileStat::isOutputOld(outFileName, srcFile, status))
                     {
-                    std::string procPath = ToolPathFile::getAnalysisToolPath();
-                    procPath = FilePathMakeExeFilename(procPath);
+                    std::string procPath = ToolPathFile::getAnalysisToolCommand(ext);
                     CppChildArgs ca;
                     ca.addArg(procPath);
                     ca.addArg(srcFile);

@@ -21,7 +21,8 @@
       <li><a href="#mozTocId937452">Quick Start</a></li>
       <li><a href="#mozTocId651087">Oovaide</a>
         <ol>
-          <li><a href="#mozTocId728139">Setting Up Analysis Projects</a></li>
+          <li><a href="#mozTocId728139">Setting Up C++ Analysis Projects</a></li>
+          <li><a href="#mozTocId728139x">Setting Up Java Analysis Projects</a></li>
           <li><a href="#mozTocId407903">Component Diagrams</a></li>
           <li><a href="#mozTocId280779">Zone Diagrams</a></li>
           <li><a href="#mozTocId269360">Class Diagrams</a>
@@ -85,8 +86,8 @@
         for more information.<br>
       </li>
       <li>Build a project. These steps are not required for viewing diagrams.
-        Building Oovaide requires CLang and GTK to be downloaded and to match the
-        paths in the Analysis/Settings/Cpp Arguments settings.<br>
+        Building Oovaide requires CLang and GTK to be downloaded and to match
+        the paths in the Analysis/Settings/Cpp Arguments settings.<br>
       </li>
       <ol>
         <li>Select Build/Settings and set the component type for each component.
@@ -192,7 +193,8 @@
     </table>
     <p><br>
     </p>
-    <h2><a class="mozTocH3 mozTocH2" name="mozTocId728139"></a>Setting Up
+
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId728139"></a>Setting Up C++
       Analysis Projects</h2>
     Anlyzing projects allows viewing zone, class and sequence diagrams. It is
     also the first step towards building projects and running code coverage.<br>
@@ -213,6 +215,32 @@
     To open a previously saved project, select File/Open and specify the
     previously saved Oovaide project directory. The build user guide is at <a href="oovaidebuildhelp.html">Oovaide
       Build Help</a>
+
+
+    <h2><a class="mozTocH3 mozTocH2" name="mozTocId728139x"></a>
+      Setting Up Java Analysis Projects</h2>
+    A JDK must be installed. The JAVA_HOME environment variable must point to
+    the JDK root. For example, JAVA_HOME="C:\Program Files\Java\jdk1.8.0_51".
+    <p/>
+    To analyze java source code, follow the steps for analyzing C++, but don't set up any
+    analysis settings.
+    <p/>
+    Some current limitations are:
+    <ul>
+      <li>Analysis limitations:</li>
+      <ul>
+        <li>Missing constructors in diagrams.</li>
+        <li>Classes with the same name in Java and C++ are combined except when within a package.</li>
+        <li>Template class relations are not all displayed.</li>
+        <li>Method variable references are duplicated for parameters. (Affects complexity)</li>
+        <li>Line statistics are not supported</li>
+        <li>No duplicate code detection</li>
+      </ul>
+      <li>Only analysis is performed. A build will be performed.</li>
+      <li>No editor highlighting or debugging.</li>
+      <li>Code coverage is not supported</li>
+    </ul>
+
     <h2><a class="mozTocH2" name="mozTocId407903"></a>Component Diagrams</h2>
     Component diagrams are similar to UML (Unified Modelling Language) component
     diagrams. A component diagram displays components such as static or shared
@@ -288,13 +316,12 @@
     <ol>
       <li>The classes for a project are displayed in the left pane in the Class
         tab. Left click on a class to display a diagram of related classes with
-        standard relations.
-      </li>
-      <li>Right clicking on a class in the class list will display a popup menu that
-	adds the selected class with standard relations. Adding a single class will
-	not relayout the diagram.</li>
-      <li>Left click on a class in the diagram and drag the cursor to the desired
-	location to move a class.</li>
+        standard relations. </li>
+      <li>Right clicking on a class in the class list will display a popup menu
+        that adds the selected class with standard relations. Adding a single
+        class will not relayout the diagram.</li>
+      <li>Left click on a class in the diagram and drag the cursor to the
+        desired location to move a class.</li>
     </ol>
     Right clicking on a class in the diagram allows
     <ul>
@@ -302,7 +329,7 @@
       <li>View Source - Views the source code</li>
       <li>Preferences - Alter amount of data shown for the selected class</li>
       <li>Add Selected - Adds the selected classes to the diagram with or
-	without relayout</li>
+        without relayout</li>
       <li>Add Standard Relations - Adds classes that have relations where the
         classes are related either through aggregation or inheritance</li>
       <li>Add All Relations - Adds classes that have standard relations plus
@@ -382,9 +409,9 @@
     <h2><a class="mozTocH3 mozTocH2" name="mozTocId120758"></a>Editing SVG
       diagrams</h2>
     <ol>
-      <li>Use File/Export Drawing As to save an SVG file. An SVG file is a vector
-        graph that most web browsers can display. Whichever drawing is displayed
-        will be saved.</li>
+      <li>Use File/Export Drawing As to save an SVG file. An SVG file is a
+        vector graph that most web browsers can display. Whichever drawing is
+        displayed will be saved.</li>
       <li>Download Inkscape from <a href="http://inkscape.org/">inkscape.org</a></li>
     </ol>
     When using File/Export Drawing As, the file's default location will be to
@@ -478,11 +505,12 @@
     <br>
     <h2><a class="mozTocH3 mozTocH2" name="mozTocId675000"></a>Build Quick Start</h2>
     The examples are a quick way to understand some basic principles. See <a href="examples.html">Examples</a>.<br>
-    The build user guide is at <a href="oovaidebuildhelp.html">Oovaide Build Help</a>
-    <br>
+    The build user guide is at <a href="oovaidebuildhelp.html">Oovaide Build
+      Help</a> <br>
     The build details are described in <a href="http://oovaide.sourceforge.net/design/OovaideBuildDesign.html">Oovaide
       Build Design</a>.<br>
-    Note that the Oovaide binary packages do not include a compiler for building.<br>
+    Note that the Oovaide binary packages do not include a compiler for
+    building.<br>
     <br>
     The following steps can be followed:<br>
     <br>
@@ -560,9 +588,9 @@
     <br>
     <h2><a class="mozTocH4 mozTocH2" name="mozTocId206848"></a>Resolving Include
       Problems During Analysis</h2>
-    The Oovaide analysis will often produce usable output even when include files
-    cannot be found, although this may result in missing classes, or methods in
-    sequence diagrams.<br>
+    The Oovaide analysis will often produce usable output even when include
+    files cannot be found, although this may result in missing classes, or
+    methods in sequence diagrams.<br>
     <br>
     Oovaide uses the OovCppParser to perform the analysis, and the OovCppParser
     uses CLang. Clang has hard coded paths compiled into the analysis binary.
@@ -702,10 +730,10 @@ c++
     <h2><a class="mozTocH4 mozTocH2" name="mozTocId813985"></a>Build Sequence</h2>
     The detailed sequence of the build is:
     <ul>
-      <li>The user specifies the source root directory and output oovaide project
-        directory. The build system scans the source root directory for include
-        and source files. Each directory with source files is considered a
-        component. Each directory with include files is added to the initial
+      <li>The user specifies the source root directory and output oovaide
+        project directory. The build system scans the source root directory for
+        include and source files. Each directory with source files is considered
+        a component. Each directory with include files is added to the initial
         include paths.</li>
       <li>The program tries to determine the compiler and other build tools.
         <ul>
@@ -777,8 +805,8 @@ c++
         dependencies. Circular dependencies may cause problems. These may be
         able to be resolved:
         <ul>
-          <li>View oovaide-incdep.txt to see include directory dependencies found
-            by compiler</li>
+          <li>View oovaide-incdep.txt to see include directory dependencies
+            found by compiler</li>
         </ul>
       </li>
       <li>Only C++ is compiled. (No .C or .ASM) Other types of files must be put

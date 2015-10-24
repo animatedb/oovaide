@@ -36,11 +36,30 @@ void ToolPathFile::getPaths()
         }
     }
 
-std::string ToolPathFile::getAnalysisToolPath()
+std::string ToolPathFile::getAnalysisToolCommand(FilePath const &filePath)
     {
-    OovString path = Project::getBinDirectory();
-    path += "oovCppParser";
-    return(path);
+    OovString command;
+    if(isJavaSource(filePath))
+        {
+        command += "java -cp";
+        OovString jarsArg;
+        jarsArg += "oovJavaParser.jar;";
+        FilePath toolsJar(getenv("JAVA_HOME"), FP_Dir);
+        toolsJar.appendDir("lib");
+        toolsJar.appendFile("tools.jar");
+        jarsArg += toolsJar;
+        FilePathQuoteCommandLinePath(jarsArg);
+        command += ' ';
+        command += jarsArg;
+        command += " oovJavaParser";
+        }
+    else
+        {
+        FilePath path(Project::getBinDirectory(), FP_Dir);
+        path.appendFile("oovCppParser");
+        command = FilePathMakeExeFilename(path);
+        }
+    return(command);
     }
 
 std::string ToolPathFile::getCompilerPath()
@@ -107,10 +126,12 @@ void ScannedComponent::saveComponentSourcesToFile(ProjectReader const &proj,
     OovStringRef const compName, ComponentTypesFile &compFile,
     OovStringRef analysisPath) const
     {
+    saveComponentFileInfo(ComponentTypesFile::CFT_JavaSource, proj, compName,
+        compFile, analysisPath, mJavaSourceFiles);
     saveComponentFileInfo(ComponentTypesFile::CFT_CppSource, proj, compName,
-        compFile, analysisPath, mSourceFiles);
+        compFile, analysisPath, mCppSourceFiles);
     saveComponentFileInfo(ComponentTypesFile::CFT_CppInclude, proj, compName,
-        compFile, analysisPath, mIncludeFiles);
+        compFile, analysisPath, mCppIncludeFiles);
     }
 
 OovString ScannedComponent::getComponentName(ProjectReader const &proj,
@@ -160,18 +181,25 @@ ScannedComponentsInfo::MapIter ScannedComponentsInfo::addComponents(
     return it;
     }
 
-void ScannedComponentsInfo::addSourceFile(OovStringRef const compName,
+void ScannedComponentsInfo::addJavaSourceFile(OovStringRef const compName,
     OovStringRef const srcFileName)
     {
     MapIter it = addComponents(compName);
-    (*it).second.addSourceFileName(srcFileName);
+    (*it).second.addJavaSourceFileName(srcFileName);
     }
 
-void ScannedComponentsInfo::addIncludeFile(OovStringRef const compName,
+void ScannedComponentsInfo::addCppSourceFile(OovStringRef const compName,
     OovStringRef const srcFileName)
     {
     MapIter it = addComponents(compName);
-    (*it).second.addIncludeFileName(srcFileName);
+    (*it).second.addCppSourceFileName(srcFileName);
+    }
+
+void ScannedComponentsInfo::addCppIncludeFile(OovStringRef const compName,
+    OovStringRef const srcFileName)
+    {
+    MapIter it = addComponents(compName);
+    (*it).second.addCppIncludeFileName(srcFileName);
     }
 
 static void setFileValues(OovStringRef const tagName,
@@ -296,12 +324,13 @@ bool ComponentFinder::processFile(OovStringRef const filePath)
     /// @todo - find files with no extension? to match things like std::vector include
     if(!ComponentsFile::excludesMatch(filePath, mExcludeDirs))
         {
-        bool inc = isCppHeader(filePath);
-        bool src = isCppSource(filePath);
+        bool cppInc = isCppHeader(filePath);
+        bool cppSrc = isCppSource(filePath);
+        bool javaSrc = isJavaSource(filePath);
         bool lib = isLibrary(filePath);
         if(mScanningPackage)
             {
-            if(inc)
+            if(cppInc)
                 {
                 if(mAddIncs)
                     {
@@ -332,18 +361,23 @@ bool ComponentFinder::processFile(OovStringRef const filePath)
             }
         else
             {
-            if(src)
+            if(cppSrc)
                 {
                 std::string name = getComponentName(filePath);
-                mScannedInfo.addSourceFile(name, filePath);
+                mScannedInfo.addCppSourceFile(name, filePath);
                 }
-            else if(inc)
+            else if(cppInc)
                 {
                 FilePath path(filePath, FP_File);
                 path.discardFilename();
                 mScannedInfo.addProjectIncludePath(path);
                 std::string name = getComponentName(filePath);
-                mScannedInfo.addIncludeFile(name, filePath);
+                mScannedInfo.addCppIncludeFile(name, filePath);
+                }
+            else if(javaSrc)
+                {
+                std::string name = getComponentName(filePath);
+                mScannedInfo.addJavaSourceFile(name, filePath);
                 }
             }
         }

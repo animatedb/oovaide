@@ -437,6 +437,7 @@ void FileEditView::init(GtkTextView *textView, FileEditViewListener *listener)
 
 OovStatusReturn FileEditView::openTextFile(OovStringRef const fn)
     {
+    mIsCppFile = isCppSource(fn) || isCppHeader(fn);
     setFileName(fn);
     File file;
     OovStatus status = file.open(fn, "rb");
@@ -527,7 +528,7 @@ GuiText FileEditView::getBuffer()
 
 void FileEditView::highlightRequest()
     {
-    if(mFilePath.length())
+    if(mFilePath.length() && mIsCppFile)
         {
     //  int numArgs = 0;
     //  char const * cppArgv[40];

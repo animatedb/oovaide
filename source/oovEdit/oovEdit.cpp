@@ -216,7 +216,7 @@ bool FindFiles::processFile(OovStringRef const filePath)
     bool success = true;
     FilePath ext(filePath, FP_File);
 
-    if(isCppHeader(ext) || isCppSource(ext))
+    if(isCppHeader(ext) || isCppSource(ext) || isJavaSource(ext))
         {
         FILE *fp = fopen(filePath.getStr(), "r");
         if(fp)

@@ -12,6 +12,8 @@
 #include "Highlighter.h"
 #include "Indenter.h"
 #include "History.h"
+#include "Components.h"         // For isCppSource
+
 
 #define USE_NEW_TIME 1
 #if(USE_NEW_TIME)
@@ -82,7 +84,8 @@ class FileEditView
         FileEditView():
             mTextView(nullptr), mTextBuffer(nullptr), mCurHistoryPos(0),
             mDoingHistory(false), mLastViewTopOffset(0), mLastViewBotOffset(0),
-            mHighlightTextContentChange(false), mListener(nullptr), mOpenModifyTime(0)
+            mHighlightTextContentChange(false), mListener(nullptr),
+            mOpenModifyTime(0), mIsCppFile(false)
             {}
         void init(GtkTextView *textView, FileEditViewListener *listener);
         OovStatusReturn openTextFile(OovStringRef const fn);
@@ -212,6 +215,7 @@ class FileEditView
         CompletionList mCompleteList;
         FileEditViewListener *mListener;
         time_t mOpenModifyTime;
+        bool mIsCppFile;
 
         void setFileName(OovStringRef const fn)
             { mFilePath = fn; }

@@ -9,6 +9,7 @@
 #include "FilePath.h"
 #include "Project.h"
 #include "OovError.h"
+#include "Components.h" // For isCppHeader
 #include <algorithm>
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -679,10 +680,8 @@ void EditFiles::idleHighlight()
 void EditFiles::viewModule(OovStringRef const fn, int lineNum)
     {
     FilePath moduleName(fn, FP_File);
-    FilePath cppExt("cpp", FP_Ext);
-    FilePath hExt("h", FP_Ext);
-    bool header = moduleName.matchExtension(hExt);
-    bool source = moduleName.matchExtension(cppExt);
+    bool header = isCppHeader(fn);
+    bool source = isCppSource(fn);
 
     if(header || source)
         {

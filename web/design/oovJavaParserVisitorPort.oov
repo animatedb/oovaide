@@ -1,0 +1,5 @@
+DrawingName|parser.ParserTreeVisitor
+FileType|Portion
+Names|currentClass;currentMethod;safeGetScope;<init>;visitMethod;addOrFindType;addTypeRelations;visitWhileLoop;visitMethodInvocation;addCloseStatement;visitIf;addVarRefStatement;findOrAddEnclosingClassForVariable;visitIdentifier;addTypeRef;visitForLoop;addMemberVariables;getTypeName;getIdentifierTypeName;addOpenCondStatement;lookupTypeNameFromIdentifier;addOrFindTypeUsingName;addTypeRel;visitClass;
+XPositions|23;18;59;145;435;305;558;310;477;143;310;320;93;465;391;310;419;258;185;145;124;57;471;585;
+YPositions|367;157;284;30;307;217;199;122;145;114;62;161;246;108;272;94;217;270;300;76;328;211;182;346;

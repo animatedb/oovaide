@@ -7,6 +7,7 @@
 
 #include "OovProject.h"
 #include "Project.h"
+#include "ProjectSettingsDialog.h"
 #include "FilePath.h"
 #include "Options.h"
 #include "BuildConfigReader.h"
@@ -97,13 +98,31 @@ bool OovProject::openProject(OovStringRef projectDir, bool &openedProject)
         status = mProjectOptions.readProject(projectDir);
         if(status.ok())
             {
-            status = mGuiOptions.read();
-            if(status.needReport())
+            if(FileIsDirOnDisk(Project::getSourceRootDirectory(), status))
                 {
-                mGuiOptions.setDefaultOptions();
-                status.report(ET_Error, "Unable to read GUI options for project, using defaults");
+                openedProject = true;
                 }
-            openedProject = true;
+            else
+                {
+                Gui::messageBox("Unable to find source directory");
+                ProjectSettingsDialog dlg(Gui::getMainWindow(),
+                    getProjectOptions(), getGuiOptions(),
+                    ProjectSettingsDialog::PS_OpenProjectEditSource);
+                if(dlg.runDialog())
+                    {
+                    status = mProjectOptions.writeFile();
+                    openedProject = true;
+                    }
+                }
+            if(openedProject)
+                {
+                status = mGuiOptions.read();
+                if(status.needReport())
+                    {
+                    mGuiOptions.setDefaultOptions();
+                    status.report(ET_Error, "Unable to read GUI options for project, using defaults");
+                    }
+                }
             }
         mProjectStatus.mProjectOpen = openedProject;
         }

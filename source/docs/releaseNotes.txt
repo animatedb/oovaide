@@ -34,6 +34,12 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
+	- Java
+	   - Variables in methods <BodyVarDecl> in xmi?
+	   - constructors?
+           - virtual functions
+           - switch/case
+
 	- gtk3
 		- msys2
 		- https://blogs.gnome.org/nacho/2014/06/26/gtk-builder-for-windows/
@@ -51,7 +57,6 @@ Missing Features
 		- C++ ide: simple, clang
 		- C++ analysis: architecture
 		- C++ architecture: class, component, application, plugin, layered
-	- do something if project source directory does not exist
 	- add notes/title box (class name, file name, etc.)
 	- add font size for drawings, display and print
 	- remove sleepMs calls in windowsChildProcessListen

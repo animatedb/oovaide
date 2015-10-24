@@ -146,6 +146,7 @@ class EditFiles:public FileEditViewListener
         GtkTextView *mLastFocusGtkTextView;
         Debugger &mDebugger;
         timeval mLastHightlightIdleUpdate;
+
         void idleHighlight();
         int getPageNumber(GtkNotebook *notebook, GtkTextView const *view) const;
         void setTabText(FileEditView *view, OovStringRef text);

@@ -685,7 +685,7 @@ void oovGui::showProjectSettingsDialog()
     {
     ProjectSettingsDialog dlg(Gui::getMainWindow(),
         gOovGui->getProject().getProjectOptions(),
-        gOovGui->getProject().getGuiOptions(), false);
+        gOovGui->getProject().getGuiOptions(), ProjectSettingsDialog::PS_OpenProject);
     if(dlg.runDialog())
         {
         if(gOovGui->canStartAnalysis())
@@ -728,7 +728,8 @@ OptionsDialogUpdate::~OptionsDialogUpdate()
 void oovGui::newProject()
     {
     ProjectSettingsDialog dlg(Gui::getMainWindow(),
-        getProject().getProjectOptions(), getProject().getGuiOptions(), true);
+        getProject().getProjectOptions(), getProject().getGuiOptions(),
+        ProjectSettingsDialog::PS_NewProject);
     if(dlg.runDialog())
         {
         if(canStartAnalysis())
@@ -742,7 +743,7 @@ void oovGui::newProject()
                     case OovProject::NP_CreatedProject:
                         GlobalSettings::saveOpenProject(dlg.getProjectDir());
                         runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
-                        gtk_widget_hide(getBuilder().getWidget("NewProjectDialog"));
+//                        gtk_widget_hide(getBuilder().getWidget("NewProjectDialog"));
                         break;
 
                     case OovProject::NP_CantCreateDir:

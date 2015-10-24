@@ -15,6 +15,7 @@ FilePaths getCppHeaderExtensions();
 FilePaths getCppSourceExtensions();
 FilePaths getLibExtensions();
 
+bool isJavaSource(OovStringRef const file);
 bool isCppHeader(OovStringRef const file);
 bool isCppSource(OovStringRef const file);
 bool isLibrary(OovStringRef const file);
@@ -74,11 +75,11 @@ class ComponentTypesFile
         /// @param typeName The component type to set.
         void setComponentType(OovStringRef const compName, OovStringRef const typeName);
 
-        /// Set the list of C++ files for a component.
+        /// Set the list of files for a component.
         /// @param cft The component file type.
         /// @param compName The component name.
         /// @param srcs The list of sources with CompoundValue default delimeters.
-        enum CompFileTypes { CFT_CppSource, CFT_CppInclude };
+        enum CompFileTypes { CFT_CppSource, CFT_CppInclude, CFT_JavaSource };
         void setComponentFiles(CompFileTypes cft, OovStringRef const compName,
                 OovStringSet const &srcs);
 

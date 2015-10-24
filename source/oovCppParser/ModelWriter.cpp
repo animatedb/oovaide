@@ -164,6 +164,8 @@ static std::string translate(const std::string &str)
 //      call name is membername.funcname, where dot is used for any member ref including "->".
 // Format of values in a variable statement:
 //      v= variable name @ class type ID @ type ID @ f=read/t=written
+//      class type ID is the class that the variable is in.
+//      type ID is the type of the variable.
 // Example:
 //    <Parms list="{[ c1 ]#c=a@2#}#{[ c2 ]#c=b@2#}" />
 //      {[ c1 ]         Open nesting with conditional on variable c1
