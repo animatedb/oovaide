@@ -65,6 +65,7 @@ set(CMAKE_EXE_LINKER_FLAGS "-pthread -Wl,--no-as-needed")
 
 # Add sub directories
 add_subdirectory(ClangView)
+add_subdirectory(oovaide)
 add_subdirectory(oovBuilder)
 add_subdirectory(oovCMaker)
 add_subdirectory(oovCommon)
@@ -73,9 +74,9 @@ add_subdirectory(oovCppParser)
 add_subdirectory(oovDbWriter)
 add_subdirectory(oovEdit)
 add_subdirectory(oovGuiCommon)
-add_subdirectory(oovaide)
+add_subdirectory(oovJavaParser)
 # Add all targets to the build-tree export set
-export(TARGETS  ClangView oovBuilder oovCMaker oovCommon oovCovInstr oovCppParser oovDbWriter oovEdit oovGuiCommon oovaide
+export(TARGETS  ClangView oovaide oovBuilder oovCMaker oovCommon oovCovInstr oovCppParser oovDbWriter oovEdit oovGuiCommon
    FILE "${PROJECT_BINARY_DIR}/OovaideTargets.cmake")
 
 # Set fpic for run time library code
@@ -115,7 +116,6 @@ install(FILES
    "${PROJECT_SOURCE_DIR}/bin/oovaide-allpkgs-win.txt"
    "${PROJECT_SOURCE_DIR}/bin/OovLogo.png"
    "${PROJECT_SOURCE_DIR}/bin/OovEditLogo.png"
-   "${PROJECT_SOURCE_DIR}/bin/OovJavaParser.jar"
 DESTINATION "${INSTALL_BIN_DIR}" COMPONENT dev)
 
 install(FILES

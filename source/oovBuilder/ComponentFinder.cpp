@@ -44,6 +44,11 @@ std::string ToolPathFile::getAnalysisToolCommand(FilePath const &filePath)
         command += "java -cp";
         OovString jarsArg;
         jarsArg += "oovJavaParser.jar;";
+#ifdef __linux__
+        jarsArg += ":";
+#else
+        jarsArg += ";";
+#endif
         FilePath toolsJar(getenv("JAVA_HOME"), FP_Dir);
         toolsJar.appendDir("lib");
         toolsJar.appendFile("tools.jar");
