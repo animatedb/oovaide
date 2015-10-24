@@ -35,10 +35,11 @@ Missing Features
 ----------------
 - General
 	- Java
-	   - Variables in methods <BodyVarDecl> in xmi?
 	   - constructors?
+	   - return types
            - virtual functions
            - switch/case
+	   - Variables in methods <BodyVarDecl> in xmi?
 
 	- gtk3
 		- msys2
