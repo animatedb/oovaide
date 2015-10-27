@@ -11,6 +11,7 @@
 #include "OovString.h"  // For split
 #include "OovError.h"
 #include <algorithm>
+#include <string.h>     // for strcmp
 
 
 /*
