@@ -16,6 +16,14 @@
 #include "IncludeMap.h"
 
 
+class CppChildArgs:public OovProcessChildArgs
+    {
+    public:
+        /// add arg list for processing one source file.
+        void addCompileArgList(const class ComponentFinder &finder,
+                const OovStringVec &incDirs);
+    };
+
 class ToolPathFile:public NameValueFile
     {
     public:
@@ -26,7 +34,8 @@ class ToolPathFile:public NameValueFile
         std::string getCompilerPath();
         std::string getJavaCompilerPath();
         std::string getJavaJarToolPath();
-        static std::string getAnalysisToolCommand(FilePath const &filePath);
+        static void getAnalysisToolCommand(FilePath const &filePath,
+            CppChildArgs &args);
         std::string getLibberPath();
         std::string getObjSymbolPath();
         static std::string getCovInstrToolPath();
@@ -196,14 +205,6 @@ class ComponentFinder:public dirRecurser
         /// While searching the directories add C++ source files to the
         /// mComponentNames set, and C++ include files to the mIncludeDirs list.
         virtual bool processFile(OovStringRef const filePath) override;
-    };
-
-class CppChildArgs:public OovProcessChildArgs
-    {
-    public:
-        /// add arg list for processing one source file.
-        void addCompileArgList(const class ComponentFinder &finder,
-                const OovStringVec &incDirs);
     };
 
 #endif

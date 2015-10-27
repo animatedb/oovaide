@@ -95,9 +95,8 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                 OovStatus status(true, SC_File);
                 if(FileStat::isOutputOld(outFileName, srcFile, status))
                     {
-                    std::string procPath = ToolPathFile::getAnalysisToolCommand(ext);
                     CppChildArgs ca;
-                    ca.addArg(procPath);
+                    ToolPathFile::getAnalysisToolCommand(ext, ca);
                     ca.addArg(srcFile);
                     ca.addArg(mSrcRootDir);
                     ca.addArg(mAnalysisDir);
@@ -136,7 +135,12 @@ bool srcFileParser::processItem(CppChildArgs const &item)
     int exitCode;
     OovPipeProcess pipeProc;
     OovString processStr = "\noovBuilder Analyzing: ";
-    processStr += item.getArgv()[1];
+    /// @todo - this is a cheat. Should use something else to indicate
+    /// which arg is the filename that is being analyzed.
+    if(item.getArgv()[1][0] == '-')
+        { processStr += item.getArgv()[4]; }
+    else
+        { processStr += item.getArgv()[1]; }
     processStr += "\n";
     printf("%s", processStr.getStr());
     fflush(stdout);

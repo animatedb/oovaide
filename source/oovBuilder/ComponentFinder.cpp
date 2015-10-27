@@ -40,12 +40,15 @@ void ToolPathFile::getPaths()
         }
     }
 
-std::string ToolPathFile::getAnalysisToolCommand(FilePath const &filePath)
+void ToolPathFile::getAnalysisToolCommand(FilePath const &filePath,
+    CppChildArgs &args)
     {
     OovString command;
     if(isJavaSource(filePath))
         {
-        command += "java -cp";
+        args.addArg("java");
+
+        args.addArg("-cp");
         OovString jarsArg;
         jarsArg += "oovJavaParser.jar";
 #ifdef __linux__
@@ -53,22 +56,30 @@ std::string ToolPathFile::getAnalysisToolCommand(FilePath const &filePath)
 #else
         jarsArg += ";";
 #endif
-        FilePath toolsJar(getenv("JAVA_HOME"), FP_Dir);
+        char const *homeStr = getenv("JAVA_HOME");
+        if(homeStr == nullptr)
+            {
+#ifdef __linux__
+            homeStr = "/usr/lib/jvm/default-java";
+#else
+#endif
+            }
+        FilePath toolsJar(homeStr, FP_Dir);
         toolsJar.appendDir("lib");
         toolsJar.appendFile("tools.jar");
         jarsArg += toolsJar;
+        args.addArg(jarsArg);
         FilePathQuoteCommandLinePath(jarsArg);
-        command += ' ';
-        command += jarsArg;
-        command += " oovJavaParser";
+        args.addArg("oovJavaParser");
         }
     else
         {
+        OovString command;
         FilePath path(Project::getBinDirectory(), FP_Dir);
         path.appendFile("oovCppParser");
         command = FilePathMakeExeFilename(path);
+        args.addArg(command);
         }
-    return(command);
     }
 
 std::string ToolPathFile::getCompilerPath()
