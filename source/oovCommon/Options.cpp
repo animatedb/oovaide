@@ -93,6 +93,12 @@ static void setBuildConfigurationPaths(NameValueFile &file,
         compiler = FilePathMakeExeFilename("g++");
     optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
     file.setNameValue(optStr, compiler);
+
+    optStr = makeBuildConfigArgName(OptToolJavaCompilePath, buildConfig);
+    file.setNameValue(optStr, "javac");
+
+    optStr = makeBuildConfigArgName(OptToolJavaJarToolPath, buildConfig);
+    file.setNameValue(optStr, "jar");
     }
 
 void OptionsDefaults::setDefaultOptions()

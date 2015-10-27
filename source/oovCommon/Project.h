@@ -29,6 +29,8 @@
 // name appended.
 #define OptToolLibPath "Tool-LibPath"
 #define OptToolCompilePath "Tool-CompilerPath"
+#define OptToolJavaCompilePath "Tool-JavaCompilerPath"
+#define OptToolJavaJarToolPath "Tool-JavaJarToolPath"
 #define OptToolObjSymbolPath "Tool-ObjSymbolPath"
 
 #define OptToolDebuggerPath "Tool-DebuggerPath"

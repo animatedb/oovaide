@@ -24,6 +24,8 @@ class ToolPathFile:public NameValueFile
             mBuildConfig = buildConfig;
             }
         std::string getCompilerPath();
+        std::string getJavaCompilerPath();
+        std::string getJavaJarToolPath();
         static std::string getAnalysisToolCommand(FilePath const &filePath);
         std::string getLibberPath();
         std::string getObjSymbolPath();
@@ -35,6 +37,8 @@ class ToolPathFile:public NameValueFile
         std::string mPathLibber;
         std::string mPathObjSymbol;
 //      std::string mPathCovInstrTool;
+        std::string mPathJavaCompiler;
+        std::string mPathJavaJarTool;
         void getPaths();
     };
 
@@ -166,7 +170,7 @@ class ComponentFinder:public dirRecurser
             { return mScannedInfo; }
         OovStringVec getAllIncludeDirs() const;
 
-        OovString makeFileName(OovStringRef const projName) const
+        OovString makeActualComponentName(OovStringRef const projName) const
             {
             OovString fn = projName;
             if(strcmp(projName, Project::getRootComponentName()) == 0)

@@ -33,6 +33,10 @@ void ToolPathFile::getPaths()
         mPathCompiler = getValue(optStr);
         optStr = makeBuildConfigArgName(OptToolObjSymbolPath, mBuildConfig);
         mPathObjSymbol = getValue(optStr);
+        optStr = makeBuildConfigArgName(OptToolJavaCompilePath, mBuildConfig);
+        mPathJavaCompiler = getValue(optStr);
+        optStr = makeBuildConfigArgName(OptToolJavaJarToolPath, mBuildConfig);
+        mPathJavaJarTool = getValue(optStr);
         }
     }
 
@@ -43,7 +47,7 @@ std::string ToolPathFile::getAnalysisToolCommand(FilePath const &filePath)
         {
         command += "java -cp";
         OovString jarsArg;
-        jarsArg += "oovJavaParser.jar;";
+        jarsArg += "oovJavaParser.jar";
 #ifdef __linux__
         jarsArg += ":";
 #else
@@ -71,6 +75,18 @@ std::string ToolPathFile::getCompilerPath()
     {
     getPaths();
     return(mPathCompiler);
+    }
+
+std::string ToolPathFile::getJavaCompilerPath()
+    {
+    getPaths();
+    return(mPathJavaCompiler);
+    }
+
+std::string ToolPathFile::getJavaJarToolPath()
+    {
+    getPaths();
+    return(mPathJavaJarTool);
     }
 
 std::string ToolPathFile::getObjSymbolPath()

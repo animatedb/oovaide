@@ -262,19 +262,22 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
             // compTypesFile is not used!!!
             OovStringSet compileArgs = getComponentCompileArgs(name,
                 compTypesFile);
-            if(compTypesFile.getComponentType(name) != ComponentTypesFile::CT_Unknown)
+            ComponentTypesFile::eCompTypes compType = compTypesFile.getComponentType(name);
+            if(compType != ComponentTypesFile::CT_Unknown &&
+                compType != ComponentTypesFile::CT_JavaJarLib &&
+                compType != ComponentTypesFile::CT_JavaJarProg)
                 {
-                OovStringVec sources = compTypesFile.getComponentFiles(
+                OovStringVec cppSources = compTypesFile.getComponentFiles(
                     ComponentTypesFile::CFT_CppSource, name);
                 if(pm == PM_CovInstr)
                     {
                     OovStringVec includes = compTypesFile.getComponentFiles(
                         ComponentTypesFile::CFT_CppInclude, name);
-                    sources.insert(sources.end(), includes.begin(), includes.end());
+                    cppSources.insert(cppSources.end(), includes.begin(), includes.end());
                     }
 
                 OovStringVec orderedIncRoots = mComponentFinder.getAllIncludeDirs();
-                for(const auto &src : sources)
+                for(const auto &src : cppSources)
                     {
                     FilePath absSrc;
                     absSrc.getAbsolutePath(src, FP_File);
@@ -291,8 +294,16 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
                         {
                         incFiles.push_back(file.getFullPath());
                         }
-                    processSourceFile(pm, src, incDirs, incFiles, compileArgs);
+                    processCppSourceFile(pm, src, incDirs, incFiles, compileArgs);
                     }
+                }
+            if(compType == ComponentTypesFile::CT_JavaJarLib ||
+                compType == ComponentTypesFile::CT_JavaJarProg)
+                {
+                bool prog = (compType == ComponentTypesFile::CT_JavaJarProg);
+                OovStringVec javaSources = compTypesFile.getComponentFiles(
+                        ComponentTypesFile::CFT_JavaSource, name);
+                processJavaSourceFiles(pm, prog, name, javaSources, compileArgs);
                 }
             }
         waitForCompletion();
@@ -314,7 +325,11 @@ void ComponentBuilder::generateDependencies()
         /// @todo - this should be optimized so that only components with source files
         /// that have changed include dependencies are processed.
         // This is done for libraries too because they may need compile switches.
-        if(compTypesFile.getComponentType(compName) != ComponentTypesFile::CT_Unknown)
+        ComponentTypesFile::eCompTypes compType =
+                compTypesFile.getComponentType(compName);
+        if(compType != ComponentTypesFile::CT_Unknown &&
+            compType != ComponentTypesFile::CT_JavaJarLib &&
+            compType != ComponentTypesFile::CT_JavaJarProg)
             {
             for(auto const &pkg : buildPackages.getPackages())
                 {
@@ -443,6 +458,18 @@ void ComponentBuilder::buildComponents()
                         compPkgLinkArgs, type == ComponentTypesFile::CT_SharedLib);
                 }
             }
+        for(const auto &name : compNames)
+            {
+            auto type = compTypesFile.getComponentType(name);
+            if(type == ComponentTypesFile::CT_JavaJarLib ||
+                type == ComponentTypesFile::CT_JavaJarProg)
+                {
+                bool prog = (type == ComponentTypesFile::CT_JavaJarProg);
+                OovStringVec sources = compTypesFile.getComponentFiles(
+                    ComponentTypesFile::CFT_JavaSource, name);
+                makeJar(name, sources, prog);
+                }
+            }
         waitForCompletion();
         }
     sVerboseDump.logProgress("Done building");
@@ -526,7 +553,14 @@ OovString ComponentBuilder::makeOutputObjectFileName(OovStringRef const srcFile)
     return outFileName;
     }
 
-void ComponentBuilder::processSourceFile(eProcessModes pm, OovStringRef const srcFile,
+OovString ComponentBuilder::makeOutputClassDirName(OovStringRef const compName)
+    {
+    FilePath path(mIntermediatePath, FP_Dir);
+    path.appendDir(compName);
+    return path;
+    }
+
+void ComponentBuilder::processCppSourceFile(eProcessModes pm, OovStringRef const srcFile,
         OovStringVec const &incDirs, OovStringVec const &incFiles,
         OovStringSet const &externPkgCompileArgs)
     {
@@ -582,6 +616,100 @@ void ComponentBuilder::processSourceFile(eProcessModes pm, OovStringRef const sr
             if(incFileOlderIndex != BadIndex)
                 sVerboseDump.logOutputOld(incFiles[static_cast<size_t>(incFileOlderIndex)]);
             }
+        }
+    }
+
+void ComponentBuilder::processJavaSourceFiles(eProcessModes pm, bool prog,
+    OovStringRef compName, OovStringVec javaSources,
+    const OovStringSet &externPkgCompileArgs)
+    {
+    OovString outDirName = makeOutputClassDirName(compName);
+    OovString outputName = mComponentFinder.makeActualComponentName(compName);
+    FilePath outFileName(outDirName, FP_Dir);
+    outFileName.appendFile(outputName);
+    outFileName.appendExtension("jar");
+    OovStatus status(true, SC_File);
+    bool old = false;
+    for(auto const &srcFile : javaSources)
+        {
+        if(FileStat::isOutputOld(outFileName, srcFile, status))
+            {
+            old = true;
+            break;
+            }
+        if(!status.ok())
+            {
+            break;
+            }
+        }
+    if(old)
+        {
+/*
+        if(status.ok())
+            {
+            status = FileEnsurePathExists(outDirName);
+            }
+*/
+        FilePath srcFileListFn(outDirName, FP_Dir);
+        srcFileListFn.appendFile("sources.txt");
+        File srcFileList;
+        if(status.ok())
+            {
+            status = srcFileList.open(srcFileListFn, "w");
+            }
+        if(status.ok())
+            {
+            for(auto const &srcFile : javaSources)
+                {
+                OovString str = srcFile + "\n";
+                status = srcFileList.putString(str);
+                if(!status.ok())
+                    {
+                    break;
+                    }
+                }
+            if(status.ok())
+                {
+                srcFileList.close();
+                }
+            }
+        if(status.ok())
+            {
+            CppChildArgs ca;
+            OovString procPath;
+            if(pm == PM_CovInstr)
+                {
+//            procPath = mToolPathFile.getCovInstrToolPath();
+                }
+            else
+                {
+                procPath = mToolPathFile.getJavaCompilerPath();
+                }
+            ca.addArg(procPath);
+            ca.addArg("-d");
+            ca.addArg(outDirName);
+            OovString srcArg = "@";
+            srcArg += srcFileListFn;
+            ca.addArg(srcArg);
+/*
+        if(pm == PM_CovInstr)
+            {
+            ca.addArg(mSrcRootDir);
+            ca.addArg(mOutputPath);
+            }
+        ca.addCompileArgList(mComponentFinder, incDirs);
+        for(auto const &arg : externPkgCompileArgs)
+            {
+            ca.addArg(arg);
+            }
+        ca.addArg("-o");
+        ca.addArg(outFileName);
+*/
+            sVerboseDump.logProcess(srcFileListFn, ca.getArgv(), static_cast<int>(ca.getArgc()));
+            addTask(ProcessArgs(procPath, outFileName, ca));
+            }
+//        if(incFileOlderIndex != BadIndex)
+//            sVerboseDump.logOutputOld(incFiles[static_cast<size_t>(incFileOlderIndex)]);
         }
     }
 
@@ -668,7 +796,7 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
         const IndexedStringSet &externPkgLinkArgs,
         bool shared)
     {
-    OovString exeName = mComponentFinder.makeFileName(compName);
+    OovString exeName = mComponentFinder.makeActualComponentName(compName);
     OovString outFileName = mOutputPath + exeName;
     if(shared)
         outFileName += ".so";
@@ -764,4 +892,43 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
         sVerboseDump.logProcess(outFileName, ca.getArgv(), ca.getArgc());
         addTask(ProcessArgs(procPath, outFileName, ca));
         }
+    }
+
+void ComponentBuilder::makeJar(OovStringRef const compName,
+    OovStringVec const &sources, bool prog)
+    {
+    OovString jarName = mComponentFinder.makeActualComponentName(compName);
+    OovString outDirName = makeOutputClassDirName(compName);
+    FilePath outFileName(outDirName, FP_Dir);
+    outFileName.appendFile(jarName);
+    outFileName.appendExtension("jar");
+
+    OovString procPath = mToolPathFile.getJavaJarToolPath();
+    OovProcessChildArgs ca;
+    ca.addArg(procPath);
+    OovString jarTypeArgs = "cf";
+    if(prog)
+        { jarTypeArgs += "m"; }
+    ca.addArg(jarTypeArgs);
+    ca.addArg(outFileName);
+    if(prog)
+        {
+        OovString str = outDirName;
+        str += "Manifest.txt";
+        ca.addArg(str);
+        }
+    std::set<OovString> classDirs;
+    for(auto const &str : sources)
+        {
+        FilePath fp(str, FP_File);
+        fp.discardFilename();
+        classDirs.insert(fp);
+        }
+    for(auto const &dir : classDirs)
+        {
+        OovString str = dir;
+        str += "*.class";
+        ca.addArg(str);
+        }
+    addTask(ProcessArgs(procPath, outFileName, ca));
     }

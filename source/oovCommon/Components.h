@@ -39,7 +39,9 @@ class ComponentTypesFile
             CT_Unknown,
             CT_StaticLib,       // .a or .lib
             CT_SharedLib,       // .so or .dll
-            CT_Program          // no extension or .exe
+            CT_Program,         // no extension or .exe
+            CT_JavaJarLib,      // .jar
+            CT_JavaJarProg      // .jar (with manifest)
             };
 
         /// This reads both component files.

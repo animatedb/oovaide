@@ -277,6 +277,13 @@ enum ComponentTypesFile::eCompTypes ComponentTypesFile::getComponentTypeFromType
             ct = CT_StaticLib;
         else if(compTypeName[1] == 'h')
             ct = CT_SharedLib;
+        else if(compTypeName[0] == 'J')
+            {
+            if(compTypeName[4] == 'L' || compTypeName[5] == 'L')
+                { ct = CT_JavaJarLib; }
+            else
+                { ct = CT_JavaJarProg; }
+            }
         }
     return ct;
     }
@@ -290,6 +297,8 @@ OovStringRef const ComponentTypesFile::getLongComponentTypeName(eCompTypes ct)
         case CT_StaticLib:      p = "Static/Compile-time Library";      break;
         case CT_SharedLib:      p = "Shared/Run-time Library";          break;
         case CT_Program:        p = "Program/Executable";               break;
+        case CT_JavaJarLib :    p = "Java Library Jar";                 break;
+        case CT_JavaJarProg:    p = "Java Executable Jar";              break;
         }
     return p;
     }
@@ -303,6 +312,8 @@ OovStringRef const ComponentTypesFile::getComponentTypeAsFileValue(eCompTypes ct
         case CT_StaticLib:      p = "StaticLib";        break;
         case CT_SharedLib:      p = "SharedLib";        break;
         case CT_Program:        p = "Program";          break;
+        case CT_JavaJarLib :    p = "JavaLib";          break;
+        case CT_JavaJarProg:    p = "JavaProg";         break;
         }
     return p;
     }
@@ -358,7 +369,14 @@ OovStringVec ComponentTypesFile::getComponentFiles(OovStringRef const compName,
         bool match = false;
         if(getNested)
             {
-            match = compareComponentNames(parentName, name);
+            if(strcmp(compName, Project::getRootComponentName()) == 0)
+                {
+                match = true;
+                }
+            else
+                {
+                match = compareComponentNames(parentName, name);
+                }
             }
         else
             {

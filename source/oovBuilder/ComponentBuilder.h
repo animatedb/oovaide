@@ -102,18 +102,23 @@ class ComponentBuilder:public ComponentTaskQueue
         /// the include paths to see if any came from any of the packages. The
         /// map that is saved is mComponentPkgDeps.
         void generateDependencies();
-        void processSourceFile(eProcessModes pm, OovStringRef const srcFile,
-                const OovStringVec &incDirs, const OovStringVec &incFiles,
-                const OovStringSet &externPkgCompileArgs);
+        void processCppSourceFile(eProcessModes pm, OovStringRef const srcFile,
+            const OovStringVec &incDirs, const OovStringVec &incFiles,
+            const OovStringSet &externPkgCompileArgs);
+        void processJavaSourceFiles(eProcessModes pm, bool prog, OovStringRef compName,
+            OovStringVec javaSources, const OovStringSet &externPkgCompileArgs);
         void makeLib(OovStringRef const libName, const OovStringVec &objectFileNames);
         void makeLibSymbols(OovStringRef const clumpName, OovStringVec const &files);
         void makeExe(OovStringRef const compName, const OovStringVec &sources,
-                const OovStringVec &projectLibsFilePaths,
-                const OovStringVec &externLibDirs,
-                const IndexedStringVec &externOrderedLibNames,
-                const IndexedStringSet &externPkgLinkArgs,
-                bool shared);
+            const OovStringVec &projectLibsFilePaths,
+            const OovStringVec &externLibDirs,
+            const IndexedStringVec &externOrderedLibNames,
+            const IndexedStringSet &externPkgLinkArgs,
+            bool shared);
+        void makeJar(OovStringRef const compName, OovStringVec const &sources,
+            bool prog);
         OovString makeOutputObjectFileName(OovStringRef const str);
+        OovString makeOutputClassDirName(OovStringRef const str);
         OovString getSymbolBasePath();
         OovString getDiagFileName() const
             { return(mIntermediatePath + "oovaide-BuildOut.txt"); }
