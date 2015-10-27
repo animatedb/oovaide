@@ -50,7 +50,9 @@ void ToolPathFile::getAnalysisToolCommand(FilePath const &filePath,
 
         args.addArg("-cp");
         OovString jarsArg;
-        jarsArg += "oovJavaParser.jar";
+        FilePath javaParserPath(Project::getBinDirectory(), FP_Dir);
+        javaParserPath.appendFile("oovJavaParser.jar");
+        jarsArg += javaParserPath;
 #ifdef __linux__
         jarsArg += ":";
 #else
