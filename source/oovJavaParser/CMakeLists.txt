@@ -17,7 +17,7 @@ add_jar(oovJavaParser
     model/ModelData.java model/ModelMethod.java model/ModelStatement.java
     model/ModelStatements.java model/ModelType.java model/ModelTypeRef.java
     model/ModelTypeRefs.java model/ModelTypeRelation.java model/ModelTypeRelations.java
-    parser/Parser.java parser/ParserTreeVisitor.java
+    parser/AnalysisParser.java parser/ParserTreeVisitor.java
     INCLUDE_JARS /usr/lib/jvm/java-7-openjdk-amd64/lib/tools.jar
     )
 
