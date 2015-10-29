@@ -11,6 +11,13 @@
 #include "DiagramDrawer.h"
 #include <gtk/gtk.h>
 
+
+// This isn't the place for this, but there is no diagram view base class
+// at the moment.
+bool setFontDialog(int &fontSize);
+
+
+
 /// Defines a basic context for drawing that can be used for screen or
 /// printing to files.
 class GtkCairoContext
@@ -52,8 +59,8 @@ class GtkCairoContext
 class NullDrawer:public DiagramDrawer
     {
     public:
-        NullDrawer(cairo_t *c=nullptr):
-            cr(c)
+        NullDrawer(Diagram &diagram, cairo_t *c=nullptr):
+            DiagramDrawer(diagram), cr(c)
             {}
         void setGraphicsLib(cairo_t *c)
             { cr = c; }
@@ -76,6 +83,7 @@ class NullDrawer:public DiagramDrawer
             {}
         virtual void drawText(const GraphPoint & /*p*/, OovStringRef const /*text*/) override
             {}
+        virtual void setCurrentDrawingFontSize(double size) override;
         virtual float getTextExtentWidth(OovStringRef const /*name*/) const override;
         virtual float getTextExtentHeight(OovStringRef const /*name*/) const override;
 
@@ -87,12 +95,13 @@ class NullDrawer:public DiagramDrawer
 class CairoDrawer:public NullDrawer
     {
     public:
-        CairoDrawer(cairo_t *c):
-            NullDrawer(c)
+        CairoDrawer(Diagram &diagram, cairo_t *c):
+            NullDrawer(diagram, c)
             {}
         virtual void setDiagramSize(GraphSize /*size*/) override
             {}
-        virtual void setFontSize(double size) override;
+// Defined in NullDrawer.
+//        virtual void setCurrentDrawingFontSize(double size) override
         virtual void drawRect(const GraphRect &rect) override;
         virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
                 bool dashed=false) override;

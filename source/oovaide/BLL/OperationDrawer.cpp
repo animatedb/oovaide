@@ -18,6 +18,7 @@ GraphSize OperationDrawer::drawDiagram(DiagramDrawer &drawer,
         OperationGraph &graph, const OperationDrawOptions &options)
     {
     drawer.setDiagramSize(getDrawingSize(drawer, graph, options));
+    drawer.setCurrentDrawingFontSize(mDiagram.getDiagramBaseFontSize());
     return drawOrSizeDiagram(drawer, graph, options, true);
     }
 
@@ -109,7 +110,7 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
 
         for(auto const &str : strs)
             {
-            recty += mCharHeight + mPad;
+            recty += mCharHeight + (mPad * 2);
             positions.push_back(GraphPoint(startpos.x+mPad, startpos.y + recty - mPad));
             int curx = static_cast<int>(drawer.getTextExtentWidth(str)) + mPad*2;
             if(curx > rectx)
@@ -190,7 +191,8 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
         std::vector<DrawString> &drawStrings, bool draw, int callDepth)
     {
     GraphPoint startpos = pos;
-    int starty = startpos.y+mPad;
+    // Add space between bottom of class and operation name
+    int starty = startpos.y+(mPad*2);
     int y=starty;
     size_t sourceIndex = operDef.getOperClassIndex();
     int arrowLen = mCharHeight * 7 / 10;
@@ -215,6 +217,8 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
         y += mCharHeight;
         drawStrings.push_back(DrawString(GraphPoint(
                 cls.getPosition().x, y), operDef.getName()));
+        // Add space between operation name and called operations.
+        y += (mPad * 2);
         int lineY = y + mPad*2;
         if(draw)
             {

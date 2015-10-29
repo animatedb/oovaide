@@ -156,6 +156,13 @@ ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &proj
     mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             optStr, "CompilerPathEntry")));
 
+// Java options are not displayed on the screen yet.
+/*
+    optStr = makeBuildConfigArgName(OptToolJavaCompilePath, buildConfig);
+    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
+            optStr, "JavaCompilerPathEntry")));
+*/
+
     optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
     mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
             optStr, "LibraryPathEntry")));

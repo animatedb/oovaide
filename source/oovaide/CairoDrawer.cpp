@@ -7,6 +7,27 @@
 
 #include "CairoDrawer.h"
 
+
+#include "Gui.h"        // For Dialog
+/// @param fontSize On entry, this prefills the dialog with the size.
+///                 Returns the new size.
+/// Returns true to set the size
+bool setFontDialog(int &fontSize)
+    {
+    Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("FontDialog")));
+    GtkWidget *fontSpin = Builder::getBuilder()->getWidget("FontSizeSpinbutton");
+    Gui::setRange(GTK_SPIN_BUTTON(fontSpin), MIN_FONT_SIZE, MAX_FONT_SIZE);
+    Gui::setValue(GTK_SPIN_BUTTON(fontSpin), fontSize);
+    bool ok = dlg.run(true);
+    if(ok)
+        {
+        fontSize = Gui::getValue(GTK_SPIN_BUTTON(fontSpin)) + 0.5;
+        }
+    return ok;
+    }
+
+
+
 float NullDrawer::getTextExtentWidth(OovStringRef const name) const
     {
     cairo_text_extents_t extents;
@@ -22,9 +43,9 @@ float NullDrawer::getTextExtentHeight(OovStringRef const name) const
     }
 
 
-void CairoDrawer::setFontSize(double size)
+void NullDrawer::setCurrentDrawingFontSize(double size)
     {
-    NullDrawer::setFontSize(size);
+    DiagramDrawer::setCurrentDrawingFontSize(size);
     cairo_set_font_size(cr, size);
     }
 

@@ -241,7 +241,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
 									<listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
-									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/include"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.6/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.1152015769" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.1058452484" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
@@ -284,7 +284,7 @@
 								<option id="gnu.cpp.link.option.paths.645546713" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/lib"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.6/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.490085970" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./ -rdynamic" valueType="string"/>
 								<option id="gnu.cpp.link.option.other.1661644474" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other"/>
@@ -360,7 +360,7 @@
 									<listOptionValue builtIn="false" value="/usr/include/cairo"/>
 									<listOptionValue builtIn="false" value="/usr/include/gdk-pixbuf-2.0"/>
 									<listOptionValue builtIn="false" value="/usr/include/atk-1.0"/>
-									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/include"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.6/include"/>
 								</option>
 								<option id="gnu.cpp.compiler.option.optimization.level.1261466725" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
 								<option id="gnu.cpp.compiler.option.debugging.level.329646242" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
@@ -403,7 +403,7 @@
 								<option id="gnu.cpp.link.option.paths.2034445752" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovGuiCommon/Linux-Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
-									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.5/lib"/>
+									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.6/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.159689848" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./ -rdynamic" valueType="string"/>
 								<option id="gnu.cpp.link.option.other.187395297" name="Other options (-Xlinker [option])" superClass="gnu.cpp.link.option.other"/>

@@ -51,7 +51,7 @@ void ClassDiagram::addClass(OovStringRef const className,
 
 void ClassDiagram::drawDiagram(DiagramDrawer &diagDrawer)
     {
-    ClassDrawer drawer(diagDrawer);
+    ClassDrawer drawer(*this, diagDrawer);
     drawer.setZoom(getDesiredZoom());
     drawer.drawDiagram(mClassGraph);
     }

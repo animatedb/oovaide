@@ -7,6 +7,12 @@ Tool-CompilerPath-Analyze|clang++.exe
 Tool-CompilerPath-Debug|clang++.exe
 Tool-CompilerPath-Release|clang++.exe
 Tool-DebuggerPath|gdb.exe
+Tool-JavaCompilerPath-Analyze|javac
+Tool-JavaCompilerPath-Debug|javac
+Tool-JavaCompilerPath-Release|javac
+Tool-JavaJarToolPath-Analyze|jar
+Tool-JavaJarToolPath-Debug|jar
+Tool-JavaJarToolPath-Release|jar
 Tool-LibPath-Analyze|ar.exe
 Tool-LibPath-Debug|ar.exe
 Tool-LibPath-Release|ar.exe

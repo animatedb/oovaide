@@ -18,8 +18,10 @@ class PortionDiagramView
     {
     public:
         PortionDiagramView(GuiOptions const &guiOptions):
-            mGuiOptions(guiOptions)
-            {}
+            mGuiOptions(guiOptions), mNullDrawer(mPortionDiagram)
+            {
+            setCairoContext();
+            }
 
         void initialize(const ModelData &modelData)
             {
@@ -28,7 +30,6 @@ class PortionDiagramView
 
         void clearGraphAndAddClass(OovStringRef const className)
             {
-            setCairoContext();
             mPortionDiagram.clearGraphAndAddClass(mNullDrawer, className);
             requestRedraw();
             }
@@ -50,15 +51,19 @@ class PortionDiagramView
             { return mPortionDiagram.saveDiagram(file); }
         OovStatusReturn loadDiagram(File &file)
             {
-            setCairoContext();
             return mPortionDiagram.loadDiagram(file, mNullDrawer);
             }
         void gotoClass(OovStringRef const className);
         bool isModified() const
             { return mPortionDiagram.isModified(); }
         void viewClassSource();
-        void requestRedraw()
-            { gtk_widget_queue_draw(getDiagramWidget()); }
+        void setFontSize(int size)
+            {
+            mPortionDiagram.setDiagramBaseAndGlobalFontSize(size);
+            mNullDrawer.setCurrentDrawingFontSize(size);
+            }
+        int getFontSize()
+            { return mPortionDiagram.getDiagramBaseFontSize(); }
 
     private:
         GuiOptions const &mGuiOptions;
@@ -70,10 +75,13 @@ class PortionDiagramView
             {
             mCairoContext.setContext(getDiagramWidget());
             mNullDrawer.setGraphicsLib(mCairoContext.getCairo());
+            mNullDrawer.setCurrentDrawingFontSize(mPortionDiagram.getDiagramBaseFontSize());
             }
         GtkWidget *getDiagramWidget()
             { return Builder::getBuilder()->getWidget("DiagramDrawingarea"); }
         void updateDrawingAreaSize();
+        void requestRedraw()
+            { gtk_widget_queue_draw(getDiagramWidget()); }
     };
 
 

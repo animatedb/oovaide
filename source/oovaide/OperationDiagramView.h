@@ -27,9 +27,11 @@ class OperationDiagramView
     {
     public:
         OperationDiagramView(GuiOptions const &guiOptions):
-            mGuiOptions(guiOptions),
-            mListener(nullptr)
-            {}
+            mGuiOptions(guiOptions), mListener(nullptr),
+            mNullDrawer(mOperationDiagram)
+            {
+            setCairoContext();
+            }
 
         void initialize(const ModelData &modelData,
             OperationDiagramListener *listener)
@@ -41,7 +43,6 @@ class OperationDiagramView
         void clearGraphAndAddOperation(OovStringRef const className,
                 OovStringRef const opName, bool isConst)
             {
-            setCairoContext();
             mOperationDiagram.clearGraphAndAddOperation(className, opName, isConst);
             requestRedraw();
             }
@@ -67,6 +68,13 @@ class OperationDiagramView
             { gtk_widget_queue_draw(getDiagramWidget()); }
         void viewSource(OovStringRef const module,
                 unsigned int lineNum);
+        void setFontSize(int size)
+            {
+            mOperationDiagram.setDiagramBaseAndGlobalFontSize(size);
+            mNullDrawer.setCurrentDrawingFontSize(size);
+            }
+        int getFontSize()
+            { return mOperationDiagram.getDiagramBaseFontSize(); }
 
     private:
         GuiOptions const &mGuiOptions;
@@ -79,6 +87,7 @@ class OperationDiagramView
             {
             mCairoContext.setContext(getDiagramWidget());
             mNullDrawer.setGraphicsLib(mCairoContext.getCairo());
+            mNullDrawer.setCurrentDrawingFontSize(mOperationDiagram.getDiagramBaseFontSize());
             }
         GtkWidget *getDiagramWidget()
             { return Builder::getBuilder()->getWidget("DiagramDrawingarea"); }

@@ -60,10 +60,10 @@ class GraphPoint
             { return GraphPoint(x + p.x, y + p.y); }
         void clear()
             { x=0; y=0; }
-        GraphPoint getZoomed(double zoomX, double zoomY) const
+        GraphPoint getZoomed(double zoom) const
             {
-            return GraphPoint(static_cast<int>(x * zoomX),
-                static_cast<int>(y * zoomY));
+            return GraphPoint(static_cast<int>(x * zoom),
+                static_cast<int>(y * zoom));
             }
         GraphPoint operator-(GraphPoint const &p)
             {
@@ -139,7 +139,7 @@ class GraphRect
         void findConnectPoints(GraphRect const &rect2, GraphPoint &p1e,
                 GraphPoint &p2e) const;
         void unionRect(GraphRect const &rect2);
-        GraphRect getZoomed(double zoomX, double zoomY) const;
+        GraphRect getZoomed(double zoom) const;
 
     public:
         GraphPoint start;

@@ -12,6 +12,7 @@ public class ModelData implements Iterable<ModelType>
     {
         public ModelData()
             {
+            super();
             mTypes = new ArrayList<ModelType>();
             }
 

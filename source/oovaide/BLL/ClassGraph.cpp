@@ -44,7 +44,7 @@ void ClassGraph::updateNodeSizes()
     {
     mPad.x = mNullDrawer->getPad();
     mPad.y = mPad.x;
-    ClassDrawer drawer(*mNullDrawer);
+    ClassDrawer drawer(mDiagram, *mNullDrawer);
     for(auto &node : mNodes)
         {
         GraphSize size = drawer.drawNode(node);

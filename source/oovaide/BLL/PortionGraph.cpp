@@ -22,6 +22,10 @@ PortionNode const *PortionGraph::getNode(OovStringRef name, PortionNodeTypes nt)
                 }
             }
         }
+    if(!retNode)
+        {
+        DebugAssert(__FILE__, __LINE__);
+        }
     return retNode;
     }
 
@@ -137,7 +141,7 @@ void PortionGraph::addOperationConnections(ModelClassifier const *classifier,
                     const ModelOperation *oper = cls->getMatchingOperation(stmt);
                     if(oper)
                         {
-                        PortionConnection conn(getNodeIndex(getNode(oper->getName(),
+                        PortionConnection conn(getNodeIndex(getNode(oper->getOverloadFuncName(),
                                 PNT_Operation)), getNodeIndex(callerOperNode));
                         mConnections.push_back(conn);
                         }

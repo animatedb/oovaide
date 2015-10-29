@@ -12,7 +12,10 @@ import java.util.Iterator;
 public class ModelTypeRefs implements Iterable<ModelTypeRef>
     {
     public ModelTypeRefs()
-        { mTypeRefs = new ArrayList<ModelTypeRef>(); }
+        {
+        super();
+        mTypeRefs = new ArrayList<ModelTypeRef>();
+        }
 
     public void addTypeRef(ModelTypeRef ref)
         { mTypeRefs.add(ref); }

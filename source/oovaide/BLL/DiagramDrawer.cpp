@@ -10,6 +10,8 @@
 #include "OovProcess.h"
 #include "Gui.h"
 #include "Project.h"
+#include "Options.h"
+#include "Debug.h"
 #include <stdio.h>
 #include <math.h>       // for atan, sqrt
 #include <limits>
@@ -97,6 +99,48 @@ DiagramArrow::DiagramArrow(GraphPoint producer, GraphPoint consumer, int arrowSi
     // calc right point of symbol
     mRightPos.set(static_cast<int>(sin(lineAngleRadians+triangleAngle) * arrowSize),
         static_cast<int>(cos(lineAngleRadians+triangleAngle) * arrowSize));
+    }
+
+
+double sDiagramSize = 0;
+
+void Diagram::setGlobalFontSize(double size)
+    {
+    sDiagramSize = size;
+    GuiOptions options;
+    OovStatus status = options.read();
+    if(status.ok())
+        {
+        OovString val;
+        val.appendInt(size);
+        options.setNameValue(OptGuiFontSize, val);
+        options.writeFile();
+        }
+    }
+
+double Diagram::getGlobalFontSize()
+    {
+    if(sDiagramSize == 0)
+        {
+        sDiagramSize =  10;
+        // The default cairo context is 10. If this returns something diferent,
+        // drawing fails with get text extents returning 0.
+/*
+        GuiOptions options;
+        OovStatus status = options.read();
+        if(status.ok())
+            {
+            OovString val;
+            val = options.getValue(OptGuiFontSize);
+            int size;
+            if(val.getInt(MIN_FONT_SIZE, MAX_FONT_SIZE, size))
+                {
+                sDiagramSize = size;
+                }
+            }
+*/
+        }
+    return sDiagramSize;
     }
 
 
@@ -200,11 +244,18 @@ std::vector<int> DiagramDependencyDrawer::getColumnPositions(
     for(size_t ni=0; ni<depths.size(); ni++)
         {
         size_t columnIndex = depths[ni];
-        int &columnWidth = columnSpacing[columnIndex];
-        int nodeWidth = static_cast<int>(getNodeRect(drawer, ni).size.x + pad * 5);
-        if(nodeWidth > columnWidth)
+        if(columnIndex < columnSpacing.size())
             {
-            columnWidth = nodeWidth;
+            int &columnWidth = columnSpacing[columnIndex];
+            int nodeWidth = static_cast<int>(getNodeRect(drawer, ni).size.x + pad * 5);
+            if(nodeWidth > columnWidth)
+                {
+                columnWidth = nodeWidth;
+                }
+            }
+        else
+            {
+            DebugAssert(__FILE__, __LINE__);
             }
         }
     // Now convert to positions.

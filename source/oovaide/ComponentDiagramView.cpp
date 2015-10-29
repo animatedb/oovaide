@@ -16,8 +16,7 @@ static ComponentDiagramView *gComponentDiagramView;
 void ComponentDiagramView::restart()
     {
     setCairoContext();
-    NullDrawer nulDrawer(mCairoContext.getCairo());
-    mComponentDiagram.restart(getDrawOptions(), nulDrawer);
+    mComponentDiagram.restart(getDrawOptions(), mNullDrawer);
     requestRedraw();
     }
 
@@ -29,8 +28,8 @@ void ComponentDiagramView::updateDrawingAreaSize()
 
 void ComponentDiagramView::drawToDrawingArea()
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    CairoDrawer cairoDrawer(cairo.getCairo());
+    setCairoContext();
+    CairoDrawer cairoDrawer(mComponentDiagram, mCairoContext.getCairo());
     cairoDrawer.clearAndSetDefaults();
 
     mComponentDiagram.drawDiagram(cairoDrawer);
@@ -39,8 +38,7 @@ void ComponentDiagramView::drawToDrawingArea()
 
 OovStatusReturn ComponentDiagramView::drawSvgDiagram(File &file)
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(file, cairo.getCairo());
+    SvgDrawer svgDrawer(mComponentDiagram, file, mCairoContext.getCairo());
     mComponentDiagram.drawDiagram(svgDrawer);
     return svgDrawer.writeFile();
     }
@@ -87,6 +85,16 @@ void ComponentDiagramView::displayContextMenu(guint button, guint32 acttime,
     ComponentDrawOptions opts = getDrawOptions();
     gtk_check_menu_item_set_active(implicitItem, opts.drawImplicitRelations);
     gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
+    }
+
+extern "C" G_MODULE_EXPORT void on_ComponentFontMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    int fontSize = gComponentDiagramView->getFontSize();
+    if(setFontDialog(fontSize))
+        {
+        gComponentDiagramView->setFontSize(fontSize);
+        }
     }
 
 extern "C" G_MODULE_EXPORT void on_RestartComponentsMenuitem_activate(

@@ -1,10 +1,16 @@
-BuildArgsBase|-c;-x;c++;-std=c++11;-I/usr/lib/llvm-3.5/include;-I/usr/lib/clang/3.5/include;-lnk-L/usr/lib/llvm-3.5/lib;-lnk-lclang;-lnk-ldl;-fPIC;-lnk-Wl,-rpath=./;-lnk-static-libstdc++;-bv;-EPgtk+-3.0;-EPgmodule-2.0;
+BuildArgsBase|-c;-x;c++;-std=c++11;-I/usr/lib/llvm-3.6/include;-I/usr/lib/clang/3.6/include;-lnk-L/usr/lib/llvm-3.6/lib;-lnk-lclang;-lnk-ldl;-fPIC;-lnk-Wl,-rpath=./;-lnk-static-libstdc++;-bv;-EPgtk+-3.0;-EPgmodule-2.0;
 BuildArgsExtra-Debug|-O0;-g3;
 BuildArgsExtra-Release|-O3;
 SourceRootDir|/home/dave/software/oovaide/sourceforge/source
 Tool-CompilerPath-Debug|clang++
 Tool-CompilerPath-Release|clang++
 Tool-DebuggerPath|/usr/bin/gdb
+Tool-JavaCompilerPath-Analyze|javac
+Tool-JavaCompilerPath-Debug|javac
+Tool-JavaCompilerPath-Release|javac
+Tool-JavaJarToolPath-Analyze|jar
+Tool-JavaJarToolPath-Debug|jar
+Tool-JavaJarToolPath-Release|jar
 Tool-LibPath-Debug|ar
 Tool-LibPath-Release|ar
 Tool-ObjSymbolPath-Debug|nm

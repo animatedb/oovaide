@@ -123,6 +123,7 @@ void IncludeDrawer::drawGraph(DiagramDrawer &drawer)
         {
         // This must be set for svg
         drawer.setDiagramSize(getDrawingSize(drawer));
+        drawer.setCurrentDrawingFontSize(mDiagram.getDiagramBaseFontSize());
 
         drawNodes(drawer);
         drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));

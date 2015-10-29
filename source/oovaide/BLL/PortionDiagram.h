@@ -10,11 +10,11 @@
 #include "PortionDrawer.h"
 #include "Gui.h"
 
-class PortionDiagram
+class PortionDiagram:public Diagram
     {
     public:
         PortionDiagram():
-            mModelData(nullptr)
+            mModelData(nullptr), mPortionDrawer(*this)
             {}
         void initialize(const ModelData &modelData);
         void clearGraphAndAddClass(DiagramDrawer &drawer, OovStringRef className);

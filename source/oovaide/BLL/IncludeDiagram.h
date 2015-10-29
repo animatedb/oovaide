@@ -11,11 +11,11 @@
 #include "DiagramDrawer.h"
 #include "Gui.h"
 
-class IncludeDiagram
+class IncludeDiagram:public Diagram
     {
     public:
         IncludeDiagram():
-            mIncludeMap(nullptr), mModified(false)
+            mIncludeMap(nullptr), mModified(false), mIncludeDrawer(*this)
             {}
         void initialize(const IncDirDependencyMapReader &includeMap);
         void clearGraphAndAddInclude(DiagramDrawer &drawer, OovStringRef incName);

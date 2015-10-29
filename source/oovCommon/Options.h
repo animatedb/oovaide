@@ -29,6 +29,8 @@
 
 #define OptGuiShowCompImplicitRelations "ShowCompImplicitRelations"
 
+#define OptGuiFontSize "FontSize"
+
 #define OptGuiEditorPath "EditorPath"
 #define OptGuiEditorLineArg "EditorLineArg"
 

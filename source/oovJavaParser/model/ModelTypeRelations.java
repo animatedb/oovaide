@@ -12,7 +12,10 @@ import java.util.Iterator;
 public class ModelTypeRelations implements Iterable<ModelTypeRelation>
     {
     public ModelTypeRelations()
-        { mTypeRelations = new HashSet<ModelTypeRelation>(); }
+        {
+        super();
+        mTypeRelations = new HashSet<ModelTypeRelation>();
+        }
 
     public void addRelation(ModelTypeRelation rel)
         { mTypeRelations.add(rel); }

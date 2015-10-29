@@ -36,7 +36,7 @@ struct NodeVectors
 
 void ComponentDiagram::updatePositionsInGraph(DiagramDrawer &nullDrawer)
     {
-    ComponentDrawer drawer(nullDrawer);
+    ComponentDrawer drawer(*this, nullDrawer);
     int pad = nullDrawer.getPad(1) * 2;
 
     enum NodeVectorsIndex { NVI_ExtPackage, NVI_Lib, NVI_Exec, NVI_NumVecs };
@@ -84,6 +84,6 @@ void ComponentDiagram::updatePositionsInGraph(DiagramDrawer &nullDrawer)
 
 void ComponentDiagram::drawDiagram(DiagramDrawer &diagDrawer)
     {
-    ComponentDrawer drawer(diagDrawer);
+    ComponentDrawer drawer(*this, diagDrawer);
     drawer.drawDiagram(mComponentGraph);
     }

@@ -15,14 +15,15 @@
 class ComponentDrawer
     {
     public:
-        ComponentDrawer(DiagramDrawer &drawer):
-            mDrawer(drawer)
+        ComponentDrawer(Diagram const &diagram, DiagramDrawer &drawer):
+            mDiagram(diagram), mDrawer(drawer)
             {}
         void drawDiagram(const ComponentGraph &graph);
         // This is used publicly to calculate node sizes.
         GraphSize drawNode(const ComponentNode &node);
 
     private:
+        Diagram const &mDiagram;
         DiagramDrawer &mDrawer;
         void drawConnection(const ComponentGraph &graph,
                 ComponentConnection const &connect);

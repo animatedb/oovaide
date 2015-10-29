@@ -11,19 +11,22 @@ import java.io.File;
 import java.io.IOException;
 
 import parser.*;
+import model.ModelData;
 
 
 public class oovJavaParser
     {
     public static void main(String[] args)
         {
-        Parser parser = new Parser();
+        AnalysisParser parser = new AnalysisParser();
         if(args.length >= 3)
             {
             if(parser.parse(args[0], args[2]))
                 {
                 ModelWriter writer = new ModelWriter();
-                writer.write(getOutputFileName(args[0], args[1], args[2]));
+                String outFn = getOutputFileName(parser.getModel(), args[0],
+                    args[1], args[2]);
+                writer.write(parser.getModel(), outFn);
                 }
             }
         else
@@ -34,9 +37,10 @@ public class oovJavaParser
         }
 
 
-    static String getOutputFileName(String srcFileName, String srcRootDir, String outDir)
+    static String getOutputFileName(ModelData model, String srcFileName,
+        String srcRootDir, String outDir)
         {
-	String moduleName = Parser.model.getModuleName();
+	String moduleName = model.getModuleName();
         String outFn = getAbsPath(outDir);
         String srcFn = getAbsPath(srcFileName);
         String srcDir = getAbsPath(srcRootDir);

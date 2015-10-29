@@ -435,7 +435,7 @@ void ComponentBuilder::buildComponents()
             makeOrderedPackageLibs(name);
             }
 
-        sVerboseDump.logProgress("Build programs");
+        sVerboseDump.logProgress("Build programs ");
 
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
@@ -477,8 +477,9 @@ void ComponentBuilder::buildComponents()
 
 
 bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
-        OovStringRef const outFile, const OovProcessChildArgs &args,
-        InProcMutex &listenerMutex, OovStringRef const stdOutFn)
+    OovStringRef const outFile, const OovProcessChildArgs &args,
+    InProcMutex &listenerMutex, OovStringRef const stdOutFn,
+    OovStringRef const workingDir)
     {
     FilePath outDir(outFile, FP_File);
     outDir.discardFilename();
@@ -515,12 +516,15 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
 */
         int exitCode;
         OovPipeProcess pipeProc;
-        success = pipeProc.spawn(procPath, args.getArgv(), listener, exitCode);
+        success = pipeProc.spawn(procPath, args.getArgv(), listener, exitCode, workingDir);
         if(!success)
             fprintf(stderr, "OovBuilder: Unable to execute process %s\n", procPath.getStr());
         if(!success || exitCode != 0)
             {
-            fprintf(stderr, "oovBuilder: Unable to build %s\nArguments were: ", outFile.getStr());
+            fprintf(stderr, "oovBuilder: Unable to build %s\n", outFile.getStr());
+            if(workingDir)
+                { fprintf(stderr, "  Working dir: %s\n", workingDir.getStr()); }
+            fprintf(stderr, "  Arguments were: ");
             args.printArgs(stderr);
             }
         }
@@ -538,8 +542,13 @@ bool ComponentTaskQueue::runProcess(OovStringRef const procPath,
 bool ComponentTaskQueue::processItem(ProcessArgs const &item)
     {
     char const *stdOutFn = item.mStdOutFn.length() ? item.mStdOutFn.getStr() : nullptr;
+    char const *workingDir = nullptr;
+    if(item.mWorkingDir.length() > 0)
+        {
+        workingDir = item.mWorkingDir.getStr();
+        }
     bool success = runProcess(item.mProcess, item.mOutputFile,
-                item.mChildArgs, mListenerStdMutex, stdOutFn);
+        item.mChildArgs, mListenerStdMutex, stdOutFn, workingDir);
     if(mListener)
         mListener->extraProcessing(success, item.mOutputFile, stdOutFn, item);
     return success;
@@ -553,11 +562,23 @@ OovString ComponentBuilder::makeOutputObjectFileName(OovStringRef const srcFile)
     return outFileName;
     }
 
-OovString ComponentBuilder::makeOutputClassDirName(OovStringRef const compName)
+OovString ComponentBuilder::makeIntermediateClassDirName(OovStringRef const compName)
     {
     FilePath path(mIntermediatePath, FP_Dir);
-    path.appendDir(compName);
+    if(strcmp(compName, Project::getRootComponentName()) != 0)
+        { path.appendDir(compName); }
     return path;
+    }
+
+OovString ComponentBuilder::makeOutputJarName(OovStringRef const compName)
+    {
+    FilePath outFileName(mOutputPath, FP_Dir);
+    if(strcmp(compName, Project::getRootComponentName()) != 0)
+        { outFileName.appendDir(compName); }
+    OovString jarName = mComponentFinder.makeActualComponentName(compName);
+    outFileName.appendFile(jarName);
+    outFileName.appendExtension("jar");
+    return outFileName;
     }
 
 void ComponentBuilder::processCppSourceFile(eProcessModes pm, OovStringRef const srcFile,
@@ -623,11 +644,9 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm, bool prog,
     OovStringRef compName, OovStringVec javaSources,
     const OovStringSet &externPkgCompileArgs)
     {
-    OovString outDirName = makeOutputClassDirName(compName);
-    OovString outputName = mComponentFinder.makeActualComponentName(compName);
-    FilePath outFileName(outDirName, FP_Dir);
-    outFileName.appendFile(outputName);
-    outFileName.appendExtension("jar");
+    OovString intDirName = makeIntermediateClassDirName(compName);
+    OovString outFileName = makeOutputJarName(compName);
+
     OovStatus status(true, SC_File);
     bool old = false;
     for(auto const &srcFile : javaSources)
@@ -650,7 +669,11 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm, bool prog,
             status = FileEnsurePathExists(outDirName);
             }
 */
-        FilePath srcFileListFn(outDirName, FP_Dir);
+        if(status.ok())
+            {
+            status = FileEnsurePathExists(intDirName);
+            }
+        FilePath srcFileListFn(intDirName, FP_Dir);
         srcFileListFn.appendFile("sources.txt");
         File srcFileList;
         if(status.ok())
@@ -687,7 +710,7 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm, bool prog,
                 }
             ca.addArg(procPath);
             ca.addArg("-d");
-            ca.addArg(outDirName);
+            ca.addArg(intDirName);
             OovString srcArg = "@";
             srcArg += srcFileListFn;
             ca.addArg(srcArg);
@@ -705,8 +728,10 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm, bool prog,
         ca.addArg("-o");
         ca.addArg(outFileName);
 */
+OovString str = "classes for ";
+str += compName;
             sVerboseDump.logProcess(srcFileListFn, ca.getArgv(), static_cast<int>(ca.getArgc()));
-            addTask(ProcessArgs(procPath, outFileName, ca));
+            addTask(ProcessArgs(procPath, str, ca));
             }
 //        if(incFileOlderIndex != BadIndex)
 //            sVerboseDump.logOutputOld(incFiles[static_cast<size_t>(incFileOlderIndex)]);
@@ -894,14 +919,11 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
         }
     }
 
-void ComponentBuilder::makeJar(OovStringRef const compName,
+void ComponentBuilder::makeJar(OovStringRef const rawCompName,
     OovStringVec const &sources, bool prog)
     {
-    OovString jarName = mComponentFinder.makeActualComponentName(compName);
-    OovString outDirName = makeOutputClassDirName(compName);
-    FilePath outFileName(outDirName, FP_Dir);
-    outFileName.appendFile(jarName);
-    outFileName.appendExtension("jar");
+    OovString compName = mComponentFinder.makeActualComponentName(rawCompName);
+    OovString outFileName = makeOutputJarName(rawCompName);
 
     OovString procPath = mToolPathFile.getJavaJarToolPath();
     OovProcessChildArgs ca;
@@ -911,24 +933,43 @@ void ComponentBuilder::makeJar(OovStringRef const compName,
         { jarTypeArgs += "m"; }
     ca.addArg(jarTypeArgs);
     ca.addArg(outFileName);
+
+    OovString outCompName = mComponentFinder.makeOutputComponentName(rawCompName);
     if(prog)
         {
-        OovString str = outDirName;
-        str += "Manifest.txt";
-        ca.addArg(str);
+        FilePath manFile(mComponentFinder.getComponentTypesFile().
+            getComponentAbsolutePath(outCompName), FP_Dir);
+
+        manFile.appendFile("Manifest.txt");
+        ca.addArg(manFile);
         }
-    std::set<OovString> classDirs;
-    for(auto const &str : sources)
+    // Go through the java source files and convert to directories that have class files.
+    std::set<OovString> relClassDirs;
+    for(auto const &src : sources)
         {
-        FilePath fp(str, FP_File);
-        fp.discardFilename();
-        classDirs.insert(fp);
+        FilePath compSourcePath(Project::getSrcRootDirectory(), FP_Dir);
+        compSourcePath.appendDir(outCompName);
+        OovString srcFn = Project::getSrcRootDirRelativeSrcFileName(src,
+            compSourcePath);
+        FilePath relFn(srcFn, FP_File);
+        relFn.discardFilename();
+        relClassDirs.insert(relFn);
         }
-    for(auto const &dir : classDirs)
+    for(auto const &dir : relClassDirs)
         {
         OovString str = dir;
         str += "*.class";
         ca.addArg(str);
         }
-    addTask(ProcessArgs(procPath, outFileName, ca));
+    OovStringVec jarLibs = mComponentFinder.getComponentTypesFile().
+            getComponentNamesByType(ComponentTypesFile::CT_JavaJarLib);
+    for(auto const &jar : jarLibs)
+        {
+        OovString jarFn = makeOutputJarName(jar);
+        ca.addArg(jarFn);
+        }
+    ProcessArgs procArgs(procPath, outFileName, ca);
+    OovString intDirName = makeIntermediateClassDirName(rawCompName);
+    procArgs.mWorkingDir = intDirName;
+    addTask(procArgs);
     }

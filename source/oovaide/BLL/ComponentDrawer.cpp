@@ -61,6 +61,7 @@ void ComponentDrawer::drawDiagram(const ComponentGraph &graph)
     if(graph.getNodes().size() > 0)
         {
         mDrawer.setDiagramSize(graph.getGraphSize());
+        mDrawer.setCurrentDrawingFontSize(mDiagram.getDiagramBaseFontSize());
         for(auto const &node : graph.getNodes())
             {
             drawNode(node);

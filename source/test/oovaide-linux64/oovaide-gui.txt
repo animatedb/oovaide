@@ -1,5 +1,6 @@
 EditorLineArg|+
 EditorPath|./oovEdit
+FontSize|10
 ShowAttrTypes|Yes
 ShowAttributes|Yes
 ShowCompImplicitRelations|No

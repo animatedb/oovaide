@@ -50,11 +50,10 @@ void SvgDrawer::setDiagramSize(GraphSize size)
     mOutputHeader = true;
     }
 
-void SvgDrawer::setFontSize(double size)
+void SvgDrawer::setCurrentDrawingFontSize(double size)
     {
     mOutputHeader = true;
-    DiagramDrawer::setFontSize(size);
-    mFontSize = size;
+    DiagramDrawer::setCurrentDrawingFontSize(size);
     }
 
 static void outArg(OovStringRef argName, OovStringRef argVal, OovString &outStr)
@@ -87,7 +86,7 @@ void SvgDrawer::maybeOutputHeader()
         const char *fontFamily = "Arial, Helvetica, sans-serif";
         OovString str = "<svg xmlns=\"http://www.w3.org/2000/svg\" version=\"1.1\"\n";
         outArg("font-family", fontFamily, str);
-        outArgFloat("font-size", mFontSize, 2, str);
+        outArgFloat("font-size", getCurrentDrawingFontSize(), 2, str);
         outArgInt("width", mDrawingSize.x, str);
         outArgInt("height", mDrawingSize.y, str);
         str += ">\n";

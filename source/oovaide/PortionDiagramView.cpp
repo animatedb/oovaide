@@ -12,8 +12,8 @@
 
 void PortionDiagramView::drawToDrawingArea()
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    CairoDrawer cairoDrawer(cairo.getCairo());
+    setCairoContext();
+    CairoDrawer cairoDrawer(mPortionDiagram, mCairoContext.getCairo());
     cairoDrawer.clearAndSetDefaults();
 
     mPortionDiagram.drawDiagram(cairoDrawer);
@@ -22,8 +22,7 @@ void PortionDiagramView::drawToDrawingArea()
 
 OovStatusReturn PortionDiagramView::drawSvgDiagram(File &file)
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(file, cairo.getCairo());
+    SvgDrawer svgDrawer(mPortionDiagram, file, mCairoContext.getCairo());
     mPortionDiagram.drawDiagram(svgDrawer);
     return svgDrawer.writeFile();
     }
@@ -80,13 +79,23 @@ void PortionDiagramView::viewClassSource()
 
 
 extern "C" G_MODULE_EXPORT void on_PortionViewSourceMenuitem_activate(
-        GtkWidget *widget, gpointer data)
+    GtkWidget *widget, gpointer data)
     {
     sPortionDiagramView->viewClassSource();
     }
 
-extern "C" G_MODULE_EXPORT void on_PortionRelayoutMenuitem_activate(
+extern "C" G_MODULE_EXPORT void on_PortionFontMenuitem_activate(
         GtkWidget *widget, gpointer data)
+    {
+    int fontSize = sPortionDiagramView->getFontSize();
+    if(setFontDialog(fontSize))
+        {
+        sPortionDiagramView->setFontSize(fontSize);
+        }
+    }
+
+extern "C" G_MODULE_EXPORT void on_PortionRelayoutMenuitem_activate(
+    GtkWidget *widget, gpointer data)
     {
     sPortionDiagramView->relayout();
     }

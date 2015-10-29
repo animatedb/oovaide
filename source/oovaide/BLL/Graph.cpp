@@ -81,10 +81,10 @@ bool GraphRect::isXOverlapped(GraphRect const &rect) const
             isBetween(rect.start.x, start.x, endx()));
     }
 
-GraphRect GraphRect::getZoomed(double zoomX, double zoomY) const
+GraphRect GraphRect::getZoomed(double zoom) const
     {
     GraphRect rect;
-    rect.start = start.getZoomed(zoomX, zoomY);
-    rect.size = size.getZoomed(zoomX, zoomY);
+    rect.start = start.getZoomed(zoom);
+    rect.size = size.getZoomed(zoom);
     return rect;
     }

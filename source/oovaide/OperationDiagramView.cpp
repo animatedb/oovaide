@@ -21,8 +21,8 @@ OperationDiagramListener::~OperationDiagramListener()
 
 void OperationDiagramView::drawToDrawingArea()
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    CairoDrawer cairoDrawer(cairo.getCairo());
+    setCairoContext();
+    CairoDrawer cairoDrawer(mOperationDiagram, mCairoContext.getCairo());
     cairoDrawer.clearAndSetDefaults();
 
     mOperationDiagram.drawDiagram(cairoDrawer);
@@ -31,8 +31,7 @@ void OperationDiagramView::drawToDrawingArea()
 
 OovStatusReturn OperationDiagramView::drawSvgDiagram(File &file)
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(file, cairo.getCairo());
+    SvgDrawer svgDrawer(mOperationDiagram, file, mCairoContext.getCairo());
     mOperationDiagram.drawDiagram(svgDrawer);
     return svgDrawer.writeFile();
     }
@@ -209,8 +208,18 @@ extern "C" G_MODULE_EXPORT void on_AddCallersMenuitem_activate(
         }
     }
 
+extern "C" G_MODULE_EXPORT void on_OperationFontMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    int fontSize = gOperationDiagramView->getFontSize();
+    if(setFontDialog(fontSize))
+        {
+        gOperationDiagramView->setFontSize(fontSize);
+        }
+    }
+
 extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
-        GtkWidget * /*widget*/, gpointer /*data*/)
+    GtkWidget * /*widget*/, gpointer /*data*/)
     {
     const OperationCall *opcall = gOperationDiagramView->getDiagram().getOperation(
             gStartPosInfo.x, gStartPosInfo.y);

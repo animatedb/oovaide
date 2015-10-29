@@ -35,13 +35,13 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
     {
     ModelType currentClass;
     ModelMethod currentMethod;
+    ModelData model;
 
-    public ParserTreeVisitor(String packageName,
-/*  ArrayList<String> classNames,*/ String analysisDir)
+    public ParserTreeVisitor(ModelData mod, String packageName, String analysisDir)
         {
-//        mClassNames = classNames;
-        Parser.model.setPackage(packageName);
-//        mClassLookup = new ClassLookup(analysisDir + "/..");
+        super();
+        model = mod;
+        model.setPackage(packageName);
         }
 /*
     @Override
@@ -384,7 +384,7 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
 
             case CLASS:
                 fullName = "";
-                String pkgName = Parser.model.getPackage();
+                String pkgName = model.getPackage();
                 if(pkgName.length() > 0)
                     {
                     fullName = pkgName + ".";
@@ -458,12 +458,12 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
 
     ModelType addOrFindTypeUsingName(String fullName)
         {
-        ModelType type = Parser.model.findType(fullName);
+        ModelType type = model.findType(fullName);
         if(type == null)
             {
             type = new ModelType();
             type.setTypeName(fullName);
-            Parser.model.addType(type);
+            model.addType(type);
             }
        return type;
        }

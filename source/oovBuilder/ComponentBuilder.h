@@ -36,6 +36,7 @@ class ProcessArgs
         ProcessArgs()
             {}
         OovString mProcess;
+        OovString mWorkingDir;      // zero length means no working directory.
         OovString mOutputFile;
         OovProcessChildArgs mChildArgs;
         OovString mStdOutFn;  // zero length will not use the name
@@ -65,8 +66,8 @@ class ComponentTaskQueue:public ThreadedWorkWaitQueue<ProcessArgs, ComponentTask
 
         /// @param outFile - used only to make an output directory, and display error.
         static bool runProcess(OovStringRef const procPath, OovStringRef const outFile,
-                const OovProcessChildArgs &args,
-                InProcMutex &mutex, OovStringRef const stdOutFn=nullptr);
+            const OovProcessChildArgs &args, InProcMutex &mutex,
+            OovStringRef const stdOutFn=nullptr, OovStringRef const workingDir=nullptr);
 
         InProcMutex mListenerStdMutex;
     private:
@@ -109,16 +110,24 @@ class ComponentBuilder:public ComponentTaskQueue
             OovStringVec javaSources, const OovStringSet &externPkgCompileArgs);
         void makeLib(OovStringRef const libName, const OovStringVec &objectFileNames);
         void makeLibSymbols(OovStringRef const clumpName, OovStringVec const &files);
+
         void makeExe(OovStringRef const compName, const OovStringVec &sources,
             const OovStringVec &projectLibsFilePaths,
             const OovStringVec &externLibDirs,
             const IndexedStringVec &externOrderedLibNames,
             const IndexedStringSet &externPkgLinkArgs,
             bool shared);
+
         void makeJar(OovStringRef const compName, OovStringVec const &sources,
             bool prog);
+
         OovString makeOutputObjectFileName(OovStringRef const str);
-        OovString makeOutputClassDirName(OovStringRef const str);
+
+        /// Returns the absolute path
+        /// @param compName The component name.
+        OovString makeIntermediateClassDirName(OovStringRef const compName);
+        OovString makeOutputJarName(OovStringRef const compName);
+
         OovString getSymbolBasePath();
         OovString getDiagFileName() const
             { return(mIntermediatePath + "oovaide-BuildOut.txt"); }

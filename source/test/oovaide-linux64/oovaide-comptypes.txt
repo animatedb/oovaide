@@ -9,7 +9,10 @@ Comp-type-oovCppParser|Program
 Comp-type-oovDbWriter|SharedLib
 Comp-type-oovEdit|Program
 Comp-type-oovGuiCommon|StaticLib
+Comp-type-oovJavaParser|JavaProg
+Comp-type-oovJavaParser/model|Unknown
+Comp-type-oovJavaParser/parser|Unknown
 Comp-type-oovReports|Program
 Comp-type-oovaide|Program
 Comp-type-test|Unknown
-Components|ClangView;examples;examples/names;examples/sharedlibgtk;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCovInstr;oovCppParser;oovDbWriter;oovEdit;oovGuiCommon;oovaide;oovaide/BLL;test;test/CppInput;test/TestCpp;test/python;test/python/oovCppParserIn;
+Components|ClangView;examples;examples/names;examples/sharedlibgtk;examples/sharedlibgtk/kingdom;examples/sharedlibgtk/resources;examples/sharedlibgtk/resources/horses;examples/sharedlibgtk/resources/men;examples/simple;examples/staticlib;examples/staticlib/BlackSheep;examples/staticlib/MainClients;oovBuilder;oovCMaker;oovCommon;oovCovInstr;oovCppParser;oovDbWriter;oovEdit;oovGuiCommon;oovJavaParser;oovJavaParser/model;oovJavaParser/parser;oovaide;oovaide/BLL;test;test/CppInput;test/TestCpp;test/python;test/python/oovCppParserIn;

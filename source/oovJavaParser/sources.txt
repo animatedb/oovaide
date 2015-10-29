@@ -2,7 +2,7 @@ oovJavaParser.java
 ModelWriter.java
 
 parser/ClassLookup.java
-parser/Parser.java
+parser/AnalysisParser.java
 parser/ParserTreeVisitor.java
 
 model/ModelData.java

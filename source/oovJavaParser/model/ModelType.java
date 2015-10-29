@@ -12,6 +12,7 @@ public class ModelType implements Iterable<ModelMethod>
     {
         public ModelType()
             {
+            super();
             mMethods = new HashSet<ModelMethod>();
             mRelations = new ModelTypeRelations();
             mMemberVars = new ModelTypeRefs();

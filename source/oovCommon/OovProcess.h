@@ -30,6 +30,7 @@
 /// @param procPath Path to executable
 /// @param argv List of arguments, last one must be nullptr.
 int spawnNoWait(OovStringRef const procPath, char const * const *argv);
+bool setWorkingDirectory(char const *path);
 
 
 /// Note that on Linux, this is not recursive.
@@ -227,7 +228,7 @@ class OovPipeProcessLinux
         void linuxClosePipes();
         bool linuxCreatePipes();
         bool linuxCreatePipeProcess(OovStringRef const procPath,
-                char const * const *argv);
+                char const * const *argv, char const *workingDir);
         void linuxChildProcessListen(OovProcessListener &listener, int &exitCode);
         void linuxChildProcessKill();
         void linuxChildProcessSend(OovStringRef const str);
@@ -252,7 +253,7 @@ class OovPipeProcessWindows
             setStatusProcNotRunning();
             }
         bool windowsCreatePipeProcess(OovStringRef const procPath,
-                char const * const *argv, bool showWindows);
+                char const * const *argv, bool showWindows, char const *workingDir);
         void windowsChildProcessListen(OovProcessListener &listener, int &exitCode);
         void windowsChildProcessClose();
         bool windowsChildProcessSend(OovStringRef const str);
@@ -289,8 +290,9 @@ class OovPipeProcess
         /// @param argv The arguments for the process
         /// @param showWindows Set true to show the window, or false to run as
         ///     a background hidden process
+        /// @param workingDir The current working directory for the child process.
         bool createProcess(OovStringRef const procPath, char const * const *argv,
-                bool showWindows);
+                bool showWindows, char const *workingDir=nullptr);
         /// This hangs waiting for the process to finish. It reads the output
         /// pipes from the child process, and sends the output to the listener.
         /// @param listener The listener that will be called when pipe data
@@ -311,8 +313,9 @@ class OovPipeProcess
         /// @param listener The listener that will be called when pipe data
         ///     is received
         /// @param exitCode The exit code of the child process
+        /// @param workingDir The current working directory for the child process.
         bool spawn(OovStringRef const procPath, char const * const * argv,
-                OovProcessListener &listener, int &exitCode);
+                OovProcessListener &listener, int &exitCode, char const *workingDir=nullptr);
         /// Checks if the argument length is ok on Windows. On Linux, it
         /// is always ok.
         bool isArgLengthOk(int len) const

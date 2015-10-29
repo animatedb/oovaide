@@ -17,7 +17,7 @@ class IncludeDiagramView
     {
     public:
         IncludeDiagramView(GuiOptions const &guiOptions):
-            mGuiOptions(guiOptions)
+            mGuiOptions(guiOptions), mNullDrawer(mIncludeDiagram)
             {}
         void initialize(IncDirDependencyMapReader const &incMap)
             {
@@ -49,6 +49,13 @@ class IncludeDiagramView
         bool isModified() const
             { return mIncludeDiagram.isModified(); }
         void viewFileSource();
+        void setFontSize(int size)
+            {
+            mIncludeDiagram.setDiagramBaseAndGlobalFontSize(size);
+            mNullDrawer.setCurrentDrawingFontSize(size);
+            }
+        int getFontSize()
+            { return mIncludeDiagram.getDiagramBaseFontSize(); }
 
     private:
         GuiOptions const &mGuiOptions;
@@ -60,6 +67,7 @@ class IncludeDiagramView
             {
             mCairoContext.setContext(getDiagramWidget());
             mNullDrawer.setGraphicsLib(mCairoContext.getCairo());
+            mNullDrawer.setCurrentDrawingFontSize(mIncludeDiagram.getDiagramBaseFontSize());
             }
         GtkWidget *getDiagramWidget()
             { return Builder::getBuilder()->getWidget("DiagramDrawingarea"); }

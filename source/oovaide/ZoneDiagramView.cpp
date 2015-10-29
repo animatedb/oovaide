@@ -131,8 +131,8 @@ ZoneDiagramListener::~ZoneDiagramListener()
 
 void ZoneDiagramView::drawToDrawingArea()
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    CairoDrawer cairoDrawer(cairo.getCairo());
+    setCairoContext();
+    CairoDrawer cairoDrawer(mZoneDiagram, mCairoContext.getCairo());
     cairoDrawer.clearAndSetDefaults();
 
     mZoneDiagram.drawDiagram(cairoDrawer);
@@ -141,8 +141,7 @@ void ZoneDiagramView::drawToDrawingArea()
 
 OovStatusReturn ZoneDiagramView::drawSvgDiagram(File &file)
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(file, cairo.getCairo());
+    SvgDrawer svgDrawer(mZoneDiagram, file, mCairoContext.getCairo());
     mZoneDiagram.drawDiagram(svgDrawer);
     return svgDrawer.writeFile();
     }
@@ -253,6 +252,16 @@ extern "C" G_MODULE_EXPORT void on_ZoneViewSourceMenuitem_activate(
             sZoneDiagramView->viewSource(classifier->getModule()->getModulePath(),
                     classifier->getLineNum());
             }
+        }
+    }
+
+extern "C" G_MODULE_EXPORT void on_ZoneFontMenuitem_activate(
+    GtkWidget *widget, gpointer data)
+    {
+    int fontSize = sZoneDiagramView->getFontSize();
+    if(setFontDialog(fontSize))
+        {
+        sZoneDiagramView->setFontSize(fontSize);
         }
     }
 

@@ -223,7 +223,7 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
     {
     if(node.getType())
         {
-        GraphPoint startpos(node.getPosition().getZoomed(mActualZoomX, mActualZoomY));
+        GraphPoint startpos(node.getPosition().getZoomed(mActualZoom));
         float fontHeight = mDrawer.getTextExtentHeight("W");
         float pad = fontHeight / 7.f;
     //    if(pad < 1)
@@ -595,8 +595,8 @@ static void drawIsSymbol(DiagramDrawer &drawer, GraphPoint parent, GraphPoint ch
 void ClassDrawer::drawConnectionLine(const ClassNode &node1, const ClassNode &node2,
     bool dashed)
     {
-    GraphRect rect1 = node1.getRect().getZoomed(mActualZoomX, mActualZoomY);
-    GraphRect rect2 = node2.getRect().getZoomed(mActualZoomX, mActualZoomY);
+    GraphRect rect1 = node1.getRect().getZoomed(mActualZoom);
+    GraphRect rect2 = node2.getRect().getZoomed(mActualZoom);
     GraphPoint p1e;
     GraphPoint p2e;
     rect1.findConnectPoints(rect2, p1e, p2e);
@@ -607,8 +607,8 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
         const ClassNode &node1, const ClassNode &node2,
         const ClassConnectItem &connectItem)
     {
-    GraphRect rect1 = node1.getRect().getZoomed(mActualZoomX, mActualZoomY);
-    GraphRect rect2 = node2.getRect().getZoomed(mActualZoomX, mActualZoomY);
+    GraphRect rect1 = node1.getRect().getZoomed(mActualZoom);
+    GraphRect rect2 = node2.getRect().getZoomed(mActualZoom);
 
     GraphPoint p1e;
     GraphPoint p2e;
@@ -616,25 +616,25 @@ void ClassDrawer::drawConnectionSymbols(const ClassRelationDrawOptions &options,
 
     if(options.drawOovSymbols)
         {
-        drawOovSymbol(mDrawer, p1e, p2e, connectItem, mActualZoomY);
+        drawOovSymbol(mDrawer, p1e, p2e, connectItem, mActualZoom);
         }
     // Draw the aggregation symbol after the oov symbols so that it can show up
     // over the const and function symbols.
     if(connectItem.mConnectType & ctAggregation)
         {
         // node1=owner, node2=owned.
-        drawHasSymbol(mDrawer, p1e, p2e, connectItem.mRefer, mActualZoomY);
+        drawHasSymbol(mDrawer, p1e, p2e, connectItem.mRefer, mActualZoom);
         }
     if(connectItem.mConnectType & ctIneritance)
         {
         // node1=parent, node2=child.
-        drawIsSymbol(mDrawer, p1e, p2e, mActualZoomY);
+        drawIsSymbol(mDrawer, p1e, p2e, mActualZoom);
         }
     }
 
 GraphSize ClassDrawer::drawRelationKey(const ClassNode &node)
     {
-    GraphPoint startpos(node.getPosition().getZoomed(mActualZoomX, mActualZoomY));
+    GraphPoint startpos(node.getPosition().getZoomed(mActualZoom));
     float fontHeight = mDrawer.getTextExtentHeight("W");
     float pad = fontHeight / 7.f;
     std::vector<std::string> strs = { "Relations Key",
@@ -658,8 +658,8 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node)
             strLenPixels = len;
         }
 
-    int shapeWidth = 18 * mActualZoomY;
-    int shapeHeight = 14 * mActualZoomY;
+    int shapeWidth = (fontHeight * 2) * mActualZoom;
+    int shapeHeight = (fontHeight * 2) * mActualZoom;
     int keyWidth = strLenPixels+shapeWidth+pad*4;
     int keyHeight = strs.size()*shapeHeight+pad*3;
     mDrawer.groupShapes(true, Color(0,0,0), Color(245,255,245));
@@ -672,18 +672,18 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node)
     p1.y += shapeHeight/2 + shapeHeight;        // Room for key header
     GraphPoint p2 = p1;
     p2.x += shapeWidth * 2;
-    drawIsSymbol(mDrawer, p1, p2, mActualZoomY);
+    drawIsSymbol(mDrawer, p1, p2, mActualZoom);
     p1.y += shapeHeight;
     p2.y += shapeHeight;
-    drawHasSymbol(mDrawer, p1, p2, true, mActualZoomY);
+    drawHasSymbol(mDrawer, p1, p2, true, mActualZoom);
     p1.y += shapeHeight;
     p2.y += shapeHeight;
-    drawHasSymbol(mDrawer, p1, p2, false, mActualZoomY);
+    drawHasSymbol(mDrawer, p1, p2, false, mActualZoom);
 //    if(options.drawOovSymbols)
         {
         p1.y += shapeHeight;
         p2.y += shapeHeight;
-        RelationDrawInfo drawInfo(p1, p2, mActualZoomY);
+        RelationDrawInfo drawInfo(p1, p2, mActualZoom);
         drawConst(mDrawer, drawInfo);
         p1.x = startSymbolXPos - drawInfo.baseFuncOffset;
         p1.y += shapeHeight;
@@ -725,19 +725,8 @@ GraphSize ClassDrawer::drawRelationKey(const ClassNode &node)
 
 void ClassDrawer::setZoom(double desiredZoom)
     {
-    /*
-    mDrawer.setFontSize(10);    // Set to default font size.
-    double noZoomHeight = mDrawer.getTextExtentHeight("W");
-//    double noZoomWidth = mDrawer.getTextExtentWidth("W");
-    mDrawer.setFontSize(desiredZoom*10);
-    double zoomHeight = mDrawer.getTextExtentHeight("W");
-//    double zoomWidth = mDrawer.getTextExtentWidth("W");
-    mActualZoomY = zoomHeight / noZoomHeight;
-    mActualZoomX = mActualZoomY; // zoomWidth / noZoomWidth;
-*/
-    mDrawer.setFontSize(desiredZoom*10);
-    mActualZoomX = desiredZoom;
-    mActualZoomY = desiredZoom;
+    mDrawer.setCurrentDrawingFontSize(desiredZoom * mDiagram.getDiagramBaseFontSize());
+    mActualZoom = desiredZoom;
     }
 
 class DrawnLines
@@ -760,8 +749,7 @@ void ClassDrawer::drawDiagram(const ClassGraph &graph)
     {
     if(graph.getNodes().size() > 0)
         {
-        mDrawer.setDiagramSize(graph.getGraphSize().getZoomed(mActualZoomX,
-                mActualZoomY));
+        mDrawer.setDiagramSize(graph.getGraphSize().getZoomed(mActualZoom));
         for(size_t ni1=0; ni1<graph.getNodes().size(); ni1++)
             {
             drawNode(graph.getNodes()[ni1]);

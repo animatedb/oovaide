@@ -29,8 +29,8 @@ void IncludeDiagramView::restart()
 
 void IncludeDiagramView::drawToDrawingArea()
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    CairoDrawer cairoDrawer(cairo.getCairo());
+    setCairoContext();
+    CairoDrawer cairoDrawer(mIncludeDiagram, mCairoContext.getCairo());
     cairoDrawer.clearAndSetDefaults();
 
     mIncludeDiagram.drawDiagram(cairoDrawer);
@@ -45,8 +45,7 @@ void IncludeDiagramView::updateDrawingAreaSize()
 
 OovStatusReturn IncludeDiagramView::drawSvgDiagram(File &file)
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(file, cairo.getCairo());
+    SvgDrawer svgDrawer(mIncludeDiagram, file, mCairoContext.getCairo());
     mIncludeDiagram.drawDiagram(svgDrawer);
     return svgDrawer.writeFile();
     }
@@ -102,6 +101,16 @@ void IncludeDiagramView::viewFileSource()
         {
         IncludeNode const &node = mIncludeDiagram.getNodes()[index];
         viewSource(mGuiOptions, node.getName(), 0);
+        }
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeFontMenuitem_activate(
+    GtkWidget *widget, gpointer data)
+    {
+    int fontSize = sIncludeDiagramView->getFontSize();
+    if(setFontDialog(fontSize))
+        {
+        sIncludeDiagramView->setFontSize(fontSize);
         }
     }
 

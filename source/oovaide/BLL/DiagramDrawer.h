@@ -53,24 +53,58 @@ class DiagramArrow
         GraphPoint mRightPos;
     };
 
+
+#define MIN_FONT_SIZE 5
+#define MAX_FONT_SIZE 30
+
+/// Each diagram can have its own font / font size.  When a diagram is saved,
+/// the font is saved with the diagram.
+/// If the global font is set, it applies to future diagrams, except if a
+/// diagram is loaded from a file, the font from the file is kept.
+class Diagram
+    {
+    public:
+        Diagram():
+            mDiagramBaseFontSize(getGlobalFontSize())
+            {}
+        void setDiagramBaseFontSize(double size)
+            { mDiagramBaseFontSize = size; }
+        /// This should only be set when the user sets the size. Not
+        /// when a drawing is loaded.
+        void setDiagramBaseAndGlobalFontSize(double size)
+            {
+            mDiagramBaseFontSize = size;
+            setGlobalFontSize(size);
+            }
+        double getDiagramBaseFontSize() const
+            { return mDiagramBaseFontSize; }
+        static void setGlobalFontSize(double size);
+        static double getGlobalFontSize();
+
+    private:
+        // This is the base font size for the diagram.
+        double mDiagramBaseFontSize;
+    };
+
+
 /// Provides an abstract interface for drawing. This interface can be used for
 /// drawing to screen, files (svg) or to a null device.
 class DiagramDrawer
     {
     public:
-        DiagramDrawer():
-            mFontSize(10.0)
+        DiagramDrawer(Diagram &diagram):
+            mDiagram(diagram),
+            mCurrentDrawingFontSize(diagram.getDiagramBaseFontSize())
             {}
         virtual ~DiagramDrawer();
-        /// This must be called before any other function.
+        /// These must be called before any other drawing function.
         virtual void setDiagramSize(GraphSize size) = 0;
-        virtual void setFontSize(double size)
-            { mFontSize = size; }
-        double getFontSize() const
-            { return mFontSize; }
+        virtual void setCurrentDrawingFontSize(double size)
+            { mCurrentDrawingFontSize = size; }
+
         virtual void drawRect(const GraphRect &rect)=0;
         virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
-                bool dashed=false)=0;
+            bool dashed=false)=0;
         virtual void drawCircle(const GraphPoint &p, int radius, Color fillColor) = 0;
         virtual void drawEllipse(const GraphRect &rect) = 0;
         virtual void drawPoly(const OovPolygon &poly, Color fillColor)=0;
@@ -89,11 +123,16 @@ class DiagramDrawer
         /// Returns a minimum of one.
         int getPad(int div=10) const;
         static void getConnectionPoints(GraphRect const &consumerRect,
-                GraphRect const &supplierRect,
-                GraphPoint &consumerPoint, GraphPoint &supplierPoint);
+            GraphRect const &supplierRect,
+            GraphPoint &consumerPoint, GraphPoint &supplierPoint);
+        double getCurrentDrawingFontSize() const
+            { return mCurrentDrawingFontSize; }
 
     private:
-        double mFontSize;
+        Diagram &mDiagram;
+        // This can be affected by zoom, or by relative font sizes from the base font size.
+        // This is not the base diagram font size. See the Diagram class.
+        double mCurrentDrawingFontSize;
     };
 
 class DiagramDependencyDrawer

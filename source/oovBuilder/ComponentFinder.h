@@ -186,6 +186,13 @@ class ComponentFinder:public dirRecurser
                 { fn = mRootPathName; }
             return fn;
             }
+        OovString makeOutputComponentName(OovStringRef const projName) const
+            {
+            OovString fn = projName;
+            if(strcmp(projName, Project::getRootComponentName()) == 0)
+                { fn = ""; }
+            return fn;
+            }
 
     private:
         OovString mRootPathName;

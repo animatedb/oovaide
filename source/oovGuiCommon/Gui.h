@@ -102,6 +102,13 @@ namespace Gui
             clear(view);
             appendText(view, text);
             }
+        inline void setValue(GtkSpinButton *spin, double val)
+            { gtk_spin_button_set_value(spin, val); }
+        inline double getValue(GtkSpinButton *spin)
+            { return gtk_spin_button_get_value(spin); }
+        inline void setRange(GtkSpinButton *spin, double min, double max)
+            { gtk_spin_button_set_range(spin, min, max); }
+
         GuiText getText(GtkTextView *textview);
         inline OovStringRef const getText(GtkEntry *entry)
             { return gtk_entry_get_text(entry); }

@@ -41,8 +41,8 @@ class BlockPolygon:public OovPolygon
 class OperationDrawer
     {
     public:
-        OperationDrawer():
-            mPad(0), mCharHeight(0)
+        OperationDrawer(Diagram const &diagram):
+            mDiagram(diagram), mPad(0), mCharHeight(0)
             {}
 
         // Graph is not const because class positions get updated.
@@ -52,6 +52,7 @@ class OperationDrawer
                 const OperationDrawOptions &options);
 
     private:
+        Diagram const &mDiagram;
         static const size_t NO_INDEX = static_cast<size_t>(-1);
         int mPad;
         int mCharHeight;

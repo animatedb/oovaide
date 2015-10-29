@@ -64,7 +64,7 @@ class ClassNode
             { return(mType == nullptr);}
         const ModelType *getType() const
             { return mType; }
-        /// Positions are only valid after positionNodes is called.
+        /// Positions are only valid after updateNodeSizes is called.
         GraphSize getSize() const
             { return rect.size; }
         void setPosition(const GraphPoint &pos)
@@ -158,9 +158,9 @@ class ClassGraphListener
 class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgroundItem>
     {
     public:
-        ClassGraph():
-            mModified(false), mBackgroundTaskLevel(0), mGraphListener(nullptr),
-            mForegroundTaskStatusListener(nullptr),
+        ClassGraph(Diagram const &diagram):
+            mDiagram(diagram), mModified(false), mBackgroundTaskLevel(0),
+            mGraphListener(nullptr), mForegroundTaskStatusListener(nullptr),
             mBackgroundTaskStatusListener(nullptr), mNullDrawer(nullptr)
             {}
         virtual ~ClassGraph();
@@ -262,6 +262,7 @@ class ClassGraph:public ThreadedWorkBackgroundQueue<ClassGraph, ClassGraphBackgr
             { mNullDrawer = &drawer; }
 
     private:
+        Diagram const &mDiagram;
         /// @todo - this should be a set?
         // This may have some duplicate relations for the different types
         // of relations.

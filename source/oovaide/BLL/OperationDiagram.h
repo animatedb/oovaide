@@ -26,11 +26,11 @@ struct OperationDiagramParams
 /// OperationDiagram uses the OperationDrawer to draw the OperationGraph.
 /// This must remain for the life of the program since GUI events can be
 /// generated any time.
-class OperationDiagram
+class OperationDiagram:public Diagram
     {
     public:
         OperationDiagram():
-            mModelData(nullptr)
+            mModelData(nullptr), mOperationDrawer(*this)
             {}
         void initialize(const ModelData &modelData)
             { mModelData = &modelData; }

@@ -46,22 +46,30 @@ class ComponentTypesFile
 
         /// This reads both component files.
         OovStatusReturn read();
+
         /// This reads the component type information only.
         OovStatusReturn readTypesOnly(OovStringRef const fn);
+
         /// Set the component names for a project.
         /// @param compNames A list of component names using the default
         ///     CompoundValue separator.
         void setComponentNames(OovStringRef const compNames)
             { mCompTypesFile.setNameValue("Components", compNames); }
+
         /// Get the component names for a project.
         /// @param definedComponentsOnly If true, this does not return any
         ///     CT_Unknown components.
         OovStringVec getComponentNames(bool definedComponentsOnly = false) const;
 
+        /// Get the component names that match the type.
+        /// @param cft The component type.
+        OovStringVec getComponentNamesByType(eCompTypes cft) const;
+
         /// Gets the child name of the component. The child name is the
         /// last name of the directory.  /parent-part1/parent-part2/child
         /// @param compName The path name of the component
         static std::string getComponentChildName(std::string const &compName);
+
         /// Gets the parent name of the component. The parent is the part
         /// of the path that is not the child.
         /// @param compName The path name of the component
@@ -69,9 +77,11 @@ class ComponentTypesFile
 
         /// Returns true if any of the components in a project are not unknown.
         bool anyComponentsDefined() const;
+
         /// Returns the component type of a directory / component.
         /// @param compName The name of the component.
         enum eCompTypes getComponentType(OovStringRef const compName) const;
+
         /// Set the component type of a directory / component.
         /// @param compName The component name.
         /// @param typeName The component type to set.
@@ -97,6 +107,7 @@ class ComponentTypesFile
         /// Gets the build arguments that are specific for a component.
         /// @param compName The component name.
         OovString getComponentBuildArgs(OovStringRef const compName) const;
+
         /// Sets the build arguments that are specific for a component.
         /// @param compName The component name.
         void setComponentBuildArgs(OovStringRef const compName, OovStringRef const args);
@@ -105,6 +116,7 @@ class ComponentTypesFile
         /// shown the the user.
         /// @param ct The component type
         static OovStringRef const getLongComponentTypeName(eCompTypes ct);
+
         /// Get the short type of component type name.  This is typically
         /// saved in a file.
         /// @param ct The component type

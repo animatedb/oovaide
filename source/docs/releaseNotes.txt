@@ -34,7 +34,13 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
-	- Font size (bug on github), save font size in drawings
+	- makeJar needs to check if jar already exists. (by checking input jars)
+	- failed jar building needs to delete output jar.
+	- Font size (bug on github)
+		- save font size in drawings
+		- save/restore global font size in preferences
+	- Improve component paths - source/output, relative/absolute, files/dirs, collections
+	- Slow drawing component diagram: ComponentGraph::updateConnections
 	- Java
 	   - Java Build - manifest
 	   - Variables in methods <BodyVarDecl> in xmi?

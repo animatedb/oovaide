@@ -15,9 +15,9 @@
 class SvgDrawer:public DiagramDrawer
     {
     public:
-        SvgDrawer(File &file, cairo_t *c):
-            mFile(file), mSuccess(true, SC_File), mFontSize(10.0), cr(c),
-            mOutputHeader(true)
+        SvgDrawer(Diagram &diagram, File &file, cairo_t *c):
+            DiagramDrawer(diagram), mFile(file), mSuccess(true, SC_File),
+            cr(c), mOutputHeader(true)
             {}
         /// This finishes up writing the file, and indicates if any errors
         /// occurred during writing.
@@ -25,7 +25,7 @@ class SvgDrawer:public DiagramDrawer
 
         // These should be called before the drawing functions.
         virtual void setDiagramSize(GraphSize size) override;
-        virtual void setFontSize(double size) override;
+        virtual void setCurrentDrawingFontSize(double size) override;
 
         virtual void drawRect(const GraphRect &rect) override;
         virtual void drawLine(const GraphPoint &p1, const GraphPoint &p2,
@@ -44,7 +44,6 @@ class SvgDrawer:public DiagramDrawer
     private:
         File &mFile;
         OovStatus mSuccess;
-        double mFontSize;
         cairo_t *cr;
         GraphSize mDrawingSize;
         bool mOutputHeader;

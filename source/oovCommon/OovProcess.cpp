@@ -47,6 +47,11 @@ class ProcDebugFile:public DebugFile
 static ProcDebugFile sDbgFile;
 #endif
 
+bool setWorkingDirectory(char const *path)
+    {
+    return(chdir(path) == 0);
+    }
+
 // Removes clang warning:
 // warning: 'OovProcessListener' has no out-of-line virtual method definitions;
 // its vtable will be emitted in every translation unit
@@ -130,7 +135,7 @@ bool OovPipeProcessLinux::linuxCreatePipes()
 
 
 bool OovPipeProcessLinux::linuxCreatePipeProcess(OovStringRef const procPath,
-        char const * const *argv)
+    char const * const *argv, char const *workingDir)
     {
     // from http://jineshkj.wordpress.com/2006/12/22/how-to-capture-stdin-stdout-and-stderr-of-child-program
     bool success = linuxCreatePipes();
@@ -139,6 +144,10 @@ bool OovPipeProcessLinux::linuxCreatePipeProcess(OovStringRef const procPath,
         int pid = fork();
         if(pid == 0)    // Is this the child?
             {
+            if(workingDir)
+                {
+                setWorkingDirectory(workingDir);
+                }
             close(STDOUT_FILENO);
             close(STDIN_FILENO);
             close(STDERR_FILENO);
@@ -348,7 +357,7 @@ static int linuxSpawnNoWait(OovStringRef const procPath, char const * const *arg
 static bool windowsChildProcessCreate(OovStringRef const szCmdline,
         HANDLE hChildStd_IN_Rd,
         HANDLE hChildStd_OUT_Wr, HANDLE hChildStd_ERR_Wr,
-        PROCESS_INFORMATION &piProcInfo, bool showWindows)
+        PROCESS_INFORMATION &piProcInfo, bool showWindows, char const *workingDir)
     {
     STARTUPINFO siStartInfo;
     ZeroMemory(&piProcInfo, sizeof(PROCESS_INFORMATION));
@@ -373,7 +382,7 @@ static bool windowsChildProcessCreate(OovStringRef const szCmdline,
     sDbgFile.printflush("windowsChildProcessCreate %s\n", szCmdline.getStr());
 #endif
     BOOL bSuccess = CreateProcess(NULL, const_cast<char*>(szCmdline.getStr()),
-        NULL, NULL, TRUE, 0, NULL, NULL, &siStartInfo, &piProcInfo);
+        NULL, NULL, TRUE, 0, NULL, workingDir, &siStartInfo, &piProcInfo);
     return bSuccess;
     }
 
@@ -468,7 +477,7 @@ bool OovPipeProcessWindows::windowsCreatePipes()
     }
 
 bool OovPipeProcessWindows::windowsCreatePipeProcess(OovStringRef const procPath,
-        char const * const *argv, bool showWindows)
+        char const * const *argv, bool showWindows, char const *workingDir)
     {
     /// @todo - procPath is not used.
     CmdLine cmdLine(procPath, argv);
@@ -477,7 +486,7 @@ bool OovPipeProcessWindows::windowsCreatePipeProcess(OovStringRef const procPath
         {
         success = windowsChildProcessCreate(cmdLine.getCmdStr(),
                 mChildStd_IN_Rd, mChildStd_OUT_Wr, mChildStd_ERR_Wr, mProcInfo,
-                showWindows);
+                showWindows, workingDir);
         }
     return success;
     }
@@ -570,13 +579,13 @@ void OovPipeProcessWindows::windowsChildProcessKill()
 #endif
 
 bool OovPipeProcess::createProcess(OovStringRef const procPath,
-        char const * const *argv, bool showWindows)
+        char const * const *argv, bool showWindows, char const *workingDir)
     {
 #ifdef __linux__
-    bool success = mPipeProcLinux.linuxCreatePipeProcess(procPath, argv);
+    bool success = mPipeProcLinux.linuxCreatePipeProcess(procPath, argv, workingDir);
 #else
     bool success = mPipeProcWindows.windowsCreatePipeProcess(procPath, argv,
-            showWindows);
+            showWindows, workingDir);
 #endif
     return success;
     }
@@ -619,11 +628,11 @@ void OovPipeProcess::childProcessKill()
     }
 
 bool OovPipeProcess::spawn(OovStringRef const procPath, char const * const * argv,
-        OovProcessListener &listener, int &exitCode)
+        OovProcessListener &listener, int &exitCode, char const *workingDir)
     {
     exitCode = -1;
 
-    bool success = createProcess(procPath, argv, false);
+    bool success = createProcess(procPath, argv, false, workingDir);
     if(success)
         {
         childProcessListen(listener, exitCode);

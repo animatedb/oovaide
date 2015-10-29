@@ -439,6 +439,7 @@ void ZoneDrawer::drawGraph(DiagramDrawer &drawer)
         {
         // This must be set for svg
         drawer.setDiagramSize(getDrawingSize());
+        drawer.setCurrentDrawingFontSize(mDiagram.getDiagramBaseFontSize());
 
         drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
         drawComponentBarriers(drawer);
@@ -503,8 +504,6 @@ size_t ZoneDrawer::getNodeIndexFromComponentIndex(size_t componentIndex)
 
 void ZoneDrawer::drawComponentText(DiagramDrawer &drawer)
     {
-    double origFontSize = drawer.getFontSize();
-    drawer.setFontSize(origFontSize * 1.2);
     for(size_t i=0; i<mComponentChanges.size(); i++)
         {
         size_t nodeIndex = getNodeIndexFromComponentIndex(i);
@@ -512,7 +511,6 @@ void ZoneDrawer::drawComponentText(DiagramDrawer &drawer)
         textPos.add(GraphDrawOffset);
         drawer.drawText(textPos, getNodeComponentText(nodeIndex));
         }
-    drawer.setFontSize(origFontSize);
     }
 
 void ZoneDrawer::drawNodeText(DiagramDrawer &drawer)

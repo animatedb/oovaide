@@ -70,8 +70,8 @@ void ToolPathFile::getAnalysisToolCommand(FilePath const &filePath,
         toolsJar.appendDir("lib");
         toolsJar.appendFile("tools.jar");
         jarsArg += toolsJar;
-        args.addArg(jarsArg);
         FilePathQuoteCommandLinePath(jarsArg);
+        args.addArg(jarsArg);
         args.addArg("oovJavaParser");
         }
     else

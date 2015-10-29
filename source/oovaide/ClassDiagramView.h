@@ -64,7 +64,7 @@ class ClassDiagramView:public ClassGraphListener
     {
     public:
         ClassDiagramView(GuiOptions const &guiOptions):
-            mGuiOptions(guiOptions), mNullDrawer(nullptr), mListener(nullptr)
+            mGuiOptions(guiOptions), mNullDrawer(mClassDiagram), mListener(nullptr)
             {}
         ~ClassDiagramView()
             {}
@@ -121,6 +121,14 @@ class ClassDiagramView:public ClassGraphListener
         void viewSource(OovStringRef const module, unsigned int lineNum);
         GuiOptions const &getGuiOptions()
             { return mGuiOptions; }
+        void setFontSize(int size)
+            {
+            mClassDiagram.setDiagramBaseAndGlobalFontSize(size);
+            mNullDrawer.setCurrentDrawingFontSize(size);
+            updateGraph(false);
+            }
+        int getFontSize()
+            { return mClassDiagram.getDiagramBaseFontSize(); }
 
     private:
         GuiOptions const &mGuiOptions;
@@ -140,6 +148,7 @@ class ClassDiagramView:public ClassGraphListener
             {
             mCairoContext.setContext(getDiagramWidget());
             mNullDrawer.setGraphicsLib(mCairoContext.getCairo());
+            mNullDrawer.setCurrentDrawingFontSize(mClassDiagram.getDiagramBaseFontSize());
             mClassDiagram.setNullDrawer(mNullDrawer);
             }
         // WARNING - This is called from a background thread.

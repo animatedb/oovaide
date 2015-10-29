@@ -10,7 +10,10 @@ import java.util.Iterator;
 public class ModelStatements implements Iterable<ModelStatement>
     {
     public ModelStatements()
-        { mStatements = new ArrayList<ModelStatement>(); }
+        {
+        super();
+        mStatements = new ArrayList<ModelStatement>();
+        }
 
     public void addStatement(ModelStatement statement)
         { mStatements.add(statement); }

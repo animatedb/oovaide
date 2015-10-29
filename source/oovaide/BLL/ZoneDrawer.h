@@ -33,8 +33,9 @@ class ZoneComponentChanges:public std::vector<size_t>
 class ZoneDrawer
     {
     public:
-        ZoneDrawer():
-            mGraph(nullptr), mScale(1), mZoom(1), mDrawNodeText(false)
+        ZoneDrawer(Diagram const  &diagram):
+            mDiagram(diagram), mGraph(nullptr), mScale(1), mZoom(1),
+            mDrawNodeText(false)
             {}
 
         // Sets zoom for next drawGraph.
@@ -55,6 +56,7 @@ class ZoneDrawer
 //            { return mGraph; }
 
     private:
+        Diagram const  &mDiagram;
         ZoneComponentChanges mComponentChanges;
         ZoneGraph const *mGraph;
         // Positions are saved without zoom. This is so that zoom does not

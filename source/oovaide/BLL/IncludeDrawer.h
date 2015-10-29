@@ -14,8 +14,8 @@
 class IncludeDrawer:public DiagramDependencyDrawer
     {
     public:
-        IncludeDrawer():
-            mGraph(nullptr)
+        IncludeDrawer(Diagram const &diagram):
+            mDiagram(diagram), mGraph(nullptr)
             {}
         void updateGraph(DiagramDrawer &drawer, IncludeGraph const &graph);
         GraphSize getDrawingSize(DiagramDrawer &drawer) const;
@@ -49,6 +49,7 @@ class IncludeDrawer:public DiagramDependencyDrawer
 
 
     private:
+        Diagram const &mDiagram;
         IncludeGraph const *mGraph;
         std::vector<GraphPoint> mNodePositions;
 

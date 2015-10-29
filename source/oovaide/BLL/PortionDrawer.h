@@ -14,8 +14,8 @@
 class PortionDrawer:public DiagramDependencyDrawer
     {
     public:
-        PortionDrawer():
-            mGraph(nullptr)
+        PortionDrawer(Diagram const &diagram):
+            mDiagram(diagram), mGraph(nullptr)
             {}
         void setGraphSource(PortionGraph const &graph)
             { mGraph = &graph; }
@@ -52,6 +52,7 @@ class PortionDrawer:public DiagramDependencyDrawer
             { return mGraph->getConnections()[index]; }
 
     private:
+        Diagram const &mDiagram;
         PortionGraph const *mGraph;
         std::vector<GraphPoint> mNodePositions;
 

@@ -13,7 +13,7 @@
 
 /// This defines functions used to interact with a component diagram. The
 /// ComponentDiagram uses the ComponentDrawer to draw the ComponentGraph.
-class ComponentDiagram
+class ComponentDiagram:public Diagram
     {
     public:
         void initialize(IncDirDependencyMapReader const &incMap);

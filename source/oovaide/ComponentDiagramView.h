@@ -17,10 +17,13 @@ class ComponentDiagramView
     {
     public:
         ComponentDiagramView(GuiOptions const &guiOptions):
-            mGuiOptions(guiOptions)
-            {}
+            mGuiOptions(guiOptions), mNullDrawer(mComponentDiagram)
+            {
+            setCairoContext();
+            }
         void initialize(IncDirDependencyMapReader const &incMap)
             {
+            setCairoContext();
             mDrawOptions.drawImplicitRelations =
                     mGuiOptions.getValueBool(OptGuiShowCompImplicitRelations);
             mComponentDiagram.initialize(incMap);
@@ -38,8 +41,7 @@ class ComponentDiagramView
         void restart();
         void relayout()
             {
-            NullDrawer nulDrawer(mCairoContext.getCairo());
-            mComponentDiagram.relayout(nulDrawer);
+            mComponentDiagram.relayout(mNullDrawer);
             requestRedraw();
             }
         bool isModified() const
@@ -49,6 +51,14 @@ class ComponentDiagramView
 // DEAD CODE
 //        GuiOptions const &getGuiOptions()
 //            { return mGuiOptions; }
+        void setFontSize(int size)
+            {
+            mComponentDiagram.setDiagramBaseAndGlobalFontSize(size);
+            mNullDrawer.setCurrentDrawingFontSize(size);
+            relayout();
+            }
+        int getFontSize()
+            { return mComponentDiagram.getDiagramBaseFontSize(); }
 
     private:
         GuiOptions const &mGuiOptions;
@@ -56,16 +66,24 @@ class ComponentDiagramView
         ComponentDrawOptions mDrawOptions;
         /// Used to calculate font sizes.
         GtkCairoContext mCairoContext;
-        void setCairoContext()
-            {
-            mCairoContext.setContext(getDiagramWidget());
-            }
+        NullDrawer mNullDrawer;
         GtkWidget *getDiagramWidget()
             { return Builder::getBuilder()->getWidget("DiagramDrawingarea"); }
         void updateDrawingAreaSize();
         void displayContextMenu(guint button, guint32 acttime, gpointer data);
         void requestRedraw()
             { gtk_widget_queue_draw(getDiagramWidget()); }
+        /// If this is not called from drawToDrawingArea, or other similar
+        /// drawing functions, then an assert "! surface->finished" will appear
+        /// from cairo.  This doesn't seem to affect other diagrams, so it
+        /// appears that since the component diagram is the first page, that
+        /// GTK is doing something different?
+        void setCairoContext()
+            {
+            mCairoContext.setContext(getDiagramWidget());
+            mNullDrawer.setGraphicsLib(mCairoContext.getCairo());
+            mNullDrawer.setCurrentDrawingFontSize(mComponentDiagram.getDiagramBaseFontSize());
+            }
     };
 
 

@@ -89,15 +89,16 @@ void ClassDiagramView::updateGraph(bool reposition)
 void ClassDiagramView::updateDrawingAreaSize()
     {
     GraphSize size = mClassDiagram.getGraphSize().getZoomed(
-            mClassDiagram.getDesiredZoom(), mClassDiagram.getDesiredZoom());
+        mClassDiagram.getDesiredZoom());
     GtkWidget *widget = getDiagramWidget();
     gtk_widget_set_size_request(widget, size.x, size.y);
     }
 
 void ClassDiagramView::drawToDrawingArea()
     {
+    setCairoContext();
     GtkCairoContext cairo(getDiagramWidget());
-    CairoDrawer cairoDrawer(cairo.getCairo());
+    CairoDrawer cairoDrawer(mClassDiagram, cairo.getCairo());
     cairoDrawer.clearAndSetDefaults();
 
     mClassDiagram.drawDiagram(cairoDrawer);
@@ -106,8 +107,7 @@ void ClassDiagramView::drawToDrawingArea()
 
 OovStatusReturn ClassDiagramView::drawSvgDiagram(File &file)
     {
-    GtkCairoContext cairo(getDiagramWidget());
-    SvgDrawer svgDrawer(file, cairo.getCairo());
+    SvgDrawer svgDrawer(mClassDiagram, file, mCairoContext.getCairo());
     mClassDiagram.drawDiagram(svgDrawer);
     return svgDrawer.writeFile();
     }
@@ -215,8 +215,7 @@ void ClassDiagramView::buttonReleaseEvent(const GdkEventButton *event)
                     static_cast<int>(event->y));
                 clickOffset.sub(gStartPosInfo);
                 GraphPoint newPos(node->getPosition());
-                newPos.add(clickOffset.getZoomed(1/mClassDiagram.getDesiredZoom(),
-                        1/mClassDiagram.getDesiredZoom()));
+                newPos.add(clickOffset.getZoomed(1/mClassDiagram.getDesiredZoom()));
 
                 node->setPosition(newPos);
                 mClassDiagram.setModified();
@@ -383,6 +382,16 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(
             gClassDiagramView->viewSource(classifier->getModule()->getModulePath(),
                 classifier->getLineNum());
             }
+        }
+    }
+
+extern "C" G_MODULE_EXPORT void on_ClassFontMenuitem_activate(
+    GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    int fontSize = gClassDiagramView->getFontSize();
+    if(setFontDialog(fontSize))
+        {
+        gClassDiagramView->setFontSize(fontSize);
         }
     }
 

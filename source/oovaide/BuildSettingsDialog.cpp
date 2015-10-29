@@ -43,6 +43,10 @@ void BuildSettingsDialog::enterScreen()
                 ComponentTypesFile::CT_SharedLib));
         Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
                 ComponentTypesFile::CT_Program));
+        Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
+                ComponentTypesFile::CT_JavaJarLib));
+        Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
+                ComponentTypesFile::CT_JavaJarProg));
 
         mComponentTree.clear();
         for(auto const &name : mComponentFile.getComponentNames())

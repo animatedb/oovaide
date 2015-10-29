@@ -68,13 +68,15 @@ class ZoneDiagramView
     {
     public:
         ZoneDiagramView(GuiOptions const &guiOptions):
-            mGuiOptions(guiOptions)
+            mGuiOptions(guiOptions), mListener(nullptr),
+            mNullDrawer(mZoneDiagram)
             {}
         void initialize(const ModelData &modelData,
                 ZoneDiagramListener &listener)
             {
             mListener = &listener;
             mZoneDiagram.initialize(modelData);
+            setCairoContext();
             }
 
         void clearGraphAndAddWorldZone()
@@ -115,6 +117,13 @@ class ZoneDiagramView
             { mToolTipWindow.lostPointer(); }
         void handleDrawingAreaMotion(int x, int y);
         void viewSource(OovStringRef const module, unsigned int lineNum);
+        void setFontSize(int size)
+            {
+            mZoneDiagram.setDiagramBaseAndGlobalFontSize(size);
+            mNullDrawer.setCurrentDrawingFontSize(size);
+            }
+        int getFontSize()
+            { return mZoneDiagram.getDiagramBaseFontSize(); }
 
     private:
         GuiOptions const &mGuiOptions;
@@ -128,6 +137,7 @@ class ZoneDiagramView
             {
             mCairoContext.setContext(getDiagramWidget());
             mNullDrawer.setGraphicsLib(mCairoContext.getCairo());
+            mNullDrawer.setCurrentDrawingFontSize(mZoneDiagram.getDiagramBaseFontSize());
             }
         GtkWidget *getDiagramWidget()
             { return Builder::getBuilder()->getWidget("DiagramDrawingarea"); }

@@ -15,24 +15,22 @@
 class ClassDrawer
     {
     public:
-        ClassDrawer(DiagramDrawer &drawer):
-                mDrawer(drawer), mActualZoomX(1.0), mActualZoomY(1.0)
-                {}
+        ClassDrawer(Diagram const &diagram, DiagramDrawer &drawer):
+            mDiagram(diagram), mDrawer(drawer), mActualZoom(1.0)
+            {}
         void setZoom(double zoom);
 // DEAD CODE
-//        double getActualZoomX() const
-//                { return(mActualZoomX); }
-//        double getActualZoomY() const
-//                { return(mActualZoomY); }
+//        double getActualZoom() const
+//                { return(mActualZoom); }
 
         void drawDiagram(const ClassGraph &graph);
         // This is used publicly to calculate node sizes.
         GraphSize drawNode(const ClassNode &node);
 
     private:
+        Diagram const &mDiagram;
         DiagramDrawer &mDrawer;
-        double mActualZoomX;
-        double mActualZoomY;
+        double mActualZoom;
 
         // Typically node1 is consumer, and node2 is producer
         /// @todo - should make this constant and clear

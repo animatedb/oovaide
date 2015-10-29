@@ -33,12 +33,12 @@ class XmlFile
 
 public class ModelWriter
     {
-    public void write(String outfileName)
+    public void write(ModelData model, String outfileName)
         {
         Integer typeIndex = 10;		// Reserve some for the module or whatever.
 
         mTypeIndices = new HashMap<ModelType, Integer>();
-        for(ModelType type : Parser.model)
+        for(ModelType type : model)
             {
             mTypeIndices.put(type, typeIndex++);
             }
@@ -47,8 +47,8 @@ public class ModelWriter
             {
             XmlFile file = new XmlFile(outfileName);
             file.println("  <Module id=\"1\" module=\"" +
-                Parser.model.getModuleName().replace('\\', '/') + "\" />");
-            for(ModelType type : Parser.model)
+                model.getModuleName().replace('\\', '/') + "\" />");
+            for(ModelType type : model)
                 {
                 writeClass(file, type);
                 writeAssoc(file, type);

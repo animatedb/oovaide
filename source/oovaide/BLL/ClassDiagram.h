@@ -15,12 +15,12 @@
 /// ClassDiagram uses the ClassDrawer to draw the ClassGraph.
 /// This must remain for the life of the program since GUI events can be
 /// generated any time.
-class ClassDiagram
+class ClassDiagram:public Diagram
     {
     public:
         ClassDiagram():
-            mModelData(nullptr), mDesiredZoom(1.0)
-                {}
+            mModelData(nullptr), mClassGraph(*this), mDesiredZoom(1.0)
+            {}
         /// The taskStatusListener's are used in the add class functions, and in
         /// the genetic repositioning code.
         /// The background is on the background thread, and cannot directly

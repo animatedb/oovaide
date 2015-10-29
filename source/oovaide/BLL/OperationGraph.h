@@ -29,7 +29,7 @@ class OperationClass
             {}
         const ModelType *getType() const
             { return mType; }
-        /// Positions are only valid after positionNodes is called.
+        /// Positions are only valid after updateNodeSizes is called.
         void setPosition(const GraphPoint &pos)
             { rect.start = pos; }
         void setSize(const GraphSize &size)

@@ -14,11 +14,12 @@
 /// ZoneDiagram uses the ZoneDrawer to draw the ZoneGraph.
 /// This must remain for the life of the program since GUI events can be
 /// generated any time.
-class ZoneDiagram
+class ZoneDiagram:public Diagram
     {
     public:
         ZoneDiagram():
-            mModelData(nullptr), mZoom(1), mResetPositions(false)
+            mModelData(nullptr), mZoneDrawer(*this), mZoom(1),
+            mResetPositions(false)
             {}
         void initialize(const ModelData &modelData);
         /// Call updateDiagram after this

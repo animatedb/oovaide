@@ -119,6 +119,21 @@ OovStringVec ComponentTypesFile::getComponentNames(bool definedComponentsOnly) c
     return compNames;
     }
 
+OovStringVec ComponentTypesFile::getComponentNamesByType(eCompTypes cft) const
+    {
+    OovStringVec allCompNames = CompoundValueRef::parseString(
+        mCompTypesFile.getValue("Components"));
+    OovStringVec filteredNames;
+    for(auto const &compName : allCompNames)
+        {
+        if(getComponentType(compName) == cft)
+            {
+            filteredNames.push_back(compName);
+            }
+        }
+    return filteredNames;
+    }
+
 std::string ComponentTypesFile::getComponentChildName(std::string const &compName)
     {
     OovString child = compName;
@@ -411,20 +426,8 @@ void ComponentTypesFile::setComponentBuildArgs(OovStringRef const compName,
 OovString ComponentTypesFile::getComponentAbsolutePath(
         OovStringRef const compName) const
     {
-    OovString path;
-    /// @todo - fix: this doesn't work if the component has no immediate files.
-    OovStringVec src = getComponentFiles(CFT_CppSource, compName, true);
-    if(src.size() == 0)
-        {
-        src = getComponentFiles(CFT_CppInclude, compName, true);
-        }
-    if(src.size() > 0)
-        {
-        FilePath fp;
-        fp.getAbsolutePath(src[0], FP_File);
-        fp.discardFilename();
-        path = fp;
-        }
+    FilePath path(Project::getSrcRootDirectory(), FP_Dir);
+    path.appendFile(compName);
     return path;
     }
 
