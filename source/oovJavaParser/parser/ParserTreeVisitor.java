@@ -43,14 +43,14 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
         model = mod;
         model.setPackage(packageName);
         }
-/*
+
     @Override
     public Object visitImport(ImportTree importTree, Trees trees)
         {
-        Parser.model.addImport(importTree.toString());
+        model.addImport(importTree.toString());
         return super.visitImport(importTree, trees);
         }
-*/
+
     @Override
     public Object visitClass(ClassTree classTree, Trees trees)
         {

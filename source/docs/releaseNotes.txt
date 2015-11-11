@@ -34,20 +34,21 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
+	- export include dependencies to database.
 	- makeJar needs to check if jar already exists. (by checking input jars)
 	- failed jar building needs to delete output jar.
 	- Font size (bug on github)
 		- save font size in drawings
 		- save/restore global font size in preferences
-	- Improve component paths - source/output, relative/absolute, files/dirs, collections
 	- Slow drawing component diagram: ComponentGraph::updateConnections
 	- Java
-	   - Java Build - manifest
-	   - Variables in methods <BodyVarDecl> in xmi?
-	   - constructors?
-           - virtual functions
-           - switch/case
-	   - cmake
+	  - Java Build - use imports to build executable jars
+	  - Variables in methods <BodyVarDecl> in xmi?
+	  - constructors?
+          - virtual functions
+          - switch/case
+	  - cmake
+	  - line numbers
 
 	- gtk3
 		- msys2
@@ -133,6 +134,7 @@ Missing Features
 	- Add filter for class list (GTK search feature exists)
 
 - Portion Diagrams
+	- Assert for call to constructor of base class (BackgroundQueueUnitTest)
 	- Allow move with multiple selection
 	- Grid for placement, option for grid size
 	- View source should go to selected function
@@ -163,7 +165,8 @@ Missing Features
 	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
 		- not in xmi file
 		- CLangView shows:
-			CompStmt, CallExpr "insert", UnexposedExpr, CallExpr "pair", TypeRef "ZoneConnection"
+			CompStmt, CallExpr "insert", UnexposedExpr, CallExpr "pair",
+			TypeRef "ZoneConnection"
 		visitFunctionAddStatements case CXCursor_CallExpr
 	- Use clang_Location_isFromMainFile if it works for header source files.
 	- Some header file changes don't reanalyze new dependent source files?
@@ -195,6 +198,7 @@ Missing Features
 	- Scan CMake files to find external pkg-config package dependencies
 	- The oovaide-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
+	- Link only with project libraries that are needed for each component
 	- A static lib without source should not be on link lines
 	- Should include mingw-builds includes so that threading errors don't occur
 	- BUG: Drive letters in path unable to write to bad filename.
