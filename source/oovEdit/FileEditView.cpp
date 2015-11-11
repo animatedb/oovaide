@@ -20,6 +20,27 @@
 
 static CompletionList *sCurrentCompleteList;
 
+#define DEBUG_EDITOR 0
+#if(DEBUG_EDITOR)
+struct DebScope
+    {
+    DebScope(char const *str):
+        mStr(str)
+        {
+        printf("[ %s\n", mStr);
+        fflush(stdout);
+        }
+    ~DebScope()
+        {
+        printf("] %s\n", mStr);
+        fflush(stdout);
+        }
+    char const *mStr;
+    };
+#define DEB_EDIT(x)     DebScope d(x);
+#else
+#define DEB_EDIT(x)
+#endif
 
 // This currently does not get the package command line arguments,
 // but usually these won't be needed for compilation.
@@ -399,6 +420,7 @@ static int textViewWindowToBufferOffset(GtkTextView *textView, int winX, int win
 
 gboolean draw(GtkWidget *widget, void *cr, gpointer user_data)
     {
+    DEB_EDIT(__FUNCTION__);
     bool handled = false;
     FileEditView *view = static_cast<FileEditView*>(user_data);
     int topOffset;
@@ -437,6 +459,7 @@ void FileEditView::init(GtkTextView *textView, FileEditViewListener *listener)
 
 OovStatusReturn FileEditView::openTextFile(OovStringRef const fn)
     {
+    DEB_EDIT(__FUNCTION__);
     mIsCppFile = isCppSource(fn) || isCppHeader(fn);
     setFileName(fn);
     File file;
@@ -498,6 +521,7 @@ OovStatusReturn FileEditView::saveTextFile()
 
 bool FileEditView::viewChange(int &topOffset, int &botOffset)
     {
+    DEB_EDIT(__FUNCTION__);
     GtkTextView *textView = getTextView();
     GdkWindow *textWindow = gtk_text_view_get_window(textView, GTK_TEXT_WINDOW_WIDGET);
     int winX;
@@ -528,6 +552,7 @@ GuiText FileEditView::getBuffer()
 
 void FileEditView::highlightRequest()
     {
+    DEB_EDIT(__FUNCTION__);
     if(mFilePath.length() && mIsCppFile)
         {
     //  int numArgs = 0;
@@ -760,6 +785,7 @@ bool FileEditView::findAndReplace(char const * const findStr, bool forward,
 void FileEditView::bufferInsertText(GtkTextBuffer *textbuffer, GtkTextIter *location,
         gchar *text, gint len)
     {
+    DEB_EDIT(__FUNCTION__);
     if(!doingHistory())
         {
         int offset = HistoryItem::getOffset(location);
@@ -833,6 +859,7 @@ void FileEditView::buttonPressSelect(int leftMarginWidth, double buttonX, double
 
 bool FileEditView::idleHighlight()
     {
+//    DEB_EDIT(__FUNCTION__);
     bool foundToken = false;
     eHighlightTask task = mHighlighter.highlightUpdate(mTextView, getBuffer(),
                 gtk_text_buffer_get_char_count(mTextBuffer));

@@ -550,12 +550,15 @@ class TypeIdMap:public std::map<int, ModelType *>
             auto it = find(id);
             if(it != end())
                 type = (*it).second;
+// Id's for intrinsic types do not exist.
+/*
             else if(id != 0)
                 {
                 OovString str = "Unable to resolve Decl ID ";
                 str.appendInt(id);
                 OovError::report(ET_Error, str);
                 }
+*/
             return type;
             }
     };

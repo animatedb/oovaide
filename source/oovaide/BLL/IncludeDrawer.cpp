@@ -110,6 +110,15 @@ void IncludeDrawer::updateNodePositions(DiagramDrawer &drawer)
         }
     }
 
+OovString const IncludeDrawer::getNodeName(size_t nodeIndex) const
+    {
+    OovString srcDir = Project::getSourceRootDirectory();
+    OovString nodeName = Project::getSrcRootDirRelativeSrcFileName(
+        mGraph->getNodes()[nodeIndex].getName());
+    return nodeName;
+    }
+
+
 void IncludeDrawer::updateGraph(DiagramDrawer &drawer, IncludeGraph const &graph)
     {
     mGraph = &graph;
@@ -212,7 +221,7 @@ void IncludeDrawer::drawNodeText(DiagramDrawer &drawer)
         GraphRect rect = getNodeRect(drawer, i);
         rect.start.x += pad;
         rect.start.y += yTextOffset;
-        drawer.drawText(rect.start, mGraph->getNodes()[i].getName().getStr());
+        drawer.drawText(rect.start, getNodeName(i).getStr());
         }
     }
 

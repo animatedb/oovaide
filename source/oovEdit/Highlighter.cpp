@@ -129,14 +129,17 @@ void TokenRange::tokenize(CXTranslationUnit transUnit)
     unsigned int numTokens = 0;
     clang_tokenize(transUnit, range, &tokens, &numTokens);
     resize(numTokens);
-    for (size_t i = 0; i < numTokens-1; i++)
+    if(numTokens > 0)
         {
-        at(i).mTokenKind = clang_getTokenKind(tokens[i]);
-        CXSourceRange tokRange = clang_getTokenExtent(transUnit, tokens[i]);
-        clang_getExpansionLocation(clang_getRangeStart(tokRange), NULL, NULL,
-            NULL, &at(i).mStartOffset);
-        clang_getExpansionLocation(clang_getRangeEnd(tokRange), NULL, NULL,
-            NULL, &at(i).mEndOffset);
+        for (size_t i = 0; i < numTokens-1; i++)
+            {
+            at(i).mTokenKind = clang_getTokenKind(tokens[i]);
+            CXSourceRange tokRange = clang_getTokenExtent(transUnit, tokens[i]);
+            clang_getExpansionLocation(clang_getRangeStart(tokRange), NULL, NULL,
+                NULL, &at(i).mStartOffset);
+            clang_getExpansionLocation(clang_getRangeEnd(tokRange), NULL, NULL,
+                NULL, &at(i).mEndOffset);
+            }
         }
     clang_disposeTokens(transUnit, tokens, numTokens);
     }
@@ -735,6 +738,7 @@ void HighlighterBackgroundThreadData::processItem(HighlightTaskItem const &item)
         default:
             break;
         }
+    DUMP_THREAD("end processItem");
     }
 
 

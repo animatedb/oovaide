@@ -27,6 +27,8 @@ public class oovJavaParser
                 String outFn = getOutputFileName(parser.getModel(), args[0],
                     args[1], args[2]);
                 writer.write(parser.getModel(), outFn);
+                writer.writeImportDependencies(parser.getModel(), args[0],
+                    args[1], args[2]);
                 }
             }
         else

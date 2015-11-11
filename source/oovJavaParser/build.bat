@@ -10,4 +10,4 @@ cd ..
 pause
 set EXECOUT=..\bin\
 copy %OUT%\oovJavaParser.jar %EXECOUT%
-java -cp "%EXECOUT%\oovJavaParser.jar;%JAVA_HOME%\lib\tools.jar" oovJavaParser parser/Parser.java ./ out/ana
+java -cp "%EXECOUT%\oovJavaParser.jar;%JAVA_HOME%\lib\tools.jar" oovJavaParser parser/AnalysisParser.java ./ out/ana

@@ -48,6 +48,17 @@ OovStringVec IncDirDependencyMapReader::getIncludeFilesDefinedInDirectory(
     return headers;
     }
 
+OovStringVec IncDirDependencyMapReader::getJavaFilesDefinedInDirectory(
+    OovStringRef const dirName) const
+    {
+    OovStringVec possibleJavaFiles = getFilesDefinedInDirectory(dirName);
+    OovStringVec javaFiles;
+    std::copy_if(possibleJavaFiles.begin(), possibleJavaFiles.end(),
+            std::back_inserter(javaFiles),
+            [](std::string const &header) { return isJavaSource(header); });
+    return javaFiles;
+    }
+
 OovStringVec IncDirDependencyMapReader::getFilesDefinedInDirectory(
         OovStringRef const dirName) const
     {
@@ -117,12 +128,29 @@ std::set<IncludedPath> IncDirDependencyMapReader::getAllIncludeFiles() const
     return incFiles;
     }
 
+std::set<OovString> IncDirDependencyMapReader::getAllFiles() const
+    {
+    std::set<IncludedPath> incFiles = getAllIncludeFiles();
+    std::set<OovString> files;
+    for(auto const &file : incFiles)
+        {
+        files.insert(file.getFullPath());
+        }
+    auto const &nameVals = getNameValues();
+    for(auto const &val : nameVals)
+        {
+        files.insert(val.first);
+        }
+    return files;
+    }
+
 void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
         OovStringRef const srcName, std::set<IncludedPath> &incFiles) const
     {
     FilePath fp(srcName, FP_File);
     OovString val = getValue(fp);
     processIncPath(val, incFiles, [](IncludedPath &){});
+    expandJavaFiles(incFiles);
     }
 
 /// This is recursive.
@@ -136,6 +164,38 @@ void IncDirDependencyMapReader::getNestedIncludeFilesUsedBySourceFile(
         {
         getNestedIncludeFilesUsedBySourceFile(incPath.getFullPath(), incFiles);
         });
+    expandJavaFiles(incFiles);
+    }
+
+void IncDirDependencyMapReader::expandJavaFiles(std::set<IncludedPath> &incFiles) const
+    {
+    for(auto it = incFiles.begin(); it != incFiles.end(); )
+        {
+        if((*it).getFullPath().find('*') != std::string::npos)
+            {
+            OovStringVec javaFiles = getJavaExpandedFiles((*it).getFullPath());
+            if(javaFiles.size() > 0)
+                {
+                for(auto const &jav : javaFiles)
+                    {
+                    FilePath dir(jav, FP_File);
+                    dir.discardFilename();
+                    FilePath file(jav, FP_File);
+                    file.discardDirectory();
+                    incFiles.insert(IncludedPath(dir, file));
+                    }
+                it = incFiles.erase(it++);
+                }
+            else
+                {
+                ++it;
+                }
+            }
+        else
+            {
+            ++it;
+            }
+        }
     }
 
 /// This is recursive
@@ -152,6 +212,19 @@ OovStringVec IncDirDependencyMapReader::getNestedIncludeDirsUsedBySourceFile(
     OovStringVec incDirs(tempDirs.size());
     std::copy(tempDirs.begin(), tempDirs.end(), incDirs.begin());
     return incDirs;
+    }
+
+OovStringVec IncDirDependencyMapReader::getJavaExpandedFiles(
+    OovStringRef const incPath) const
+    {
+    OovString path = incPath;
+    size_t wildPos = path.find('*');
+    OovStringVec files;
+    if(wildPos != std::string::npos)
+        {
+        files = getJavaFilesDefinedInDirectory(path.substr(0, wildPos));
+        }
+    return files;
     }
 
 /*

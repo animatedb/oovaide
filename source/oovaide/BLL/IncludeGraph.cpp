@@ -6,6 +6,7 @@
 
 #include "IncludeGraph.h"
 #include "Debug.h"
+#include "Project.h"
 #include <algorithm>
 
 
@@ -29,31 +30,43 @@ void IncludeGraph::clearAndAddInclude(OovStringRef incName)
     addSuppliers(incName);
     }
 
-void IncludeGraph::addSuppliers(OovStringRef incName)
+size_t IncludeGraph::getNodeIndex(OovStringRef name) const
     {
-    mNodes.push_back(IncludeNode(incName, INT_Project));
+    size_t nodeIndex = NO_INDEX;
+    for(size_t i=0; i<mNodes.size(); i++)
+        {
+        if(mNodes[i].getName().compare(name) == 0)
+            {
+            nodeIndex = i;
+            break;
+            }
+        }
+    return nodeIndex;
+    }
+
+size_t IncludeGraph::addOrGetNode(OovStringRef name)
+    {
+    size_t index = getNodeIndex(name);
+    if(index == NO_INDEX)
+        {
+        mNodes.push_back(IncludeNode(name, INT_Project));
+        index = getNodeIndex(name);
+        }
+    return index;
+    }
+
+void IncludeGraph::addSuppliers(OovStringRef consName)
+    {
+    size_t consIndex = addOrGetNode(consName);
     std::set<IncludedPath> incFiles;
-    mIncludeMap->getImmediateIncludeFilesUsedBySourceFile(incName, incFiles);
+    mIncludeMap->getImmediateIncludeFilesUsedBySourceFile(consName, incFiles);
     for(auto const &incFile : incFiles)
         {
-        auto const &iter = std::find_if(mNodes.begin(), mNodes.end(),
-                [incFile](IncludeNode const &node)
-                    {
-                    bool val = incFile.getFullPath() == node.getName().getStr();
-                    return(val);
-                    }
-                );
-        if(iter == mNodes.end())
+        size_t supIndex = addOrGetNode(incFile.getFullPath());
+        if(supIndex != NO_INDEX)
             {
-#define RECURSE 0
-#if(RECURSE)
-            addSuppliers(incFile.getFullPath());
-#else
-            mNodes.push_back(IncludeNode(incFile.getFullPath(), INT_Project));
-#endif
+            IncludeConnection conn(supIndex, consIndex);
+            mConnections.push_back(conn);
             }
-        IncludeConnection conn(getNodeIndex(getNode(incFile.getFullPath(),
-                INT_Project)), getNodeIndex(getNode(incName, INT_Project)));
-        mConnections.push_back(conn);
         }
     }

@@ -2,8 +2,8 @@
 # Oovaide
 
 An object oriented analysis and integrated development platform that automatically
-generates build, class, sequence, zone, portion, and component diagrams for C++
-and Objective C languages. Also includes test coverage, complexity and
+generates build, class, sequence, zone, portion, and component diagrams for C++,
+Objective C and Java languages. Also includes test coverage, complexity and
 analysis statistics.
 
 [Oovaide Home Page](http://oovaide.sourceforge.net/)
@@ -33,7 +33,7 @@ analysis statistics.
 		- Include dependency diagrams
 	- Analysis
 		- Dependencies are generated automatically between files and components.
-		- Code coverage
+		- Code coverage (Not for Java)
 			- Instruments code and produces coverage information.
 			- Can be used to find dead code (dynamic).
 		- Code complexity
@@ -42,7 +42,7 @@ analysis statistics.
 		- Dead code detection (static)
 			- Class data member usage
 			- Class method usage
-		- Line counts
+		- Line counts (Not for Java)
 		- Project statistics
 		- Export to sqlite database
 	- Build

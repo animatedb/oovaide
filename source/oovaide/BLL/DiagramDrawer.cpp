@@ -328,7 +328,7 @@ void DiagramDependencyGenes::initialize(DiagramDependencyDrawer &drawer, size_t 
     // Each gene contains the Y position for every node.
     const size_t sizePos = sizeof(GeneValue);
     size_t geneBytes = numNodes * sizePos;
-    mMaxDrawingHeight = static_cast<size_t>(nodeHeight * 5.0 * getMaxNodesInColumn());
+    mMaxDrawingHeight = static_cast<size_t>(nodeHeight * 4.0 * getMaxNodesInColumn());
     GenePool::initialize(geneBytes, numGenes, 0.35, 0.005, 0,
         static_cast<GeneValue>(mMaxDrawingHeight));
     }
@@ -374,6 +374,7 @@ void DiagramDependencyGenes::setupQualityEachGeneration()
     mMaxDistanceQ = 0;
     mMaxOverlapQ = 0;
     mMaxHeightQ = 0;
+//    size_t minOverlap = 32000;
     size_t numNodes = mDrawer->getNumNodes();
     for(size_t genei=0; genei<getNumGenes(); genei++)
         {
@@ -404,13 +405,21 @@ void DiagramDependencyGenes::setupQualityEachGeneration()
             {
             mMaxOverlapQ = nodeOverlapCount;
             }
-
+/*
+        if(nodeOverlapCount < minOverlap)
+            {
+            minOverlap = nodeOverlapCount;
+            }
+*/
         size_t geneHeight = getDrawingHeight(genei);
         if(geneHeight > mMaxHeightQ)
             {
             mMaxHeightQ = geneHeight;
             }
         }
+//    printf("max lap %u dist %u size %u\n", mMaxOverlapQ, mMaxDistanceQ, mMaxHeightQ);
+//    printf("min lap %u\n", minOverlap);
+//    fflush(stdout);
     }
 
 QualityType DiagramDependencyGenes::calculateSingleGeneQuality(size_t geneIndex) const
@@ -441,7 +450,10 @@ QualityType DiagramDependencyGenes::calculateSingleGeneQuality(size_t geneIndex)
     QualityType q = static_cast<QualityType>(overlapQ + distQ + sizeQ);
 //printf("%d ", geneIndex);
 //printf("%d ", distance);
-//printf("   Q lap %d dist %d size %d total %d\n", overlapQ, distQ, sizeQ, q);
+//printf(" lap  %d/%d\n", nodesOverlapCount, mMaxOverlapQ);
+//printf(" dist %d/%d\n", distance, mMaxDistanceQ);
+//printf(" size %d/%d\n", geneHeight, mMaxHeightQ);
+//printf(" Q lap %d dist %d size %d total %d\n", overlapQ, distQ, sizeQ, q);
 //fflush(stdout);
     return q;
     }
@@ -480,7 +492,7 @@ size_t DiagramDependencyGenes::getNodeOverlapCount(size_t geneIndex) const
 bool DiagramDependencyGenes::nodesOverlap(size_t geneIndex, size_t node1, size_t node2) const
     {
     // Add some space between nodes
-    size_t nodeHeight = mNodeHeight * 2;
+    size_t nodeHeight = mNodeHeight * 1.5;
 
     int p1Y = getYPosition(geneIndex, node1);
     int p2Y = getYPosition(geneIndex, node2);

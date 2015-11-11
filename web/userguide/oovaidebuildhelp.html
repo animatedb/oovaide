@@ -7,16 +7,26 @@
     <title>Oovaide Build Help</title>
   </head>
 <body>
-<h1>Oovaide Build Help</h1>
+<h1>Oovaide Analysis and Build Help</h1>
+Oovaide can analyze projects, and can also build projects.  The setup for
+analysis is simpler than the setup for building projects.
 
-<h2>Overview of Oovaide Analysis Process</h2>
+<h2>Oovaide Analysis</h2>
   One goal of Oovaide is to be able to analyze a project by only providing
   a simple setup for analysis.  This allows analyzing projects where
   nothing is known about the source code.
   <p/>
   Oovaide scans the directories of the project under the source root directory
-  and adds include paths for any directories that contain header files.
-  Exclude directories can be set up for the project if needed.
+  to find source files that need to be analyzed.  The file extensions are used
+  to determine which source file parser to use.  Oovaide can analyze and build
+  a single directory tree that contains both C++ and Java files.  In fact,
+  Oovaide itself can be built this way.
+
+  <h3>C++ Analysis</h3>
+  Oovaide scans all directories in the project, and adds include paths for any
+  directories that contain header files.  Exclude directories can be set up
+  for the project to prevent using some include directories from being used
+  as include directories, and to prevent source files from being analyzed.
   <p/>
   Oovaide generally uses one set of compiler settings for all directories. This
   typically means that a superset of all packages must be specified.  For example,
@@ -26,17 +36,58 @@
   <p/>
   Each header and source file is analyzed independently. This means
   that each file should be able to include all definitions needed.
+  <p/>
+  Not all compiler errors need to be fixed to generate useful diagrams.
+  Oovaide will still generate references to undefined objects as long as
+  the compiler has parsed beyond the initial errors.
   If the files do not include all needed definitions (they expect the
   source that includes them to include other files first), then the
   error limit may need to be increased so that more of the
   file can be parsed.  The other alternative is to fix the header files
   so that they include the needed definitions.
   <p/>
-  Not all compiler errors need to be fixed to generate useful diagrams.
-  Oovaide will still generate references to undefined objects as long as
-  the compiler has parsed beyond the initial errors.
+  In Linux, the CLang compiler is not shipped with Oovaide, but must be present
+  on the system.
 
-<h2>Packages</h2>
+  <h3>Java Analysis</h3>
+  At the current time, the oovJavaParser.jar tool is used to parse and analyze
+  the java source files.
+  <p/>
+  The JAVA_HOME environment variable must be set to the
+  JAVA SDK. An example is: "C:\Program Files\Java\jdk1.8.0_51".
+  In Linux, if JAVA_HOME is missing, then "/usr/lib/jvm/default-java" is used.
+  A single file is analyzed at a time.
+  <p/>
+  The CLASSPATH environment variable must include tools.jar. An example is:
+  "C:\Program Files\Java\jdk1.8.0_51\lib\tools.jar".
+
+
+<h2>OovAide Build</h2>
+If analysis has completed successfully, then building applications with
+multiple libraries and executables is fairly easy.
+<p/>
+The Build Settings dialog under the Build menu allows selecting a directory
+and specifying what type of component to build from the directory. For
+example, if a single executable will be built from the whole directory tree,
+then select the <Root> component/directory, and define it as a 
+Program/Executable (for C++) or as a Java Executable Jar (for Java).
+
+<h2>OovAide Build Java</h2>
+Any component specified as a Java Executable Jar must have a Manifest.txt
+file in the component's source directory.
+<p/>
+The classpath must include all jars that are required for the build.
+The Java Library Jar can be used to build a jar that is not a stand-alone
+executable. At the moment, Oovaide does not determine jar dependency build
+order, so if this is a problem, multiple projects may have to be created
+to work around this for now.
+<p/>
+The package names must match the directory structure.  For each jar that
+is created, the package names in the java files must match the directories
+under the specified component's directory.
+
+<h2>OovAide Build C++</h2>
+<h3>Packages</h3>
   Packages are collections of include and library files that are distributed
   for use by many programs.  Some examples are gtk, Qt, etc.  Oovaide
   provides an "External Project Packages" button on the build arguments
@@ -46,7 +97,7 @@
   is used by the Oovaide package dialogs so that packages can be selected
   and used in each project.
 
-<h2>Windows Packages</h2>
+<h3>Windows Packages</h3>
   On Windows, there is a file called
   bin/oovaide-allpkgs-win.txt, that defines a few common packages.  This file
   can be easily read to see how packages are defined, and it
@@ -66,7 +117,7 @@
   the same as in the Build Arguments.
   
 
-<h2>Oovaide Build Arguments</h2>
+<h3>Oovaide Build Arguments</h3>
 The CLang compiler arguments for Analysis are set up in the Analysis/Settings
 dialog in the Build Arguments tab.  Many arguments are passed directly to the
 compiler, so for example, "-I/dir" will use "/dir" as an include path to
@@ -100,7 +151,7 @@ directories.
 	</td></tr>
 </table>
 
-<h2>Problem Solving</h2>
+<h3>Problem Solving</h3>
   Oovaide should delete all stale configuration files whenever the build
   settings are modified.  In the case that it does not, it is possible to
   delete the following:
@@ -114,7 +165,7 @@ directories.
    See the Inkscape Example for more problem solving information.
 
 
-<h2>Inkscape Example on Windows</h2>
+<h3>Inkscape Example on Windows</h3>
   This example shows how to analyze a project where little is known about
   the project.  This example was run on Windows, but some items will
   be similar on Linux.

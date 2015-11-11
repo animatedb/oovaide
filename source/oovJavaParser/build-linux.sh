@@ -16,5 +16,6 @@ cd ..
 EXEC_OUT=../bin-linux/
 cp $OUT/oovJavaParser.jar $EXEC_OUT
 
-java -cp "$OUT/oovJavaParser.jar:$JAVA_HOME/lib/tools.jar" oovJavaParser parser/Parser.java ./ out/ana
+# The following runs a test analysis
+java -cp "$OUT/oovJavaParser.jar:$JAVA_HOME/lib/tools.jar" oovJavaParser ModelWriter.java ./ out/ana
 

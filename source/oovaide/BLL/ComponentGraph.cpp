@@ -64,14 +64,25 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
         {
         if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
             {
+            ComponentTypesFile::eCompTypes compType = mNodes[consumerIndex].getComponentType();
+            ComponentTypesFile::CompFileTypes srcFileType;
+            if(compType == ComponentTypesFile::CT_JavaJarLib ||
+                compType == ComponentTypesFile::CT_JavaJarProg)
+                {
+                srcFileType = ComponentTypesFile::CFT_JavaSource;
+                }
+            else
+                {
+                srcFileType = ComponentTypesFile::CFT_CppSource;
+                }
             OovStringVec srcFiles = compFile.getComponentFiles(
-                ComponentTypesFile::CFT_CppSource, mNodes[consumerIndex].getName());
+                srcFileType, mNodes[consumerIndex].getName());
             for(auto const &srcFile : srcFiles)
                 {
                 FilePath fp;
                 fp.getAbsolutePath(srcFile, FP_File);
                 OovStringVec incDirs =
-                        mIncludeMap->getNestedIncludeDirsUsedBySourceFile(fp);
+                    mIncludeMap->getNestedIncludeDirsUsedBySourceFile(fp);
                 for(auto const &incDir : incDirs)
                     {
                     size_t supplierIndex = getComponentIndex(compPaths, incDir);

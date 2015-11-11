@@ -86,6 +86,10 @@ class IncludeGraph
         IncludeConnections mConnections;
         const IncDirDependencyMapReader *mIncludeMap;
         IncludeDrawOptions mDrawOptions;
+
+        static const size_t NO_INDEX = static_cast<size_t>(-1);
+        size_t getNodeIndex(OovStringRef name) const;
+        size_t addOrGetNode(OovStringRef name);
     };
 
 #endif

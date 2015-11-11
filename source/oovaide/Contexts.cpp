@@ -291,10 +291,10 @@ void Contexts::updateClassList()
 
 void Contexts::updateIncludeList()
     {
-    std::set<IncludedPath> files = mProject.getIncMap().getAllIncludeFiles();
+    std::set<OovString> files = mProject.getIncMap().getAllFiles();
     for(auto const &file : files)
         {
-        mIncludeList.appendText(file.getFullPath().getStr());
+        mIncludeList.appendText(file);
         }
     }
 

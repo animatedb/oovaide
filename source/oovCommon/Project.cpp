@@ -205,6 +205,11 @@ OovString Project::getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileNa
     return relSrcFileName;
     }
 
+OovString Project::getSrcRootDirRelativeSrcFileName(OovStringRef const srcFileName)
+    {
+    return getSrcRootDirRelativeSrcFileName(srcFileName, getSourceRootDirectory());
+    }
+
 OovString Project::getSrcRootDirRelativeSrcFileDir(OovStringRef const srcRootDir,
         OovStringRef const srcFileName)
     {

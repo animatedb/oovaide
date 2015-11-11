@@ -61,14 +61,16 @@ void CMaker::makeDefineName(OovStringRef const pkgName, OovString &defName)
     defName.setUpperCase(shortName);
     }
 
-static std::string makeComponentNameFromDir(std::string const &str)
+/// For any component that has subdirectories "xx/yy", replace the
+/// slash with a dash.
+static std::string makeIdentifierFromComponentName(std::string const &compName)
     {
-    std::string fixedCompName = str;
+    std::string fixedCompName = compName;
     std::replace(fixedCompName.begin(), fixedCompName.end(), '/', '-');
     return fixedCompName;
     }
 
-static std::string makeRelativeComponentNameFromDir(OovStringRef const compName,
+static std::string makeRelativeIdentifierFromComponentName(OovStringRef const compName,
         std::string const &str)
     {
     std::string dir = str;
@@ -85,7 +87,7 @@ static std::string makeRelativeComponentNameFromDir(OovStringRef const compName,
             dir.insert(0, "../");
             }
         }
-    return makeComponentNameFromDir(dir);
+    return makeIdentifierFromComponentName(dir);
     }
 
 
@@ -185,7 +187,7 @@ OovStatusReturn CMaker::makeTopMakelistsFile(OovStringRef const destName)
         if(compType != ComponentTypesFile::CT_Unknown)
             {
             str += ' ';
-            str += makeComponentNameFromDir(name);
+            str += makeIdentifierFromComponentName(name);
             }
         }
     str += "\n";
@@ -337,6 +339,16 @@ OovStatusReturn CMaker::makeToolchainFile(OovStringRef const compilePath,
     return status;
     }
 
+void maybeSplitLine(std::string &str)
+    {
+    size_t startpos = str.rfind('\n');
+    if(startpos == std::string::npos)
+        startpos = 0;
+    if(str.length() - startpos > 70)
+        {
+        str += "\n  ";
+        }
+    }
 
 void CMaker::appendNames(OovStringVec const &names,
         char delim, OovString &str)
@@ -345,13 +357,7 @@ void CMaker::appendNames(OovStringVec const &names,
         {
         str += name;
         str += delim;
-        size_t startpos = str.rfind('\n');
-        if(startpos == std::string::npos)
-            startpos = 0;
-        if(str.length() - startpos > 70)
-            {
-            str += "\n  ";
-            }
+        maybeSplitLine(str);
         }
     int len = str.length();
     if(len > 0 && str[len-1] == delim)
@@ -422,6 +428,55 @@ void CMaker::addLibsAndIncs(OovStringRef const compName, OovString &str)
         }
     }
 
+
+OovString CMaker::makeJavaComponentFile(OovStringRef const compName,
+    ComponentTypesFile::eCompTypes compType,
+    OovStringVec const &source, OovStringRef const destName)
+    {
+    OovString str;
+    str += "cmake_minimum_required (VERSION 2.8)\n\n"
+        "find_package(Java REQUIRED)\n"
+        "include(UseJava)\n"
+        "enable_testing()\n"
+        "project (";
+    str += compName;
+    str += ")\n";
+    str += "set(CMAKE_JAVA_COMPILE_FLAGS \"-source\" \"1.6\" \"-target\" \"1.6\")\n\n";
+
+    str += "add_jar(";
+    str += compName;
+    str += "\n";
+    if(compType == ComponentTypesFile::CT_JavaJarProg)
+        {
+        str += "   MANIFEST ${CMAKE_CURRENT_SOURCE_DIR}/Manifest.txt\n";
+        }
+    str += "   ";
+    // @todo - Add java files
+    OovStringVec srcFiles = mCompTypes.getComponentFiles(
+        ComponentTypesFile::CFT_JavaSource, compName);
+    for(auto const &src : srcFiles)
+        {
+        FilePath compSourcePath(Project::getSrcRootDirectory(), FP_Dir);
+        compSourcePath.appendDir(compName);
+        OovString srcFn = Project::getSrcRootDirRelativeSrcFileName(src,
+            compSourcePath);
+        str += srcFn;
+        maybeSplitLine(str);
+        str += ' ';
+        }
+    // @todo - Add jar files
+    str += ")\n\n";
+
+    str += "add_test(NAME ";
+    str += "Test";
+    str += compName;
+    str += " COMMAND ${Java_JAVA_EXECUTABLE} -cp ${_jarFile} ";
+    str += compName;
+    str += ")\n";
+    str += "install_jar(oovJavaParser ${INSTALL_BIN_DIR})\n";
+    return str;
+    }
+
 OovStatusReturn CMaker::makeComponentFile(OovStringRef const compName,
     ComponentTypesFile::eCompTypes compType,
     OovStringVec const &sources, OovStringRef const destName)
@@ -429,68 +484,94 @@ OovStatusReturn CMaker::makeComponentFile(OovStringRef const compName,
     OovString str;
     if(mVerbose)
         printf("Processing %s\n      %s\n", compName.getStr(), destName.getStr());
-    if(compType == ComponentTypesFile::CT_Program)
+    switch(compType)
         {
-        if(mVerbose)
-            printf("  Executable\n");
-
-        addCommandAndNames(CT_Exec, compName, sources, str);
-
-        addLibsAndIncs(compName, str);
-
-        str += "install(TARGETS ";
-        str += compName;
-        str += "\n  EXPORT ";
-        str += mProjectName;
-        str += "Targets";
-        str += "\n  RUNTIME DESTINATION \"${INSTALL_BIN_DIR}\" COMPONENT lib)\n";
-        }
-    else if(compType == ComponentTypesFile::CT_SharedLib)
-        {
-        if(mVerbose)
-            printf("  SharedLib\n");
-        addCommandAndNames(CT_Shared, compName, sources, str);
-
-        addLibsAndIncs(compName, str);
-
-        str += "install(TARGETS ";
-        str += compName;
-        str += "\n  LIBRARY DESTINATION \"${INSTALL_LIB_DIR}\" COMPONENT lib)\n";
-        }
-    else if(compType == ComponentTypesFile::CT_StaticLib)
-        {
-        if(mVerbose)
-            printf("  Library\n");
-        OovStringVec headers = mCompTypes.getComponentFiles(
-                ComponentTypesFile::CFT_CppInclude, compName);
-        discardDirs(headers);
-
-        OovStringVec allFiles = headers;
-        allFiles.insert(allFiles.end(), sources.begin(), sources.end() );
-        std::sort(allFiles.begin(), allFiles.end(), compareNoCase);
-        if(sources.size() == 0)
+        case ComponentTypesFile::CT_Program:
             {
-            addCommandAndNames(CT_Interface, compName, allFiles, str);
-            str += "set_target_properties(";
+            if(mVerbose)
+                printf("  Executable\n");
+
+            addCommandAndNames(CT_Exec, compName, sources, str);
+
+            addLibsAndIncs(compName, str);
+
+            str += "install(TARGETS ";
             str += compName;
-            str += " PROPERTIES LINKER_LANGUAGE CXX)\n";
+            str += "\n  EXPORT ";
+            str += mProjectName;
+            str += "Targets";
+            str += "\n  RUNTIME DESTINATION \"${INSTALL_BIN_DIR}\" COMPONENT lib)\n";
             }
-        else
-            addCommandAndNames(CT_Static, compName, allFiles, str);
+            break;
 
-        addCommandAndNames(CT_TargHeaders, compName, headers, str);
+        case  ComponentTypesFile::CT_SharedLib:
+            {
+            if(mVerbose)
+                printf("  SharedLib\n");
+            addCommandAndNames(CT_Shared, compName, sources, str);
+
+            addLibsAndIncs(compName, str);
+
+            str += "install(TARGETS ";
+            str += compName;
+            str += "\n  LIBRARY DESTINATION \"${INSTALL_LIB_DIR}\" COMPONENT lib)\n";
+            }
+            break;
+
+        case ComponentTypesFile::CT_StaticLib:
+            {
+            if(mVerbose)
+                printf("  Library\n");
+            OovStringVec headers = mCompTypes.getComponentFiles(
+                    ComponentTypesFile::CFT_CppInclude, compName);
+            discardDirs(headers);
+
+            OovStringVec allFiles = headers;
+            allFiles.insert(allFiles.end(), sources.begin(), sources.end() );
+            std::sort(allFiles.begin(), allFiles.end(), compareNoCase);
+            if(sources.size() == 0)
+                {
+                addCommandAndNames(CT_Interface, compName, allFiles, str);
+                str += "set_target_properties(";
+                str += compName;
+                str += " PROPERTIES LINKER_LANGUAGE CXX)\n";
+                }
+            else
+                addCommandAndNames(CT_Static, compName, allFiles, str);
+
+            addCommandAndNames(CT_TargHeaders, compName, headers, str);
 
 
-        str += "install(TARGETS ";
-        str += compName;
-        str += "\n  EXPORT ";
-        str += mProjectName;
-        str += "Targets";
-        str += "\n  ARCHIVE DESTINATION \"${INSTALL_LIB_DIR}\" COMPONENT lib";
-        str += "\n  PUBLIC_HEADER DESTINATION \"${INSTALL_INCLUDE_DIR}/";
-        str += mProjectName;
-        str += "\" COMPONENT dev)\n";
+            str += "install(TARGETS ";
+            str += compName;
+            str += "\n  EXPORT ";
+            str += mProjectName;
+            str += "Targets";
+            str += "\n  ARCHIVE DESTINATION \"${INSTALL_LIB_DIR}\" COMPONENT lib";
+            str += "\n  PUBLIC_HEADER DESTINATION \"${INSTALL_INCLUDE_DIR}/";
+            str += mProjectName;
+            str += "\" COMPONENT dev)\n";
+            }
+            break;
+
+        case ComponentTypesFile::CT_JavaJarLib:
+            {
+            if(mVerbose)
+                printf("  JavaLib\n");
+            str += makeJavaComponentFile(compName, compType, sources, destName);
+            }
+            break;
+
+        case ComponentTypesFile::CT_JavaJarProg:
+            if(mVerbose)
+                printf("  JavaProg\n");
+            str += makeJavaComponentFile(compName, compType, sources, destName);
+            break;
+
+        case ComponentTypesFile::CT_Unknown:
+            break;
         }
+
     OovStatus status = writeFile(destName, str);
     if(status.needReport())
         {
@@ -552,13 +633,13 @@ OovStringVec CMaker::getCompLibrariesAndIncs(OovStringRef const compName,
                             {
                             if(compType == ComponentTypesFile::CT_StaticLib)
                                 {
-                                projLibs.insert(makeComponentNameFromDir(
+                                projLibs.insert(makeIdentifierFromComponentName(
                                     supplierCompName));
                                 }
                             else
                                 {
                                 /// @todo - this could check for include files in the dir
-                                extraIncDirsSet.insert(makeRelativeComponentNameFromDir(
+                                extraIncDirsSet.insert(makeRelativeIdentifierFromComponentName(
                                     compName, supplierCompName));
                                 }
                             break;
@@ -649,7 +730,7 @@ OovStatusReturn CMaker::makeComponentFiles(bool writeToProject,
             {
             OovStringVec sources = getCompSources(compName);
             FilePath outFp;
-            std::string fixedCompName = makeComponentNameFromDir(compName);
+            std::string fixedCompName = makeIdentifierFromComponentName(compName);
             if(writeToProject)
                 {
                 outFp.setPath(mCompTypes.getComponentAbsolutePath(
@@ -723,9 +804,8 @@ bool CMaker::makeFiles(bool writeToProject)
         status = mBuildPkgs.read();
         if(status.needReport())
             {
-            // Is build package file optional?
-            status.reported();
-//            status.report(ET_Error, "Unable to read build packages");
+            // The build package file is optional.
+            status.clearError();
             }
         }
     if(status.ok())

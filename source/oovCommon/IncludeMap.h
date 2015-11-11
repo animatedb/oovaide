@@ -74,8 +74,10 @@ class IncDirDependencyMapReader:public NameValueFile
         /// @param incFiles The returned list of included files
         void getNestedIncludeFilesUsedBySourceFile(
                 OovStringRef const srcName, std::set<IncludedPath> &incFiles) const;
-        /// Get all included files in the project by all source files
+        /// Get all included files in the project by all source files.
         std::set<IncludedPath> getAllIncludeFiles() const;
+        /// Get all source and included files in the project.
+        std::set<OovString> getAllFiles() const;
         /// Get the included files that reside in a directory.
         /// This only matches exact directories, not nested trees.
         /// @param dirName The directory name that contains the files.
@@ -112,8 +114,18 @@ class IncDirDependencyMapReader:public NameValueFile
         /// @param includesUsedSoFar A cache of includes to speed up searching.
         /// @param srcName The source file name to check.
         bool anyRootDirsUsedBySourceFile(OovStringVec const &incRoots,
-                OovStringSet &includesUsedSoFar,
-                OovStringRef const srcName) const;
+            OovStringSet &includesUsedSoFar,
+            OovStringRef const srcName) const;
+
+        /// At the moment, this expands directories that have defined project
+        /// files. If there are no defined files, then the wildcard remains in
+        /// the set.
+        void expandJavaFiles(std::set<IncludedPath> &incFiles) const;
+
+        OovStringVec getJavaFilesDefinedInDirectory(
+            OovStringRef const dirName) const;
+        // Accepts an include path to support a java style wildcard import.
+        OovStringVec getJavaExpandedFiles(OovStringRef const incPath) const;
     };
 
 #endif /* INCLUDEMAP_H_ */

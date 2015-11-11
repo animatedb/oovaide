@@ -14,6 +14,7 @@ public class ModelData implements Iterable<ModelType>
             {
             super();
             mTypes = new ArrayList<ModelType>();
+            mImports = new ArrayList<String>();
             }
 
         public void setModuleName(String moduleName)
@@ -21,6 +22,9 @@ public class ModelData implements Iterable<ModelType>
 
         public void addType(ModelType type)
             { mTypes.add(type); }
+
+        public void addImport(String importStr)
+            { mImports.add(importStr); }
 
         public void setPackage(String packageName)
             { mPackageName = packageName; }
@@ -50,7 +54,11 @@ public class ModelData implements Iterable<ModelType>
         public Iterator<ModelType> iterator()
             { return getTypes(); }
 
+        public ArrayList<String> getImports()
+            { return mImports; }
+
         String mModuleName;
 	ArrayList<ModelType> mTypes;
+	ArrayList<String> mImports;
         String mPackageName;
     };

@@ -55,4 +55,7 @@ class CMaker
         OovStatusReturn makeComponentFile(OovStringRef const compName,
             ComponentTypesFile::eCompTypes compType,
             OovStringVec const &source, OovStringRef const destName);
+        OovString makeJavaComponentFile(OovStringRef const compName,
+            ComponentTypesFile::eCompTypes compType,
+            OovStringVec const &source, OovStringRef const destName);
     };

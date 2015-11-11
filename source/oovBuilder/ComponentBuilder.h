@@ -96,6 +96,8 @@ class ComponentBuilder:public ComponentTaskQueue
         /// A map of all packages required to build each component.
         ComponentPkgDeps mComponentPkgDeps;
 
+        const ComponentTypesFile &getComponentTypesFile() const
+            { return mComponentFinder.getComponentTypesFile(); }
         void buildComponents();
         void processSourceForComponents(eProcessModes pm);
         /// Saves a map of all packages required to build each component.
@@ -106,8 +108,27 @@ class ComponentBuilder:public ComponentTaskQueue
         void processCppSourceFile(eProcessModes pm, OovStringRef const srcFile,
             const OovStringVec &incDirs, const OovStringVec &incFiles,
             const OovStringSet &externPkgCompileArgs);
-        void processJavaSourceFiles(eProcessModes pm, bool prog, OovStringRef compName,
-            OovStringVec javaSources, const OovStringSet &externPkgCompileArgs);
+
+        /// This uses the javac program to create class files from java files.
+        ///
+        /// @param pm At the moment, this does not perform coverage.
+        /// @param compName This is used to find directories.
+        /// @param javaSources This is typically all source files for the component
+        ///     from multiple directories that are defined in the component.
+        /// @param externPkgCompileArgs
+        ///
+        /// javac creates the output files relative to the -d output directory,
+        /// but appends the package name from inside the java file. This function
+        /// uses the intermediate directory plus the component name to create
+        /// the output directory.
+        ///
+        /// The -cp flag can be used for javac to include a jar, but this function
+        /// requires that the user must specify the classpath as an environment
+        /// variable.  It would be nice to fix this in the future so the
+        /// jar dependencies are resolved by adding -cp for supplier jars.
+        void processJavaSourceFiles(eProcessModes pm, OovStringRef compName,
+            OovStringVec javaSources /*, const OovStringSet &externPkgCompileArgs*/);
+
         void makeLib(OovStringRef const libName, const OovStringVec &objectFileNames);
         void makeLibSymbols(OovStringRef const clumpName, OovStringVec const &files);
 
@@ -118,15 +139,32 @@ class ComponentBuilder:public ComponentTaskQueue
             const IndexedStringSet &externPkgLinkArgs,
             bool shared);
 
+        /// This creates a jar if the output file is older than the input files.
+        /// All library jars in the project are passed to the jar command.
+        /// @param compName The name of the component is used to name the output
+        ///     jar and the output directory.
+        /// @param sources The source java files are used to determine where the
+        ///     class files are that are used to create the jar.
+        /// @param prog If true, then the jar libs in the project are used
+        ///     while building the program jar. A Manifest.txt file is required
+        ///     to be in the source directory if prog is true.
         void makeJar(OovStringRef const compName, OovStringVec const &sources,
             bool prog);
 
+
+        /// Returns the absolute path
         OovString makeOutputObjectFileName(OovStringRef const str);
 
         /// Returns the absolute path
         /// @param compName The component name.
-        OovString makeIntermediateClassDirName(OovStringRef const compName);
-        OovString makeOutputJarName(OovStringRef const compName);
+        OovString makeOutputJarName(OovStringRef const compName)
+            { return ComponentTypesFile::getComponentFileName(mOutputPath,
+                compName, "jar"); }
+
+        OovString makeLibFn(OovStringRef const compName)
+            { return ComponentTypesFile::getComponentFileName(mOutputPath,
+                compName, "lib", "a"); }
+
 
         OovString getSymbolBasePath();
         OovString getDiagFileName() const

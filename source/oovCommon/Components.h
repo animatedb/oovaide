@@ -56,10 +56,33 @@ class ComponentTypesFile
         void setComponentNames(OovStringRef const compNames)
             { mCompTypesFile.setNameValue("Components", compNames); }
 
-        /// Get the component names for a project.
+        /// Get the component names for a project.  The component names
+        /// do not have an absolute path, and is <Root> for the root.
         /// @param definedComponentsOnly If true, this does not return any
         ///     CT_Unknown components.
         OovStringVec getComponentNames(bool definedComponentsOnly = false) const;
+
+        /// Returns a directory relative to relDir.
+        /// This returns relDir for the root compName.
+        static OovString getComponentDir(OovStringRef relDir,
+            OovStringRef compName);
+
+        /// Returns a directory relative to relDir.
+        /// Uses getComponentDir for the directory, and uses the compName to
+        /// build a base file name. If compName is root, then the component
+        /// name is built using getRootComponentFileName().
+        static OovString getComponentBaseFileName(OovStringRef relDir,
+            OovStringRef compName);
+
+        /// Returns a directory relative to relDir.
+        /// Uses getComponentBaseFileName and adds the extension.
+        static OovString getComponentFileName(OovStringRef relDir,
+            OovStringRef compName, OovStringRef ext);
+
+        /// Returns a directory relative to relDir.
+        /// Uses getComponentBaseFileName and adds the prefix and extension.
+        static OovString getComponentFileName(OovStringRef relDir,
+            OovStringRef compName, OovStringRef basePrefix, OovStringRef ext);
 
         /// Get the component names that match the type.
         /// @param cft The component type.
@@ -95,8 +118,8 @@ class ComponentTypesFile
         void setComponentFiles(CompFileTypes cft, OovStringRef const compName,
                 OovStringSet const &srcs);
 
-        /// Get the list of C++ files for a component. This matches files
-        /// in subdirectories of the component.
+        /// Get the list of full paths to the source files for a component.
+        /// This can match files in subdirectories of the component.
         /// @param cft The component file type.
         /// @param compName The component name.
         /// @param getNested Set true to get all files for a component. Set
@@ -141,7 +164,7 @@ class ComponentTypesFile
         NameValueFile mCompSourceListFile;
 
         OovStringVec getComponentFiles(OovStringRef const compName,
-                OovStringRef const tagStr, bool getNested=true) const;
+            OovStringRef const tagStr, bool getNested=true) const;
         void setComponentType(OovStringRef const compName, eCompTypes ct);
         // Setting a component below some parent must make sure the parents are unknown
         void coerceParentComponents(OovStringRef const compName);
@@ -152,6 +175,10 @@ class ComponentTypesFile
         static enum eCompTypes getComponentTypeFromTypeName(
                 OovStringRef const compTypeName);
         static OovStringRef getCompFileTypeTagName(CompFileTypes cft);
+        /// If there is no owner, this returns an empty name.
+        /// This can return the owner as the passed in name if it is a defined
+        /// component.
+        OovString getComponentNameOwner(OovStringRef compName) const;
     };
 
 /// This class stores the directories that contain include files within a project.

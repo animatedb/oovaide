@@ -10,15 +10,12 @@ Analyzing Programs - Windows Versions:
 	so running analysis does not require any additional
 	downloads. Using Oovaide for more complete analysis usually
 	requires some MinGW or other package so that CLang can find
-	standard include files. Using database export requires sqlite3.
+	additional include files. Using database export requires
+	sqlite3.
 
 Analyzing Programs - Linux Versions:
-	The oovaide-*-linux downloads require GTK3 and a 64 bit OS.
-	Part of CLang is included so running analysis does not
-	require any additional downloads. Using Oovaide for more
-	complete analysis usually requires some other package so
-	that CLang can find standard include files. Using database
- 	export requires sqlite3.
+	The oovaide-*-linux downloads require GTK3, CLang and a 64
+        bit OS. Using database export requires sqlite3.
 
 
 Building Programs - Windows Versions:
@@ -72,9 +69,11 @@ Building Programs - Linux Versions:
 	are required in order to build Oovaide.
 
 	To build oovaide on Linux using CMake (Debian/Ubuntu):
-		- Run "sudo apt-get install libgtk-3-dev clang libclang-dev"
+		- Run "sudo apt-get install libgtk-3-dev clang
+		  libclang-dev"
 		  from a terminal
-		- LLVM include and lib paths are in the top level CMakeLists.txt
+		- LLVM include and lib paths are in the top level
+		  CMakeLists.txt
 		- Run "cmake ./" from the oovaide top level directory
 		- Run "make" from the same directory
 

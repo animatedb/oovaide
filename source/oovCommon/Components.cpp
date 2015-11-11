@@ -119,6 +119,46 @@ OovStringVec ComponentTypesFile::getComponentNames(bool definedComponentsOnly) c
     return compNames;
     }
 
+OovString ComponentTypesFile::getComponentDir(OovStringRef relDir,
+    OovStringRef compName)
+    {
+    FilePath outDir(relDir, FP_Dir);
+    if(strcmp(compName, Project::getRootComponentName()) != 0)
+        { outDir.appendDir(compName); }
+    return outDir;
+    }
+
+OovString ComponentTypesFile::getComponentBaseFileName(OovStringRef relDir,
+    OovStringRef compName)
+    {
+    FilePath outFileName(getComponentDir(relDir, compName), FP_Dir);
+
+    if(strcmp(compName, Project::getRootComponentName()) != 0)
+        { outFileName.appendFile(compName); }
+    else
+        { outFileName.appendFile(Project::getRootComponentFileName()); }
+    return outFileName;
+    }
+
+OovString ComponentTypesFile::getComponentFileName(OovStringRef relDir,
+    OovStringRef compName, OovStringRef ext)
+    {
+    FilePath fn(getComponentBaseFileName(relDir, compName), FP_File);
+    fn.appendExtension(ext);
+    return fn;
+    }
+
+OovString ComponentTypesFile::getComponentFileName(OovStringRef relDir,
+    OovStringRef compName, OovStringRef basePrefix, OovStringRef ext)
+    {
+    FilePath fn(getComponentBaseFileName(relDir, compName), FP_File);
+    size_t compNamePos = FilePathGetPosEndDir(fn);
+    if(compNamePos != std::string::npos)
+        { fn.insert(compNamePos+1, basePrefix); }
+    fn.appendExtension(ext);
+    return fn;
+    }
+
 OovStringVec ComponentTypesFile::getComponentNamesByType(eCompTypes cft) const
     {
     OovStringVec allCompNames = CompoundValueRef::parseString(
@@ -368,6 +408,32 @@ void ComponentTypesFile::setComponentFiles(CompFileTypes cft,
     mCompSourceListFile.setNameValue(tag, objArgs.getAsString());
     }
 
+OovString ComponentTypesFile::getComponentNameOwner(OovStringRef compName) const
+    {
+    OovString ownerCompName;
+    OovStringVec definedCompNames = getComponentNames(true);
+    for(auto const &name : definedCompNames)
+        {
+        int len = name.length();
+        if(name.compare(0, len, compName, len) == 0)
+            {
+            if(name.length() > ownerCompName.length())
+                {
+                ownerCompName = name;
+                }
+            }
+        }
+    if(ownerCompName.length() == 0)
+        {
+        OovString rootName = Project::getRootComponentName();
+        if(getComponentType(rootName) != CT_Unknown)
+            {
+            ownerCompName = rootName;
+            }
+        }
+    return ownerCompName;
+    }
+
 OovStringVec ComponentTypesFile::getComponentFiles(CompFileTypes cft,
         OovStringRef const compName, bool getNested) const
     {
@@ -378,32 +444,32 @@ OovStringVec ComponentTypesFile::getComponentFiles(OovStringRef const compName,
         OovStringRef const tagStr, bool getNested) const
     {
     OovStringVec files;
-    OovStringVec names = getComponentNames();
-    OovString parentName = compName;
-    for(auto const &name : names)
+    // This must be allowed for unknown components because:
+    // - The component list shows files for unknown components
+    // - The subdirectories/nested directories of a component may be unknown.
+//    if(getComponentType(compName) != CT_Unknown)
         {
-        bool match = false;
-        if(getNested)
+        OovStringVec names = getComponentNames();
+        OovString parentName = compName;
+        for(auto const &name : names)
             {
-            if(strcmp(compName, Project::getRootComponentName()) == 0)
+            bool match = false;
+            if(getNested)
                 {
-                match = true;
+                OovString owner = getComponentNameOwner(name);
+                match = (owner.compare(compName) == 0);
                 }
             else
                 {
-                match = compareComponentNames(parentName, name);
+                match = (parentName == name);
                 }
-            }
-        else
-            {
-            match = (parentName == name);
-            }
-        if(match)
-            {
-            OovString tag = ComponentTypesFile::getCompTagName(name, tagStr);
-            OovString val = mCompSourceListFile.getValue(tag);
-            OovStringVec newFiles = CompoundValueRef::parseString(val);
-            files.insert(files.end(), newFiles.begin(), newFiles.end());
+            if(match)
+                {
+                OovString tag = ComponentTypesFile::getCompTagName(name, tagStr);
+                OovString val = mCompSourceListFile.getValue(tag);
+                OovStringVec newFiles = CompoundValueRef::parseString(val);
+                files.insert(files.end(), newFiles.begin(), newFiles.end());
+                }
             }
         }
     return files;
@@ -427,7 +493,10 @@ OovString ComponentTypesFile::getComponentAbsolutePath(
         OovStringRef const compName) const
     {
     FilePath path(Project::getSrcRootDirectory(), FP_Dir);
-    path.appendFile(compName);
+    if(strcmp(compName, Project::getRootComponentName()) != 0)
+        {
+        path.appendDir(compName);
+        }
     return path;
     }
 

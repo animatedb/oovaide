@@ -4,7 +4,12 @@
 
 import java.io.PrintWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.io.RandomAccessFile;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.Iterator;
 
 import model.*;
@@ -33,7 +38,9 @@ class XmlFile
 
 public class ModelWriter
     {
-    public void write(ModelData model, String outfileName)
+    HashMap<ModelType, Integer> mTypeIndices;
+
+    public void write(ModelData model, String outFileName)
         {
         Integer typeIndex = 10;		// Reserve some for the module or whatever.
 
@@ -45,7 +52,7 @@ public class ModelWriter
 
         try
             {
-            XmlFile file = new XmlFile(outfileName);
+            XmlFile file = new XmlFile(outFileName);
             file.println("  <Module id=\"1\" module=\"" +
                 model.getModuleName().replace('\\', '/') + "\" />");
             for(ModelType type : model)
@@ -197,5 +204,158 @@ public class ModelWriter
 
         }
 
-    HashMap<ModelType, Integer> mTypeIndices;
-    };
+    static void ensureLastPathSep(String dir)
+        {
+        int lastCharIndex = dir.length()-1;
+        if(dir.charAt(lastCharIndex) != '/' &&
+            dir.charAt(lastCharIndex) != '\\')
+            { dir += "/"; }
+        }
+
+    String getAnalysisIncDepsFilename(String outDir)
+        {
+        String incDepFn = outDir;
+        ensureLastPathSep(incDepFn);
+        incDepFn += "oovaide-incdeps.txt";
+        return incDepFn;
+        }
+
+    // Format is:    fn | time ; time; incpath ; incname ;
+    // where incpath and incname are repeated for each imported file.
+    String getImportStr(ModelData model, String srcRootDir, String absSrcFn)
+        {
+        ensureLastPathSep(srcRootDir);
+        String str = "";
+        if(model.getImports().size() > 0)
+            {
+            str += absSrcFn;
+            str += '|';
+            int time = (int)(System.currentTimeMillis() / 1000L);
+            str += Integer.toString(time);	// Last parser update time
+            str += ';';
+            str += Integer.toString(time);  // Last parser check time - NOT UPDATED!
+            str += ';';
+            for(String importStr : model.getImports())
+                {
+                importStr = importStr.replace("import ", "");
+                importStr = importStr.trim();
+                importStr = importStr.substring(0, importStr.length()-1);	// Remove the last semicolon.
+                importStr = importStr.replace(".", "/");
+                importStr = importStr.trim();
+
+                int lastSep = importStr.lastIndexOf('/');
+                if(lastSep != -1)
+                    {
+                    String dir = importStr.substring(0, lastSep);
+                    dir += '/';
+                    if(Files.isDirectory(Paths.get(srcRootDir + dir)))
+                        {
+                        dir = srcRootDir + dir;
+                        }
+                    str += dir;
+                    str += ';';
+                    str += importStr.substring(lastSep+1);
+                    str += ".java;";
+                    }
+                }
+            }
+        return str;
+        }
+
+    void sleepMs(int ms)
+        {
+        try
+            {
+            Thread.sleep(ms);
+            }
+        catch(InterruptedException ex)
+            {
+            Thread.currentThread().interrupt();
+            }
+        }
+
+    void writeImportDependencies(ModelData model, String absSrcFn,
+        String srcRootDir, String outDir)
+        {
+        // Follow a similar technique as oovCppWriter/SharedFile::open
+        String incDepFn = getAnalysisIncDepsFilename(outDir);
+        RandomAccessFile file = null;
+        for(int i=0; i<50; i++)
+            {
+            try
+                {
+                try
+                    {
+                    file = new RandomAccessFile(incDepFn, "rw");
+                    break;
+                    }
+                catch(FileNotFoundException e)
+                    {
+                    file = new RandomAccessFile(incDepFn, "w");
+                    break;
+                    }
+                }
+            catch(IOException e)
+                {
+                }
+            sleepMs(100);
+            }
+        if(file != null)
+            {
+            ArrayList<String> lines = new ArrayList<String>();
+            boolean keepReading = true;
+            while(keepReading)
+                {
+                try
+                    {
+                    String str = file.readLine();
+                    if(str != null)
+                        {
+                        str.trim();
+                        lines.add(str);
+                        }
+                    else
+                        { keepReading = false; }
+                    }
+                catch(IOException e)
+                    {
+                    keepReading = false;
+                    }
+                }
+
+            for(int i=0; i<lines.size(); i++)
+                {
+                String line = lines.get(i);
+                int barIndex = line.indexOf('|');
+                if(line.substring(0, barIndex).compareTo(absSrcFn) == 0)
+                    {
+                    lines.remove(i);
+                    break;
+                    }
+                }
+            String importStr = getImportStr(model, srcRootDir, absSrcFn);
+            if(importStr.length() > 0)
+                {
+                lines.add(importStr);
+                }
+
+            try
+                {
+                if(importStr.length() > 0)
+                    {
+                    file.seek(0);
+                    for(String line : lines)
+                        {
+                        file.writeBytes(line);
+                        file.writeBytes(System.getProperty("line.separator"));
+                        }
+                    file.setLength(file.getFilePointer());
+                    }
+                file.close();
+                }
+            catch(IOException e)
+                {
+                }
+            }
+        }
+    }
