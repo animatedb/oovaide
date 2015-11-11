@@ -2,8 +2,8 @@
 # Oovaide
 
 An object oriented analysis and integrated development platform that automatically
-generates build, class, sequence, zone, portion, and component diagrams for C++
-and Objective C languages. Also includes test coverage, complexity and
+generates build, class, sequence, zone, portion, and component diagrams for C++,
+Objective C, and Java languages. Also includes test coverage, complexity and
 analysis statistics.
 
 [Oovaide Home Page](http://oovaide.sourceforge.net/)
