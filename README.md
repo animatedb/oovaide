@@ -58,7 +58,8 @@ Download the Oovaide binaries from the [releases]
 (http://sourceforge.net/projects/oovaide/files/). There is a version for Linux,
 and one for Windows. The Linux version requires GTK and CLang to be
 installed on the computer. The Windows version does not require any extra downloads
-for analysis, but CLang or some minGW package is required for building.
+for analysis, but CLang or some minGW package is required  if OovAide is used to
+build projects.
 
 If you would like to build from source:
 - mkdir oovaide-git
