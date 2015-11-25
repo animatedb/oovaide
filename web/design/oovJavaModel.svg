@@ -1,8 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
  font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="726" height="616">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="586" y="25" width="133" height="143" />
-<line x1="586" y1="38" x2="719" y2="38" />
+<rect x="586" y="25" width="129" height="143" />
+<line x1="586" y1="38" x2="715" y2="38" />
 <polygon points="699,46 711,51 711,41 699,46 " style="fill:#ffffff" />
 <polygon points="699,60 706,64 713,60 706,56 699,60 " style="fill:#ffffff" />
 <polygon points="699,74 706,78 713,74 706,70 699,74 " style="fill:#0" />
@@ -30,25 +30,28 @@
 <text x="587" y="160">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="19" y="73" width="234" height="134" />
+<rect x="19" y="73" width="234" height="161" />
 <line x1="19" y1="94" x2="253" y2="94" />
-<line x1="19" y1="124" x2="253" y2="124" />
+<line x1="19" y1="133" x2="253" y2="133" />
 </g>
 <g stroke="none">
 <text x="20" y="82">model.ModelData</text>
-<text x="20" y="91">model</text>
+<text x="20" y="91">oovJavaParser/model</text>
 <text x="20" y="103">+java.lang.String mModuleName</text>
 <text x="20" y="112">+java.util.ArrayList mTypes</text>
-<text x="20" y="121">+java.lang.String mPackageName</text>
-<text x="20" y="133">-getTypes()</text>
+<text x="20" y="121">+java.util.ArrayList mImports</text>
+<text x="20" y="130">+java.lang.String mPackageName</text>
 <text x="20" y="142">-&lt;init&gt;()</text>
-<text x="20" y="151">-setModuleName(java.lang.String moduleName)</text>
-<text x="20" y="160">-setPackage(java.lang.String packageName)</text>
-<text x="20" y="169">-iterator()</text>
-<text x="20" y="178">-getModuleName()</text>
-<text x="20" y="187">-findType(java.lang.String name)</text>
+<text x="20" y="151">-setPackage(java.lang.String packageName)</text>
+<text x="20" y="160">-getModuleName()</text>
+<text x="20" y="169">-findType(java.lang.String name)</text>
+<text x="20" y="178">-addImport(java.lang.String importStr)</text>
+<text x="20" y="187">-iterator()</text>
 <text x="20" y="196">-getPackage()</text>
-<text x="20" y="205">-addType(model.ModelType type)</text>
+<text x="20" y="205">-setModuleName(java.lang.String moduleName)</text>
+<text x="20" y="214">-getImports()</text>
+<text x="20" y="223">-addType(model.ModelType type)</text>
+<text x="20" y="232">-getTypes()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -79,34 +82,23 @@
 </g>
 <g stroke="none">
 <text x="314" y="36">model.ModelType</text>
-<text x="314" y="45">model</text>
+<text x="314" y="45">oovJavaParser/model</text>
 <text x="314" y="57">+java.lang.String mTypeName</text>
 <text x="314" y="66">+java.util.HashSet mMethods</text>
 <text x="314" y="75">+model.ModelTypeRelations mRelations</text>
 <text x="314" y="84">+model.ModelTypeRefs mMemberVars</text>
-<text x="314" y="96">-setTypeName(java.lang.String typeName)</text>
-<text x="314" y="105">-&lt;init&gt;()</text>
-<text x="314" y="114">-addMethod(model.ModelMethod method)</text>
-<text x="314" y="123">-setModule()</text>
-<text x="314" y="132">-getModule()</text>
-<text x="314" y="141">-addRelation(model.ModelTypeRelation rel)</text>
-<text x="314" y="150">-getRelations()</text>
-<text x="314" y="159">-getTypeName()</text>
-<text x="314" y="168">-iterator()</text>
-<text x="314" y="177">-isDefined()</text>
-<text x="314" y="186">-getMemberVars()</text>
-<text x="314" y="195">-getMethods()</text>
-</g>
-<g stroke="none" font-style="italic">
-</g>
-<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="18" y="18" width="64" height="26" />
-<line x1="18" y1="39" x2="82" y2="39" />
-<line x1="18" y1="42" x2="82" y2="42" />
-</g>
-<g stroke="none">
-<text x="19" y="27">parser.Parser</text>
-<text x="19" y="36">parser</text>
+<text x="314" y="96">-getTypeName()</text>
+<text x="314" y="105">-getRelations()</text>
+<text x="314" y="114">-&lt;init&gt;()</text>
+<text x="314" y="123">-setTypeName(java.lang.String typeName)</text>
+<text x="314" y="132">-addRelation(model.ModelTypeRelation rel)</text>
+<text x="314" y="141">-getModule()</text>
+<text x="314" y="150">-getMethods()</text>
+<text x="314" y="159">-getMemberVars()</text>
+<text x="314" y="168">-addMethod(model.ModelMethod method)</text>
+<text x="314" y="177">-iterator()</text>
+<text x="314" y="186">-setModule()</text>
+<text x="314" y="195">-isDefined()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -117,7 +109,7 @@
 </g>
 <g stroke="none">
 <text x="22" y="269">model.ModelMethod</text>
-<text x="22" y="278">model</text>
+<text x="22" y="278">oovJavaParser/model</text>
 <text x="22" y="290">+java.lang.String mMethodName</text>
 <text x="22" y="299">+model.ModelTypeRefs mParameters</text>
 <text x="22" y="308">+model.ModelStatements mStatements</text>
@@ -136,7 +128,7 @@
 </g>
 <g stroke="none">
 <text x="272" y="481">model.ModelStatement</text>
-<text x="272" y="490">model</text>
+<text x="272" y="490">oovJavaParser/model</text>
 <text x="272" y="502">+model.ModelStatement.StatementType </text>
 <text x="279" y="511">mStatementType</text>
 <text x="272" y="520">+java.lang.String mName</text>
@@ -160,7 +152,7 @@
 </g>
 <g stroke="none">
 <text x="527" y="521">model.ModelTypeRef</text>
-<text x="527" y="530">model</text>
+<text x="527" y="530">oovJavaParser/model</text>
 <text x="527" y="542">+java.lang.String mVarName</text>
 <text x="527" y="551">+model.ModelType mType</text>
 <text x="527" y="563">-&lt;init&gt;()</text>
@@ -178,7 +170,7 @@
 </g>
 <g stroke="none">
 <text x="521" y="253">model.ModelTypeRelation</text>
-<text x="521" y="262">model</text>
+<text x="521" y="262">oovJavaParser/model</text>
 <text x="521" y="274">+model.ModelTypeRelation.RelationType</text>
 <text x="528" y="283"> mRelationType</text>
 <text x="521" y="292">+model.ModelType mType</text>
@@ -198,13 +190,13 @@
 </g>
 <g stroke="none">
 <text x="417" y="389">model.ModelTypeRefs</text>
-<text x="417" y="398">model</text>
+<text x="417" y="398">oovJavaParser/model</text>
 <text x="417" y="410">+java.util.ArrayList mTypeRefs</text>
 <text x="417" y="422">-&lt;init&gt;()</text>
-<text x="417" y="431">-addTypeRef(model.ModelTypeRef ref)</text>
-<text x="417" y="440">-getTypeRefsIter()</text>
+<text x="417" y="431">-getTypeRefs()</text>
+<text x="417" y="440">-addTypeRef(model.ModelTypeRef ref)</text>
 <text x="417" y="449">-iterator()</text>
-<text x="417" y="458">-getTypeRefs()</text>
+<text x="417" y="458">-getTypeRefsIter()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -215,34 +207,29 @@
 </g>
 <g stroke="none">
 <text x="24" y="413">model.ModelStatements</text>
-<text x="24" y="422">model</text>
+<text x="24" y="422">oovJavaParser/model</text>
 <text x="24" y="434">+java.util.ArrayList mStatements</text>
 <text x="24" y="446">-&lt;init&gt;()</text>
-<text x="24" y="455">-addStatement(model.ModelStatement statement)</text>
-<text x="24" y="464">-getStatementIter()</text>
+<text x="24" y="455">-getStatements()</text>
+<text x="24" y="464">-addStatement(model.ModelStatement statement)</text>
 <text x="24" y="473">-iterator()</text>
-<text x="24" y="482">-getStatements()</text>
+<text x="24" y="482">-getStatementIter()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="226" y1="207" x2="323" y2="278" />
-<circle cx="237" cy="215" r="5" style="fill:#ffffff" />
-<circle cx="250" cy="224" r="5" style="fill:#ffffff" />
-<circle cx="250" cy="224" r="2" style="fill:#ffffff" />
-<polygon points="226,207 229,215 237,215 234,207 226,207 " style="fill:#0" />
-<line x1="253" y1="203" x2="442" y2="307" />
-<circle cx="415" cy="292" r="5" style="fill:#0" />
-<circle cx="415" cy="292" r="2" style="fill:#0" />
-<polygon points="442,307 434,297 429,306 442,307 " style="fill:#ffffff" />
-<line x1="253" y1="129" x2="313" y2="122" />
-<circle cx="266" cy="127" r="5" style="fill:#ffffff" />
-<circle cx="273" cy="126" r="2" style="fill:#ffffff" />
-<line x1="84" y1="73" x2="60" y2="44" />
-<circle cx="68" cy="54" r="5" style="fill:#ffffff" />
-<circle cx="79" cy="67" r="5" style="fill:#ffffff" />
-<circle cx="79" cy="67" r="2" style="fill:#ffffff" />
-<polygon points="60,44 61,52 68,54 68,47 60,44 " style="fill:#0" />
+<line x1="253" y1="231" x2="322" y2="278" />
+<circle cx="264" cy="238" r="5" style="fill:#ffffff" />
+<circle cx="277" cy="247" r="5" style="fill:#ffffff" />
+<circle cx="277" cy="247" r="2" style="fill:#ffffff" />
+<polygon points="253,231 256,239 264,238 261,231 253,231 " style="fill:#0" />
+<line x1="253" y1="212" x2="441" y2="307" />
+<circle cx="414" cy="293" r="5" style="fill:#0" />
+<circle cx="414" cy="293" r="2" style="fill:#0" />
+<polygon points="441,307 432,297 428,306 441,307 " style="fill:#ffffff" />
+<line x1="253" y1="137" x2="313" y2="127" />
+<circle cx="266" cy="134" r="5" style="fill:#ffffff" />
+<circle cx="273" cy="133" r="2" style="fill:#ffffff" />
 <line x1="343" y1="294" x2="458" y2="380" />
 <circle cx="446" cy="371" r="5" style="fill:#ffffff" />
 <circle cx="433" cy="362" r="5" style="fill:#ffffff" />

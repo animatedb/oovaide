@@ -27,20 +27,22 @@ import model.*;
 // be called first in the constructor.  Windows was ok.
 public class AnalysisParser
     {
-    public boolean parse(String srcFileName, String analysisDir)
+    /// @param srcFileNames First arg is file to analyze, additional files can be
+    /// passed to the compiler.
+    public boolean parse(String analysisDir, String...srcFileNames)
         {
         boolean success = false;
         JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
         StandardJavaFileManager fileManager = compiler.
             getStandardFileManager(null, null, null);
         Iterable<? extends javax.tools.JavaFileObject> javaFileObjects =
-            fileManager.getJavaFileObjects(srcFileName);
+            fileManager.getJavaFileObjects(srcFileNames);
 
         JavacTask task = (JavacTask) compiler.getTask(null, fileManager, null, null,
             null, javaFileObjects);
 
 	model = new ModelData();
-	model.setModuleName(getAbsPath(srcFileName));
+	model.setModuleName(getAbsPath(srcFileNames[0]));
         try
             {
             Iterable<? extends CompilationUnitTree> asts = task.parse();
@@ -62,6 +64,12 @@ public class AnalysisParser
                     {
                     packageName = et.toString();
                     }
+
+                SourcePositions sourcePosition = trees.getSourcePositions();
+                long endPos = sourcePosition.getEndPosition(ast, ast);
+                LineMap lineMap = ast.getLineMap();
+                model.setModuleLines((int)lineMap.getLineNumber(endPos));
+
                 ArrayList<String> classNames = new ArrayList<String>();
 //		new ParserClassTreeVisitor(classNames).scan(ast, trees);
                 new ParserTreeVisitor(model, packageName, analysisDir).

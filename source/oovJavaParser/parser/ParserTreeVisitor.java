@@ -29,19 +29,71 @@ import model.*;
 // Class names are resolved at run-time. See the following for notes.
 // http://stackoverflow.com/questions/9812152/java-compile-time-class-resolution
 // http://docs.oracle.com/javase/7/docs/technotes/tools/findingclasses.html
-// http://stackoverflow.com/questions/8345220/java-difference-between-class-forname-and-classloader-loadclass
+// http://stackoverflow.com/questions/8345220/java-difference-between-
+// 	class-forname-and-classloader-loadclass
+
+// See CppParser.h for info about switch case handling.
+class JavaSwitchContext
+    {
+    public JavaSwitchContext(ModelMethod parentMethod, String exprString)
+            {
+            mParentMethod = parentMethod;
+            mSwitchStr = exprString;
+            mInCase = false;
+            }
+        // This will only output the case statement if there is some functionality
+        // after the case.
+    public void startCase(String caseString, boolean hasFunctionality)
+            {
+            String exprStr = mSwitchStr.substring(1, mSwitchStr.length()-1) +
+                " == " + caseString;
+            if(!mInCase)
+                {
+                mConditionStr = exprStr;
+                if(hasFunctionality)
+                    {
+                    mParentMethod.addOpenCondStatement("[" + mConditionStr + "]");
+                    }
+                }
+            else
+                {
+                mConditionStr += " || ";
+                mConditionStr += exprStr;
+                mParentMethod.addCloseStatement();
+                mParentMethod.addOpenCondStatement("[" + mConditionStr + "]");
+                }
+            mInCase = true;
+            }
+        // This is called for a break, return, or the end of a switch without a break.
+    public void endCase()
+            {
+            if(mInCase)
+                {
+                mParentMethod.addCloseStatement();
+                mInCase = false;
+                }
+            }
+
+    String mSwitchStr;
+    String mConditionStr;
+    boolean mInCase;
+    ModelMethod mParentMethod;
+    };
+
 
 class ParserTreeVisitor extends TreePathScanner<Object, Trees>
     {
     ModelType currentClass;
     ModelMethod currentMethod;
     ModelData model;
+    ArrayList<JavaSwitchContext> mSwitchContexts;
 
     public ParserTreeVisitor(ModelData mod, String packageName, String analysisDir)
         {
         super();
         model = mod;
         model.setPackage(packageName);
+        mSwitchContexts = new ArrayList<JavaSwitchContext>();
         }
 
     @Override
@@ -187,6 +239,43 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
         return super.visitIdentifier(identTree, trees);
         }
 
+    @Override
+    public Object visitSwitch(SwitchTree switchTree, Trees trees)
+        {
+        mSwitchContexts.add(new JavaSwitchContext(currentMethod,
+            switchTree.getExpression().toString()));
+        Object ret = super.visitSwitch(switchTree, trees);
+        mSwitchContexts.get(mSwitchContexts.size()-1).endCase();
+        mSwitchContexts.remove(mSwitchContexts.size()-1);
+        return ret;
+        }
+
+    @Override
+    public Object visitCase(CaseTree caseTree, Trees trees)
+        {
+        JavaSwitchContext ctxt = mSwitchContexts.get(mSwitchContexts.size()-1);
+        String exprStr;
+        if(caseTree.getExpression() != null)
+            {
+            exprStr = caseTree.getExpression().toString();
+            }
+        else
+            {
+            exprStr = "[default]";
+            }
+	ctxt.startCase(exprStr, caseTree.getStatements().size() > 0);
+        return super.visitCase(caseTree, trees);
+        }
+
+    @Override
+    public Object visitBreak(BreakTree breakTree, Trees trees)
+        {
+        if(mSwitchContexts.size() > 0)
+            {
+            mSwitchContexts.get(mSwitchContexts.size()-1).endCase();
+            }
+        return super.visitBreak(breakTree, trees);
+        }
 
 //////////////
 
@@ -215,17 +304,12 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
 
     public void addOpenCondStatement(String condText)
         {
-        ModelStatement statement = new ModelStatement(
-            ModelStatement.StatementType.ST_OpenNest);
-        statement.setName(condText);
-        currentMethod.getStatements().addStatement(statement);
+        currentMethod.addOpenCondStatement(condText);
         }
 
     public void addCloseStatement()
         {
-        ModelStatement statement = new ModelStatement(
-            ModelStatement.StatementType.ST_CloseNest);
-        currentMethod.getStatements().addStatement(statement);
+        currentMethod.addCloseStatement();
         }
 
     void addTypeRelations(ModelType type, ClassTree classTree, Trees trees)

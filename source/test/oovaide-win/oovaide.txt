@@ -2,12 +2,15 @@ BuildArgsBase|-c;-x;c++;-std=c++11;-EPgtk+-3.0;-EPllvm;-EPmingw-w64;
 BuildArgsExtra-Debug|-O0;-g3;
 BuildArgsExtra-Release|-O3;
 ExcludeDirs|bin/;test/oovaide-win/;test/python/;lib/clang/;
+Java-ClassPath|C:\Program Files\Java\jdk1.8.0_51\lib\tools.jar;
+Java-JdkPath|C:\Program Files\Java\jdk1.8.0_51;
 SourceRootDir|C:/Dave/Mine/software/oovaide/source/
 Tool-CompilerPath-Analyze|clang++.exe
 Tool-CompilerPath-Debug|clang++.exe
 Tool-CompilerPath-Release|clang++.exe
 Tool-DebuggerPath|gdb.exe
-Tool-JavaCompilerPath-Analyze|javac
+Tool-JavaAnalyzerTool-Analyze|oovJavaParser
+Tool-JavaCompilerPath-Analyze|java
 Tool-JavaCompilerPath-Debug|javac
 Tool-JavaCompilerPath-Release|javac
 Tool-JavaJarToolPath-Analyze|jar

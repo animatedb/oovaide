@@ -56,6 +56,8 @@ class BuildConfig
         /// Get the path of the analysis directory from the build configuration
         /// file.
         std::string getAnalysisPath() const;
+        static char const *getBaseAnalysisPath()
+            { return "analysis-"; }
         /// Get the path of the analysis directory using the passed in CRC string.
         /// @param crcStr The CRC string for the analysis arguments.
         std::string getAnalysisPathUsingCRC(OovStringRef const crcStr) const;

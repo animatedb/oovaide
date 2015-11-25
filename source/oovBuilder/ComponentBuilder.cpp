@@ -681,6 +681,19 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm,
             ca.addArg(procPath);
             ca.addArg("-d");
             ca.addArg(intDirName);
+
+            OovString classPathStr = mToolPathFile.getValue(OptJavaClassPath);
+            if(classPathStr.length() > 0)
+                {
+                ca.addArg("-cp");
+                FilePathQuoteCommandLinePath(classPathStr);
+                ca.addArg(classPathStr);
+                }
+
+            ToolPathFile::appendArgs(true, mToolPathFile.getValue(
+                OptJavaBuildArgs), ca);
+            ToolPathFile::appendArgs(false, mToolPathFile.getValue(
+                OptJavaBuildArgs), ca);
             OovString srcArg = "@";
             srcArg += srcFileListFn;
             ca.addArg(srcArg);

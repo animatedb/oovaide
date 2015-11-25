@@ -108,10 +108,9 @@ class OovProject:public ThreadedWorkBackgroundQueue<OovProject, ProjectBackgroun
         /// @return false if analysis is being loaded.
         bool loadAnalysisFiles();
 
-        enum eSrcManagerOptions { SM_Analyze, SM_Build, SM_CovInstr, SM_CovBuild, SM_CovStats };
         /// Returns true if process started.
         bool runSrcManager(OovStringRef const buildConfigName,
-                OovStringRef const runStr, eSrcManagerOptions smo);
+                OovStringRef const runStr, eProcessModes smo);
         void stopSrcManager();
 
         ModelData &getModelData()

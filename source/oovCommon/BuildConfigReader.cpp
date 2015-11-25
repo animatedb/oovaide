@@ -32,7 +32,7 @@ BuildConfig::BuildConfig()
 std::string BuildConfig::getAnalysisPathUsingCRC(OovStringRef const crcStr) const
     {
     FilePath analysisCrcStr(Project::getProjectDirectory(), FP_Dir);
-    OovString dirName = "analysis-";
+    OovString dirName = getBaseAnalysisPath();
     dirName += crcStr;
     analysisCrcStr.appendDir(dirName);
     return analysisCrcStr;

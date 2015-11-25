@@ -19,6 +19,8 @@ public class ModelData implements Iterable<ModelType>
 
         public void setModuleName(String moduleName)
             { mModuleName = moduleName; }
+        public void setModuleLines(int numModuleLines)
+            { mModuleLines = numModuleLines; }
 
         public void addType(ModelType type)
             { mTypes.add(type); }
@@ -45,6 +47,9 @@ public class ModelData implements Iterable<ModelType>
             return null;
             }
 
+        public int getModuleLines()
+            { return mModuleLines; }
+
         public String getPackage()
             { return mPackageName; }
 
@@ -58,6 +63,7 @@ public class ModelData implements Iterable<ModelType>
             { return mImports; }
 
         String mModuleName;
+        int mModuleLines;              // Output as moduleLines="23"
 	ArrayList<ModelType> mTypes;
 	ArrayList<String> mImports;
         String mPackageName;

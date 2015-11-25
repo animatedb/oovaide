@@ -331,11 +331,11 @@ gboolean oovGui::onBackgroundIdle(gpointer data)
         switch(editorMsg)
             {
             case ECC_RunAnalysis:
-                gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+                gOovGui->runSrcManager(BuildConfigAnalysis, PM_Analyze);
                 break;
 
             case ECC_Build:
-                gOovGui->runSrcManager(BuildConfigDebug, OovProject::SM_Build);
+                gOovGui->runSrcManager(BuildConfigDebug, PM_Build);
                 break;
 
             case ECC_StopAnalysis:
@@ -383,6 +383,8 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
             builder->getWidget("BuildAnalyzeMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
             builder->getWidget("StopAnalyzeMenuitem"), !idle);
+    gtk_widget_set_sensitive(
+            builder->getWidget("CleanMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
             builder->getWidget("ComplexityMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
@@ -438,39 +440,46 @@ static bool checkAnyComponents()
     }
 
 void oovGui::runSrcManager(OovStringRef const buildConfigName,
-        OovProject::eSrcManagerOptions smo)
+    eProcessModes smo)
     {
     mWindowBuildListener.clearStatusTextView(getBuilder());
-    bool success = true;
     char const *str = nullptr;
     switch(smo)
         {
-        case OovProject::SM_Analyze:
+        case PM_Analyze:
             str = "\nAnalyzing\n";
             break;
 
-        case OovProject::SM_Build:
-            str = "\nBuilding\n";
-            success = checkAnyComponents();
+        case PM_Build:
+            if(checkAnyComponents())
+                {
+                str = "\nBuilding\n";
+                }
             break;
 
-        case OovProject::SM_CovInstr:
-            str = "\nInstrumenting\n";
-            success = checkAnyComponents();
+        case PM_CovInstr:
+            if(checkAnyComponents())
+                {
+                str = "\nInstrumenting\n";
+                }
             break;
 
-        case OovProject::SM_CovBuild:
+        case PM_CovBuild:
             str = "\nBuilding coverage\n";
             break;
 
-        case OovProject::SM_CovStats:
+        case PM_CovStats:
             str = "\nGenerating coverage statistics\n";
             break;
 
         default:
+            if(smo & PM_CleanMask)
+                {
+                str = "Cleaning\n";
+                }
             break;
         }
-    if(success)
+    if(str)
         {
         mWindowBuildListener.onStdOut(str, std::string(str).length());
         mProject.runSrcManager(buildConfigName, str, smo);
@@ -697,7 +706,7 @@ void oovGui::showProjectSettingsDialog()
                 {
                 status.report(ET_Error, "Unable to write project settings");
                 }
-            runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+            runSrcManager(BuildConfigAnalysis, PM_Analyze);
             }
         }
     }
@@ -713,11 +722,11 @@ class OptionsDialogUpdate:public OptionsDialog
         virtual void updateOptions() override
             {
             gOovGui->cppArgOptionsChangedUpdateDrawings();
-            gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+            gOovGui->runSrcManager(BuildConfigAnalysis, PM_Analyze);
             }
         virtual void buildConfig(OovStringRef const name) override
             {
-            gOovGui->runSrcManager(name, OovProject::SM_Build);
+            gOovGui->runSrcManager(name, PM_Build);
             }
     };
 
@@ -742,7 +751,7 @@ void oovGui::newProject()
                     {
                     case OovProject::NP_CreatedProject:
                         GlobalSettings::saveOpenProject(dlg.getProjectDir());
-                        runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+                        runSrcManager(BuildConfigAnalysis, PM_Analyze);
 //                        gtk_widget_hide(getBuilder().getWidget("NewProjectDialog"));
                         break;
 
@@ -767,7 +776,7 @@ void oovGui::openProject(OovStringRef projectDir)
         if(openedProject)
             {
             GlobalSettings::saveOpenProject(projectDir);
-            runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+            runSrcManager(BuildConfigAnalysis, PM_Analyze);
             }
         else
             {
@@ -940,14 +949,59 @@ void oovGui::makeCmake()
         }
     }
 
+void oovGui::cleanProject()
+    {
+    Dialog cleanDlg(GTK_DIALOG(getBuilder().getWidget("CleanDialog")));
+    GtkCheckButton *ana = GTK_CHECK_BUTTON(Builder::getBuilder()->getWidget(
+        "CleanAnalysisCheckbutton"));
+    Gui::setCheckbox(ana, true);
+    GtkCheckButton *bld = GTK_CHECK_BUTTON(Builder::getBuilder()->getWidget(
+        "CleanBuildCheckbutton"));
+    Gui::setCheckbox(bld, false);
+    GtkCheckButton *cov = GTK_CHECK_BUTTON(Builder::getBuilder()->getWidget(
+        "CleanCoverageCheckbutton"));
+    Gui::setCheckbox(cov, false);
+    if(cleanDlg.run(true))
+        {
+        eProcessModes mode = PM_None;
+        if(Gui::getCheckbox(ana))
+            {
+            mode = static_cast<eProcessModes>(mode | PM_CleanAnalyze);
+            }
+        if(Gui::getCheckbox(bld))
+            {
+            mode = static_cast<eProcessModes>(mode | PM_CleanBuild);
+            }
+        if(Gui::getCheckbox(cov))
+            {
+            mode = static_cast<eProcessModes>(mode | PM_CleanAnalyze);
+            }
+        runSrcManager(BuildConfigAnalysis, mode);
+        }
+    }
 
 
 
 ////////////////////////
 
 
+// Use this to debug "This application has requested the Runtime to terminate it in an unusual way"
+#define DEBUG_RUNTIME 0
+#if(DEBUG_RUNTIME)
+void mysigabort(int signum)
+{
+    printf("SIGABRT\n");
+    return;
+}
+#include <signal.h>
+#endif
+
+
 int main(int argc, char *argv[])
     {
+#if(DEBUG_RUNTIME)
+    signal(SIGABRT, mysigabort);
+#endif
     gtk_init(&argc, &argv);
     Builder builder;
 
@@ -1003,7 +1057,7 @@ extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
     if(newModule.runDialog())
         {
         viewSource(gOovGui->getProject().getGuiOptions(), newModule.getFileName(), 1);
-        gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+        gOovGui->runSrcManager(BuildConfigAnalysis, PM_Analyze);
         }
     }
 
@@ -1035,7 +1089,13 @@ extern "C" G_MODULE_EXPORT void on_ExportDrawingAsMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_BuildAnalyzeMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_Analyze);
+    gOovGui->runSrcManager(BuildConfigAnalysis, PM_Analyze);
+    }
+
+extern "C" G_MODULE_EXPORT void on_CleanMenuitem_activate(
+        GtkWidget * /*button*/, gpointer /*data*/)
+    {
+    gOovGui->cleanProject();
     }
 
 extern "C" G_MODULE_EXPORT void on_ComplexityMenuitem_activate(
@@ -1065,13 +1125,13 @@ extern "C" G_MODULE_EXPORT void on_DuplicatesMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_BuildDebugMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    gOovGui->runSrcManager(BuildConfigDebug, OovProject::SM_Build);
+    gOovGui->runSrcManager(BuildConfigDebug, PM_Build);
     }
 
 extern "C" G_MODULE_EXPORT void on_BuildReleaseMenuitem_activate(
         GtkWidget *button, gpointer data)
     {
-    gOovGui->runSrcManager(BuildConfigRelease, OovProject::SM_Build);
+    gOovGui->runSrcManager(BuildConfigRelease, PM_Build);
     }
 
 extern "C" G_MODULE_EXPORT void on_StopBuildMenuitem_activate(
@@ -1107,19 +1167,19 @@ extern "C" G_MODULE_EXPORT void on_StatusTextBottomBufferToolbutton_clicked(
 extern "C" G_MODULE_EXPORT void on_InstrumentMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_CovInstr);
+    gOovGui->runSrcManager(BuildConfigAnalysis, PM_CovInstr);
     }
 
 extern "C" G_MODULE_EXPORT void on_CoverageBuildMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_CovBuild);
+    gOovGui->runSrcManager(BuildConfigAnalysis, PM_CovBuild);
     }
 
 extern "C" G_MODULE_EXPORT void on_CoverageStatsMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
-    gOovGui->runSrcManager(BuildConfigAnalysis, OovProject::SM_CovStats);
+    gOovGui->runSrcManager(BuildConfigAnalysis, PM_CovStats);
     }
 
 extern "C" G_MODULE_EXPORT void on_MakeCMakeMenuitem_activate(

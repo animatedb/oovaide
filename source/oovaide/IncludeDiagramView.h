@@ -31,6 +31,8 @@ class IncludeDiagramView
             mIncludeDiagram.clearGraphAndAddInclude(mNullDrawer, incName);
             }
         void addSuppliers();
+        void addConsumers();
+        void removeNode();
 
         // For use by extern functions.
         void graphButtonPressEvent(const GdkEventButton *event);

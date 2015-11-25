@@ -182,10 +182,20 @@ size_t FilePathGetPosSegment(OovStringRef const path, OovStringRef const seg)
 
 //////////////
 
+bool haveHead(char const *str)
+    {
+    return(str[0] == '/' || str[0] == ':');
+    }
+
 
 OovString FilePathGetHead(OovStringRef const path, size_t pos)
     {
-    return std::string(path).substr(0, pos+1);
+    OovString str;
+    if(pos > 0 || haveHead(path))
+        { str = std::string(path).substr(0, pos+1); }
+    else
+        { str = ""; }
+    return str;
     }
 
 OovString FilePathGetTail(OovStringRef const path, size_t pos)
@@ -752,8 +762,11 @@ void FilePath::discardExtension()
 
 void FilePath::discardHead(size_t pos)
     {
-    CHECKSIZE(__FILE__, __LINE__, size(), pos+1);
-    pathStdStr().erase(0, pos+1);
+    if(pos != 0 || haveHead(getStr()))
+        {
+        CHECKSIZE(__FILE__, __LINE__, size(), pos+1);
+        pathStdStr().erase(0, pos+1);
+        }
     }
 
 int FilePath::discardLeadingRelSegments()

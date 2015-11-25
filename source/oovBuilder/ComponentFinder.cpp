@@ -17,7 +17,7 @@ static DebugFile sLog("oov-finder-debug.txt");
 
 void ToolPathFile::getPaths()
     {
-    if(mPathCompiler.length() == 0)
+    if(!haveValues())
         {
         std::string projFileName = Project::getProjectFilePath();
         setFilename(projFileName);
@@ -27,91 +27,51 @@ void ToolPathFile::getPaths()
             status.report(ET_Error, "Unable to get project paths");
             }
 
-        std::string optStr = makeBuildConfigArgName(OptToolLibPath, mBuildConfig);
-        mPathLibber = getValue(optStr);
-        optStr = makeBuildConfigArgName(OptToolCompilePath, mBuildConfig);
-        mPathCompiler = getValue(optStr);
-        optStr = makeBuildConfigArgName(OptToolObjSymbolPath, mBuildConfig);
-        mPathObjSymbol = getValue(optStr);
-        optStr = makeBuildConfigArgName(OptToolJavaCompilePath, mBuildConfig);
-        mPathJavaCompiler = getValue(optStr);
-        optStr = makeBuildConfigArgName(OptToolJavaJarToolPath, mBuildConfig);
-        mPathJavaJarTool = getValue(optStr);
         }
     }
 
-void ToolPathFile::getAnalysisToolCommand(FilePath const &filePath,
-    CppChildArgs &args)
+void ToolPathFile::appendArgs(bool appendSwitchArgs, OovStringRef argStr,
+    CppChildArgs &childArgs)
     {
-    OovString command;
-    if(isJavaSource(filePath))
+    CompoundValue javaArgs;
+    javaArgs.parseString(argStr);
+    for(auto const &arg : javaArgs)
         {
-        args.addArg("java");
-
-        args.addArg("-cp");
-        OovString jarsArg;
-        FilePath javaParserPath(Project::getBinDirectory(), FP_Dir);
-        javaParserPath.appendFile("oovJavaParser.jar");
-        jarsArg += javaParserPath;
-#ifdef __linux__
-        jarsArg += ":";
-#else
-        jarsArg += ";";
-#endif
-        char const *homeStr = getenv("JAVA_HOME");
-        if(homeStr == nullptr)
+        if(appendSwitchArgs == (arg[0] == '-'))
             {
-#ifdef __linux__
-            homeStr = "/usr/lib/jvm/default-java";
-#else
-#endif
+            childArgs.addArg(arg);
             }
-        FilePath toolsJar(homeStr, FP_Dir);
-        toolsJar.appendDir("lib");
-        toolsJar.appendFile("tools.jar");
-        jarsArg += toolsJar;
-        FilePathQuoteCommandLinePath(jarsArg);
-        args.addArg(jarsArg);
-        args.addArg("oovJavaParser");
-        }
-    else
-        {
-        OovString command;
-        FilePath path(Project::getBinDirectory(), FP_Dir);
-        path.appendFile("oovCppParser");
-        command = FilePathMakeExeFilename(path);
-        args.addArg(command);
         }
     }
 
 std::string ToolPathFile::getCompilerPath()
     {
     getPaths();
-    return(mPathCompiler);
+    return getValue(makeBuildConfigArgName(OptToolCompilePath));
     }
 
 std::string ToolPathFile::getJavaCompilerPath()
     {
     getPaths();
-    return(mPathJavaCompiler);
+    return(getValue(makeBuildConfigArgName(OptToolJavaCompilePath)));
     }
 
 std::string ToolPathFile::getJavaJarToolPath()
     {
     getPaths();
-    return(mPathJavaJarTool);
+    return getValue(makeBuildConfigArgName(OptToolJavaJarToolPath));
     }
 
 std::string ToolPathFile::getObjSymbolPath()
     {
     getPaths();
-    return(mPathObjSymbol);
+    return getValue(makeBuildConfigArgName(OptToolObjSymbolPath));
     }
 
 std::string ToolPathFile::getLibberPath()
     {
     getPaths();
-    return(mPathLibber);
+    return getValue(makeBuildConfigArgName(OptToolLibPath));
     }
 
 std::string ToolPathFile::getCovInstrToolPath()

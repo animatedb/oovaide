@@ -1,6 +1,7 @@
 
 set OUT=out
 set SRC=..
+set CLASSPATH=C:\Program Files\Java\jdk1.8.0_51\lib\tools.jar
 mkdir %OUT%
 del %OUT%\*.class
 javac -d %OUT% @sources.txt
@@ -10,4 +11,4 @@ cd ..
 pause
 set EXECOUT=..\bin\
 copy %OUT%\oovJavaParser.jar %EXECOUT%
-java -cp "%EXECOUT%\oovJavaParser.jar;%JAVA_HOME%\lib\tools.jar" oovJavaParser parser/AnalysisParser.java ./ out/ana
+java -cp "%EXECOUT%\oovJavaParser.jar;%CLASSPATH%" oovJavaParser parser/AnalysisParser.java ./ out/ana

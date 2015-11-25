@@ -133,6 +133,11 @@ namespace Gui
         inline void setEnabled(GtkMenuItem *w, bool enabled)
             { gtk_widget_set_sensitive(GTK_WIDGET(w), enabled); }
 
+        inline void setCheckbox(GtkCheckButton *w, bool set)
+            { gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(w), set); }
+        inline bool getCheckbox(GtkCheckButton *w)
+            { return gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(w)); }
+
         inline bool hasFocus(GtkWidget *w)
             { return(gtk_widget_is_focus(w)); }
         inline bool isVisible(GtkWidget *w)

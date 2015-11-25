@@ -53,8 +53,9 @@ public class ModelWriter
         try
             {
             XmlFile file = new XmlFile(outFileName);
-            file.println("  <Module id=\"1\" module=\"" +
-                model.getModuleName().replace('\\', '/') + "\" />");
+            String moduleName = model.getModuleName().replace('\\', '/');
+            file.println("  <Module id=\"1\" module=\"" + moduleName +
+                "\" moduleLines=\"" + model.getModuleLines() +  "\" />");
             for(ModelType type : model)
                 {
                 writeClass(file, type);

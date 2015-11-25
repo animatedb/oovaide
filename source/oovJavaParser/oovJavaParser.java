@@ -2,13 +2,11 @@
 // Created on: Oct 16, 2015
 // \copyright 2015 DCBlaha.  Distributed under the GPL.
 
-// Compile:	javac oovJavaParser.java Parser.java
-//	set CLASSPATH if needed: C:\Program Files\Java\jdk1.8.0_51\lib\tools.jar
-// Make jar:	jar cfm oovJavaParser.jar Manifest.txt *.class
-// Run:		java -jar oovJavaParser.jar
+// This requires tools.jar from the JAVA SDK.
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import parser.*;
 import model.ModelData;
@@ -21,7 +19,13 @@ public class oovJavaParser
         AnalysisParser parser = new AnalysisParser();
         if(args.length >= 3)
             {
-            if(parser.parse(args[0], args[2]))
+            ArrayList<String> filenames = new ArrayList<String>();
+            filenames.add(args[0]);
+            for(int argi=3; argi<args.length; argi++)
+                {
+                filenames.add(args[argi]);
+                }
+            if(parser.parse(args[2], filenames.toArray(new String[filenames.size()])))
                 {
                 ModelWriter writer = new ModelWriter();
                 String outFn = getOutputFileName(parser.getModel(), args[0],
@@ -34,7 +38,7 @@ public class oovJavaParser
         else
             {
             System.err.println("oovCppParser args are: sourceFilePath sourceRootDir " +
-                "outputProjectFilesDir [javaArgs]...");
+                "outputProjectFilesDir [extraJavaFiles]...");
             }
         }
 

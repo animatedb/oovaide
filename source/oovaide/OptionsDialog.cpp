@@ -143,8 +143,8 @@ class ScreenOptions
     private:
         ProjectReader &mProjectOptions;
         GuiOptions &mGuiOptions;
-        std::vector<std::unique_ptr<Option>> mBuildScreenOptions;
-        std::vector<std::unique_ptr<Option>> mGuiScreenOptions;
+        std::vector<std::unique_ptr<Option>> mProjectOptionLookup;
+        std::vector<std::unique_ptr<Option>> mGuiOptionLookup;
     };
 
 ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &project,
@@ -153,80 +153,85 @@ ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &proj
     mGuiOptions(guiOptions)
     {
     std::string optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
-    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-            optStr, "CompilerPathEntry")));
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
+        optStr, "CompilerPathEntry")));
 
-// Java options are not displayed on the screen yet.
-/*
-    optStr = makeBuildConfigArgName(OptToolJavaCompilePath, buildConfig);
-    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-            optStr, "JavaCompilerPathEntry")));
-*/
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
+        OptJavaClassPath, "JavaClassPathTextview")));
+
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
+        OptJavaJdkPath, "JavaJdkPathTextview")));
+
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
+        OptJavaAnalyzeArgs, "JavaExtraAnalysisArgsTextview")));
+
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
+        OptJavaBuildArgs, "JavaExtraBuildArgsTextview")));
 
     optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
-    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-            optStr, "LibraryPathEntry")));
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
+        optStr, "LibraryPathEntry")));
 
     optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
-    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-            optStr, "SymbolPathEntry")));
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
+        optStr, "SymbolPathEntry")));
 
 
-    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new TextViewOption(OptBaseArgs,
-            "CppArgumentsTextview")));
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(OptBaseArgs,
+        "CppArgumentsTextview")));
 
-    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new TextViewOption(
-            makeBuildConfigArgName(OptExtraBuildArgs, buildConfig),
-            "ExtraBuildArgsTextview")));
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
+        makeBuildConfigArgName(OptExtraBuildArgs, buildConfig),
+        "ExtraBuildArgsTextview")));
 
     // Editor
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-            OptGuiEditorPath, "EditorPathEntry")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-            OptGuiEditorLineArg, "EditorLineArgEntry")));
-    mBuildScreenOptions.push_back(std::unique_ptr<Option>(new EntryOption(
-            OptToolDebuggerPath, "DebuggerPathEntry")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
+        OptGuiEditorPath, "EditorPathEntry")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
+        OptGuiEditorLineArg, "EditorLineArgEntry")));
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
+        OptToolDebuggerPath, "DebuggerPathEntry")));
 
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowAttributes, "ShowAttributesCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowOperations, "ShowOperationsCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowOperParams, "ShowOperParamsCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowOperReturn, "ShowOperReturnCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowAttrTypes, "ShowAttrTypesCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowOperTypes, "ShowOperTypesCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowPackageName, "ShowPackageNameCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowAttributes, "ShowAttributesCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowOperations, "ShowOperationsCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowOperParams, "ShowOperParamsCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowOperReturn, "ShowOperReturnCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowAttrTypes, "ShowAttrTypesCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowOperTypes, "ShowOperTypesCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowPackageName, "ShowPackageNameCheckbutton")));
 
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowOovSymbols, "ShowOovSymbolsCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowTemplateRelations, "ShowTemplateRelationsCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowOperParamRelations, "ShowOperParamRelationsCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowOperBodyVarRelations, "ShowOperBodyVarRelationsCheckbutton")));
-    mGuiScreenOptions.push_back(std::unique_ptr<Option>(new CheckOption(
-            OptGuiShowRelationKey, "ShowRelationKeyCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowOovSymbols, "ShowOovSymbolsCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowTemplateRelations, "ShowTemplateRelationsCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowOperParamRelations, "ShowOperParamRelationsCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowOperBodyVarRelations, "ShowOperBodyVarRelationsCheckbutton")));
+    mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
+        OptGuiShowRelationKey, "ShowRelationKeyCheckbutton")));
     }
 
 void ScreenOptions::optionsToScreen() const
     {
-    for(auto const &opt : mBuildScreenOptions)
+    for(auto const &opt : mProjectOptionLookup)
         opt->optionToScreen(mProjectOptions);
-    for(auto const &opt : mGuiScreenOptions)
+    for(auto const &opt : mGuiOptionLookup)
         opt->optionToScreen(mGuiOptions);
     }
 
 void ScreenOptions::screenToOptions()
     {
-    for(auto const &opt : mBuildScreenOptions)
+    for(auto const &opt : mProjectOptionLookup)
         opt->screenToOption(mProjectOptions);
-    for(auto const &opt : mGuiScreenOptions)
+    for(auto const &opt : mGuiOptionLookup)
         opt->screenToOption(mGuiOptions);
     }
 

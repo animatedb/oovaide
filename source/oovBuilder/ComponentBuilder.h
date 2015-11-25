@@ -82,8 +82,8 @@ class ComponentBuilder:public ComponentTaskQueue
         ComponentBuilder(ComponentFinder &compFinder):
             mComponentFinder(compFinder)
             {}
-        void build(eProcessModes mode, OovStringRef const incDepsFilePath,
-                OovStringRef const buildDirClass);
+        void build(eProcessModes mode,
+            OovStringRef const incDepsFilePath, OovStringRef const buildDirClass);
 
     private:
         FilePath mSrcRootDir;

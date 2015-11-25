@@ -33,20 +33,127 @@
 class OovBuilder
     {
     public:
-        void build(eProcessModes processMode, OovStringRef oovProjDir,
-                OovStringRef buildConfigName, bool verbose);
-        ComponentFinder &getComponentFinder()
-            { return mCompFinder; }
+        void process(eProcessModes processMode, OovStringRef oovProjDir,
+            OovStringRef buildConfigName, bool verbose);
 
     private:
         ComponentFinder mCompFinder;
 
-        bool readProject(OovStringRef const buildConfigName,
-            OovStringRef const oovProjDir, bool verbose);
         void analyze(BuildConfigWriter &cfg, eProcessModes procMode,
             OovStringRef const buildConfigName, OovStringRef const srcRootDir);
+        void build(eProcessModes processMode, OovStringRef oovProjDir,
+                OovStringRef buildConfigName, bool verbose);
+        void clean(eProcessModes pm, OovStringRef oovProjDir);
+        bool readProject(OovStringRef const buildConfigName,
+            OovStringRef const oovProjDir, bool verbose);
+        ComponentFinder &getComponentFinder()
+            { return mCompFinder; }
     };
 
+void OovBuilder::process(eProcessModes processMode, OovStringRef oovProjDir,
+    OovStringRef buildConfigName, bool verbose)
+    {
+    if(processMode & PM_CleanMask)
+        {
+        clean(processMode, oovProjDir);
+        }
+    else
+        {
+        build(processMode, oovProjDir, buildConfigName, verbose);
+        }
+    }
+
+static OovStatusReturn cleanMatchingDir(OovStringRef path)
+    {
+    std::vector<std::string> dirs;
+    OovStatus status = getDirListMatch(path, dirs);
+    if(status.ok())
+        {
+        for(auto const &dir : dirs)
+            {
+            status = recursiveDeleteDir(dir);
+            if(!status.ok())
+                {
+                break;
+                }
+            }
+        }
+    return status;
+    }
+
+void OovBuilder::clean(eProcessModes pm, OovStringRef oovProjDir)
+    {
+    OovStatus status(true, SC_File);
+    Project::setProjectDirectory(oovProjDir);
+    if(pm & PM_CleanAnalyze)
+        {
+        FilePath analysisPath(oovProjDir, FP_Dir);
+        analysisPath.appendFile(BuildConfig::getBaseAnalysisPath());
+        analysisPath.appendFile("*");
+        status = cleanMatchingDir(analysisPath);
+        if(status.ok())
+            {
+            status = recursiveDeleteDir(Project::getOutputDir());
+            }
+        }
+    if(pm & PM_CleanCoverage)
+        {
+        if(status.ok())
+            {
+            if(FileIsDirOnDisk(Project::getCoverageSourceDirectory(), status))
+                {
+                status = recursiveDeleteDir(Project::getCoverageSourceDirectory());
+                }
+            }
+        if(status.ok())
+            {
+            if(FileIsDirOnDisk(Project::getCoverageProjectDirectory(), status))
+                {
+                status = recursiveDeleteDir(Project::getCoverageProjectDirectory());
+                }
+            }
+        }
+    if(pm & PM_CleanBuild)
+        {
+        if(status.ok())
+            {
+            FilePath buildIntermediatePath(oovProjDir, FP_Dir);
+            buildIntermediatePath.appendFile("bld-*");
+            status = cleanMatchingDir(buildIntermediatePath);
+            }
+        if(status.ok())
+            {
+            FilePath buildOutputPath(oovProjDir, FP_Dir);
+            buildOutputPath.appendFile("out-*");
+            status = cleanMatchingDir(buildOutputPath);
+            }
+        }
+    if(status.ok())
+        {
+        if(status.ok())
+            {
+            FilePath analysisPath(oovProjDir, FP_Dir);
+            analysisPath.appendFile("oovaide-tmp-*");
+            std::vector<std::string> files;
+            status = getDirListMatch(analysisPath, files);
+            if(status.ok())
+                {
+                for(auto const &file : files)
+                    {
+                    status = FileDelete(file);
+                    if(!status.ok())
+                        {
+                        break;
+                        }
+                    }
+                }
+            }
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to clean");
+        }
+    }
 
 void OovBuilder::build(eProcessModes processMode, OovStringRef oovProjDir,
         OovStringRef buildConfigName, bool verbose)
@@ -247,7 +354,10 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
                 printf("Deleting %s\n", dir.getStr());
                 if(dir.length() > 5)        // Reduce chance of deleting root
                     {
-                    status = recursiveDeleteDir(dir);
+                    if(FileIsDirOnDisk(dir, status))
+                        {
+                        status = recursiveDeleteDir(dir);
+                        }
                     if(status.needReport())
                         {
                         status.report(ET_Error, "Unable to clean up directories");
@@ -307,9 +417,27 @@ int main(int argc, char const * const argv[])
                 {
                 OovString mode;
                 mode.setLowerCase(testArg.substr(6));
-                if(mode.find("analyze") == 0)
+                if(mode.find("clean-") == 0)
                     {
-                    processMode = PM_Analyze;
+                    processMode = PM_None;
+                    for(size_t pos = mode.find("-")+1; pos < mode.length(); pos++)
+                        {
+                        if(mode[pos] == 'a')
+                            {
+                            processMode = static_cast<eProcessModes>(
+                                processMode | PM_CleanAnalyze);
+                            }
+                        if(mode[pos] == 'b')
+                            {
+                            processMode = static_cast<eProcessModes>(
+                                processMode | PM_CleanBuild);
+                            }
+                        if(mode[pos] == 'c')
+                            {
+                            processMode = static_cast<eProcessModes>(
+                                processMode | PM_CleanCoverage);
+                            }
+                        }
                     }
                 else if(mode.find("cov-instr") == 0)
                     {
@@ -318,6 +446,10 @@ int main(int argc, char const * const argv[])
                 else if(mode.find("cov-build") == 0)
                     {
                     processMode = PM_CovBuild;
+                    }
+                else if(mode.find("analyze") == 0)
+                    {
+                    processMode = PM_Analyze;
                     }
                 else if(mode.find("cov-stat") == 0)
                     {
@@ -342,14 +474,14 @@ int main(int argc, char const * const argv[])
             fprintf(stderr, "  The args are:\n");
             fprintf(stderr, "    -cfg-<buildconfig>\n");
             fprintf(stderr, "               buildconfig is Debug, Release or any custom name\n");
-            fprintf(stderr, "    -mode-<analyze|build|cov-instr|cov-build|cov-stats>\n");
-            fprintf(stderr, "               Analyze, build or coverage\n");
+            fprintf(stderr, "    -mode-<analyze|build|clean-[abc]|cov-instr|cov-build|cov-stats>\n");
+            fprintf(stderr, "               cov means coverage, [abc] means analyze, build, coverage \n");
             fprintf(stderr, "    -bv         builder verbose - OovBuilder.txt file\n");
         }
 
     if(success)
         {
-        builder.build(processMode, oovProjDir, buildConfigName, verbose);
+        builder.process(processMode, oovProjDir, buildConfigName, verbose);
         }
     return 0;
     }

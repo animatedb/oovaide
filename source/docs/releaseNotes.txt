@@ -19,8 +19,8 @@ Explanations
 	- If the error "undeclared identifier __builtin_ia32_bsrsi" displays,
 	  this means that the clang headers are not found or the libclang.dll
 	  version is different and not searching the same way. Windows libclang
-	  3.6 allowed the clang library includes to be under bin, but 3.7 does
-	  not. The depends.exe shows that oovCppParser finds libclang.dll in bin
+	  3.6 allowed the clang library includes to be under bin, but 3.7 requires
+	  ..\lib. The depends.exe shows that oovCppParser finds libclang.dll in bin
 	  directory.
 	- If the error, "Never use <adxintrin.h> directly", displays, the
 	  Oovaide project must be set to exclude lib dir for analysis.
@@ -34,53 +34,9 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
-	- export include dependencies to database.
-	- makeJar needs to check if jar already exists. (by checking input jars)
-	- failed jar building needs to delete output jar.
-	- Font size (bug on github)
-		- save font size in drawings
-		- save/restore global font size in preferences
-	- Slow drawing component diagram: ComponentGraph::updateConnections
-	- Java
-	  - Java Build - use imports to build executable jars
-	  - Variables in methods <BodyVarDecl> in xmi?
-	  - constructors?
-          - virtual functions
-          - switch/case
-	  - cmake
-	  - line numbers
-
-	- gtk3
-		- msys2
-		- https://blogs.gnome.org/nacho/2014/06/26/gtk-builder-for-windows/
-			- https://mail.gnome.org/archives/gtkmm-list/2014-January/msg00011.html
-			- https://git.gnome.org/browse/gtk-builder-win
-			- http://win-builds.org
-		- 3.8 - http://sourceforge.net/projects/gtk3win
-	- Shouldn't have to  rebuild everything if project directories change
-	- code count mismatch from database:
-		makeCoverageStats not showing as overloaded. (one is static)
 	- Preserve state between sessions
-	- https://github.com/rdp/open-source-how-to-popularize-your-project
-	- http://keywordtool.io/search
-		- C++ class diagram: automatic, reverse engineering
-		- C++ ide: simple, clang
-		- C++ analysis: architecture
-		- C++ architecture: class, component, application, plugin, layered
-	- add notes/title box (class name, file name, etc.)
-	- add font size for drawings, display and print
-	- remove sleepMs calls in windowsChildProcessListen
-	- remove mingw dependencies from common - Sleep/chrono/pthread-gthread
-	- BUG: doing File/New on an existing project doesn't delete package config.
-	- Need to clean up package config if user reenters data.
-	- link to https://rawgit.com/animatedb/oovaide/master/web/articles/PortionDiagrams.html
-	- Add UML notes to diagrams, allow color/font selection
-	- in ModelObjects, getRelatedFuncParamClasses and getRelatedFuncInterfaceClasses
-	  are the same?
 - Gui
 	- Add External Directories button for Build Arguments dialog.
-	- BUG: Sometimes the Add Package dialog doesn't hide/close.
-		- window might be busy and is not responding (oovCommon/PackagesProcess?)
 	- Changing preferences should update drawings
 	- For linux, don't getPackage if not in available list.
 
@@ -88,17 +44,28 @@ Missing Features
 	- Make it clear which files must be saved to save project settings. (add clean)
 	- Add more multitasking: library symbols, loading projects
 
+- Packages
+	- BUG: doing File/New on an existing project doesn't delete package config.
+	- BUG: Sometimes the Add Package dialog doesn't hide/close.
+		- window might be busy and is not responding (oovCommon/PackagesProcess?)
+	- Need to clean up package config if user reenters data.
+
 - Journal
 	- Provide MRU list of drawings from previous sessions?
 	- Allow more copies of diagrams?
 
+- Diagrams
+	- add UML notes/title box (class name, file name, etc.)
+	- allow color/font name selection
+	- Font size - save font size in drawings
+	- Font size - save/restore global font size in preferences
+
 - Component Diagrams
+	- Slow drawing component diagram: ComponentGraph::updateConnections
 	- BUG: Doing build resets component diagram
 	- Changing build settings/dependencies should update components
 
 - Include Diagrams
-	- BUG: adds extra node when using "Add Suppliers". Fails on Gui.h.
-	- Add remove node
 
 - Zone Diagrams
 	- Don't cause redraw while mouse is moving
@@ -161,6 +128,16 @@ Missing Features
 	- Allow rearranging class order?
 
 - Analysis (builder and parser)
+	- Java
+	    and wait for completion of previous jars
+		http://stackoverflow.com/questions/200483/how-do-i-get-a-list-
+		of-java-class-dependencies-for-a-main-class
+	  - Variables in methods <BodyVarDecl> in xmi?
+	  - constructors?
+          - virtual functions
+          - switch/case
+	  - cmake
+	  - line numbers
 	- Method usage: dup function names, con/destructors
 	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
 		- not in xmi file
@@ -188,6 +165,10 @@ Missing Features
 	- Add -Wall, --analyzer
 
 - Build System (Build not required for displaying diagrams)
+	- C++ modules (see clang, import, umbrella)
+	- Java - use imports to build executable jars in correct order
+	- Java - jar building needs to delete output jar.
+	- Shouldn't have to  rebuild everything if project directories change
 	- Build/Settings per component don't seem to work for -lnk-static-libstdc++
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
 		- Changing edit/preferences deletes analysis, but not debug/release
@@ -205,10 +186,17 @@ Missing Features
 	- Build sometimes must have objects specified before or after other libs/objects
 	- split source of libraries into separate file for each function for release mode
 	- Cross compiling: http://www.cmake.org/Wiki/CMake_Cross_Compiling
-	- date compares should not be for older, but even if date changed (in case of restore files)
+	- date compares should not be for older, but even if date changed
+	  (in case of restore files)
 	- Cache file times or monitor file changes
 
+- Database
+	- export include dependencies to database.
+	- code count mismatch from database:
+		makeCoverageStats not showing as overloaded. (one is static)
+
 - Coverage
+	- Support Java
 	- Instead of coverage, change macro to log every instrumented line to
 	  find crash sequence/threads.
 	- fix switch/case fall throughs
@@ -258,15 +246,16 @@ Missing Features
 	- starting debugger too quickly can crash
 		- find using coverage tool
 		- set_terminate(handler)	void my_terminate_handler()
-		http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
-		_gtk_text_btree_insert assertion failed: (eol <= len)
+		http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-
+			Cplusplus_gtk_text_btree_insert assertion failed: (eol <= len)
 		 Gtktextbtree.c gtk_text_buffer_real_insert_text
 	- expand debugger variable children
 	- Doing 'print' std::string says "no member named _M_dataplus".
 		- Compiling and linking with g++ instead of clang++ works.
 	- Need stdout program output window
 		- http://visualgdb.com/gdbreference/commands/set_new-console
-	http://blogs.msdn.com/b/vcblog/archive/2015/04/29/open-sourcing-visual-studio-s-gdb-lldb-debug-engine.aspx
+	http://blogs.msdn.com/b/vcblog/archive/2015/04/29/open-sourcing-visual-studio-s-gdb-
+		lldb-debug-engine.aspx
 	https://github.com/facebook/ds2
 	- Stopping debugger should remove code location indicator arrow. (redraw problem)
 	- Can't use Crl-C to paste into control window
@@ -294,22 +283,28 @@ Missing Features
 	- add switch to only show from main file
 
 - Cleanup
+	- remove sleepMs calls in windowsChildProcessListen
+	- remove mingw dependencies from common - Sleep/chrono/pthread-gthread
 	- catch run-time error (see debugger section above)
 		std::runtime_error, SEH, set_terminate
-		http://www.codeproject.com/Articles/207464/Exception-Handling-in-Visual-Cplusplus
+		http://www.codeproject.com/Articles/207464/Exception-Handling-
+			in-Visual-Cplusplus
 		http://stackoverflow.com/questions/3899870/print-call-stack-in-c-or-c
 			backtrace, backtrace_symbols
-		http://stackoverflow.com/questions/2443135/how-do-i-find-where-an-exception-was-thrown-in-c
+		http://stackoverflow.com/questions/2443135/how-do-i-find-where-
+			an-exception-was-thrown-in-c
 	- separate gui from backend - humble dialog
-		- domain/presentation, business, backend, Business Logic Layer, Domain Logic
+		- domain/presentation, business, backend, Business Logic Layer,
+		  Domain Logic
 	- redesign:
-		which drawer when:drawers are defined in view, all other class functions have
-			explicit references (no set drawer)
+		which drawer when:drawers are defined in view, all other class
+			functions have explicit references (no set drawer)
 		initialize does not draw in non-view classes
 		draw / queue draw (remove all drawing from business, only for size)
 		remove cairo initialization from initialize functions.
 		remove/rename all updateGraph functions (reposition, etc.)
-		safer to get pointer from journal instead of static pointer initialized when.
+		safer to get pointer from journal instead of static pointer
+		initialized when.
 	- test:
 		preferences
 		switching drawer - svg
@@ -322,11 +317,41 @@ Missing Features
 	- BUG: Goto class doesn't change tab to class tab - journal requires this
 
 - Future
+	- Deployment
+		msys2/pacman/MXE
+	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
+		nullsoft
+		nsis
+		CMake - ExternalProject_Add
+		fpm deb/rpm
+		http://nsis.sourceforge.net/Main_Page
+		https://github.com/jordansissel/fpm, http://www.exemsi.com/, Wix(.Net only)
+		http://ubuntuforums.org/showthread.php?t=910717
+		http://unix.stackexchange.com/questions/30303/how-to-create-a-
+			deb-file-manually
+	- Change help links to github
+		https://rawgit.com/animatedb/oovaide/master/web/articles/PortionDiagrams.html
+	- Popularize project
+		- https://github.com/rdp/open-source-how-to-popularize-your-project
+		- http://keywordtool.io/search
+		- C++ class diagram: automatic, reverse engineering
+		- C++ ide: simple, clang
+		- C++ analysis: architecture
+		- C++ architecture: class, component, application, plugin, layered
+	- Newer version of gtk3
+		- msys2
+		- https://blogs.gnome.org/nacho/2014/06/26/gtk-builder-for-windows/
+			- https://mail.gnome.org/archives/gtkmm-list/2014-January/msg00011.html
+			- https://git.gnome.org/browse/gtk-builder-win
+			- http://win-builds.org
+		- 3.8 - http://sourceforge.net/projects/gtk3win
+	- Newer version of CLang
 	- Database
 		- MySQL Connector/C++
 		- Reports:
 			http://butleranalytics.com/10-mysql-reporting-tools/
-			http://stackoverflow.com/questions/3582381/mysql-open-source-reporting-services
+			http://stackoverflow.com/questions/3582381/mysql-open-source-
+				reporting-services
 			ReportServer
 			Jasper (banded)
 			Birt (item objects)
@@ -381,20 +406,11 @@ Missing Features
 	- static analysis
 	- abstract interpretation (show ranges of variables)
 	- C Intermediate Language - http://www.cs.berkeley.edu/~necula/cil/cil016.html
-	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
-		nullsoft
-		nsis
-		CMake - ExternalProject_Add
-		fpm deb/rpm
-		biicode
-		http://nsis.sourceforge.net/Main_Page
-		https://github.com/jordansissel/fpm, http://www.exemsi.com/, Wix(.Net only)
-		http://ubuntuforums.org/showthread.php?t=910717
-		http://unix.stackexchange.com/questions/30303/how-to-create-a-deb-file-manually
 	- reference design guidelines?
 		self-sufficient headers:
 	  	http://gernotklingler.com/blog/care-include-dependencies-cpp-keep-minimum/
-	  	http://stackoverflow.com/questions/1190597/open-source-tool-to-visualize-c-c-header-file-dependencies
+	  	http://stackoverflow.com/questions/1190597/open-source-tool-to-
+			visualize-c-c-header-file-dependencies
 	- create minimal code guidelines, ex:
 	  "The Power of Ten \96 Rules for Developing Safety Critical Code"
 

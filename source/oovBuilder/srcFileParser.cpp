@@ -24,6 +24,7 @@ bool srcFileParser::analyzeSrcFiles(OovStringRef const srcRootDir,
 #else
     setupQueue(1);
 #endif
+    mToolPathFile.setConfig(BuildConfigAnalysis);
     mIncDirArgs = mComponentFinder.getAllIncludeDirs();
     mExcludeDirs = mComponentFinder.getProjectBuildArgs().getProjectExcludeDirs();
     OovStatus status = recurseDirs(srcRootDir);
@@ -75,6 +76,69 @@ void VerboseDumper::logOutputOld(OovStringRef const fn)
         }
     }
 
+static void appendPathArgSep(OovString &str)
+    {
+#ifdef __linux__
+    str += ":";
+#else
+    str += ";";
+#endif
+    }
+
+static void getAnalysisToolCommand(FilePath const &filePath,
+    ToolPathFile &toolPathFile, CppChildArgs &args)
+    {
+    OovString command;
+    if(isJavaSource(filePath))
+        {
+        args.addArg(toolPathFile.getJavaCompilerPath());
+
+        ToolPathFile::appendArgs(true, toolPathFile.getValue(
+            OptJavaAnalyzeArgs), args);
+        args.addArg("-cp");
+
+        // Add the compiler jar to the classpath.
+        OovString classPathArg;
+        FilePath javaParserPath(Project::getBinDirectory(), FP_Dir);
+        OovString javaAnalyzerTool = toolPathFile.getValue(
+            toolPathFile.makeBuildConfigArgName(OptToolJavaAnalyzerTool));
+        OovString anaToolJar = javaAnalyzerTool;
+        anaToolJar += ".jar";
+        javaParserPath.appendFile(anaToolJar);
+        classPathArg += javaParserPath;
+
+        // Add tools.jar from the Java SDK to the classpath.
+        appendPathArgSep(classPathArg);
+        OovString toolsJar = toolPathFile.getValue(OptJavaJdkPath);
+        if(toolsJar.back() == ';')
+            {
+            toolsJar.pop_back();
+            }
+        FilePath toolsJarFile(toolsJar, FP_Dir);
+        toolsJarFile.appendDir("lib");
+        toolsJarFile.appendFile("tools.jar");
+        classPathArg += toolsJarFile;
+
+        OovString classPathStr = toolPathFile.getValue(OptJavaClassPath);
+        if(classPathStr.length() > 0)
+            {
+            appendPathArgSep(classPathArg);
+            classPathArg += classPathStr;
+            }
+        FilePathQuoteCommandLinePath(classPathArg);
+        args.addArg(classPathArg);
+        args.addArg(javaAnalyzerTool);
+        }
+    else
+        {
+        OovString command;
+        FilePath path(Project::getBinDirectory(), FP_Dir);
+        path.appendFile("oovCppParser");
+        command = FilePathMakeExeFilename(path);
+        args.addArg(command);
+        }
+    }
+
 
 bool srcFileParser::processFile(OovStringRef const srcFile)
     {
@@ -82,7 +146,8 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
     if(!ComponentsFile::excludesMatch(srcFile, mExcludeDirs))
         {
         FilePath ext(srcFile, FP_File);
-        if(isCppHeader(ext) || isCppSource(ext) || isJavaSource(ext))
+        bool cppSource = isCppHeader(ext) || isCppSource(ext);
+        if(cppSource || isJavaSource(ext))
             {
             struct OovStat32 srcFileStat;
             success = (OovStatFunc(srcFile, &srcFileStat) == 0);
@@ -96,12 +161,20 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                 if(FileStat::isOutputOld(outFileName, srcFile, status))
                     {
                     CppChildArgs ca;
-                    ToolPathFile::getAnalysisToolCommand(ext, ca);
+                    getAnalysisToolCommand(ext, mToolPathFile, ca);
                     ca.addArg(srcFile);
                     ca.addArg(mSrcRootDir);
                     ca.addArg(mAnalysisDir);
 
-                    ca.addCompileArgList(mComponentFinder, mIncDirArgs);
+                    if(cppSource)
+                        {
+                        ca.addCompileArgList(mComponentFinder, mIncDirArgs);
+                        }
+                    else
+                        {
+                        ToolPathFile::appendArgs(false, mToolPathFile.
+                            getValue(OptJavaAnalyzeArgs), ca);
+                        }
                     addTask(ca);
     /*
                     sLog.logProcess(srcFile, ca.getArgv(), ca.getArgc());

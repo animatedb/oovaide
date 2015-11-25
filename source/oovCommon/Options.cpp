@@ -6,10 +6,11 @@
  */
 
 #include "Options.h"
-#include <stdlib.h>     // for getenv
 #include "FilePath.h"
 #include "Project.h"
 #include "OovString.h"
+#include <stdlib.h>     // for getenv
+#include <string.h>
 
 
 #ifndef __linux__
@@ -95,7 +96,17 @@ static void setBuildConfigurationPaths(NameValueFile &file,
     file.setNameValue(optStr, compiler);
 
     optStr = makeBuildConfigArgName(OptToolJavaCompilePath, buildConfig);
-    file.setNameValue(optStr, "javac");
+    if(strcmp(buildConfig, BuildConfigAnalysis) == 0)
+        {
+        file.setNameValue(optStr, "java");
+
+        optStr = makeBuildConfigArgName(OptToolJavaAnalyzerTool, buildConfig);
+        file.setNameValue(optStr, "oovJavaParser");
+        }
+    else
+        {
+        file.setNameValue(optStr, "javac");
+        }
 
     optStr = makeBuildConfigArgName(OptToolJavaJarToolPath, buildConfig);
     file.setNameValue(optStr, "jar");
@@ -171,6 +182,21 @@ void OptionsDefaults::setDefaultOptions()
             extraCppRlsArgs.getAsString(), useCLangBuild);
 
     mProject.setNameValue(OptBaseArgs, baseArgs.getAsString());
+
+    std::string str = getenv("CLASSPATH");
+    if(str.length())
+        {
+        mProject.setNameValue(OptJavaClassPath, str);
+        }
+    str = getenv("JAVA_HOME");
+    if(str.length() > 0)
+        {
+#ifdef __linux__
+        str = "/usr/lib/jvm/default-java";
+#else
+#endif
+        }
+    mProject.setNameValue(OptJavaJdkPath, str);
     }
 
 void GuiOptions::setDefaultOptions()

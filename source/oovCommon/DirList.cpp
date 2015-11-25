@@ -17,6 +17,40 @@
 #include <stdio.h>
 
 
+// The wildcardStr can have an asterisk, but must be at the end of
+// a subdirectory. For example: "\Qt*\mingw*\"
+static bool subDirMatch(OovStringRef const wildCardStr, OovStringRef const pathStr)
+    {
+    const char *wcStr = wildCardStr;
+    const char *pStr = pathStr;
+    bool match = true;
+    while(*wcStr)
+        {
+        switch(*wcStr)
+            {
+            case '*':
+                while(*pStr != '/' && *pStr)
+                    {
+                    pStr++;
+                    }
+                break;
+
+            default:
+                if(toupper(*wcStr) == toupper(*pStr))
+                    {
+                    pStr++;
+                    }
+                else
+                    {
+                    match = false;
+                    }
+            }
+        wcStr++;
+        }
+    return(match && *wcStr == *pStr);
+    }
+
+
 OovStatusReturn deleteDir(OovStringRef const path)
     {
     OovStatus status(true, SC_File);
@@ -181,6 +215,36 @@ OovStatusReturn getDirListMatchExt(const std::vector<std::string> &paths,
     return status;
     }
 
+OovStatusReturn const getDirListMatch(OovStringRef const path,
+    std::vector<std::string> &fn)
+    {
+    OovStatus status(true, SC_File);
+    FilePath srchPath(path, FP_File);
+    srchPath.discardFilename();
+    FilePath rootName(path, FP_File);
+    rootName.discardDirectory();
+    DIR *dp = opendir(srchPath.getStr());
+    if(dp)
+        {
+        struct dirent *dirp;
+        while(((dirp = readdir(dp)) != nullptr) && status.ok())
+            {
+            if(subDirMatch(rootName, dirp->d_name))
+                {
+                FilePath fullName(srchPath, FP_Dir);
+                fullName.appendFile(dirp->d_name);
+                fn.push_back(fullName);
+                }
+            }
+        closedir(dp);
+        }
+    else
+        {
+        status.set(false, SC_File);
+        }
+    return status;
+    }
+
 OovStatusReturn getDirList(OovStringRef const path, eDirListTypes types, std::vector<std::string> &fn)
     {
     OovStatus status(true, SC_File);
@@ -226,39 +290,6 @@ OovStatusReturn getDirList(OovStringRef const path, eDirListTypes types, std::ve
     return status;
     }
 
-// The wildcardStr can have an asterisk, but must be at the end of
-// a subdirectory. For example: "\Qt*\mingw*\"
-bool subDirMatch(OovStringRef const wildCardStr, OovStringRef const pathStr)
-    {
-    const char *wcStr = wildCardStr;
-    const char *pStr = pathStr;
-    bool match = true;
-    while(*wcStr)
-        {
-        switch(*wcStr)
-            {
-            case '*':
-                while(*pStr != '/' && *pStr)
-                    {
-                    pStr++;
-                    }
-                break;
-
-            default:
-                if(toupper(*wcStr) == toupper(*pStr))
-                    {
-                    pStr++;
-                    }
-                else
-                    {
-                    match = false;
-                    }
-            }
-        wcStr++;
-        }
-    return(match && *wcStr == *pStr);
-    }
-
 // Returns matching subdirectories.
 std::vector<std::string> matchDirs(FilePaths const &wildCardDirs)
     {
@@ -282,36 +313,39 @@ OovString const findMatchingDir(FilePaths const &startingDirs, OovStringRef cons
     {
     OovString matchedDir;
     FilePath wildCardPattern(wildCardStr, FP_Dir);
-    FilePaths searchDirs = startingDirs;
-    size_t pos = wildCardPattern.getPosStartDir();
-    while(1)
+    if(wildCardPattern.length() > 0)
         {
-        std::vector<std::string> foundSubDirs = matchDirs(searchDirs);
-
-        // Filter and copy matching found directories to new search directories.
-        searchDirs.clear();
-        pos = wildCardPattern.getPosRightPathSep(pos, RP_RetPosNatural);
-        for(auto const &foundDir : foundSubDirs)
+        FilePaths searchDirs = startingDirs;
+        size_t pos = wildCardPattern.getPosStartDir();
+        while(1)
             {
-            FilePaths patterns;
-            for(auto const &startDir : startingDirs)
+            std::vector<std::string> foundSubDirs = matchDirs(searchDirs);
+
+            // Filter and copy matching found directories to new search directories.
+            searchDirs.clear();
+            pos = wildCardPattern.getPosRightPathSep(pos, RP_RetPosNatural);
+            for(auto const &foundDir : foundSubDirs)
                 {
-                FilePath pattern(startDir, FP_Dir);
-                pattern.appendDir(wildCardPattern.getHead(pos));
-                if(subDirMatch(pattern, foundDir))
+                FilePaths patterns;
+                for(auto const &startDir : startingDirs)
                     {
-                    searchDirs.push_back(FilePath(foundDir, FP_Dir));
+                    FilePath pattern(startDir, FP_Dir);
+                    pattern.appendDir(wildCardPattern.getHead(pos));
+                    if(subDirMatch(pattern, foundDir))
+                        {
+                        searchDirs.push_back(FilePath(foundDir, FP_Dir));
+                        }
                     }
                 }
+            if(pos == wildCardPattern.numBytes()-1)
+                {
+                break;
+                }
             }
-        if(pos == wildCardPattern.numBytes()-1)
+        if(searchDirs.size() > 0)
             {
-            break;
+            matchedDir = searchDirs[0];
             }
-        }
-    if(searchDirs.size() > 0)
-        {
-        matchedDir = searchDirs[0];
         }
     return matchedDir;
     }

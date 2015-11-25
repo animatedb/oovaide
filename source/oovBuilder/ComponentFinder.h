@@ -32,21 +32,17 @@ class ToolPathFile:public NameValueFile
             mBuildConfig = buildConfig;
             }
         std::string getCompilerPath();
+        // See Project.h for how this varies depending on build configuration.
         std::string getJavaCompilerPath();
+        static void appendArgs(bool appendSwitchArgs, OovStringRef argStr, CppChildArgs &args);
         std::string getJavaJarToolPath();
-        static void getAnalysisToolCommand(FilePath const &filePath,
-            CppChildArgs &args);
         std::string getLibberPath();
         std::string getObjSymbolPath();
         static std::string getCovInstrToolPath();
+        OovString makeBuildConfigArgName(OovStringRef const baseName)
+            { return ::makeBuildConfigArgName(baseName, mBuildConfig); }
     private:
         std::string mBuildConfig;
-//      std::string mPathAnalysisTool;
-        std::string mPathCompiler;
-        std::string mPathLibber;
-        std::string mPathObjSymbol;
-//      std::string mPathCovInstrTool;
-        std::string mPathJavaCompiler;
         std::string mPathJavaJarTool;
         void getPaths();
     };
@@ -126,8 +122,6 @@ class ScannedComponentsInfo
 
         MapIter addComponents(OovStringRef const compName);
     };
-
-enum eProcessModes { PM_Analyze, PM_Build, PM_CovInstr, PM_CovBuild, PM_CovStats };
 
 /// This recursively searches a directory path and considers each directory that
 /// has C++ source files to be a component.  All directories that contain C++

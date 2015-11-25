@@ -29,11 +29,19 @@
 // name appended.
 #define OptToolLibPath "Tool-LibPath"
 #define OptToolCompilePath "Tool-CompilerPath"
+// During analysis, the compiler is typically "java", but also requires JavaAnalyzerTool.
+// During debug or release or other, the compiler is typically "javac".
 #define OptToolJavaCompilePath "Tool-JavaCompilerPath"
-#define OptToolJavaJarToolPath "Tool-JavaJarToolPath"
+#define OptToolJavaAnalyzerTool "Tool-JavaAnalyzerTool"
+#define OptToolJavaJarToolPath "Tool-JavaJarToolPath"           // Actually the jar name.
 #define OptToolObjSymbolPath "Tool-ObjSymbolPath"
 
 #define OptToolDebuggerPath "Tool-DebuggerPath"
+
+#define OptJavaClassPath "Java-ClassPath"
+#define OptJavaJdkPath "Java-JdkPath"
+#define OptJavaAnalyzeArgs "Java-Args-Analyze"
+#define OptJavaBuildArgs "Java-Args-Build"
 
 #define BuildConfigAnalysis "Analyze"
 #define BuildConfigDebug "Debug"
@@ -44,6 +52,14 @@
 
 OovString makeBuildConfigArgName(OovStringRef const baseName,
         OovStringRef const buildConfig);
+
+enum eProcessModes
+    {
+    PM_None, PM_Analyze, PM_Build, PM_CovInstr, PM_CovBuild, PM_CovStats,
+
+    PM_CleanMask=0xF00,
+    PM_CleanAnalyze=0x100, PM_CleanBuild=0x200, PM_CleanCoverage=0x400
+    };
 
 /// A project file contains compile flags and drawing parameters.
 /// There is also a matching .XMI file for every source file, that only

@@ -1,142 +1,154 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
- font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="410" height="407">
+ font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="533" height="482">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="19" y="263" width="133" height="143" />
-<line x1="19" y1="276" x2="152" y2="276" />
-<polygon points="132,284 144,289 144,279 132,284 " style="fill:#ffffff" />
-<polygon points="132,298 139,302 146,298 139,294 132,298 " style="fill:#ffffff" />
-<polygon points="132,312 139,316 146,312 139,308 132,312 " style="fill:#0" />
-<polygon points="132,326 140,331 136,326 140,321 132,326 " style="fill:#ffffff" />
-<circle cx="132" cy="340" r="5" style="fill:#ffffff" />
-<circle cx="132" cy="354" r="5" style="fill:#ffffff" />
-<circle cx="139" cy="354" r="2" style="fill:#ffffff" />
-<circle cx="132" cy="368" r="5" style="fill:#ffffff" />
-<circle cx="132" cy="368" r="2" style="fill:#ffffff" />
-<circle cx="132" cy="382" r="5" style="fill:#ffffff" />
-<circle cx="132" cy="382" r="2" style="fill:#0" />
-<circle cx="132" cy="396" r="5" style="fill:#0" />
-<circle cx="132" cy="396" r="2" style="fill:#0" />
+<rect x="20" y="338" width="129" height="143" />
+<line x1="20" y1="351" x2="149" y2="351" />
+<polygon points="133,359 145,364 145,354 133,359 " style="fill:#ffffff" />
+<polygon points="133,373 140,377 147,373 140,369 133,373 " style="fill:#ffffff" />
+<polygon points="133,387 140,391 147,387 140,383 133,387 " style="fill:#0" />
+<polygon points="133,401 141,406 137,401 141,396 133,401 " style="fill:#ffffff" />
+<circle cx="133" cy="415" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="429" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="429" r="2" style="fill:#ffffff" />
+<circle cx="133" cy="443" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="443" r="2" style="fill:#ffffff" />
+<circle cx="133" cy="457" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="457" r="2" style="fill:#0" />
+<circle cx="133" cy="471" r="5" style="fill:#0" />
+<circle cx="133" cy="471" r="2" style="fill:#0" />
 </g>
 <g stroke="none">
-<text x="20" y="272">Relations Key</text>
-<text x="20" y="286">Generalization</text>
-<text x="20" y="300">Aggregation(reference)</text>
-<text x="20" y="314">Composition(owned)</text>
-<text x="20" y="328">Const</text>
-<text x="20" y="342">Method Variable</text>
-<text x="20" y="356">Method Parameter</text>
-<text x="20" y="370">Public</text>
-<text x="20" y="384">Protected</text>
-<text x="20" y="398">Private</text>
+<text x="21" y="347">Relations Key</text>
+<text x="21" y="361">Generalization</text>
+<text x="21" y="375">Aggregation(reference)</text>
+<text x="21" y="389">Composition(owned)</text>
+<text x="21" y="403">Const</text>
+<text x="21" y="417">Method Variable</text>
+<text x="21" y="431">Method Parameter</text>
+<text x="21" y="445">Public</text>
+<text x="21" y="459">Protected</text>
+<text x="21" y="473">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="17" y="25" width="214" height="89" />
-<line x1="17" y1="55" x2="231" y2="55" />
-<line x1="17" y1="58" x2="231" y2="58" />
+<rect x="21" y="22" width="225" height="80" />
+<line x1="21" y1="43" x2="246" y2="43" />
+<line x1="21" y1="46" x2="246" y2="46" />
 </g>
 <g stroke="none">
-<text x="18" y="34">oovJavaParser</text>
-<text x="18" y="43">C:/Dave/Mine/software/oovaide/source/oovJa</text>
-<text x="18" y="52">  vaParser</text>
-<text x="18" y="67">-getAbsPath(java.lang.String path)</text>
-<text x="18" y="76">-main()</text>
-<text x="18" y="85">-getOutputFileName(java.lang.String </text>
-<text x="25" y="94">srcFileName, java.lang.String srcRootDir</text>
-<text x="25" y="103">, java.lang.String outDir)</text>
-<text x="18" y="112">-&lt;init&gt;()</text>
+<text x="22" y="31">oovJavaParser</text>
+<text x="22" y="40">oovJavaParser</text>
+<text x="22" y="55">-getOutputFileName(model.ModelData model,</text>
+<text x="29" y="64"> java.lang.String srcFileName, java.lang.St</text>
+<text x="29" y="73">ring srcRootDir, java.lang.String outDir)</text>
+<text x="22" y="82">-main()</text>
+<text x="22" y="91">-&lt;init&gt;()</text>
+<text x="22" y="100">-getAbsPath(java.lang.String path)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="306" y="28" width="57" height="17" />
-<line x1="306" y1="40" x2="363" y2="40" />
-<line x1="306" y1="43" x2="363" y2="43" />
+<rect x="337" y="130" width="104" height="26" />
+<line x1="337" y1="151" x2="441" y2="151" />
+<line x1="337" y1="154" x2="441" y2="154" />
 </g>
 <g stroke="none">
-<text x="307" y="37">java.io.File</text>
+<text x="338" y="139">model.ModelData</text>
+<text x="338" y="148">oovJavaParser/model</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="339" y="98" width="64" height="26" />
-<line x1="339" y1="119" x2="403" y2="119" />
-<line x1="339" y1="122" x2="403" y2="122" />
+<rect x="429" y="72" width="103" height="26" />
+<line x1="429" y1="93" x2="532" y2="93" />
+<line x1="429" y1="96" x2="532" y2="96" />
 </g>
 <g stroke="none">
-<text x="340" y="107">parser.Parser</text>
-<text x="340" y="116">parser</text>
+<text x="430" y="81">parser.AnalysisParser</text>
+<text x="430" y="90">oovJavaParser/parser</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="184" y="218" width="225" height="188" />
-<line x1="184" y1="248" x2="409" y2="248" />
-<line x1="184" y1="260" x2="409" y2="260" />
+<rect x="188" y="193" width="331" height="287" />
+<line x1="188" y1="214" x2="519" y2="214" />
+<line x1="188" y1="244" x2="519" y2="244" />
 </g>
 <g stroke="none">
-<text x="185" y="227">ModelWriter</text>
-<text x="185" y="236">C:/Dave/Mine/software/oovaide/source/oovJav</text>
-<text x="185" y="245">  aParser</text>
-<text x="185" y="257">+java.util.HashMap mTypeIndices</text>
-<text x="185" y="269">-getTypeIndexStr(model.ModelType type)</text>
-<text x="185" y="278">-outXml(java.lang.String str)</text>
-<text x="185" y="287">-writeMethodParams(XmlFile file, model.Mode</text>
-<text x="192" y="296">lMethod method)</text>
-<text x="185" y="305">-write(java.lang.String outfileName)</text>
-<text x="185" y="314">-writeStatements(XmlFile file, model.ModelM</text>
-<text x="192" y="323">ethod method)</text>
-<text x="185" y="332">-writeMemberVars(XmlFile file, model.ModelT</text>
-<text x="192" y="341">ype type)</text>
-<text x="185" y="350">-writeAssoc(XmlFile file, model.ModelType </text>
-<text x="192" y="359">type)</text>
-<text x="185" y="368">-&lt;init&gt;()</text>
-<text x="185" y="377">-writeClass(XmlFile file, model.ModelType </text>
-<text x="192" y="386">type)</text>
-<text x="185" y="395">-writeMethods(XmlFile file, model.ModelType</text>
-<text x="192" y="404"> type)</text>
+<text x="189" y="202">ModelWriter</text>
+<text x="189" y="211">oovJavaParser</text>
+<text x="189" y="223">-File mFile</text>
+<text x="189" y="232">-ModelData mModelData</text>
+<text x="189" y="241">+java.util.HashMap mTypeIndices</text>
+<text x="189" y="253">+writeFile(OovStringRef filename)</text>
+<text x="189" y="262">+~ModelWriter()</text>
+<text x="189" y="271">-openFile(OovStringRef filename)</text>
+<text x="189" y="280">-getObjectModelId(string&lt;&lt;typedef&gt;&gt; name)</text>
+<text x="189" y="289">-writeType(ModelType type)</text>
+<text x="189" y="298">-writeClassDefinition(ModelClassifier classifier, bool isClassDef)</text>
+<text x="189" y="307">-writeOperation(ModelClassifier classifier, ModelOperation oper)</text>
+<text x="189" y="316">-writeStatements(ModelStatements stmts)</text>
+<text x="189" y="325">-writeAssociation(ModelAssociation assoc)</text>
+<text x="189" y="334">+ModelWriter(ModelData modelData)</text>
+<text x="189" y="343">-ensureLastPathSep(java.lang.String dir)</text>
+<text x="189" y="352">-getTypeIndexStr(model.ModelType type)</text>
+<text x="189" y="361">-getAnalysisIncDepsFilename(java.lang.String outDir)</text>
+<text x="189" y="370">-writeImportDependencies(model.ModelData model, java.lang.String </text>
+<text x="196" y="379">absSrcFn, java.lang.String srcRootDir, java.lang.String outDir)</text>
+<text x="189" y="388">-writeMethods(XmlFile file, model.ModelType type)</text>
+<text x="189" y="397">-writeMethodParams(XmlFile file, model.ModelMethod method)</text>
+<text x="189" y="406">-sleepMs()</text>
+<text x="189" y="415">-writeAssoc(XmlFile file, model.ModelType type)</text>
+<text x="189" y="424">-write(model.ModelData model, java.lang.String outFileName)</text>
+<text x="189" y="433">-&lt;init&gt;()</text>
+<text x="189" y="442">-getImportStr(model.ModelData model, java.lang.String srcRootDir,</text>
+<text x="196" y="451"> java.lang.String absSrcFn)</text>
+<text x="189" y="460">-writeMemberVars(XmlFile file, model.ModelType type)</text>
+<text x="189" y="469">-outXml(java.lang.String str)</text>
+<text x="189" y="478">-writeClass(XmlFile file, model.ModelType type)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="18" y="209" width="95" height="17" />
-<line x1="18" y1="221" x2="113" y2="221" />
-<line x1="18" y1="224" x2="113" y2="224" />
+<rect x="33" y="158" width="95" height="17" />
+<line x1="33" y1="170" x2="128" y2="170" />
+<line x1="33" y1="173" x2="128" y2="173" />
 </g>
 <g stroke="none">
-<text x="19" y="218">java.io.PrintStream</text>
+<text x="34" y="167">java.io.PrintStream</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="208" y="142" width="88" height="26" />
-<line x1="208" y1="163" x2="296" y2="163" />
-<line x1="208" y1="166" x2="296" y2="166" />
+<rect x="354" y="19" width="57" height="17" />
+<line x1="354" y1="31" x2="411" y2="31" />
+<line x1="354" y1="34" x2="411" y2="34" />
 </g>
 <g stroke="none">
-<text x="209" y="151">model.ModelData</text>
-<text x="209" y="160">model</text>
+<text x="355" y="28">java.io.File</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="231" y1="53" x2="306" y2="40" />
-<circle cx="244" cy="50" r="5" style="fill:#ffffff" />
-<line x1="231" y1="87" x2="339" y2="106" />
-<circle cx="244" cy="89" r="5" style="fill:#ffffff" />
-<line x1="155" y1="113" x2="230" y2="218" />
-<circle cx="163" cy="124" r="5" style="fill:#ffffff" />
-<line x1="107" y1="113" x2="68" y2="209" />
-<circle cx="101" cy="125" r="5" style="fill:#ffffff" />
-<line x1="189" y1="113" x2="233" y2="142" />
-<circle cx="200" cy="120" r="5" style="fill:#ffffff" />
-<line x1="337" y1="44" x2="365" y2="98" />
-<circle cx="358" cy="85" r="5" style="fill:#ffffff" />
-<line x1="339" y1="122" x2="287" y2="142" />
-<circle cx="325" cy="127" r="5" style="fill:#ffffff" />
-<circle cx="310" cy="132" r="5" style="fill:#ffffff" />
-<circle cx="310" cy="132" r="2" style="fill:#ffffff" />
-<polygon points="339,122 331,121 326,127 334,128 339,122 " style="fill:#0" />
-<line x1="270" y1="218" x2="255" y2="168" />
-<circle cx="265" cy="204" r="5" style="fill:#ffffff" />
+<line x1="245" y1="97" x2="348" y2="130" />
+<circle cx="258" cy="101" r="5" style="fill:#ffffff" />
+<circle cx="264" cy="103" r="2" style="fill:#ffffff" />
+<line x1="245" y1="69" x2="429" y2="82" />
+<circle cx="258" cy="69" r="5" style="fill:#ffffff" />
+<line x1="165" y1="102" x2="239" y2="193" />
+<circle cx="173" cy="112" r="5" style="fill:#ffffff" />
+<line x1="113" y1="102" x2="84" y2="158" />
+<circle cx="106" cy="114" r="5" style="fill:#ffffff" />
+<line x1="245" y1="47" x2="354" y2="30" />
+<circle cx="258" cy="44" r="5" style="fill:#ffffff" />
+<line x1="409" y1="130" x2="460" y2="98" />
+<circle cx="448" cy="105" r="5" style="fill:#ffffff" />
+<circle cx="434" cy="113" r="5" style="fill:#ffffff" />
+<circle cx="434" cy="113" r="2" style="fill:#ffffff" />
+<polygon points="460,98 452,98 449,105 456,105 460,98 " style="fill:#0" />
+<line x1="387" y1="156" x2="379" y2="193" />
+<circle cx="381" cy="179" r="5" style="fill:#ffffff" />
+<circle cx="383" cy="172" r="2" style="fill:#ffffff" />
+<line x1="459" y1="72" x2="395" y2="35" />
+<circle cx="446" cy="64" r="5" style="fill:#ffffff" />
 </g>
 </svg>

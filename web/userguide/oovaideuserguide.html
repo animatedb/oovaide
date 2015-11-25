@@ -8,8 +8,9 @@
   </head>
   <body> <font size="+3">Oovaide User Guide<br>
     </font>
-    <hr style="width: 100%; height: 3px;"> Created: June 8, 2009 Last update:
-    April 1, 2015
+    <hr style="width: 100%; height: 3px;">
+    Created: June 8, 2009
+    Last update: Nov 18, 2015
     <p> <img src="../description/OovLogo.png" style="height: 16mm; width: 30mm;">
     </p>
     <p> </p>
@@ -79,7 +80,7 @@
       </li>
       <li>At this point, it may be possible to view diagrams if the include
         paths are set. They are already set if the oovaide project was opened.
-        Select Analysis/Settings and select the Cpp Arguments tab to change the
+        Select Analysis/Settings and select the C++ Settings tab to change the
         include paths and compile and link settings. Note that the include and
         library paths can both be set using the External Project Packages
         button, or recursive searches using "-ER". See the Build System section
@@ -87,7 +88,7 @@
       </li>
       <li>Build a project. These steps are not required for viewing diagrams.
         Building Oovaide requires CLang and GTK to be downloaded and to match
-        the paths in the Analysis/Settings/Cpp Arguments settings.<br>
+        the paths in the Analysis/Settings/C++ Settings.<br>
       </li>
       <ol>
         <li>Select Build/Settings and set the component type for each component.
@@ -206,7 +207,7 @@
         source root of the source files to analyze. The location can be
         specified for saving all of the project files for Oovaide. Files can be
         excluded from analysis. This can also be changed later.</li>
-      <li>Select the Analysis/Settings menu item. Choose the "Cpp Arguments" tab
+      <li>Select the Analysis/Settings menu item. Choose the "C++ Settings" tab
         to change the include paths and other compiler settings. Errors during
         compilation are stored in the project directory. If there are errors,
         change the compiler settings and restart analysis.See the Build section
@@ -249,7 +250,7 @@
     <br>
     Any component that has the Component Type defined in the Build Settings
     dialog will be displayed. In addition, the components that are defined in
-    the Analysis/Settings Build Arguments dialog using the External Project
+    the Analysis/Settings C++ Settings dialog using the External Project
     Packages will be displayed. The analysis will figure out the dependencies
     and the dependency arrows will also be generated automatically.<br>
     <ol>
@@ -440,9 +441,9 @@
     <h2><a class="mozTocH2" name="mozTocId261866"></a>Duplicate Code Analysis</h2>
     <ol>
       <li>Turn on duplicate code analysis by adding -dups to the
-        Analysis/Settings/Build Arguments/Analyze/Extra Build Arguments</li>
-      <li>Delete any existing analysis directories in the Oovaide project
-        directory so that a complete analysis is run.</li>
+        Analysis/Settings/C++ Settings/Analyze/Extra Build Arguments</li>
+      <li>Delete any existing analysis directories in the Oovaide project using
+	the clean menu item so that a complete analysis is run.</li>
       <li>Run Analysis/Analyze</li>
       <li>Run Analysis/Duplicates</li>
     </ol>
@@ -522,7 +523,7 @@
         searched for in the /usr/bin directory, and if found clang++ is used as
         the compiler.</li>
       <li>Add some references to external project packages. These are specified
-        under Analysis/Settings/Build Arguments.</li>
+        under Analysis/Settings/C++ Settings.</li>
       <ul>
         <li>Use the External Project Packages button to specify a package on the
           system. In Linux, this uses pkg-confg, and will define all includes,
@@ -618,11 +619,11 @@
       will find many mingw paths, but does not find paths for Mingw-W64. </p>
     <p> Switching between the packages often requires nothing more than changing
       the path environment variable or setting the compiler name in the Oovaide
-      Analysis/Settings/Build Arguments dialog.<br>
+      Analysis/Settings/C++ Settings dialog.<br>
     </p>
     <p> CLang normally finds mingw by searching for default paths, but does not
       find mingw-w64. For this reason, mingw-w64 is defined as a package that
-      can be included in the Analysis/Settings/ menu in the Build Arguments tab
+      can be included in the Analysis/Settings/ menu in the C++ Settings tab
       using the External Project Packages button. </p>
     <p> So there are a few usage scenarios:<br>
     </p>
@@ -636,8 +637,7 @@
     <br>
     If the compiler cannot find a standard library file, then it isn't finding
     the file in its include directories. To view the CLang or GCC compiler
-    include paths, use the -v option in the Oovaide Analysis/Settings/Build
-    Arguments.
+    include paths, use the -v option in the Oovaide Analysis/Settings/C++ Settings.
     <p> The typical location for mingw is in the \MinGW directory. CLang
       supports the following MinGW installations on Windows.<br>
       <br>
@@ -665,11 +665,11 @@
     <br>
     <h2><a class="mozTocH4 mozTocH2" name="mozTocId450611"></a>Linux Example</h2>
     This is an old Linux example. The best method currently is to load the
-    required packages in the Analysis/Settings/Build Arguments tab.<br>
+    required packages in the Analysis/Settings/C++ Settings tab.<br>
     For Linux, the following arguments work to build all Oovaide components with
     the CLang compiler. These arguments will build the complete oovaide project
     on Linux when the component types are set in the components tab. This is how
-    the arguments may look in the Analysis/Settings/Build Arguments dialog.
+    the arguments may look in the Analysis/Settings/C++ Settings dialog.
     <pre>	-c<br>	-std=c++0x
 	-ER/usr/include/gtk-3.0<br>	-ER/usr/include/glib-2.0
 	-I/usr/include/c++<br>	-ER/usr/include/cairo
@@ -705,7 +705,7 @@ c++
     <h2><a class="mozTocH4 mozTocH2" name="mozTocId913463"></a>Windows GTK
       Example</h2>
     This is an old Windows example. The best method currently is to load the
-    required packages in the Analysis/Settings/Build Arguments tab. For Windows,
+    required packages in the Analysis/Settings/C++ Settings tab. For Windows,
     the following arguments work to build all Oovaide components with the g++
     compiler.<br>
     <br>
@@ -773,33 +773,65 @@ c++
     can be defined as a component and all source files that are contained in
     that directory or other child directories of that directory will be used to
     build the component. The include files can be in any child directory, and
-    will be found automatically.<br>
-    <br>
+    will be found automatically.
+    <p/>
     If multiple directories are used to build a component that are not under one
     directory, it is possible to create many static libraries. Oovaide will
-    determine static library link order automatically.<br>
-    <br>
-    The following shows a typical project that can be supported. <br>
-    <br>
-    Root directory of project source code<br>
-    <pre>  Sub-directory1 - Component1
-      *.cpp - All of these files are used for Component1
-      *.h - These can be used by any component<br><br>  Sub-directory2
-      *.h - These can be used by any component<br><br>  Sub-directory3
-      Sub-directory4 - Component2
-          *.cpp - These can only be used for Component2
-          *.h - These can be used by any component<br>
-  Sub-directory5 - Component3<br>      Sub-directory6
-          *.cpp - These can be used for Component3<br>
-  Sub-directory7<br>          *.cpp - These can be used for Component3</pre>
+    determine static library link order automatically.
+    <p/>
+    The following directory structure will be used to describe projects
+    that can be supported.
+    <p/>
+	<embed src="../userguide/ExampleSourceTree.svg" type="image/svg+xml">
+    <p/>
+  Some of the rules are:
+  <ul>
+  <li>A component at any level of the tree will	be built using all source
+     files in all subdirectories that are not defined as a component.
+     In this diagram, the top nodes ("Dir Root", "Dir A", and "Dir B-2")
+     are defined as components.</li>
+  <li>The groupings do not determine where header files can be found.
+     They only determine which source files are compiled into the component.
+     Header files can be anywhere and will be automatically found
+     during analysis.</li>
+  <li>Component "Dir A" could be a library, which will be linked into
+     other components automatically.</li>
+  </ul>
+    <p/>
+	If "Dir A" is defined as a component type other than Undefined, then it
+	will use all source in "Dir A" and its children to build the component.
+	OovAide searches down the
+	tree until it finds a component, and then does not include anything
+	under the directory that is defined as a component.
+	Some examples are listed here:
+	<ul>
+	<li>"Dir A", "Dir B-2", and "Dir Root" could all be defined as
+	   executable programs.
+	<li>"Dir A" could be a static library, "Dir B-2" could be defined
+	   as a dynamic library, and
+		"Dir Root" could be defined as an executable program.
+	   The executable program and dynamic library would link in
+	   "Dir A" if needed.  It will also link in external 
+	   project libraries if any were defined.</li>
+	<li>"Dir A" and "Dir B-2" could be defined as static libraries, and
+		"Dir Root" could be defined as an executable program.
+	   The executable program would link in the libraries that are
+	   needed in the correct order.</li>
+	</ul>
+
     <br>
     There are also these limitations.<br>
     <ul>
-      <li>Only GNU or clang projects. CLang support for MSVC projects is
+      <li>Only GNU, clang C++ or Java projects. CLang support for MSVC projects is
         improving, but unknown.<br>
       </li>
+      <li>Analysis is performed for one set of compiler switches for all files
+	int a project. Different sets can be used for debug/release. External
+	packages will cause other switches to be added.</li>
+      <li>Building Java programs does not order the building of jars.</li>
       <li>External project roots are expected that they will not be changed. In
-        order to update library information, delete the out/sym files.</li>
+        order to update library information, delete the OovAide output files
+	using the clean menu item.</li>
       <li>The component names will be created from the directory names.</li>
       <li>Some duplicate filenames (includes) may cause problems for determining
         dependencies. Circular dependencies may cause problems. These may be
@@ -809,8 +841,9 @@ c++
             found by compiler</li>
         </ul>
       </li>
-      <li>Only C++ is compiled. (No .C or .ASM) Other types of files must be put
-        into external objects or libraries.</li>
+      <li>Only C++ or Java is compiled. (No .C or .ASM) Other types of files
+	can be included by building them externally and using external
+	objects or libraries.</li>
     </ul>
     There are some problems using llvm/clang 3.2 on Windows or Linux. The build
     tool will attempt to use tools that are known to work. CLang 3.4 may not

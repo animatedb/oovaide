@@ -21,8 +21,8 @@ class IncludeDrawOptions
 
 enum IncludeNodeTypes
     {
-    INT_Project,
-    INT_System
+    INT_Project
+//    INT_System
     };
 
 class IncludeNode
@@ -68,6 +68,8 @@ class IncludeGraph
             { mIncludeMap = &incMap; }
         void clearAndAddInclude(OovStringRef incName);
         void addSuppliers(OovStringRef incName);
+        void addConsumers(OovStringRef incName);
+        void removeNode(OovStringRef incName);
         IncludeNode const *getNode(OovStringRef name, IncludeNodeTypes nt) const;
         size_t getNodeIndex(IncludeNode const *node) const
             { return(static_cast<size_t>(node - &mNodes[0])); }
@@ -89,7 +91,8 @@ class IncludeGraph
 
         static const size_t NO_INDEX = static_cast<size_t>(-1);
         size_t getNodeIndex(OovStringRef name) const;
-        size_t addOrGetNode(OovStringRef name);
+        void addNode(OovStringRef name);
+        void updateConnections();
     };
 
 #endif

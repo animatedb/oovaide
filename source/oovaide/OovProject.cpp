@@ -243,7 +243,7 @@ void OovProject::processAnalysisFiles()
     }
 
 bool OovProject::runSrcManager(OovStringRef const buildConfigName,
-        OovStringRef const runStr, eSrcManagerOptions smo)
+        OovStringRef const runStr, eProcessModes pm)
     {
     bool success = true;
     OovString procPath = Project::getBinDirectory();
@@ -252,30 +252,51 @@ bool OovProject::runSrcManager(OovStringRef const buildConfigName,
     args.addArg(procPath);
     args.addArg(Project::getProjectDirectory());
 
-    switch(smo)
+    switch(pm)
         {
-        case SM_Analyze:
+        case PM_Analyze:
             args.addArg("-mode-analyze");
             break;
 
-        case SM_Build:
+        case PM_Build:
             args.addArg("-mode-build");
             args.addArg(makeBuildConfigArgName("-cfg", buildConfigName));
             break;
 
-        case SM_CovInstr:
+        case PM_CovInstr:
             args.addArg("-mode-cov-instr");
             args.addArg(makeBuildConfigArgName("-cfg", BuildConfigAnalysis));
             break;
 
-        case  SM_CovBuild:
+        case PM_CovBuild:
             args.addArg("-mode-cov-build");
             args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug));
             break;
 
-        case SM_CovStats:
+        case PM_CovStats:
             args.addArg("-mode-cov-stats");
             args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug));
+            break;
+
+        default:
+            if(pm & PM_CleanMask)
+                {
+                OovString cleanArg = "-mode-clean-";
+                if(pm & PM_CleanAnalyze)
+                    {
+                    cleanArg += "a";
+                    }
+                if(pm & PM_CleanBuild)
+                    {
+                    cleanArg += "b";
+                    }
+                if(pm & PM_CleanCoverage)
+                    {
+                    cleanArg += "c";
+                    }
+                args.addArg(cleanArg);
+                args.addArg(makeBuildConfigArgName("-cfg", BuildConfigDebug));
+                }
             break;
         }
     if(success)

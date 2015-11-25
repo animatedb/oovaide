@@ -44,29 +44,73 @@ size_t IncludeGraph::getNodeIndex(OovStringRef name) const
     return nodeIndex;
     }
 
-size_t IncludeGraph::addOrGetNode(OovStringRef name)
+void IncludeGraph::addNode(OovStringRef name)
     {
-    size_t index = getNodeIndex(name);
-    if(index == NO_INDEX)
+    if(getNodeIndex(name) == NO_INDEX)
         {
         mNodes.push_back(IncludeNode(name, INT_Project));
-        index = getNodeIndex(name);
         }
-    return index;
+    }
+
+void IncludeGraph::removeNode(OovStringRef name)
+    {
+    size_t index = getNodeIndex(name);
+    if(index != NO_INDEX)
+        {
+        mNodes.erase(mNodes.begin() + index);
+        }
+    updateConnections();
     }
 
 void IncludeGraph::addSuppliers(OovStringRef consName)
     {
-    size_t consIndex = addOrGetNode(consName);
     std::set<IncludedPath> incFiles;
     mIncludeMap->getImmediateIncludeFilesUsedBySourceFile(consName, incFiles);
+    addNode(consName);
     for(auto const &incFile : incFiles)
         {
-        size_t supIndex = addOrGetNode(incFile.getFullPath());
-        if(supIndex != NO_INDEX)
+        addNode(incFile.getFullPath());
+        }
+    updateConnections();
+    }
+
+void IncludeGraph::addConsumers(OovStringRef incName)
+    {
+    addNode(incName);
+    for(auto const &consFile : mIncludeMap->getNameValues())
+        {
+        std::set<IncludedPath> supFiles;
+        mIncludeMap->getImmediateIncludeFilesUsedBySourceFile(
+            consFile.first, supFiles);
+        for(auto const &supFile : supFiles)
             {
-            IncludeConnection conn(supIndex, consIndex);
-            mConnections.push_back(conn);
+            if(supFile.getFullPath().compare(incName) == 0)
+                {
+                addNode(consFile.first);
+                break;
+                }
+            }
+        }
+    updateConnections();
+    }
+
+void IncludeGraph::updateConnections()
+    {
+    mConnections.clear();
+    for(auto const &consNode : mNodes)
+        {
+        std::set<IncludedPath> incFiles;
+        mIncludeMap->getImmediateIncludeFilesUsedBySourceFile(
+            consNode.getName(), incFiles);
+        for(auto const &supNode : incFiles)
+            {
+            size_t consIndex = getNodeIndex(consNode.getName());
+            size_t supIndex = getNodeIndex(supNode.getFullPath());
+            if(supIndex != NO_INDEX && consIndex != NO_INDEX)
+                {
+                IncludeConnection conn(supIndex, consIndex);
+                mConnections.push_back(conn);
+                }
             }
         }
     }

@@ -126,6 +126,9 @@ class NameValueRecord
         const std::map<OovString, OovString> &getNameValues() const
             { return mNameValues; }
 
+        bool haveValues() const
+            { return(mNameValues.empty() == false); }
+
         /// Write all items to the file.
         /// @param file The file to write to.
         OovStatusReturn write(File &file);

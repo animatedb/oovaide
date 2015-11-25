@@ -50,17 +50,42 @@ analysis is simpler than the setup for building projects.
   on the system.
 
   <h3>Java Analysis</h3>
-  At the current time, the oovJavaParser.jar tool is used to parse and analyze
-  the java source files.
+  The oovJavaParser.jar tool that is distributed with OovAide is used to parse
+  and analyze the java source files.  A single java file is analyzed at a time.
   <p/>
-  The JAVA_HOME environment variable must be set to the
-  JAVA SDK. An example is: "C:\Program Files\Java\jdk1.8.0_51".
-  In Linux, if JAVA_HOME is missing, then "/usr/lib/jvm/default-java" is used.
-  A single file is analyzed at a time.
+  The Analysis/Settings menu selection will display a tab named "Java Settings".
+  This tab allows setting the class path and JDK path.
   <p/>
-  The CLASSPATH environment variable must include tools.jar. An example is:
-  "C:\Program Files\Java\jdk1.8.0_51\lib\tools.jar".
+  The class path is initialized from the CLASSPATH environment variable, but
+  altering it in the settings will not change the CLASSPATH environment
+  variable.  The class path must contain all jars that are needed for your project.
+  The CLASSPATH environment variable does not need to include tools.jar since
+  it is added from the JDK path as described below.
+  <p/>
+  The JDK path is initialized from the JAVA_HOME environment variable, but
+  altering it in the settings will not change the JAVA_HOME environment
+  variable. In Linux, if JAVA_HOME is missing, then "/usr/lib/jvm/default-java"
+  is used as default.
+  The JDK path must be set to the JAVA SDK. An example is:
+  "C:\Program Files\Java\jdk1.8.0_51". This path is used to find the tools.jar
+  file in the lib directory.
+  <p/>
+  The Extra Analyze Arguments can be used to set switches, or to add java
+  files that will be added to the analysis.
 
+  <h4>Android Analysis</h4>
+  In Android with Windows, the class paths may contain something similar to the following:
+  <ul>
+  <li>...\AppData\Local\Android\sdk\platforms\android-22\android.jar</li>
+  <li>...\AppData\Local\Android\sdk\extras\android\support\v7\appcompat\libs\android-support-v7-appcompat.jar</li>
+  <li>...\AppData\Local\Android\sdk\extras\android\support\v4\android-support-v4.jar</li>
+  </ul>
+  The Extra Analyze Arguments may contain something similar to the following:
+  <ul>
+  <li>
+  ...\AndroidStudioProjects\MyApplication\app\build\generated\source\r\debug\com\example\blahad01\myapplication\R.java</li>
+  </ul>
+<p/>
 
 <h2>OovAide Build</h2>
 If analysis has completed successfully, then building applications with
@@ -71,6 +96,25 @@ and specifying what type of component to build from the directory. For
 example, if a single executable will be built from the whole directory tree,
 then select the <Root> component/directory, and define it as a 
 Program/Executable (for C++) or as a Java Executable Jar (for Java).
+  <p/>
+  The following directory structure shows how components can be created.
+  See the user guide for more information.
+  <p/>
+	<embed src="../userguide/ExampleSourceTree.svg" type="image/svg+xml">
+  <p/>
+  Some of the rules are:
+  <ul>
+  <li>A component at any level of the tree will	be built using all source
+     files in all subdirectories that are not defined as a component.
+     In this diagram, the top nodes ("Dir Root", "Dir A", and "Dir B-2")
+     are defined as components.</li>
+  <li>The groupings do not determine where header files can be found.
+     They only determine which source files are compiled into the component.
+     Header files can be anywhere and will be automatically found
+     during analysis.</li>
+  <li>Component "Dir A" could be a library, which will be linked into
+     other components automatically.</li>
+  </ul>
 
 <h2>OovAide Build Java</h2>
 Any component specified as a Java Executable Jar must have a Manifest.txt
@@ -85,17 +129,21 @@ to work around this for now.
 The package names must match the directory structure.  For each jar that
 is created, the package names in the java files must match the directories
 under the specified component's directory.
+<p/>
+The Extra Build Arguments can be used to specify switches or to add
+jar, java or class files.
 
 <h2>OovAide Build C++</h2>
 <h3>Packages</h3>
   Packages are collections of include and library files that are distributed
   for use by many programs.  Some examples are gtk, Qt, etc.  Oovaide
-  provides an "External Project Packages" button on the build arguments
+  provides an "External Project Packages" button on the C++ Settings
   screen that allows selecting packages.
   <p/>
   Packages are different on Windows and Linux.  On Linux, the pkg-config tool
   is used by the Oovaide package dialogs so that packages can be selected
   and used in each project.
+
 
 <h3>Windows Packages</h3>
   On Windows, there is a file called
@@ -114,12 +162,12 @@ under the specified component's directory.
   to the root should be used as the path.
   <p/>
   The "External References" can be specified with exclude directories
-  the same as in the Build Arguments.
+  the same as in the C++ Settings.
   
 
-<h3>Oovaide Build Arguments</h3>
+<h3>Oovaide C++ Settings</h3>
 The CLang compiler arguments for Analysis are set up in the Analysis/Settings
-dialog in the Build Arguments tab.  Many arguments are passed directly to the
+dialog in the C++ Settings tab.  Many arguments are passed directly to the
 compiler, so for example, "-I/dir" will use "/dir" as an include path to
 search.  There are a few special arguments that Oovaide uses as described below.
 <p/>

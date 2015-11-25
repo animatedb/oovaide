@@ -45,6 +45,9 @@ private:
     char const * mAnalysisDir;
     OovStringVec mExcludeDirs;
     OovStringVec mIncDirArgs;
+    // It is kind of strange that both this and the builder instantiate this,
+    // but since both jobs are different, no significant reason to make them the same.
+    ToolPathFile mToolPathFile;
     const ComponentFinder &mComponentFinder;
 
     virtual bool processFile(OovStringRef const filePath) override;

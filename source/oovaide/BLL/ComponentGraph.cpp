@@ -60,6 +60,7 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
         }
 
     // This is slow - look to improve?
+    // Find project component relations
     for(size_t consumerIndex=0; consumerIndex<mNodes.size(); consumerIndex++)
         {
         if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
@@ -92,6 +93,31 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
                 }
             }
         }
+// This crashes and doesn't appear to be faster than above.
+/*
+    for(size_t supplierIndex=0; supplierIndex<mNodes.size(); supplierIndex++)
+        {
+        if(mNodes[supplierIndex].getComponentNodeType() == ComponentNode::CNT_Component)
+            {
+            OovStringVec incRoots;
+            OovString path = compFile.getComponentAbsolutePath(mNodes[supplierIndex].getName());
+printf("%s\n", path.getStr());
+fflush(stdout);
+            incRoots.push_back(path);
+            for(size_t consumerIndex=0; consumerIndex<mNodes.size(); consumerIndex++)
+                {
+                if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
+                    {
+                    if(mIncludeMap->anyRootDirsMatch(incRoots, compPaths[consumerIndex]))
+                        {
+                        mConnections.insert(ComponentConnection(consumerIndex, supplierIndex));
+                        }
+                    }
+                }
+            }
+        }
+*/
+    // Find external project relations
     for(size_t supplierIndex=0; supplierIndex<mNodes.size(); supplierIndex++)
         {
         if(mNodes[supplierIndex].getComponentNodeType() == ComponentNode::CNT_ExternalPackage)

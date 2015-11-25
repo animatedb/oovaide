@@ -94,6 +94,28 @@ void IncludeDiagramView::addSuppliers()
         }
     }
 
+void IncludeDiagramView::addConsumers()
+    {
+    size_t index = mIncludeDiagram.getNodeIndex(mNullDrawer, sStartPosInfo);
+    if(index != IncludeDrawer::NO_INDEX)
+        {
+        IncludeNode const &node = mIncludeDiagram.getNodes()[index];
+        mIncludeDiagram.addConsumers(node.getName());
+        relayout();
+        }
+    }
+
+void IncludeDiagramView::removeNode()
+    {
+    size_t index = mIncludeDiagram.getNodeIndex(mNullDrawer, sStartPosInfo);
+    if(index != IncludeDrawer::NO_INDEX)
+        {
+        IncludeNode const &node = mIncludeDiagram.getNodes()[index];
+        mIncludeDiagram.removeNode(node.getName());
+        relayout();
+        }
+    }
+
 void IncludeDiagramView::viewFileSource()
     {
     size_t index = mIncludeDiagram.getNodeIndex(mNullDrawer, sStartPosInfo);
@@ -118,6 +140,18 @@ extern "C" G_MODULE_EXPORT void on_IncludeAddSuppliersMenuitem_activate(
         GtkWidget *widget, gpointer data)
     {
     sIncludeDiagramView->addSuppliers();
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeAddConsumersMenuitem_activate(
+        GtkWidget *widget, gpointer data)
+    {
+    sIncludeDiagramView->addConsumers();
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeRemoveFileMenuitem_activate(
+    GtkWidget *widget, gpointer data)
+    {
+    sIncludeDiagramView->removeNode();
     }
 
 extern "C" G_MODULE_EXPORT void on_IncludeViewSourceMenuitem_activate(

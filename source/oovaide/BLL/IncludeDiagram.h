@@ -39,6 +39,10 @@ class IncludeDiagram:public Diagram
             { return mIncludeGraph.getNodes(); }
         void addSuppliers(OovStringRef incName)
             { mIncludeGraph.addSuppliers(incName); }
+        void addConsumers(OovStringRef incName)
+            { mIncludeGraph.addConsumers(incName); }
+        void removeNode(OovStringRef incName)
+            { mIncludeGraph.removeNode(incName); }
 
         /// This can be used to paint to a window, or to an SVG file.
         void drawDiagram(DiagramDrawer &drawer);

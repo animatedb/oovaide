@@ -11,7 +11,7 @@ cd $OUT
 jar cfm oovJavaParser.jar $SRC/Manifest.txt *.class parser/*.class model/*.class
 cd ..
 
-#read -rp "Press any key to continue..." key
+read -rp "Compile complete, press any key to continue to test..." key
 
 EXEC_OUT=../bin-linux/
 cp $OUT/oovJavaParser.jar $EXEC_OUT

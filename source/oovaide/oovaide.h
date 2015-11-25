@@ -111,10 +111,10 @@ class oovGui:public OovErrorListener, private GlobalSettingsListener
             oovGui *gui = reinterpret_cast<oovGui*>(data);
             return gui->onBackgroundIdle(data);
             }
-        void runSrcManager(OovStringRef const buildConfigName,
-                OovProject::eSrcManagerOptions smo);
+        void runSrcManager(OovStringRef const buildConfigName, eProcessModes pm);
         void stopSrcManager()
             { mProject.stopSrcManager(); }
+        void cleanProject();
 
         void updateGuiForAnalysis();
         void updateGuiForProjectChange();

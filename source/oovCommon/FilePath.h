@@ -129,7 +129,8 @@ bool FilePathMatchExtension(OovStringRef const path1, OovStringRef const path2);
 /// @param path2 The file path to check.
 int FilePathComparePaths(OovStringRef const path1, OovStringRef const path2);
 
-/// Get the string to the left and including the position.
+/// Get the string to the left and including the position. A position of
+/// zero with a path without a drive or path spec returns an empty string.
 /// @param path A file path.
 /// @param pos The reference position.
 OovString FilePathGetHead(OovStringRef const path, size_t pos);
@@ -397,6 +398,7 @@ class FilePath:public FilePathRefInterface<FilePath>, public OovString
 
         /// Discard the characters before the position.
         /// Erases up to after the position (pos + 1).
+        /// A position of zero with no drive or path spec does not erase anything.
         /// @param pos The reference position.
         void discardHead(size_t pos);
 

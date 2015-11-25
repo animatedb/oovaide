@@ -23,9 +23,25 @@ public class ModelMethod
         public ModelTypeRefs getParameters()
             { return mParameters; }
 
-        /// Use this to get or add statements.
-        public ModelStatements getStatements()
-            { return mStatements; }
+       /// Use this to get or add statements.
+       public ModelStatements getStatements()
+           { return mStatements; }
+
+        public void addOpenCondStatement(String condText)
+            {
+            ModelStatement statement = new ModelStatement(
+                ModelStatement.StatementType.ST_OpenNest);
+            statement.setName(condText);
+            mStatements.addStatement(statement);
+            }
+
+        public void addCloseStatement()
+            {
+            ModelStatement statement = new ModelStatement(
+            ModelStatement.StatementType.ST_CloseNest);
+            mStatements.addStatement(statement);
+            }
+
 
         String mMethodName;
         ModelTypeRefs mParameters;

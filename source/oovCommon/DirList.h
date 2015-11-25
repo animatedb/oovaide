@@ -33,11 +33,15 @@ OovStatusReturn getDirListMatchExt(OovStringRef const path, const FilePath &ext,
         std::vector<std::string> &fn);
 
 /// Get all filenames with a matching extensions.
-/// @param path The path to search.
+/// @param paths The paths to search.
 /// @param extensions The extensions to match.
 /// @param fn The returned list of filenames.
 OovStatusReturn getDirListMatchExt(const std::vector<std::string> &paths,
         const FilePaths &extensions, std::vector<std::string> &fn);
+
+/// This can only accept a wild card "*" in the last subdir.
+OovStatusReturn const getDirListMatch(OovStringRef const path,
+    std::vector<std::string> &fn);
 
 /// Find a directory that matches the wildcard string.
 /// Returns the first matching directory, or an empty string for no match.
