@@ -1,0 +1,189 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <!-- DC Blaha - 11/18/2015 -->
+  <!-- Last Update: 11/18/2015 -->
+
+  <head>
+    <meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+    <title>OovAide Build System</title>
+  </head>
+  <body>
+	<a href="../index.html">Oovaide Index</a>
+
+<h1>Automated Build Systems</h1>
+	Have you ever thought that too much time is spent on setting
+	up projects for building programs?
+	<p/>
+	This is modern times and we build programs on computers. This has
+	been going on for decades. Why do we have to manually set up
+	include paths? What is the minimal amount of information
+	required to build a program?  Why do we have to manually set
+	up libraries for linking and define which libraries use which
+	other libraries?
+	<p/>
+	In order for the programmer to set up us little as possible,
+	modern systems should find this information automatically, and
+	update the information if any files have changed.  There are
+	some problems doing this for all programs, but for many programs,
+	the constraints and tasks are not that difficult.
+
+    <h1>C++ Automated Build</h1>
+    <h2>Include Paths</h2>
+	Some of the difficulties with automatically finding include
+	paths are described below.
+	<ul>
+	<li>C++ code is difficult to parse. This problem is pretty
+	much solved by using the CLang parser, and building some code
+	around it to search for include paths.</li>
+	<li>C++ macros can alter the files that are included. Many projects
+	do not have this problem at least for the header files that
+	are defined within the project.  The future C++ module feature
+	may be required to solve the macro problem for difficult projects.</li>
+	<li>
+	In C++, an include path	can be something like "&lt;gtk/gtk.h&gt;",
+	which means that the include directory flag given to the compiler
+	has to specify a directory one level higher in the directory tree.</li>
+	<li>Many include files within a project could have the same name.</li>
+	<li>Most projects rely on external project include paths, such
+	as C++ standard libraries, or some other framework. At the moment these
+	cannot be found automatically, at least not on all operating systems.
+	</li>
+	</ul>
+
+    <h2>Specifying Source Code Grouping</h2>
+	<p/>
+	<embed src="../userguide/ExampleSourceTree.svg" type="image/svg+xml">
+	<p/>
+	For simple projects, it may be that all source code under a
+	directory is used to build a single executable. For other projects,
+	there can be many components of different types, such as static
+	library, dynamic library or executable.  Each dynamic
+	library or executable can use any static library.  At the moment,
+	there is no way to automatically determine which source code in
+	different directories are used to build a component. This must
+	require some additional information from the programmer, but usually
+	there should be no need to list all source or header files, or to
+	specify the dependencies.
+
+    <h2>Libraries</h2>
+	In some operating systems, the linker may require the libraries to be
+	listed in order.  This is not a big problem and is easily solved
+	with available tools.
+
+    <h2>External Packages</h2>
+	In addition to external project include files, there are typically also
+	external libraries required by projects.  These projects may also
+	require additional compile or link time switches.  Under Linux, there
+	can be quite a bit of information available, but under Windows, the
+	task is a bit more difficult.
+
+    <h2>Setting up Build Tools</h2>
+	It would also be nice if the build system automatically found the
+	build tools. For example, it may search for g++ or for clang++. On
+	Windows or Linux, it may search the "Path" environment variable, or on
+	may search some standard directories.  In addition, some compiler
+	options may be setup by default for debug and release versions.
+
+
+<h1>OovAide Build System</h1>
+	The following sections are defined in the order that
+	a programmer would go through to set up a project for building
+	using the OovAide program.  Performing only analysis using OovAide
+	only requires a subset of the steps defined here.
+	<p/>
+	OovAide has the following constraints:
+	<ul>
+	<li>compile switches for whole project</li>
+	<li>header file names must be unique</li>
+	</ul>
+	OovAide allows specifying custom compile switches for the project.
+	OovAide actually runs a command line build program called
+	oovBuilder, which allows performing builds from the command line.
+	OovAide also runs many of the build tasks in parallel by multitasking
+	the processes.
+
+    <h2>Specify Project Code Location</h2>
+	The programmer must select a single source root directory for all of
+	the source code that will be in the project.  It is possible to
+	specify exclusion directories for directories that should not be
+	analyzed or built.
+
+    <h2>Build Tools</h2>
+	The OovAide program searches for the g++ and clang++ tools. It also
+	requires the ar and nm tools for finding library dependencies.
+
+    <h2>Directory Scan</h2>
+	The OovAide program scans the directories under the source root
+	directory to find all of the source and header files.  The CLang
+	parser is run on all C++ files to generate include dependencies.
+	The include dependencies are used to build object files, and to
+	determine when they must be rebuilt when a source file changes.
+	<p/>
+	At the moment, the directory scan is performed on the whole
+	source root directory tree. This could be optimized in the
+	future by performing directory monitoring, This may limit the use
+	for very large projects.
+	<p/>
+	While parsing the C++ files, include flags are set for all directories
+	in the project that contain header files so that the CLang compiler
+	can function correctly.  It would be nice if CLang could request
+	include flags dynamically during parsing to reduce possible problems
+	that this could create.  During actual compilation, only the dependent
+	include flags are added.
+	<p/>
+	At the moment, if the project is changed in a major manner,
+	the conservative approach is taken, and all files are rebuilt.
+
+    <h2>External Packages</h2>
+	On Linux, the pkgconfig program provides definitions for many
+	popular libraries.  The OovAide GUI provides a simple way to
+	select external packages to add to the program.
+	<p/>
+	On Windows,
+	a similar interface is provided for selecting libraries, but there is
+	no common database that provides definitions of external libraries.
+	A few library definitions are provided, but others can be added
+	by the programmer.
+
+    <h2>Specifying Source Code Grouping</h2>
+	The following directory tree will be used to discuss some
+	common scenarios.
+	<p/>
+	<embed src="../userguide/ExampleSourceTree.svg" type="image/svg+xml">
+	<p/>
+	An important point to remember is that the OovAide grouping mechanism
+	is used for grouping source files into components. OovAide will set
+	include paths for header files no matter where they are as long as
+	the file names are unique.
+	<p/>
+	OovAide uses a simple method for defining components.  Any directory
+	in the source root directory can be designated as a component.
+
+examples:
+extra component settings:
+
+<p/>
+
+
+	I have mainly seen a few main configurations for how projects manage
+	header files. In some projects, there are many header files in
+	a few directories that do not contain source (CPP files), and the
+	source files are in other directories. In other	projects, each source
+ 	file has a corresponding header file, and the header files are in
+	all of the directories.  Many projects are some combination of these.
+
+    <h2>Build</h2>
+	The build performs the directory scan to see what which files
+	were modified. The file extensions are used to determine which
+	tool to run on each file.  The nm tool is used to find the names
+	in internal and external project libraries to determine library
+	dependencies and link order.
+
+
+    <h1>Java Automated Build</h1>
+import
+
+  </body>
+
+</html>
