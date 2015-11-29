@@ -93,8 +93,16 @@ static void getAnalysisToolCommand(FilePath const &filePath,
         {
         args.addArg(toolPathFile.getJavaCompilerPath());
 
-        ToolPathFile::appendArgs(true, toolPathFile.getValue(
-            OptJavaAnalyzeArgs), args);
+        // Arguments for the parser must not be given to java, and instead
+        // given later to the parser outside of this function.
+        CompoundValue javaArgs;
+        javaArgs.parseString(toolPathFile.getValue(OptJavaAnalyzeArgs));
+        size_t dupPos = javaArgs.find("-dups");
+        if(dupPos != CompoundValue::npos)
+            {
+            javaArgs.erase(javaArgs.begin() + 1);
+            }
+        ToolPathFile::appendArgs(true, javaArgs.getAsString(), args);
         args.addArg("-cp");
 
         // Add the compiler jar to the classpath.
@@ -172,8 +180,12 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                         }
                     else
                         {
-                        ToolPathFile::appendArgs(false, mToolPathFile.
-                            getValue(OptJavaAnalyzeArgs), ca);
+                        CompoundValue javaArgs;
+                        javaArgs.parseString(mToolPathFile.getValue(OptJavaAnalyzeArgs));
+                        if(javaArgs.find("-dups") != std::string::npos)
+                            {
+                            ca.addArg("-dups");
+                            }
                         }
                     addTask(ca);
     /*

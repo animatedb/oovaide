@@ -6,7 +6,7 @@ mkdir %OUT%
 del %OUT%\*.class
 javac -d %OUT% @sources.txt
 cd %OUT%
-jar cfm oovJavaParser.jar %SRC%\Manifest.txt *.class parser\*.class model\*.class
+jar cfm oovJavaParser.jar %SRC%\Manifest.txt *.class parser\*.class model\*.class common\*.class
 cd ..
 pause
 set EXECOUT=..\bin\

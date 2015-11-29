@@ -8,7 +8,7 @@ mkdir $OUT
 rm $OUT\*.class
 javac -cp $CLASSPATH -d $OUT @sources.txt
 cd $OUT
-jar cfm oovJavaParser.jar $SRC/Manifest.txt *.class parser/*.class model/*.class
+jar cfm oovJavaParser.jar $SRC/Manifest.txt *.class parser/*.class model/*.class common/*.class
 cd ..
 
 read -rp "Compile complete, press any key to continue to test..." key
