@@ -6,7 +6,6 @@
  */
 
 #include "BuildConfigWriter.h"
-#include "Project.h"
 #include "OovError.h"
 #include <stdio.h>      // For snprintf
 

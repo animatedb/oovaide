@@ -1,5 +1,5 @@
 DrawingName|ClassDiagramView
 FileType|Class
 Names|Oov-Key;ClassDiagramView;ClassDiagram;GtkCairoContext;NullDrawer;ClassDiagramListener;ForegroundThreadBusyDialog;ClassGraphListener;ModelData;ClassGraph;OovTaskStatusListener;DiagramDrawer;
-XPositions|466;11;28;362;384;418;128;16;182;128;252;279;
-YPositions|217;11;593;486;613;407;658;407;568;476;422;607;
+XPositions|467;11;28;362;384;418;128;16;182;128;252;279;
+YPositions|182;11;593;486;613;407;658;407;568;476;422;607;

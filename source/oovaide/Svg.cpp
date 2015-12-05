@@ -56,6 +56,11 @@ void SvgDrawer::setCurrentDrawingFontSize(double size)
     DiagramDrawer::setCurrentDrawingFontSize(size);
     }
 
+static void appendColorInt(OovString &str, int rgbColor)
+    {
+    str.appendInt(rgbColor, 16, 0, 6);
+    }
+
 static void outArg(OovStringRef argName, OovStringRef argVal, OovString &outStr)
     {
     outStr += ' ';
@@ -79,6 +84,20 @@ static void outArgFloat(OovStringRef argName, double argVal, int precision, OovS
     outArg(argName, argValStr, outStr);
     }
 
+static void outArg4Int(OovStringRef argName, int argVal1, int argVal2,
+    int argVal3, int argVal4, OovString &outStr)
+    {
+    OovString argValStr;
+    argValStr.appendInt(argVal1);
+    argValStr += " ";
+    argValStr.appendInt(argVal2);
+    argValStr += " ";
+    argValStr.appendInt(argVal3);
+    argValStr += " ";
+    argValStr.appendInt(argVal4);
+    outArg(argName, argValStr, outStr);
+    }
+
 void SvgDrawer::maybeOutputHeader()
     {
     if(mOutputHeader && mSuccess.ok())
@@ -89,6 +108,7 @@ void SvgDrawer::maybeOutputHeader()
         outArgFloat("font-size", getCurrentDrawingFontSize(), 2, str);
         outArgInt("width", mDrawingSize.x, str);
         outArgInt("height", mDrawingSize.y, str);
+        outArg4Int("viewbox", 0, 0, mDrawingSize.x, mDrawingSize.y, str);
         str += ">\n";
         mSuccess = mFile.putString(str);
         mOutputHeader = false;
@@ -140,7 +160,7 @@ void SvgDrawer::drawCircle(const GraphPoint &p, int radius, Color fillColor)
         outArgInt("r", radius, str);
 
         OovString style = " style=\"fill:#";
-        style.appendInt(fillColor.getRGB(), 16);
+        appendColorInt(style, fillColor.getRGB());
         style += '\"';
 
         str += style;
@@ -184,7 +204,7 @@ void SvgDrawer::drawPoly(const OovPolygon &poly, Color fillColor)
         outArg("points", pointsStr, str);
 
         OovString styleArg = "fill:#";
-        styleArg.appendInt(fillColor.getRGB(), 16);
+        appendColorInt(styleArg, fillColor.getRGB());
         addArg(str, "style", styleArg);
 
         str += " />\n";

@@ -13,7 +13,6 @@ public class ModelTypeRelations implements Iterable<ModelTypeRelation>
     {
     public ModelTypeRelations()
         {
-        super();
         mTypeRelations = new HashSet<ModelTypeRelation>();
         }
 

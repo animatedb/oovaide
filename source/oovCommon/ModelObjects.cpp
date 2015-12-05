@@ -696,6 +696,84 @@ bool ModelData::isTypeReferencedByStatements(ModelStatements const &stmts,
     return referenced;
     }
 
+bool ModelData::isTypeReferencedByOperation(ModelOperation const &oper,
+    ModelType const &checkType) const
+    {
+    bool referenced = false;
+    // Only defined operations in the translation unit have a module.
+    if(oper.getModule())
+        {
+        // Check function parameters.
+        for(auto &param : oper.getParams())
+            {
+            if(param->getDeclType() == &checkType)
+                {
+                referenced = true;
+                break;
+                }
+            }
+        if(!referenced)
+            {
+            // Check function call decls.
+            ModelStatements const &stmts = oper.getStatements();
+            referenced = isTypeReferencedByStatements(stmts, checkType);
+            }
+        if(!referenced)
+            {
+            // Check body variables.
+            for(auto &vd : oper.getBodyVarDeclarators())
+                {
+                if(vd->getDeclType() == &checkType)
+                    {
+                    referenced = true;
+                    break;
+                    }
+                }
+            }
+        if(!referenced)
+            {
+            if(oper.getReturnType().getDeclType() == &checkType)
+                {
+                referenced = true;
+                }
+            }
+        }
+    return referenced;
+    }
+
+bool ModelData::isTypeReferencedByClassAttributes(ModelClassifier const &classifier,
+    ModelType const &checkType) const
+    {
+    bool referenced = false;
+    for(auto &attr : classifier.getAttributes())
+        {
+        if(attr->getDeclType() == &checkType)
+            {
+            referenced = true;
+            if(referenced)
+                {
+                break;
+                }
+            }
+        }
+    return referenced;
+    }
+
+bool ModelData::isTypeReferencedByParentClass(ModelClassifier const &classifier,
+    ModelType const &checkType) const
+    {
+    bool referenced = false;
+    for(auto &assoc : mAssociations)
+        {
+        if(assoc->getParent() == &checkType)
+            {
+            referenced = true;
+            break;
+            }
+        }
+    return referenced;
+    }
+
 bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) const
     {
     bool referenced = false;
@@ -707,57 +785,16 @@ bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) con
             // Only defined classes in the parsed translation unit have a module.
             if(classifier->getModule())
                 {
-                for(auto &attr : classifier->getAttributes())
-                    {
-                    if(attr->getDeclType() == &checkType)
-                        {
-                        referenced = true;
-                        break;
-                        }
-                    }
+                referenced = isTypeReferencedByClassAttributes(*classifier, checkType);
                 }
             if(!referenced)
                 {
                 for(auto &oper : classifier->getOperations())
                     {
-                    // Only defined operations in the translation unit have a module.
-                    if(oper->getModule())
+                    referenced = isTypeReferencedByOperation(*oper, checkType);
+                    if(referenced)
                         {
-                        // Check function parameters.
-                        for(auto &param : oper->getParams())
-                            {
-                            if(param->getDeclType() == &checkType)
-                                {
-                                referenced = true;
-                                break;
-                                }
-                            }
-                        if(!referenced)
-                            {
-                            // Check function call decls.
-                            ModelStatements &stmts = oper->getStatements();
-                            referenced = isTypeReferencedByStatements(stmts, checkType);
-                            }
-                        if(!referenced)
-                            {
-                            // Check body variables.
-                            for(auto &vd : oper->getBodyVarDeclarators())
-                                {
-                                if(vd->getDeclType() == &checkType)
-                                    {
-                                    referenced = true;
-                                    break;
-                                    }
-                                }
-                            }
-                        if(!referenced)
-                            {
-                            if(oper->getReturnType().getDeclType() == &checkType)
-                                {
-                                referenced = true;
-                                break;
-                                }
-                            }
+                        break;
                         }
                     }
                 }

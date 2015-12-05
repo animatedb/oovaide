@@ -156,7 +156,7 @@ public class ModelWriter
             switch(stmt.getStatementType())
                 {
                 case ST_OpenNest:
-                    line += "{" + stmt.getName();
+                    line += "{" + translate(stmt.getName());
                     break;
 
                 case ST_CloseNest:
@@ -164,13 +164,14 @@ public class ModelWriter
                     break;
 
                 case ST_Call:
-                    line += "c=" + stmt.getName() + "@" + getTypeIndexStr(
+                    line += "c=" + translate(stmt.getName()) + "@" + getTypeIndexStr(
                         stmt.getClassType());
                     break;
 
                 case ST_VarRef:
-                    line += "v=" + stmt.getName() + "@" + getTypeIndexStr(
-                        stmt.getClassType()) + "@" + getTypeIndexStr(stmt.getVarType()) + "@t";
+                    line += "v=" + translate(stmt.getName()) + "@" + 
+                        getTypeIndexStr(stmt.getClassType()) + "@" +
+                        getTypeIndexStr(stmt.getVarType()) + "@t";
                     break;
                 }
             }
@@ -328,10 +329,14 @@ public class ModelWriter
                 {
                 String line = lines.get(i);
                 int barIndex = line.indexOf('|');
-                if(line.substring(0, barIndex).compareTo(absSrcFn) == 0)
+                // If there are no imports, there is no bar.
+                if(barIndex != -1)
                     {
-                    lines.remove(i);
-                    break;
+                    if(line.substring(0, barIndex).compareTo(absSrcFn) == 0)
+                        {
+                        lines.remove(i);
+                        break;
+                        }
                     }
                 }
             String importStr = getImportStr(model, srcRootDir, absSrcFn);
@@ -359,4 +364,23 @@ public class ModelWriter
                 }
             }
         }
+
+    String translate(String str)
+        {
+        String retStr = "";
+        for(int i=0; i<str.length(); i++)
+            {
+            switch(str.charAt(i))
+                {
+                case '>':           retStr += "&gt;";       break;
+                case '<':           retStr += "&lt;";       break;
+                case '&':           retStr += "&amp;";      break;
+                case '\'':          retStr += "&apos;";     break;
+                case '\"':          retStr += "&quot;";     break;
+                default:            retStr += str.charAt(i);    break;
+                }
+            }
+        return retStr;
+        }
+
     }

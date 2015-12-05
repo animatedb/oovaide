@@ -1,276 +1,329 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
- font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="642" height="659">
+ font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="709" height="760" viewbox="0 0 709 760">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="15" y="499" width="133" height="143" />
-<line x1="15" y1="512" x2="148" y2="512" />
-<polygon points="128,520 140,525 140,515 128,520 " style="fill:#ffffff" />
-<polygon points="128,534 135,538 142,534 135,530 128,534 " style="fill:#ffffff" />
-<polygon points="128,548 135,552 142,548 135,544 128,548 " style="fill:#0" />
-<polygon points="128,562 136,567 132,562 136,557 128,562 " style="fill:#ffffff" />
-<circle cx="128" cy="576" r="5" style="fill:#ffffff" />
-<circle cx="128" cy="590" r="5" style="fill:#ffffff" />
-<circle cx="135" cy="590" r="2" style="fill:#ffffff" />
-<circle cx="128" cy="604" r="5" style="fill:#ffffff" />
-<circle cx="128" cy="604" r="2" style="fill:#ffffff" />
-<circle cx="128" cy="618" r="5" style="fill:#ffffff" />
-<circle cx="128" cy="618" r="2" style="fill:#0" />
-<circle cx="128" cy="632" r="5" style="fill:#0" />
-<circle cx="128" cy="632" r="2" style="fill:#0" />
+<rect x="20" y="526" width="129" height="143" />
+<line x1="20" y1="539" x2="149" y2="539" />
+<polygon points="133,547 145,552 145,542 133,547 " style="fill:#ffffff" />
+<polygon points="133,561 140,565 147,561 140,557 133,561 " style="fill:#ffffff" />
+<polygon points="133,575 140,579 147,575 140,571 133,575 " style="fill:#000000" />
+<polygon points="133,589 141,594 137,589 141,584 133,589 " style="fill:#ffffff" />
+<circle cx="133" cy="603" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="617" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="617" r="2" style="fill:#ffffff" />
+<circle cx="133" cy="631" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="631" r="2" style="fill:#ffffff" />
+<circle cx="133" cy="645" r="5" style="fill:#ffffff" />
+<circle cx="133" cy="645" r="2" style="fill:#000000" />
+<circle cx="133" cy="659" r="5" style="fill:#000000" />
+<circle cx="133" cy="659" r="2" style="fill:#000000" />
 </g>
 <g stroke="none">
-<text x="16" y="508">Relations Key</text>
-<text x="16" y="522">Generalization</text>
-<text x="16" y="536">Aggregation(reference)</text>
-<text x="16" y="550">Composition(owned)</text>
-<text x="16" y="564">Const</text>
-<text x="16" y="578">Method Variable</text>
-<text x="16" y="592">Method Parameter</text>
-<text x="16" y="606">Public</text>
-<text x="16" y="620">Protected</text>
-<text x="16" y="634">Private</text>
+<text x="21" y="535">Relations Key</text>
+<text x="21" y="549">Generalization</text>
+<text x="21" y="563">Aggregation(reference)</text>
+<text x="21" y="577">Composition(owned)</text>
+<text x="21" y="591">Const</text>
+<text x="21" y="605">Method Variable</text>
+<text x="21" y="619">Method Parameter</text>
+<text x="21" y="633">Public</text>
+<text x="21" y="647">Protected</text>
+<text x="21" y="661">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="11" y="114" width="175" height="71" />
-<line x1="11" y1="135" x2="186" y2="135" />
-<line x1="11" y1="147" x2="186" y2="147" />
+<rect x="21" y="23" width="170" height="71" />
+<line x1="21" y1="44" x2="191" y2="44" />
+<line x1="21" y1="56" x2="191" y2="56" />
 </g>
 <g stroke="none">
-<text x="12" y="123">parser.Parser</text>
-<text x="12" y="132">parser</text>
-<text x="12" y="144">+model.ModelData model</text>
-<text x="12" y="156">-&lt;init&gt;()</text>
-<text x="12" y="165">-parse(java.lang.String srcFileName,</text>
-<text x="19" y="174"> java.lang.String analysisDir)</text>
-<text x="12" y="183">-getAbsPath(java.lang.String path)</text>
+<text x="22" y="32">parser.AnalysisParser</text>
+<text x="22" y="41">parser</text>
+<text x="22" y="53">+model.ModelData model</text>
+<text x="22" y="65">-&lt;init&gt;()</text>
+<text x="22" y="74">-getModel()</text>
+<text x="22" y="83">-parse(java.lang.String dupHashFn,</text>
+<text x="29" y="92"> java.lang.String analysisDir)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="237" y="230" width="88" height="26" />
-<line x1="237" y1="251" x2="325" y2="251" />
-<line x1="237" y1="254" x2="325" y2="254" />
+<rect x="323" y="271" width="88" height="26" />
+<line x1="323" y1="292" x2="411" y2="292" />
+<line x1="323" y1="295" x2="411" y2="295" />
 </g>
 <g stroke="none">
-<text x="238" y="239">model.ModelData</text>
-<text x="238" y="248">model</text>
+<text x="324" y="280">model.ModelData</text>
+<text x="324" y="289">model</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="12" y="288" width="119" height="17" />
-<line x1="12" y1="300" x2="131" y2="300" />
-<line x1="12" y1="303" x2="131" y2="303" />
+<rect x="178" y="273" width="86" height="17" />
+<line x1="178" y1="285" x2="264" y2="285" />
+<line x1="178" y1="288" x2="264" y2="288" />
 </g>
 <g stroke="none">
-<text x="13" y="297">javax.tools.ToolProvider</text>
+<text x="179" y="282">java.util.ArrayList</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="424" y="92" width="123" height="17" />
-<line x1="424" y1="104" x2="547" y2="104" />
-<line x1="424" y1="107" x2="547" y2="107" />
+<rect x="230" y="346" width="478" height="413" />
+<line x1="230" y1="367" x2="708" y2="367" />
+<line x1="230" y1="406" x2="708" y2="406" />
 </g>
 <g stroke="none">
-<text x="425" y="101">javax.tools.JavaCompiler</text>
+<text x="231" y="355">parser.ParserTreeVisitor</text>
+<text x="231" y="364">parser</text>
+<text x="231" y="376">+model.ModelType currentClass</text>
+<text x="231" y="385">+model.ModelMethod currentMethod</text>
+<text x="231" y="394">+model.ModelData model</text>
+<text x="231" y="403">+java.util.ArrayList mSwitchContexts</text>
+<text x="231" y="415">-visitImport(com.sun.source.tree.ImportTree importTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="424">-safeGetScope(com.sun.source.util.Trees trees, com.sun.source.util.TreePath path)</text>
+<text x="231" y="433">-visitEnhancedForLoop(com.sun.source.tree.EnhancedForLoopTree forTree, com.sun.source.util.T</text>
+<text x="238" y="442">rees trees)</text>
+<text x="231" y="451">-visitMethod(com.sun.source.tree.MethodTree methodTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="460">-addCloseStatement()</text>
+<text x="231" y="469">-addTypeRef(model.ModelTypeRefs typeRefs, com.sun.source.tree.Tree supplierTree, com.sun.sou</text>
+<text x="238" y="478">rce.util.Trees trees, java.lang.String supplierVarName)</text>
+<text x="231" y="487">-&lt;init&gt;(model.ModelData mod, java.lang.String packageName, java.lang.String analysisDir)</text>
+<text x="231" y="496">-visitCase(com.sun.source.tree.CaseTree caseTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="505">-getTypeName(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="514">-visitSwitch(com.sun.source.tree.SwitchTree switchTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="523">-addMemberVariables(model.ModelType type, com.sun.source.tree.ClassTree classTree, </text>
+<text x="238" y="532">com.sun.source.util.Trees trees)</text>
+<text x="231" y="541">-visitNewClass(com.sun.source.tree.NewClassTree newTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="550">-findOrAddEnclosingClassForVariable(com.sun.source.tree.Tree tree, com.sun.source.util.Trees</text>
+<text x="238" y="559"> trees)</text>
+<text x="231" y="568">-lookupTypeNameFromIdentifier(com.sun.source.tree.Tree tree, com.sun.source.util.Trees </text>
+<text x="238" y="577">trees)</text>
+<text x="231" y="586">-visitForLoop(com.sun.source.tree.ForLoopTree forTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="595">-addTypeRelations(model.ModelType type, com.sun.source.tree.ClassTree classTree, com.sun.sou</text>
+<text x="238" y="604">rce.util.Trees trees)</text>
+<text x="231" y="613">-getIdentifierTypeName(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="622">-visitWhileLoop(com.sun.source.tree.WhileLoopTree whileTree, com.sun.source.util.Trees </text>
+<text x="238" y="631">trees)</text>
+<text x="231" y="640">-visitIdentifier(com.sun.source.tree.IdentifierTree identTree, com.sun.source.util.Trees </text>
+<text x="238" y="649">trees)</text>
+<text x="231" y="658">-visitBreak(com.sun.source.tree.BreakTree breakTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="667">-addVarRefStatement(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees,</text>
+<text x="238" y="676"> java.lang.String varName)</text>
+<text x="231" y="685">-addOrFindTypeUsingName(java.lang.String fullName)</text>
+<text x="231" y="694">-addOpenCondStatement(java.lang.String condText)</text>
+<text x="231" y="703">-visitIf(com.sun.source.tree.IfTree ifTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="712">-visitMethodInvocation(com.sun.source.tree.MethodInvocationTree callTree, com.sun.source.uti</text>
+<text x="238" y="721">l.Trees trees)</text>
+<text x="231" y="730">-visitClass(com.sun.source.tree.ClassTree classTree, com.sun.source.util.Trees trees)</text>
+<text x="231" y="739">-addTypeRel(model.ModelType consumerType, com.sun.source.tree.Tree supplierTree, com.sun.sou</text>
+<text x="238" y="748">rce.util.Trees trees)</text>
+<text x="231" y="757">-addOrFindType(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="54" y="18" width="183" height="17" />
-<line x1="54" y1="30" x2="237" y2="30" />
-<line x1="54" y1="33" x2="237" y2="33" />
+<rect x="455" y="73" width="119" height="17" />
+<line x1="455" y1="85" x2="574" y2="85" />
+<line x1="455" y1="88" x2="574" y2="88" />
 </g>
 <g stroke="none">
-<text x="55" y="27">javax.tools.StandardJavaFileManager</text>
+<text x="456" y="82">javax.tools.ToolProvider</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="269" y="73" width="145" height="17" />
-<line x1="269" y1="85" x2="414" y2="85" />
-<line x1="269" y1="88" x2="414" y2="88" />
+<rect x="469" y="132" width="123" height="17" />
+<line x1="469" y1="144" x2="592" y2="144" />
+<line x1="469" y1="147" x2="592" y2="147" />
 </g>
 <g stroke="none">
-<text x="270" y="82">com.sun.source.util.JavacTask</text>
+<text x="470" y="141">javax.tools.JavaCompiler</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="369" y="150" width="123" height="17" />
-<line x1="369" y1="162" x2="492" y2="162" />
-<line x1="369" y1="165" x2="492" y2="165" />
+<rect x="230" y="6" width="183" height="17" />
+<line x1="230" y1="18" x2="413" y2="18" />
+<line x1="230" y1="21" x2="413" y2="21" />
 </g>
 <g stroke="none">
-<text x="370" y="159">com.sun.source.util.Trees</text>
+<text x="231" y="15">javax.tools.StandardJavaFileManager</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="156" y="44" width="198" height="17" />
-<line x1="156" y1="56" x2="354" y2="56" />
-<line x1="156" y1="59" x2="354" y2="59" />
+<rect x="132" y="209" width="90" height="26" />
+<line x1="132" y1="230" x2="222" y2="230" />
+<line x1="132" y1="233" x2="222" y2="233" />
 </g>
 <g stroke="none">
-<text x="157" y="53">com.sun.source.tree.CompilationUnitTree</text>
+<text x="133" y="218">common.Common</text>
+<text x="133" y="227">common</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="109" y="252" width="83" height="17" />
-<line x1="109" y1="264" x2="192" y2="264" />
-<line x1="109" y1="267" x2="192" y2="267" />
+<rect x="457" y="100" width="145" height="17" />
+<line x1="457" y1="112" x2="602" y2="112" />
+<line x1="457" y1="115" x2="602" y2="115" />
 </g>
 <g stroke="none">
-<text x="110" y="261">java.lang.Object</text>
+<text x="458" y="109">com.sun.source.util.JavacTask</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="449" y="123" width="180" height="17" />
-<line x1="449" y1="135" x2="629" y2="135" />
-<line x1="449" y1="138" x2="629" y2="138" />
+<rect x="344" y="225" width="123" height="17" />
+<line x1="344" y1="237" x2="467" y2="237" />
+<line x1="344" y1="240" x2="467" y2="240" />
 </g>
 <g stroke="none">
-<text x="450" y="132">com.sun.source.util.TreePathScanner</text>
+<text x="345" y="234">com.sun.source.util.Trees</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="42" y="63" width="57" height="17" />
-<line x1="42" y1="75" x2="99" y2="75" />
-<line x1="42" y1="78" x2="99" y2="78" />
+<rect x="443" y="20" width="198" height="17" />
+<line x1="443" y1="32" x2="641" y2="32" />
+<line x1="443" y1="35" x2="641" y2="35" />
 </g>
 <g stroke="none">
-<text x="43" y="72">java.io.File</text>
+<text x="444" y="29">com.sun.source.tree.CompilationUnitTree</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="313" y="172" width="86" height="17" />
-<line x1="313" y1="184" x2="399" y2="184" />
-<line x1="313" y1="187" x2="399" y2="187" />
+<rect x="452" y="46" width="172" height="17" />
+<line x1="452" y1="58" x2="624" y2="58" />
+<line x1="452" y1="61" x2="624" y2="61" />
 </g>
 <g stroke="none">
-<text x="314" y="181">java.util.ArrayList</text>
+<text x="453" y="55">com.sun.source.util.SourcePositions</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="13" y="392" width="145" height="17" />
-<line x1="13" y1="404" x2="158" y2="404" />
-<line x1="13" y1="407" x2="158" y2="407" />
+<rect x="477" y="202" width="141" height="17" />
+<line x1="477" y1="214" x2="618" y2="214" />
+<line x1="477" y1="217" x2="618" y2="217" />
 </g>
 <g stroke="none">
-<text x="14" y="401">com.sun.source.tree.ClassTree</text>
+<text x="478" y="211">com.sun.source.tree.LineMap</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="12" y="335" width="158" height="17" />
-<line x1="12" y1="347" x2="170" y2="347" />
-<line x1="12" y1="350" x2="170" y2="350" />
+<rect x="483" y="261" width="180" height="17" />
+<line x1="483" y1="273" x2="663" y2="273" />
+<line x1="483" y1="276" x2="663" y2="276" />
 </g>
 <g stroke="none">
-<text x="13" y="344">com.sun.source.util.TreeScanner</text>
+<text x="484" y="270">com.sun.source.util.TreePathScanner</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="196" y="299" width="445" height="359" />
-<line x1="196" y1="320" x2="641" y2="320" />
-<line x1="196" y1="341" x2="641" y2="341" />
+<rect x="20" y="385" width="160" height="89" />
+<line x1="20" y1="406" x2="180" y2="406" />
+<line x1="20" y1="418" x2="180" y2="418" />
 </g>
 <g stroke="none">
-<text x="197" y="308">parser.ParserTreeVisitor</text>
-<text x="197" y="317">parser</text>
-<text x="197" y="329">+model.ModelType currentClass</text>
-<text x="197" y="338">+model.ModelMethod currentMethod</text>
-<text x="197" y="350">-addTypeRelations(model.ModelType type, com.sun.source.tree.ClassTree classTree,</text>
-<text x="204" y="359"> com.sun.source.util.Trees trees)</text>
-<text x="197" y="368">-visitIdentifier(com.sun.source.tree.IdentifierTree identTree, com.sun.source.util.Tree</text>
-<text x="204" y="377">s trees)</text>
-<text x="197" y="386">-visitMethod(com.sun.source.tree.MethodTree methodTree, com.sun.source.util.Trees </text>
-<text x="204" y="395">trees)</text>
-<text x="197" y="404">-addVarRefStatement(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees,</text>
-<text x="204" y="413"> java.lang.String varName)</text>
-<text x="197" y="422">-findOrAddEnclosingClassForVariable(com.sun.source.tree.Tree tree, com.sun.source.util.</text>
-<text x="204" y="431">Trees trees)</text>
-<text x="197" y="440">-addOpenCondStatement(java.lang.String condText)</text>
-<text x="197" y="449">-addMemberVariables(model.ModelType type, com.sun.source.tree.ClassTree classTree,</text>
-<text x="204" y="458"> com.sun.source.util.Trees trees)</text>
-<text x="197" y="467">-getIdentifierTypeName(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees)</text>
-<text x="197" y="476">-addCloseStatement()</text>
-<text x="197" y="485">-addTypeRef(model.ModelTypeRefs typeRefs, com.sun.source.tree.Tree supplierTree,</text>
-<text x="204" y="494"> com.sun.source.util.Trees trees, java.lang.String supplierVarName)</text>
-<text x="197" y="503">-&lt;init&gt;(java.lang.String packageName, java.lang.String analysisDir)</text>
-<text x="197" y="512">-visitClass(com.sun.source.tree.ClassTree classTree, com.sun.source.util.Trees trees)</text>
-<text x="197" y="521">-lookupTypeNameFromIdentifier(com.sun.source.tree.Tree tree, com.sun.source.util.Trees </text>
-<text x="204" y="530">trees)</text>
-<text x="197" y="539">-getTypeName(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees)</text>
-<text x="197" y="548">-addOrFindTypeUsingName(java.lang.String fullName)</text>
-<text x="197" y="557">-visitEnhancedForLoop(com.sun.source.tree.EnhancedForLoopTree forTree, com.sun.source.u</text>
-<text x="204" y="566">til.Trees trees)</text>
-<text x="197" y="575">-safeGetScope(com.sun.source.util.Trees trees, com.sun.source.util.TreePath path)</text>
-<text x="197" y="584">-addOrFindType(com.sun.source.tree.Tree tree, com.sun.source.util.Trees trees)</text>
-<text x="197" y="593">-visitWhileLoop(com.sun.source.tree.WhileLoopTree whileTree, com.sun.source.util.Trees </text>
-<text x="204" y="602">trees)</text>
-<text x="197" y="611">-visitForLoop(com.sun.source.tree.ForLoopTree forTree, com.sun.source.util.Trees trees)</text>
-<text x="197" y="620">-addTypeRel(model.ModelType consumerType, com.sun.source.tree.Tree supplierTree,</text>
-<text x="204" y="629"> com.sun.source.util.Trees trees)</text>
-<text x="197" y="638">-visitIf(com.sun.source.tree.IfTree ifTree, com.sun.source.util.Trees trees)</text>
-<text x="197" y="647">-visitMethodInvocation(com.sun.source.tree.MethodInvocationTree callTree, com.sun.sourc</text>
-<text x="204" y="656">e.util.Trees trees)</text>
+<text x="21" y="394">parser.DupHashFile</text>
+<text x="21" y="403">parser</text>
+<text x="21" y="415">+java.io.PrintWriter mFile</text>
+<text x="21" y="427">-close()</text>
+<text x="21" y="436">-&lt;init&gt;()</text>
+<text x="21" y="445">-fixSpaces(java.lang.String text)</text>
+<text x="21" y="454">-makeHash(java.lang.String str)</text>
+<text x="21" y="463">-append(java.lang.String text)</text>
+<text x="21" y="472">-open(java.lang.String fileName)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="475" y="165" width="85" height="17" />
+<line x1="475" y1="177" x2="560" y2="177" />
+<line x1="475" y1="180" x2="560" y2="180" />
+</g>
+<g stroke="none">
+<text x="476" y="174">java.lang.System</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="46" y="310" width="177" height="35" />
+<line x1="46" y1="340" x2="223" y2="340" />
+<line x1="46" y1="343" x2="223" y2="343" />
+</g>
+<g stroke="none">
+<text x="47" y="319">oovJavaParser</text>
+<text x="47" y="328">C:/Dave/Mine/software/oovaide/sourc</text>
+<text x="47" y="337">  e/oovJavaParser</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="166" y1="184" x2="256" y2="230" />
-<circle cx="178" cy="190" r="5" style="fill:#ffffff" />
-<circle cx="192" cy="197" r="5" style="fill:#ffffff" />
-<circle cx="192" cy="197" r="2" style="fill:#ffffff" />
-<polygon points="166,184 170,191 178,190 174,184 166,184 " style="fill:#0" />
-<line x1="92" y1="184" x2="72" y2="288" />
-<circle cx="89" cy="197" r="5" style="fill:#ffffff" />
-<line x1="185" y1="138" x2="424" y2="107" />
-<circle cx="198" cy="136" r="5" style="fill:#ffffff" />
-<line x1="111" y1="114" x2="142" y2="34" />
-<circle cx="116" cy="100" r="5" style="fill:#ffffff" />
-<line x1="185" y1="125" x2="313" y2="89" />
-<circle cx="198" cy="121" r="5" style="fill:#ffffff" />
-<line x1="185" y1="151" x2="369" y2="157" />
-<circle cx="198" cy="151" r="5" style="fill:#ffffff" />
-<line x1="154" y1="114" x2="243" y2="60" />
-<circle cx="165" cy="106" r="5" style="fill:#ffffff" />
-<line x1="114" y1="184" x2="147" y2="252" />
-<circle cx="120" cy="196" r="5" style="fill:#ffffff" />
-<line x1="185" y1="146" x2="449" y2="134" />
-<circle cx="198" cy="145" r="5" style="fill:#ffffff" />
-<line x1="86" y1="114" x2="72" y2="79" />
-<circle cx="80" cy="101" r="5" style="fill:#ffffff" />
-<line x1="237" y1="248" x2="191" y2="255" />
-<circle cx="223" cy="250" r="5" style="fill:#ffffff" />
-<line x1="296" y1="230" x2="347" y2="188" />
-<circle cx="306" cy="221" r="5" style="fill:#ffffff" />
-<circle cx="319" cy="210" r="5" style="fill:#ffffff" />
-<circle cx="319" cy="210" r="2" style="fill:#ffffff" />
-<polygon points="296,230 304,229 306,222 299,222 296,230 " style="fill:#0" />
-<line x1="288" y1="256" x2="314" y2="299" />
-<circle cx="306" cy="287" r="5" style="fill:#ffffff" />
-<line x1="430" y1="166" x2="424" y2="299" />
-<circle cx="424" cy="285" r="5" style="fill:#ffffff" />
-<circle cx="424" cy="278" r="2" style="fill:#ffffff" />
-<line x1="159" y1="268" x2="198" y2="299" />
-<circle cx="187" cy="290" r="5" style="fill:#ffffff" />
-<line x1="537" y1="139" x2="480" y2="299" />
-<circle cx="526" cy="167" r="5" style="fill:#0" />
-<circle cx="526" cy="167" r="2" style="fill:#0" />
-<polygon points="537,139 528,149 537,152 537,139 " style="fill:#ffffff" />
-<circle cx="484" cy="285" r="5" style="fill:#ffffff" />
-<line x1="119" y1="408" x2="196" y2="427" />
-<circle cx="182" cy="423" r="5" style="fill:#ffffff" />
-<circle cx="175" cy="421" r="2" style="fill:#ffffff" />
-<line x1="110" y1="351" x2="196" y2="387" />
-<circle cx="183" cy="381" r="5" style="fill:#ffffff" />
+<line x1="146" y1="93" x2="352" y2="271" />
+<circle cx="156" cy="102" r="5" style="fill:#ffffff" />
+<circle cx="168" cy="112" r="5" style="fill:#ffffff" />
+<circle cx="168" cy="112" r="2" style="fill:#ffffff" />
+<polygon points="146,93 148,101 156,102 154,94 146,93 " style="fill:#000000" />
+<line x1="124" y1="93" x2="217" y2="273" />
+<circle cx="130" cy="105" r="5" style="fill:#ffffff" />
+<line x1="131" y1="93" x2="318" y2="346" />
+<circle cx="139" cy="104" r="5" style="fill:#ffffff" />
+<line x1="191" y1="62" x2="455" y2="78" />
+<circle cx="204" cy="62" r="5" style="fill:#ffffff" />
+<line x1="191" y1="74" x2="489" y2="132" />
+<circle cx="204" cy="76" r="5" style="fill:#ffffff" />
+<line x1="191" y1="41" x2="282" y2="22" />
+<circle cx="204" cy="38" r="5" style="fill:#ffffff" />
+<line x1="121" y1="93" x2="172" y2="209" />
+<circle cx="126" cy="105" r="5" style="fill:#ffffff" />
+<line x1="191" y1="68" x2="462" y2="100" />
+<circle cx="204" cy="69" r="5" style="fill:#ffffff" />
+<line x1="165" y1="93" x2="392" y2="225" />
+<circle cx="177" cy="100" r="5" style="fill:#ffffff" />
+<line x1="191" y1="53" x2="443" y2="34" />
+<circle cx="204" cy="51" r="5" style="fill:#ffffff" />
+<line x1="191" y1="58" x2="452" y2="54" />
+<circle cx="204" cy="57" r="5" style="fill:#ffffff" />
+<line x1="191" y1="87" x2="524" y2="202" />
+<circle cx="204" cy="91" r="5" style="fill:#ffffff" />
+<line x1="183" y1="93" x2="556" y2="261" />
+<circle cx="195" cy="98" r="5" style="fill:#ffffff" />
+<line x1="106" y1="93" x2="100" y2="385" />
+<circle cx="105" cy="106" r="5" style="fill:#ffffff" />
+<line x1="191" y1="81" x2="489" y2="165" />
+<circle cx="204" cy="84" r="5" style="fill:#ffffff" />
+<line x1="109" y1="93" x2="133" y2="310" />
+<circle cx="131" cy="296" r="5" style="fill:#ffffff" />
+<line x1="323" y1="284" x2="264" y2="281" />
+<circle cx="309" cy="283" r="5" style="fill:#ffffff" />
+<circle cx="293" cy="282" r="5" style="fill:#ffffff" />
+<circle cx="293" cy="282" r="2" style="fill:#ffffff" />
+<polygon points="323,284 316,280 310,284 315,288 323,284 " style="fill:#000000" />
+<line x1="371" y1="297" x2="391" y2="346" />
+<circle cx="385" cy="333" r="5" style="fill:#ffffff" />
+<circle cx="383" cy="326" r="2" style="fill:#ffffff" />
+<circle cx="379" cy="318" r="5" style="fill:#ffffff" />
+<circle cx="379" cy="318" r="2" style="fill:#ffffff" />
+<polygon points="391,346 392,338 386,334 384,341 391,346 " style="fill:#000000" />
+<line x1="228" y1="289" x2="281" y2="346" />
+<circle cx="271" cy="335" r="5" style="fill:#ffffff" />
+<circle cx="260" cy="324" r="5" style="fill:#ffffff" />
+<circle cx="260" cy="324" r="2" style="fill:#ffffff" />
+<polygon points="281,346 279,338 272,336 273,344 281,346 " style="fill:#000000" />
+<line x1="206" y1="289" x2="166" y2="310" />
+<circle cx="178" cy="303" r="5" style="fill:#ffffff" />
+<line x1="428" y1="346" x2="406" y2="241" />
+<circle cx="425" cy="332" r="5" style="fill:#ffffff" />
+<circle cx="423" cy="325" r="2" style="fill:#ffffff" />
+<line x1="544" y1="346" x2="571" y2="277" />
+<circle cx="549" cy="332" r="5" style="fill:#ffffff" />
+<circle cx="560" cy="304" r="5" style="fill:#000000" />
+<circle cx="560" cy="304" r="2" style="fill:#000000" />
+<polygon points="571,277 562,287 571,290 571,277 " style="fill:#ffffff" />
+<line x1="172" y1="235" x2="140" y2="310" />
+<circle cx="145" cy="297" r="5" style="fill:#ffffff" />
 </g>
 </svg>

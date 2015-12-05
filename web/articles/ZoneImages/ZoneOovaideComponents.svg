@@ -1,54 +1,59 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="424" height="352">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+ font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="432" height="353" viewbox="0 0 432 353">
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="273" y1="39" x2="284" y2="20" />
-<line x1="276" y1="40" x2="287" y2="22" />
-<line x1="330" y1="244" x2="349" y2="254" />
-<line x1="322" y1="258" x2="339" y2="270" />
-<line x1="296" y1="287" x2="309" y2="303" />
-<line x1="210" y1="325" x2="212" y2="346" />
-<line x1="165" y1="323" x2="161" y2="343" />
-<line x1="40" y1="188" x2="20" y2="190" />
-<line x1="193" y1="17" x2="193" y2="-4" />
+<line x1="272" y1="31" x2="281" y2="12" />
+<line x1="274" y1="33" x2="284" y2="14" />
+<line x1="349" y1="228" x2="369" y2="236" />
+<line x1="344" y1="241" x2="363" y2="250" />
+<line x1="325" y1="270" x2="341" y2="283" />
+<line x1="306" y1="289" x2="319" y2="305" />
+<line x1="228" y1="324" x2="231" y2="345" />
+<line x1="189" y1="325" x2="187" y2="345" />
+<line x1="58" y1="216" x2="38" y2="222" />
+<line x1="205" y1="17" x2="205" y2="-4" />
 </g>
 <g  fill="#f5f5ff" stroke="#ff6800" style="stroke-width:1">
-<line x1="338" y1="133" x2="234" y2="27" />
-<line x1="338" y1="133" x2="272" y2="44" />
-<line x1="338" y1="133" x2="322" y2="248" />
-<line x1="338" y1="133" x2="305" y2="271" />
-<line x1="338" y1="133" x2="254" y2="308" />
-<line x1="338" y1="133" x2="187" y2="320" />
-<line x1="338" y1="133" x2="83" y2="271" />
-<line x1="338" y1="133" x2="82" y2="72" />
+<line x1="346" y1="119" x2="239" y2="25" />
+<line x1="346" y1="119" x2="271" y2="37" />
+<line x1="346" y1="119" x2="342" y2="232" />
+<line x1="346" y1="119" x2="331" y2="253" />
+<line x1="346" y1="119" x2="311" y2="277" />
+<line x1="346" y1="119" x2="266" y2="308" />
+<line x1="346" y1="119" x2="208" y2="320" />
+<line x1="346" y1="119" x2="111" y2="286" />
+<line x1="346" y1="119" x2="86" y2="83" />
 </g>
-<g  fill="#f5f5ff" stroke="#007d34" style="stroke-width:1">
-<line x1="187" y1="320" x2="254" y2="308" />
-<line x1="187" y1="320" x2="83" y2="271" />
+<g  fill="#f5f5ff" stroke="#f6768e" style="stroke-width:1">
+<line x1="208" y1="320" x2="266" y2="308" />
+<line x1="208" y1="320" x2="111" y2="286" />
 </g>
-<g  fill="#f5f5ff" stroke="#00538a" style="stroke-width:1">
-<line x1="82" y1="72" x2="83" y2="271" />
+<g  fill="#f5f5ff" stroke="#ff7a5c" style="stroke-width:1">
+<line x1="86" y1="83" x2="111" y2="286" />
 </g>
 <g  fill="#f5f5ff" stroke="#c10020" style="stroke-width:1">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<circle cx="234" cy="27" r="1" style="fill:#ffffff" />
-<circle cx="272" cy="44" r="1" style="fill:#ffffff" />
-<circle cx="338" cy="133" r="1" style="fill:#ffffff" />
-<circle cx="322" cy="248" r="1" style="fill:#ffffff" />
-<circle cx="305" cy="271" r="1" style="fill:#ffffff" />
-<circle cx="254" cy="308" r="1" style="fill:#ffffff" />
-<circle cx="187" cy="320" r="1" style="fill:#ffffff" />
-<circle cx="83" cy="271" r="1" style="fill:#ffffff" />
-<circle cx="82" cy="72" r="1" style="fill:#ffffff" />
+<circle cx="239" cy="25" r="1" style="fill:#ffffff" />
+<circle cx="271" cy="37" r="1" style="fill:#ffffff" />
+<circle cx="346" cy="119" r="1" style="fill:#ffffff" />
+<circle cx="342" cy="232" r="1" style="fill:#ffffff" />
+<circle cx="331" cy="253" r="1" style="fill:#ffffff" />
+<circle cx="311" cy="277" r="1" style="fill:#ffffff" />
+<circle cx="266" cy="308" r="1" style="fill:#ffffff" />
+<circle cx="208" cy="320" r="1" style="fill:#ffffff" />
+<circle cx="111" cy="286" r="1" style="fill:#ffffff" />
+<circle cx="86" cy="83" r="1" style="fill:#ffffff" />
 </g>
-<g font-size="10.000000" stroke="none">
-<text x="236" y="22">oovBuilder</text>
-<text x="275" y="39">oovCMaker</text>
-<text x="343" y="132">oovCommon</text>
-<text x="326" y="251">oovCovInstr</text>
-<text x="308" y="274">oovCppParser</text>
-<text x="256" y="312">oovEdit</text>
-<text x="108" y="325">oovGuiCommon</text>
-<text x="45" y="274">oovaide</text>
-<text x="20" y="69">oovaide/BLL</text>
+<g stroke="none">
+<text x="240" y="20">oovBuilder</text>
+<text x="273" y="32">oovCMaker</text>
+<text x="351" y="118">oovCommon</text>
+<text x="347" y="234">oovCovInstr</text>
+<text x="335" y="256">oovCppParser</text>
+<text x="315" y="281">oovDbWriter</text>
+<text x="268" y="312">oovEdit</text>
+<text x="208" y="325">oovGuiCommon</text>
+<text x="68" y="290">oovaide</text>
+<text x="20" y="80">oovaide/BLL</text>
 </g>
 </svg>

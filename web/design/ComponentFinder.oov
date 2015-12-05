@@ -1,5 +1,5 @@
 DrawingName|ComponentFinder
 FileType|Class
-Names|Oov-Key;ComponentFinder;OovStringVec;ScannedComponentsInfo;ProjectReader;ComponentTypesFile;ComponentsFile;Package;dirRecurser;std::map<OovString,ScannedComponent,std::less<OovString>,std::allocator<std::pair<OovString,ScannedComponent> > >;InsertOrderedSet;ScannedComponent;
-XPositions|28;30;224;455;186;327;335;32;326;484;312;459;
-YPositions|411;26;363;27;433;308;225;361;28;273;415;378;
+Names|Oov-Key;ComponentFinder;OovStringVec;ScannedComponentsInfo;ProjectReader;ProjectBuildArgs;ComponentTypesFile;ComponentsFile;Package;dirRecurser;std::map<OovString,ScannedComponent,std::less<OovString>,std::allocator<std::pair<OovString,ScannedComponent> > >;InsertOrderedSet;ScannedComponent;
+XPositions|27;25;266;470;173;99;404;369;43;365;494;400;364;
+YPositions|523;25;423;24;403;467;286;178;377;22;356;403;497;

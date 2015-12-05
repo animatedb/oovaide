@@ -392,6 +392,8 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
     gtk_widget_set_sensitive(
             builder->getWidget("MethodUsageMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
+            builder->getWidget("IncludeUsageMenuitem"), idle && analRdy);
+    gtk_widget_set_sensitive(
             builder->getWidget("DuplicatesMenuitem"), idle && analRdy);
     gtk_widget_set_sensitive(
             builder->getWidget("ProjectStatsMenuitem"), idle && analRdy);
@@ -619,7 +621,7 @@ void oovGui::makeComplexityFile()
 void oovGui::makeMemberUseFile()
     {
     std::string fn;
-    if(createMemberVarUsageStaticAnalysisFile(Gui::getMainWindow(),
+    if(StaticAnalysis::createMemberVarUsageFile(Gui::getMainWindow(),
             mProject.getModelData(), fn))
         {
         displayBrowserFile(fn);
@@ -633,8 +635,22 @@ void oovGui::makeMemberUseFile()
 void oovGui::makeMethodUseFile()
     {
     std::string fn;
-    if(createMethodUsageStaticAnalysisFile(Gui::getMainWindow(),
+    if(StaticAnalysis::createMethodUsageFile(Gui::getMainWindow(),
             mProject.getModelData(), fn))
+        {
+        displayBrowserFile(fn);
+        }
+    else
+        {
+        displayWriteError(fn);
+        }
+    }
+
+void oovGui::makeIncludeTypeUseFile()
+    {
+    std::string fn;
+    if(StaticAnalysis::createIncludeTypeUsageFile(Gui::getMainWindow(),
+            mProject.getModelData(), mProject.getIncMap(), fn))
         {
         displayBrowserFile(fn);
         }
@@ -647,7 +663,7 @@ void oovGui::makeMethodUseFile()
 void oovGui::makeLineStats()
     {
     std::string fn;
-    if(createLineStatsFile(mProject.getModelData(), fn))
+    if(StaticAnalysis::createLineStatsFile(mProject.getModelData(), fn))
         {
         displayBrowserFile(fn);
         }
@@ -680,7 +696,7 @@ void oovGui::makeDuplicatesFile()
 void oovGui::displayProjectStats()
     {
     OovString str;
-    if(createProjectStats(mProject.getModelData(), str))
+    if(StaticAnalysis::createProjectStats(mProject.getModelData(), str))
         {
         Gui::messageBox(str, GTK_MESSAGE_INFO);
         }
@@ -1114,6 +1130,12 @@ extern "C" G_MODULE_EXPORT void on_MethodUsageMenuitem_activate(
         GtkWidget * /*button*/, gpointer /*data*/)
     {
     gOovGui->makeMethodUseFile();
+    }
+
+extern "C" G_MODULE_EXPORT void on_IncludeUsageMenuitem_activate(
+        GtkWidget * /*button*/, gpointer /*data*/)
+    {
+    gOovGui->makeIncludeTypeUseFile();
     }
 
 extern "C" G_MODULE_EXPORT void on_DuplicatesMenuitem_activate(

@@ -240,6 +240,12 @@ OovString FilePathGetDrivePath(OovStringRef const path)
     return fp.getHead(fp.getPosEndDir());
     }
 
+OovString FilePathGetDirPath(OovStringRef const path)
+    {
+    FilePath fp(path, FP_File);
+    return fp.getHead(fp.getPosStartDir());
+    }
+
 OovString FilePathGetFileName(OovStringRef const path)
     {
     FilePath fp(path, FP_File);

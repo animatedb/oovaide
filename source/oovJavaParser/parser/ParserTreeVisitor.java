@@ -90,7 +90,6 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
 
     public ParserTreeVisitor(ModelData mod, String packageName, String analysisDir)
         {
-        super();
         model = mod;
         model.setPackage(packageName);
         mSwitchContexts = new ArrayList<JavaSwitchContext>();
@@ -176,6 +175,42 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
         Object obj = super.visitWhileLoop(whileTree, trees);
         addCloseStatement();
         return obj;
+        }
+
+    @Override
+    public Object visitNewClass(NewClassTree newTree, Trees trees)
+        {
+        ModelStatement statement = new ModelStatement(
+            ModelStatement.StatementType.ST_Call);
+	ModelType type = addOrFindType(newTree, trees);
+        if(type != null)
+            {
+            // Implicit constructors are not defined in the class, so create
+            // them here so that something shows in sequence diagrams.
+            // I have not tested constructors with arguments. This is probably
+            // wrong, but will at least show a relation to the class.
+            String methodName = "<init>";
+            boolean foundMethod = false;
+            for(ModelMethod method : type)
+                {
+                if(method.getMethodName().compareTo(methodName) == 0)
+                    {
+                    foundMethod = true;
+                    break;
+                    }
+                }
+            if(!foundMethod)
+                {
+                ModelMethod constructor = new ModelMethod();
+                constructor.setMethodName(methodName);
+                type.addMethod(constructor);
+                }
+            statement.setClassType(type);
+            statement.setName(methodName);
+            currentMethod.getStatements().addStatement(statement);
+            }
+//System.out.println("NEW CLASS " + type.getTypeName());
+        return super.visitNewClass(newTree, trees);
         }
 
     @Override
@@ -462,8 +497,9 @@ class ParserTreeVisitor extends TreePathScanner<Object, Trees>
                 }
                 break;
 
-            // Return null fullName for NEW_CLASS, since it is part of a MethodInvocationTree.
             case NEW_CLASS:
+                ExpressionTree expTree = ((NewClassTree)tree).getIdentifier();
+                fullName = getIdentifierTypeName(expTree, trees);
                 break;
 
             case CLASS:

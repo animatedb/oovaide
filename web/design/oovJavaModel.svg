@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
- font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="726" height="616">
+ font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="726" height="616" viewbox="0 0 726 616">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="586" y="25" width="129" height="143" />
 <line x1="586" y1="38" x2="715" y2="38" />
 <polygon points="699,46 711,51 711,41 699,46 " style="fill:#ffffff" />
 <polygon points="699,60 706,64 713,60 706,56 699,60 " style="fill:#ffffff" />
-<polygon points="699,74 706,78 713,74 706,70 699,74 " style="fill:#0" />
+<polygon points="699,74 706,78 713,74 706,70 699,74 " style="fill:#000000" />
 <polygon points="699,88 707,93 703,88 707,83 699,88 " style="fill:#ffffff" />
 <circle cx="699" cy="102" r="5" style="fill:#ffffff" />
 <circle cx="699" cy="116" r="5" style="fill:#ffffff" />
@@ -13,9 +13,9 @@
 <circle cx="699" cy="130" r="5" style="fill:#ffffff" />
 <circle cx="699" cy="130" r="2" style="fill:#ffffff" />
 <circle cx="699" cy="144" r="5" style="fill:#ffffff" />
-<circle cx="699" cy="144" r="2" style="fill:#0" />
-<circle cx="699" cy="158" r="5" style="fill:#0" />
-<circle cx="699" cy="158" r="2" style="fill:#0" />
+<circle cx="699" cy="144" r="2" style="fill:#000000" />
+<circle cx="699" cy="158" r="5" style="fill:#000000" />
+<circle cx="699" cy="158" r="2" style="fill:#000000" />
 </g>
 <g stroke="none">
 <text x="587" y="34">Relations Key</text>
@@ -30,28 +30,30 @@
 <text x="587" y="160">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="19" y="73" width="234" height="161" />
+<rect x="19" y="73" width="234" height="179" />
 <line x1="19" y1="94" x2="253" y2="94" />
 <line x1="19" y1="133" x2="253" y2="133" />
 </g>
 <g stroke="none">
 <text x="20" y="82">model.ModelData</text>
-<text x="20" y="91">oovJavaParser/model</text>
+<text x="20" y="91">model</text>
 <text x="20" y="103">+java.lang.String mModuleName</text>
 <text x="20" y="112">+java.util.ArrayList mTypes</text>
 <text x="20" y="121">+java.util.ArrayList mImports</text>
 <text x="20" y="130">+java.lang.String mPackageName</text>
-<text x="20" y="142">-&lt;init&gt;()</text>
-<text x="20" y="151">-setPackage(java.lang.String packageName)</text>
-<text x="20" y="160">-getModuleName()</text>
-<text x="20" y="169">-findType(java.lang.String name)</text>
-<text x="20" y="178">-addImport(java.lang.String importStr)</text>
-<text x="20" y="187">-iterator()</text>
-<text x="20" y="196">-getPackage()</text>
-<text x="20" y="205">-setModuleName(java.lang.String moduleName)</text>
-<text x="20" y="214">-getImports()</text>
-<text x="20" y="223">-addType(model.ModelType type)</text>
-<text x="20" y="232">-getTypes()</text>
+<text x="20" y="142">-setModuleName(java.lang.String moduleName)</text>
+<text x="20" y="151">-addImport(java.lang.String importStr)</text>
+<text x="20" y="160">-getPackage()</text>
+<text x="20" y="169">-iterator()</text>
+<text x="20" y="178">-getImports()</text>
+<text x="20" y="187">-addType(model.ModelType type)</text>
+<text x="20" y="196">-getModuleName()</text>
+<text x="20" y="205">-findType(java.lang.String name)</text>
+<text x="20" y="214">-setPackage(java.lang.String packageName)</text>
+<text x="20" y="223">-getTypes()</text>
+<text x="20" y="232">-setModuleLines()</text>
+<text x="20" y="241">-getModuleLines()</text>
+<text x="20" y="250">-&lt;init&gt;()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -82,42 +84,45 @@
 </g>
 <g stroke="none">
 <text x="314" y="36">model.ModelType</text>
-<text x="314" y="45">oovJavaParser/model</text>
+<text x="314" y="45">model</text>
 <text x="314" y="57">+java.lang.String mTypeName</text>
 <text x="314" y="66">+java.util.HashSet mMethods</text>
 <text x="314" y="75">+model.ModelTypeRelations mRelations</text>
 <text x="314" y="84">+model.ModelTypeRefs mMemberVars</text>
-<text x="314" y="96">-getTypeName()</text>
-<text x="314" y="105">-getRelations()</text>
-<text x="314" y="114">-&lt;init&gt;()</text>
-<text x="314" y="123">-setTypeName(java.lang.String typeName)</text>
-<text x="314" y="132">-addRelation(model.ModelTypeRelation rel)</text>
-<text x="314" y="141">-getModule()</text>
-<text x="314" y="150">-getMethods()</text>
-<text x="314" y="159">-getMemberVars()</text>
-<text x="314" y="168">-addMethod(model.ModelMethod method)</text>
-<text x="314" y="177">-iterator()</text>
-<text x="314" y="186">-setModule()</text>
-<text x="314" y="195">-isDefined()</text>
+<text x="314" y="96">-getMemberVars()</text>
+<text x="314" y="105">-addMethod(model.ModelMethod method)</text>
+<text x="314" y="114">-getModule()</text>
+<text x="314" y="123">-isDefined()</text>
+<text x="314" y="132">-iterator()</text>
+<text x="314" y="141">-setModule()</text>
+<text x="314" y="150">-addRelation(model.ModelTypeRelation rel)</text>
+<text x="314" y="159">-getMethods()</text>
+<text x="314" y="168">-getRelations()</text>
+<text x="314" y="177">-&lt;init&gt;()</text>
+<text x="314" y="186">-setTypeName(java.lang.String typeName)</text>
+<text x="314" y="195">-getTypeName()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="21" y="260" width="234" height="98" />
+<rect x="21" y="260" width="234" height="125" />
 <line x1="21" y1="281" x2="255" y2="281" />
 <line x1="21" y1="311" x2="255" y2="311" />
 </g>
 <g stroke="none">
 <text x="22" y="269">model.ModelMethod</text>
-<text x="22" y="278">oovJavaParser/model</text>
+<text x="22" y="278">model</text>
 <text x="22" y="290">+java.lang.String mMethodName</text>
 <text x="22" y="299">+model.ModelTypeRefs mParameters</text>
 <text x="22" y="308">+model.ModelStatements mStatements</text>
-<text x="22" y="320">-getStatements()</text>
-<text x="22" y="329">-getMethodName()</text>
-<text x="22" y="338">-&lt;init&gt;()</text>
-<text x="22" y="347">-setMethodName(java.lang.String methodName)</text>
-<text x="22" y="356">-getParameters()</text>
+<text x="22" y="320">-addOpenCondStatement(java.lang.String </text>
+<text x="29" y="329">condText)</text>
+<text x="22" y="338">-setMethodName(java.lang.String methodName)</text>
+<text x="22" y="347">-getMethodName()</text>
+<text x="22" y="356">-addCloseStatement()</text>
+<text x="22" y="365">-&lt;init&gt;()</text>
+<text x="22" y="374">-getStatements()</text>
+<text x="22" y="383">-getParameters()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -128,19 +133,19 @@
 </g>
 <g stroke="none">
 <text x="272" y="481">model.ModelStatement</text>
-<text x="272" y="490">oovJavaParser/model</text>
+<text x="272" y="490">model</text>
 <text x="272" y="502">+model.ModelStatement.StatementType </text>
 <text x="279" y="511">mStatementType</text>
 <text x="272" y="520">+java.lang.String mName</text>
 <text x="272" y="529">+model.ModelType mClassType</text>
 <text x="272" y="538">+model.ModelType mVarType</text>
-<text x="272" y="550">-setClassType(model.ModelType type)</text>
-<text x="272" y="559">-setVarType(model.ModelType type)</text>
-<text x="272" y="568">-&lt;init&gt;()</text>
-<text x="272" y="577">-getName()</text>
-<text x="272" y="586">-getVarType()</text>
-<text x="272" y="595">-setName(java.lang.String name)</text>
-<text x="272" y="604">-getClassType()</text>
+<text x="272" y="550">-&lt;init&gt;()</text>
+<text x="272" y="559">-getClassType()</text>
+<text x="272" y="568">-getVarType()</text>
+<text x="272" y="577">-setName(java.lang.String name)</text>
+<text x="272" y="586">-setVarType(model.ModelType type)</text>
+<text x="272" y="595">-setClassType(model.ModelType type)</text>
+<text x="272" y="604">-getName()</text>
 <text x="272" y="613">-getStatementType()</text>
 </g>
 <g stroke="none" font-style="italic">
@@ -152,14 +157,14 @@
 </g>
 <g stroke="none">
 <text x="527" y="521">model.ModelTypeRef</text>
-<text x="527" y="530">oovJavaParser/model</text>
+<text x="527" y="530">model</text>
 <text x="527" y="542">+java.lang.String mVarName</text>
 <text x="527" y="551">+model.ModelType mType</text>
 <text x="527" y="563">-&lt;init&gt;()</text>
-<text x="527" y="572">-setName(java.lang.String name)</text>
-<text x="527" y="581">-setType(model.ModelType type)</text>
-<text x="527" y="590">-getName()</text>
-<text x="527" y="599">-getType()</text>
+<text x="527" y="572">-getName()</text>
+<text x="527" y="581">-setName(java.lang.String name)</text>
+<text x="527" y="590">-getType()</text>
+<text x="527" y="599">-setType(model.ModelType type)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -170,16 +175,16 @@
 </g>
 <g stroke="none">
 <text x="521" y="253">model.ModelTypeRelation</text>
-<text x="521" y="262">oovJavaParser/model</text>
+<text x="521" y="262">model</text>
 <text x="521" y="274">+model.ModelTypeRelation.RelationType</text>
 <text x="528" y="283"> mRelationType</text>
 <text x="521" y="292">+model.ModelType mType</text>
-<text x="521" y="304">-getType()</text>
-<text x="521" y="313">-getRelationType()</text>
-<text x="521" y="322">-&lt;init&gt;()</text>
+<text x="521" y="304">-&lt;init&gt;()</text>
+<text x="521" y="313">-setType(model.ModelType type)</text>
+<text x="521" y="322">-getRelationType()</text>
 <text x="521" y="331">-setRelationType(model.ModelTypeRelat</text>
 <text x="528" y="340">ion.RelationType relType)</text>
-<text x="521" y="349">-setType(model.ModelType type)</text>
+<text x="521" y="349">-getType()</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
@@ -190,83 +195,83 @@
 </g>
 <g stroke="none">
 <text x="417" y="389">model.ModelTypeRefs</text>
-<text x="417" y="398">oovJavaParser/model</text>
+<text x="417" y="398">model</text>
 <text x="417" y="410">+java.util.ArrayList mTypeRefs</text>
-<text x="417" y="422">-&lt;init&gt;()</text>
-<text x="417" y="431">-getTypeRefs()</text>
-<text x="417" y="440">-addTypeRef(model.ModelTypeRef ref)</text>
-<text x="417" y="449">-iterator()</text>
-<text x="417" y="458">-getTypeRefsIter()</text>
+<text x="417" y="422">-getTypeRefsIter()</text>
+<text x="417" y="431">-iterator()</text>
+<text x="417" y="440">-&lt;init&gt;()</text>
+<text x="417" y="449">-getTypeRefs()</text>
+<text x="417" y="458">-addTypeRef(model.ModelTypeRef ref)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="23" y="404" width="243" height="80" />
-<line x1="23" y1="425" x2="266" y2="425" />
-<line x1="23" y1="437" x2="266" y2="437" />
+<rect x="23" y="425" width="243" height="80" />
+<line x1="23" y1="446" x2="266" y2="446" />
+<line x1="23" y1="458" x2="266" y2="458" />
 </g>
 <g stroke="none">
-<text x="24" y="413">model.ModelStatements</text>
-<text x="24" y="422">oovJavaParser/model</text>
-<text x="24" y="434">+java.util.ArrayList mStatements</text>
-<text x="24" y="446">-&lt;init&gt;()</text>
-<text x="24" y="455">-getStatements()</text>
-<text x="24" y="464">-addStatement(model.ModelStatement statement)</text>
-<text x="24" y="473">-iterator()</text>
-<text x="24" y="482">-getStatementIter()</text>
+<text x="24" y="434">model.ModelStatements</text>
+<text x="24" y="443">model</text>
+<text x="24" y="455">+java.util.ArrayList mStatements</text>
+<text x="24" y="467">-getStatementIter()</text>
+<text x="24" y="476">-iterator()</text>
+<text x="24" y="485">-&lt;init&gt;()</text>
+<text x="24" y="494">-getStatements()</text>
+<text x="24" y="503">-addStatement(model.ModelStatement statement)</text>
 </g>
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="253" y1="231" x2="322" y2="278" />
-<circle cx="264" cy="238" r="5" style="fill:#ffffff" />
-<circle cx="277" cy="247" r="5" style="fill:#ffffff" />
-<circle cx="277" cy="247" r="2" style="fill:#ffffff" />
-<polygon points="253,231 256,239 264,238 261,231 253,231 " style="fill:#0" />
-<line x1="253" y1="212" x2="441" y2="307" />
-<circle cx="414" cy="293" r="5" style="fill:#0" />
-<circle cx="414" cy="293" r="2" style="fill:#0" />
-<polygon points="441,307 432,297 428,306 441,307 " style="fill:#ffffff" />
-<line x1="253" y1="137" x2="313" y2="127" />
-<circle cx="266" cy="134" r="5" style="fill:#ffffff" />
-<circle cx="273" cy="133" r="2" style="fill:#ffffff" />
+<line x1="253" y1="235" x2="321" y2="278" />
+<circle cx="264" cy="242" r="5" style="fill:#ffffff" />
+<circle cx="278" cy="251" r="5" style="fill:#ffffff" />
+<circle cx="278" cy="251" r="2" style="fill:#ffffff" />
+<polygon points="253,235 257,242 264,242 261,235 253,235 " style="fill:#000000" />
+<line x1="253" y1="217" x2="440" y2="307" />
+<circle cx="412" cy="293" r="5" style="fill:#000000" />
+<circle cx="412" cy="293" r="2" style="fill:#000000" />
+<polygon points="440,307 431,297 427,307 440,307 " style="fill:#ffffff" />
+<line x1="253" y1="142" x2="313" y2="130" />
+<circle cx="266" cy="139" r="5" style="fill:#ffffff" />
+<circle cx="273" cy="137" r="2" style="fill:#ffffff" />
 <line x1="343" y1="294" x2="458" y2="380" />
 <circle cx="446" cy="371" r="5" style="fill:#ffffff" />
 <circle cx="433" cy="362" r="5" style="fill:#ffffff" />
 <circle cx="433" cy="362" r="2" style="fill:#ffffff" />
-<polygon points="458,380 455,372 447,372 450,379 458,380 " style="fill:#0" />
-<line x1="324" y1="294" x2="191" y2="404" />
-<circle cx="201" cy="395" r="5" style="fill:#ffffff" />
-<circle cx="214" cy="384" r="5" style="fill:#ffffff" />
-<circle cx="214" cy="384" r="2" style="fill:#ffffff" />
-<polygon points="191,404 199,403 201,396 194,396 191,404 " style="fill:#0" />
+<polygon points="458,380 455,372 447,372 450,379 458,380 " style="fill:#000000" />
+<line x1="325" y1="294" x2="186" y2="425" />
+<circle cx="196" cy="415" r="5" style="fill:#ffffff" />
+<circle cx="207" cy="404" r="5" style="fill:#ffffff" />
+<circle cx="207" cy="404" r="2" style="fill:#ffffff" />
+<polygon points="186,425 194,423 196,416 188,417 186,425 " style="fill:#000000" />
 <line x1="455" y1="307" x2="435" y2="197" />
-<circle cx="449" cy="277" r="5" style="fill:#0" />
-<circle cx="449" cy="277" r="2" style="fill:#0" />
+<circle cx="449" cy="277" r="5" style="fill:#000000" />
+<circle cx="449" cy="277" r="2" style="fill:#000000" />
 <polygon points="455,307 457,294 448,296 455,307 " style="fill:#ffffff" />
 <line x1="460" y1="323" x2="491" y2="380" />
-<circle cx="474" cy="349" r="5" style="fill:#0" />
-<circle cx="474" cy="349" r="2" style="fill:#0" />
+<circle cx="474" cy="349" r="5" style="fill:#000000" />
+<circle cx="474" cy="349" r="2" style="fill:#000000" />
 <polygon points="460,323 461,336 470,331 460,323 " style="fill:#ffffff" />
-<line x1="437" y1="323" x2="240" y2="404" />
-<circle cx="409" cy="334" r="5" style="fill:#0" />
-<circle cx="409" cy="334" r="2" style="fill:#0" />
-<polygon points="437,323 424,323 428,332 437,323 " style="fill:#ffffff" />
-<line x1="313" y1="186" x2="208" y2="260" />
-<circle cx="301" cy="194" r="5" style="fill:#ffffff" />
-<circle cx="295" cy="198" r="2" style="fill:#ffffff" />
+<line x1="440" y1="323" x2="227" y2="425" />
+<circle cx="412" cy="335" r="5" style="fill:#000000" />
+<circle cx="412" cy="335" r="2" style="fill:#000000" />
+<polygon points="440,323 427,323 431,333 440,323 " style="fill:#ffffff" />
+<line x1="313" y1="191" x2="221" y2="260" />
+<circle cx="301" cy="199" r="5" style="fill:#ffffff" />
+<circle cx="296" cy="203" r="2" style="fill:#ffffff" />
 <line x1="411" y1="197" x2="379" y2="472" />
 <circle cx="380" cy="458" r="5" style="fill:#ffffff" />
 <circle cx="381" cy="451" r="2" style="fill:#ffffff" />
 <circle cx="382" cy="442" r="5" style="fill:#ffffff" />
 <circle cx="382" cy="442" r="2" style="fill:#ffffff" />
-<polygon points="379,472 384,465 380,459 376,464 379,472 " style="fill:#0" />
+<polygon points="379,472 384,465 380,459 376,464 379,472 " style="fill:#000000" />
 <line x1="455" y1="197" x2="589" y2="512" />
 <circle cx="583" cy="499" r="5" style="fill:#ffffff" />
 <circle cx="580" cy="492" r="2" style="fill:#ffffff" />
 <circle cx="577" cy="484" r="5" style="fill:#ffffff" />
 <circle cx="577" cy="484" r="2" style="fill:#ffffff" />
-<polygon points="589,512 590,504 584,500 582,507 589,512 " style="fill:#0" />
+<polygon points="589,512 590,504 584,500 582,507 589,512 " style="fill:#000000" />
 <line x1="512" y1="197" x2="565" y2="244" />
 <circle cx="522" cy="206" r="5" style="fill:#ffffff" />
 <circle cx="527" cy="210" r="2" style="fill:#ffffff" />
@@ -274,22 +279,27 @@
 <circle cx="549" cy="230" r="2" style="fill:#ffffff" />
 <circle cx="542" cy="224" r="5" style="fill:#ffffff" />
 <circle cx="542" cy="224" r="2" style="fill:#ffffff" />
-<polygon points="565,244 563,236 555,235 557,243 565,244 " style="fill:#0" />
+<polygon points="565,244 563,236 555,235 557,243 565,244 " style="fill:#000000" />
 <line x1="445" y1="197" x2="500" y2="380" />
+<circle cx="449" cy="210" r="5" style="fill:#ffffff" />
 <circle cx="453" cy="225" r="5" style="fill:#ffffff" />
 <circle cx="453" cy="225" r="2" style="fill:#ffffff" />
-<polygon points="445,197 443,205 449,210 451,203 445,197 " style="fill:#0" />
-<line x1="255" y1="343" x2="416" y2="392" />
-<circle cx="283" cy="351" r="5" style="fill:#ffffff" />
-<circle cx="283" cy="351" r="2" style="fill:#ffffff" />
-<polygon points="255,343 261,349 268,347 263,341 255,343 " style="fill:#0" />
-<line x1="140" y1="358" x2="143" y2="404" />
-<circle cx="141" cy="387" r="5" style="fill:#ffffff" />
-<circle cx="141" cy="387" r="2" style="fill:#ffffff" />
-<polygon points="140,358 137,366 140,371 144,365 140,358 " style="fill:#0" />
-<line x1="271" y1="500" x2="235" y2="484" />
-<circle cx="247" cy="489" r="5" style="fill:#ffffff" />
-<circle cx="254" cy="492" r="2" style="fill:#ffffff" />
+<polygon points="445,197 443,205 449,210 451,203 445,197 " style="fill:#000000" />
+<line x1="203" y1="384" x2="297" y2="472" />
+<circle cx="213" cy="393" r="5" style="fill:#ffffff" />
+<line x1="255" y1="352" x2="416" y2="396" />
+<circle cx="268" cy="355" r="5" style="fill:#ffffff" />
+<circle cx="283" cy="359" r="5" style="fill:#ffffff" />
+<circle cx="283" cy="359" r="2" style="fill:#ffffff" />
+<polygon points="255,352 261,358 268,355 263,350 255,352 " style="fill:#000000" />
+<line x1="140" y1="384" x2="143" y2="425" />
+<circle cx="141" cy="397" r="5" style="fill:#ffffff" />
+<circle cx="142" cy="413" r="5" style="fill:#ffffff" />
+<circle cx="142" cy="413" r="2" style="fill:#ffffff" />
+<polygon points="140,384 137,392 141,397 145,391 140,384 " style="fill:#000000" />
+<line x1="271" y1="509" x2="260" y2="505" />
+<circle cx="273" cy="509" r="5" style="fill:#ffffff" />
+<circle cx="279" cy="512" r="2" style="fill:#ffffff" />
 <line x1="576" y1="512" x2="539" y2="460" />
 <circle cx="547" cy="471" r="5" style="fill:#ffffff" />
 <circle cx="551" cy="477" r="2" style="fill:#ffffff" />

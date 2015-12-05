@@ -1,5 +1,5 @@
 DrawingName|oovGui
 FileType|Class
 Names|Oov-Key;oovGui;OovProject;Contexts;ProjectStatus;WindowBuildListener;WindowProjectStatusListener;Journal;ComponentList;IncludeList;ClassList;OperationList;ZoneDiagramList;JournalList;JournalListener;
-XPositions|362;12;12;354;11;13;11;329;587;408;357;260;601;414;588;
-YPositions|655;20;600;23;1083;905;412;813;606;494;546;482;486;602;721;
+XPositions|669;12;12;354;13;13;338;257;586;408;342;465;601;426;587;
+YPositions|771;20;565;23;1144;903;635;875;576;494;543;542;477;587;681;

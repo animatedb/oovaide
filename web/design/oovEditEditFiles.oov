@@ -1,5 +1,5 @@
 DrawingName|EditFiles
 FileType|Class
-Names|Oov-Key;EditFiles;EditOptions;std::vector<std::unique_ptr<ScrolledFileView,std::default_delete<ScrolledFileView> >,std::allocator<std::unique_ptr<ScrolledFileView,std::default_delete<ScrolledFileView> > > >;<<typedef>>Debugger;ScrolledFileView;FileEditView;LeftMargin;Highlighter;Indenter;CompletionList;
-XPositions|771;23;544;445;457;23;373;23;646;20;287;
-YPositions|18;13;109;30;206;367;251;572;846;829;820;
+Names|Oov-Key;EditFiles;EditOptions;std::vector<std::unique_ptr<ScrolledFileView,std::default_delete<ScrolledFileView> >,std::allocator<std::unique_ptr<ScrolledFileView,std::default_delete<ScrolledFileView> > > >;ScrolledFileView;FileEditView;LeftMargin;Highlighter;Indenter;CompletionList;
+XPositions|771;23;544;467;22;373;21;649;20;287;
+YPositions|18;13;109;33;410;251;631;837;850;820;

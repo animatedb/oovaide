@@ -270,6 +270,9 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
         OovString(OovStringRef const &str):
             std::string(str.getStr())
             {}
+        OovString(OovString const &str):
+            std::string(str)
+            {}
         OovString(std::string const &str):
             std::string(str.c_str())
             {}
@@ -293,6 +296,9 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
             { std::string::operator=(str); }
         void operator=(OovStringRef const &str)
             { std::string::operator=(str); }
+        // Move assignment operator
+        void operator=(OovString &&str)
+            { std::string::operator=(str); }
 
         /// Use toupper to convert the string. This only works for ASCII strings.
         /// @param str The string to use as the source.
@@ -305,7 +311,7 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
         /// Append an integer. This does not append any whitespace.
         /// @param val The integer value to append.
         /// @param radix The radix, typically 10 or 16.
-        void appendInt(int val, int radix=10);
+        void appendInt(int val, int radix=10, int minSpaces=0, int minDigits=1);
 
         /// Append a float. This does not append any whitespace.
         /// @param val The floating value to append.

@@ -13,7 +13,6 @@ public class ModelTypeRefs implements Iterable<ModelTypeRef>
     {
     public ModelTypeRefs()
         {
-        super();
         mTypeRefs = new ArrayList<ModelTypeRef>();
         }
 

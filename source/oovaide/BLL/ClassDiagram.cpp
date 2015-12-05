@@ -132,7 +132,10 @@ OovStatusReturn ClassDiagram::loadDiagram(File &file)
                 int y=0;
                 xPositions[i].getInt(0, INT_MAX, x);
                 yPositions[i].getInt(0, INT_MAX, y);
-                nodes[0].setPosition(GraphPoint(x, y));
+                if(nodes.size() > 0)
+                    {
+                    nodes[0].setPosition(GraphPoint(x, y));
+                    }
                 }
             else
                 {

@@ -1,37 +1,36 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
-  font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
-  width="600" height="757">
+ font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="600" height="766" viewbox="0 0 600 766">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="466" y="217" width="133" height="143" />
-<line x1="466" y1="230" x2="599" y2="230" />
-<polygon points="579,238 591,243 591,233 579,238 " style="fill:#ffffff" />
-<polygon points="579,252 586,256 593,252 586,248 579,252 " style="fill:#ffffff" />
-<polygon points="579,266 586,270 593,266 586,262 579,266 " style="fill:#000000" />
-<polygon points="579,280 587,285 583,280 587,275 579,280 " style="fill:#ffffff" />
-<circle cx="579" cy="294" r="5" style="fill:#ffffff" />
-<circle cx="579" cy="308" r="5" style="fill:#ffffff" />
-<circle cx="586" cy="308" r="2" style="fill:#ffffff" />
-<circle cx="579" cy="322" r="5" style="fill:#ffffff" />
-<circle cx="579" cy="322" r="2" style="fill:#ffffff" />
-<circle cx="579" cy="336" r="5" style="fill:#ffffff" />
-<circle cx="579" cy="336" r="2" style="fill:#000000" />
-<circle cx="579" cy="350" r="5" style="fill:#000000" />
-<circle cx="579" cy="350" r="2" style="fill:#000000" />
+<rect x="467" y="182" width="129" height="143" />
+<line x1="467" y1="195" x2="596" y2="195" />
+<polygon points="580,203 592,208 592,198 580,203 " style="fill:#ffffff" />
+<polygon points="580,217 587,221 594,217 587,213 580,217 " style="fill:#ffffff" />
+<polygon points="580,231 587,235 594,231 587,227 580,231 " style="fill:#000000" />
+<polygon points="580,245 588,250 584,245 588,240 580,245 " style="fill:#ffffff" />
+<circle cx="580" cy="259" r="5" style="fill:#ffffff" />
+<circle cx="580" cy="273" r="5" style="fill:#ffffff" />
+<circle cx="587" cy="273" r="2" style="fill:#ffffff" />
+<circle cx="580" cy="287" r="5" style="fill:#ffffff" />
+<circle cx="580" cy="287" r="2" style="fill:#ffffff" />
+<circle cx="580" cy="301" r="5" style="fill:#ffffff" />
+<circle cx="580" cy="301" r="2" style="fill:#000000" />
+<circle cx="580" cy="315" r="5" style="fill:#000000" />
+<circle cx="580" cy="315" r="2" style="fill:#000000" />
 </g>
 <g stroke="none">
-<text x="467" y="226">Relations Key</text>
-<text x="467" y="240">Generalization</text>
-<text x="467" y="254">Aggregation(reference)</text>
-<text x="467" y="268">Composition(owned)</text>
-<text x="467" y="282">Const</text>
-<text x="467" y="296">Method Variable</text>
-<text x="467" y="310">Method Parameter</text>
-<text x="467" y="324">Public</text>
-<text x="467" y="338">Protected</text>
-<text x="467" y="352">Private</text>
+<text x="468" y="191">Relations Key</text>
+<text x="468" y="205">Generalization</text>
+<text x="468" y="219">Aggregation(reference)</text>
+<text x="468" y="233">Composition(owned)</text>
+<text x="468" y="247">Const</text>
+<text x="468" y="261">Method Variable</text>
+<text x="468" y="275">Method Parameter</text>
+<text x="468" y="289">Public</text>
+<text x="468" y="303">Protected</text>
+<text x="468" y="317">Private</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="11" y="11" width="436" height="359" />
+<rect x="11" y="11" width="436" height="377" />
 <line x1="11" y1="32" x2="447" y2="32" />
 <line x1="11" y1="89" x2="447" y2="89" />
 </g>
@@ -49,7 +48,7 @@
 <text x="12" y="116">+buttonPressEvent(GdkEventButton&lt;&lt;typedef&gt;&gt; event)</text>
 <text x="12" y="125">+buttonReleaseEvent(GdkEventButton&lt;&lt;typedef&gt;&gt; event)</text>
 <text x="12" y="134">+drawToDrawingArea()</text>
-<text x="12" y="143">+drawSvgDiagram(FILE&lt;&lt;typedef&gt;&gt; fp)</text>
+<text x="12" y="143">+drawSvgDiagram(File file)</text>
 <text x="12" y="152">+updateGraph(bool reposition)</text>
 <text x="12" y="161">+gotoClass(OovStringRef className)</text>
 <text x="12" y="170">+displayListContextMenu(guint&lt;&lt;typedef&gt;&gt; button, guint32&lt;&lt;typedef&gt;&gt; acttime,</text>
@@ -63,20 +62,22 @@
 <text x="12" y="242">+ClassDiagramView(GuiOptions guiOptions)</text>
 <text x="12" y="251">+~ClassDiagramView()</text>
 <text x="12" y="260">+clearGraphAndAddClass(OovStringRef className, ClassGraph::eAddNodeTypes addType)</text>
-<text x="12" y="269">+addClass(OovStringRef className, ClassGraph::eAddNodeTypes addType, int depth,</text>
-<text x="19" y="278"> bool reposition)</text>
-<text x="12" y="287">+saveDiagram(FILE&lt;&lt;typedef&gt;&gt; fp)</text>
-<text x="12" y="296">+loadDiagram(FILE&lt;&lt;typedef&gt;&gt; fp)</text>
+<text x="12" y="269">+addClass(OovStringRef className, ClassGraph::eAddNodeTypes addType, depth, </text>
+<text x="19" y="278">bool reposition)</text>
+<text x="12" y="287">+saveDiagram(File file)</text>
+<text x="12" y="296">+loadDiagram(File file)</text>
 <text x="12" y="305">+isModified()</text>
 <text x="12" y="314">+requestRedraw()</text>
 <text x="12" y="323">+getDiagram()</text>
-<text x="12" y="332">+getNode(int x, int y)</text>
+<text x="12" y="332">+getNode(x, y)</text>
 <text x="12" y="341">+getGuiOptions()</text>
-<text x="12" y="350">-getDiagramWidget()</text>
-<text x="12" y="359">-setCairoContext()</text>
+<text x="12" y="350">+setFontSize(size)</text>
+<text x="12" y="359">+getFontSize()</text>
+<text x="12" y="368">-getDiagramWidget()</text>
+<text x="12" y="377">-setCairoContext()</text>
 </g>
 <g stroke="none" font-style="italic">
-<text x="12" y="368">-doneRepositioning()</text>
+<text x="12" y="386">-doneRepositioning()</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="28" y="593" width="67" height="26" />
@@ -107,7 +108,7 @@
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="384" y="613" width="215" height="143" />
+<rect x="384" y="613" width="215" height="152" />
 <line x1="384" y1="634" x2="599" y2="634" />
 <line x1="384" y1="646" x2="599" y2="646" />
 </g>
@@ -115,20 +116,21 @@
 <text x="385" y="622">NullDrawer</text>
 <text x="385" y="631">oovaide</text>
 <text x="385" y="643">#cairo_t&lt;&lt;typedef&gt;&gt; cr</text>
-<text x="385" y="673">+NullDrawer(cairo_t&lt;&lt;typedef&gt;&gt; c)</text>
-<text x="385" y="682">+setGraphicsLib(cairo_t&lt;&lt;typedef&gt;&gt; c)</text>
-<text x="385" y="691">+haveCr()</text>
+<text x="385" y="682">+NullDrawer(Diagram diagram, cairo_t&lt;</text>
+<text x="392" y="691">&lt;typedef&gt;&gt; c)</text>
+<text x="385" y="700">+setGraphicsLib(cairo_t&lt;&lt;typedef&gt;&gt; c)</text>
 </g>
 <g stroke="none" font-style="italic">
-<text x="385" y="655">+getTextExtentWidth(OovStringRef )</text>
-<text x="385" y="664">+getTextExtentHeight(OovStringRef )</text>
-<text x="385" y="700">+setDiagramSize(GraphSize&lt;&lt;typedef&gt;&gt; )</text>
-<text x="385" y="709">+drawRect(GraphRect )</text>
-<text x="385" y="718">+drawLine(GraphPoint , GraphPoint , bool )</text>
-<text x="385" y="727">+drawCircle(GraphPoint , int , Color )</text>
-<text x="385" y="736">+drawEllipse(GraphRect )</text>
-<text x="385" y="745">+drawPoly(OovPolygon&lt;&lt;typedef&gt;&gt; , Color )</text>
-<text x="385" y="754">+drawText(GraphPoint , OovStringRef )</text>
+<text x="385" y="655">+setCurrentDrawingFontSize(double size)</text>
+<text x="385" y="664">+getTextExtentWidth(OovStringRef )</text>
+<text x="385" y="673">+getTextExtentHeight(OovStringRef )</text>
+<text x="385" y="709">+setDiagramSize(GraphSize&lt;&lt;typedef&gt;&gt; )</text>
+<text x="385" y="718">+drawRect(GraphRect )</text>
+<text x="385" y="727">+drawLine(GraphPoint , GraphPoint , bool )</text>
+<text x="385" y="736">+drawCircle(GraphPoint , , Color )</text>
+<text x="385" y="745">+drawEllipse(GraphRect )</text>
+<text x="385" y="754">+drawPoly(OovPolygon&lt;&lt;typedef&gt;&gt; , Color )</text>
+<text x="385" y="763">+drawText(GraphPoint , OovStringRef )</text>
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="418" y="407" width="179" height="44" />
@@ -185,9 +187,9 @@
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
-<rect x="128" y="476" width="60" height="26" />
-<line x1="128" y1="497" x2="188" y2="497" />
-<line x1="128" y1="500" x2="188" y2="500" />
+<rect x="128" y="476" width="64" height="26" />
+<line x1="128" y1="497" x2="192" y2="497" />
+<line x1="128" y1="500" x2="192" y2="500" />
 </g>
 <g stroke="none">
 <text x="129" y="485">ClassGraph</text>
@@ -218,42 +220,42 @@
 <g stroke="none" font-style="italic">
 </g>
 <g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
-<line x1="157" y1="369" x2="66" y2="593" />
-<circle cx="151" cy="381" r="5" style="fill:#ffffff" />
-<circle cx="145" cy="396" r="5" style="fill:#000000" />
-<circle cx="145" cy="396" r="2" style="fill:#000000" />
-<polygon points="157,369 150,374 152,381 158,377 157,369 " style="fill:#000000" />
-<line x1="362" y1="369" x2="450" y2="486" />
-<circle cx="370" cy="380" r="5" style="fill:#ffffff" />
-<circle cx="380" cy="392" r="5" style="fill:#000000" />
-<circle cx="380" cy="392" r="2" style="fill:#000000" />
-<polygon points="362,369 363,377 370,380 370,372 362,369 " style="fill:#000000" />
-<line x1="323" y1="369" x2="454" y2="613" />
-<circle cx="329" cy="381" r="5" style="fill:#ffffff" />
-<circle cx="337" cy="395" r="5" style="fill:#000000" />
-<circle cx="337" cy="395" r="2" style="fill:#000000" />
-<polygon points="323,369 323,377 329,381 330,373 323,369 " style="fill:#000000" />
-<line x1="437" y1="369" x2="482" y2="407" />
-<circle cx="447" cy="378" r="5" style="fill:#ffffff" />
-<circle cx="453" cy="382" r="2" style="fill:#ffffff" />
-<circle cx="459" cy="388" r="5" style="fill:#000000" />
-<circle cx="459" cy="388" r="2" style="fill:#000000" />
-<polygon points="437,369 440,377 447,378 445,370 437,369 " style="fill:#ffffff" />
-<line x1="228" y1="369" x2="225" y2="658" />
-<circle cx="227" cy="398" r="5" style="fill:#000000" />
-<circle cx="227" cy="398" r="2" style="fill:#000000" />
-<polygon points="228,369 224,376 228,382 232,376 228,369 " style="fill:#000000" />
-<line x1="100" y1="369" x2="72" y2="407" />
-<circle cx="89" cy="382" r="5" style="fill:#ffffff" />
-<circle cx="89" cy="382" r="2" style="fill:#ffffff" />
-<polygon points="72,407 83,400 75,394 72,407 " style="fill:#ffffff" />
-<line x1="222" y1="369" x2="213" y2="568" />
-<polygon points="222,369 216,376 222,372 227,377 222,369 " style="fill:#ffffff" />
-<circle cx="221" cy="382" r="5" style="fill:#ffffff" />
-<circle cx="221" cy="389" r="2" style="fill:#ffffff" />
-<line x1="285" y1="369" x2="303" y2="422" />
-<circle cx="289" cy="382" r="5" style="fill:#ffffff" />
-<circle cx="291" cy="388" r="2" style="fill:#ffffff" />
+<line x1="152" y1="387" x2="66" y2="593" />
+<circle cx="146" cy="399" r="5" style="fill:#ffffff" />
+<circle cx="140" cy="414" r="5" style="fill:#000000" />
+<circle cx="140" cy="414" r="2" style="fill:#000000" />
+<polygon points="152,387 145,392 147,399 153,395 152,387 " style="fill:#000000" />
+<line x1="372" y1="387" x2="449" y2="486" />
+<circle cx="380" cy="398" r="5" style="fill:#ffffff" />
+<circle cx="390" cy="410" r="5" style="fill:#000000" />
+<circle cx="390" cy="410" r="2" style="fill:#000000" />
+<polygon points="372,387 373,395 380,398 380,390 372,387 " style="fill:#000000" />
+<line x1="329" y1="387" x2="451" y2="613" />
+<circle cx="335" cy="399" r="5" style="fill:#ffffff" />
+<circle cx="343" cy="413" r="5" style="fill:#000000" />
+<circle cx="343" cy="413" r="2" style="fill:#000000" />
+<polygon points="329,387 329,395 335,399 336,391 329,387 " style="fill:#000000" />
+<line x1="447" y1="379" x2="481" y2="407" />
+<circle cx="457" cy="387" r="5" style="fill:#ffffff" />
+<circle cx="463" cy="392" r="2" style="fill:#ffffff" />
+<circle cx="470" cy="398" r="5" style="fill:#000000" />
+<circle cx="470" cy="398" r="2" style="fill:#000000" />
+<polygon points="447,379 450,387 457,387 455,380 447,379 " style="fill:#ffffff" />
+<line x1="228" y1="387" x2="225" y2="658" />
+<circle cx="227" cy="416" r="5" style="fill:#000000" />
+<circle cx="227" cy="416" r="2" style="fill:#000000" />
+<polygon points="228,387 224,394 228,400 232,394 228,387 " style="fill:#000000" />
+<line x1="88" y1="387" x2="72" y2="407" />
+<circle cx="90" cy="383" r="5" style="fill:#ffffff" />
+<circle cx="90" cy="383" r="2" style="fill:#ffffff" />
+<polygon points="72,407 84,401 75,394 72,407 " style="fill:#ffffff" />
+<line x1="222" y1="387" x2="213" y2="568" />
+<polygon points="222,387 216,394 222,390 227,395 222,387 " style="fill:#ffffff" />
+<circle cx="221" cy="400" r="5" style="fill:#ffffff" />
+<circle cx="220" cy="407" r="2" style="fill:#ffffff" />
+<line x1="291" y1="387" x2="303" y2="422" />
+<circle cx="295" cy="400" r="5" style="fill:#ffffff" />
+<circle cx="297" cy="406" r="2" style="fill:#ffffff" />
 <line x1="61" y1="593" x2="63" y2="433" />
 <circle cx="61" cy="579" r="5" style="fill:#ffffff" />
 <circle cx="61" cy="572" r="2" style="fill:#ffffff" />
@@ -264,46 +266,47 @@
 <circle cx="123" cy="595" r="5" style="fill:#000000" />
 <circle cx="123" cy="595" r="2" style="fill:#000000" />
 <polygon points="94,601 102,604 107,599 100,596 94,601 " style="fill:#ffffff" />
-<line x1="71" y1="593" x2="148" y2="502" />
-<circle cx="80" cy="582" r="5" style="fill:#ffffff" />
-<circle cx="90" cy="570" r="5" style="fill:#000000" />
-<circle cx="90" cy="570" r="2" style="fill:#000000" />
-<polygon points="71,593 79,590 80,583 72,585 71,593 " style="fill:#000000" />
+<line x1="72" y1="593" x2="150" y2="502" />
+<circle cx="81" cy="582" r="5" style="fill:#ffffff" />
+<circle cx="91" cy="570" r="5" style="fill:#000000" />
+<circle cx="91" cy="570" r="2" style="fill:#000000" />
+<polygon points="72,593 80,591 81,583 73,585 72,593 " style="fill:#000000" />
 <line x1="79" y1="593" x2="289" y2="448" />
 <circle cx="90" cy="585" r="5" style="fill:#ffffff" />
 <circle cx="96" cy="581" r="2" style="fill:#ffffff" />
 <line x1="94" y1="607" x2="279" y2="618" />
 <circle cx="107" cy="607" r="5" style="fill:#ffffff" />
 <circle cx="114" cy="608" r="2" style="fill:#ffffff" />
-<line x1="384" y1="645" x2="352" y2="633" />
-<circle cx="380" cy="643" r="5" style="fill:#ffffff" />
-<circle cx="380" cy="643" r="2" style="fill:#ffffff" />
-<polygon points="352,633 362,642 365,633 352,633 " style="fill:#ffffff" />
+<line x1="384" y1="647" x2="349" y2="633" />
+<circle cx="371" cy="641" r="5" style="fill:#ffffff" />
+<circle cx="376" cy="644" r="5" style="fill:#ffffff" />
+<circle cx="376" cy="644" r="2" style="fill:#ffffff" />
+<polygon points="349,633 359,642 362,633 349,633 " style="fill:#ffffff" />
 <line x1="239" y1="658" x2="304" y2="448" />
 <circle cx="295" cy="476" r="5" style="fill:#ffffff" />
 <circle cx="295" cy="476" r="2" style="fill:#ffffff" />
 <polygon points="304,448 296,458 305,461 304,448 " style="fill:#ffffff" />
-<line x1="80" y1="433" x2="141" y2="476" />
-<circle cx="129" cy="467" r="5" style="fill:#ffffff" />
-<circle cx="123" cy="463" r="2" style="fill:#ffffff" />
-<circle cx="116" cy="458" r="5" style="fill:#000000" />
-<circle cx="116" cy="458" r="2" style="fill:#000000" />
-<polygon points="141,476 138,468 130,468 133,476 141,476 " style="fill:#ffffff" />
-<line x1="206" y1="568" x2="165" y2="502" />
-<polygon points="165,502 165,511 167,505 174,505 165,502 " style="fill:#ffffff" />
-<circle cx="172" cy="513" r="5" style="fill:#ffffff" />
-<circle cx="176" cy="519" r="2" style="fill:#ffffff" />
-<line x1="188" y1="479" x2="272" y2="448" />
-<circle cx="201" cy="474" r="5" style="fill:#ffffff" />
-<circle cx="207" cy="471" r="2" style="fill:#ffffff" />
-<circle cx="216" cy="468" r="5" style="fill:#000000" />
-<circle cx="216" cy="468" r="2" style="fill:#000000" />
-<polygon points="188,479 196,480 201,475 193,473 188,479 " style="fill:#ffffff" />
-<line x1="173" y1="502" x2="302" y2="607" />
-<circle cx="183" cy="510" r="5" style="fill:#ffffff" />
-<circle cx="189" cy="515" r="2" style="fill:#ffffff" />
-<circle cx="196" cy="520" r="5" style="fill:#000000" />
-<circle cx="196" cy="520" r="2" style="fill:#000000" />
-<polygon points="173,502 176,510 183,510 181,503 173,502 " style="fill:#ffffff" />
+<line x1="81" y1="433" x2="142" y2="476" />
+<circle cx="130" cy="467" r="5" style="fill:#ffffff" />
+<circle cx="124" cy="463" r="2" style="fill:#ffffff" />
+<circle cx="117" cy="458" r="5" style="fill:#000000" />
+<circle cx="117" cy="458" r="2" style="fill:#000000" />
+<polygon points="142,476 139,468 131,468 134,476 142,476 " style="fill:#ffffff" />
+<line x1="206" y1="568" x2="167" y2="502" />
+<polygon points="167,502 167,511 169,505 176,505 167,502 " style="fill:#ffffff" />
+<circle cx="174" cy="514" r="5" style="fill:#ffffff" />
+<circle cx="177" cy="520" r="2" style="fill:#ffffff" />
+<line x1="192" y1="478" x2="272" y2="448" />
+<circle cx="205" cy="473" r="5" style="fill:#ffffff" />
+<circle cx="211" cy="470" r="2" style="fill:#ffffff" />
+<circle cx="220" cy="467" r="5" style="fill:#000000" />
+<circle cx="220" cy="467" r="2" style="fill:#000000" />
+<polygon points="192,478 200,479 205,474 197,472 192,478 " style="fill:#ffffff" />
+<line x1="175" y1="502" x2="302" y2="607" />
+<circle cx="185" cy="510" r="5" style="fill:#ffffff" />
+<circle cx="191" cy="515" r="2" style="fill:#ffffff" />
+<circle cx="198" cy="521" r="5" style="fill:#000000" />
+<circle cx="198" cy="521" r="2" style="fill:#000000" />
+<polygon points="175,502 178,510 185,510 183,503 175,502 " style="fill:#ffffff" />
 </g>
 </svg>

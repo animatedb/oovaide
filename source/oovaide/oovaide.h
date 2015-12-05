@@ -132,6 +132,7 @@ class oovGui:public OovErrorListener, private GlobalSettingsListener
         void makeComplexityFile();
         void makeMemberUseFile();
         void makeMethodUseFile();
+        void makeIncludeTypeUseFile();
         void makeDuplicatesFile();
         void displayProjectStats();
         void makeLineStats();

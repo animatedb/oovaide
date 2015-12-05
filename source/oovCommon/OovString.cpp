@@ -128,8 +128,9 @@ int StringCompareNoCaseNumCharsMatch(char const * const str1, char const * const
     return(p1-str1);
     }
 
+// minDigits 0 doesn't print zero, 1 is normal minimum
 static bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInBytes,
-    int radix)
+    int radix, int minSpaces=0, int minDigits=1)
     {
     bool success = false;
     if(dstSizeInBytes > 0)
@@ -137,9 +138,9 @@ static bool IntToAsciiString(int value, char * const buffer, size_t dstSizeInByt
         const size_t numBufSize = 30;
         char numBuf[numBufSize];
         if(radix == 10)
-            snprintf(numBuf, sizeof(numBuf), "%d", value);
+            snprintf(numBuf, sizeof(numBuf), "%*.*d", minSpaces, minDigits, value);
         else
-            snprintf(numBuf, sizeof(numBuf), "%x", value);
+            snprintf(numBuf, sizeof(numBuf), "%*.*x", minSpaces, minDigits, value);
         if(isAsciiLenOk(numBuf, dstSizeInBytes))
             {
             copyString(buffer, dstSizeInBytes, numBuf, numBufSize);
@@ -281,10 +282,10 @@ void OovString::setLowerCase(OovStringRef const str)
     StringToLower(*this);
     }
 
-void OovString::appendInt(int val, int radix)
+void OovString::appendInt(int val, int radix, int minSpaces, int minDigits)
     {
     char buf[30];
-    IntToAsciiString(val, buf, sizeof(buf), radix);
+    IntToAsciiString(val, buf, sizeof(buf), radix, minSpaces, minDigits);
     append(buf);
     }
 

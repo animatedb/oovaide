@@ -1,5 +1,5 @@
 DrawingName|ComponentBuilder
 FileType|Class
 Names|Oov-Key;ComponentBuilder;ComponentFinder;ToolPathFile;ObjSymbols;IncDirDependencyMapReader;ComponentPkgDeps;ComponentTaskQueue;std::map<OovString,OovStringSet,std::less<OovString>,std::allocator<std::pair<OovString,OovStringSet> > >;NameValueFile;
-XPositions|315;26;473;542;31;280;464;29;504;342;
-YPositions|556;27;402;245;536;514;28;399;177;424;
+XPositions|300;26;455;505;31;278;496;29;504;342;
+YPositions|553;27;417;238;536;511;27;399;177;424;

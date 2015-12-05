@@ -1,0 +1,329 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+ font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="784" height="657" viewbox="0 0 784 657">
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="654" y="351" width="129" height="143" />
+<line x1="654" y1="364" x2="783" y2="364" />
+<polygon points="767,372 779,377 779,367 767,372 " style="fill:#ffffff" />
+<polygon points="767,386 774,390 781,386 774,382 767,386 " style="fill:#ffffff" />
+<polygon points="767,400 774,404 781,400 774,396 767,400 " style="fill:#0" />
+<polygon points="767,414 775,419 771,414 775,409 767,414 " style="fill:#ffffff" />
+<circle cx="767" cy="428" r="5" style="fill:#ffffff" />
+<circle cx="767" cy="442" r="5" style="fill:#ffffff" />
+<circle cx="774" cy="442" r="2" style="fill:#ffffff" />
+<circle cx="767" cy="456" r="5" style="fill:#ffffff" />
+<circle cx="767" cy="456" r="2" style="fill:#ffffff" />
+<circle cx="767" cy="470" r="5" style="fill:#ffffff" />
+<circle cx="767" cy="470" r="2" style="fill:#0" />
+<circle cx="767" cy="484" r="5" style="fill:#0" />
+<circle cx="767" cy="484" r="2" style="fill:#0" />
+</g>
+<g stroke="none">
+<text x="655" y="360">Relations Key</text>
+<text x="655" y="374">Generalization</text>
+<text x="655" y="388">Aggregation(reference)</text>
+<text x="655" y="402">Composition(owned)</text>
+<text x="655" y="416">Const</text>
+<text x="655" y="430">Method Variable</text>
+<text x="655" y="444">Method Parameter</text>
+<text x="655" y="458">Public</text>
+<text x="655" y="472">Protected</text>
+<text x="655" y="486">Private</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="23" y="420" width="281" height="224" />
+<line x1="23" y1="441" x2="304" y2="441" />
+<line x1="23" y1="480" x2="304" y2="480" />
+</g>
+<g stroke="none">
+<text x="24" y="429">Tokenizer</text>
+<text x="24" y="438">oovEdit</text>
+<text x="24" y="450">-CXTranslationUnit&lt;&lt;typedef&gt;&gt; mTransUnit</text>
+<text x="24" y="459">-CLangLock mCLangLock</text>
+<text x="24" y="468">-CXFile&lt;&lt;typedef&gt;&gt; mSourceFile</text>
+<text x="24" y="477">-OovString mSourceFilename</text>
+<text x="24" y="489">+~Tokenizer()</text>
+<text x="24" y="498">+parse(OovStringRef fileName, OovStringRef buffer,</text>
+<text x="31" y="507"> size_t&lt;&lt;typedef&gt;&gt; bufLen, char[] clang_args,</text>
+<text x="31" y="516"> size_t&lt;&lt;typedef&gt;&gt; num_clang_args)</text>
+<text x="24" y="525">+tokenize(TokenRange highlight)</text>
+<text x="24" y="534">+findToken(eFindTokenTypes ft, size_t&lt;&lt;typedef&gt;</text>
+<text x="31" y="543">&gt; origOffset, string&lt;&lt;typedef&gt;&gt; fn, size_t&lt;</text>
+<text x="31" y="552">&lt;typedef&gt;&gt; offset)</text>
+<text x="24" y="561">+getClassNameAtLocation(size_t&lt;&lt;typedef&gt;&gt; origOffset)</text>
+<text x="24" y="570">+getMethodNameAtLocation(size_t&lt;&lt;typedef&gt;&gt; origOffset,</text>
+<text x="31" y="579"> OovString className, OovString methodName)</text>
+<text x="24" y="588">+codeComplete(size_t&lt;&lt;typedef&gt;&gt; offset)</text>
+<text x="24" y="597">-getCursorAtOffset(CXTranslationUnit&lt;&lt;typedef&gt;</text>
+<text x="31" y="606">&gt; tu, CXFile&lt;&lt;typedef&gt;&gt; file, unsigned int </text>
+<text x="31" y="615">desiredOffset)</text>
+<text x="24" y="624">-getLineColumn(size_t&lt;&lt;typedef&gt;&gt; charOffset, </text>
+<text x="31" y="633">unsigned int line, unsigned int column)</text>
+<text x="24" y="642">+Tokenizer()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="627" y="612" width="122" height="44" />
+<line x1="627" y1="633" x2="749" y2="633" />
+<line x1="627" y1="636" x2="749" y2="636" />
+</g>
+<g stroke="none">
+<text x="628" y="621">CLangLock</text>
+<text x="628" y="630">oovEdit</text>
+<text x="628" y="645">+lock(line, Tokenizer tok)</text>
+<text x="628" y="654">+unlock()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="354" y="230" width="213" height="242" />
+<line x1="354" y1="251" x2="567" y2="251" />
+<line x1="354" y1="353" x2="567" y2="353" />
+</g>
+<g stroke="none">
+<text x="355" y="239">HighlighterBackgroundThreadData</text>
+<text x="355" y="248">oovEdit</text>
+<text x="355" y="260">-OovString mFilename</text>
+<text x="355" y="269">-OovProcessChildArgs mClang_args</text>
+<text x="355" y="278">-Tokenizer mTokenizer</text>
+<text x="355" y="287">-mParseRequestCounter</text>
+<text x="355" y="296">-mParseFinishedCounter</text>
+<text x="355" y="305">-std::mutex mResultsLock</text>
+<text x="355" y="314">-eHighlightTask mTaskResults</text>
+<text x="355" y="323">-TokenRange mTokenResults</text>
+<text x="355" y="332">-OovStringVec mShowMemberResults</text>
+<text x="355" y="341">-OovString mFindTokenResultFilename</text>
+<text x="355" y="350">-size_t&lt;&lt;typedef&gt;&gt; mFindTokenResultOffset</text>
+<text x="355" y="371">+initArgs(OovStringRef filename, char[] </text>
+<text x="362" y="380">clang_args, num_clang_args)</text>
+<text x="355" y="389">+getParseResults()</text>
+<text x="355" y="398">+getShowMembersResults()</text>
+<text x="355" y="407">+getFindTokenResults(string&lt;&lt;typedef&gt;</text>
+<text x="362" y="416">&gt; fn, size_t&lt;&lt;typedef&gt;&gt; offset)</text>
+<text x="355" y="425">+processItem(HighlightTaskItem item)</text>
+<text x="355" y="434">+HighlighterBackgroundThreadData()</text>
+<text x="355" y="443">+makeParseRequest()</text>
+<text x="355" y="452">+isParseNeeded()</text>
+<text x="355" y="461">+getTaskResults()</text>
+<text x="355" y="470">+getTokenizer()</text>
+</g>
+<g stroke="none" font-style="italic">
+<text x="355" y="362">+~HighlighterBackgroundThreadData()</text>
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="347" y="83" width="239" height="26" />
+<line x1="347" y1="104" x2="586" y2="104" />
+<line x1="347" y1="107" x2="586" y2="107" />
+</g>
+<g stroke="none">
+<text x="348" y="92">ThreadedWorkBackgroundQueue&lt;HighlighterBack</text>
+<text x="348" y="101">  groundThreadData,HighlightTaskItem&gt;</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="25" y="25" width="279" height="224" />
+<line x1="25" y1="46" x2="304" y2="46" />
+<line x1="25" y1="94" x2="304" y2="94" />
+</g>
+<g stroke="none">
+<text x="26" y="34">Highlighter</text>
+<text x="26" y="43">oovEdit</text>
+<text x="26" y="55">-HighlighterBackgroundThreadData mBackgroundThreadD</text>
+<text x="33" y="64">ata</text>
+<text x="26" y="73">-HighlightTags mHighlightTags</text>
+<text x="26" y="82">-TokenRange mHighlightTokens</text>
+<text x="26" y="91">-Highlighter::TokenStates mTokenState</text>
+<text x="26" y="103">+highlightRequest(OovStringRef filename, char[] </text>
+<text x="33" y="112">clang_args, num_clang_args)</text>
+<text x="26" y="121">+highlightUpdate(GtkTextView&lt;&lt;typedef&gt;&gt; textView,</text>
+<text x="33" y="130"> OovStringRef buffer, size_t&lt;&lt;typedef&gt;&gt; bufLen)</text>
+<text x="26" y="139">+showMembers(size_t&lt;&lt;typedef&gt;&gt; offset)</text>
+<text x="26" y="148">+findToken(eFindTokenTypes ft, size_t&lt;&lt;typedef&gt;</text>
+<text x="33" y="157">&gt; origOffset)</text>
+<text x="26" y="166">+applyTags(GtkTextBuffer&lt;&lt;typedef&gt;&gt; textBuffer,</text>
+<text x="33" y="175"> topOffset, botOffset)</text>
+<text x="26" y="184">+Highlighter()</text>
+<text x="26" y="193">+getShowMembers()</text>
+<text x="26" y="202">+getFindTokenResults(string&lt;&lt;typedef&gt;&gt; fn,</text>
+<text x="33" y="211"> size_t&lt;&lt;typedef&gt;&gt; offset)</text>
+<text x="26" y="220">+getClassNameAtLocation(size_t&lt;&lt;typedef&gt;&gt; offset)</text>
+<text x="26" y="229">+getMethodNameAtLocation(size_t&lt;&lt;typedef&gt;&gt;</text>
+<text x="33" y="238"> offset, OovString className, OovString </text>
+<text x="33" y="247">methodName)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="537" y="25" width="239" height="35" />
+<line x1="537" y1="55" x2="776" y2="55" />
+<line x1="537" y1="58" x2="776" y2="58" />
+</g>
+<g stroke="none">
+<text x="538" y="34">ThreadedWorkBackgroundQueue&lt;T_ProcessClass,</text>
+<text x="538" y="43">  T_ThreadQueueItem&gt;&lt;&lt;template&gt;&gt;</text>
+<text x="538" y="52">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="597" y="130" width="184" height="134" />
+<line x1="597" y1="151" x2="781" y2="151" />
+<line x1="597" y1="190" x2="781" y2="190" />
+</g>
+<g stroke="none">
+<text x="598" y="139">HighlightTaskItem</text>
+<text x="598" y="148">oovEdit</text>
+<text x="598" y="160">+eHighlightTask mTask</text>
+<text x="598" y="169">+OovString mParseSourceBuffer</text>
+<text x="598" y="178">+size_t&lt;&lt;typedef&gt;&gt; mOffset</text>
+<text x="598" y="187">+eFindTokenTypes mFindTokenFt</text>
+<text x="598" y="199">+HighlightTaskItem()</text>
+<text x="598" y="208">+setParseTask(OovStringRef buffer,</text>
+<text x="605" y="217"> size_t&lt;&lt;typedef&gt;&gt; bufLen)</text>
+<text x="598" y="226">+setShowMembersTask(size_t&lt;&lt;</text>
+<text x="605" y="235">typedef&gt;&gt; offset)</text>
+<text x="598" y="244">+setFindTokenTask(eFindTokenTypes </text>
+<text x="605" y="253">ft, size_t&lt;&lt;typedef&gt;&gt; origOffset)</text>
+<text x="598" y="262">+getTask()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="675" y="293" width="103" height="26" />
+<line x1="675" y1="314" x2="778" y2="314" />
+<line x1="675" y1="317" x2="778" y2="317" />
+</g>
+<g stroke="none">
+<text x="676" y="302">OovProcessChildArgs</text>
+<text x="676" y="311">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="24" y="326" width="245" height="35" />
+<line x1="24" y1="347" x2="269" y2="347" />
+<line x1="24" y1="350" x2="269" y2="350" />
+</g>
+<g stroke="none">
+<text x="25" y="335">TokenRange</text>
+<text x="25" y="344">oovEdit</text>
+<text x="25" y="359">+tokenize(CXTranslationUnit&lt;&lt;typedef&gt;&gt; transUnit)</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="670" y="537" width="53" height="17" />
+<line x1="670" y1="549" x2="723" y2="549" />
+<line x1="670" y1="552" x2="723" y2="552" />
+</g>
+<g stroke="none">
+<text x="671" y="546">std::mutex</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="420" y="508" width="164" height="62" />
+<line x1="420" y1="529" x2="584" y2="529" />
+<line x1="420" y1="541" x2="584" y2="541" />
+</g>
+<g stroke="none">
+<text x="421" y="517">CLangAutoLock</text>
+<text x="421" y="526">oovEdit</text>
+<text x="421" y="538">-CLangLock mLock</text>
+<text x="421" y="550">+CLangAutoLock(CLangLock lock,</text>
+<text x="428" y="559"> line, Tokenizer tok)</text>
+<text x="421" y="568">+~CLangAutoLock()</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
+<rect x="418" y="625" width="63" height="26" />
+<line x1="418" y1="646" x2="481" y2="646" />
+<line x1="418" y1="649" x2="481" y2="649" />
+</g>
+<g stroke="none">
+<text x="419" y="634">ModelData</text>
+<text x="419" y="643">oovCommon</text>
+</g>
+<g stroke="none" font-style="italic">
+</g>
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="303" y1="559" x2="627" y2="623" />
+<circle cx="332" cy="564" r="5" style="fill:#0" />
+<circle cx="332" cy="564" r="2" style="fill:#0" />
+<polygon points="303,559 309,564 316,561 311,557 303,559 " style="fill:#0" />
+<circle cx="613" cy="620" r="5" style="fill:#ffffff" />
+<circle cx="606" cy="618" r="2" style="fill:#ffffff" />
+<line x1="303" y1="447" x2="354" y2="415" />
+<circle cx="342" cy="422" r="5" style="fill:#ffffff" />
+<circle cx="328" cy="430" r="5" style="fill:#0" />
+<circle cx="328" cy="430" r="2" style="fill:#0" />
+<polygon points="354,415 346,415 343,422 350,422 354,415 " style="fill:#0" />
+<line x1="163" y1="420" x2="164" y2="249" />
+<circle cx="163" cy="262" r="5" style="fill:#ffffff" />
+<line x1="153" y1="420" x2="147" y2="360" />
+<circle cx="151" cy="406" r="5" style="fill:#ffffff" />
+<circle cx="150" cy="399" r="2" style="fill:#ffffff" />
+<line x1="303" y1="534" x2="420" y2="538" />
+<circle cx="316" cy="534" r="5" style="fill:#ffffff" />
+<circle cx="406" cy="537" r="5" style="fill:#ffffff" />
+<circle cx="399" cy="537" r="2" style="fill:#ffffff" />
+<line x1="303" y1="583" x2="418" y2="627" />
+<circle cx="316" cy="588" r="5" style="fill:#ffffff" />
+<line x1="689" y1="612" x2="696" y2="553" />
+<circle cx="690" cy="598" r="5" style="fill:#ffffff" />
+<line x1="645" y1="612" x2="562" y2="570" />
+<circle cx="574" cy="576" r="5" style="fill:#ffffff" />
+<circle cx="580" cy="579" r="2" style="fill:#ffffff" />
+<circle cx="588" cy="583" r="5" style="fill:#0" />
+<circle cx="588" cy="583" r="2" style="fill:#0" />
+<polygon points="562,570 566,577 574,576 570,570 562,570 " style="fill:#ffffff" />
+<line x1="462" y1="230" x2="466" y2="109" />
+<circle cx="462" cy="216" r="5" style="fill:#ffffff" />
+<line x1="466" y1="109" x2="462" y2="230" style="stroke-dasharray: 4, 4 " />
+<line x1="462" y1="230" x2="467" y2="218" />
+<line x1="462" y1="230" x2="458" y2="217" />
+<circle cx="465" cy="138" r="5" style="fill:#ffffff" />
+<circle cx="465" cy="138" r="2" style="fill:#ffffff" />
+<polygon points="466,109 461,121 470,122 466,109 " style="fill:#ffffff" />
+<line x1="354" y1="275" x2="303" y2="237" />
+<circle cx="314" cy="245" r="5" style="fill:#ffffff" />
+<circle cx="327" cy="254" r="5" style="fill:#0" />
+<circle cx="327" cy="254" r="2" style="fill:#0" />
+<polygon points="303,237 306,245 314,245 311,238 303,237 " style="fill:#0" />
+<line x1="566" y1="280" x2="597" y2="258" />
+<polygon points="566,280 575,280 569,278 569,271 566,280 " style="fill:#ffffff" />
+<circle cx="577" cy="271" r="5" style="fill:#ffffff" />
+<circle cx="583" cy="267" r="2" style="fill:#ffffff" />
+<line x1="566" y1="334" x2="675" y2="314" />
+<circle cx="579" cy="331" r="5" style="fill:#ffffff" />
+<circle cx="595" cy="328" r="5" style="fill:#0" />
+<circle cx="595" cy="328" r="2" style="fill:#0" />
+<polygon points="566,334 574,337 579,332 572,329 566,334 " style="fill:#0" />
+<line x1="354" y1="349" x2="268" y2="346" />
+<circle cx="340" cy="348" r="5" style="fill:#ffffff" />
+<circle cx="324" cy="347" r="5" style="fill:#0" />
+<circle cx="324" cy="347" r="2" style="fill:#0" />
+<polygon points="354,349 347,345 341,349 347,353 354,349 " style="fill:#0" />
+<line x1="566" y1="438" x2="687" y2="537" />
+<circle cx="589" cy="456" r="5" style="fill:#0" />
+<circle cx="589" cy="456" r="2" style="fill:#0" />
+<polygon points="566,438 569,446 576,446 574,439 566,438 " style="fill:#0" />
+<line x1="371" y1="109" x2="303" y2="119" />
+<circle cx="316" cy="116" r="5" style="fill:#ffffff" />
+<line x1="511" y1="83" x2="597" y2="59" style="stroke-dasharray: 4, 4 " />
+<line x1="597" y1="59" x2="584" y2="58" />
+<line x1="597" y1="59" x2="586" y2="67" />
+<line x1="494" y1="109" x2="597" y2="156" style="stroke-dasharray: 4, 4 " />
+<line x1="597" y1="156" x2="588" y2="146" />
+<line x1="597" y1="156" x2="584" y2="156" />
+<line x1="303" y1="152" x2="597" y2="187" />
+<circle cx="316" cy="153" r="5" style="fill:#ffffff" />
+<line x1="155" y1="249" x2="147" y2="326" />
+<circle cx="153" cy="262" r="5" style="fill:#ffffff" />
+<circle cx="151" cy="278" r="5" style="fill:#0" />
+<circle cx="151" cy="278" r="2" style="fill:#0" />
+<polygon points="155,249 150,256 154,262 158,257 155,249 " style="fill:#0" />
+</g>
+</svg>

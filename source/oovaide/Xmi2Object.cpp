@@ -33,6 +33,7 @@
 #include "OovError.h"
 
 
+#define DEBUG_FUNC 0
 #define DEBUG_CLASS 0
 #define DEBUG_LOAD 0
 #if(DEBUG_LOAD)
@@ -159,7 +160,7 @@ bool XmiParser::parse(char const * const buf)
     {
 #if(DEBUG_LOAD)
     if(sDumpFile)
-        fprintf(sLog.mFp, "----------\n");
+        fprintf(sLog.mFp, "---------- starting index = %d\n", mStartingModuleTypeIndex);
 #endif
     bool success = (parseXml(buf) == ERROR_NONE);
     if(success)
@@ -404,11 +405,17 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
                 }
             if(strcmp(attrName.c_str(), "name") == 0)
                 {
+#if(DEBUG_CLASS)
+    if(attrVal == "oovJavaParser")
+        {
+        printf("a");
+        }
+#endif
                 elItem.mModelObject->setName(attrVal.c_str());
-    #if(DEBUG_LOAD)
-        if(sDumpFile)
-            fprintf(sLog.mFp, "  %s ", attrVal.c_str());
-    #endif
+#if(DEBUG_LOAD)
+    if(sDumpFile)
+        fprintf(sLog.mFp, "  %s ", attrVal.c_str());
+#endif
                 }
             }
         switch(elItem.mType)

@@ -781,8 +781,18 @@ class ModelData
         /// be done for every loaded file since ID's are specific for each file.
         void resolveModelIds();
 
+        bool isTypeReferencedByOperation(ModelOperation const &oper,
+            ModelType const &type) const;
+        bool isTypeReferencedByClassAttributes(ModelClassifier const &classifier,
+            ModelType const &type) const;
+        bool isTypeReferencedByParentClass(ModelClassifier const &classifier,
+            ModelType const &type) const;
+
         /// Go through the classes and operations and see if the type is
-        /// referenced.
+        /// referenced as a supplier.
+        /// This is used by the model writer, so it has one
+        /// strange rule. If a type is related by inheritance in any way,
+        /// then indicate it is referenced. Should this be changed?
         /// @param type The type to check.
         bool isTypeReferencedByDefinedObjects(ModelType const &type) const;
 

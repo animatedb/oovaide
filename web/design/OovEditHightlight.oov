@@ -1,5 +1,5 @@
 DrawingName|Tokenizer
 FileType|Class
 Names|Oov-Key;Tokenizer;CLangLock;HighlighterBackgroundThreadData;ThreadedWorkBackgroundQueue<HighlighterBackgroundThreadData,HighlightTaskItem>;Highlighter;ThreadedWorkBackgroundQueue<T_ProcessClass,T_ThreadQueueItem><<template>>;HighlightTaskItem;OovProcessChildArgs;TokenRange;std::mutex;CLangAutoLock;ModelData;
-XPositions|728;23;631;419;347;25;624;682;702;71;684;419;423;
-YPositions|361;420;630;241;83;25;30;108;300;335;544;536;681;
+XPositions|654;23;627;354;347;25;537;597;675;24;670;420;418;
+YPositions|351;420;612;230;83;25;25;130;293;326;537;508;625;

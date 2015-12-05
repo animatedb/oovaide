@@ -11,7 +11,6 @@ public class ModelStatements implements Iterable<ModelStatement>
     {
     public ModelStatements()
         {
-        super();
         mStatements = new ArrayList<ModelStatement>();
         }
 

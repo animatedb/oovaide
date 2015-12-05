@@ -1,5 +1,5 @@
 DrawingName|oovJavaParser
 FileType|Class
-Names|Oov-Key;oovJavaParser;model.ModelData;parser.AnalysisParser;ModelWriter;java.io.PrintStream;java.io.File;
-XPositions|20;21;337;429;188;33;354;
-YPositions|338;22;130;72;193;158;19;
+Names|Oov-Key;oovJavaParser;parser.AnalysisParser;java.util.ArrayList;common.Common;ModelWriter;java.io.PrintStream;model.ModelData;java.util.HashMap;
+XPositions|23;22;303;250;274;205;22;417;22;
+YPositions|327;31;122;184;46;256;183;183;245;

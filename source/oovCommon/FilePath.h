@@ -154,6 +154,10 @@ OovString FilePathGetSegment(OovStringRef const path, size_t pos);
 /// @param path A file path.
 OovString FilePathGetDrivePath(OovStringRef const path);
 
+/// Gets the directory spec of the path
+/// @param path A file path.
+OovString FilePathGetDirPath(OovStringRef const path);
+
 /// Gets the filename without the extension of the path.
 /// @param path A file path.
 OovString FilePathGetFileName(OovStringRef const path);

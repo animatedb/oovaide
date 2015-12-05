@@ -1,5 +1,5 @@
 DrawingName|DebuggerGdb
 FileType|Class
-Names|Oov-Key;DebuggerGdb;OovBackgroundPipeProcess;OovProcessListener;DebuggerBase;<<typedef>>Debugger;DebuggerBreakpoints;DebuggerListener;InProcMutex;std::queue<eDebuggerChangeStatus,std::deque<eDebuggerChangeStatus,std::allocator<eDebuggerChangeStatus> > >;DebuggerLocation;cDebugResult;
-XPositions|524;22;339;403;15;331;440;435;509;417;438;438;
-YPositions|639;470;633;710;22;753;376;136;74;22;212;461;
+Names|Oov-Key;DebuggerGdb;OovBackgroundPipeProcess;OovProcessListener;DebuggerBase;DebuggerBreakpoints;DebuggerListener;InProcMutex;std::queue<eDebuggerChangeStatus,std::deque<eDebuggerChangeStatus,std::allocator<eDebuggerChangeStatus> > >;DebuggerLocation;
+XPositions|533;22;339;403;15;440;435;509;417;438;
+YPositions|625;470;633;710;22;376;136;74;22;212;

@@ -1,5 +1,5 @@
 DrawingName|model.ModelData
 FileType|Class
-Names|Oov-Key;model.ModelData;java.util.ArrayList;java.lang.Iterable;model.ModelType;parser.Parser;model.ModelMethod;model.ModelStatement;model.ModelTypeRef;model.ModelTypeRelation;model.ModelTypeRefs;model.ModelStatements;
-XPositions|586;19;290;413;313;18;21;271;526;520;416;23;
-YPositions|25;73;278;307;27;18;260;472;512;244;380;404;
+Names|Oov-Key;model.ModelData;java.util.ArrayList;java.lang.Iterable;model.ModelType;model.ModelMethod;model.ModelStatement;model.ModelTypeRef;model.ModelTypeRelation;model.ModelTypeRefs;model.ModelStatements;
+XPositions|586;19;290;413;313;21;271;526;520;416;23;
+YPositions|25;73;278;307;27;260;472;512;244;380;425;

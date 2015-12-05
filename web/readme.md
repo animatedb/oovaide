@@ -42,7 +42,7 @@ analysis statistics.
 		- Dead code detection (static)
 			- Class data member usage
 			- Class method usage
-		- Line counts (Not for Java)
+		- Line counts
 		- Project statistics
 		- Export to sqlite database
 	- Build

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" version="1.1"
   font-family="Arial, Helvetica, sans-serif" font-size="10.000000" 
-  width="466" height="358">
+  width="466" height="358" viewbox="0 0 466 358">
 <g  fill="#f5fff5" stroke="#000000" style="stroke-width:1">
 <rect x="332" y="214" width="133" height="143" />
 <line x1="332" y1="227" x2="465" y2="227" />

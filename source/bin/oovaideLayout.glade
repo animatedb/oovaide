@@ -1924,6 +1924,15 @@ Use this dialog to set up component definitions.</property>
                           </object>
                         </child>
                         <child>
+                          <object class="GtkMenuItem" id="IncludeUsageMenuitem">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Include Type Usage...</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_IncludeUsageMenuitem_activate" swapped="no"/>
+                          </object>
+                        </child>
+                        <child>
                           <object class="GtkMenuItem" id="DuplicatesMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>

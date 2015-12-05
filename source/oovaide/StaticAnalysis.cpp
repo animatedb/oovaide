@@ -8,8 +8,10 @@
 #include "StaticAnalysis.h"
 #include "FilePath.h"
 #include "Project.h"
+#include "IncludeMap.h"
 #include "XmlWriter.h"
 #include "OovError.h"
+#include <algorithm>
 
 class XslFile
     {
@@ -149,7 +151,7 @@ static void getAllAttrCounts(GtkWindow *parentWindow,
         }
     }
 
-bool createMemberVarUsageStaticAnalysisFile(GtkWindow *parentWindow,
+bool StaticAnalysis::createMemberVarUsageFile(GtkWindow *parentWindow,
         ModelData const &modelData, std::string &fn)
     {
     FilePath fp = Project::getOutputDir();
@@ -329,7 +331,7 @@ static void getAllOperationCounts(GtkWindow *parentWindow,
         }
     }
 
-bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
+bool StaticAnalysis::createMethodUsageFile(GtkWindow *parentWindow,
         ModelData const &model, std::string &fn)
     {
     FilePath fp = Project::getOutputDir();
@@ -407,7 +409,7 @@ bool createMethodUsageStaticAnalysisFile(GtkWindow *parentWindow,
     }
 
 
-bool createProjectStats(ModelData const &modelData, std::string &displayStr)
+bool StaticAnalysis::createProjectStats(ModelData const &modelData, std::string &displayStr)
     {
     unsigned numClasses = 0;
     unsigned numFiles = modelData.mModules.size();
@@ -568,7 +570,7 @@ static OovString getRelativeFileName(OovString const &fullFn)
     return Project::getSrcRootDirRelativeSrcFileName(fullFn, srcDir);
     }
 
-bool createLineStatsFile(ModelData const &modelData, std::string &fn)
+bool StaticAnalysis::createLineStatsFile(ModelData const &modelData, std::string &fn)
     {
     FilePath fp = Project::getOutputDir();
     fp.appendFile("LineStatistics");
@@ -615,6 +617,293 @@ bool createLineStatsFile(ModelData const &modelData, std::string &fn)
             {
             status = useFile.putString("</LineStatisticsReport>\n");
             }
+        }
+    return status.ok();
+    }
+
+
+// This doesn't work well yet because types are defined in header modules,
+// but the methods in source modules actually use the types.
+// The methods in a module must be analyzed to see if they refer to
+// a type.
+// Add isTypeReferencedByOperation()
+static std::vector<ModelOperation const*> getModuleOperations(
+    ModelData const &modelData, OovString const &consumerFile,
+    std::set<ModelClassifier const*> &operClasses)
+    {
+    std::vector<ModelOperation const*> ops;
+    for(auto const &type : modelData.mTypes)
+        {
+        ModelClassifier const *classifier = ModelType::getClass(type.get());
+        if(classifier)
+            {
+            for(auto const &oper : classifier->getOperations())
+                {
+                if(oper->getModule())
+                    {
+                    if(consumerFile == oper->getModule()->getModulePath())
+                        {
+                        ops.push_back(oper.get());
+                        operClasses.insert(classifier);
+                        }
+                    }
+                }
+            }
+        }
+    return ops;
+    }
+
+bool isProjectFile(OovStringRef file)
+    {
+    OovString const &srcDir = Project::getSourceRootDirectory();
+    size_t len = srcDir.length();
+    return(srcDir.compare(0, len, file, len) == 0);
+    }
+
+static void filterProjectSourceFiles(std::set<OovString> &projFiles)
+    {
+    // remove/erase idiom does not work on sets.
+    //   projFiles.erase(std::remove_if(projFiles.begin(), projFiles.end(),
+    //     isProjectFile), projFiles.end());
+    for(auto it = projFiles.begin(); it != projFiles.end(); )
+        {
+        if(!isProjectFile(*it))
+            {
+            projFiles.erase(it++);
+            }
+        else
+            {
+            ++it;
+            }
+        }
+    }
+
+static void filterProjectIncFiles(std::set<IncludedPath> &incFiles)
+    {
+    // remove/erase idiom does not work on sets.
+    for(auto it = incFiles.begin(); it != incFiles.end(); )
+        {
+        if(!isProjectFile((*it).getFullPath()))
+            {
+            incFiles.erase(it++);
+            }
+        else
+            {
+            ++it;
+            }
+        }
+    }
+
+static bool isTypeReferencedByOperatons(ModelData const &modelData,
+    std::vector<ModelOperation const*> const &moduleOps, ModelType const &type)
+    {
+    bool referenced = false;
+    for(auto const &conOper : moduleOps)
+        {
+        if(modelData.isTypeReferencedByOperation(*conOper, type))
+            {
+            referenced = true;
+            break;
+            }
+        }
+    return referenced;
+    }
+
+static bool isTypeReferencedByOperClasses(
+    std::set<ModelClassifier const*> &operClasses, ModelType const &type)
+    {
+    bool referenced = false;
+    for(auto const &cls : operClasses)
+        {
+        if(cls == &type)
+            {
+            referenced = true;
+            break;
+            }
+        }
+    return referenced;
+    }
+
+static bool createIncludeTypeUsageStyleTransform(const std::string &fullPath)
+    {
+    using namespace XML;
+
+    XslFile xslFile;
+        XslTemplate tplRoot(&xslFile.getStyleSheet(), "match=\"/\"");
+            Element html(&tplRoot, "html");
+                Element head(&html, "head");
+                    Element title(&head, "title");
+                        XslText titleText(&title, "Include Types Usage Report");
+                Element body(&html, "body");
+                    Element headMem(&body, "h1");
+                        XslText headText(&headMem, "Method Usage");
+                    XslText outText(&body, "See the output directory for the "
+                        "text file output. The count is the count of "
+                         "the number of types used in the provider include file.");
+                    Table table(&body);
+                        TableRow rowHead(&table);
+                            TableHeader rowConsModule(&rowHead, "Consumer");
+                            TableHeader rowSuppModule(&rowHead, "Provider");
+                            TableHeader rowCount(&rowHead, "Count");
+                            XslApplyTemplates app(&table, "select=\"IncludeTypeUseReport/Module\"");
+                                XslSort sort(&app, "select=\"UseCount\" data-type=\"number\"");
+        XslTemplate tplAttr(&xslFile.getStyleSheet(), "match=\"Module\"");
+            TableRow rowVal(&tplAttr);
+                TableCol colClass(&rowVal);
+                    XslValueOf valConsModule(&colClass, "select=\"ConsumerModule\"");
+                TableCol colOper(&rowVal);
+                    XslValueOf valSuppModule(&colOper, "select=\"SupplierModule\"");
+                TableCol colCount(&rowVal);
+                    XslValueOf valCount(&colCount, "select=\"UseCount\"");
+
+    OovStatus status = xslFile.writeXsl(fullPath, "Unable to write method transform: ");
+    return status.ok();
+    }
+
+
+bool StaticAnalysis::createIncludeTypeUsageFile(GtkWindow *parentWindow,
+    ModelData const &modelData, IncDirDependencyMapReader const &incMap,
+    std::string &fn)
+    {
+    FilePath fp = Project::getOutputDir();
+    fp.appendFile("IncludeUsage");
+
+    createIncludeTypeUsageStyleTransform(fp + ".xslt");
+
+    fp.appendFile(".xml");
+    fn = fp;
+    File useFile;
+    OovStatus status = useFile.open(fp, "w");
+    if(status.ok())
+        {
+        static const char *header =
+                "<?xml version=\"1.0\"?>\n"
+                "<?xml-stylesheet type=\"text/xsl\" href=\"IncludeUsage.xslt\"?>\n"
+                "<IncludeTypeUseReport>\n";
+        status = useFile.putString(header);
+        }
+    typedef std::multimap<OovString, ModelClassifier const*> ModuleType;
+    ModuleType moduleTypeMap;
+    typedef std::pair<ModuleType::const_iterator, ModuleType::const_iterator> moduleTypeRange;
+    if(status.ok())
+        {
+        // Build an intermediate module/type map for efficiency
+        for(auto const &type : modelData.mTypes)
+            {
+            ModelClassifier const *classifier = ModelType::getClass(type.get());
+            if(classifier)
+                {
+                ModelModule const *module = classifier->getModule();
+                if(module)
+                    {
+                    moduleTypeMap.insert(std::pair<OovString, ModelClassifier const*>(
+                        module->getModulePath(), classifier));
+                    }
+                }
+            }
+        std::set<OovString> projFiles = incMap.getAllFiles();
+        filterProjectSourceFiles(projFiles);
+        for(auto const &consumerFile : projFiles)
+            {
+            moduleTypeRange consumerTypesRange = moduleTypeMap.equal_range(
+                consumerFile);
+            std::set<IncludedPath> incFiles;
+            incFiles.clear();
+            incMap.getImmediateIncludeFilesUsedBySourceFile(consumerFile, incFiles);
+            std::set<ModelClassifier const*> operClasses;
+            operClasses.clear();
+            std::vector<ModelOperation const*> moduleOps = getModuleOperations(
+                 modelData, consumerFile, operClasses);
+
+#define DEBUG_INC 0
+#if(DEBUG_INC)
+bool display = (consumerFile.find("StaticAnalysis") != std::string::npos);
+if(display)
+    {
+    printf("%s defined types %d, operations %d\n", consumerFile.getStr(),
+            moduleTypeMap.count(consumerFile), moduleOps.size());
+    for(auto const &oper : moduleOps)
+        {
+        printf("  O: %s\n", oper->getName().getStr());
+        }
+    for(auto const &cls : operClasses)
+        {
+        printf("  C: %s\n", cls->getName().getStr());
+        }
+    }
+#endif
+
+            filterProjectIncFiles(incFiles);
+            for(auto const &supplierFile : incFiles)
+                {
+                std::set<ModelClassifier const*> usedTypes;
+                // Output the counts.
+                moduleTypeRange supplierTypesRange = moduleTypeMap.equal_range(
+                    supplierFile.getFullPath());
+                for(auto conIt = consumerTypesRange.first;
+                    conIt != consumerTypesRange.second; conIt++)
+                    {
+                    ModelClassifier const &conClass = *(*conIt).second;
+                    for(auto supIt = supplierTypesRange.first;
+                        supIt != supplierTypesRange.second; supIt++)
+                        {
+                        ModelClassifier const &supClass = *(*supIt).second;
+                        if(modelData.isTypeReferencedByClassAttributes(conClass,
+                            *(*supIt).second) ||
+                            modelData.isTypeReferencedByParentClass(conClass, supClass))
+                            {
+                            usedTypes.insert(&supClass);
+                            }
+                        }
+                    }
+                for(auto supIt = supplierTypesRange.first;
+                    supIt != supplierTypesRange.second; supIt++)
+                    {
+                    ModelClassifier const &supClass = *(*supIt).second;
+                    if(isTypeReferencedByOperatons(modelData, moduleOps, supClass) ||
+                        isTypeReferencedByOperClasses(operClasses, supClass))
+                        {
+                        usedTypes.insert(&supClass);
+                        }
+                    }
+#if(DEBUG_INC)
+if(display)
+    {
+    printf("  %s %d %d\n\n", supplierFile.getFullPath().getStr(),
+        moduleTypeMap.count(supplierFile.getFullPath()), usedTypes.size());
+    moduleTypeRange supplierTypesRange = moduleTypeMap.equal_range(
+        supplierFile.getFullPath());
+    for(auto supIt = supplierTypesRange.first;
+        supIt != supplierTypesRange.second; supIt++)
+        {
+        printf("    supplier types %s\n", (*supIt).second->getName().getStr());
+        }
+    fflush(stdout);
+    }
+#endif
+                static const char *item =
+                    "  <Module>\n"
+                    "    <ConsumerModule>%s</ConsumerModule>\n"
+                    "    <SupplierModule>%s</SupplierModule>\n"
+                    "    <UseCount>%d</UseCount>\n"
+                    "  </Module>\n";
+                /// @todo - add error checking
+                if(fprintf(useFile.getFp(), item, consumerFile.getStr(),
+                    supplierFile.getFullPath().getStr(), usedTypes.size()) < 0)
+                    {
+                    status.set(false, SC_File);
+                    break;
+                    }
+                }
+            }
+        if(status.ok())
+            {
+            status = useFile.putString("</IncludeTypeUseReport>\n");
+            }
+        }
+    if(status.needReport())
+        {
+        status.report(ET_Error, "Unable to write include type use data");
         }
     return status.ok();
     }

@@ -15,7 +15,7 @@
 <h2>OOVAIDE Features</h2>
 <hr style="width: 100%; height: 3px;">
 
-Last update: June 8, 2015
+Last update: December 1, 2015
 
 <p>
 <img src="OovLogo.png" style="height:16mm; width:30mm">
@@ -23,10 +23,10 @@ Last update: June 8, 2015
 </p><h2>Features</h2>
 <h3>General</h3>
 <ul>
-	<li>C++ build system, editor, debugger, diagram tool, code coverage,
+	<li>C++ or Java build system, editor, debugger, diagram tool, code coverage (C++ only),
 	complexity, and other analysis tools.<br>
 </li>
-  <li>Generates SVG diagrams automatically from C++ files.</li>
+  <li>Generates SVG diagrams automatically from C++ or Java files.</li>
   <li>The build and analysis tools are command line utilities that are invoked from the GUI.</li>
   <li>Works under Windows or Linux.</li>
   <li>Uses LLVM/CLang to parse C++ source files.</li>
@@ -38,22 +38,22 @@ Last update: June 8, 2015
 <ul>
 	<li>New projects can be created by selecting the top level directory of the
 	source file tree.  The output directory of the project is specified so that
-	all of the C++ files are parsed and saved in compressed format in this
+	all of the C++ and Java files are parsed and saved in compressed format in this
 	directory.</li>
 	<li>An existing project can be opened by specifying the previously saved
 	output directory, and the compressed files are read and updated if
-	any C++ source files have been altered.</li>
+	any C++ or Java source files have been altered.</li>
 	<li>When a project is open, the class list displays found classes of
 	all parsed source files.</li>
 </ul>
 
-<h3>C++ parsing</h3>
+<h3>C++ and Java parsing</h3>
 <ul>
 	<li>The source directory is recursively parsed for all source and header
 	files.</li>
 	<li>The external include paths can be specified using external package references.
 	 Project include paths are found automatically.</li>
-	<li>The compilation runs in the background ant the error results are displayed in a window.</li>
+	<li>The compilation runs in the background and the error results are displayed in a window.</li>
 	<li>The output files contain</li>
 		<ul>
 		<li>inheritance relationships</li>
@@ -62,6 +62,7 @@ Last update: June 8, 2015
 		conditionals and function calls</li>
 		<li>source module names</li>
 		<li>directory/component include path relationships</li>
+		<li>line count information</li>
 		</ul>
 </ul>
 
@@ -69,6 +70,7 @@ Last update: June 8, 2015
 The following diagrams are available.
 	<ul>
 	<li>Component dependency diagrams</li>
+	<li>Include dependency diagrams</li>
 	<li>Zone diagrams (view thousands of classes)</li>
 	<li>Class diagrams</li>
 	<li>Portion diagrams (view class attribute/member relations)</li>
@@ -96,11 +98,11 @@ The following diagrams are available.
 
 <h3>Build System</h3>
 	The goal of the build system is to have a simple and easy to use build system
-	that uses GNU or Clang (Not MSVC) to build projects for Windows or Linux.
+	that uses GNU, Clang (Not MSVC), or Java to build projects for Windows or Linux.
 	See the user guide for a complete description of the build system.<br>
 
 <h3>Editor</h3>
-	C++ code editor with syntax highlighting and debugger.
+	C++ code editor with syntax highlighting (using CLang) and debugger (using GDB).
 
 
 </div></body>

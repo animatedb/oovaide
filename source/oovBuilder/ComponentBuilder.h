@@ -11,7 +11,7 @@
 #include "ComponentFinder.h"
 #include "ObjSymbols.h"
 #include "OovThreadedWaitQueue.h"
-#include "Project.h"
+#include "IncludeMap.h"
 
 
 class ComponentPkgDeps

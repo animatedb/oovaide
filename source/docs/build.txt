@@ -7,9 +7,31 @@ Building Oovaide projects
 	I have not figured out how to build a 32 bit version under
 	64 bit Ubuntu yet.
 
-	I usually put the Eclipse workspace in trunk.
-	In eclipse, select the build configuration for your platorm.
+	The eclipse projects have a build configuration for a few platorms.
 	Source files use Preferences/C/C++/Code Style/profile=Whitesmiths
+
+Versions after 2015-08
+----------------------
+Windows:
+	MinGW:
+		From: http://sourceforge.net/projects/mingw-w64/
+		File: x86_64-mingw32-gcc-4.7.0-release-c,c++,fortran-sjlj.7z
+
+	GTK-3.0
+		From: http://www.tarnyko.net/dl/gtk.htm
+		File: gtk+-bundle_3.6.4-20130513_win32.zip
+	CLang:
+		From: http://llvm.org/releases/download.html
+		File: LLVM-3.6.2-win32.exe
+	Java:
+		Java is optional for analyzing C++ source.
+		File: jdk-8u51-windows-i586.exe
+
+Linux:
+	The top level CMakeLists.txt file contains the versions required
+	for external packages.  It may be possible to use versions that
+	are different than what is listed, but these may not have been
+	tested.
 
 
 Versions after 2014-01
@@ -88,16 +110,12 @@ Problems/Solutions
   appears to be because the references don't work well with configuration
   windows/linux/release/debug name changes.
 
-Link order can take time to work out with clang.  I couldn't find a dependency
-graph anywhere. Oovcde now does this automatically.
-
 To solve link errors for GetProcessMemoryInfo@12 and _imp_semSetOptions@4,
 I needed to link with psapi and imagehlp. Also needed pthread.
 
 
 Oovaide build ideas
 ------------------
-
 file extensions map to tools
 component file extension contents are used to find component type (C++, Java, etc.)
 	C/C++ common analysis and compile switches
@@ -107,4 +125,4 @@ component file extension contents are used to find component type (C++, Java, et
 	link switches
 
 Add source extensions to build arguments along with tools
-split out linker switches from compiler switches?
+split out linker switches from compiler switches? - pkgconfig packages together.
