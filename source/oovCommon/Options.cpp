@@ -183,20 +183,28 @@ void OptionsDefaults::setDefaultOptions()
 
     mProject.setNameValue(OptBaseArgs, baseArgs.getAsString());
 
-    std::string str = getenv("CLASSPATH");
-    if(str.length())
+    char const *tempStr = getenv("CLASSPATH");
+    if(tempStr)
         {
-        mProject.setNameValue(OptJavaClassPath, str);
+        std::string str = tempStr;
+        if(str.length())
+            {
+            mProject.setNameValue(OptJavaClassPath, str);
+            }
         }
-    str = getenv("JAVA_HOME");
-    if(str.length() > 0)
+    tempStr = getenv("JAVA_HOME");
+    if(tempStr)
         {
+        std::string str = tempStr;
+        if(str.length() > 0)
+            {
 #ifdef __linux__
-        str = "/usr/lib/jvm/default-java";
+            str = "/usr/lib/jvm/default-java";
 #else
 #endif
+            mProject.setNameValue(OptJavaJdkPath, str);
+            }
         }
-    mProject.setNameValue(OptJavaJdkPath, str);
     }
 
 void GuiOptions::setDefaultOptions()
