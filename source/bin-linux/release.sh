@@ -1,18 +1,30 @@
 #!/bin/sh
 
 # This is the destination compared to the bin directory.
-dst=../../../backup/oovaide
-# This is the directory named source
+dstBack=../../../backup
+# This is a single version for release
+dst=$dstBack/oovaide
+# This gets to the directory named source from bin
 source=..
 # This is the source directory in the destination
 dstFromSource=../../backup/oovaide
 #clang=../../../clang+llvm-3.4-x86_64
 
-rm -r $dst
-mkdir $dst
+if [ -d $dst ] ; then
+  rm -r $dst
+  mkdir $dst
+else
+  if ! [ -d $dstBack ] ; then
+    mkdir $dstBack
+  fi
+  mkdir $dst
+  mkdir $dst/bin
+  mkdir $dst/web
+fi
 
-find ../test/trunk-oovaide-*/analysis* -delete
-find ../test/trunk-oovaide-*/oovaide-tmp* -delete
+# Delete files from the source before the copy
+find ../../test/oovaide-*/analysis* -delete
+find ../../test/oovaide-*/oovaide-tmp* -delete
 
 # copy the logos and images.
 rsync -av ../bin/ $dst/bin
@@ -30,8 +42,17 @@ find . -name '*.in' | cpio -pdm $dstFromSource
 find . -name '*.cproject' | cpio -pdm $dstFromSource
 find . -name '*.project' | cpio -pdm $dstFromSource
 
-rm -r $dstFromSource/.metadata
-rm -r $dstFromSource/examples/simple-oovaide
-rm -r $dstFromSource/examples/staticlib-oovaide
-rm -r $dstFromSource/examples/sharedlibgtk-oovaide
+if [ -d $dstFromSource/.metadata ] ; then
+  rm -r $dstFromSource/.metadata
+fi
+if [ -d $dstFromSource/examples/simple-oovaide ] ; then
+  rm -r $dstFromSource/examples/simple-oovaide
+fi
+if [ -d $dstFromSource/examples/staticlib-oovaide ] ; then
+  rm -r $dstFromSource/examples/staticlib-oovaide
+fi
+if [ -d $dstFromSource/examples/sharedlibgtk-oovaide ] ; then
+  rm -r $dstFromSource/examples/sharedlibgtk-oovaide
+fi
+
 

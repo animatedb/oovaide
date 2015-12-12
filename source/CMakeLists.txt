@@ -5,9 +5,10 @@ INCLUDE(FindPkgConfig)
 
 set(OOVAIDE_MAJOR_VERION 0)
 set(OOVAIDE_MINOR_VERION 1)
-set(OOVAIDE_PATCH_VERION 0)
-set(OOVAIDE_VERION
-${OOVAIDE_MAJOR_VERSION}.${OOVAIDE_MINOR_VERSION}.${OOVAIDE_PATCH_VERSION})
+set(OOVAIDE_PATCH_VERION 1)
+set(OOVAIDE_VERION ${OOVAIDE_MAJOR_VERSION}.${OOVAIDE_MINOR_VERSION}.${OOVAIDE_PATCH_VERSION})
+
+#set(CMAKE_INSTALL_PREFIX "/usr")
 
 # Offer the user the choice of overriding the installation directories
 set(INSTALL_LIB_DIR lib CACHE PATH "Installation directory for libraries")
@@ -135,3 +136,16 @@ DESTINATION "${INSTALL_BIN_DIR}/data" COMPONENT dev)
 install(EXPORT OovaideTargets DESTINATION
    "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
+# Use dpkg -I x.deb to view contents of deb file
+# Use dpkg -c x.deb to view viles of deb file
+# Use dpkg -i x.deb to install the package from the deb file
+# Use "sudo make package" to use cmake to build a deb file.set(CPACK_GENERATOR DEB)
+set(CPACK_DEBIAN_PACKAGE_NAME oovaide)
+set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Source code analysis tool for C++ and Java")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER AnimatedB)
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libclang1 (>=1.34.1), libgtk-3-0 (>=3.4.1)")
+set(CPACK_DEBIAN_PACKAGE_SUGGESTS "sqlite, default-jdk")
+set(CPACK_PACKAGE_VERSION_MAJOR ${OOVAIDE_MAJOR_VERION})
+set(CPACK_PACKAGE_VERSION_Minor ${OOVAIDE_MINOR_VERION})
+set(CPACK_PACKAGE_VERSION_Patch ${OOVAIDE_PATCH_VERION})
+include(CPack)
