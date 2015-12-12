@@ -141,6 +141,7 @@ install(EXPORT OovaideTargets DESTINATION
 # Use dpkg -i x.deb to install the package from the deb file
 # Use "sudo make package" to use cmake to build a deb file.set(CPACK_GENERATOR DEB)
 # Building oovaide requires libclang-3.6-dev, but using analysis only requires libclang1
+set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_NAME oovaide)
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Source code analysis tool for C++ and Java")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER AnimatedB)
