@@ -14,7 +14,7 @@ set(CMAKE_JAVA_COMPILE_FLAGS "-source" "1.6" "-target" "1.6")
 
 add_jar(oovJavaParser
     MANIFEST ${CMAKE_CURRENT_SOURCE_DIR}/Manifest.txt
-    ModelWriter.java oovJavaParser.java
+    JavaModelWriter.java oovJavaParser.java
     common/Common.java model/ModelData.java model/ModelMethod.java model/ModelStatement.java
     model/ModelStatements.java model/ModelType.java model/ModelTypeRef.java
     model/ModelTypeRefs.java model/ModelTypeRelation.java model/ModelTypeRelations.java
