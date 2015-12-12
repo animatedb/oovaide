@@ -11,22 +11,24 @@
   <body>
 	<a href="../index.html">Oovaide Index</a>
 
-<h1>Automated Build Systems</h1>
+<h1>Automated Build System</h1>
 	Have you ever thought that too much time is spent on setting
 	up projects for building programs?
 	<p/>
 	This is modern times and we build programs on computers. This has
 	been going on for decades. Why do we have to manually set up
-	include paths? What is the minimal amount of information
-	required to build a program?  Why do we have to manually set
-	up libraries for linking and define which libraries use which
-	other libraries?
+	include paths?  Why do we have to manually set up libraries for
+	linking and define which libraries use which other libraries?
+	What is the minimal amount of information required to build a program?
 	<p/>
 	In order for the programmer to set up us little as possible,
 	modern systems should find this information automatically, and
 	update the information if any files have changed.  There are
 	some problems doing this for all programs, but for many programs,
 	the constraints and tasks are not that difficult.
+	<p/>
+	We do not need yet another build system, but maybe some of these
+	features will someday be incorporated into other tools.
 
     <h1>C++ Automated Build</h1>
     <h2>Include Paths</h2>
@@ -34,11 +36,14 @@
 	paths are described below.
 	<ul>
 	<li>C++ code is difficult to parse. This problem is pretty
-	much solved by using the CLang parser, and building some code
-	around it to search for include paths.</li>
-	<li>C++ macros can alter the files that are included. Many projects
-	do not have this problem at least for the header files that
-	are defined within the project.  The future C++ module feature
+	much solved by using a modern parser such as the CLang parser,
+	and building some code around them to search for include paths.</li>
+	<li>C++ macros can alter the files that are included. Two different
+	include files can include a single include files with a different
+	#define setting so that the included file has different include
+	dependency results.
+	Many projects do not have this problem at least for the header files
+	that are defined within the project.  The future C++ module feature
 	may be required to solve the macro problem for difficult projects.</li>
 	<li>
 	In C++, an include path	can be something like "&lt;gtk/gtk.h&gt;",
@@ -50,6 +55,13 @@
 	cannot be found automatically, at least not on all operating systems.
 	</li>
 	</ul>
+
+    <h2>Setting up Build Tools</h2>
+	It would also be nice if the build system automatically found the
+	build tools. For example, it may search for g++ or for clang++. On
+	Windows or Linux, it may search the "Path" environment variable, or on
+	may search some standard directories.  In addition, some compiler
+	options may be setup by default for debug and release versions.
 
     <h2>Specifying Source Code Grouping</h2>
 	<p/>
@@ -78,25 +90,18 @@
 	can be quite a bit of information available, but under Windows, the
 	task is a bit more difficult.
 
-    <h2>Setting up Build Tools</h2>
-	It would also be nice if the build system automatically found the
-	build tools. For example, it may search for g++ or for clang++. On
-	Windows or Linux, it may search the "Path" environment variable, or on
-	may search some standard directories.  In addition, some compiler
-	options may be setup by default for debug and release versions.
-
 
 <h1>OovAide Build System</h1>
-	The following sections are defined in the order that
+	An attempt was made to build an easy to use build system in the
+	OovAide program.  This solution may not work for very large or
+	complicated projects, but does work on projects that have multiple
+	include paths, external packages, and builds multiple binary components.
+	<p/>
+	The following sections are defined roughly in the order that
 	a programmer would go through to set up a project for building
 	using the OovAide program.  Performing only analysis using OovAide
 	only requires a subset of the steps defined here.
 	<p/>
-	OovAide has the following constraints:
-	<ul>
-	<li>compile switches for whole project</li>
-	<li>header file names must be unique</li>
-	</ul>
 	OovAide allows specifying custom compile switches for the project.
 	OovAide actually runs a command line build program called
 	oovBuilder, which allows performing builds from the command line.
@@ -106,45 +111,58 @@
     <h2>Specify Project Code Location</h2>
 	The programmer must select a single source root directory for all of
 	the source code that will be in the project.  It is possible to
-	specify exclusion directories for directories that should not be
-	analyzed or built.
+	specify exclusion directories within the source root directory to
+	specify directories that should not be analyzed or built.
 
-    <h2>Build Tools</h2>
+    <h2>Setting Up Build Tools</h2>
 	The OovAide program searches for the g++ and clang++ tools. It also
 	requires the ar and nm tools for finding library dependencies.
 
-    <h2>Directory Scan</h2>
-	The OovAide program scans the directories under the source root
-	directory to find all of the source and header files.  The CLang
-	parser is run on all C++ files to generate include dependencies.
-	The include dependencies are used to build object files, and to
-	determine when they must be rebuilt when a source file changes.
+    <h2>Setting up Build Configurations</h2>
+	OovAide defines the standard Debug and Release configurations
+	and sets up some default compiler switches for each configuration.
+	The goal here is that external packages only need to be set
+	once, and every configuration will use the common arguments.
+	OovAide also supports adding more configurations for things such
+	as cross compiling, but at the moment, a separate project may
+	be required if the configurations are too different.
 	<p/>
-	At the moment, the directory scan is performed on the whole
-	source root directory tree. This could be optimized in the
-	future by performing directory monitoring, This may limit the use
-	for very large projects.
+	Typically the external packages must be defined differently on Linux
+	or Windows because the package systems are not the same on
+	all systems.
 	<p/>
-	While parsing the C++ files, include flags are set for all directories
-	in the project that contain header files so that the CLang compiler
-	can function correctly.  It would be nice if CLang could request
-	include flags dynamically during parsing to reduce possible problems
-	that this could create.  During actual compilation, only the dependent
-	include flags are added.
-	<p/>
-	At the moment, if the project is changed in a major manner,
-	the conservative approach is taken, and all files are rebuilt.
+	There is much room for improvement here.
 
     <h2>External Packages</h2>
+	The advantage of having predefined external packages is that
+	the programmer can select a single name such as MySQL or
+	wxWidgets, and the appropriate compiler switches
+	(with include paths), link switches, and link libraries can
+	be used by a project. The OovAide program reads the package
+	details and sends the appropriate information to the compiler or linker.
+	<p/>
 	On Linux, the pkgconfig program provides definitions for many
-	popular libraries.  The OovAide GUI provides a simple way to
-	select external packages to add to the program.
+	popular packages. The pkgconfig program is on many Linux systems,
+	and defines the compile and link information needed to use the
+	package. The OovAide
+	GUI provides a simple way to select external packages to add
+	to the program.
 	<p/>
 	On Windows,
 	a similar interface is provided for selecting libraries, but there is
 	no common database that provides definitions of external libraries.
-	A few library definitions are provided, but others can be added
-	by the programmer.
+	A few library definitions are provided by OovAide, but others can be
+	added by the programmer.  This is not a good long term solution, but
+	there is not a common package manager on all systems yet.
+
+    <h2>Directory Scan</h2>
+	The OovAide program scans the directories under the source root
+	directory to find all of the source and header files.
+	<p/>
+	At the moment, the directory scan is performed on the whole
+	source root directory tree. This could be optimized in the
+	future by performing directory monitoring, Scanning all directories
+	may limit the use for very large projects.
 
     <h2>Specifying Source Code Grouping</h2>
 	The following directory tree will be used to discuss some
@@ -159,19 +177,87 @@
 	<p/>
 	OovAide uses a simple method for defining components.  Any directory
 	in the source root directory can be designated as a component.
+	<p/>
+	Some of the grouping rules:
+	<ul>
+    	<li>A component at any level of the tree will be built using all
+	  source files in all subdirectories that are not defined as a
+	  component. In this diagram, the top nodes ("Dir Root", "Dir A",
+	  and "Dir B-2") are defined as components.</li>
+	<li>The groupings do not determine where header files can be found.
+	  They only determine which source files are compiled into the
+	  component. Header files can be anywhere and will be automatically
+	  found during analysis.</li>
+	<li>Component "Dir A" could be a library, which will be linked into
+	  other components automatically.</li>
+	</ul>
 
-examples:
-extra component settings:
+    <h3>Example 1</h3>
+	In the first example, "Dir Root" is defined as an executable component.
+	Include files could be present in any directory, and these directories
+	will be supplied to the compiler in order to build the object files
+	from the source files.  All object files will be linked into the
+	executable. 
 
-<p/>
+    <h3>Example 2</h3>
+	This example starts from the first example, and defines "Dir A" as
+	a static library component.  This means that the programmer only has
+	to select one item in the directory tree as a component, and
+	OovAide will build a static library and link it into the executable
+	without specifying and source paths, etc.  OovAide provides
+	the StaticLib example that is similar to this.
+	<a href="../userguide/examples.html">Examples</a>
 
+    <h3>Example 3</h3>
+	This example starts from the first example, and defines "Dir A" as
+	a run-time library component.  This is not as nice as example 2,
+	since the source code must be modified to define an interface
+	and use the interface for the run-time bindings.
 
-	I have mainly seen a few main configurations for how projects manage
-	header files. In some projects, there are many header files in
-	a few directories that do not contain source (CPP files), and the
-	source files are in other directories. In other	projects, each source
- 	file has a corresponding header file, and the header files are in
-	all of the directories.  Many projects are some combination of these.
+    <h3>Example 4</h3>
+	A good example of a slightly more complex system is the OovAide
+	project. It contains multiple executables (OovAide, OovBuilder,
+	ClangView, OovCMaker, OovCovInstr, OovCppParser),
+	multiple static libraries (OovCommon, and OovGuiCommon),
+	a Java program (OovJavaParser), and a run-time library (OovDbWriter).
+	There are include files in all of these component directories,
+	and they are all properly built.
+
+    <h2>Analysis</h2>
+  	The CLang parser is run on all C++ files to generate include
+	dependencies. The include dependencies are used to build object
+	files, and to determine when they must be rebuilt when a source
+	file changes.  The include dependencies are also used to determine
+	which external packages are used by each component.
+	<p/>
+	A CRC is used on the command line switches to determine when
+	the analysis and include dependencies must be updated. A separate
+	directory is used for each CRC so that switching between settings
+	is faster.
+	<p/>
+	While parsing the C++ files, include flags are set for all directories
+	in the project that contain header files so that the CLang compiler
+	can function correctly. In addition, OOvAide specifies the parent
+	and grandparent directories so that relative paths such as &lt;gtk/gtk.h&gt;
+	will compile. The number of include directories may be a problem on
+	some versions of Windows for larger projects since the command line
+	length may be limited to 32767 characters.
+	<p/>
+	It would be nice if CLang could request
+	include flags dynamically during parsing to reduce possible problems
+	that too many include directories could create.
+	<p/>
+	The CLang compiler is actually invoked twice. Once to generate
+	include dependencies and analysis information, and then again
+	to compile.  This can be a bit of a speed problem, but it is
+	alleviated since OovAide performs multitasking for the build processes.
+	It doesn't appear that CLang supports analyzing and building at
+	the same time using the C-Index interface to the compiler.
+	During the actual compile, only the include files that are
+	required are specified as directories for faster compilation.
+	<p/>
+	At the moment, if the project is changed in a major manner,
+	the conservative approach is taken, and all files are rebuilt.
 
     <h2>Build</h2>
 	The build performs the directory scan to see what which files
@@ -180,10 +266,60 @@ extra component settings:
 	in internal and external project libraries to determine library
 	dependencies and link order.  Only files that are out of date are
 	built.
+	<p/>
+	The include dependency directories are used to determine which
+	external package libraries are needed to build a component that
+	is linked.  OovAide does have constraints that the header file
+	have to be unique in some cases in order to prevent linking the
+	wrong library or finding the wrong include during a compile.  This
+	is typically not a problem since most external packages have few
+	files that are included directly in a project.
+	<p/>
+	At the moment, all project libraries are included in the link. This
+	does not seem to cost much time since the unused libraries will be last
+	during the link.  This rule may be changed in the future.
+	<p/>
 
+	More build details can be seen at
+	<a href="../userguide/oovaidebuildhelp.html">OovAide Build Help</a>
+	or 
+	<a href="../design/OovaideBuildDesign.html">OovAide Build Design</a>
 
     <h1>Java Automated Build</h1>
-import
+	OovAide can also build very simple Java programs (generally a single jar)
+	that are in the same directories along with C++ files.
+
+    <h2>Directory Scan</h2>
+	While the scan for C++ files is run under the source root
+	directory, the java files are also found.
+
+    <h2>Specifying Source Code Grouping</h2>
+	The same directory setup is used as the C++ grouping.  The component
+	types that are used for java are "Library Jar" or "Executable Jar".
+	The difference is that a Manifest.txt file is required in any
+	directory that is defined as an "Executable Jar". The manifest must
+	have the Main-Class attribute set. See OovJavaParser directory
+	as an example.
+
+    <h2>Setting up Build Configurations</h2>
+	The Java setup allows setting up the class path to allow
+	references to external jars, and other arguments.
+
+    <h2>Analysis and Build</h2>
+	At the moment, the java parser is used to find the include dependencies.
+	This may mean that the files must compile successfully in order for
+	full analysis to be performed. The jar files are not built in any
+	order at this time, so if one is dependent on another, sorry.
+	A workaround is to define multiple OovAide projects, and to define
+	exclude directories if needed.
+	<p/>
+	The correct way to fix this would be to have a pass that finds
+	include dependencies before performing analysis or builds.  I am not
+	sure if the Java parser supports this, but it appears that it might.
+	In addition, the jar
+	files have to be built in order which presents some interesting
+	problems to solve in order to support multitasking.
+
 
   </body>
 

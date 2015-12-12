@@ -6,9 +6,9 @@
 #ifndef DirList_h
 #define DirList_h
 
+#include "FilePath.h"   // For FilePaths
 #include <string>
 #include <vector>
-#include "FilePath.h"
 
 /// Delete the last leaf of a directory.
 /// @param path The path to delete.

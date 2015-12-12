@@ -376,7 +376,7 @@ extern "C" G_MODULE_EXPORT void on_ViewSourceMenuitem_activate(
     ClassNode *node = gClassDiagramView->getNode(gStartPosInfo.x, gStartPosInfo.y);
     if(node)
         {
-        const ModelClassifier *classifier = node->getType()->getClass();
+        const ModelClassifier *classifier = ModelClassifier::getClass(node->getType());
         if(classifier && classifier->getModule())
             {
             gClassDiagramView->viewSource(classifier->getModule()->getModulePath(),

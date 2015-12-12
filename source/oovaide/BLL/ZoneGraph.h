@@ -64,10 +64,20 @@ class ZoneNode
         OovString getMappedComponentName(class ZonePathMap const &map) const;
         OovString getMappedName() const
             {
+            OovString name;
             if(mMappedName.length() == 0)
-                return mType->getClass()->getModule()->getName();
+                {
+                ModelClassifier const *cl = ModelClassifier::getClass(mType);
+                if(cl && cl->getModule())
+                    {
+                    name = cl->getModule()->getName();
+                    }
+                }
             else
-                return mMappedName;
+                {
+                name = mMappedName;
+                }
+            return name;
             }
         // Make sure that /CodeGen/PBQP/Graph.h isn't between
         // /CodeGen/Optimize.h and /CodeGen/Passes.h

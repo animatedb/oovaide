@@ -3,6 +3,7 @@
 cmake_minimum_required (VERSION 2.8)
 
 find_package(Java REQUIRED)
+find_package(JNI REQUIRED)
 include(UseJava)
 
 enable_testing()
@@ -18,7 +19,7 @@ add_jar(oovJavaParser
     model/ModelStatements.java model/ModelType.java model/ModelTypeRef.java
     model/ModelTypeRefs.java model/ModelTypeRelation.java model/ModelTypeRelations.java
     parser/AnalysisParser.java parser/ParserTreeVisitor.java
-    INCLUDE_JARS /usr/lib/jvm/java-7-openjdk-amd64/lib/tools.jar
+    INCLUDE_JARS ${JNI_INCLUDE_DIRS}/../lib/tools.jar
     )
 
 add_test(NAME TestOovJavaParser COMMAND ${Java_JAVA_EXECUTABLE} -cp ${_jarFile} oovJavaParser)

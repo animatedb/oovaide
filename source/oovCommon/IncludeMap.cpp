@@ -6,7 +6,7 @@
  */
 
 #include "IncludeMap.h"
-#include "Components.h" // For isHeader
+#include "Components.h"         // For isHeader
 #include "Debug.h"
 #include "OovError.h"
 #include <algorithm>
@@ -37,6 +37,8 @@ void discardDirs(OovStringVec &paths)
         }
     }
 
+/*
+DEAD CODE
 OovStringVec IncDirDependencyMapReader::getIncludeFilesDefinedInDirectory(
         OovStringRef const dirName) const
     {
@@ -47,6 +49,7 @@ OovStringVec IncDirDependencyMapReader::getIncludeFilesDefinedInDirectory(
             [](std::string const &header) { return isCppHeader(header); });
     return headers;
     }
+*/
 
 OovStringVec IncDirDependencyMapReader::getJavaFilesDefinedInDirectory(
     OovStringRef const dirName) const

@@ -34,7 +34,7 @@ void PortionGraph::clearAndAddClass(OovStringRef classname)
     const ModelType *type = mModel->findType(classname);
     if(type)
         {
-        ModelClassifier const *cls = type->getClass();
+        ModelClassifier const *cls = ModelClassifier::getClass(type);
         if(cls)
             {
             for(auto const &attr : cls->getAttributes())
@@ -59,7 +59,7 @@ void PortionGraph::clearAndAddClass(OovStringRef classname)
                         if(!getNode(operName, PNT_Operation))
                             {
                             ModelClassifier const *calledClass =
-                                stmt.getClassDecl().getDeclType()->getClass();
+                                ModelClassifier::getClass(stmt.getClassDecl().getDeclType());
                             OovString className = calledClass->getName();
                             if(className.length() > 0)
                                 {
@@ -135,7 +135,8 @@ void PortionGraph::addOperationConnections(ModelClassifier const *classifier,
             {
             if(stmt.getStatementType() == ST_Call)
                 {
-                ModelClassifier const *cls = stmt.getClassDecl().getDeclType()->getClass();
+                ModelClassifier const *cls = ModelClassifier::getClass(
+                    stmt.getClassDecl().getDeclType());
                 if(cls == classifier)
                     {
                     const ModelOperation *oper = cls->getMatchingOperation(stmt);

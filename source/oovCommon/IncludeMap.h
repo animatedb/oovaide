@@ -11,7 +11,6 @@
 #include <string>
 #include <set>
 #include "NameValueFile.h"
-#include "FilePath.h"
 
 static const int IncDirMapNumTimeVals = 2;
 static const int IncDirMapNumIncPathParts = 2;
@@ -81,8 +80,9 @@ class IncDirDependencyMapReader:public NameValueFile
         /// Get the included files that reside in a directory.
         /// This only matches exact directories, not nested trees.
         /// @param dirName The directory name that contains the files.
-        OovStringVec getIncludeFilesDefinedInDirectory(
-                OovStringRef const dirName) const;
+// DEAD CODE
+//        OovStringVec getIncludeFilesDefinedInDirectory(
+//                OovStringRef const dirName) const;
         /// Get the nested include directories that are used by a source file.
         /// This recursively finds all include directories for the specified
         /// interface or implementation source file name.

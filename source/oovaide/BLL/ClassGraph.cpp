@@ -170,7 +170,7 @@ void ClassGraph::addRelatedNodesRecurseUserToVector(const ModelData &model,
     // Add nodes if members refer to the passed in type.
     if((addType & AN_MemberUsers) > 0)
         {
-        const ModelClassifier*cl = modelType->getClass();
+        const ModelClassifier*cl = ModelClassifier::getClass(modelType);
         if(cl)
             {
             for(const auto &attr : cl->getAttributes())
@@ -189,7 +189,7 @@ void ClassGraph::addRelatedNodesRecurseUserToVector(const ModelData &model,
     // Add nodes if func params refer to the passed in type.
     if((addType & AN_FuncParamsUsers) > 0)
         {
-        const ModelClassifier*cl = modelType->getClass();
+        const ModelClassifier*cl = ModelClassifier::getClass(modelType);
         if(cl)
             {
             ConstModelClassifierVector relatedClasses;
@@ -209,7 +209,7 @@ void ClassGraph::addRelatedNodesRecurseUserToVector(const ModelData &model,
     // Add nodes if func body variables refer to the passed in type.
     if((addType & AN_FuncBodyUsers) > 0)
         {
-        const ModelClassifier*cl = modelType->getClass();
+        const ModelClassifier*cl = ModelClassifier::getClass(modelType);
         if(cl)
             {
             ConstModelDeclClasses relatedDeclClasses;
@@ -236,8 +236,8 @@ ClassNodeDrawOptions ClassGraph::getComponentOptions(ModelType const &type,
     if(mNodes.size() > FIRST_CLASS_INDEX)
         {
         ModelType const *mainType = mNodes[FIRST_CLASS_INDEX].getType();
-        ModelClassifier const *mainClass = mainType->getClass();
-        ModelClassifier const *testClass = type.getClass();
+        ModelClassifier const *mainClass = ModelClassifier::getClass(mainType);
+        ModelClassifier const *testClass = ModelClassifier::getClass(&type);
         if(mainClass && testClass)
             {
             ModelModule const *mainModule = mainClass->getModule();
@@ -281,7 +281,7 @@ void ClassGraph::getRelatedNodesRecurse(const ModelData &model, const ModelType 
     -- maxDepth;
     if(maxDepth >= 0 && type /* && type->getObjectType() == otClass*/)
         {
-        const ModelClassifier *classifier = type->getClass();
+        const ModelClassifier *classifier = ModelClassifier::getClass(type);
         if(classifier)
             {
             addNodeToVector(ClassNode(classifier,
@@ -470,7 +470,7 @@ void ClassGraph::updateConnections(const ModelData &modelData)
                         }
                     }
                 }
-            const ModelClassifier *classifier = type->getClass();
+            const ModelClassifier *classifier = ModelClassifier::getClass(type);
             if(classifier)
                 {
                 // Get attributes of classifier, and get the decl type
@@ -537,7 +537,7 @@ void ClassGraph::addNode(const ModelData &model, char const * const className,
         ClassGraph::eAddNodeTypes addType, int nodeDepth, bool reposition)
     {
     const ModelType *type = model.getTypeRef(className);
-    const ModelClassifier *classifier = type->getClass();
+    const ModelClassifier *classifier = ModelClassifier::getClass(type);
     if(classifier)
         {
         if(mNodes.size() == 0 && mGraphOptions.drawRelationKey)

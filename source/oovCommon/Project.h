@@ -55,7 +55,8 @@ OovString makeBuildConfigArgName(OovStringRef const baseName,
 
 enum eProcessModes
     {
-    PM_None, PM_Analyze, PM_Build, PM_CovInstr, PM_CovBuild, PM_CovStats,
+    PM_None=0, PM_Analyze=0x01, PM_Build=0x02, PM_CovInstr=0x04,
+    PM_CovBuild=0x08, PM_CovStats=0x10,
 
     PM_CleanMask=0xF00,
     PM_CleanAnalyze=0x100, PM_CleanBuild=0x200, PM_CleanCoverage=0x400

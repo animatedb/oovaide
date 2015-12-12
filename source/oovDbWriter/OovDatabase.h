@@ -8,7 +8,7 @@
 #define OOV_DATABASE_H
 
 #include "SQLiteImport.h"
-#include "DbString.h"
+#include "DbString.h"           // For DbNames and DbValues
 
 #define UNDEFINED_INT -1
 

@@ -6,283 +6,361 @@
     <link rel="stylesheet" type="text/css" href="../style.css">
     <title>Oovaide Build Help</title>
   </head>
-<body>
-<h1>Oovaide Analysis and Build Help</h1>
-Oovaide can analyze projects, and can also build projects.  The setup for
-analysis is simpler than the setup for building projects.
-
-<h2>Oovaide Analysis</h2>
-  One goal of Oovaide is to be able to analyze a project by only providing
-  a simple setup for analysis.  This allows analyzing projects where
-  nothing is known about the source code.
-  <p/>
-  Oovaide scans the directories of the project under the source root directory
-  to find source files that need to be analyzed.  The file extensions are used
-  to determine which source file parser to use.  Oovaide can analyze and build
-  a single directory tree that contains both C++ and Java files.  In fact,
-  Oovaide itself can be built this way.
-
-  <h3>C++ Analysis</h3>
-  Oovaide scans all directories in the project, and adds include paths for any
-  directories that contain header files.  Exclude directories can be set up
-  for the project to prevent using some include directories from being used
-  as include directories, and to prevent source files from being analyzed.
-  <p/>
-  Oovaide generally uses one set of compiler settings for all directories. This
-  typically means that a superset of all packages must be specified.  For example,
-  if gtk is not needed for some directories, adding it for all directories should
-  not cause a problem for directories that do not require gtk.  It may make
-  analysis slower, but should not fail.
-  <p/>
-  Each header and source file is analyzed independently. This means
-  that each file should be able to include all definitions needed.
-  <p/>
-  Not all compiler errors need to be fixed to generate useful diagrams.
-  Oovaide will still generate references to undefined objects as long as
-  the compiler has parsed beyond the initial errors.
-  If the files do not include all needed definitions (they expect the
-  source that includes them to include other files first), then the
-  error limit may need to be increased so that more of the
-  file can be parsed.  The other alternative is to fix the header files
-  so that they include the needed definitions.
-  <p/>
-  In Linux, the CLang compiler is not shipped with Oovaide, but must be present
-  on the system.
-
-  <h3>Java Analysis</h3>
-  The oovJavaParser.jar tool that is distributed with OovAide is used to parse
-  and analyze the java source files.  A single java file is analyzed at a time.
-  <p/>
-  The Analysis/Settings menu selection will display a tab named "Java Settings".
-  This tab allows setting the class path and JDK path.
-  <p/>
-  The class path is initialized from the CLASSPATH environment variable, but
-  altering it in the settings will not change the CLASSPATH environment
-  variable.  The class path must contain all jars that are needed for your project.
-  The CLASSPATH environment variable does not need to include tools.jar since
-  it is added from the JDK path as described below.
-  <p/>
-  The JDK path is initialized from the JAVA_HOME environment variable, but
-  altering it in the settings will not change the JAVA_HOME environment
-  variable. In Linux, if JAVA_HOME is missing, then "/usr/lib/jvm/default-java"
-  is used as default.
-  The JDK path must be set to the JAVA SDK. An example is:
-  "C:\Program Files\Java\jdk1.8.0_51". This path is used to find the tools.jar
-  file in the lib directory.
-  <p/>
-  The Extra Analyze Arguments can be used to set switches, or to add java
-  files that will be added to the analysis.
-
-  <h4>Android Analysis</h4>
-  In Android with Windows, the class paths may contain something similar to the following:
-  <ul>
-  <li>...\AppData\Local\Android\sdk\platforms\android-22\android.jar</li>
-  <li>...\AppData\Local\Android\sdk\extras\android\support\v7\appcompat\libs\android-support-v7-appcompat.jar</li>
-  <li>...\AppData\Local\Android\sdk\extras\android\support\v4\android-support-v4.jar</li>
-  </ul>
-  The Extra Analyze Arguments may contain something similar to the following:
-  <ul>
-  <li>
-  ...\AndroidStudioProjects\MyApplication\app\build\generated\source\r\debug\com\example\blahad01\myapplication\R.java</li>
-  </ul>
-<p/>
-
-<h2>OovAide Build</h2>
-If analysis has completed successfully, then building applications with
-multiple libraries and executables is fairly easy.
-<p/>
-The Build Settings dialog under the Build menu allows selecting a directory
-and specifying what type of component to build from the directory. For
-example, if a single executable will be built from the whole directory tree,
-then select the <Root> component/directory, and define it as a 
-Program/Executable (for C++) or as a Java Executable Jar (for Java).
-  <p/>
-  The following directory structure shows how components can be created.
-  See the user guide for more information.
-  <p/>
-	<embed src="../userguide/ExampleSourceTree.svg" type="image/svg+xml">
-  <p/>
-  Some of the rules are:
-  <ul>
-  <li>A component at any level of the tree will	be built using all source
-     files in all subdirectories that are not defined as a component.
-     In this diagram, the top nodes ("Dir Root", "Dir A", and "Dir B-2")
-     are defined as components.</li>
-  <li>The groupings do not determine where header files can be found.
-     They only determine which source files are compiled into the component.
-     Header files can be anywhere and will be automatically found
-     during analysis.</li>
-  <li>Component "Dir A" could be a library, which will be linked into
-     other components automatically.</li>
-  </ul>
-
-<h2>OovAide Build Java</h2>
-Any component specified as a Java Executable Jar must have a Manifest.txt
-file in the component's source directory.
-<p/>
-The classpath must include all jars that are required for the build.
-The Java Library Jar can be used to build a jar that is not a stand-alone
-executable. At the moment, Oovaide does not determine jar dependency build
-order, so if this is a problem, multiple projects may have to be created
-to work around this for now.
-<p/>
-The package names must match the directory structure.  For each jar that
-is created, the package names in the java files must match the directories
-under the specified component's directory.
-<p/>
-The Extra Build Arguments can be used to specify switches or to add
-jar, java or class files.
-
-<h2>OovAide Build C++</h2>
-<h3>Packages</h3>
-  Packages are collections of include and library files that are distributed
-  for use by many programs.  Some examples are gtk, Qt, etc.  Oovaide
-  provides an "External Project Packages" button on the C++ Settings
-  screen that allows selecting packages.
-  <p/>
-  Packages are different on Windows and Linux.  On Linux, the pkg-config tool
-  is used by the Oovaide package dialogs so that packages can be selected
-  and used in each project.
-
-
-<h3>Windows Packages</h3>
-  On Windows, there is a file called
-  bin/oovaide-allpkgs-win.txt, that defines a few common packages.  This file
-  can be easily read to see how packages are defined, and it
-  is possible to modify and add more packages.
-  <p/>
-  On Windows, Oovaide attempts to find directories using wildcards in the
-  package directory definitions.  If there are multiple versions, then
-  the directory can be specified manually.
-  <p/>
-  If the "Include Directory" setting is blank, then the directories are
-  scanned for include files, and paths are saved.  To prevent this scan,
-  directories can be specified (separated with semicolons) or a single
-  period can be used to specify that only the current directory relative
-  to the root should be used as the path.
-  <p/>
-  The "External References" can be specified with exclude directories
-  the same as in the C++ Settings.
-  
-
-<h3>Oovaide C++ Settings</h3>
-The CLang compiler arguments for Analysis are set up in the Analysis/Settings
-dialog in the C++ Settings tab.  Many arguments are passed directly to the
-compiler, so for example, "-I/dir" will use "/dir" as an include path to
-search.  There are a few special arguments that Oovaide uses as described below.
-<p/>
-The argument order is important if there are files with the same names in different
-directories.
-<p/>
-<table border="1">
-	<tr>
-	<th>Flag</th><th>Name</th><th>Description</th>
-	</tr>
-	<tr>
-	<td>-EP</td><td>External Packages</td>
-	<td>
-	This flag should be added using the "External Project Packages" button.
-	This specifies the name of the package to use for the OovBuilder.
-	</td></tr>
-
-	<tr><td>-ER</td><td>External Recursive Directories</td>
-	<td>
-	This flag allows specifying a root directory to search for includes
-	and libraries.  It also allows specifying exclude directories. An
-	example is "/rootdir/!/test/!/examples/", so that any filepath that
-	matches test or examples will be excluded.
-	</td></tr>
-
-	<tr><td>-lnk</td><td>Link Flag</td>
-	<td>The value following this flag is sent to the linker.
-	Some examples are "-lnk-L/libdir", or "-lnk../dir/objfile.o".
-	</td></tr>
-</table>
-
-<h3>Problem Solving</h3>
-  Oovaide should delete all stale configuration files whenever the build
-  settings are modified.  In the case that it does not, it is possible to
-  delete the following:
-  <ul>
-	<li>oovaide-pkg.txt - keeps project package information</li>
-	<li>oovaide=tmp-* - keeps directory scanned project information</li>
-	<li>analysis directories - keeps object diagram information</li>
-  </ul>
-  An analysis directory is created for each set of build arguments.
-  <p/>
-   See the Inkscape Example for more problem solving information.
-
-
-<h3>Inkscape Example on Windows</h3>
-  This example shows how to analyze a project where little is known about
-  the project.  This example was run on Windows, but some items will
-  be similar on Linux.
-  <p/>
-  For this example, we will attempt to analyze the Inkscape program.  The
-  Inkscape program requires gtkmm and boost, so they need to be added as
-  external packages.  Since gtkmm includes mingw, there is no reason to
-  additionally add a separate mingw package.
-  <p/>
-	I don't know which version of gtkmm is
-	needed, so I just downloaded the Tarnyko gtkmm-3.4.0_mingw-4.6.2 version.
-	Use Oovaide to add gtkmm as an external package.
-	<p/>
-	At first, there was a compile error about a missing config.h.  I never
-	ran the configure command, so I cheated and copied config.h.in to config.h
-	in the Inkscape source code.
-	<p/>
-	The following problem
-	is displayed during analysis, and resolved by adding an include of
-	"gtkmm-3.0/gtkmm.h" to the Inkscape source in
-	src/extension/param/parameter.h. The real problem is that Inkscape does
-	not define all classes before they are referenced in header files. 
-	<pre>
-	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+  <body>
+    <h1><a class="mozTocH1" id="mozTocId108467"></a>Oovaide Analysis and Build
+      Help</h1>
+    Oovaide can analyze projects, and can also build projects. The setup for
+    analysis is simpler than the setup for building projects since only compile
+    type parsing is performed, and the building of library and run-time
+    components does not need to be specified.
+    <p> </p>
+    <ol id="mozToc">
+      <!--mozToc h1 1 h2 2 h3 3 h4 4 h5 5 h6 6-->
+      <li><a href="#mozTocId108467">Oovaide Analysis and Build Help</a>
+        <ol>
+          <li><a href="#mozTocId929749">Oovaide Analysis</a></li>
+          <li><a href="#mozTocId694741">C++ Analysis</a>
+            <ol>
+              <li><a href="#mozTocId634053">Choosing External C++ Packages</a></li>
+              <li><a href="#mozTocId18425">Oovaide C++ Settings</a></li>
+              <li><a href="#mozTocId966297">Solving C++ Analysis / Compile
+                  Problems</a>
+                <ol>
+                  <li><a href="#mozTocId416185">LibCLang missing</a></li>
+                  <li><a href="#mozTocId948534">Analyzing projects (such as
+                      OovAide) that use CLang libraries</a></li>
+                  <li><a href="#mozTocId919305">Missing Standard Library
+                      Includes</a></li>
+                  <li><a href="#mozTocId597034">Builtin identifiers</a></li>
+                  <li><a href="#mozTocId98516">CLang headers</a></li>
+                </ol>
+              </li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId485883">Java Analysis</a>
+            <ol>
+              <li><a href="#mozTocId619101">Android Analysis</a></li>
+              <li><a href="#mozTocId805501">Solving Java Analysis Problems</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId485848">OovAide Build</a>
+            <ol>
+              <li><a href="#mozTocId332885">OovAide Build C++</a></li>
+              <li><a href="#mozTocId671330">OovAide Build Java</a></li>
+            </ol>
+          </li>
+          <li><a href="#mozTocId513853">Inkscape Example on Windows</a></li>
+        </ol>
+      </li>
+    </ol>
+    <p><br>
+    </p>
+    <h2><a class="mozTocH2" id="mozTocId929749"></a>Oovaide Analysis</h2>
+    One goal of Oovaide is to be able to analyze a project by only providing a
+    simple setup for analysis. This allows analyzing projects where nothing is
+    known about the source code.
+    <p> When a new project is created the following can be defined. </p>
+    <ul>
+      <li>A single parent directory can be provided to specify the location of
+        the source code of the project to be analyzed.</li>
+      <li>A directory called the OovAide project directory is specified that
+        contains all of the analysis information that is gathered about the
+        source directory.</li>
+      <li>Optionally some exclude directories can be set up for the project to
+        prevent using some directories from being used as include directories,
+        and to prevent source files from being analyzed.</li>
+    </ul>
+    After a project is created, these directories can be viewed using the
+    Analysis/Project Settings menu item. The source root directory can be
+    changed if the directory does not exist.
+    <p> Oovaide scans the directories of the project under the source root
+      directory to find source files that need to be analyzed. The extensions of
+      the files in the directories are used to determine which source file
+      parser to use. Oovaide can analyze and build a single directory tree that
+      contains both C++ and Java files. In fact, Oovaide itself can be built
+      this way. </p>
+    <h2><a class="mozTocH2" id="mozTocId694741"></a>C++ Analysis</h2>
+    There are typically three types of files used to analyze or build a project.
+    <ul>
+      <li> <b>Project Files</b> - Files that are defined by the project. These
+        are specified by the source root directory. Detailed analysis
+        information is only gathered for these types of files.</li>
+      <li><b>Compiler Libraries</b> - Files that are part of the standard
+        library. These are typically supplied by the compiler and normally these
+        do not need to be specified for analysis. Some examples of these files
+        limits.h, stdio.h, or files from STL.</li>
+      <li><b>External Packages</b> - Files that are defined that are needed by
+        the project, but are defined external to the project. The easiest way to
+        specify externally required files is to use the "External Project
+        Packages" button. Some examples of these packages are GTK, Boost, etc.</li>
+    </ul>
+    <p> Oovaide scans all directories in the project, and adds include directory
+      paths to the compiler command line for any directories in the project that
+      contain header files. </p>
+    <p> OovAide uses the CLang parser for analysis. This means that problems
+      with include paths can be solved by searching the web for typical CLang
+      installation problems. </p>
+    <p> Oovaide generally uses one set of compiler settings for all directories.
+      This typically means that a superset of all packages must be specified.
+      For example, if gtk is not needed for some directories, adding it for all
+      directories should not cause a problem for directories that do not require
+      gtk. It may make analysis slower, but should not fail. </p>
+    <p> Each header and source file is analyzed independently. This means that
+      each file should be able to include all definitions needed. Search the web
+      for "self-sufficient headers", or "self-contained headers", for more
+      information. On many projects, a fairly small include change can be made
+      to the source to be able to analyze much of the source. </p>
+    <p> Not all compiler errors need to be fixed to generate useful diagrams.
+      Oovaide will still generate references to undefined objects as long as the
+      compiler has parsed beyond the initial errors. If the files do not include
+      all needed definitions (they expect the source that includes them to
+      include other files first), then the error limit may need to be increased
+      so that more of the file can be parsed. The other alternative is to fix
+      the header files so that they include the needed definitions. </p>
+    <p> In Linux, the CLang compiler is not shipped with Oovaide, but must be
+      present on the system. </p>
+    <h3><a class="mozTocH3" id="mozTocId634053"></a>Choosing External C++
+      Packages</h3>
+    Packages are collections of include and library files that are distributed
+    for use by many programs. Some examples are GTK, Qt, etc. Oovaide provides
+    an "External Project Packages" button on the C++ Settings screen that allows
+    selecting packages.
+    <p> Packages are different on Windows and Linux. On Linux, the pkg-config
+      tool is used by the Oovaide package dialogs so that packages can be
+      selected and used in each project. </p>
+    <p> On Windows, there is a file called bin/oovaide-allpkgs-win.txt, that
+      defines a few common packages. This file can be easily read to see how
+      packages are defined, and it is possible to modify and add more packages.
+    </p>
+    <p> On Windows, Oovaide attempts to find directories using wildcards in the
+      package directory definitions. If there are multiple versions, then the
+      directory can be specified manually. </p>
+    <p> If the "Include Directory" setting is blank, then the directories are
+      scanned for include files, and paths are saved. To prevent this scan,
+      directories can be specified (separated with semicolons) or a single
+      period can be used to specify that only the current directory relative to
+      the root should be used as the path. </p>
+    <p> The "External References" can be specified with exclude directories the
+      same as in the C++ Settings. </p>
+    <h3><a class="mozTocH3" id="mozTocId18425"></a>Oovaide C++ Settings</h3>
+    The CLang compiler arguments for Analysis are set up in the
+    Analysis/Settings dialog in the C++ Settings tab. Many arguments are passed
+    directly to the compiler, so for example, "-I/dir" will use "/dir" as an
+    include path to search. There are a few special arguments that Oovaide uses
+    as described below.
+    <p> The argument order is important if there are files with the same names
+      in different directories. </p>
+    <p> </p>
+    <table border="1">
+      <tbody>
+        <tr>
+          <th>Flag</th>
+          <th>Name</th>
+          <th>Description</th>
+        </tr>
+        <tr>
+          <td>-EP</td>
+          <td>External Packages</td>
+          <td> This flag should be added using the "External Project Packages"
+            button. This specifies the name of the package to use for the
+            OovBuilder. </td>
+        </tr>
+        <tr>
+          <td>-ER</td>
+          <td>External Recursive Directories</td>
+          <td> This flag allows specifying a root directory to search for
+            includes and libraries. It also allows specifying exclude
+            directories. An example is "/rootdir/!/test/!/examples/", so that
+            any filepath that matches test or examples will be excluded. </td>
+        </tr>
+        <tr>
+          <td>-lnk</td>
+          <td>Link Flag</td>
+          <td>The value following this flag is sent to the linker. Some examples
+            are "-lnk-L/libdir", or "-lnk../dir/objfile.o". </td>
+        </tr>
+      </tbody>
+    </table>
+    <h3><a class="mozTocH3" id="mozTocId966297"></a>Solving C++ Analysis /
+      Compile Problems</h3>
+    One of the most difficult problems can be solving include path problems. The
+    include directories for files in the project do not have to be set since
+    OovAide sets these automatically. OovAide requires that the include file
+    names are unique, or the wrong one could be used.
+    <p> See the Inkscape Example below for more problem solving information. </p>
+    <p> </p>
+    <h4><a class="mozTocH4" id="mozTocId416185"></a>LibCLang missing</h4>
+    OovAide requires the C interface to the CLang library. On Windows, the CLang
+    library is supplied with OovAide.
+    <p> On Linux, the library is not supplied. If the library does not exist, an
+      error like the following will occur. "error while loading shared
+      libraries: libclang-3.6.so.1: cannot open shared object file". A package
+      manager will allow adding the CLang package that is required. In Debian
+      systems such as Ubuntu, the Synaptic Package Manager can be used to find
+      the package by searching for "clang interface", and it may be named
+      something like libclang1-3.6. </p>
+    <h4><a class="mozTocH4" id="mozTocId948534"></a>Analyzing projects (such as
+      OovAide) that use CLang libraries</h4>
+    If an error displays "fatal error: clang-c/Index.h: No such file or
+    directory", then something like libclang-3.6-dev is needed. OovAide should
+    work with many versions of the libclang library.
+    <h4><a class="mozTocH4" id="mozTocId919305"></a>Missing Standard Library
+      Includes</h4>
+    If an error appears such as "error: 'stdio.h' file not found" or "error:
+    'limits.h' file not found", this means that CLang is not finding the include
+    files in some standard locations. It is possible to find the locations that
+    CLang is looking by using the -v switch in the Analysis/Settings menu on the
+    C++ Settings tab in the Common Build Arguments edit box.
+    <h4><a class="mozTocH4" id="mozTocId597034"></a>Builtin identifiers</h4>
+    If an error "undeclared identifier __builtin__ia32_bsri" displays, this
+    means that the clang headers are not found or the libclang.dll version is
+    does not match and is not searching the paths the same. For example, CLang
+    versions 3.6 and 3.7 are in different locations at least on Windows. In
+    Windows, depends.exe will show the locations. On Linux, the ldd program can
+    be used to show dependencies for oovCppParser.
+    <h4><a class="mozTocH4" id="mozTocId98516"></a>CLang headers</h4>
+    The CLang headers should not be analyzed or else the "Never use
+    &lt;adxintrin.h&gt; directly" error will display.
+    <h2><a class="mozTocH2" id="mozTocId485883"></a>Java Analysis</h2>
+    The oovJavaParser.jar tool that is distributed with OovAide is used to parse
+    and analyze the java source files. A single java file is analyzed at a time.
+    <p> The Analysis/Settings menu selection will display a tab named "Java
+      Settings". This tab allows setting the class path and JDK path. </p>
+    <p> The class path is initialized from the CLASSPATH environment variable,
+      but altering it in the settings will not change the CLASSPATH environment
+      variable. The class path must contain all jars that are needed for your
+      project. The CLASSPATH environment variable does not need to include
+      tools.jar since it is added from the JDK path as described below. </p>
+    <p> The JDK path is initialized from the JAVA_HOME environment variable, but
+      altering it in the settings will not change the JAVA_HOME environment
+      variable. In Linux, if JAVA_HOME is missing, then
+      "/usr/lib/jvm/default-java" is used as default. The JDK path must be set
+      to the JAVA SDK. An example is: "C:\Program Files\Java\jdk1.8.0_51". This
+      path is used to find the tools.jar file in the lib directory. </p>
+    <p> The Extra Analyze Arguments can be used to set switches, or to add java
+      files that will be added to the analysis. </p>
+    <h3><a class="mozTocH3" id="mozTocId619101"></a>Android Analysis</h3>
+    In Android with Windows, the class paths may contain something similar to
+    the following:
+    <ul>
+      <li>...\AppData\Local\Android\sdk\platforms\android-22\android.jar</li>
+      <li>...\AppData\Local\Android\sdk\extras\android\support\v7\appcompat\libs\android-support-v7-appcompat.jar</li>
+      <li>...\AppData\Local\Android\sdk\extras\android\support\v4\android-support-v4.jar</li>
+    </ul>
+    The Extra Analyze Arguments may contain something similar to the following:
+    <ul>
+      <li>
+...\AndroidStudioProjects\MyApplication\app\build\generated\source\r\debug\com\example\blahad01\myapplication\R.java</li>
+    </ul>
+    <p> </p>
+    <h3><a class="mozTocH3" id="mozTocId805501"></a>Solving Java Analysis
+      Problems</h3>
+    If an error displays "java.lang.NoClassDefFoundError:
+    com/sun/source/tree/Tree", this means that the JDK tools path must be set.
+    The package that is required in Ubuntu is something like openjdk-7-jdk and
+    can be found in the Synaptic Package Manager. Once the package is installed,
+    the Properties/Install Files tab shows the installation location of
+    tools.jar at something like /usr/lib/jvm/openjdk-i386/lib/tools.jar, so the
+    JDK path must be set to /usr/lib/jvm/openjdk-i386 in the Analysis/Settings
+    menu on the Java Settings tab.
+    <h2><a class="mozTocH2" id="mozTocId485848"></a>OovAide Build</h2>
+    If analysis has completed successfully, then building applications with
+    multiple libraries and executables is fairly easy.
+    <p> The Build Settings dialog under the Build menu allows selecting a
+      directory and specifying what type of component to build from the
+      directory. For example, if a single executable will be built from the
+      whole directory tree, then select the <root> component/directory, and
+        define it as a Program/Executable (for C++) or as a Java Executable Jar
+        (for Java). </root></p>
+    <p> The following directory structure shows how components can be created.
+      See the user guide for more information. </p>
+    <p> <embed src="../userguide/ExampleSourceTree.svg" type="image/svg+xml"> </p>
+    <p> Some of the rules are: </p>
+    <ul>
+      <li>A component at any level of the tree will be built using all source
+        files in all subdirectories that are not defined as a component. In this
+        diagram, the top nodes ("Dir Root", "Dir A", and "Dir B-2") are defined
+        as components.</li>
+      <li>The groupings do not determine where header files can be found. They
+        only determine which source files are compiled into the component.
+        Header files can be anywhere and will be automatically found during
+        analysis.</li>
+      <li>Component "Dir A" could be a library, which will be linked into other
+        components automatically.</li>
+    </ul>
+    <h3><a class="mozTocH2 mozTocH3" id="mozTocId332885"></a>OovAide Build C++</h3>
+    Use the Build/Build Settings menu to specify component types. The Extra
+    Build Arguments on this screen are specific to each component.
+    <h3><a class="mozTocH2 mozTocH3" id="mozTocId671330"></a>OovAide Build Java</h3>
+    Any component specified as a Java Executable Jar must have a Manifest.txt
+    file in the component's source directory.
+    <p> The classpath must include all jars that are required for the build. The
+      Java Library Jar can be used to build a jar that is not a stand-alone
+      executable. At the moment, Oovaide does not determine jar dependency build
+      order, so if this is a problem, multiple projects may have to be created
+      to work around this for now. </p>
+    <p> The package names must match the directory structure. For each jar that
+      is created, the package names in the java files must match the directories
+      under the specified component's directory. </p>
+    <p> The Extra Build Arguments can be used to specify switches or to add jar,
+      java or class files. </p>
+    <h2><a class="mozTocH3 mozTocH2" id="mozTocId513853"></a>Inkscape Example on
+      Windows</h2>
+    This example shows how to analyze a project where little is known about the
+    project. This example was run on Windows, but some items will be similar on
+    Linux.
+    <p> For this example, we will attempt to analyze the Inkscape program. The
+      Inkscape program requires gtkmm and boost, so they need to be added as
+      external packages. Since gtkmm includes mingw, there is no reason to
+      additionally add a separate mingw package. </p>
+    <p> I don't know which version of gtkmm is needed, so I just downloaded the
+      Tarnyko gtkmm-3.4.0_mingw-4.6.2 version. Use Oovaide to add gtkmm as an
+      external package. </p>
+    <p> At first, there was a compile error about a missing config.h. I never
+      ran the configure command, so I cheated and copied config.h.in to config.h
+      in the Inkscape source code. </p>
+    <p> The following problem is displayed during analysis, and resolved by
+      adding an include of "gtkmm-3.0/gtkmm.h" to the Inkscape source in
+      src/extension/param/parameter.h. The real problem is that Inkscape does
+      not define all classes before they are referenced in header files. </p>
+    <pre>	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
 	  extension/param/parameter.h:42:8: error: use of undeclared identifier 'Glib'
 	</pre>
-	Similar to the first problem, more includes need to be added, so
-	add the following includes to the parameter.h file before
-	the gtkmm include. #include "xml/node.h", #include "extension/extension.h".
-	<pre>
-	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+    Similar to the first problem, more includes need to be added, so add the
+    following includes to the parameter.h file before the gtkmm include.
+    #include "xml/node.h", #include "extension/extension.h".
+    <pre>	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
 	  extension/param\string.h:17:28: error: expected class name
 	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
 	  extension/param\string.h:27:86: error: use of undeclared identifier 'Parameter'
 	</pre>
-
-	Inkscape defines float.h which conflicts with the external mingw library float.h.
-	This problem can be eliminated by selecting "Analysis/Project Settings", and
-	adding "inkscape-0.91/src/extension/param/" to Exclude Sub-Directories.
-	<pre>
-	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+    Inkscape defines float.h which conflicts with the external mingw library
+    float.h. This problem can be eliminated by selecting "Analysis/Project
+    Settings", and adding "inkscape-0.91/src/extension/param/" to Exclude
+    Sub-Directories.
+    <pre>	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
 	extension/param\float.h:32:23: error: unknown type name 'gchar'
 	</pre>
-
-	The CLang compiler requires intrinsics from its own header file,
-	and cannot use the one from mingw. The CLang compiler searches some paths
-	which can be seen by adding the -v switch to the compiler options.
-	The first files that CLang is searching for are shipped in the CLang package under
-	the LLVM/lib directory.  These must be found before the mingw directories.
-	The best option is NOT to add the mingw directories to a project, since CLang
-	will normally find them.
-	Another option may be to use "-Iclang/3.6.0/include" before the other
-	external package ref arguments ("-EP").
-	<pre>
-	/gtkmm340_mingw462/lib/gcc/mingw32/4.6.2/include\ia32intrin.h:41:10:
+    The CLang compiler requires intrinsics from its own header file, and cannot
+    use the one from mingw. The CLang compiler searches some paths which can be
+    seen by adding the -v switch to the compiler options. The first files that
+    CLang is searching for are shipped in the CLang package under the LLVM/lib
+    directory. These must be found before the mingw directories. The best option
+    is NOT to add the mingw directories to a project, since CLang will normally
+    find them. Another option may be to use "-Iclang/3.6.0/include" before the
+    other external package ref arguments ("-EP").
+    <pre>	/gtkmm340_mingw462/lib/gcc/mingw32/4.6.2/include\ia32intrin.h:41:10:
 	error: use of undeclared identifier '__builtin_ia32_bsrsi'
 	</pre>
-
-	Inscape requires the Boehm garbage collector.  This can be added by
-	defining a new external package, or by using -I with the "include" directory
-	specified.  The sigc++ library can be added in the same manner with the "sigc++"
-	directory specified. These
-	packages are probably not needed to get a pretty good analysis of Inkscape.
-	<pre>
-	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
+    Inscape requires the Boehm garbage collector. This can be added by defining
+    a new external package, or by using -I with the "include" directory
+    specified. The sigc++ library can be added in the same manner with the
+    "sigc++" directory specified. These packages are probably not needed to get
+    a pretty good analysis of Inkscape.
+    <pre>	C:/Dave/Mine/software/external-projects/inkscape-0.91/inkscape-0.91/src/
 	  gc-core.h:25:11: fatal error: 'gc.h' file not found
 	</pre>
-	To summarize, by modifying two source files, and creating a simple Oovaide
-	project, it was fairly easy to perform analysis on the Inkscape project.
-
-</body>
+    To summarize, by modifying two source files, and creating a simple Oovaide
+    project, it was fairly easy to perform analysis on the Inkscape project.
+  </body>
 </html>

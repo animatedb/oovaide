@@ -375,7 +375,7 @@ OovStatusReturn ModelWriter::writeType(const ModelType &mtype)
     int classXmiId = getObjectModelId(mtype.getName());
     bool isDefinedClass = false;
     bool isDefinedOpers = false;
-    const ModelClassifier *cl = mtype.getClass();
+    const ModelClassifier *cl = ModelClassifier::getClass(&mtype);
     if(cl)
         {
         if(cl->getModule())
@@ -395,7 +395,7 @@ OovStatusReturn ModelWriter::writeType(const ModelType &mtype)
         if(mtype.getDataType() == DT_Class)
             {
             typeName = "Class";
-            const ModelClassifier *typeCl = mtype.getClass();
+            const ModelClassifier *typeCl = ModelClassifier::getClass(&mtype);
             snprintf(lineNumStr, sizeof(lineNumStr), "line=\"%d\"",
                 typeCl->getLineNum());
             }
@@ -409,7 +409,7 @@ OovStatusReturn ModelWriter::writeType(const ModelType &mtype)
         std::string earlyTermStr;
         if(mtype.getDataType() == DT_Class)
             {
-            const ModelClassifier *typeCl = mtype.getClass();
+            const ModelClassifier *typeCl = ModelClassifier::getClass(&mtype);
             if(typeCl->getModule())
                 {
                 moduleStr = "module=\"";

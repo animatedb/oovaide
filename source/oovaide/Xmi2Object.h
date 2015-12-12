@@ -96,6 +96,8 @@ class XmiParser:private XmlParser
         // These are the types that were loaded from the current module that
         // may need to have indices remapped.
         std::vector<ModelType*> mPotentialRemapIndicesTypes;
+
+        void closeTypeElem(XmiElement const &elItem);
         void updateDeclTypeIndices(ModelTypeRef &decl);
         void updateStatementTypeIndices(ModelStatements &stmt);
         void updateTypeIndices();

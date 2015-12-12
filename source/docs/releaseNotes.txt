@@ -34,6 +34,9 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
+	- deployment fix install so not /usr/local, rename bin/data dir
+	- Duplicate class/function names
+	- Build Java/task sequencing
 	- Preserve state between sessions
 - Gui
 	- Add External Directories button for Build Arguments dialog.
@@ -78,6 +81,7 @@ Missing Features
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 
 - Class Diagrams/List
+	- Find shortest path for two related classes with max depth of search
 	- example names: member NotAStar typedef with base type int not shown
 	  when drawing is loaded. Shouldn't show in add selected list?
 	- Allow add all classes in module
@@ -129,12 +133,15 @@ Missing Features
 
 - Analysis (builder and parser)
 	- Java
-	    and wait for completion of previous jars
+	    and wait for completion of previous jars (task flow scheduling, topological sorting)
 		http://stackoverflow.com/questions/200483/how-do-i-get-a-list-
 		of-java-class-dependencies-for-a-main-class
 	  - Variables in methods <BodyVarDecl> in xmi?
 	  - code coverage
+	- Duplicate class or function names, affects usage reports, drawings
 	- Method usage: dup function names, con/destructors
+	- Include usage: doesn't show usage of dup Java/C++ classes,
+		external includes, or global functions (getCppArgs).
 	- ZoneConnection is not listed as member usage of ZoneConnections::insertConnection
 		- not in xmi file
 		- CLangView shows:
@@ -320,23 +327,6 @@ Missing Features
 	- C#
 	    http://stackoverflow.com/questions/81406/parser-for-c-sharp
 	    mono dmcs/mcs
-	- Deployment
-		debreate
-		msys2/pacman/MXE
-		giftwrap
-		ubucompilator	- old/incomplete
-		debianpackagemaker
-		alien - convert deb to rpm
-	- packages: http://blog.ideabulbs.com/2010/11/how-to-create-your-own-debianubuntu.html
-		nullsoft
-		nsis
-		CMake - ExternalProject_Add
-		fpm deb/rpm
-		http://nsis.sourceforge.net/Main_Page
-		https://github.com/jordansissel/fpm, http://www.exemsi.com/, Wix(.Net only)
-		http://ubuntuforums.org/showthread.php?t=910717
-		http://unix.stackexchange.com/questions/30303/how-to-create-a-
-			deb-file-manually
 	- Change help links to github
 		https://rawgit.com/animatedb/oovaide/master/web/articles/PortionDiagrams.html
 	- Popularize project

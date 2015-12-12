@@ -105,7 +105,7 @@ void ZoneDiagramView::handleDrawingAreaMotion(int x, int y)
         std::string str = "Class name: ";
         str += node->mType->getName();
         str += "\nComponent name: ";
-        str += node->mType->getClass()->getModule()->getName();
+        str += ModelClassifier::getClass(node->mType)->getModule()->getName();
         mToolTipWindow.handleCursorMovement(x, y, str);
         }
     else
@@ -246,7 +246,7 @@ extern "C" G_MODULE_EXPORT void on_ZoneViewSourceMenuitem_activate(
     const ZoneNode *node = sZoneDiagramView->getDiagram().getZoneNode(sStartPosInfo);
     if(node)
         {
-        const ModelClassifier *classifier = node->mType->getClass();
+        const ModelClassifier *classifier = ModelClassifier::getClass(node->mType);
         if(classifier)
             {
             sZoneDiagramView->viewSource(classifier->getModule()->getModulePath(),

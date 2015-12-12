@@ -9,7 +9,6 @@
 #define BUILDCONFIGREADER_H_
 
 #include "NameValueFile.h"
-#include "Project.h"
 
 /// The BuildConfig file stores all arguments for each build configuration such
 /// as analysis, debug, or release. It does this in a format that allows

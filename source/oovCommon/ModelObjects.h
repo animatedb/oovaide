@@ -75,7 +75,8 @@ class Visibility
 
 /// This is the base type for most objects that represent the model.
 /// It contains a name and ID. The ID is only used to resolve relations
-/// between objects within a single XMI file.
+/// between objects while XMI files are loaded and resolved using
+/// resolveModelIds().
 class ModelObject
     {
     public:
@@ -491,10 +492,6 @@ class ModelType:public ModelObject
         /// Get whether this is a class or simple data type
         eModelDataTypes getDataType() const
             { return mDataType; }
-        /// @todo - remove this function
-        const class ModelClassifier *getClass() const;
-        /// @todo - remove this function
-        class ModelClassifier *getClass();
         /// Get a class pointer. This returns null if the data type is not a class.
         static class ModelClassifier const *getClass(ModelType const *modelType);
         /// Get a class pointer. This returns null if the data type is not a class.
@@ -782,6 +779,10 @@ class ModelData
         void resolveModelIds();
 
         bool isTypeReferencedByOperation(ModelOperation const &oper,
+            ModelType const &type) const;
+        bool isTypeReferencedByOperationInterface(ModelOperation const &oper,
+            ModelType const &type) const;
+        bool isTypeReferencedByClassOperationInterfaces(ModelClassifier const &classifier,
             ModelType const &type) const;
         bool isTypeReferencedByClassAttributes(ModelClassifier const &classifier,
             ModelType const &type) const;

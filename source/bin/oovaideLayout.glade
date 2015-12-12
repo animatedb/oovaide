@@ -1885,7 +1885,7 @@ Use this dialog to set up component definitions.</property>
                           <object class="GtkMenuItem" id="CleanMenuitem">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Clean</property>
+                            <property name="label" translatable="yes">Clean...</property>
                             <property name="use_underline">True</property>
                             <signal name="activate" handler="on_CleanMenuitem_activate" swapped="no"/>
                           </object>

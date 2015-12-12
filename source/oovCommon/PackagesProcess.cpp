@@ -5,8 +5,8 @@
  *  \copyright 2014 DCBlaha.  Distributed under the GPL.
  */
 
-#include "Packages.h"
 #ifdef __linux__
+#include "Packages.h"
 #include "OovProcess.h"
 #endif
 #include <algorithm>

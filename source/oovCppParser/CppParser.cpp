@@ -918,16 +918,17 @@ void CppParser::addTypedef(CXCursor cursor)
         ModelType *typeDef = mParserModelData.createOrGetTypedef(cursor);
         if(typeDef && typeDef->getDataType() == DT_Class)
             {
-            addClassFileLoc(cursor, typeDef->getClass());
+            ModelClassifier *tdcl = ModelClassifier::getClass(typeDef);
+            addClassFileLoc(cursor, tdcl);
             // Only add typedefs that are defined in the compiled file.
-            if(typeDef->getClass()->getModule())
+            if(tdcl->getModule())
                 {
                 CXType typedefCursorType = clang_getTypedefDeclUnderlyingType(cursor);
                 CXType baseType = getBaseType(typedefCursorType);
                 RefType rType;
                 ModelType const *parentReffedType = mParserModelData.createOrGetDataTypeRef(baseType, rType);
-                ModelClassifier const *child = typeDef->getClass();
-                ModelClassifier const *parent = parentReffedType->getClass();
+                ModelClassifier const *child = ModelClassifier::getClass(typeDef);
+                ModelClassifier const *parent = ModelClassifier::getClass(parentReffedType);
                 mParserModelData.addAssociation(parent, child, getAccess(cursor));
                 }
             }

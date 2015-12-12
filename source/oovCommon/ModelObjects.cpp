@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <ctype.h>
 #include <algorithm>
-#include <map>
 
 
 #define DEBUG_OPER 0
@@ -44,16 +43,6 @@ Visibility::Visibility(OovStringRef const umlStr)
         }
     }
 
-const ModelClassifier *ModelType::getClass() const
-    {
-    return getClass(this);
-    }
-
-ModelClassifier *ModelType::getClass()
-    {
-    return getClass(this);
-    }
-
 class ModelClassifier *ModelType::getClass(ModelType *modelType)
     {
     ModelClassifier *cl = nullptr;
@@ -74,27 +63,6 @@ class ModelClassifier const *ModelType::getClass(ModelType const *modelType)
             cl = static_cast<ModelClassifier const *>(modelType);
         }
     return cl;
-    }
-
-bool ModelType::isTemplateUseType() const
-    {
-    // Stereotypes have two "<", but template uses have one.
-    // Look for a '<' that is not followed by a '<'.
-    OovString const &name = getName();
-    bool templateUse = false;
-    for(size_t i=0; i<name.length(); i++)
-        {
-        if(name[i] == '<')
-            {
-            // Worst case, this could index the null terminator,
-            // but normal class names should not have this format.
-            if(name[i+1] != '<')
-                {
-                templateUse = true;
-                }
-            }
-        }
-    return(templateUse);
     }
 
 bool ModelType::isTemplateDefType(OovString const &name)
@@ -125,7 +93,7 @@ bool ModelTypeRef::match(ModelTypeRef const &typeRef) const
 
 const class ModelClassifier *ModelDeclarator::getDeclClassType() const
     {
-    return getDeclType() ? getDeclType()->getClass() : nullptr;
+    return getDeclType() ? ModelClassifier::getClass(getDeclType()) : nullptr;
     }
 
 
@@ -372,56 +340,6 @@ ModelOperation *ModelClassifier::addOperation(const std::string &name,
     return oper;
     }
 
-void ModelClassifier::replaceOperation(ModelOperation const * const operToReplace,
-            std::unique_ptr<ModelOperation> &&newOper)
-        {
-        size_t index = getMatchingOperationIndex(*operToReplace);
-        if(index != NoIndex)
-            {
-//          mOperations.erase(mOperations.begin() + index);
-//          mOperations.push_back(std::move(newOper));
-            mOperations[index] = std::move(newOper);
-            }
-        }
-
-void ModelClassifier::eraseAttribute(const ModelAttribute *attr)
-    {
-    for(size_t i=0; i<mAttributes.size(); ++i)
-        {
-        if(mAttributes[i].get() == attr)
-            {
-            mAttributes.erase(mAttributes.begin() +
-                static_cast<int>(i));
-            break;
-            }
-        }
-    }
-
-void ModelClassifier::eraseOperation(const ModelOperation *oper)
-    {
-    for(size_t i=0; i<mOperations.size(); ++i)
-        {
-        if(mOperations[i].get() == oper)
-            {
-#if(DEBUG_OPER)
-            if(oper->getName().find("appendPage") != std::string::npos)
-                {
-                OovString str;
-                str = "eraseOper ";
-                str += oper->getName().getStr();
-                str += ' ';
-                str.appendInt(oper->getStatements().size());
-                OovError::report(ET_Error, str);
-                }
-#endif
-
-            mOperations.erase(mOperations.begin() +
-                static_cast<int>(i));
-            break;
-            }
-        }
-    }
-
 // DEAD CODE
 /*
 void ModelClassifier::removeOperation(ModelOperation *oper)
@@ -531,47 +449,6 @@ void ModelData::clear()
     mTypes.clear();
     }
 
-// The resolveModelIds() function takes a long time for large projects.
-// This reduces the time for resolving types to about 1/3 of the time of
-// iterating through the type map to find the types.
-class TypeIdMap:public std::map<int, ModelType *>
-    {
-    public:
-        TypeIdMap(std::vector<std::unique_ptr<ModelType>> const &types)
-            {
-            for(auto &type : types)
-                {
-                insert(std::pair<int, ModelType*>(type->getModelId(), type.get()));
-                }
-            }
-        ModelType *getTypeByModelId(int id) const
-            {
-            ModelType *type = nullptr;
-            auto it = find(id);
-            if(it != end())
-                type = (*it).second;
-// Id's for intrinsic types do not exist.
-/*
-            else if(id != 0)
-                {
-                OovString str = "Unable to resolve Decl ID ";
-                str.appendInt(id);
-                OovError::report(ET_Error, str);
-                }
-*/
-            return type;
-            }
-    };
-
-void ModelData::resolveDecl(TypeIdMap const &typeMap, ModelTypeRef &decl)
-    {
-    if(decl.getDeclTypeModelId() != UNDEFINED_ID)
-        {
-        decl.setDeclType(typeMap.getTypeByModelId(decl.getDeclTypeModelId()));
-        decl.setDeclTypeModelId(UNDEFINED_ID);
-        }
-    }
-
 void ModelData::dumpTypes()
     {
 #if(DEBUG_TYPES)
@@ -586,359 +463,6 @@ void ModelData::dumpTypes()
         fclose(fp);
         }
 #endif
-    }
-
-void ModelData::resolveStatements(class TypeIdMap const &typeMap, ModelStatements &stmts)
-    {
-    for(auto &stmt : stmts)
-        {
-        if(stmt.getStatementType() == ST_Call ||
-                stmt.getStatementType() == ST_VarRef)
-            {
-#if(DEBUG_OPER)
-if(stmt.getFullName().find("appendPage") != std::string::npos)
-    {
-    OovString str;
-    str = "XMI RESOLVE CALL ";
-    str += stmt.getFullName();
-    OovError::report(ET_Error, str);
-    }
-#endif
-            resolveDecl(typeMap, stmt.getClassDecl());
-            if(stmt.getStatementType() == ST_VarRef)
-                {
-                resolveDecl(typeMap, stmt.getVarDecl());
-                }
-            }
-        }
-    }
-
-void ModelData::resolveModelIds()
-    {
-    dumpTypes();
-    TypeIdMap typeMap(mTypes);
-    // Resolve class member attributes and operations.
-    for(const auto &type : mTypes)
-        {
-        if(type->getDataType() == DT_Class)
-            {
-            ModelClassifier *classifier = type->getClass();
-            for(auto &attr : classifier->getAttributes())
-                {
-                resolveDecl(typeMap, *attr);
-                }
-            for(auto &oper : classifier->getOperations())
-                {
-                // Resolve function parameters.
-                for(auto &param : oper->getParams())
-                    {
-                    resolveDecl(typeMap, *param);
-                    }
-                // Resolve function call decls.
-                ModelStatements &stmts = oper->getStatements();
-                resolveStatements(typeMap, stmts);
-
-                // Resolve body variables.
-                for(auto &vd : oper->getBodyVarDeclarators())
-                    {
-                    resolveDecl(typeMap, *vd);
-                    }
-                resolveDecl(typeMap, oper->getReturnType());
-                }
-            }
-        }
-    // Resolve relations.
-    for(auto &assoc : mAssociations)
-        {
-        if(assoc->getChildModelId() != UNDEFINED_ID)
-            {
-            assoc->setChildClass(typeMap.getTypeByModelId(assoc->getChildModelId())->getClass());
-            assoc->setParentClass(typeMap.getTypeByModelId(assoc->getParentModelId())->getClass());
-/*
-            assoc->setChildModelId(UNDEFINED_ID);
-            assoc->setParentModelId(UNDEFINED_ID);
-*/
-            }
-        }
-/*
-    for(auto &type : mTypes)
-        {
-        type->setModelId(UNDEFINED_ID);
-        }
-    // Resolve modules.
-    for(auto &mod : mModules)
-        {
-        mod->setModelId(UNDEFINED_ID);
-        }
-*/
-    }
-
-bool ModelData::isTypeReferencedByStatements(ModelStatements const &stmts,
-        ModelType const &type) const
-    {
-    bool referenced = false;
-    for(auto &stmt : stmts)
-        {
-        if(stmt.getStatementType() == ST_Call &&
-                stmt.getClassDecl().getDeclType() == &type)
-            {
-            referenced = true;
-            break;
-            }
-        if(stmt.getStatementType() == ST_VarRef &&
-                (stmt.getClassDecl().getDeclType() == &type ||
-                stmt.getVarDecl().getDeclType() == &type))
-            {
-            referenced = true;
-            break;
-            }
-        }
-    return referenced;
-    }
-
-bool ModelData::isTypeReferencedByOperation(ModelOperation const &oper,
-    ModelType const &checkType) const
-    {
-    bool referenced = false;
-    // Only defined operations in the translation unit have a module.
-    if(oper.getModule())
-        {
-        // Check function parameters.
-        for(auto &param : oper.getParams())
-            {
-            if(param->getDeclType() == &checkType)
-                {
-                referenced = true;
-                break;
-                }
-            }
-        if(!referenced)
-            {
-            // Check function call decls.
-            ModelStatements const &stmts = oper.getStatements();
-            referenced = isTypeReferencedByStatements(stmts, checkType);
-            }
-        if(!referenced)
-            {
-            // Check body variables.
-            for(auto &vd : oper.getBodyVarDeclarators())
-                {
-                if(vd->getDeclType() == &checkType)
-                    {
-                    referenced = true;
-                    break;
-                    }
-                }
-            }
-        if(!referenced)
-            {
-            if(oper.getReturnType().getDeclType() == &checkType)
-                {
-                referenced = true;
-                }
-            }
-        }
-    return referenced;
-    }
-
-bool ModelData::isTypeReferencedByClassAttributes(ModelClassifier const &classifier,
-    ModelType const &checkType) const
-    {
-    bool referenced = false;
-    for(auto &attr : classifier.getAttributes())
-        {
-        if(attr->getDeclType() == &checkType)
-            {
-            referenced = true;
-            if(referenced)
-                {
-                break;
-                }
-            }
-        }
-    return referenced;
-    }
-
-bool ModelData::isTypeReferencedByParentClass(ModelClassifier const &classifier,
-    ModelType const &checkType) const
-    {
-    bool referenced = false;
-    for(auto &assoc : mAssociations)
-        {
-        if(assoc->getParent() == &checkType)
-            {
-            referenced = true;
-            break;
-            }
-        }
-    return referenced;
-    }
-
-bool ModelData::isTypeReferencedByDefinedObjects(ModelType const &checkType) const
-    {
-    bool referenced = false;
-    for(const auto &type : mTypes)
-        {
-        if(type->getDataType() == DT_Class)
-            {
-            ModelClassifier *classifier = type->getClass();
-            // Only defined classes in the parsed translation unit have a module.
-            if(classifier->getModule())
-                {
-                referenced = isTypeReferencedByClassAttributes(*classifier, checkType);
-                }
-            if(!referenced)
-                {
-                for(auto &oper : classifier->getOperations())
-                    {
-                    referenced = isTypeReferencedByOperation(*oper, checkType);
-                    if(referenced)
-                        {
-                        break;
-                        }
-                    }
-                }
-            if(referenced)
-                {
-                break;
-                }
-            }
-        }
-    // Check relations.
-    if(!referenced)
-        {
-        for(auto &assoc : mAssociations)
-            {
-            if(assoc->getChild() == &checkType || assoc->getParent() == &checkType)
-                {
-                referenced = true;
-                break;
-                }
-            }
-        }
-    return referenced;
-    }
-
-void ModelData::takeAttributes(ModelClassifier *sourceType, ModelClassifier *destType)
-    {
-    for(auto &attr : sourceType->getAttributes())
-        {
-        ModelAttribute *attrPtr = attr.get();
-        destType->addAttribute(std::move(attr));
-        sourceType->eraseAttribute(attrPtr);
-        }
-    for(auto &oper : sourceType->getOperations())
-        {
-        ModelOperation const *destOper = destType->getMatchingOperation(*oper.get());
-        if(destOper && destOper->isDefinition())
-            {
-            // dest operation already has a good definition.
-            }
-        else
-            {
-            ModelOperation *operPtr = oper.get();
-            if(destOper)
-                destType->replaceOperation(destOper, std::move(oper));
-            else
-                destType->addOperation(std::move(oper));
-            sourceType->eraseOperation(operPtr);
-            }
-        }
-    // Function parameters have references to types, but they do not need to
-    // be handled since those types haven't been resolved yet.
-    }
-
-void ModelData::replaceStatementType(ModelStatements &stmts, ModelType *existingType,
-        ModelClassifier *newType)
-    {
-    for(auto &stmt : stmts)
-        {
-        if(stmt.getStatementType() == ST_Call ||
-                stmt.getStatementType() == ST_VarRef)
-            {
-            if(stmt.getClassDecl().getDeclType() == existingType)
-                {
-                stmt.getClassDecl().setDeclType(newType);
-                }
-            if(stmt.getStatementType() == ST_VarRef)
-                {
-                if(stmt.getVarDecl().getDeclType() == existingType)
-                    {
-                    stmt.getVarDecl().setDeclType(newType);
-                    }
-                }
-            }
-        }
-    }
-
-void ModelData::replaceType(ModelType *existingType, ModelClassifier *newType)
-    {
-    // Don't need to update function parameter types at this time, because the
-    // existing type is a datatype, and datatypes are not referred to at this time.
-
-    // update member attributes.
-    for(const auto &type : mTypes)
-        {
-        if(type->getDataType() == DT_Class)
-            {
-            ModelClassifier *classifier = type->getClass();
-            for(auto &attr : classifier->getAttributes())
-                {
-                if(attr->getDeclType() == existingType)
-                    {
-                    attr->setDeclType(newType);
-                    }
-                }
-            for(auto &oper : classifier->getOperations())
-                {
-                for(auto &parm : oper->getParams())
-                    {
-                    if(parm->getDeclType() == existingType)
-                        {
-                        parm->setDeclType(newType);
-                        }
-                    }
-                for(auto &vd : oper->getBodyVarDeclarators())
-                    {
-                    if(vd->getDeclType() == existingType)
-                        {
-                        vd->setDeclType(newType);
-                        }
-                    }
-                if(oper->getReturnType().getDeclType() == existingType)
-                    {
-                    oper->getReturnType().setDeclType(newType);
-                    }
-                replaceStatementType(oper->getStatements(), existingType, newType);
-                }
-            }
-        }
-    // Resolve relations.
-    for(auto &assoc : mAssociations)
-        {
-        if(assoc->getChild() == existingType)
-            {
-            assoc->setChildClass(newType);
-            }
-        if(assoc->getParent() == existingType)
-            {
-            assoc->setParentClass(newType);
-            }
-        }
-    eraseType(existingType);
-    }
-
-void ModelData::eraseType(ModelType *existingType)
-    {
-    // Delete the old type
-    for(size_t ci=0; ci<mTypes.size(); ci++)
-        {
-        if(mTypes[ci].get() == existingType)
-            {
-            mTypes.erase(mTypes.begin() +
-                static_cast<int>(ci));
-            }
-        }
     }
 
 const ModelType *ModelData::getTypeRef(OovStringRef const typeName) const
@@ -994,7 +518,6 @@ ModelObject *ModelData::createDataType(eModelDataTypes type, const std::string &
     }
 
 #define BASESPEED 1
-#define BINARYSPEED 1
 #if(BASESPEED)
 static inline bool skipStr(char const * * const str, OovStringRef const compareStr)
     {
@@ -1014,9 +537,17 @@ static inline bool skipStr(char const * * const str, OovStringRef const compareS
     }
 #endif
 
+#if(BASESPEED)
 static bool isIdentC(char c)
     {
     return(isalnum(c) || c == '_');
+    }
+
+static char getTokenType(char c)
+    {
+    if(isIdentC(c))
+        c = 'i';
+    return c;
     }
 
 static char const *skipWhite(OovStringRef const s)
@@ -1030,13 +561,7 @@ static char const *skipWhite(OovStringRef const s)
         }
     return p;
     }
-
-static char getTokenType(char c)
-    {
-    if(isIdentC(c))
-        c = 'i';
-    return c;
-    }
+#endif
 
 std::string ModelData::getBaseType(OovStringRef const fullStr)
 {
@@ -1108,6 +633,8 @@ static inline bool compareStrs(OovStringRef const tstr1, OovStringRef const tstr
     return (strcmp(tstr1, tstr2) < 0);
     }
 
+#define BINARYSPEED 1
+
 void ModelData::addType(std::unique_ptr<ModelType> &&type)
     {
 #if(BINARYSPEED)
@@ -1122,17 +649,6 @@ void ModelData::addType(std::unique_ptr<ModelType> &&type)
 #endif
     }
 
-static OovString getTemplateDefBaseName(OovString const &name)
-    {
-    OovString templName;
-    if(ModelType::isTemplateDefType(name))
-        {
-        size_t pos = name.find('<');
-        templName = name.substr(0, pos);
-        }
-    return templName;
-    }
-
 /*
 static OovString getTemplateUseBaseName(OovString const &name)
     {
@@ -1145,52 +661,6 @@ static OovString getTemplateUseBaseName(OovString const &name)
     return templName;
     }
 */
-
-/// Gets the template definition name, or the regular name if it
-/// is not a template definition. Template definitions have the template
-/// stereotype.
-/// This discards the template type parameters
-/// This must return most of the name otherwise the binary search will fail.
-static OovString getTemplateSortedBaseName(OovString const &name)
-    {
-    OovString templName = getTemplateDefBaseName(name);
-    if(templName.length() == 0)
-        {
-        templName = name;
-        }
-    return templName;
-    }
-
-const ModelType *ModelData::findTemplateType(OovStringRef const baseIdentName) const
-    {
-    const ModelType *type = nullptr;
-#if(BINARYSPEED)
-    // This comparison must produce the same sort order as addType.
-    auto iter = std::lower_bound(mTypes.begin(), mTypes.end(), baseIdentName,
-        [](std::unique_ptr<ModelType> const &mod1, OovStringRef const mod2Name) -> bool
-        { return(compareStrs(getTemplateSortedBaseName(mod1->getName()), mod2Name)); } );
-    while(iter != mTypes.end())
-        {
-        // At this point, the iterator should be at the first template name of
-        // either the usage or define, so search linearly to the end.
-        // This relies on the fact that the template base name is alphabetically
-        // less than all other uses, which it will be since it is shorter.
-        // This also expects that there will always be a definition, so it
-        // shouldn't take long to iterate until it is found instead of trying
-        // to stop when the base name changes. It should be very rare to reach
-        // the end.
-        OovString templName = getTemplateSortedBaseName((*iter)->getName());
-        if(templName.compare(baseIdentName) == 0)
-            {
-            type = (*iter).get();
-            break;
-            }
-        iter++;
-        }
-#else
-#endif
-    return type;
-    }
 
 const ModelType *ModelData::findType(OovStringRef const name) const
     {
@@ -1223,31 +693,6 @@ const ModelType *ModelData::findType(OovStringRef const name) const
 ModelType *ModelData::findType(OovStringRef const name)
     {
     return const_cast<ModelType*>(static_cast<const ModelData*>(this)->findType(name));
-    }
-
-ModelModule const * ModelData::findModuleById(int id)
-    {
-    ModelModule *mod = nullptr;
-    // Searching backwards is an effective optimization because onAttr
-    // has calls to this function, and many of the recently added ID's
-    // will be at the end.
-    if(mModules.size() > 0)
-        {
-        for(int i=static_cast<int>(mModules.size())-1; i>=0; i--)
-            {
-            size_t index = static_cast<size_t>(i);
-            if(mModules[index]->getModelId() == id)
-                {
-                mod = mModules[index].get();
-                break;
-                }
-            }
-        }
-    if(!mod)
-        {
-        DebugAssert(__FILE__, __LINE__);
-        }
-    return mod;
     }
 
 /*
@@ -1298,66 +743,6 @@ static void getIdents(const std::string &str, std::vector<std::string> &idents)
     }
 */
 
-void ModelData::getRelatedTypeArgClasses(const ModelType &type,
-        ConstModelClassifierVector &classes) const
-    {
-    classes.clear();
-    OovString name = type.getName();
-    OovStringVec delimiters;
-    delimiters.push_back("<");
-    delimiters.push_back(">");
-    delimiters.push_back(",");
-
-    OovStringVec idents = name.split(delimiters, false);
-    for(auto &id : idents)
-        {
-        if(id.findNonSpace() != OovString::npos)
-            {
-            const ModelClassifier *cl = ModelClassifier::getClass(findType(id));
-            if(!cl)
-                {
-                cl = ModelClassifier::getClass(findTemplateType(id));
-                }
-            if(cl)
-                classes.addUnique(cl);
-            }
-        }
-    /*
-    /// @todo - this does not handle typedefs of typedefs currently.
-    /// Only the inner typedef classes are found.
-    size_t startPos = name.rfind('<');
-    if(startPos != std::string::npos)
-        {
-        size_t endPos = name.find('>', startPos);
-        std::vector<std::string> idents;
-        getIdents(name.substr(startPos, endPos-startPos), idents);
-        for(auto &id : idents)
-            {
-            const ModelClassifier *tempCl = findType(id)->getClass();
-            if(tempCl)
-                classes.addUnique(tempCl);
-            }
-        }
-        */
-    }
-
-void ModelData::getRelatedFuncParamClasses(const ModelClassifier &classifier,
-        ConstModelDeclClasses &declClasses) const
-    {
-    declClasses.clear();
-    for(auto &oper : classifier.getOperations())
-        {
-        for(auto &param : oper->getParams())
-            {
-            const ModelClassifier *cl = param->getDeclClassType();
-            if(cl)
-                {
-                declClasses.addUnique(param.get());
-                }
-            }
-        }
-    }
-
 bool ConstModelDeclClasses::addUnique(ModelDeclClass const &decl)
     {
     bool added = false;
@@ -1386,31 +771,6 @@ bool ConstModelClassifierVector::addUnique(const ModelClassifier *cl)
     return(added);
     }
 
-void ModelData::getRelatedFuncInterfaceClasses(const ModelClassifier &classifier,
-        ConstModelClassifierVector &classes) const
-    {
-    classes.clear();
-    for(auto &oper : classifier.getOperations())
-        {
-        for(auto &param : oper->getParams())
-            {
-            ModelClassifier const *cl = param.get()->getDeclClassType();
-            classes.addUnique(cl);
-            }
-        }
-// If the function's return is a relation, then the relation will already
-// be present as either a param, member or body user
-/*
-        ModelTypeRef const &retType = oper->getReturnType();
-        const ModelClassifier *cl = retType.getDeclType()->getClass();
-        if(cl)
-            {
-            classes.push_back(cl);
-            }
-        }
-*/
-    }
-
 void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
         ConstModelDeclClasses &declClasses) const
     {
@@ -1428,7 +788,8 @@ void ModelData::getRelatedBodyVarClasses(const ModelClassifier &classifier,
             {
             if(stmt.getStatementType() == ST_Call)
                 {
-                const ModelClassifier *cl = stmt.getClassDecl().getDeclType()->getClass();
+                const ModelClassifier *cl = ModelClassifier::getClass(
+                    stmt.getClassDecl().getDeclType());
                 if(cl)
                     {
                     declClasses.addUnique(ModelDeclClass(stmt.getAttrName(),

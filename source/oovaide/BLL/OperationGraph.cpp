@@ -287,7 +287,8 @@ void OperationGraph::fillDefinition(const ModelStatements &stmts, OperationDefin
 #endif
         else if(stmt.getStatementType() == ST_Call)
             {
-            const ModelClassifier *cls = stmt.getClassDecl().getDeclType()->getClass();
+            const ModelClassifier *cls = ModelClassifier::getClass(
+                stmt.getClassDecl().getDeclType());
             // If there is no class, it must be an [else]
 /*
             if(!cls)
@@ -369,7 +370,8 @@ void OperationGraph::clearGraphAndAddOperation(const ModelData &model,
     fprintf(sLog.mFp, "---------\n");
 #endif
     clearGraph();
-    const ModelClassifier *sourceClass = model.getTypeRef(className)->getClass();
+    const ModelClassifier *sourceClass = ModelClassifier::getClass(
+        model.getTypeRef(className));
     if(sourceClass)
         {
         std::vector<const ModelOperation*> opers = sourceClass->getOperationsByName(operName);
@@ -488,8 +490,8 @@ std::string OperationGraph::getClassName(const OperationCall &opcall) const
 
 void OperationGraph::addOperDefinition(const OperationCall &opcall)
     {
-    const ModelClassifier *cls = mOpClasses[opcall.getOperClassIndex()].
-            getType()->getClass();
+    const ModelClassifier *cls = ModelClassifier::getClass(
+        mOpClasses[opcall.getOperClassIndex()].getType());
     const ModelOperation *targetOper = cls->getMatchingOperation(opcall.getOperation());
     if(!isOperDefined(opcall) && targetOper)
         addDefinition(opcall.getOperClassIndex(), *targetOper);
@@ -503,8 +505,8 @@ void OperationGraph::addOperCallers(const ModelStatements &stmts,
         {
         if(stmt.getStatementType() == ST_Call)
             {
-            const ModelClassifier *callerCls = stmt.getClassDecl().getDeclType()->
-                    getClass();
+            const ModelClassifier *callerCls = ModelClassifier::getClass(
+                stmt.getClassDecl().getDeclType());
             if(stmt.operMatch(callee.getOperation().getName()) &&
                     callerCls == mOpClasses[callee.getOperClassIndex()].getType())
                 {
@@ -518,7 +520,7 @@ void OperationGraph::addOperCallers(const ModelData &model, const OperationCall 
     {
     for(const auto &type : model.mTypes)
         {
-        const ModelClassifier *srcCls = type->getClass();
+        const ModelClassifier *srcCls = ModelClassifier::getClass(type.get());
         if(srcCls)
             {
             for(const auto &oper : srcCls->getOperations())
@@ -531,8 +533,8 @@ void OperationGraph::addOperCallers(const ModelData &model, const OperationCall 
 
 void OperationGraph::removeOperDefinition(const OperationCall &opcall)
     {
-    const ModelClassifier *cls = mOpClasses[opcall.getOperClassIndex()].getType()->
-            getClass();
+    const ModelClassifier *cls = ModelClassifier::getClass(
+        mOpClasses[opcall.getOperClassIndex()].getType());
     const ModelOperation *targetOper = cls->getOperationByName(opcall.getName(),
             opcall.isConst());
     if(targetOper)

@@ -49,7 +49,8 @@ static bool mapPath(ZonePathMap const &map, OovString const &origName,
 
 OovString ZoneNode::getMappedComponentName(ZonePathMap const &map) const
     {
-    OovString compName = ZoneGraph::getComponentText(mType->getClass()->getModule());
+    OovString compName = ZoneGraph::getComponentText(ModelClassifier::getClass(
+        mType)->getModule());
     OovString newName;
     if(mapPath(map, compName, newName))
         {
@@ -68,7 +69,7 @@ class ReverseIndexLookup
             {
             for(size_t i=0; i<nodes.size(); i++)
                 {
-                mClasses[i] = nodes[i].mType->getClass();
+                mClasses[i] = ModelClassifier::getClass(nodes[i].mType);
                 }
             }
 
@@ -188,7 +189,7 @@ void ZoneGraph::updateGraph()
         clearGraph();
         for(auto const &type : mModel->mTypes)
             {
-            ModelClassifier const *cls = type.get()->getClass();
+            ModelClassifier const *cls = ModelClassifier::getClass(type.get());
             if(cls && cls->getModule() != nullptr)
                 {
                 if(!isFiltered(cls->getModule(), mFilteredModules))
@@ -213,8 +214,8 @@ void ZoneGraph::sortNodes()
     for(auto &node : mNodes)
         {
         OovString mappedName;
-        if(mapPath(mPathMap, node.mType->getClass()->getModule()->getModulePath(),
-                mappedName))
+        if(mapPath(mPathMap, ModelClassifier::getClass(node.mType)->getModule()->
+            getModulePath(), mappedName))
             {
             node.setMappedName(mappedName);
             }
@@ -236,14 +237,16 @@ void ZoneGraph::updateConnections()
     mConnections.clear();
     for(size_t nodeIndex=0; nodeIndex<getNodes().size(); nodeIndex++)
         {
-        const ModelClassifier *classifier = getNodes()[nodeIndex].mType->getClass();
+        const ModelClassifier *classifier = ModelClassifier::getClass(
+            getNodes()[nodeIndex].mType);
         if(classifier)
             {
             // Get attributes of classifier, and get the decl type
             for(const auto &attr : classifier->getAttributes())
                 {
-                mConnections.insertConnection(nodeIndex, attr->getDeclType()->getClass(),
-                        indexLookup, ZDD_FirstIsClient);
+                mConnections.insertConnection(nodeIndex,
+                    ModelClassifier::getClass(attr->getDeclType()),
+                    indexLookup, ZDD_FirstIsClient);
                 }
             if(drawFuncRels)
                 {

@@ -40,7 +40,7 @@ public class oovJavaParser
                 }
             if(parser.parse(dupHashFn, args[2], filenames.toArray(new String[filenames.size()])))
                 {
-                ModelWriter writer = new ModelWriter();
+                JavaModelWriter writer = new JavaModelWriter();
                 String outFn = Common.getOutputFileName(args[0], args[1], args[2], "xmi");
                 writer.write(parser.getModel(), outFn);
                 writer.writeImportDependencies(parser.getModel(), args[0],

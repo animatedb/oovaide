@@ -32,7 +32,7 @@ class PortionDiagram:public Diagram
             ModelType const *type = mModelData->getTypeRef(mCurrentClassName);
             if(type)
                 {
-                classifier = type->getClass();
+                classifier = ModelClassifier::getClass(type);
                 }
             return classifier;
             }

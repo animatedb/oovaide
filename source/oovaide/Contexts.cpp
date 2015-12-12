@@ -302,7 +302,8 @@ void Contexts::updateOperationList(const ModelData &modelData,
         OovStringRef const className)
     {
     mOperationList.clear();
-    const ModelClassifier *cls = modelData.getTypeRef(className)->getClass();
+    const ModelClassifier *cls = ModelClassifier::getClass(
+        modelData.getTypeRef(className));
     if(cls)
         {
         for(size_t i=0; i<cls->getOperations().size(); i++)

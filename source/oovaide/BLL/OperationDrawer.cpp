@@ -96,7 +96,7 @@ GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass
     OovStringRef const typeName = type->getName();
     int rectx = 0;
     int recty = 0;
-    const ModelClassifier *classifier = type->getClass();
+    const ModelClassifier *classifier = ModelClassifier::getClass(type);
     if(classifier)
         {
         if(draw)

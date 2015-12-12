@@ -186,7 +186,8 @@ int OovComplexity::getDataFunctionCallComplexity()
         {
         if(stmt.getStatementType() == ST_Call)
             {
-            ModelClassifier const *cls = stmt.getClassDecl().getDeclType()->getClass();
+            ModelClassifier const *cls = ModelClassifier::getClass(
+                stmt.getClassDecl().getDeclType());
             if(cls)
                 {
                 const ModelOperation *oper = cls->getMatchingOperation(stmt);

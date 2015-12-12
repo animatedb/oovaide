@@ -4,7 +4,7 @@
  *  \copyright 2014 DCBlaha.  Distributed under the GPL.
  */
 #include "File.h"
-#include "FilePath.h"
+#include "FilePath.h"       // For OovStat
 #include "Debug.h"
 //#include <io.h>
 #include <sys/stat.h>

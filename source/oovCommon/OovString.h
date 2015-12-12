@@ -264,8 +264,10 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
     public:
         OovString()
             {}
+        // std::string crashes if passed a null pointer. Things like getenv()
+        // can return a null pointer, so this prevents crashes.
         OovString(char const * const str):
-            std::string(str)
+            std::string(str ? str : "")
             {}
         OovString(OovStringRef const &str):
             std::string(str.getStr())
@@ -289,7 +291,7 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
             {}
         /// These can prevent temporary OovStrings from being created.
         void operator=(char const * const str)
-            { std::string::operator=(str); }
+            { std::string::operator=(str ? str : ""); }
         void operator=(std::string const &str)
             { std::string::operator=(str); }
         void operator=(OovString const &str)

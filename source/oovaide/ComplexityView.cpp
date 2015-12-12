@@ -145,7 +145,7 @@ bool createComplexityFile(ModelData const &modelData, std::string &fn)
             {
             for(auto const &type : modelData.mTypes)
                 {
-                ModelClassifier *classifier = type->getClass();
+                ModelClassifier *classifier = ModelClassifier::getClass(type.get());
                 if(classifier)
                     {
                     for(auto const &oper : classifier->getOperations())

@@ -2,7 +2,8 @@
 add_library(oovCommon STATIC BuildConfigReader.cpp BuildConfigReader.h 
   Components.cpp Components.h CoverageHeaderReader.cpp CoverageHeaderReader.h 
   Debug.cpp Debug.h DirList.cpp DirList.h File.cpp File.h FilePath.cpp 
-  FilePath.h IncludeMap.cpp IncludeMap.h ModelObjects.cpp ModelObjects.h 
+  FilePath.h IncludeMap.cpp IncludeMap.h ModelObjects.cpp ModelObjects.h
+  ModelObjectsLoad.cpp ModelObjectsReference.cpp ModelObjectsReplace.cpp 
   NameValueFile.cpp NameValueFile.h OovError.cpp OovError.h OovIpc.cpp 
   OovIpc.h OovLibrary.cpp OovLibrary.h OovProcess.cpp OovProcess.h OovProcessArgs.cpp 
   OovProcessArgs.h OovString.cpp OovString.h OovThreadedBackgroundQueue.cpp 

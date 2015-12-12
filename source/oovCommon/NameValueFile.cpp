@@ -5,7 +5,7 @@
  *  \copyright 2013 DCBlaha.  Distributed under the GPL.
  */
 #include "NameValueFile.h"
-#include "FilePath.h"
+#include "FilePath.h"   // For FileIsFileOnDisk
 #include "File.h"
 #include "Debug.h"
 #include "OovError.h"

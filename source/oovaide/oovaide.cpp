@@ -477,7 +477,7 @@ void oovGui::runSrcManager(OovStringRef const buildConfigName,
         default:
             if(smo & PM_CleanMask)
                 {
-                str = "Cleaning\n";
+                str = "\nCleaning\n";
                 }
             break;
         }
@@ -990,7 +990,7 @@ void oovGui::cleanProject()
             }
         if(Gui::getCheckbox(cov))
             {
-            mode = static_cast<eProcessModes>(mode | PM_CleanAnalyze);
+            mode = static_cast<eProcessModes>(mode | PM_CleanCoverage);
             }
         runSrcManager(BuildConfigAnalysis, mode);
         }

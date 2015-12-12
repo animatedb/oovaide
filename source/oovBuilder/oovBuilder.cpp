@@ -87,6 +87,7 @@ void OovBuilder::clean(eProcessModes pm, OovStringRef oovProjDir)
     Project::setProjectDirectory(oovProjDir);
     if(pm & PM_CleanAnalyze)
         {
+        printf("Cleaning Analyze\n");
         FilePath analysisPath(oovProjDir, FP_Dir);
         analysisPath.appendFile(BuildConfig::getBaseAnalysisPath());
         analysisPath.appendFile("*");
@@ -98,6 +99,7 @@ void OovBuilder::clean(eProcessModes pm, OovStringRef oovProjDir)
         }
     if(pm & PM_CleanCoverage)
         {
+        printf("Cleaning Coverage\n");
         if(status.ok())
             {
             if(FileIsDirOnDisk(Project::getCoverageSourceDirectory(), status))
@@ -115,6 +117,7 @@ void OovBuilder::clean(eProcessModes pm, OovStringRef oovProjDir)
         }
     if(pm & PM_CleanBuild)
         {
+        printf("Cleaning Build\n");
         if(status.ok())
             {
             FilePath buildIntermediatePath(oovProjDir, FP_Dir);

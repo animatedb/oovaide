@@ -40,6 +40,48 @@
     static DebugFile sLog("DebugXmiParse.txt", true);
     static ModelModule const *sCurrentModule;
     static bool sDumpFile = false;
+    class DumpLoad
+        {
+        public:
+            DumpLoad():
+                mEndLine(true)
+                {}
+            void dumpOpen(int depth, char const *elName)
+                {
+                if(sDumpFile)
+                    {
+                    if(!mEndLine)
+                        {
+                        fprintf(sLog.mFp, "\n");
+                        }
+                    OovString spaces(depth*2, ' ');
+                    fprintf(sLog.mFp, "%s< %s ", spaces.getStr(), elName);
+                    mEndLine = false;
+                    }
+                }
+            void dumpAttr(int depth, char const *attrVal)
+                {
+                if(sDumpFile)
+                    {
+                    fprintf(sLog.mFp, "%s ", attrVal);
+                    }
+                }
+            void dumpClose(int depth)
+                {
+                if(sDumpFile)
+                    {
+                    if(mEndLine)
+                        {
+                        OovString spaces(depth*2, ' ');
+                        fprintf(sLog.mFp, "%s", spaces.getStr());
+                        }
+                    fprintf(sLog.mFp, ">\n");
+                    mEndLine = true;
+                    }
+                }
+        private:
+            bool mEndLine;
+        } sDumpLoad;
     // This can be used for debugging. FN format is something like "DiagramDrawer_h.xmi".
     static char const *sCurrentFilename;
     static void dumpFilename(char const * const fn, int typeIndex)
@@ -88,10 +130,10 @@
             for(auto &mt : graph.mTypes)
                 {
                 const char *typeStr = (mt->getDataType()==DT_Class) ? "Class": "DataType";
-                fprintf(sLog.mFp, " %s   %s %d\n", typeStr,
+                fprintf(sLog.mFp, " %s   %s id=%d\n", typeStr,
                         mt->getName().c_str(), mt->getModelId());
                 fflush(sLog.mFp);
-                const ModelClassifier*c = mt->getClass();
+                const ModelClassifier*c = ModelClassifier::getClass(mt.get());
                 if(c && c->getModule() == sCurrentModule)
                     {
                     for(const auto &attr : c->getAttributes())
@@ -118,8 +160,8 @@
             fprintf(sLog.mFp, "\n** Relations Dump **\n");
             for(const auto &assoc : graph.mAssociations)
                 {
-                const ModelClassifier *child = assoc->getChild()->getClass();
-                const ModelClassifier *parent = assoc->getParent()->getClass();
+                const ModelClassifier *child = ModelClassifier::getClass(assoc->getChild());
+                const ModelClassifier *parent = ModelClassifier::getClass(assoc->getParent());
                 if(child && parent)
                     {
                     if(child->getModule() == sCurrentModule ||
@@ -246,10 +288,7 @@ void XmiParser::onOpenElem(char const * const name, int len)
             break;
         }
 #if(DEBUG_LOAD)
-    if(sDumpFile)
-        {
-        fprintf(sLog.mFp, "< %s  ", elName.c_str());
-        }
+    sDumpLoad.dumpOpen(mElementStack.size(), elName.c_str());
 #endif
     mElementStack.push_back(elem);
     }
@@ -413,8 +452,7 @@ void XmiParser::onAttr(char const * const name, int &nameLen,
 #endif
                 elItem.mModelObject->setName(attrVal.c_str());
 #if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "  %s ", attrVal.c_str());
+    sDumpLoad.dumpAttr(mElementStack.size(), attrVal.c_str());
 #endif
                 }
             }
@@ -573,102 +611,104 @@ ModelObject *XmiParser::findParentInStack(XmiElementTypes type, bool afterAdding
     return obj;
     }
 
+void XmiParser::closeTypeElem(XmiElement const &elItem)
+    {
+    ModelType *newType = static_cast<ModelType*>(elItem.mModelObject);
+    ModelType *existingType = mModel.findType(newType->getName().c_str());
+    if(existingType)
+        {
+        if(newType->getDataType() == DT_Class &&
+                existingType->getDataType() == DT_DataType)
+            {
+            // Upgrade the type from a datatype to a class.
+            mModel.replaceType(existingType, static_cast<ModelClassifier*>(newType));
+#if(DEBUG_LOAD)
+if(sDumpFile)
+fprintf(sLog.mFp, "Replaced and upgraded to class %s %d\n", newType->getName().c_str(), newType->getModelId());
+#endif
+            }
+        else if(newType->getDataType() == DT_Class &&
+                existingType->getDataType() == DT_Class)
+            {
+            // Classes from the XMI files can either be defined struct/classes
+            // with data members or function declarations or definitions, or
+            // they may only contain defined functions
+            mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
+#if(DEBUG_LOAD)
+if(sDumpFile)
+fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
+#endif
+            // This type must have indices remapped.
+            mPotentialRemapIndicesTypes.push_back(existingType);
+            // If the new class is a definition, then update
+            // the existing class's module and line number.
+            if(static_cast<const ModelClassifier*>(newType)->isDefinition())
+                {
+                ModelModule const *module = static_cast<ModelClassifier*>
+                    (newType)->getModule();
+                if(module)
+                    {
+                    static_cast<ModelClassifier*>(existingType)->setModule(
+                        module);
+                    static_cast<ModelClassifier*>(existingType)->setLineNum(
+                        static_cast<ModelClassifier*>(newType)->getLineNum());
+                    }
+                else
+                    {
+//                              DebugAssert(__FILE__, __LINE__);
+                    }
+                }
+            mModel.takeAttributes(static_cast<ModelClassifier*>(newType),
+                    static_cast<ModelClassifier*>(existingType));
+            delete newType;
+            newType = nullptr;
+#if(DEBUG_LOAD)
+if(sDumpFile)
+fprintf(sLog.mFp, "Used existing class %s %d\n", existingType->getName().c_str(), existingType->getModelId());
+#endif
+            }
+        // If the new type is a datatype, use the old type whether it
+        // was a class or datatype.
+        else if(newType->getDataType() == DT_DataType)
+            {
+            mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
+#if(DEBUG_LOAD)
+if(sDumpFile)
+fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
+#endif
+            delete newType;
+            newType = nullptr;
+#if(DEBUG_LOAD)
+if(sDumpFile)
+fprintf(sLog.mFp, "Used existing type %s %d\n", existingType->getName().c_str(), existingType->getModelId());
+#endif
+            }
+        }
+    if(newType)
+        {
+        /// @todo - use make_unique when supported.
+        mModel.addType(std::unique_ptr<ModelType>(newType));
+        mPotentialRemapIndicesTypes.push_back(newType);
+#if(DEBUG_LOAD)
+if(sDumpFile)
+fprintf(sLog.mFp, "New type %s %d\n", newType->getName().c_str(), newType->getModelId());
+#endif
+        }
+    }
+
 void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
     {
     if(mElementStack.size() > 0)
         {
         XmiElement const &elItem = mElementStack.back();
-    #if(DEBUG_LOAD)
-        if(sDumpFile)
-            fprintf(sLog.mFp, "> ");
-    #endif
+#if(DEBUG_LOAD)
+        sDumpLoad.dumpClose(mElementStack.size());
+#endif
         switch(elItem.mType)
             {
             case ET_Class:
             case ET_DataType:
-                {
-                ModelType *newType = static_cast<ModelType*>(elItem.mModelObject);
-                ModelType *existingType = mModel.findType(newType->getName().c_str());
-                if(existingType)
-                    {
-                    if(newType->getDataType() == DT_Class &&
-                            existingType->getDataType() == DT_DataType)
-                        {
-                        // Upgrade the type from a datatype to a class.
-                        mModel.replaceType(existingType, static_cast<ModelClassifier*>(newType));
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "Replaced and upgraded to class %s %d\n", newType->getName().c_str(), newType->getModelId());
-#endif
-                        }
-                    else if(newType->getDataType() == DT_Class &&
-                            existingType->getDataType() == DT_Class)
-                        {
-                        // Classes from the XMI files can either be defined struct/classes
-                        // with data members or function declarations or definitions, or
-                        // they may only contain defined functions
-                        mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
-#endif
-                        // This type must have indices remapped.
-                        mPotentialRemapIndicesTypes.push_back(existingType);
-                        // If the new class is a definition, then update
-                        // the existing class's module and line number.
-                        if(static_cast<const ModelClassifier*>(newType)->isDefinition())
-                            {
-                            ModelModule const *module = static_cast<ModelClassifier*>
-                                (newType)->getModule();
-                            if(module)
-                                {
-                                static_cast<ModelClassifier*>(existingType)->setModule(
-                                    module);
-                                static_cast<ModelClassifier*>(existingType)->setLineNum(
-                                    static_cast<ModelClassifier*>(newType)->getLineNum());
-                                }
-                            else
-                                {
-//                              DebugAssert(__FILE__, __LINE__);
-                                }
-                            }
-                        mModel.takeAttributes(static_cast<ModelClassifier*>(newType),
-                                static_cast<ModelClassifier*>(existingType));
-                        delete newType;
-                        newType = nullptr;
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "Used existing class %s %d\n", existingType->getName().c_str(), existingType->getModelId());
-#endif
-                        }
-                    // If the new type is a datatype, use the old type whether it
-                    // was a class or datatype.
-                    else if(newType->getDataType() == DT_DataType)
-                        {
-                        mFileTypeIndexMap[newType->getModelId()] = existingType->getModelId();
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "Change new %d to exist %d\n", newType->getModelId(), existingType->getModelId());
-#endif
-                        delete newType;
-                        newType = nullptr;
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "Used existing type %s %d\n", existingType->getName().c_str(), existingType->getModelId());
-#endif
-                        }
-                    }
-                if(newType)
-                    {
-                    /// @todo - use make_unique when supported.
-                    mModel.addType(std::unique_ptr<ModelType>(newType));
-                    mPotentialRemapIndicesTypes.push_back(newType);
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "New type %s %d\n", newType->getName().c_str(), newType->getModelId());
-#endif
-                    }
-                }
+                closeTypeElem(elItem);
                 break;
 
             case ET_Attr:
@@ -737,10 +777,6 @@ void XmiParser::onCloseElem(char const * const /*name*/, int /*len*/)
                 break;
             }
         }
-#if(DEBUG_LOAD)
-    if(sDumpFile)
-        fprintf(sLog.mFp, "\n");
-#endif
     if(mElementStack.size() > 0)
         mElementStack.pop_back();
     }
@@ -795,7 +831,7 @@ void XmiParser::updateTypeIndices()
         {
         if(type->getDataType() == DT_Class)
             {
-            ModelClassifier *classifier = type->getClass();
+            ModelClassifier *classifier = ModelClassifier::getClass(type);
             for(auto &attr : classifier->getAttributes())
                 {
                 updateDeclTypeIndices(*attr);

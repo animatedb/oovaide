@@ -1,25 +1,26 @@
-<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="97" height="99" viewbox="0 0 97 99">
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="19" y="14" width="77" height="28" />
-<rect x="14" y="19" width="10" height="5" />
-<rect x="14" y="29" width="10" height="5" />
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1"
+ font-family="Arial, Helvetica, sans-serif" font-size="10.00" width="85" height="91" viewbox="0 0 85 91">
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="7" y="62" width="75" height="28" />
+<rect x="2" y="67" width="10" height="5" />
+<rect x="2" y="77" width="10" height="5" />
 </g>
-<g font-size="10">
-<text x="26" y="26">BlackSheep</text>
-<text x="26" y="38">&lt;&lt;StaticLib&gt;&gt;</text>
+<g stroke="none">
+<text x="14" y="74">&lt;Root&gt;</text>
+<text x="14" y="86">&lt;&lt;Program&gt;&gt;</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<rect x="20" y="70" width="75" height="28" />
-<rect x="15" y="75" width="10" height="5" />
-<rect x="15" y="85" width="10" height="5" />
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<rect x="7" y="4" width="77" height="28" />
+<rect x="2" y="9" width="10" height="5" />
+<rect x="2" y="19" width="10" height="5" />
 </g>
-<g font-size="10">
-<text x="27" y="82">MainClients</text>
-<text x="27" y="94">&lt;&lt;Program&gt;&gt;</text>
+<g stroke="none">
+<text x="14" y="16">BlackSheep</text>
+<text x="14" y="28">&lt;&lt;StaticLib&gt;&gt;</text>
 </g>
-<g  fill="#f5f5ff" stroke="rgb(0,0,0)" style="stroke-width:1">
-<line x1="55" y1="42" x2="55" y2="70" style="stroke-dasharray: 4, 4 "/>
-<line x1="55" y1="42" x2="60" y2="50" />
-<line x1="55" y1="42" x2="50" y2="50" />
+<g  fill="#f5f5ff" stroke="#000000" style="stroke-width:1">
+<line x1="43" y1="32" x2="42" y2="62" style="stroke-dasharray: 4, 4 " />
+<line x1="43" y1="32" x2="48" y2="40" />
+<line x1="43" y1="32" x2="37" y2="39" />
 </g>
 </svg>

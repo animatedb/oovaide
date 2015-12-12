@@ -10,7 +10,7 @@
 
 
 #include "ModelObjects.h"
-#include "ParseBase.h"
+#include "ParseBase.h"          // For CXCursor
 #include "OovString.h"
 
 

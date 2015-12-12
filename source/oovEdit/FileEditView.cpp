@@ -16,6 +16,7 @@
 
 #include "IncludeMap.h"
 #include "BuildConfigReader.h"
+#include "Project.h"
 #include "OovProcess.h"
 
 static CompletionList *sCurrentCompleteList;

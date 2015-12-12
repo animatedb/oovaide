@@ -236,7 +236,7 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
             gStartPosInfo.x, gStartPosInfo.y);
     if(node)
         {
-        const ModelClassifier *cls = node->getType()->getClass();
+        const ModelClassifier *cls = ModelClassifier::getClass(node->getType());
         if(cls->getModule())
             {
             gOperationDiagramView->viewSource(cls->getModule()->getModulePath(),

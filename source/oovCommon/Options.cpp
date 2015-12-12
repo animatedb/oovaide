@@ -6,7 +6,6 @@
  */
 
 #include "Options.h"
-#include "FilePath.h"
 #include "Project.h"
 #include "OovString.h"
 #include <stdlib.h>     // for getenv
@@ -132,7 +131,7 @@ void OptionsDefaults::setDefaultOptions()
         status.reported();
         }
 #else
-    std::string path = getenv("PATH");
+    OovString path = getenv("PATH");
     if(path.find("LLVM") != std::string::npos)
         {
         useCLangBuild = true;
@@ -183,27 +182,19 @@ void OptionsDefaults::setDefaultOptions()
 
     mProject.setNameValue(OptBaseArgs, baseArgs.getAsString());
 
-    char const *tempStr = getenv("CLASSPATH");
-    if(tempStr)
+    OovString str = getenv("CLASSPATH");;
+    if(str.length())
         {
-        std::string str = tempStr;
-        if(str.length())
-            {
-            mProject.setNameValue(OptJavaClassPath, str);
-            }
+        mProject.setNameValue(OptJavaClassPath, str);
         }
-    tempStr = getenv("JAVA_HOME");
-    if(tempStr)
+    str = getenv("JAVA_HOME");
+    if(str.length() > 0)
         {
-        std::string str = tempStr;
-        if(str.length() > 0)
-            {
 #ifdef __linux__
-            str = "/usr/lib/jvm/default-java";
+        str = "/usr/lib/jvm/default-java";
 #else
 #endif
-            mProject.setNameValue(OptJavaJdkPath, str);
-            }
+        mProject.setNameValue(OptJavaJdkPath, str);
         }
     }
 

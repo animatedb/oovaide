@@ -180,7 +180,7 @@ bool StaticAnalysis::createMemberVarUsageFile(GtkWindow *parentWindow,
 
         for(auto const &type : modelData.mTypes)
             {
-            ModelClassifier *classifier = type->getClass();
+            ModelClassifier *classifier = ModelClassifier::getClass(type.get());
             if(classifier)
                 {
                 for(auto const &attr : classifier->getAttributes())
@@ -421,7 +421,7 @@ bool StaticAnalysis::createProjectStats(ModelData const &modelData, std::string 
     std::string maxAttrStr;
     for(auto const &type : modelData.mTypes)
         {
-        ModelClassifier const *classifier = type.get()->getClass();
+        ModelClassifier const *classifier = ModelClassifier::getClass(type.get());
         if(classifier && classifier->getName().length() > 0)
             {
             numClasses++;
@@ -622,12 +622,7 @@ bool StaticAnalysis::createLineStatsFile(ModelData const &modelData, std::string
     }
 
 
-// This doesn't work well yet because types are defined in header modules,
-// but the methods in source modules actually use the types.
-// The methods in a module must be analyzed to see if they refer to
-// a type.
-// Add isTypeReferencedByOperation()
-static std::vector<ModelOperation const*> getModuleOperations(
+static std::vector<ModelOperation const*> getModuleDefinedOperations(
     ModelData const &modelData, OovString const &consumerFile,
     std::set<ModelClassifier const*> &operClasses)
     {
@@ -694,7 +689,7 @@ static void filterProjectIncFiles(std::set<IncludedPath> &incFiles)
         }
     }
 
-static bool isTypeReferencedByOperatons(ModelData const &modelData,
+static bool isTypeReferencedByOperations(ModelData const &modelData,
     std::vector<ModelOperation const*> const &moduleOps, ModelType const &type)
     {
     bool referenced = false;
@@ -736,7 +731,7 @@ static bool createIncludeTypeUsageStyleTransform(const std::string &fullPath)
                         XslText titleText(&title, "Include Types Usage Report");
                 Element body(&html, "body");
                     Element headMem(&body, "h1");
-                        XslText headText(&headMem, "Method Usage");
+                        XslText headText(&headMem, "Include Type Usage");
                     XslText outText(&body, "See the output directory for the "
                         "text file output. The count is the count of "
                          "the number of types used in the provider include file.");
@@ -809,37 +804,48 @@ bool StaticAnalysis::createIncludeTypeUsageFile(GtkWindow *parentWindow,
                 consumerFile);
             std::set<IncludedPath> incFiles;
             incFiles.clear();
-            incMap.getImmediateIncludeFilesUsedBySourceFile(consumerFile, incFiles);
-            std::set<ModelClassifier const*> operClasses;
-            operClasses.clear();
-            std::vector<ModelOperation const*> moduleOps = getModuleOperations(
-                 modelData, consumerFile, operClasses);
-
 #define DEBUG_INC 0
 #if(DEBUG_INC)
-bool display = (consumerFile.find("StaticAnalysis") != std::string::npos);
-if(display)
+bool consDisplay = (consumerFile.find("EditorIpc") != std::string::npos);
+if(consDisplay)
+    {
+    printf("--\n");
+    fflush(stdout);
+    }
+#endif
+            incMap.getImmediateIncludeFilesUsedBySourceFile(consumerFile, incFiles);
+            std::set<ModelClassifier const*> modelDefOperClasses;
+            modelDefOperClasses.clear();
+            std::vector<ModelOperation const*> moduleDefOps = getModuleDefinedOperations(
+                 modelData, consumerFile, modelDefOperClasses);
+#if(DEBUG_INC)
+if(consDisplay)
     {
     printf("%s defined types %d, operations %d\n", consumerFile.getStr(),
-            moduleTypeMap.count(consumerFile), moduleOps.size());
-    for(auto const &oper : moduleOps)
+            moduleTypeMap.count(consumerFile), moduleDefOps.size());
+    for(auto const &oper : moduleDefOps)
         {
         printf("  O: %s\n", oper->getName().getStr());
         }
-    for(auto const &cls : operClasses)
+    for(auto const &cls : modelDefOperClasses)
         {
         printf("  C: %s\n", cls->getName().getStr());
         }
+    fflush(stdout);
     }
 #endif
-
             filterProjectIncFiles(incFiles);
             for(auto const &supplierFile : incFiles)
                 {
+#if(DEBUG_INC)
+bool supDisplay = consDisplay &&
+    (supplierFile.getFullPath().find("OovIpc") != std::string::npos);
+#endif
                 std::set<ModelClassifier const*> usedTypes;
                 // Output the counts.
                 moduleTypeRange supplierTypesRange = moduleTypeMap.equal_range(
                     supplierFile.getFullPath());
+                // Go through all types in the module to find used types.
                 for(auto conIt = consumerTypesRange.first;
                     conIt != consumerTypesRange.second; conIt++)
                     {
@@ -848,26 +854,37 @@ if(display)
                         supIt != supplierTypesRange.second; supIt++)
                         {
                         ModelClassifier const &supClass = *(*supIt).second;
-                        if(modelData.isTypeReferencedByClassAttributes(conClass,
-                            *(*supIt).second) ||
-                            modelData.isTypeReferencedByParentClass(conClass, supClass))
+                        bool ref = modelData.isTypeReferencedByClassAttributes(
+                            conClass, *(*supIt).second);
+                        if(!ref)
+                            {
+                            // Go through function declarations to find used types.
+                            ref = modelData.isTypeReferencedByClassOperationInterfaces(conClass,
+                                *(*supIt).second);
+                            }
+                        if(!ref)
+                            {
+                            ref = modelData.isTypeReferencedByParentClass(conClass, supClass);
+                            }
+                        if(ref)
                             {
                             usedTypes.insert(&supClass);
                             }
                         }
                     }
+                // Go through all functions defined in the module to find used types.
                 for(auto supIt = supplierTypesRange.first;
                     supIt != supplierTypesRange.second; supIt++)
                     {
                     ModelClassifier const &supClass = *(*supIt).second;
-                    if(isTypeReferencedByOperatons(modelData, moduleOps, supClass) ||
-                        isTypeReferencedByOperClasses(operClasses, supClass))
+                    if(isTypeReferencedByOperations(modelData, moduleDefOps, supClass) ||
+                        isTypeReferencedByOperClasses(modelDefOperClasses, supClass))
                         {
                         usedTypes.insert(&supClass);
                         }
                     }
 #if(DEBUG_INC)
-if(display)
+if(supDisplay)
     {
     printf("  %s %d %d\n\n", supplierFile.getFullPath().getStr(),
         moduleTypeMap.count(supplierFile.getFullPath()), usedTypes.size());
