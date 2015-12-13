@@ -27,7 +27,7 @@ Builder *Builder::getBuilder()
 bool Builder::addFromFile(OovStringRef const fn)
     {
     GError *err = nullptr;
-    OovString path = Project::getBinDirectory();
+    OovString path = Project::getDataDirectory();
     path += fn;
     getBuilder();
     gtk_builder_add_from_file(mGtkBuilder, path.getStr(), &err);

@@ -8,6 +8,9 @@
 #include "Project.h"
 #include "Packages.h"
 #include "OovError.h"
+#ifdef __linux__
+#include <unistd.h>     // For readlink
+#endif
 
 OovString Project::sProjectDirectory;
 OovString Project::sSourceRootDirectory;
@@ -81,39 +84,30 @@ OovStringRef const Project::getSrcRootDirectory()
     return sSourceRootDirectory;
     }
 
-OovString const &Project::getLibDirectory()
+OovString const Project::getBinDirectory()
     {
     static OovString path;
     if(path.length() == 0)
         {
         OovStatus status(true, SC_File);
 #ifdef __linux__
-        path = getBinDirectory();
-        size_t pos = path.find("bin");
-        if(pos != std::string::npos)
+        char buf[300];
+        ssize_t len = readlink("/proc/self/exe", buf, sizeof(buf));
+        if(len >= 0)
             {
-            path.replace(pos, 3, "lib");
+            buf[len] = '\0';
+            path = buf;
+            size_t pos = path.rfind('/');
+            if(pos == std::string::npos)
+                {
+                pos = path.rfind('\\');
+                }
+            if(pos != std::string::npos)
+                {
+                path.resize(pos+1);
+                }
             }
-#else
-        path = getBinDirectory();
-#endif
-        if(status.needReport())
-            {
-            status.report(ET_Error, "Unable to get lib directory");
-            }
-        }
-    return path;
-    }
-
-OovString const &Project::getBinDirectory()
-    {
-    static OovString path;
-    if(path.length() == 0)
-        {
-        OovStatus status(true, SC_File);
-#ifdef __linux__
-        // On linux, we could use the "which" command using "which oovaide", but
-        // this will probably be ok?
+/*
         if(FileIsFileOnDisk("./oovaide", status))
             {
             path = "./";
@@ -122,6 +116,7 @@ OovString const &Project::getBinDirectory()
             {
             path = "/usr/local/bin/";
             }
+*/
         else
             {
             path = "/usr/bin";
@@ -140,6 +135,100 @@ OovString const &Project::getBinDirectory()
             {
             status.report(ET_Error, "Unable to get bin directory");
             }
+        }
+    return path;
+    }
+
+static bool isDevelopment()
+    {
+    static enum eDevel { Uninit, Devel, Deploy } devel;
+    if(devel == Uninit)
+        {
+        OovString path = Project::getBinDirectory();
+        size_t pos = path.find("bin");
+        if(pos != std::string::npos)
+            {
+            path.replace(pos, 3, "lib");
+            }
+        OovStatus status(true, SC_File);
+        if(FileIsDirOnDisk(path, status))
+            {
+            devel = Deploy;
+            }
+        else
+            {
+            devel = Devel;
+            }
+        if(status.needReport())
+            {
+            status.reported();
+            }
+        }
+    return(devel == Devel);
+    }
+
+OovString const Project::getLibDirectory()
+    {
+    OovString path = getBinDirectory();
+#ifdef __linux__
+    // During development, the libs/.so are in the bin dir.
+    if(!isDevelopment())
+        {
+        size_t pos = path.find("bin");
+        if(pos != std::string::npos)
+            {
+            path.replace(pos, 3, "lib");
+            }
+        }
+#endif
+    return path;
+    }
+
+OovString const Project::getDataDirectory()
+    {
+    FilePath path(getBinDirectory(), FP_Dir);
+#ifdef __linux__
+    if(isDevelopment())
+        {
+        path.appendDir("data");
+        }
+    else
+        {
+        size_t pos = path.find("bin");
+        if(pos != std::string::npos)
+            {
+            path.replace(pos, 3, "share/data");
+            }
+        }
+#else
+    path.appendDir("data");
+#endif
+    return path;
+    }
+
+OovString const Project::getDocDirectory()
+    {
+    FilePath path(getBinDirectory(), FP_Dir);
+#ifdef __linux__
+    if(isDevelopment())
+        {
+        path.appendDir("../../web");
+        }
+    else
+        {
+        size_t pos = path.find("bin");
+        if(pos != std::string::npos)
+            {
+            path.replace(pos, 3, "share/doc");
+            }
+        }
+#else
+    path.appendDir("data");
+#endif
+    OovStatus status(true, SC_File);
+    if(!FileIsDirOnDisk(path, status))
+        {
+        path.setPath("http://oovaide.sourceforge.net", FP_Dir);
         }
     return path;
     }

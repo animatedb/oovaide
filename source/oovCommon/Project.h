@@ -73,8 +73,12 @@ class Project
             { sProjectDirectory = projDir; }
         static OovString const &getProjectDirectory()
             { return sProjectDirectory; }
-        static OovString const &getBinDirectory();
-        static OovString const &getLibDirectory();
+        static OovString const getBinDirectory();
+        static OovString const getLibDirectory();
+        // This directory is read only configuration or gui data
+        static OovString const getDataDirectory();
+        // This directory is for language related files like locale and help/web
+        static OovString const getDocDirectory();
         static OovString getProjectFilePath();
 
         static OovString getGuiOptionsFilePath();

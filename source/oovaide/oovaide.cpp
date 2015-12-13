@@ -573,27 +573,9 @@ static void displayBrowserFile(OovStringRef const fileName)
 ///
 static void displayHelpFile(OovStringRef const fileName)
     {
-    FilePath fullFn;
-    static char const *dirs[] = { "help", "..\\..\\web\\userguide" };
-    OovStatus status(true, SC_File);
-    for(auto const dir : dirs)
-        {
-        fullFn.setPath(dir, FP_Dir);
-        fullFn.appendFile(fileName);
-        if(FileIsFileOnDisk(fullFn, status))
-            {
-            break;
-            }
-        }
-    if(!FileIsFileOnDisk(fullFn, status))
-        {
-        fullFn.setPath("http://oovaide.sourceforge.net/userguide", FP_Dir);
-        fullFn.appendFile(fileName);
-        }
-    if(status.needReport())
-        {
-        status.reported();
-        }
+    FilePath fullFn(Project::getDocDirectory(), FP_Dir);
+    fullFn.appendDir("userguide");
+    fullFn.appendFile(fileName);
     displayBrowserFile(fullFn);
     }
 

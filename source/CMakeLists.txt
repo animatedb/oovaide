@@ -109,28 +109,14 @@ install(FILES
    "${PROJECT_BINARY_DIR}/OovaideConfigVersion.cmake"
 DESTINATION "${INSTALL_CMAKE_DIR}" COMPONENT dev)
 
-# Copy some extra files to the share directory
+# Copy some extra files to the bin directory
 install(FILES
-   "${PROJECT_SOURCE_DIR}/bin/oovaideLayout.glade"
-   "${PROJECT_SOURCE_DIR}/bin/oovEdit.glade"
    "${PROJECT_SOURCE_DIR}/bin/OovEdit.css"
    "${PROJECT_SOURCE_DIR}/bin/oovaide-allpkgs-win.txt"
-   "${PROJECT_SOURCE_DIR}/bin/OovLogo.png"
-   "${PROJECT_SOURCE_DIR}/bin/OovEditLogo.png"
 DESTINATION "${INSTALL_BIN_DIR}" COMPONENT dev)
 
-install(FILES
-   "${PROJECT_SOURCE_DIR}/bin/data/AnalyzeButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/BinaryComponentsButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/BuildButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/ClassDiagramButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/IncludeDiagramButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/OperationDiagramButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/PortionDiagramButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/StepIntoButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/StepOverButton.png"
-   "${PROJECT_SOURCE_DIR}/bin/data/ZoneDiagramButton.png"
-DESTINATION "${INSTALL_BIN_DIR}/data" COMPONENT dev)
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/bin/data/"
+    DESTINATION "share/oovaide/data" COMPONENT dev)
 
 # Install the export set for use with the install-tree
 install(EXPORT OovaideTargets DESTINATION
