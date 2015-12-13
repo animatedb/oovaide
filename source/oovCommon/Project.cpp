@@ -197,7 +197,7 @@ OovString const Project::getDataDirectory()
         size_t pos = path.find("bin");
         if(pos != std::string::npos)
             {
-            path.replace(pos, 3, "share/data");
+            path.replace(pos, 3, "share/oovaide/data");
             }
         }
 #else
@@ -219,7 +219,7 @@ OovString const Project::getDocDirectory()
         size_t pos = path.find("bin");
         if(pos != std::string::npos)
             {
-            path.replace(pos, 3, "share/doc");
+            path.replace(pos, 3, "share/oovaide/doc");
             }
         }
 #else
