@@ -1023,7 +1023,9 @@ int main(int argc, char *argv[])
         }
     else
         {
-        Gui::messageBox("Unable to find oovaideLayout.glade.");
+        OovString str = "Unable to find oovaideLayout.glade at ";
+        str += Project::getDataDirectory();
+        Gui::messageBox(str.getStr());
         }
     return 0;
     }
