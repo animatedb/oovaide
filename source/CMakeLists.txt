@@ -118,6 +118,9 @@ DESTINATION "${INSTALL_BIN_DIR}" COMPONENT dev)
 install(DIRECTORY "${PROJECT_SOURCE_DIR}/bin/data/"
     DESTINATION "share/oovaide/data" COMPONENT dev)
 
+install(DIRECTORY "${PROJECT_SOURCE_DIR}/../web/userguide/"
+    DESTINATION "share/oovaide/doc/userguide" COMPONENT dev)
+
 # Install the export set for use with the install-tree
 install(EXPORT OovaideTargets DESTINATION
    "${INSTALL_CMAKE_DIR}" COMPONENT dev)

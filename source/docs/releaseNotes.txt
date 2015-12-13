@@ -34,7 +34,6 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
-	- deployment fix install so not /usr/local, rename bin/data dir
 	- Duplicate class/function names
 	- Build Java/task sequencing
 	- Preserve state between sessions
