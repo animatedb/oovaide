@@ -476,7 +476,7 @@
   <object class="GtkImage" id="AnalyzeButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/AnalyzeButton.png</property>
+    <property name="pixbuf">AnalyzeButton.png</property>
   </object>
   <object class="GtkDialog" id="BackgroundProgressDialog">
     <property name="can_focus">False</property>
@@ -572,12 +572,12 @@
   <object class="GtkImage" id="BinaryComponentsButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/BinaryComponentsButton.png</property>
+    <property name="pixbuf">BinaryComponentsButton.png</property>
   </object>
   <object class="GtkImage" id="BuildButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/BuildButton.png</property>
+    <property name="pixbuf">BuildButton.png</property>
   </object>
   <object class="GtkDialog" id="BuildSettingsDialog">
     <property name="can_focus">False</property>
@@ -845,7 +845,7 @@ Use this dialog to set up component definitions.</property>
   <object class="GtkImage" id="ClassDiagramButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/ClassDiagramButton.png</property>
+    <property name="pixbuf">ClassDiagramButton.png</property>
   </object>
   <object class="GtkMenu" id="ClassListPopupMenu">
     <property name="visible">True</property>
@@ -1705,7 +1705,7 @@ Use this dialog to set up component definitions.</property>
   <object class="GtkImage" id="IncludeDiagramButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/IncludeDiagramButton.png</property>
+    <property name="pixbuf">IncludeDiagramButton.png</property>
   </object>
   <object class="GtkWindow" id="MainWindow">
     <property name="can_focus">False</property>
@@ -3258,7 +3258,7 @@ This should normally not be under the Root Source Directory.</property>
   <object class="GtkImage" id="OperationDiagramButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/OperationDiagramButton.png</property>
+    <property name="pixbuf">OperationDiagramButton.png</property>
   </object>
   <object class="GtkDialog" id="OptionsDialog">
     <property name="can_focus">False</property>
@@ -4270,7 +4270,7 @@ These arguments are specific to the selected configuration.
   <object class="GtkImage" id="PortionDiagramButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/PortionDiagramButton.png</property>
+    <property name="pixbuf">PortionDiagramButton.png</property>
   </object>
   <object class="GtkDialog" id="ProjectPackagesDialog">
     <property name="can_focus">False</property>
@@ -4626,7 +4626,7 @@ These arguments are specific to the selected configuration.
   <object class="GtkImage" id="ZoneDiagramButtonImage">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
-    <property name="pixbuf">data/ZoneDiagramButton.png</property>
+    <property name="pixbuf">ZoneDiagramButton.png</property>
   </object>
   <object class="GtkMenu" id="ZoneListPopupMenu">
     <property name="visible">True</property>
