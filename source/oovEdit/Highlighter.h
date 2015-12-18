@@ -87,6 +87,7 @@ class Tokenizer
 
     private:
         CXTranslationUnit mTransUnit;
+        CXIndex mContextIndex;
         CLangLock mCLangLock;
         CXFile mSourceFile;
         OovString mSourceFilename;
@@ -215,6 +216,8 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
         std::mutex mResultsLock;
 
         // All results must be protected with mResultsLock.
+        // mTaskResults is set when a background task completes, and is cleared
+        // when a getxxxResults function is called.
         eHighlightTask mTaskResults;
         TokenRange mTokenResults;
         OovStringVec mShowMemberResults;

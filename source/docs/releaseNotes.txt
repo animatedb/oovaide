@@ -193,7 +193,8 @@ Missing Features
 	- Cache file times or monitor file changes
 
 - Database
-	- export include dependencies to database.
+	- Some functions have '#' appended in writeStatement for undefined
+	  functions implicitely called or templates, etc.
 	- code count mismatch from database:
 		makeCoverageStats not showing as overloaded. (one is static)
 
@@ -215,13 +216,6 @@ Missing Features
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 
 - Editor
-	- CRASHES: LLVM 3.7
-		Editor is UNUSABLE!!! - parse/tokenize/parse(reparse) fails with single file.
-		- all calls to clang are protected with mutex.
-	- BUG: LLVM 3.7 - Pressing . displays context and makes runtime error:
-		Concurrent access to ASTUnit	 CLang3.7 ASTUnit.cpp 2848
-		HighlighterBackgroundThreadData::processItem / codeCompleteAt
-
 	- Click on tab should set focus to view so cursor displays
 	- Make find in files a background task
 	- Add history list of lines of last go to defs, go to method, etc.
@@ -317,7 +311,7 @@ Missing Features
 	- Remove duplicate connections for getRelatedBodyVarClasses, etc.
 
 - Closed
-	- BUG: Goto class doesn't change tab to class tab - journal requires this
+	- Goto class doesn't change tab to class tab - journal requires this
         - Java methods are virtual by default. Useless to display italics on everything.
 	- Java constructors are called <init>
 	- Java parser does not support comment/code line numbers

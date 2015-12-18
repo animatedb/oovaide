@@ -25,6 +25,7 @@
 	<tr><td>Method</td><td>Contains method/function definitions</td></tr>
 	<tr><td>MethodTypeRef</td><td>Defines a reference to a type from a method</td></tr>
 	<tr><td>Module</td><td>Contains information about a source file</td></tr>
+	<tr><td>ModuleRelation</td><td>Contains include or import relations between source files</td></tr>
 	<tr><td>Statement</td><td>Contains flow or reference statements that belong to methods</td></tr>
 	<tr><td>Type</td><td>Defines classes or simple data types</td></tr>
 	<tr><td>TypeRelation</td><td>Contains class aggregation or inheritance relations</td></tr>
@@ -69,6 +70,13 @@
 		types must be defined in Oovaide for this to be filled.</td></tr>
 	</table>
 
+    <h2>ModuleRelation</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>idSupplierModule</td><td>The id of the file that was included or imported.</td></tr>
+	<tr><td>idConsumerModule</td><td>The id of the file that included or imported the supplier.</td></tr>
+	</table>
+
     <h2>Statement</h2>
 	<table border="1">
 	<tr><th>Column</th><th>Description</th></tr>
@@ -87,12 +95,24 @@
 	<tr><td>lineNumber</td><td>The line number of the type definition in the source code</td></tr>
 	</table>
 
+    <h2>TypeRelation</h2>
+	<table border="1">
+	<tr><th>Column</th><th>Description</th></tr>
+	<tr><td>typeRelationDescription</td><td>0=inheritance, 1=member</td></tr>
+	<tr><td>visibility</td><td>0=public, 1=protected, 2=private</td></tr>
+	<tr><td>idSupplierModule</td><td>The id of the supplier type.</td></tr>
+	<tr><td>idConsumerModule</td><td>The id of the consumer type.</td></tr>
+	</table>
+
     <h2>Other Details</h2>
 	<ul>
 	<li>Global methods are treated as if they belong to the class with an empty name.</li>
-	<li>Methods that do not belong to a class may have the name appended with a # character.
-	These can be template calls, or classes that are defined outside of the project.
-	This may change in the future.</li>
+	<li>Methods that do not have any defined information may have the name
+	appended with a # character.
+	These can be implicit method calls, template calls, or classes that are defined
+	outside of the project. This may change in the future.</li>
+	<li>Overloaded methods will have a "+;" followed by a hex number. The hex number is a
+	CRC of the arguments.</li>
 	<li>The value -1 is often used to mean undefined. This may change in the future.</li>
 	</ul>
 

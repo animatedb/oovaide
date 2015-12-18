@@ -132,12 +132,13 @@ static bool isModifierKey(int key)
     return(key == GDK_KEY_Shift_R || key == GDK_KEY_Shift_L || isControlKey(key));
     }
 
-bool CompletionList::handleEditorKey(int key, int modKeys)
+bool CompletionList::handleEditorKey(int key, int modKeyState)
     {
     sCurrentCompleteList = this;
     bool getCompletionData = false;
+
     if((key == '.' || (mLastNonModifierKey == '-' && key == '>')) ||
-        (key == ' ' && isControlKey(mLastKey))
+        ((modKeyState & GDK_CONTROL_MASK) && key == ' ')
             )
         {
         getCompletionData = true;
@@ -159,7 +160,6 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
             }
         else
             {
-            mCompletionTriggerPointOffset++;
             mStartIdentifierOffset = mCompletionTriggerPointOffset;
             }
 
@@ -183,7 +183,10 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
     ///
     /// The identifier keys should really be sent to the list when it displays,
     /// so for now, just train the user to quit typing until the list displays.
-    else if(isGettingCompletionData() /*&& (!isIdentC(key) && (key != GDK_KEY_BackSpace))*/)
+
+    /// The !isControlKey is used to prevent the quit from being called after
+    /// a Ctrl-space is performed.
+    else if(isGettingCompletionData() && !isControlKey(key)/*&& (!isIdentC(key) && (key != GDK_KEY_BackSpace))*/)
         {
         quitGettingCompletionData();
         }
@@ -191,7 +194,6 @@ bool CompletionList::handleEditorKey(int key, int modKeys)
         {
         mLastNonModifierKey = key;
         }
-    mLastKey = key;
     return getCompletionData;
     }
 
@@ -279,10 +281,10 @@ void CompletionList::startGettingCompletionData()
 bool CompletionList::okToShowList() const
     {
 #if(USE_NEW_TIME)
-	std::chrono::high_resolution_clock::time_point currentTime =
-		std::chrono::high_resolution_clock::now();
-	std::chrono::duration<double> timeSpan = std::chrono::duration_cast<
-		std::chrono::duration<double>>(currentTime - mGettingCompletionDataStartTime);
+    std::chrono::high_resolution_clock::time_point currentTime =
+        std::chrono::high_resolution_clock::now();
+    std::chrono::duration<double> timeSpan = std::chrono::duration_cast<
+        std::chrono::duration<double>>(currentTime - mGettingCompletionDataStartTime);
     bool timeIsUp = (timeSpan.count() > std::chrono::seconds(1).count());
 #else
     time_t curTime;
@@ -863,7 +865,7 @@ bool FileEditView::idleHighlight()
 //    DEB_EDIT(__FUNCTION__);
     bool foundToken = false;
     eHighlightTask task = mHighlighter.highlightUpdate(mTextView, getBuffer(),
-                gtk_text_buffer_get_char_count(mTextBuffer));
+        gtk_text_buffer_get_char_count(mTextBuffer));
     if(task & HT_FindToken)
         {
         foundToken = true;
@@ -879,10 +881,8 @@ bool FileEditView::idleHighlight()
     return foundToken;
     }
 
-bool FileEditView::handleKeys(GdkEvent *event)
+void FileEditView::handleKeyRelease(GdkEvent *event)
     {
-    bool handled = false;
-
     int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
     if(mCompleteList.handleEditorKey(event->key.keyval, modKeys))
         {
@@ -890,7 +890,12 @@ bool FileEditView::handleKeys(GdkEvent *event)
         mHighlighter.showMembers(mCompleteList.getCompletionTriggerPointOffset());
 #endif
         }
+    }
 
+bool FileEditView::handleKeyPress(GdkEvent *event)
+    {
+    bool handled = false;
+    int modKeys = (GDK_SHIFT_MASK | GDK_CONTROL_MASK | GDK_MOD1_MASK) & event->key.state;
     switch(event->key.keyval)
         {
         case '>':       // Checking for "->"

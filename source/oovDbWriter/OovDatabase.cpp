@@ -127,6 +127,13 @@ bool OovDatabase::createTables()
             "idConsumerType INT NOT NULL"
             ");",
 
+        // This is for include or import.
+        "CREATE TABLE IF NOT EXISTS ModuleRelation("
+            "idModuleRelation INTEGER PRIMARY KEY NOT NULL,"
+            "idSupplierModule INT NOT NULL,"
+            "idConsumerModule INT NOT NULL"
+            ");",
+
         // This is for method parameters and returns.
         "CREATE TABLE IF NOT EXISTS MethodTypeRef("
             "idMethodTypeRef INTEGER PRIMARY KEY NOT NULL,"
@@ -253,12 +260,34 @@ bool OovDatabase::addTypeRelation(OovStringRef supplierName, OovStringRef consum
         {
         success = execSelectId("idType", "Type", "name", consumerName, true, idConsumer);
         }
-    if(success)
+    if(success && idSupplier != UNDEFINED_INT && idConsumer != UNDEFINED_INT)
         {
         DbString ins;
         ins.INSERT("TypeRelation").INTO({"idTypeRelation",
-                "typeRelationDescription","visibility","idSupplierType","idConsumerType"}).
-                VALUES({nullptr, tr, visibility, idSupplier, idConsumer});
+            "typeRelationDescription","visibility","idSupplierType","idConsumerType"}).
+            VALUES({nullptr, tr, visibility, idSupplier, idConsumer});
+        success = exec(ins.getDbStr());
+        }
+    return success;
+    }
+
+bool OovDatabase::addModuleRelation(OovStringRef supplierName, OovStringRef consumerName)
+    {
+    int idSupplier = UNDEFINED_INT;
+    int idConsumer = UNDEFINED_INT;
+    // At the moment, the external project includes are not added previously,
+    // so they will not be found to add relations.
+    bool success = execSelectId("idModule", "Module", "name", supplierName, false, idSupplier);
+    if(success && idSupplier != UNDEFINED_INT)
+        {
+        success = execSelectId("idModule", "Module", "name", consumerName, false, idConsumer);
+        }
+    if(success && idSupplier != UNDEFINED_INT && idConsumer != UNDEFINED_INT)
+        {
+        DbString ins;
+        ins.INSERT("ModuleRelation").INTO({"idModuleRelation",
+            "idSupplierModule","idConsumerModule"}).
+            VALUES({nullptr, idSupplier, idConsumer});
         success = exec(ins.getDbStr());
         }
     return success;

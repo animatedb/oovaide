@@ -70,7 +70,12 @@ class OovDatabase:public SQLite, public SQLiteListener
         /// @param rt The type of relation (inheritance or member).
         bool addTypeRelation(OovStringRef supplierName, OovStringRef consumerName,
             int visibility, eTypeRelations rt);
-
+        /// This must be done after both modules already exist.
+        /// Adds a module relation to the ModuleRelation table.
+        /// @param supplierName The supplier of the relation.
+        /// @param consumerName The consumer of the relation. The consumer is
+        ///     dependent on the supplier.
+        bool addModuleRelation(OovStringRef supplierName, OovStringRef consumerName);
         /// Query the Method table by name to find the method ID.
         /// @param idClass The ID of the class that defines the method.
         /// @param name The name of the method.

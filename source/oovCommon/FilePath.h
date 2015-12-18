@@ -175,7 +175,7 @@ OovString FilePathGetFileExt(OovStringRef const path);
 OovString FilePathGetWithoutEndPathSep(OovStringRef const path);
 
 /// Gets the path where the directory separators are converted to a
-/// foward slash character.
+/// back slash character.
 #ifndef __linux__
 OovString FilePathGetAsWindowsPath(OovStringRef const path);
 #endif

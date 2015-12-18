@@ -60,7 +60,7 @@ class IncDirDependencyMapReader:public NameValueFile
     public:
         /// Read the include dependency map file
         /// @param fn The file name to read from
-        void read(OovStringRef const fn);
+        OovStatusReturn read(OovStringRef const fn);
         /// Get the include files that are directly included in the source file.
         /// @param srcName The source file name
         /// @param incFiles The returned list of included files

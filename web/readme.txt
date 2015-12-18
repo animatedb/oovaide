@@ -11,13 +11,24 @@ Using OovAide to analyze programs:
 	so running analysis does not require any additional
 	downloads. Using Oovaide for more complete analysis usually
 	requires some MinGW or other package so that CLang can find
-	additional include files. Using database export requires
-	sqlite3. Analyzing java source code requires the Java JDK.
+	additional include files.
+	Exporting to database requires sqlite3.
+	Analyzing Java source code requires the Java JDK.
 
-     Linux Versions:
+     Debian / Ubuntu Versions:
+	First use a package manager to make sure the libclang1 and
+	libgtk-3-0 packages are installed. Then download an OovAide
+	deb package and use something like the following at a
+	command line:
+		dpkg -i oovaide-1512-0.1.1-ia32.deb
+	Exporting to database requires the sqlite package.
+	Analyzing Java requires the default-jdk package.
+
+     Other Linux Versions:
 	The oovaide-*-linux downloads require GTK3, CLang and a 64
-        bit OS. Using database export requires sqlite3. Analyzing
-	java source code requires the Java JDK.
+        bit OS.
+	Exporting to database requires sqlite3.
+	Analyzing Java requires the Java JDK.
 
 Using OovAide to build programs:
     Either G++ or CLang is required to build C++ programs using

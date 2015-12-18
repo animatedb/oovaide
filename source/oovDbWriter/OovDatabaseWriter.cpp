@@ -6,6 +6,7 @@
 
 #include "OovDatabase.h"
 #include "Components.h"
+#include "IncludeMap.h"
 #include "Project.h"
 #include "stdio.h"
 #include "ModelObjects.h"
@@ -60,6 +61,7 @@ class DbWriter
         bool openDatabase(char const *projectDir, ModelData const *modelData);
         bool writeTypes(int passIndex, int &typeIndex, int maxTypesPerTransaction);
         bool writeComponentsInfo(ComponentTypesFile const* compTypesFile);
+        bool writeModuleRelations(IncDirDependencyMapReader const* incMapFile);
         void closeDatabase();
         OovStringRef getLastError() const
             { return mDb.getLastError(); }
@@ -114,15 +116,15 @@ bool DbWriter::openDatabase(char const *projectDir, ModelData const *modelData)
             }
         else
             {
-            OovString errStr = "Unable to open ";
-            errStr += libName;
+            OovString errStr = "Unable to load ";
+            errStr += dbFn;
             mDb.setLastError(errStr);
             }
         }
     else
         {
-        OovString errStr = "Unable to load ";
-        errStr += dbFn;
+        OovString errStr = "Unable to open ";
+        errStr += libName;
         mDb.setLastError(errStr);
         }
     return success;
@@ -158,6 +160,37 @@ bool DbWriter::writeComponentsInfo(ComponentTypesFile const* compTypesFile)
             if(!success)
                 {
                 break;
+                }
+            }
+        if(success)
+            {
+            success = mDb.exec("end");
+            }
+        }
+    return success;
+    }
+
+bool DbWriter::writeModuleRelations(IncDirDependencyMapReader const* incMapFile)
+    {
+    bool success = true;
+    if(incMapFile)
+        {
+        success = mDb.exec("begin");
+        if(success)
+            {
+            std::set<OovString> allFiles = incMapFile->getAllFiles();
+            for(auto const &consFile : allFiles)
+                {
+                std::set<IncludedPath> incFiles;
+                incMapFile->getImmediateIncludeFilesUsedBySourceFile(consFile, incFiles);
+                for(auto const &supFile : incFiles)
+                    {
+                    success = mDb.addModuleRelation(supFile.getFullPath(), consFile);
+                    if(!success)
+                        {
+                        break;
+                        }
+                    }
                 }
             }
         if(success)
@@ -263,9 +296,13 @@ bool DbWriter::writeDataMemberTypeRefs(ModelClassifier const *cls)
     for(size_t attri=0; attri<cls->getAttributes().size() && success; attri++)
         {
         auto const &attr = cls->getAttributes()[attri].get();
-        OovStringRef memberName = attr->getDeclType()->getName();
-        success = mDb.addTypeRelation(memberName, cls->getName(),
-            attr->getAccess().getVis(), OovDatabase::TR_Member);
+        ModelType const *type = attr->getDeclType();
+        if(type)
+            {
+            OovStringRef memberName = type->getName();
+            success = mDb.addTypeRelation(memberName, cls->getName(),
+                attr->getAccess().getVis(), OovDatabase::TR_Member);
+            }
         }
     return success;
     }
@@ -278,12 +315,15 @@ bool DbWriter::writeTypeRefs(int idMethod,
     for(auto const &var : decls)
         {
         int idSupplierType = UNDEFINED_INT;
-        success = mDb.getTypeId(var->getDeclType()->getName(), true,
-            idSupplierType);
-        if(success)
+        ModelType const *type = var->getDeclType();
+        if(type)
             {
-            success = mDb.addMethodTypeRef(var->getName(),
-                varRel, idMethod, idSupplierType);
+            success = mDb.getTypeId(type->getName(), true, idSupplierType);
+            if(success)
+                {
+                success = mDb.addMethodTypeRef(var->getName(),
+                    varRel, idMethod, idSupplierType);
+                }
             }
         if(!success)
             {
@@ -458,11 +498,22 @@ void DbWriter::closeDatabase()
 extern "C"
 {
 SHAREDSHARED_EXPORT bool OpenDb(char const *projectDir, void const *modelData)
-    { return sDbWriter.openDatabase(projectDir, static_cast<ModelData const*>(modelData)); }
+    {
+    return sDbWriter.openDatabase(projectDir, static_cast<ModelData const*>(
+        modelData));
+    }
 SHAREDSHARED_EXPORT bool WriteDb(int passIndex, int &typeIndex, int maxTypesPerTransaction)
     { return sDbWriter.writeTypes(passIndex, typeIndex, maxTypesPerTransaction); }
 SHAREDSHARED_EXPORT bool WriteDbComponentTypes(void const *compTypesFile)
-    { return sDbWriter.writeComponentsInfo(static_cast<ComponentTypesFile const*>(compTypesFile)); }
+    {
+    return sDbWriter.writeComponentsInfo(
+        static_cast<ComponentTypesFile const*>(compTypesFile));
+    }
+SHAREDSHARED_EXPORT bool WriteDbModuleRelations(void const *includeMapFile)
+    {
+    return sDbWriter.writeModuleRelations(static_cast<
+        IncDirDependencyMapReader const*>(includeMapFile));
+    }
 SHAREDSHARED_EXPORT char const *GetLastDbError()
     { return sDbWriter.getLastError().getStr(); }
 SHAREDSHARED_EXPORT void CloseDb()

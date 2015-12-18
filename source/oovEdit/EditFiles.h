@@ -123,6 +123,7 @@ class EditFiles:public FileEditViewListener
         /// Handles keys where the behavior is modified. The main keys are
         /// related to indenting.
         bool handleKeyPress(GdkEvent *event);
+        bool handleKeyRelease(GdkEvent *event);
         Debugger &getDebugger()
             { return mDebugger; }
         /// Used by signal handler to close the page.

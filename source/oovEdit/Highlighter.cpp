@@ -144,12 +144,15 @@ void TokenRange::tokenize(CXTranslationUnit transUnit)
     clang_disposeTokens(transUnit, tokens, numTokens);
     }
 
+
+
 Tokenizer::~Tokenizer()
     {
     CLangAutoLock lock(mCLangLock, __LINE__, this);
     if(mTransUnit)
         {
         clang_disposeTranslationUnit(mTransUnit);
+        clang_disposeIndex(mContextIndex);
         }
     }
 
@@ -159,21 +162,18 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
     CLangAutoLock lock(mCLangLock, __LINE__, this);
     try
         {
-        // The clang_defaultCodeCompleteOptions() options are not for the parse
-        // function, they are for the clang_codeCompleteAt func.
-        unsigned options = clang_defaultEditingTranslationUnitOptions();
-        // This is required to allow go to definition to work with #include.
-        options |= CXTranslationUnit_DetailedPreprocessingRecord;
         if(!mSourceFile)
             {
-            mSourceFilename = fileName;
-            CXIndex index = clang_createIndex(1, 1);
-            {
-            mTransUnit = clang_parseTranslationUnit(index, fileName,
-                clang_args, static_cast<int>(num_clang_args), 0, 0, options);
-            }
-            clang_disposeIndex(index);
+            // The clang_defaultCodeCompleteOptions() options are not for the parse
+            // function, they are for the clang_codeCompleteAt func.
+            unsigned options = clang_defaultEditingTranslationUnitOptions();
+            // This is required to allow go to definition to work with #include.
+            options |= CXTranslationUnit_DetailedPreprocessingRecord;
 
+            mSourceFilename = fileName;
+            mContextIndex = clang_createIndex(1, 1);
+            mTransUnit = clang_parseTranslationUnit(mContextIndex, fileName,
+                clang_args, static_cast<int>(num_clang_args), 0, 0, options);
 #if(0)
             printf("%s\n", fileName);
             int numDiags = clang_getNumDiagnostics(mTransUnit);
@@ -191,11 +191,12 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             }
         else
             {
-            CXUnsavedFile file;
+            static CXUnsavedFile file;
             file.Filename = mSourceFilename.c_str();
             file.Contents = buffer;
             file.Length = bufLen;
 
+            unsigned options = clang_defaultReparseOptions(mTransUnit);
             int stat = clang_reparseTranslationUnit(mTransUnit, 1, &file, options);
             if(stat != 0)
                 {

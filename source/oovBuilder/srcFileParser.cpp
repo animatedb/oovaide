@@ -4,12 +4,12 @@
 //  \copyright 2013 DCBlaha.  Distributed under the GPL.
 
 #include "srcFileParser.h"
-#include <stdio.h>
 #include "Project.h"
 #include "FilePath.h"
 #include "OovProcess.h"
 #include "ComponentFinder.h"
-
+#include <stdio.h>
+#include <algorithm>
 
 bool srcFileParser::analyzeSrcFiles(OovStringRef const srcRootDir,
         OovStringRef const analysisDir)
@@ -97,11 +97,9 @@ static void getAnalysisToolCommand(FilePath const &filePath,
         // given later to the parser outside of this function.
         CompoundValue javaArgs;
         javaArgs.parseString(toolPathFile.getValue(OptJavaAnalyzeArgs));
-        size_t dupPos = javaArgs.find("-dups");
-        if(dupPos != CompoundValue::npos)
-            {
-            javaArgs.erase(javaArgs.begin() + 1);
-            }
+        javaArgs.erase(remove_if(javaArgs.begin(), javaArgs.end(),
+            [](OovString const &arg){ return(arg.find("-dups") != std::string::npos);}
+            ));
         ToolPathFile::appendArgs(true, javaArgs.getAsString(), args);
         args.addArg("-cp");
 
@@ -186,6 +184,7 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                             {
                             ca.addArg("-dups");
                             }
+                        ToolPathFile::appendArgs(false, javaArgs.getAsString(), ca);
                         }
                     addTask(ca);
     /*

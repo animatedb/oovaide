@@ -139,6 +139,7 @@ OovString const Project::getBinDirectory()
     return path;
     }
 
+#ifdef __linux__
 static bool isDevelopment()
     {
     static enum eDevel { Uninit, Devel, Deploy } devel;
@@ -166,6 +167,7 @@ static bool isDevelopment()
         }
     return(devel == Devel);
     }
+#endif
 
 OovString const Project::getLibDirectory()
     {
@@ -223,7 +225,8 @@ OovString const Project::getDocDirectory()
             }
         }
 #else
-    path.appendDir("data");
+    // During development, the path is ../../web, but let it find the web below.
+    path.appendDir("../web");
 #endif
     OovStatus status(true, SC_File);
     if(!FileIsDirOnDisk(path, status))

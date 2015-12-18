@@ -8,6 +8,8 @@
 #include "Project.h"
 #include "Gui.h"
 #include "Components.h"
+#include "BuildConfigReader.h"
+#include "IncludeMap.h"
 
 void DatabaseWriter::writeDatabase(ModelData *modelData)
     {
@@ -55,9 +57,18 @@ void DatabaseWriter::writeDatabase(ModelData *modelData)
                 {
                 ComponentTypesFile compFile;
                 OovStatus status = compFile.read();
+                IncDirDependencyMapReader incMapFile;
+                BuildConfigReader buildConfig;
+                std::string incDepsFilePath = buildConfig.getIncDepsFilePath();
+                // Components file is optional, so overwriting status is ok.
+                status = incMapFile.read(incDepsFilePath);
                 if(status.ok())
                     {
                     success = WriteDbComponentTypes(&compFile);
+                    }
+                if(status.ok())
+                    {
+                    success = WriteDbModuleRelations(&incMapFile);
                     }
                 if(status.needReport())
                     {
@@ -85,6 +96,7 @@ void DatabaseWriter::loadSymbols()
     loadModuleSymbol("OpenDb", (OovProcPtr*)&OpenDb);
     loadModuleSymbol("WriteDb", (OovProcPtr*)&WriteDb);
     loadModuleSymbol("WriteDbComponentTypes", (OovProcPtr*)&WriteDbComponentTypes);
+    loadModuleSymbol("WriteDbModuleRelations", (OovProcPtr*)&WriteDbModuleRelations);
     loadModuleSymbol("GetLastDbError", (OovProcPtr*)&GetLastDbError);
     loadModuleSymbol("CloseDb", (OovProcPtr*)&CloseDb);
     }

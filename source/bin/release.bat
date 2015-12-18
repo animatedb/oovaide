@@ -12,9 +12,9 @@ rem update clang in source directory area
 rd /s /q .\clang
 xcopy /s /Y "%clang%\bin\libclang.dll" .\
 rem This is for LLVM 3.6 and before
-xcopy /s /Y /i "%clang%\lib\clang\*.*" .\clang\
+rem xcopy /s /Y /i "%clang%\lib\clang\*.*" .\clang\
 rem This is for LLVM 3.7
-rem xcopy /s /Y /i "%clang%\lib\*.*" ..\lib
+xcopy /s /Y /i "%clang%\lib\*.*" ..\lib
 del ..\lib\LTO.dll
 
 del /s %dst%\web\*.bak

@@ -48,6 +48,8 @@ class CompletionList
             { return mCompletionTriggerPointOffset; }
         bool isGettingCompletionData() const
             { return mGettingCompletionData; }
+        // This adds a small delay so that the user doesn't get interrupted
+        // by a pop up list too soon while typing.
         bool okToShowList() const;
 
     private:
@@ -185,7 +187,8 @@ class FileEditView
 
         /// Used to process keys that require special handling.  These are
         /// things like code completion, indenting, home key, etc.
-        bool handleKeys(GdkEvent *event);
+        bool handleKeyPress(GdkEvent *event);
+        void handleKeyRelease(GdkEvent *event);
 
         std::string getFilePath() const
             { return mFilePath; }

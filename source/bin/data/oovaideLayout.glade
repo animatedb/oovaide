@@ -3853,7 +3853,14 @@ These arguments are specific to the selected configuration.
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
                             <property name="has_tooltip">True</property>
-                            <property name="tooltip_text" translatable="yes">Extra switches passed to the java command, or extra java files passed to the parser.</property>
+                            <property name="tooltip_text" translatable="yes">Extra switches passed to the java command, or extra java files passed to the parser.
+Full directory paths must be specified to java files.
+Use -dups to find duplicate code.
+Example:
+    /proj/lib1/*.java
+    /proj/lib2/*.java
+    -dups
+</property>
                           </object>
                         </child>
                       </object>

@@ -460,6 +460,14 @@ extern "C" G_MODULE_EXPORT gboolean on_EditFiles_key_press_event(GtkWidget *widg
     return handled;
     }
 
+extern "C" G_MODULE_EXPORT gboolean on_EditFiles_key_release_event(GtkWidget *widget,
+        GdkEvent *event, gpointer user_data)
+    {
+    if(sEditFiles)
+        sEditFiles->handleKeyRelease(event);
+    return false;
+    }
+
 void EditFiles::removeNotebookPage(GtkWidget *pageWidget)
     {
     mLastFocusGtkTextView = nullptr;
@@ -609,6 +617,8 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
                     G_CALLBACK(on_EditFiles_focus_in_event), NULL);
             g_signal_connect(editView, "key_press_event",
                     G_CALLBACK(on_EditFiles_key_press_event), NULL);
+            g_signal_connect(editView, "key_release_event",
+                    G_CALLBACK(on_EditFiles_key_release_event), NULL);
             g_signal_connect(editView, "button_press_event",
                     G_CALLBACK(on_EditFiles_button_press_event), NULL);
             mFileViews.push_back(std::unique_ptr<ScrolledFileView>(scrolledView));
@@ -712,8 +722,15 @@ bool EditFiles::handleKeyPress(GdkEvent *event)
     {
     bool handled = false;
     if(getEditView())
-        handled = getEditView()->handleKeys(event);
+        handled = getEditView()->handleKeyPress(event);
     return handled;
+    }
+
+bool EditFiles::handleKeyRelease(GdkEvent *event)
+    {
+    if(getEditView())
+        getEditView()->handleKeyRelease(event);
+    return false;
     }
 
 bool EditFiles::checkExitSave()

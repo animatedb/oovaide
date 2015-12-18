@@ -11,7 +11,7 @@
 #include "OovError.h"
 #include <algorithm>
 
-void IncDirDependencyMapReader::read(OovStringRef const fn)
+OovStatusReturn IncDirDependencyMapReader::read(OovStringRef const fn)
     {
     setFilename(fn);
     // It is ok if the include map is not present the first time.
@@ -26,6 +26,7 @@ void IncDirDependencyMapReader::read(OovStringRef const fn)
         str += fn;
         status.report(ET_Error, str);
         }
+    return status;
     }
 
 void discardDirs(OovStringVec &paths)

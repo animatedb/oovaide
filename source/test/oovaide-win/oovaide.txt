@@ -3,6 +3,7 @@ BuildArgsExtra-Analyze|-dups;
 BuildArgsExtra-Debug|-O0;-g3;
 BuildArgsExtra-Release|-O3;
 ExcludeDirs|bin/;test/oovaide-win/;test/python/;lib/clang/;
+Java-Args-Analyze|/Dave/Mine/software/oovaide/source/examples/java/firstpackage/*.java;/Dave/Mine/software/oovaide/source/examples/java/secondpackage/*.java;
 Java-ClassPath|C:\Program Files\Java\jdk1.8.0_51\lib\tools.jar;
 Java-JdkPath|C:\Program Files\Java\jdk1.8.0_51;
 SourceRootDir|C:/Dave/Mine/software/oovaide/source/

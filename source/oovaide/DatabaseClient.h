@@ -26,6 +26,8 @@ struct DatabaseWriterInterface
     bool (*WriteDb)(int passIndex, int &typeIndex, int maxTypesPerTransaction);
     /// This writes the component information that is used by the modules table.
     bool (*WriteDbComponentTypes)(void const *compTypesFile);
+    /// This writes the module relations for include or import.
+    bool (*WriteDbModuleRelations)(void const *incMapFile);
     /// Get the last error string.
     char const *(*GetLastDbError)();
     /// Close the database.
