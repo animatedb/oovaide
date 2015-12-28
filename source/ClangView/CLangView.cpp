@@ -457,13 +457,20 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
     BuildConfigReader cfg;
     std::string incDepsPath = cfg.getIncDepsFilePath();
     IncDirDependencyMapReader incDirMap;
-    incDirMap.read(incDepsPath);
-    OovStringVec incDirs = incDirMap.getNestedIncludeDirsUsedBySourceFile(srcName);
-    for(auto const &dir : incDirs)
+    status = incDirMap.read(incDepsPath);
+    if(status.ok())
         {
-        std::string arg = "-I";
-        arg += dir;
-        args.addArg(arg);
+        OovStringVec incDirs = incDirMap.getNestedIncludeDirsUsedBySourceFile(srcName);
+        for(auto const &dir : incDirs)
+            {
+            std::string arg = "-I";
+            arg += dir;
+            args.addArg(arg);
+            }
+        }
+    else
+        {
+        status.reported();
         }
     }
 

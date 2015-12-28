@@ -20,9 +20,27 @@
 #define CODE_COMPLETE 1
 #endif
 
+enum TokenKinds
+    {
+    // From CLang CXTokenKind
+    TK_Punctuation=CXToken_Punctuation,
+    TK_Keyword=CXToken_Keyword,
+    TK_Identifier=CXToken_Identifier,
+    TK_Literal=CXToken_Literal,
+    TK_Comment=CXToken_Comment,
+    TK_Error=CXToken_Comment+1,
+    TK_NumKinds=TK_Error+1
+    };
+
 struct Token
     {
-    CXTokenKind mTokenKind;
+    public:
+        Token():
+            mTokenKind(TK_Punctuation), mStartOffset(-1), mEndOffset(-1)
+            {}
+        void setKind(CXTokenKind tk)
+            { mTokenKind = static_cast<TokenKinds>(tk); }
+    TokenKinds mTokenKind;
     unsigned int mStartOffset;
     unsigned int mEndOffset;
     };
@@ -74,11 +92,14 @@ class Tokenizer
             char const * const clang_args[], size_t num_clang_args);
         // line numbers are 1 based.
         void tokenize(/*int startLine, int endLine,*/ TokenRange &highlight);
+        OovStringVec getDiagResults();
         bool findToken(eFindTokenTypes ft, size_t origOffset, std::string &fn,
             size_t &offset);
         OovString getClassNameAtLocation(size_t origOffset);
         void getMethodNameAtLocation(size_t origOffset, OovString &className,
             OovString &methodName);
+        OovString const &getSourceFileName()
+            { return mSourceFilename; }
 #if(CODE_COMPLETE)
         OovStringVec codeComplete(size_t offset);
 #else
@@ -104,7 +125,7 @@ class HighlightTags
             { return mTags[tagIndex].getTextTag(); }
 
     private:
-        GuiHighlightTag mTags[5];
+        GuiHighlightTag mTags[TK_NumKinds];
     };
 
 
@@ -197,7 +218,7 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
             { mParseRequestCounter++; }
         bool isParseNeeded() const
             { return(mParseRequestCounter != mParseFinishedCounter); }
-        TokenRange getParseResults();
+        TokenRange getParseResults(OovStringVec &diagStringResults);
         OovStringVec getShowMembersResults();
         void getFindTokenResults(std::string &fn, size_t &offset);
         eHighlightTask getTaskResults() const
@@ -219,7 +240,8 @@ class HighlighterBackgroundThreadData:public ThreadedWorkBackgroundQueue<
         // mTaskResults is set when a background task completes, and is cleared
         // when a getxxxResults function is called.
         eHighlightTask mTaskResults;
-        TokenRange mTokenResults;
+        TokenRange mTokenResults;               // getParseResults returns this.
+        OovStringVec mDiagStringResults;        // getParseResults returns this.
         OovStringVec mShowMemberResults;
         OovString mFindTokenResultFilename;
         size_t mFindTokenResultOffset;

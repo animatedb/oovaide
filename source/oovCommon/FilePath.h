@@ -47,6 +47,12 @@ enum eReturnPosition {
 enum eFilePathTypes { FP_File, FP_Dir, FP_Ext };
 
 
+// This is not a file path function, but we have no better place to put this.
+inline OovString GetEnv(char const *envName)
+    {
+    return OovString(getenv(envName));
+    }
+
 //***** non-modifying path functions
 /// Get the start of the directory specification. This is the position after
 /// after the drive spec. If there is no drive spec, this returns the

@@ -128,8 +128,15 @@ install(EXPORT OovaideTargets DESTINATION
 # Use dpkg -I x.deb to view contents of deb file
 # Use dpkg -c x.deb to view viles of deb file
 # Use dpkg -i x.deb to install the package from the deb file
+# Use dpkg -r pkg to uninstall the package
+# use dpkg --search file to find the package that supplies a file.
 # Use "sudo make package" to use cmake to build a deb file.set(CPACK_GENERATOR DEB)
-# Building oovaide requires libclang-3.6-dev, but using analysis only requires libclang1
+# The package libclang1 is required to analyze using oovaide.
+# The package libclang-dev is required to build oovaide.
+# The package clang is required to build programs using the clang compiler.
+# The package libgtk-3-0 is required to run oovaide.
+# The package libgtk-3-dev is required to build oovaide.
+# Use "echo '#include <stddef.h>' | clang -xc -v -" to find include searches.
 set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_NAME oovaide)
 set(CPACK_DEBIAN_PACKAGE_DESCRIPTION "Source code analysis tool for C++ and Java")

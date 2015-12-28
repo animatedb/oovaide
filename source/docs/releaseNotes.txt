@@ -132,6 +132,8 @@ Missing Features
 
 - Analysis (builder and parser)
 	- Java
+	    https://www.reddit.com/r/programming/comments/3xos63/will_there_be_module_hell/
+	    http://blog.codefx.org/java/dev/will-there-be-module-hell/
 	    and wait for completion of previous jars (task flow scheduling, topological sorting)
 		http://stackoverflow.com/questions/200483/how-do-i-get-a-list-
 		of-java-class-dependencies-for-a-main-class
@@ -170,6 +172,7 @@ Missing Features
 	- C++ modules (see clang, import, umbrella)
 	- Java - use imports to build executable jars in correct order
 	- Java - jar building needs to delete output jar.
+	- Java - build failing in linux? Can't find *.class in makeJar()
 	- Shouldn't have to  rebuild everything if project directories change
 	- Build/Settings per component don't seem to work for -lnk-static-libstdc++
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
@@ -216,6 +219,7 @@ Missing Features
 			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
 
 - Editor
+	- Sometimes goto definition doesn't.  Second time works.
 	- Click on tab should set focus to view so cursor displays
 	- Make find in files a background task
 	- Add history list of lines of last go to defs, go to method, etc.
@@ -240,6 +244,8 @@ Missing Features
 	- refactor-rename
 
 - Debugger (In editor)
+	- whatis for str var, std::++cxx11::string says incomplete type
+	- Allow view variable by asking CLang for type to view (type)var
 	- starting debugger too quickly can crash
 		- find using coverage tool
 		- set_terminate(handler)	void my_terminate_handler()

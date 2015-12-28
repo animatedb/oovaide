@@ -43,6 +43,28 @@
       </object>
     </child>
   </object>
+  <object class="GtkMenu" id="ControlPopupMenu">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <child>
+      <object class="GtkMenuItem" id="ControlUpdateMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Update</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ControlUpdateMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ControlRemoveMenuitem">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Remove</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ControlRemoveMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+  </object>
   <object class="GtkMenu" id="EditPopupMenu">
     <property name="visible">True</property>
     <property name="can_focus">False</property>
@@ -121,6 +143,33 @@
         <property name="label" translatable="yes">View Variable</property>
         <property name="use_underline">True</property>
         <signal name="activate" handler="on_DebugViewVariable_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ViewDerefVariableMenuitem2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">View * Variable</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ViewDereferencedVariable_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ViewVariableArrayZeroMenuitem2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">View Variable[0]</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ViewVariableArrayZeroMenuitem_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="ViewDerefVariableArrayZeroMenuitem2">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">View * Variable[0]</property>
+        <property name="use_underline">True</property>
+        <signal name="activate" handler="on_ViewVariableDerefArrayZeroMenuitem_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -341,6 +390,21 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkCheckButton" id="SourceOnlyCheckbutton">
+                <property name="label" translatable="yes">Source Files Only</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="xalign">0</property>
+                <property name="active">True</property>
+                <property name="draw_indicator">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">4</property>
               </packing>
             </child>
           </object>
@@ -985,6 +1049,33 @@
                             <signal name="activate" handler="on_DebugViewVariable_activate" swapped="no"/>
                           </object>
                         </child>
+                        <child>
+                          <object class="GtkMenuItem" id="ViewDereferencedVariableMenuitem">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">View * Variable</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_ViewDereferencedVariable_activate" swapped="no"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="ViewVariableArrayZeroMenuitem">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">View Variable[0]</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_ViewVariableArrayZeroMenuitem_activate" swapped="no"/>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkMenuItem" id="ViewVariableDerefArrayZeroMenuitem">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">View * Variable[0]</property>
+                            <property name="use_underline">True</property>
+                            <signal name="activate" handler="on_ViewVariableDerefArrayZeroMenuitem_activate" swapped="no"/>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -1363,6 +1454,7 @@
                           <object class="GtkTreeView" id="DataTreeview">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
+                            <signal name="button-press-event" handler="on_DataTreeview_button_press_event" swapped="no"/>
                             <child internal-child="selection">
                               <object class="GtkTreeSelection" id="treeview-selection1"/>
                             </child>

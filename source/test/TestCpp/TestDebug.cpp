@@ -27,14 +27,14 @@ TEST_F(gDebugUnitTest, DebugResultIntTest)
     // Starting variable
     int var = 1;
     // Variable returned in debugger
-        //  value="1"
+    //   value="1"
     // Variable encoded in c++
     char const * const dbgVar = "value=\"1\"";
 
     DebugResult debRes;
     debRes.parseResult(dbgVar);
     std::string str = debRes.getAsString();
-    EXPECT_EQ(str.compare("value = 1") == 0, true);
+    EXPECT_EQ(str.find("value = 1") != std::string::npos, true);
     }
 
 // Test a simple variable containing curly braces.
@@ -43,16 +43,16 @@ TEST_F(gDebugUnitTest, DebugResultVarStringTest)
     // Starting variable
     char const * const var = "{curly}";
     // Variable returned in debugger
-        //  value = 0x40d139 <_ZStL19piecewise_construct+41> \"{curly}\""
+    //   value ="0x40d139 <_ZStL19piecewise_construct+41> \"{curly}\""
     // Variable encoded in c++
-    char const * const dbgVar = "value="
-        " 0x40d139 <_ZStL19piecewise_construct+41> \\\"{curly}\\\"";
+    char const * const dbgVar = "value=\"0x40d139 <_ZStL19piecewise_construct+41> \\\"{curly}\\\"";
 
     DebugResult debRes;
     debRes.parseResult(dbgVar);
     std::string str = debRes.getAsString();
     EXPECT_EQ(str.find(quoteStr(var)) != std::string::npos, true);
     }
+
 
 // At the moment, the debugger does the simplest parsing, so it leaves
 // in the escaped characters.

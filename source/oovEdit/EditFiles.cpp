@@ -10,6 +10,7 @@
 #include "Project.h"
 #include "OovError.h"
 #include "Components.h" // For isCppHeader
+#include "ControlWindow.h"
 #include <algorithm>
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -801,12 +802,6 @@ bool EditFiles::checkDebugger()
     return ok;
     }
 
-void EditFiles::showInteractNotebookTab(char const * const tabName)
-    {
-    GtkNotebook *book = GTK_NOTEBOOK(Builder::getBuilder()->getWidget("InteractNotebook"));
-    Gui::setCurrentPage(book, Gui::findTab(book, tabName));
-    }
-
 void EditFiles::setTabText(FileEditView *editView, OovStringRef text)
     {
     GtkNotebook *book = getBook(editView);
@@ -882,7 +877,7 @@ bool EditFiles::handleButtonPress(GtkWidget *widget, GdkEventButton const &butto
             Debugger &deb = sEditFiles->getDebugger();
             if(deb.isDebuggerRunning())
                 {
-                sEditFiles->showInteractNotebookTab("Data");
+                ControlWindow::showNotebookTab(ControlWindow::CT_Data);
                 deb.startGetVariable(Gui::getSelectedText(
                         scrolledView->getTextView()));
                 }
@@ -951,26 +946,53 @@ extern "C" G_MODULE_EXPORT gboolean on_DebugToggleBreakpoint_activate(GtkWidget 
     return false;
     }
 
-extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *widget,
-        GdkEvent *event, gpointer user_data)
+static void viewVarExpr(OovStringRef prefixExpr, OovStringRef postfixExpr)
     {
     if(sEditFiles && sEditFiles->checkDebugger())
         {
         FileEditView const *view = sEditFiles->getEditView();
         if(view)
             {
-            sEditFiles->showInteractNotebookTab("Data");
-            sEditFiles->getDebugger().startGetVariable(
-                    Gui::getSelectedText(view->getTextView()));
+            OovString expr;
+            expr += prefixExpr;
+            expr += Gui::getSelectedText(view->getTextView());
+            expr += postfixExpr;
+            sEditFiles->getDebugger().startGetVariable(expr);
+            ControlWindow::showNotebookTab(ControlWindow::CT_Data);
 #if(DBG_EDITF)
-    const char *str = Gui::getSelectedText(view->getTextView());
-    sDbgFile.printflush("ViewVar %s\n", str);
+    sDbgFile.printflush("ViewVar %s\n", expr.getStr());
 #endif
             }
         }
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_DebugViewVariable_activate(GtkWidget *widget,
+        GdkEvent *event, gpointer user_data)
+    {
+    viewVarExpr("", "");
     return false;
     }
 
+extern "C" G_MODULE_EXPORT gboolean on_ViewDereferencedVariable_activate(
+    GtkWidget *widget, GdkEvent *event, gpointer user_data)
+    {
+    viewVarExpr("*", "");
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_ViewVariableArrayZeroMenuitem_activate(
+        GtkWidget *widget, GdkEvent *event, gpointer user_data)
+    {
+    viewVarExpr("", "[0]");
+    return false;
+    }
+
+extern "C" G_MODULE_EXPORT gboolean on_ViewVariableDerefArrayZeroMenuitem_activate(
+        GtkWidget *widget, GdkEvent *event, gpointer user_data)
+    {
+    viewVarExpr("*", "[0]");
+    return false;
+    }
 
 extern "C" G_MODULE_EXPORT void on_MainDebugGoToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
     {

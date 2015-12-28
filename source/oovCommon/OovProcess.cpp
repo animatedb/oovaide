@@ -7,6 +7,7 @@
 #include "OovProcess.h"
 #include "File.h"
 #include "Debug.h"
+#include "FilePath.h"   // for GetEnv
 #ifdef __linux__
 #include <spawn.h>
 #include <unistd.h>     // for usleep
@@ -318,14 +319,14 @@ void OovPipeProcessLinux::linuxChildProcessKill()
 
 static bool addEnvItem(OovStringRef envName, OovString &envStr)
     {
-    char *val = getenv(envName.getStr());
-    if(val)
+    OovString val = GetEnv(envName.getStr());
+    if(val.length() > 0)
         {
         envStr += envName;
         envStr += "=";
         envStr += val;
         }
-    return(val != nullptr);
+    return(val.length() > 0);
     }
 
 static int linuxSpawnNoWait(OovStringRef const procPath, char const * const *argv)

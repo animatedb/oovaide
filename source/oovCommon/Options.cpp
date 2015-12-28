@@ -8,7 +8,6 @@
 #include "Options.h"
 #include "Project.h"
 #include "OovString.h"
-#include <stdlib.h>     // for getenv
 #include <string.h>
 
 
@@ -111,6 +110,70 @@ static void setBuildConfigurationPaths(NameValueFile &file,
     file.setNameValue(optStr, "jar");
     }
 
+#ifdef __linux__
+static OovStringVec getSystemIncludePaths(bool useCLangBuild)
+    {
+    OovStringVec sysIncPaths;
+    FilePath clangOutputFileName(Project::getProjectDirectory(), FP_Dir);
+    clangOutputFileName.appendFile("oovaide-temp-clang.txt");
+    OovString cmdStr = "echo \"\" | ";
+    if(useCLangBuild)
+        { cmdStr += "clang++"; }
+    else
+        { cmdStr += "g++"; }
+    cmdStr += " -v -x c++ -E - 2>";
+    cmdStr += clangOutputFileName;
+    system(cmdStr.getStr());
+
+    File clangFile;
+    OovStatus status = clangFile.open(clangOutputFileName, "r");
+    if(status.ok())
+        {
+        char buf[1000];
+        bool startSearch = false;
+        while(clangFile.getString(buf, sizeof(buf), status))
+            {
+            char *endLine = strchr(buf, '\n');
+            if(endLine)
+                {
+                *endLine = '\0';
+                }
+            if(strstr(buf, "#include <...> search"))
+                {
+                startSearch = true;
+                }
+            if(strstr(buf, "End of search"))
+                {
+                startSearch = false;
+                }
+            if(startSearch && buf[0] == ' ' /*&& strstr(buf, "llvm")*/)
+                {
+                sysIncPaths.push_back(&buf[1]);
+                }
+            }
+        clangFile.close();
+        }
+    if(status.ok())
+        {
+        status = FileDelete(clangOutputFileName);
+        }
+    if(status.needReport())
+        { status.reported(); }
+    return sysIncPaths;
+    }
+
+static OovStringVec getEnvPathDirs()
+    {
+    OovString pathStr = GetEnv("PATH");
+    OovStringVec pathDirs;
+    if(pathStr.length() > 0)
+        {
+        pathDirs = StringSplit(pathStr.getStr(), ':');
+        }
+    return pathDirs;
+    }
+#endif
+
 void OptionsDefaults::setDefaultOptions()
     {
     CompoundValue baseArgs;
@@ -124,14 +187,19 @@ void OptionsDefaults::setDefaultOptions()
 //    baseArgs.addArg("-ER/usr/include/gtk-3.0");
 //    baseArgs.addArg("-ER/usr/lib/x86_64-linux-gnu/glib-2.0/include");
     OovStatus status(true, SC_File);
-    if(FileIsFileOnDisk("/usr/bin/clang++", status))
-        useCLangBuild = true;
+    for(auto const &dir : getEnvPathDirs())
+        {
+        FilePath clangPath(dir, FP_Dir);
+        clangPath.appendFile("clang++");
+        if(FileIsFileOnDisk(clangPath, status))
+            { useCLangBuild = true; }
+        }
     if(status.needReport())
         {
         status.reported();
         }
 #else
-    OovString path = getenv("PATH");
+    OovString path = GetEnv("PATH");
     if(path.find("LLVM") != std::string::npos)
         {
         useCLangBuild = true;
@@ -160,6 +228,24 @@ void OptionsDefaults::setDefaultOptions()
         extraCppDbgArgs.addArg("-std=c++0x");
         extraCppRlsArgs.addArg("-std=c++0x");
         }
+#ifdef __linux__
+    if(Project::getProjectDirectory().length() > 0)
+        {
+        OovStringVec sysIncPaths = getSystemIncludePaths(useCLangBuild);
+        if(sysIncPaths.size())
+            {
+            for(auto const &incPath : sysIncPaths)
+                {
+                extraCppDocArgs.addArg("-isystem");
+                extraCppDocArgs.addArg(incPath);
+                }
+            }
+        else
+            {
+            // llvm/clang was not found. Standard headers may be missing for analysis.
+            }
+        }
+#endif
     extraCppDbgArgs.addArg("-O0");
     extraCppDbgArgs.addArg("-g3");
 
@@ -182,12 +268,12 @@ void OptionsDefaults::setDefaultOptions()
 
     mProject.setNameValue(OptBaseArgs, baseArgs.getAsString());
 
-    OovString str = getenv("CLASSPATH");;
+    OovString str = GetEnv("CLASSPATH");;
     if(str.length())
         {
         mProject.setNameValue(OptJavaClassPath, str);
         }
-    str = getenv("JAVA_HOME");
+    str = GetEnv("JAVA_HOME");
     if(str.length() > 0)
         {
 #ifdef __linux__

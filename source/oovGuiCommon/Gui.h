@@ -183,6 +183,8 @@ class GuiTextIter
             { return gtk_text_iter_get_offset(&iter); }
         static bool decIter(GtkTextIter *iter)
             { return gtk_text_iter_backward_char(iter); }
+        static bool incLineIter(GtkTextIter *iter)
+            { return gtk_text_iter_forward_line(iter);  }
 // DEAD CODE
 //        static bool incIter(GtkTextIter *iter)
 //            { return gtk_text_iter_forward_char(iter); }
@@ -211,6 +213,12 @@ class GuiTextBuffer:public GuiTextIter
             {
             GtkTextIter iter;
             gtk_text_buffer_get_iter_at_offset(buf, &iter, offset);
+            return iter;
+            }
+        static GtkTextIter getLineIter(GtkTextBuffer *buf, int lineNum)
+            {
+            GtkTextIter iter;
+            gtk_text_buffer_get_iter_at_line(buf, &iter, lineNum);
             return iter;
             }
         static int getCursorOffset(GtkTextBuffer *buf)
@@ -297,13 +305,24 @@ class GuiTreeView
             {}
         void access(GtkTreeView *treeView)
             { mTreeView = treeView; }
-        void clear();
+
+        bool getSelected(GtkTreeModel *&model, GtkTreeIter &iter);
+        bool findImmediateChildPartialMatch(OovStringRef const str, GuiTreeItem parentItem,
+            GuiTreeItem &item);
+        OovString findNoCaseLongestMatch(OovStringRef const str);
+        bool getNthChild(GuiTreeItem parentItem, int childIndex, GuiTreeItem &item);
+        /// A default item will return the number of children at the root.
+        int getNumChildren(GuiTreeItem &item) const;
+
+        void scrollToPath(GuiTreePath &path);
+
         void removeSelected();
+        void removeItem(GuiTreeItem item);
+        void removeNthChild(GuiTreeItem parentItem, int childIndex);
+        void clear();
+
         GtkTreeView *getTreeView()
             { return mTreeView; }
-        void scrollToPath(GuiTreePath &path);
-        /// A default item will return the number of children at the root.
-        int getNumChildren(GuiTreeItem const &item) const;
 
     protected:
         GtkTreeView *mTreeView;
@@ -351,7 +370,6 @@ class GuiList:public GuiTreeView
                 OovStringRef const title);
         void appendText(OovStringRef const str);
         void sort();
-        OovString findLongestMatch(OovStringRef const str);
         OovStringVec getText() const;
         OovString getSelected() const;
         int getSelectedIndex() const;

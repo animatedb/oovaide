@@ -285,11 +285,38 @@ void GuiTreeView::clear()
         }
     }
 
+bool GuiTreeView::getSelected(GtkTreeModel *&model, GtkTreeIter &iter)
+    {
+    bool gotIt = false;
+
+    GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
+    if(sel)
+        {
+        if(gtk_tree_selection_get_selected(sel, &model, &iter))
+            {
+            gotIt = true;
+            }
+        }
+    return gotIt;
+    }
+
 void GuiTreeView::removeSelected()
     {
     GtkTreeIter iter;
     GtkTreeModel *model;
 
+    if(getSelected(model, iter))
+        {
+        if(GTK_IS_LIST_STORE(model))
+            {
+            gtk_list_store_remove(GTK_LIST_STORE(model), &iter);
+            }
+        else
+            {
+            gtk_tree_store_remove(GTK_TREE_STORE(model), &iter);
+            }
+        }
+/*
     GtkTreeSelection *sel = gtk_tree_view_get_selection(mTreeView);
     if(sel)
         {
@@ -305,6 +332,7 @@ void GuiTreeView::removeSelected()
                 }
             }
         }
+*/
     }
 
 void GuiTreeView::scrollToPath(GuiTreePath &path)
@@ -312,10 +340,88 @@ void GuiTreeView::scrollToPath(GuiTreePath &path)
     gtk_tree_view_scroll_to_cell(mTreeView, path.getPath(), nullptr, false, 0, 0);
     }
 
-int GuiTreeView::getNumChildren(GuiTreeItem const &item) const
+int GuiTreeView::getNumChildren(GuiTreeItem &item) const
     {
     GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
-    return gtk_tree_model_iter_n_children(model, nullptr);
+    return gtk_tree_model_iter_n_children(model, item.getPtr());
+    }
+
+bool GuiTreeView::findImmediateChildPartialMatch(OovStringRef const str,
+    GuiTreeItem parentItem, GuiTreeItem &item)
+    {
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    bool match = false;
+    item.setRoot(false);
+    if(gtk_tree_model_iter_children(GTK_TREE_MODEL(model), item.getPtr(),
+        parentItem.getPtr()))
+        {
+        do
+            {
+            GuiListStringValue val;
+            char const *v = val.getStringFromModel(model, item.getPtr());
+            if(OovString(str).compare(0, str.numBytes(), v, str.numBytes()) == 0)
+                {
+                match = true;
+                break;
+                }
+            } while(gtk_tree_model_iter_next(model, item.getPtr()));
+        }
+    return match;
+    }
+
+OovString GuiTreeView::findNoCaseLongestMatch(OovStringRef const str)
+    {
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    GtkTreeIter iter;
+    OovString bestStr;
+    if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model), &iter))
+        {
+        int bestMatchCount = 0;
+        do
+            {
+            GuiListStringValue val;
+            char const *v = val.getStringFromModel(model, &iter);
+            if(v)
+                {
+                int count = StringCompareNoCaseNumCharsMatch(str, v);
+                if(count > bestMatchCount)
+                    {
+                    bestStr = v;
+                    bestMatchCount = count;
+                    }
+                }
+            } while(gtk_tree_model_iter_next(model, &iter));
+        }
+    return bestStr;
+    }
+
+bool GuiTreeView::getNthChild(GuiTreeItem parentItem, int childIndex, GuiTreeItem &item)
+    {
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    item.setRoot(false);
+    return gtk_tree_model_iter_nth_child(model, item.getPtr(), parentItem.getPtr(), childIndex);
+    }
+
+void GuiTreeView::removeNthChild(GuiTreeItem parentItem, int childIndex)
+    {
+    GuiTreeItem item;
+    if(getNthChild(parentItem, childIndex, item))
+        {
+        removeItem(item);
+        }
+    }
+
+void GuiTreeView::removeItem(GuiTreeItem item)
+    {
+    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
+    if(GTK_IS_LIST_STORE(model))
+        {
+        gtk_list_store_remove(GTK_LIST_STORE(model), item.getPtr());
+        }
+    else
+        {
+        gtk_tree_store_remove(GTK_TREE_STORE(model), item.getPtr());
+        }
     }
 
 
@@ -436,32 +542,6 @@ void GuiList::setSelected(OovStringRef const str)
                 } while(gtk_tree_model_iter_next(model, &iter));
             }
         }
-    }
-
-OovString GuiList::findLongestMatch(OovStringRef const str)
-    {
-    GtkTreeModel *model = gtk_tree_view_get_model(mTreeView);
-    GtkTreeIter iter;
-    OovString bestStr;
-    if(gtk_tree_model_get_iter_first(GTK_TREE_MODEL(model), &iter))
-        {
-        int bestMatchCount = 0;
-        do
-            {
-            GuiListStringValue val;
-            char const *v = val.getStringFromModel(model, &iter);
-            if(v)
-                {
-                int count = StringCompareNoCaseNumCharsMatch(str, v);
-                if(count > bestMatchCount)
-                    {
-                    bestStr = v;
-                    bestMatchCount = count;
-                    }
-                }
-            } while(gtk_tree_model_iter_next(model, &iter));
-        }
-    return bestStr;
     }
 
 

@@ -153,8 +153,10 @@ void IncDirDependencyMapReader::getImmediateIncludeFilesUsedBySourceFile(
     {
     FilePath fp(srcName, FP_File);
     OovString val = getValue(fp);
-    processIncPath(val, incFiles, [](IncludedPath &){});
-    expandJavaFiles(incFiles);
+    std::set<IncludedPath> curIncFiles;
+    processIncPath(val, curIncFiles, [](IncludedPath &){});
+    expandJavaFiles(curIncFiles);
+    incFiles.insert(curIncFiles.begin(), curIncFiles.end());
     }
 
 /// This is recursive.

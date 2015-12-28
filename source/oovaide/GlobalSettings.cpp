@@ -79,7 +79,7 @@ void GlobalSettings::saveOpenProject(OovStringRef projDir)
 OovString SettingsFile::getSettingsFileName()
     {
 #ifdef __linux__
-    FilePath dirStr(getenv("HOME"), FP_Dir);
+    FilePath dirStr(GetEnv("HOME"), FP_Dir);
     dirStr.appendDir(".config/Oovaide");
 #else
     OovString dirStr = Project::getBinDirectory();

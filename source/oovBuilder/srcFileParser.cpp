@@ -96,13 +96,18 @@ static void getAnalysisToolCommand(FilePath const &filePath,
         // Arguments for the parser must not be given to java, and instead
         // given later to the parser outside of this function.
         CompoundValue javaArgs;
-        javaArgs.parseString(toolPathFile.getValue(OptJavaAnalyzeArgs));
-        javaArgs.erase(remove_if(javaArgs.begin(), javaArgs.end(),
-            [](OovString const &arg){ return(arg.find("-dups") != std::string::npos);}
-            ));
+        OovString javaArgsStr = toolPathFile.getValue(OptJavaAnalyzeArgs);
+        javaArgs.parseString(javaArgsStr);
+        if(javaArgsStr.length() > 0)
+            {
+            javaArgs.erase(remove_if(javaArgs.begin(), javaArgs.end(),
+                [](OovString const &arg){ return(arg.find("-dups") != std::string::npos);}
+                ));
+            }
         ToolPathFile::appendArgs(true, javaArgs.getAsString(), args);
-        args.addArg("-cp");
 
+        // Add the classpath
+        args.addArg("-cp");
         // Add the compiler jar to the classpath.
         OovString classPathArg;
         FilePath javaParserPath(Project::getBinDirectory(), FP_Dir);

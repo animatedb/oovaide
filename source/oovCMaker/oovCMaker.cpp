@@ -719,9 +719,16 @@ OovStatusReturn CMaker::makeComponentFiles(bool writeToProject,
     OovStatus status(true, SC_File);
     FilePath incMapFn(getAnalysisPath(), FP_Dir);
     incMapFn.appendFile(Project::getAnalysisIncDepsFilename());
-    mIncMap.read(incMapFn);
-    if(mVerbose)
-        printf("Read incmap\n");
+    status = mIncMap.read(incMapFn);
+    if(status.ok())
+        {
+        if(mVerbose)
+            printf("Read incmap\n");
+        }
+    else
+        {
+        status.reported();
+        }
     for(auto const &compName : compNames)
         {
         ComponentTypesFile::eCompTypes compType =

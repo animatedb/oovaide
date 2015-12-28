@@ -8,7 +8,9 @@
 #include "Highlighter.h"
 #include "Debug.h"
 #include "ModelObjects.h"       // for getBaseType
+#include "ControlWindow.h"
 #include <chrono>
+#include <algorithm>
 
 
 #if(SHARED_QUEUE)
@@ -133,7 +135,7 @@ void TokenRange::tokenize(CXTranslationUnit transUnit)
         {
         for (size_t i = 0; i < numTokens-1; i++)
             {
-            at(i).mTokenKind = clang_getTokenKind(tokens[i]);
+            at(i).setKind(clang_getTokenKind(tokens[i]));
             CXSourceRange tokRange = clang_getTokenExtent(transUnit, tokens[i]);
             clang_getExpansionLocation(clang_getRangeStart(tokRange), NULL, NULL,
                 NULL, &at(i).mStartOffset);
@@ -174,20 +176,6 @@ void Tokenizer::parse(OovStringRef fileName, OovStringRef buffer, size_t bufLen,
             mContextIndex = clang_createIndex(1, 1);
             mTransUnit = clang_parseTranslationUnit(mContextIndex, fileName,
                 clang_args, static_cast<int>(num_clang_args), 0, 0, options);
-#if(0)
-            printf("%s\n", fileName);
-            int numDiags = clang_getNumDiagnostics(mTransUnit);
-            for (int i = 0; i<numDiags; i++)
-                {
-                CXDiagnostic diag = clang_getDiagnostic(mTransUnit, i);
-        //          CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
-        //          if(sev >= CXDiagnostic_Error)
-                CXStringDisposer diagStr = clang_formatDiagnostic(diag,
-                clang_defaultDiagnosticDisplayOptions());
-                printf("%s\n", diagStr.c_str());
-                }
-            fflush(stdout);
-#endif
             }
         else
             {
@@ -221,6 +209,27 @@ void Tokenizer::tokenize(/*int startLine, int endLine, */TokenRange &tokens)
         }
     }
 
+OovStringVec Tokenizer::getDiagResults()
+    {
+    OovStringVec diagResults;
+    if(mTransUnit)
+        {
+        int numDiags = clang_getNumDiagnostics(mTransUnit);
+        for (int i = 0; i<numDiags && i < 10; i++)
+            {
+            CXDiagnostic diag = clang_getDiagnostic(mTransUnit, i);
+//          CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);
+//          if(sev >= CXDiagnostic_Error)
+            OovString diagStr = getDisposedString(clang_formatDiagnostic(diag,
+                clang_defaultDiagnosticDisplayOptions()));
+            if(diagStr.find(mSourceFilename) != std::string::npos)
+                {
+                diagResults.push_back(diagStr);
+                }
+            }
+        }
+    return diagResults;
+    }
 
 #if(0)
 static CXCursor getCursorUsingTokens(CXTranslationUnit tu, CXCursor cursor,
@@ -621,11 +630,12 @@ void HighlightTags::initTags(GtkTextBuffer *textBuffer)
     {
     if(!mTags[CXToken_Punctuation].isInitialized())
         {
-        mTags[CXToken_Punctuation].setForegroundColor(textBuffer, "punc", "black");
-        mTags[CXToken_Keyword].setForegroundColor(textBuffer, "key", "blue");
-        mTags[CXToken_Identifier].setForegroundColor(textBuffer, "iden", "black");
-        mTags[CXToken_Literal].setForegroundColor(textBuffer, "lit", "red");
-        mTags[CXToken_Comment].setForegroundColor(textBuffer, "comm", "dark green");
+        mTags[TK_Punctuation].setForegroundColor(textBuffer, "punc", "black");
+        mTags[TK_Keyword].setForegroundColor(textBuffer, "key", "blue");
+        mTags[TK_Identifier].setForegroundColor(textBuffer, "iden", "black");
+        mTags[TK_Literal].setForegroundColor(textBuffer, "lit", "magenta");
+        mTags[TK_Comment].setForegroundColor(textBuffer, "comm", "dark green");
+        mTags[TK_Error].setForegroundColor(textBuffer, "err", "red");
         }
     }
 
@@ -663,13 +673,15 @@ OovStringVec HighlighterBackgroundThreadData::getShowMembersResults()
     return members;
     }
 
-TokenRange HighlighterBackgroundThreadData::getParseResults()
+TokenRange HighlighterBackgroundThreadData::getParseResults(
+    OovStringVec &diagStringResults)
     {
     TokenRange retTokens;
     std::lock_guard<std::mutex> lock(mResultsLock);
     if(mTaskResults & HT_Parse)
         {
         retTokens = std::move(mTokenResults);
+        diagStringResults = std::move(mDiagStringResults);
         mTaskResults = static_cast<eHighlightTask>(mTaskResults & ~HT_Parse);
         }
     return retTokens;
@@ -699,6 +711,7 @@ void HighlighterBackgroundThreadData::processItem(HighlightTaskItem const &item)
             std::lock_guard<std::mutex> lock(mResultsLock);
             mParseFinishedCounter = counter;
             mTokenizer.tokenize(mTokenResults);
+            mDiagStringResults = mTokenizer.getDiagResults();
             mTaskResults = static_cast<eHighlightTask>(mTaskResults | HT_Parse);
             DUMP_THREAD("processItem-Parse end");
             }
@@ -778,6 +791,47 @@ void Highlighter::highlightRequest(
     DUMP_THREAD("highlightRequest-end");
     }
 
+static int getErrorPosition(OovStringRef const line, int &charOffset)
+    {
+    int lineNum = -1;
+    OovStringVec tokens = StringSplit(line, ':');
+    auto iter = std::find_if(tokens.begin(), tokens.end(),
+        [](OovStringRef const tok)
+        { return(isdigit(tok[0])); }
+        );
+    int starti = iter-tokens.begin();
+    if(tokens[starti].getInt(0, INT_MAX, lineNum))
+        {
+        if(static_cast<unsigned int>(starti+1) < tokens.size())
+            {
+            tokens[starti+1].getInt(0, INT_MAX, charOffset);
+            }
+        }
+    return lineNum;
+    }
+
+static int getDiagBufferOffset(GtkTextView *textView, OovStringRef diagStr,
+    int &endOffset)
+    {
+    int offset = -1;
+    endOffset = -1;
+    GtkTextBuffer *textBuf = GuiTextBuffer::getBuffer(textView);
+    int charPos;
+    int lineNum = getErrorPosition(diagStr, charPos);
+    if(lineNum != -1)
+        {
+        GtkTextIter iter = GuiTextBuffer::getLineIter(textBuf, lineNum-1);
+        GtkTextIter endIter = iter;
+        if(!GuiTextIter::incLineIter(&endIter))
+            {
+            endIter = iter;
+            }
+        offset = GuiTextIter::getIterOffset(iter) + charPos-1;
+        endOffset = GuiTextIter::getIterOffset(endIter);
+        }
+    return offset;
+    }
+
 eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
         OovStringRef const buffer, size_t bufLen)
     {
@@ -811,7 +865,23 @@ eHighlightTask Highlighter::highlightUpdate(GtkTextView *textView,
     if(!mBackgroundThreadData.isParseNeeded() &&
             mBackgroundThreadData.getTaskResults() & HT_Parse)
         {
-        mHighlightTokens = mBackgroundThreadData.getParseResults();
+        OovStringVec diagResults;
+        mHighlightTokens = mBackgroundThreadData.getParseResults(diagResults);
+        ControlWindow::showNotebookTab(ControlWindow::CT_Control);
+        GtkTextView *widget = GTK_TEXT_VIEW(ControlWindow::getTabView(
+            ControlWindow::CT_Control));
+        Gui::clear(widget);
+        for(auto const &str : diagResults)
+            {
+            OovError::report(ET_Info, str);
+            int endOffset;
+            int offset = getDiagBufferOffset(textView, str, endOffset);
+            Token token;
+            token.mStartOffset = offset;
+            token.mTokenKind = TK_Error;
+            token.mEndOffset = endOffset;
+            mHighlightTokens.push_back(token);
+            }
         mTokenState = TS_GotTokens;
         gtk_widget_queue_draw(GTK_WIDGET(textView));
 //      applyTags(gtk_text_view_get_buffer(textView), );

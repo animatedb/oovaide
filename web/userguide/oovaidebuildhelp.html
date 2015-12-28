@@ -202,13 +202,33 @@
     If an error displays "fatal error: clang-c/Index.h: No such file or
     directory", then something like libclang-3.6-dev is needed. OovAide should
     work with many versions of the libclang library.
+
     <h4><a class="mozTocH4" id="mozTocId919305"></a>Missing Standard Library
       Includes</h4>
-    If an error appears such as "error: 'stdio.h' file not found" or "error:
-    'limits.h' file not found", this means that CLang is not finding the include
+    On Linux, OovAide attempts to define some standard include paths for
+    analysis using -isystem when a project is created.  If these are not correct,
+    it may be required to set them manually after the project as been created.
+    <p/>
+    If an error appears such as "error: 'stdio.h' file not found" or for 
+    'limits.h' or 'stddef.h', this means that CLang is not finding the include
     files in some standard locations. It is possible to find the locations that
     CLang is looking by using the -v switch in the Analysis/Settings menu on the
     C++ Settings tab in the Common Build Arguments edit box.
+    On Debian, the package that includes the files is libclang-common-x.x-dev,
+    which is included by using libclang-x.x-dev.  Sometimes using the 
+    build-essentials may help.
+    <p/>
+    It is possible to find the intersection of files that packages supply,
+    and where clang is searching using the following.
+    Using "echo '#include <stddef.h>' | clang -xc -v -", showed that clang
+    was searching for /usr/lib/llvm-3.6/bin/../lib/clang/3.6.2/include. Remember
+    that the paths during analysis and build are different since the path
+    to oovCppParser is different than the path to clang.
+    Using "dpkg --search stddef.h", showed that
+    libclang-common-3.6-dev supplied the file
+    /usr/lib/llvm-3.6/lib/clang/3.6.2/include/stddef.h.  The "-xc -v -"
+    switches can also be used in the OovAide analysis settings.
+
     <h4><a class="mozTocH4" id="mozTocId597034"></a>Builtin identifiers</h4>
     If an error "undeclared identifier __builtin__ia32_bsri" displays, this
     means that the clang headers are not found or the libclang.dll version is

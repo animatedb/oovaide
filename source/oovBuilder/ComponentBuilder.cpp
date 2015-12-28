@@ -11,7 +11,6 @@
 #include "File.h"
 #include <stdio.h>
 #include <sys/stat.h>
-#include <stdlib.h>     // for getenv
 #include <algorithm>
 
 TaskQueueListener::~TaskQueueListener()
@@ -40,7 +39,11 @@ void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFileP
         err += getDiagFileName();
         status.report(ET_Error, err);
         }
-    mIncDirMap.read(incDepsFilePath);
+    status = mIncDirMap.read(incDepsFilePath);
+    if(status.needReport())
+        {
+        status.reported();      // Inc dir map is optional.
+        }
     if(mode == PM_CovInstr)
         {
         sVerboseDump.logProgress("Instrument source");
@@ -966,6 +969,8 @@ void ComponentBuilder::makeJar(OovStringRef const compName,
             }
         for(auto const &dir : relClassDirs)
             {
+            // Don't need to use absolute path since the working dir is set
+            // below in procArgs.
             OovString str = dir;
             str += "*.class";
             ca.addArg(str);

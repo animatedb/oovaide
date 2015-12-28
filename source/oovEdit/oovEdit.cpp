@@ -11,6 +11,7 @@
 #include "Project.h"
 #include "Components.h"
 #include "DirList.h"
+#include "ControlWindow.h"
 #include <string.h>
 #include <vector>
 
@@ -157,9 +158,10 @@ class FindFiles:public dirRecurser
     public:
         ~FindFiles()
             {}
-        FindFiles(char const *srchStr, bool caseSensitive, GtkTextView *view):
-            mSrchStr(srchStr), mCaseSensitive(caseSensitive), mView(view),
-            mNumMatches(0)
+        FindFiles(char const *srchStr, bool caseSensitive, bool sourceOnly,
+            GtkTextView *view):
+            mSrchStr(srchStr), mCaseSensitive(caseSensitive),
+            mSourceFilesOnly(sourceOnly), mView(view), mNumMatches(0)
             {}
         OovStatusReturn recurseDirs(char const * const srcDir)
             {
@@ -175,6 +177,7 @@ class FindFiles:public dirRecurser
     private:
         std::string mSrchStr;
         bool mCaseSensitive;
+        bool mSourceFilesOnly;
         GtkTextView *mView;
         int mNumMatches;
     };
@@ -216,7 +219,8 @@ bool FindFiles::processFile(OovStringRef const filePath)
     bool success = true;
     FilePath ext(filePath, FP_File);
 
-    if(isCppHeader(ext) || isCppSource(ext) || isJavaSource(ext))
+    bool isSource = (isCppHeader(ext) || isCppSource(ext) || isJavaSource(ext));
+    if(mSourceFilesOnly ? isSource : true)
         {
         FILE *fp = fopen(filePath.getStr(), "r");
         if(fp)
@@ -254,9 +258,9 @@ bool FindFiles::processFile(OovStringRef const filePath)
     }
 
 void Editor::findInFiles(char const * const srchStr, char const * const path,
-        bool caseSensitive, GtkTextView *view)
+        bool caseSensitive, bool sourceOnly, GtkTextView *view)
     {
-    FindFiles findFiles(srchStr, caseSensitive, view);
+    FindFiles findFiles(srchStr, caseSensitive, sourceOnly, view);
     OovStatus status = findFiles.recurseDirs(path);
     if(status.needReport())
         {
@@ -274,20 +278,27 @@ void Editor::findInFilesDialog()
     {
     FindDialog dialog(mEditFiles);
     GtkToggleButton *downCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-            "FindDownCheckbutton"));
+        "FindDownCheckbutton"));
+    GtkToggleButton *sourceOnlyCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
+        "SourceOnlyCheckbutton"));
     Gui::setVisible(GTK_WIDGET(downCheck), false);
+    Gui::setVisible(GTK_WIDGET(sourceOnlyCheck), true);
     if(dialog.run(true))
         {
         GtkToggleButton *caseCheck = GTK_TOGGLE_BUTTON(getBuilder().getWidget(
-                "CaseSensitiveCheckbutton"));
-        mEditFiles.showInteractNotebookTab("Find");
-        GtkTextView *findView = GTK_TEXT_VIEW(getBuilder().getWidget("FindTextview"));
+            "CaseSensitiveCheckbutton"));
+        ControlWindow::showNotebookTab(ControlWindow::CT_Find);
+        GtkTextView *findView = GTK_TEXT_VIEW(ControlWindow::getTabView(
+            ControlWindow::CT_Find));
         Gui::clear(findView);
         GtkEntry *entry = GTK_ENTRY(Builder::getBuilder()->getWidget("FindEntry"));
         findInFiles(gtk_entry_get_text(entry), Project::getSrcRootDirectory().getStr(),
-                gtk_toggle_button_get_active(caseCheck), findView);
+            gtk_toggle_button_get_active(caseCheck),
+            gtk_toggle_button_get_active(sourceOnlyCheck),
+            findView);
         }
     Gui::setVisible(GTK_WIDGET(downCheck), true);
+    Gui::setVisible(GTK_WIDGET(sourceOnlyCheck), false);
     }
 
 void Editor::gotoFileLine(std::string const &lineBuf)
@@ -371,8 +382,8 @@ gboolean Editor::onIdle(gpointer data)
     {
     if(mDebugOut.length())
         {
-        GtkTextView *view = GTK_TEXT_VIEW(getBuilder().
-                getWidget("ControlTextview"));
+        GtkTextView *view = GTK_TEXT_VIEW(ControlWindow::getTabView(
+            ControlWindow::CT_Control));
         Gui::appendText(view, mDebugOut);
         Gui::scrollToCursor(view);
         mDebugOut.clear();
@@ -407,25 +418,80 @@ gboolean Editor::onIdle(gpointer data)
     return true;
     }
 
+// This is recursive.
+// This adds items if they does not exist.  It preserves the tree
+// so that the state of expanded items will not be destroyed.
+// childIndex of -1 is special since the name is used to find the item.
 static void appendTree(GuiTree &varView, GuiTreeItem &parentItem,
-        DebugResult const &debResult)
+    DebugResult const &debResult, int childIndex = -1)
     {
-    OovString str = debResult.getVarName();
+    OovString varPrefix = debResult.getVarName();
+    OovString str = varPrefix;
     if(debResult.getValue().length() > 0)
         {
-        str += " : ";
+        varPrefix += " : ";
+        str = varPrefix;
         str += debResult.getValue();
         }
-    GuiTreeItem item = varView.appendText(parentItem, str);
+
+    GuiTreeItem item;
+    bool foundItem = false;
+    if(childIndex == -1)
+        {
+        if(varView.findImmediateChildPartialMatch(varPrefix, parentItem, item))
+            {
+            foundItem = true;
+            }
+        }
+    else
+        {
+        foundItem = varView.getNthChild(parentItem, childIndex, item);
+        }
+    if(foundItem)
+        {
+        varView.setText(item, str);
+        }
+    else
+        {
+        item = varView.appendText(parentItem, str);
+        }
+
+    /// Remove items that no longer are available for the variable name.
+        {
+        int numDataChildren = debResult.getChildResults().size();
+        int numTreeChildren = varView.getNumChildren(item);
+        for(int childI=numDataChildren; childI<numTreeChildren; childI++)
+            {
+            varView.removeNthChild(item, childI);
+            }
+        }
+
+    int callerChildIndex = 0;
     for(auto const &childRes : debResult.getChildResults())
         {
-        appendTree(varView, item, *childRes.get());
+        appendTree(varView, item, *childRes.get(), callerChildIndex++);
         }
-    int numChildren = varView.getNumChildren(GuiTreeItem());
+    /// @TODO - should only expand added item at parent level?
+    GuiTreeItem root;
+    int lastChild = varView.getNumChildren(root) - 1;
     OovString numPathStr;
-    numPathStr.appendInt(numChildren-1);
+    numPathStr.appendInt(lastChild);
     GuiTreePath path(numPathStr);
     varView.expandRow(path);
+    }
+
+void Editor::updateDebugDataValue()
+    {
+    OovStringVec strs = mVarView.getSelected();
+    if(strs.size() > 0)
+        {
+        mEditFiles.getDebugger().startGetVariable(strs[0]);
+        }
+    }
+
+void Editor::removeDebugDataValue()
+    {
+    mVarView.removeSelected();
     }
 
 void Editor::idleDebugStatusChange(eDebuggerChangeStatus st)
@@ -442,7 +508,8 @@ void Editor::idleDebugStatusChange(eDebuggerChangeStatus st)
         }
     else if(st == DCS_Stack)
         {
-        GtkTextView *view = GTK_TEXT_VIEW(mBuilder.getWidget("StackTextview"));
+        GtkTextView *view = GTK_TEXT_VIEW(ControlWindow::getTabView(
+            ControlWindow::CT_Stack));
         Gui::setText(view, mDebugger.getStack());
         }
     else if(st == DCS_Value)
@@ -451,7 +518,8 @@ void Editor::idleDebugStatusChange(eDebuggerChangeStatus st)
         GuiTreeItem item;
         appendTree(mVarView, item, mDebugger.getVarValue());
 
-        int numChildren = mVarView.getNumChildren(GuiTreeItem());
+        GuiTreeItem root;
+        int numChildren = mVarView.getNumChildren(root);
         OovString numPathStr;
         numPathStr.appendInt(numChildren-1);
         GuiTreePath path(numPathStr);
@@ -597,6 +665,13 @@ bool Editor::checkExitSave()
         }
     return exitOk;
     }
+
+void Editor::displayControlMenu(guint button, guint32 acttime, gpointer data)
+    {
+    GtkMenu *menu = Builder::getBuilder()->getMenu("ControlPopupMenu");
+    gtk_menu_popup(menu, nullptr, nullptr, nullptr, nullptr, button, acttime);
+    }
+
 
 // Using pipe IPC and editor container to talk between editor and oovaide solves
 // all problems by launching a single editor. No need to use special GTK stuff,
@@ -925,7 +1000,8 @@ extern "C" G_MODULE_EXPORT bool on_FindTextview_button_press_event(
     GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
     if(buttEvent->type == GDK_2BUTTON_PRESS)
         {
-        GtkWidget *widget = gEditor->getBuilder().getWidget("FindTextview");
+        GtkTextView *widget = GTK_TEXT_VIEW(ControlWindow::getTabView(
+            ControlWindow::CT_Find));
         std::string line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
         size_t pos = line.find(' ');
         if(pos != std::string::npos)
@@ -943,7 +1019,8 @@ extern "C" G_MODULE_EXPORT gboolean on_StackTextview_button_press_event(GtkWidge
     GdkEventButton *buttEvent = reinterpret_cast<GdkEventButton *>(event);
     if(buttEvent->type == GDK_2BUTTON_PRESS)
         {
-        GtkWidget *widget = gEditor->getBuilder().getWidget("StackTextview");
+        GtkTextView *widget = GTK_TEXT_VIEW(ControlWindow::getTabView(
+            ControlWindow::CT_Stack));
         OovString line = Gui::getCurrentLineText(GTK_TEXT_VIEW(widget));
         gEditor->debugSetStackFrame(line);
         size_t pos = line.rfind(' ');
@@ -1074,4 +1151,27 @@ extern "C" G_MODULE_EXPORT void on_MainBuildToolbutton_clicked(GtkWidget * /*wid
 extern "C" G_MODULE_EXPORT void on_MainStopToolbutton_clicked(GtkWidget * /*widget*/, gpointer data)
     {
     gEditor->stopAnalyze();
+    }
+
+extern "C" G_MODULE_EXPORT bool on_DataTreeview_button_press_event(GtkWidget * /*widget*/,
+    GdkEvent  *event, gpointer data)
+    {
+    bool handled = false;
+    GdkEventButton *eventBut = reinterpret_cast<GdkEventButton*>(event);
+    if(eventBut->button == 3)   // Right button
+        {
+        gEditor->displayControlMenu(eventBut->button, eventBut->time, (gpointer)event);
+        handled = true;
+        }
+    return handled;
+    }
+
+extern "C" G_MODULE_EXPORT void on_ControlUpdateMenuitem_activate(GtkWidget * /*widget*/,gpointer data)
+    {
+    gEditor->updateDebugDataValue();
+    }
+
+extern "C" G_MODULE_EXPORT void on_ControlRemoveMenuitem_activate(GtkWidget * /*widget*/,gpointer data)
+    {
+    gEditor->removeDebugDataValue();
     }

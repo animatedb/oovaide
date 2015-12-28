@@ -32,7 +32,7 @@ class Editor:public DebuggerListener, public OovErrorListener
         void findAgain(bool forward);
         void findInFilesDialog();
         void findInFiles(char const * const srchStr, char const * const path,
-                bool caseSensitive, GtkTextView *view);
+                bool caseSensitive, bool sourceOnly, GtkTextView *view);
 //      void setTabs(int numSpaces);
         void setStyle();
         void cut()
@@ -138,6 +138,9 @@ class Editor:public DebuggerListener, public OovErrorListener
             {
             }
         void debugSetStackFrame(OovStringRef const frameLine);
+        void displayControlMenu(guint button, guint32 acttime, gpointer data);
+        void updateDebugDataValue();
+        void removeDebugDataValue();
 
     private:
         Builder mBuilder;

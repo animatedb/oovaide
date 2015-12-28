@@ -15,8 +15,8 @@
 #include <string.h>
 #define DBG_RESULT 0
 #if(DBG_RESULT)
-static DebugFile sDbgFile("DbgResult.txt", false);
-//static DebugFile sDbgFile(stdout);
+//static DebugFile sDbgFile("DbgResult.txt", false);
+static DebugFile sDbgFile(stdout);
 void debugStr(char const *title, char const *str)
     { sDbgFile.printflush("%s %s\n", title, str); }
 #else
@@ -119,21 +119,30 @@ static char const *parseString(char const *valStr, std::string &translatedStr)
 #endif
     char const *p = valStr;
     bool quotedValue = false;
-    if(*p == '\\' && *p == '\"')
+    if(*p == '\\' && *(p+1) == '\"')
         {
         quotedValue = true;
-        p+=2;
+        p++;
+        translatedStr += *p++;
         }
-    while(*p && *p != '\"')
+    bool prevBackslash = false;
+    while(*p)
         {
         if(*p == '\\')
             {
             p++;
             // Handle a backslash or quote.
+            if(prevBackslash)
+                { prevBackslash = false; }
+            else if(*p == '\"')
+                { break; }
+            else
+                { prevBackslash = (*p == '\\'); }
             translatedStr += *p++;
             }
         else
             {
+            prevBackslash = false;
             translatedStr += *p++;
             }
         }
@@ -175,6 +184,7 @@ debugStr("   parseVarName", mVarName.c_str());
     return p;
     }
 
+// This parses a single value within a compound list value.
 // Parses up to a list separator
 char const *DebugResult::parseValue(char const *resultStr)
     {
@@ -182,14 +192,17 @@ char const *DebugResult::parseValue(char const *resultStr)
 debugStr("parseValue-start", resultStr);
 #endif
     char const *p = skipSpace(resultStr);
-    // Some values are quoted in strings, but are not C++ strings.
-    // C++ strings start with a backslash quote.
+    // Values start with a quote and end with a quote even if they are not
+    // C++ strings. C++ strings start with a backslash quote.
     bool quotedValue = false;
-    if(isStringC(*p))
+    if(isStringC(*p))   // All values should start with a quote.
         {
         quotedValue = true;
         ++p;
         }
+    // According to GDB MI documentation, a value can be a const, tuple, or list.
+    // Tuples and lists start with a special character, and are the start of values separated by commas.
+    // const values can be complex like: 0x40d139 <_ZStL19piecewise_construct+41> \"{curly}\"
     if(isStartListC(*p))
         {
         DebugResult &res = addResult();
@@ -210,16 +223,18 @@ debugStr("parseValue-start", resultStr);
             LogAssertFile(__FILE__, __LINE__, str.getStr());
             }
         }
-    else if(*p == '\\' && isStringC(*(p+1)))
-        {
-        // In the GDB/MI interface, the value sometimes starts with a quote, and
-        // ends with a quote and then \r\n.
-        p = parseString(p, mValue);
-        }
     else
         {
-        while(*p && !isListItemSepC(*p) && !isEndListC(*p) && !isStringC(*p))
+        // Search for the end of the value by looking for the end quote.
+        // C++ quoted strings can be many locations within the value.
+        while(*p && !isStringC(*p) && !isListItemSepC(*p) && !isEndListC(*p))
             {
+            if(*p == '\\' && isStringC(*(p+1)))
+                {
+                // In the GDB/MI interface, the value sometimes starts with a quote, and
+                // ends with a quote and then \r\n.
+                p = parseString(p, mValue);
+                }
             mValue += *p++;
             }
         }

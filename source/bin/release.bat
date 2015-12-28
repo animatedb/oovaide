@@ -16,6 +16,7 @@ rem xcopy /s /Y /i "%clang%\lib\clang\*.*" .\clang\
 rem This is for LLVM 3.7
 xcopy /s /Y /i "%clang%\lib\*.*" ..\lib
 del ..\lib\LTO.dll
+del OovAideSettings.txt
 
 del /s %dst%\web\*.bak
 xcopy /s %trnk%\..\web\*.* %dst%\web\
