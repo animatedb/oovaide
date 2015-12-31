@@ -324,7 +324,7 @@ void Contexts::updateOperationList(const ModelData &modelData,
 void Contexts::displayClass(OovStringRef const className)
     {
     // While the graph is initialized or destructed, there is no name.
-    if(std::string(className).length() > 0)
+//    if(std::string(className).length() > 0)
         {
         mClassList.setSelected(className);
         updateOperationList(mProject.getModelData(), className);
@@ -337,7 +337,7 @@ void Contexts::displayOperation(OovStringRef const className,
         OovStringRef const operName, bool isConst)
     {
     // While the graph is initialized or destructed, there is no name.
-    if(std::string(className).length() > 0)
+//    if(std::string(className).length() > 0)
         {
         if(std::string(operName).length() > 0)
             {

@@ -39,7 +39,10 @@ class GtkCairoContext
         void clear()
             {
             if(mCr)
+                {
                 cairo_destroy(mCr);
+                mCr = nullptr;
+                }
             }
         ~GtkCairoContext()
             {

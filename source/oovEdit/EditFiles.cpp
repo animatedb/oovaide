@@ -11,6 +11,7 @@
 #include "OovError.h"
 #include "Components.h" // For isCppHeader
 #include "ControlWindow.h"
+#include "DirList.h"
 #include <algorithm>
 #ifndef M_PI
 #define M_PI 3.14159265
@@ -690,27 +691,20 @@ void EditFiles::idleHighlight()
 
 void EditFiles::viewModule(OovStringRef const fn, int lineNum)
     {
+    std::vector<std::string> fileNames;
     FilePath moduleName(fn, FP_File);
-    bool header = isCppHeader(fn);
-    bool source = isCppSource(fn);
-
-    if(header || source)
+    moduleName.appendExtension(".*");
+    OovStatus status = getDirListMatch(moduleName, fileNames);
+    for(auto const fileName : fileNames)
         {
-        moduleName.appendExtension("h");
-        if(header)
-            viewFile(moduleName, lineNum);
+        if(fileName.compare(fn) == 0)
+            {
+            viewFile(fileName, lineNum);
+            }
         else
-            viewFile(moduleName, 1);
-
-        moduleName.appendExtension("cpp");
-        if(source)
-            viewFile(moduleName, lineNum);
-        else
-            viewFile(moduleName, 1);
-        }
-    else
-        {
-        viewFile(fn, lineNum);
+            {
+            viewFile(fileName, 1);
+            }
         }
     }
 

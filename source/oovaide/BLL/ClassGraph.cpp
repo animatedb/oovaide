@@ -73,7 +73,6 @@ int ClassGraph::getAvgNodeSize() const
 void ClassGraph::updateGenes(const ModelData &modelData,
         DiagramDrawer &nullDrawer)
     {
-    updateNodeSizes();
     updateConnections(modelData);
     if(mNodes.size() > 1)
         {
@@ -600,6 +599,7 @@ GraphSize ClassGraph::updateGraph(const ModelData &modelData, bool geneRepositio
     if(geneRepositioning)
         {
         stopAndWaitForCompletion();
+        updateNodeSizes();
         addTask(ClassGraphBackgroundItem(&modelData, &mGraphOptions));
         }
     else
