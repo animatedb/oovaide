@@ -64,8 +64,13 @@ LeftMargin::~LeftMargin()
 void LeftMargin::updateTextInfo(GtkTextView *textView)
     {
     char str[8];
-    snprintf(str, sizeof(str), "%d",
-            gtk_text_buffer_get_line_count(gtk_text_view_get_buffer(textView)));
+    int lineCount = gtk_text_buffer_get_line_count(gtk_text_view_get_buffer(textView));
+    // Set a minimum width so that a resize isn't required less than 2 digits.
+    if(lineCount < 10)
+        {
+        lineCount = 10;
+        }
+    snprintf(str, sizeof(str), "%d", lineCount);
     pango_layout_set_text(mMarginLayout, str, -1);
     pango_layout_get_pixel_size(mMarginLayout, &mTextWidth, NULL);
     int len = strlen(str);

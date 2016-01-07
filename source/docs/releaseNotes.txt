@@ -5,6 +5,8 @@ Features
 
 Explanations
 ------------
+	- In Windows, the proper version of libstdc++-6.dll must be used along
+	  with gtk libs, etc.
 	- If operations aren't shown for classes, use -x c++ for Clang.
 	- If float.h is or intrinics are missing, make sure clang dir is under exec dir (bin).
 	- If classes aren't showing relation to std::vector<>, use "-x c++" for Clang.

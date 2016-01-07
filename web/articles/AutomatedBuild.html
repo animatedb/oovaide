@@ -21,14 +21,14 @@
 	libraries use which other libraries?
 	What is the minimal amount of information required to build a program?
 	<p/>
-	In order for the programmer to have to set up us little as possible,
+	In order to allow the programmer to set up us little as possible,
 	modern systems should find this information automatically, and
 	update the information if any files have changed.  There are
 	some problems doing this for all programs, but for many programs,
 	the constraints and tasks are not that difficult.
 	<p/>
 	We do not need yet another build system, but maybe some of these
-	features will someday be incorporated into other tools.
+	features will someday be incorporated into more intelligent build systems.
 
     <h1>C++ Automated Build</h1>
     <h2>Include Paths</h2>
@@ -115,8 +115,14 @@
 	specify directories that should not be analyzed or built.
 
     <h2>Setting Up Build Tools</h2>
-	The OovAide program searches for the g++ and clang++ tools. It also
-	requires the ar and nm tools for finding library dependencies.
+	The OovAide program searches for the g++ and clang++ tools. It does
+	this differently on Windows and Linux. It also requires the ar and
+	nm tools for finding library dependencies.
+	<p/>
+	On Linux, the system include paths must be found. OovAide runs
+	the compiler to query the built-in include paths. On Windows, the
+	include files are supplied with OovAide, and do not need to be
+	found using the compiler.
 
     <h2>Setting up Build Configurations</h2>
 	OovAide defines the standard Debug and Release configurations
@@ -144,9 +150,8 @@
 	On Linux, the pkgconfig program provides definitions for many
 	popular packages. The pkgconfig program is on many Linux systems,
 	and defines the compile and link information needed to use the
-	package. The OovAide
-	GUI provides a simple way to select external packages to add
-	to the program.
+	package. The OovAide GUI provides a simple way to select external
+	packages to add to the program.
 	<p/>
 	On Windows,
 	a similar interface is provided for selecting libraries, but there is
@@ -159,10 +164,12 @@
 	The OovAide program scans the directories under the source root
 	directory to find all of the source and header files.
 	<p/>
-	At the moment, the directory scan is performed on the whole
-	source root directory tree. This could be optimized in the
-	future by performing directory monitoring, Scanning all directories
-	may limit the use for very large projects.
+	The OovAide project assumes that an external editor may have been
+	used to edit the files, and performs a directory scan on the whole
+	source root directory tree in order to find modified files.
+	This could be optimized in the future by performing directory
+	monitoring, since scanning all directories may limit the use for
+	very large projects.
 
     <h2>Specifying Source Code Grouping</h2>
 	The following directory tree will be used to discuss some
@@ -247,12 +254,6 @@
 	include flags dynamically during parsing to reduce possible problems
 	that too many include directories could create.
 	<p/>
-	The CLang compiler is actually invoked twice. Once to generate
-	include dependencies and analysis information, and then again
-	to compile.  This can be a bit of a speed problem, but it is
-	alleviated since OovAide performs multitasking for the build processes.
-	It doesn't appear that CLang supports analyzing and building at
-	the same time using the C-Index interface to the compiler.
 	During the actual compile, only the include files that are
 	required are specified as directories for faster compilation.
 	<p/>
@@ -284,6 +285,33 @@
 	<a href="../userguide/oovaidebuildhelp.html">OovAide Build Help</a>
 	or 
 	<a href="../design/OovaideBuildDesign.html">OovAide Build Design</a>
+
+    <h2>Future</h2>
+	The CLang compiler is invoked multiple times.
+	<ul>
+	<li>The editor uses the compiler in order to perform syntax highlighting
+	and to find symbols for code completion.  This is fairly transparent
+	to the user since it is performed on a background thread.</li>
+	<li>The compiler is used to generate include dependencies and analysis
+	information.</li>
+	<li>The source code is compiled into object files.</li>
+	</ul>
+	<p/>
+	Running the compiler multiple times could be a bit of a speed problem,
+	but it is alleviated since OovAide performs multitasking for the
+	build processes.
+	It doesn't appear that CLang supports analyzing and building at
+	the same time using the C-Index interface to the compiler. In the future,
+	the analysis information could be generated in the editor after it is
+	detected that the editor has has compiled some source code cleanly.
+	Performing the compilation automatically could also be performed, but
+	makes more sense when a source file is being compiled rather than a header file.
+	There is definitely room for improvement here.
+	<p/>
+	The other major problem that could be partially solved is include
+	files that have the same name.  The source code grouping could be used
+	to first find include files within the current component.  This still
+	may not be enough for some projects though.
 
     <h1>Java Automated Build</h1>
 	OovAide can also build very simple Java programs (generally a single jar)
