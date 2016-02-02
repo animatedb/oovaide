@@ -9,10 +9,10 @@ add_executable(oovaide BLL/ClassDiagram.cpp BLL/ClassDrawer.cpp BLL/ClassGenes.c
   BLL/ZoneDrawer.cpp BLL/ZoneGraph.cpp BuildSettingsDialog.cpp CairoDrawer.cpp 
   ClassDiagramView.cpp ComplexityView.cpp ComponentDiagramView.cpp ComponentList.cpp 
   Contexts.cpp DatabaseClient.cpp DuplicatesView.cpp GlobalSettings.cpp
-  IncludeDiagramView.cpp Journal.cpp NewModule.cpp oovaide.cpp 
-  OovProject.cpp OperationDiagramView.cpp OptionsDialog.cpp PackagesDialogs.cpp 
-  PortionDiagramView.cpp ProjectSettingsDialog.cpp StaticAnalysis.cpp 
-  Svg.cpp Xmi2Object.cpp XmlParser.cpp ZoneDiagramView.cpp)
+  IncludeDiagramView.cpp Journal.cpp NewModule.cpp oovaide.cpp OovProject.cpp
+  OperationDiagramView.cpp OptionsDialog.cpp PackagesDialogs.cpp PortionDiagramView.cpp
+  ProjectSettingsDialog.cpp StaticAnalysis.cpp Svg.cpp Xmi2Object.cpp
+  XmlParser.cpp ZoneDiagramView.cpp)
 
 target_link_libraries(oovaide oovCommon oovGuiCommon ${GTK_LIBRARIES} ${DL_LIBRARIES})
 

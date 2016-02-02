@@ -12,6 +12,7 @@
 #include <set>
 #include "Graph.h"      // For GraphRect
 #include "Components.h"
+#include "Project.h"
 #include "Packages.h"
 #include "IncludeMap.h"
 
@@ -29,12 +30,11 @@ class ComponentNode
     public:
         enum ComponentNodeTypes { CNT_Component, CNT_ExternalPackage };
         ComponentNode():
-            mComponentType(ComponentTypesFile::CT_Unknown),
+            mComponentType(CT_Unknown),
             mComponentNodeType(CNT_Component)
             {}
         ComponentNode(OovStringRef const name, ComponentNodeTypes cnt,
-                ComponentTypesFile::eCompTypes type=
-                        ComponentTypesFile::CT_Unknown):
+            eCompTypes type=CT_Unknown):
             mCompName(name), mComponentType(type), mComponentNodeType(cnt)
             {
             }
@@ -48,13 +48,13 @@ class ComponentNode
             { return mCompName; }
         ComponentNodeTypes getComponentNodeType() const
             { return mComponentNodeType; }
-        ComponentTypesFile::eCompTypes getComponentType() const
+        eCompTypes getComponentType() const
             { return mComponentType; }
 
     private:
         OovString mCompName;
         GraphRect mRect;
-        ComponentTypesFile::eCompTypes mComponentType;
+        eCompTypes mComponentType;
         ComponentNodeTypes mComponentNodeType;
     };
 
@@ -87,7 +87,8 @@ class ComponentConnection
 class ComponentGraph
     {
     public:
-        ComponentGraph():
+        ComponentGraph(ProjectReader &project):
+            mProject(project),
             mIncludeMap(nullptr), mModified(false)
             {}
         // The source must exist for the lifetime of the graph.
@@ -110,6 +111,8 @@ class ComponentGraph
             { mModified = true; }
 
     private:
+        ProjectReader &mProject;
+        ScannedComponentInfo mScannedComponentInfo;
         IncDirDependencyMapReader const *mIncludeMap;
         std::vector<ComponentNode> mNodes;
         std::set<ComponentConnection> mConnections;
@@ -117,8 +120,7 @@ class ComponentGraph
         static const size_t NO_INDEX = static_cast<size_t>(-1);
 
         // This finds include paths for all source files of each component.
-        void updateConnections(const ComponentTypesFile &compFile,
-                const ComponentDrawOptions &options);
+        void updateConnections(const ComponentDrawOptions &options);
         size_t getComponentIndex(OovStringVec const &compPaths,
                 OovStringRef const dir);
         void pruneConnections();

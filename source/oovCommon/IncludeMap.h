@@ -98,7 +98,9 @@ class IncDirDependencyMapReader:public NameValueFile
         /// @param incRoots A list of include roots
         /// @param dirName The directory name to check.
         bool anyRootDirsMatch(OovStringVec const &incRoots,
-                OovStringRef const dirName) const;
+            OovStringVec const &consumerFiles) const;
+        bool anyRootDirsMatch(OovStringVec const &incRoots,
+            OovStringRef const dirName) const;
         /// Get the include directories sorted by the ordered include root
         /// directories for the specified source implementation file name.
         /// It does this by finding the longest directory that matches.

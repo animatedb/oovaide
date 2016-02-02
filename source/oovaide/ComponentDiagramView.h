@@ -16,7 +16,8 @@
 class ComponentDiagramView
     {
     public:
-        ComponentDiagramView(GuiOptions const &guiOptions):
+        ComponentDiagramView(ProjectReader &project, GuiOptions const &guiOptions):
+            mComponentDiagram(project),
             mGuiOptions(guiOptions), mNullDrawer(mComponentDiagram)
             {
             setCairoContext();
@@ -61,8 +62,8 @@ class ComponentDiagramView
             { return mComponentDiagram.getDiagramBaseFontSize(); }
 
     private:
-        GuiOptions const &mGuiOptions;
         ComponentDiagram mComponentDiagram;
+        GuiOptions const &mGuiOptions;
         ComponentDrawOptions mDrawOptions;
         /// Used to calculate font sizes.
         GtkCairoContext mCairoContext;

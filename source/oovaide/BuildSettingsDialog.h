@@ -20,7 +20,7 @@
 class BuildSettingsDialog
     {
     public:
-        BuildSettingsDialog();
+        BuildSettingsDialog(ProjectReader &project);
         virtual ~BuildSettingsDialog();
         // Reads from the component file and displays in the tree view
         void enterScreen();
@@ -32,6 +32,7 @@ class BuildSettingsDialog
 
     private:
         GuiTree mComponentTree;
+        ProjectReader &mProject;
         ComponentTypesFile mComponentFile;
         std::string mLastCompName;
         GuiTreeItem getParent(std::string const &compName);

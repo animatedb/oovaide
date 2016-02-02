@@ -11,7 +11,7 @@
   <body>
 	<a href="../index.html">Oovaide Index</a>
 
-<h1>Automated Build System</h1>
+  <h1>Automated Build System</h1>
 
 	Have you ever thought that too much time is spent on setting
 	up projects for building programs?
@@ -20,6 +20,10 @@
 	have to manually set up libraries for linking and define which
 	libraries use which other libraries?
 	What is the minimal amount of information required to build a program?
+	<p/>
+	The OovAide program must be easy to set up to analyze programs that
+	may be built using many different build systems. For this reason it
+	is important that it is easy to set up.
 	<p/>
 	In order to allow the programmer to set up us little as possible,
 	modern systems should find this information automatically, and
@@ -92,6 +96,12 @@
 
 
 <h1>OovAide Build System</h1>
+	The original purpose of OovAide is to be able to investigate projects
+	where there is minimal knowledge of the project. There may be build files
+	present, but there are so many build systems that it is impossible
+	to handle them all.  OovAide at some point may be able to read a
+	few, at least for the purpose of analysis, but it does not currently.
+	<p/>
 	An attempt was made to build an easy to use build system in the
 	OovAide program.  This solution may not work for very large or
 	complicated projects, but does work on projects that have multiple
@@ -286,8 +296,9 @@
 	or 
 	<a href="../design/OovaideBuildDesign.html">OovAide Build Design</a>
 
-    <h2>Future</h2>
-	The CLang compiler is invoked multiple times.
+    <h2>Some Future Tasks</h2>
+	For a broader vision, see the Completely Redesigned Build below.
+	Optimize the use of the CLang compiler. The CLang compiler is invoked multiple times.
 	<ul>
 	<li>The editor uses the compiler in order to perform syntax highlighting
 	and to find symbols for code completion.  This is fairly transparent
@@ -348,6 +359,251 @@
 	files have to be built in order which presents some interesting
 	problems to solve in order to support multitasking.
 
+  <h1>Completely Redesigned Build</h1>
+	The following are ideas for a completely redesigned build after
+	presenting this article on Reddit. Many people think that the
+	current build systems (make or cmake) are fine.
+	My opinion is that the current build systems have the following
+	problems.
+	<ul>
+	  <li>There is too much manual setup</li>
+	  <li>They could be much faster</li>
+	  <li>Conditional logic should be reduced or removed for simplicity</li>
+	</ul>
+	A couple of unique features to OovAide is that the build should
+	be extremely easy to set up so that analysis can be performed on
+	unknown projects or projects with strange build systems.
+	Another point is that analysis can be performed even when a
+	successful build is not possible.
+	<p/>
+	There are multiple phases to a more automated build. These phases are
+	not listed in exact order since some phases are iterative. For example,
+	some types of directory grouping may be done at any time.
+	<ul>
+	<li>
+	  Build Setup
+	  <ul>
+	    <li>Setting up tool information</li>
+	    <li>Download externally required packages</li>
+	  </ul>
+	</li>
+	<li>Editor creates or modifies source files (Requires include paths)</li>
+	<li>Component identification/directory grouping</li>
+	<li>
+	  Build
+	  <ul>
+	    <li>Either the build scans for modified files, or
+		performs directory monitoring, or is told by
+		the editor which files have changed.</li>
+	    <li>Find include dependencies (using something like -M flags)</li>
+	    <li>Build files/components by running final commands
+		(executables require running nm on libraries for
+		determining link order)</li>
+	  </ul>
+	  Scanning for new files and finding dependencies does not need
+	  to be done as often as the final build phase.</li>
+	  The final build phase does not need to scan all files
+	  to determine what to build.
+	  </li>
+	</ul>
+
+	Implementation Goals.
+	<ul>
+	<li>Try to default in standard ways first, then allow overriding
+	  by user.  For example, default to including all include paths
+	  in project, then if duplicate include files, allow user to
+	  specify order. Default to building all files in recursive directories.
+	  This can reduce file size and complexity.</li>
+	<li>Reduce the required number of build files. This reduces the complexity
+	  for projects (especially for small projects), and increases build speed.</li>
+	<li>Reduce directory scanning (like -M) so that they do not need to be
+	  done for every build.</li>
+	<li>Allow building debug/release, cross compile, platform, etc.</li>
+	<li>Multiple targets? Allow building things like doxygen, C assembly, etc?</li>
+	<li>At the moment, this build does not support building arbitrary files
+	  using rules like ninja.</li>
+	</ul>
+
+	Some implementation details.
+	<ul>
+	<li>Implementation solution for overriding defaults. For include directories
+	  and build tool arguments, this is done using indexed filtered variables</li>
+	<li>When do build files need to be loaded and how many
+	  need to be loaded? (build files per component)
+	  Location of build file has no meaning. Build files are all combined into
+	  a single build mass.  Separated build files may be useful if variables
+	  can be inherited/extended from parent build files.  This may not be
+	  useful until variables can be used from other variables?
+	  There should not need to be a build file in each component, but there
+	  can be to provide sub-projects that can be included into various
+	  parent projects. Parent build files define settings for child build
+	  files. Add and subtract from previous settings. Conditional for linux/windows
+	  Parent build "import" child builds.
+	  </li>
+	<li>Can the build files stay loaded and be
+	  reexecuted for each source file update? Saves scanning for new files.</li>
+	<li>Build files required to determine what to build should
+	  be small, then other files can be loaded to build certain parts?</li>
+	<li>Dependency generation must be performed before build phase
+	  for Java?</li>
+	<li>Analysis, docs, etc. output should be generated after build output?
+	  Include dependency analysis should be done by editor. Include dependency
+	  info should be saved by directory? Derived from C++ modules?
+	  C++ modules created automatically if specified? The editor can indicate to
+	  the build system whether the include dependencies need to be updated, and
+	  implicitly when a file has been created or changed.
+	  </li>
+	<li>Allow specifying include paths that must be included first. Allow
+	  user to choose from multiple duplicates? How to specify order?</li>
+	<li>Library dependency ordering - when/how does it happen, what are rules?</li>
+	<li>All stored paths that are within a project should be relative.</li>
+	<li>Should allow external projects to be on different drives. (Windows)</li>
+	<li>Still two module proposals: Microsoft open-std.org,
+	  CLang module.modulemap, std.vector. Neither module proposal specifies
+	  location of external dependencies? Improved import may handle dup names?</li>
+	<li>Does CMake get include directories from library specifications?</li>
+	<li>Must support debug/release output.</li>
+	<li>The new C++ module system should be used. This is an extra
+	  file in the source directories that can specify include
+	  dependencies, etc.  This looks like it can be generated
+	  by compilers, but it is too late in the build phases.</li>
+	<li>Components / grouping should allow specifying wildcard source
+	  lists</li>
+	<li>To solve the duplicate header file problem, rely on C++ modules?
+	  Worst case manual override?</li>
+	<li>Should skip builds if input requirements (packages) do not exist</li>
+	<li>Ninja ideas:
+	  <ul>
+	    <li>Ninja is a low level build program (the last build phase). It does not
+	      find packages like CMake. It does support building packages?</li>
+	    <li>
+	      Ninja is good for complete builds.  It seems like it could
+	      be faster if it was told which parts of a program to build.
+	      I am pretty sure it must load all ninja files to do a build.
+	      This http://www.aosabook.org/en/posa/ninja.html says that there are
+	      10 MB of ninja files to do a chrome build. This
+		https://ninja-build.org/manual.html says it takes less than
+		a second to start a build.
+	      It could use default mechanisms to reduce file size. Such as
+	      defaulting to *.cpp (more implicit rather than explicit) for a build rule.
+	      It seems like it could be faster also if it did not use
+	      the -M flags and could have two stages for scan/build.
+	      </li>
+	    <li>Fixed variables can be defined. These are basically
+	      literal strings that can define command names, and
+	      command arguments. Variables inherit from parent file.
+	      There are no conditionals for platform, debug/release, etc.</li>
+	    <li>Targets allow specifying which build outputs to build.</li>
+	    <li>&quot;rules&quot; provide common information about
+	      building a file type. Rules support variable substitution
+	      and extracting parts of the output filename and input filenames.
+	      $in has an extension but $out does not?</li>
+	    <li>&quot;build&quot; applies the rules to a specific output file.</li>
+	    <li>I view ninja type files as intermediate files. So they should
+	      not be stored in source directories. Dependency info like C++
+	      modules can be stored in source directories.</li>
+	  </ul>
+	  </li>
+	<li>Bug fix: Support multiple drives?</li>
+	</ul>
+    <h2>Evolve OovAide Build</h2>
+	The main reason that the project files must be updated is to support
+	different configurations for different components. The main feature is
+	to support different include paths for any component.
+
+	<h3>Variables</h3>
+	A base variable	can be defined as having a value, then it can either
+	be reassigned or appended to for certain build states.
+	<p/>
+	Variable as stored in a project file:
+		<table border="1">
+		<tr><th>Entity</th><th>Description</th><th>Example</th></tr>
+		<tr><td>Var name</td><td>An identifier</td><td>CppArgs</td></tr>
+		<tr><td>Filter</td><td>[filtername : filtervalue & filtername : filtervalue]</td>
+			<td>[comp:oovaide & plat:Windows]</td></tr>
+		<tr><td>Function</td><td>Set(=), insert(^), or append(+) to a variable</td><td>+</td></tr>
+		<tr><td>Value separator</td><td>|</td><td>|</td></tr>
+		<tr><td>Value</td><td>any string or compound values</td><td>-lnk-Wl,--subsystem,windows;</td></tr>
+		</table>
+	<br/>
+	The following are filters that are prebuilt into the program.
+		<table border="1">
+		<tr><th>Filter Name</th><th>Possible Values</th></tr>
+		<tr><td>mode</td><td>Analyze, Build</td></tr>
+		<tr><td>plat</td><td>Linux, Windows</td></tr>
+		<tr><td>cfg</td><td>Analysis, Debug, Release, [custom]</td></tr>
+		<tr><td>comp</td><td>Any component name within the project</td></tr>
+		</table>
+	The comp filter is not yet supported. Another that may be added is
+	filetype (cpp,c,asm,obj,lib/java). Also coverage does not have filters yet.
+	<p/>
+	The following is an example configuration file.
+	<pre>
+	CppArgs[]=|-c;-x;c++;-std=c++11;
+	CppArgs[cfg:Debug]+|-O0;-g3;
+	</pre>
+
+	The previous configuration would result in the following. The arguments are shown as
+	separated with semicolons. This shows that release mode is using the base
+	variable arguments, and the Debug mode has extra arguments appended.
+
+	<table border="1">
+	<tr><th>Mode</th><th>Flags</th></tr>
+	<tr><td>Debug</td><td>-c;-x;c++;-std=c++11;-O0;-g3;</td></tr>
+	<tr><td>Release</td><td>-c;-x;c++;-std=c++11;</td></tr>
+	</table>
+
+
+	<h3>Future</h3>
+	Some of the following may be already implmented in the latest versions of OovAide.
+	<ul>
+	  <li>Dependencies - Add dependency dialog per component/dir.
+	    Clear and find, if manually set up, should builder ever scan?
+	    In future, could scan from within selected directories.
+	    Add external and internal project dependency scanning.
+	    First only add internal dependencies?
+	    Add Comp-intDeps[] to oovaide-comptypes.txt for internal dependencies?
+	    If empty, use scan. Scan or CMake results go to Comp-scannedIntDeps or pulled out of incdeps?
+	    Allow different file types in same directory? Dependencies different?
+	    OovBuilder can scan or use CMake files to set up manual dependencies.
+	    GUI reads incdeps to assist updating manual dependencies?
+		NEW: ComponentFinder::getComponentIncludeDirs()
+	    </li>
+	  <li>Clean - Should be per component/dir. Add dependency/scan cleaning?</li>
+	  <li>Build CRC - Fix to handle changed external projects per component?
+	    CRC per component? Other option is that external packages must be
+	    set, and components can select from external packages.</li>
+	  <li>Projects - Add import for child components. Import only defines
+	    a way to optionally separate definitions so that multiple parents can
+	    import a child file. Info from oovaide-comptypes.txt file gets moved into
+	    oovaide.txt. oovaide-tmp-compsources.txt changes</li>
+	  <li>Change build configurations to allow Windows/Linux settings - causes
+	    change in External Packages for Windows/Linux Analysis</li>
+	  <li>Types of tools: convert=compile,analyze,coverage combine=lib(.obj),link(.lib)
+	    javac - For each component *.java converts to *.class
+	    link - combines lib and obj files
+	    java dups flag is handled strangely, analysis requires ordering by component
+	    jar dependencies
+	    </li>
+	  <li>Rules - JavaAnalysis
+	    $javaToolPath $javaArgs -cp $tools.jar $javaAnalyzerTool $in $srcRootDir $analDir $args
+	    </li>
+	  <li>Option - OovAide needs option for placement of dependency information in
+		source or build dirs?</li>
+	  <li>Option - Need option for when to rescan (when editor changes file). Allow
+	    manual rescan or clean. Clean by component.</li>
+	  <li>Add option to specify relative include path levels? #include <gtk/gtk.h></li>
+	  <li>Read CMake files to create build files. add_subdirectory</li>
+	  <li>IncDeps - oovaide-incdeps.txt is specific for each component.
+	    There are two types of incdeps - compiler generated (files), and user
+	    specified (paths, previously oovaide-extdirs.txt)</li>
+	  <li>Incdeps - Change incdeps file and other build files to use internal
+	    directory variables to reduce filepath duplication to reduce file sizes</li>
+	  <li>oovaide-extdirs.txt (initial include paths) is specific for each component
+	    or defined as variable that builds inherit</li>
+	  <li>Java - external packages should be specified by component, sets
+	    classpath</li>
+	</ul>
 
   </body>
 

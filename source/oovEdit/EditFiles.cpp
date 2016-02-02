@@ -144,7 +144,8 @@ void LeftMargin::drawMarginLine(GtkTextView *textView, cairo_t *cr)
 
 //////////
 
-EditFiles::EditFiles(Debugger &debugger, EditOptions &editOptions):
+EditFiles::EditFiles(ProjectReader &project, Debugger &debugger, EditOptions &editOptions):
+    mProject(project),
     mEditOptions(editOptions),
     mHeaderBook(nullptr), mSourceBook(nullptr), mBuilder(nullptr),
     mLastFocusGtkTextView(nullptr), mDebugger(debugger)
@@ -579,7 +580,7 @@ void EditFiles::viewFile(OovStringRef const fn, int lineNum)
             GtkWidget *editView = gtk_text_view_new();
 
             /// @todo - use make_unique when supported.
-            ScrolledFileView *scrolledView = new ScrolledFileView(mDebugger);
+            ScrolledFileView *scrolledView = new ScrolledFileView(mProject, mDebugger);
             scrolledView->mFileView.init(GTK_TEXT_VIEW(editView), this);
             OovStatus status = scrolledView->mFileView.openTextFile(fp);
             if(status.needReport())
@@ -757,7 +758,7 @@ bool EditFiles::checkDebugger()
         str += Project::getProjectFilePath();
         status.report(ET_Error, str);
         }
-    getDebugger().setDebuggerFilePath(projFile.getValue(OptToolDebuggerPath));
+    getDebugger().setDebuggerFilePath(projFile.getValue(OptExeDebuggerPath));
     getDebugger().setDebuggee(mEditOptions.getValue(OptEditDebuggee));
     getDebugger().setDebuggeeArgs(mEditOptions.getValue(OptEditDebuggeeArgs));
     getDebugger().setWorkingDir(mEditOptions.getValue(OptEditDebuggerWorkingDir));

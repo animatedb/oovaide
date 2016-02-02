@@ -719,7 +719,12 @@ Use this dialog to set up component definitions.</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="has_tooltip">True</property>
-                        <property name="tooltip_text" translatable="yes">Example: -lnk-Wl,--subsystem,windows</property>
+                        <property name="tooltip_text" translatable="yes">These arguments are the same format as the Analysis
+Settings dialog. These are appended to the arguments
+defined there, but these are specific to a
+component/directory.
+
+Example: -lnk-Wl,--subsystem,windows</property>
                       </object>
                     </child>
                   </object>
@@ -1828,6 +1833,7 @@ Use this dialog to set up component definitions.</property>
     <property name="title" translatable="yes">New Module</property>
     <property name="modal">True</property>
     <property name="type_hint">dialog</property>
+    <property name="gravity">north</property>
     <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox6">
@@ -1940,6 +1946,7 @@ Use this dialog to set up component definitions.</property>
               <object class="GtkEntry" id="NewModule_InterfaceEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Leave blank to prevent creation of interface file</property>
                 <property name="invisible_char">•</property>
               </object>
               <packing>
@@ -1951,6 +1958,7 @@ Use this dialog to set up component definitions.</property>
               <object class="GtkEntry" id="NewModule_ImplementationEntry">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="tooltip_text" translatable="yes">Leave blank to prevent creation of implementation file</property>
                 <property name="invisible_char">•</property>
               </object>
               <packing>
@@ -1967,8 +1975,10 @@ Use this dialog to set up component definitions.</property>
                   <object class="GtkEntry" id="comboboxtext-entry">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
+                    <property name="tooltip_text" translatable="yes">Select or type to create a new component directory</property>
                     <property name="max_length">255</property>
                     <property name="activates_default">True</property>
+                    <property name="secondary_icon_tooltip_text" translatable="yes">Select or type a new name to create a new directory</property>
                   </object>
                 </child>
               </object>
@@ -2335,9 +2345,13 @@ cause build errors, but may not be important for some analysis. Compiler
 arguments are important for any function analysis.
 
 Use the External Project Packages or standard compiler (-I, -L) switches
-to specify some external project include and library files.  Enter a superset
-since Oovaide will figure out which includes and libraries are needed for
-each subdirectory. Packages should be in link order.
+to specify some external project include and library files.  Project include
+file paths are generally found automatically. Enter a superset of external
+packages since Oovaide will figure out which includes and libraries are
+needed for each subdirectory. Packages should be in link order.
+
+Component/directory specific arguments can be added in the build
+settings dialog.
 
 Arguments are passed to the compiler and linker.
 Special arguments are:
@@ -2590,7 +2604,8 @@ This is specific to the selected configuration.</property>
                                             <property name="tooltip_text" translatable="yes">The format of arguments is the same as
 the Common Build Arguments.
 
-These arguments are specific to the selected configuration.
+These arguments are specific to the selected configuration
+and are appended to the Common Build Arguments.
 </property>
                                             <property name="border_width">1</property>
                                           </object>
@@ -4367,7 +4382,6 @@ Example:
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
-                    <property name="overlay_scrolling">False</property>
                     <child>
                       <object class="GtkViewport" id="DiagramViewport">
                         <property name="visible">True</property>

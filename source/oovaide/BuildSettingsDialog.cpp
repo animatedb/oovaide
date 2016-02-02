@@ -13,7 +13,8 @@
 static BuildSettingsDialog *gBuildDlg;
 
 
-BuildSettingsDialog::BuildSettingsDialog()
+BuildSettingsDialog::BuildSettingsDialog(ProjectReader &project):
+    mProject(project), mComponentFile(mProject)
     {
     gBuildDlg = this;
     mComponentTree.init(*Builder::getBuilder(), "ComponentListTreeview", "Component List");
@@ -28,7 +29,8 @@ BuildSettingsDialog::~BuildSettingsDialog()
 
 void BuildSettingsDialog::enterScreen()
     {
-    OovStatus status = mComponentFile.read();
+    ScannedComponentInfo scannedCompInfo;
+    OovStatus status = scannedCompInfo.readScannedInfo();
     if(status.ok())
         {
         GtkComboBoxText *typeBox = GTK_COMBO_BOX_TEXT(Builder::getBuilder()->getWidget(
@@ -36,20 +38,20 @@ void BuildSettingsDialog::enterScreen()
         Gui::clear(typeBox);
         Gui::setSelected(GTK_COMBO_BOX(typeBox), -1);
         Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
-                ComponentTypesFile::CT_Unknown));
+            CT_Unknown));
         Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
-                ComponentTypesFile::CT_StaticLib));
+            CT_StaticLib));
         Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
-                ComponentTypesFile::CT_SharedLib));
+            CT_SharedLib));
         Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
-                ComponentTypesFile::CT_Program));
+            CT_Program));
         Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
-                ComponentTypesFile::CT_JavaJarLib));
+            CT_JavaJarLib));
         Gui::appendText(typeBox, ComponentTypesFile::getLongComponentTypeName(
-                ComponentTypesFile::CT_JavaJarProg));
+            CT_JavaJarProg));
 
         mComponentTree.clear();
-        for(auto const &name : mComponentFile.getComponentNames())
+        for(auto const &name : scannedCompInfo.getComponentNames())
             {
             if(mLastCompName.length() == 0)
                 {
@@ -84,10 +86,10 @@ void BuildSettingsDialog::switchComponent()
 void BuildSettingsDialog::saveScreen()
     {
     saveFromScreen(mLastCompName);
-    OovStatus status = mComponentFile.writeFile();
+    OovStatus status = mComponentFile.writeComponentTypes();
     if(status.needReport())
         {
-        status.report(ET_Error, "Unable to save build settings");
+        status.report(ET_Error, "Unable to save component type");
         }
     }
 
@@ -110,7 +112,8 @@ void BuildSettingsDialog::saveFromScreen(std::string const &compName)
         CompoundValue buildArgs;
         buildArgs.parseString(str, '\n');
         std::string newBuildArgsStr = buildArgs.getAsString();
-        mComponentFile.setComponentBuildArgs(compName, newBuildArgsStr);
+        mProject.setNameValue(ProjectReader::getCppArgsCompFilterName(compName),
+            newBuildArgsStr);
         }
     }
 
@@ -127,7 +130,8 @@ void BuildSettingsDialog::loadToScreen(std::string const &compName)
         Gui::setSelected(GTK_COMBO_BOX(typeBox), index);
 
         CompoundValue cppArgs;
-        cppArgs.parseString(mComponentFile.getComponentBuildArgs(compName));
+        cppArgs.parseString(mProject.getValue(
+            ProjectReader::getCppArgsCompFilterName(compName)));
         std::string str = cppArgs.getAsString('\n');
         Gui::setText(argsView, str);
         }

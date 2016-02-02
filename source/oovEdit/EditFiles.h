@@ -52,8 +52,9 @@ class LeftMargin
 class ScrolledFileView
     {
     public:
-        ScrolledFileView(Debugger &debugger):
-            mDebugger(debugger), mScrolled(nullptr), mDesiredLine(-1)
+        ScrolledFileView(ProjectReader &project, Debugger &debugger):
+            mDebugger(debugger), mScrolled(nullptr), mFileView(project),
+            mDesiredLine(-1)
             {}
         GtkNotebook *getBook()
             {
@@ -91,7 +92,7 @@ class ScrolledFileView
 class EditFiles:public FileEditViewListener
     {
     public:
-        EditFiles(Debugger &debugger, EditOptions &editOptions);
+        EditFiles(ProjectReader &project, Debugger &debugger, EditOptions &editOptions);
         static EditFiles &getEditFiles();
         void init(Builder &builder);
         // This prevents a crash if called before the windows
@@ -138,6 +139,7 @@ class EditFiles:public FileEditViewListener
         static bool handleButtonPress(GtkWidget *widget, GdkEventButton const &button);
 
     private:
+        ProjectReader &mProject;
         EditOptions &mEditOptions;
         GtkNotebook *mHeaderBook;
         GtkNotebook *mSourceBook;

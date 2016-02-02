@@ -64,7 +64,16 @@ bool NewModule::createModuleFiles()
         compDir.appendDir(compName);
     // Create the new component directory if it doesn't exist.
     OovStatus status = FileEnsurePathExists(compDir);
-    if(status.ok())
+    if(!status.ok())
+        {
+        status.reported();
+        OovString err;
+        err = "Unable to create component directory ";
+        err += compDir;
+        Gui::messageBox(err, GTK_MESSAGE_INFO);
+        }
+
+    if(status.ok() && interfaceName.length() > 0)
         {
         if(!FileIsFileOnDisk(interfaceName, status))
             {
@@ -78,17 +87,17 @@ bool NewModule::createModuleFiles()
                 status = intFile.putString(str);
                 }
             }
-        }
-    if(!status.ok())
-        {
-        status.reported();
-        OovString err;
-        err = "Unable to create interface ";
-        err += interfaceName;
-        Gui::messageBox(err, GTK_MESSAGE_INFO);
+        if(!status.ok())
+            {
+            status.reported();
+            OovString err;
+            err = "Unable to create interface ";
+            err += interfaceName;
+            Gui::messageBox(err, GTK_MESSAGE_INFO);
+            }
         }
 
-    if(status.ok())
+    if(status.ok() && implementationName.length() > 0)
         {
         if(!FileIsFileOnDisk(implementationName, status))
             {
@@ -116,25 +125,26 @@ bool NewModule::createModuleFiles()
 bool NewModule::runDialog()
     {
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("NewModuleDialog")));
-    ComponentTypesFile componentsFile;
+    ComponentTypesFile componentsFile(mProject);
     Gui::clear(GTK_COMBO_BOX_TEXT(Builder::getBuilder()->getWidget(
             "NewModule_ComponentComboboxtext")));
-    OovStatus status = componentsFile.read();
+    ScannedComponentInfo scannedCompInfo;
+    OovStatus status = scannedCompInfo.readScannedInfo();
     if(status.ok())
         {
-        OovStringVec names = componentsFile.getComponentNames();
+        OovStringVec names = scannedCompInfo.getComponentNames();
         if(names.size() == 0)
             {
             Gui::appendText(GTK_COMBO_BOX_TEXT(Builder::getBuilder()->getWidget(
-                    "NewModule_ComponentComboboxtext")), Project::getRootComponentName());
+                "NewModule_ComponentComboboxtext")), Project::getRootComponentName());
             }
         for(auto const &name : names)
             {
             Gui::appendText(GTK_COMBO_BOX_TEXT(Builder::getBuilder()->getWidget(
-                    "NewModule_ComponentComboboxtext")), name);
+                "NewModule_ComponentComboboxtext")), name);
             }
         Gui::setSelected(GTK_COMBO_BOX(Builder::getBuilder()->getWidget(
-                "NewModule_ComponentComboboxtext")), 0);
+            "NewModule_ComponentComboboxtext")), 0);
         }
     if(status.needReport())
         {

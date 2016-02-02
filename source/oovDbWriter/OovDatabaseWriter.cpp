@@ -60,7 +60,8 @@ class DbWriter
         // The project directory is used to find the place to store the output.
         bool openDatabase(char const *projectDir, ModelData const *modelData);
         bool writeTypes(int passIndex, int &typeIndex, int maxTypesPerTransaction);
-        bool writeComponentsInfo(ComponentTypesFile const* compTypesFile);
+        bool writeComponentsInfo(ComponentTypesFile const* compTypesFile,
+                ScannedComponentInfo const *scannedCompInfo);
         bool writeModuleRelations(IncDirDependencyMapReader const* incMapFile);
         void closeDatabase();
         OovStringRef getLastError() const
@@ -130,19 +131,20 @@ bool DbWriter::openDatabase(char const *projectDir, ModelData const *modelData)
     return success;
     }
 
-bool DbWriter::writeComponentsInfo(ComponentTypesFile const* compTypesFile)
+bool DbWriter::writeComponentsInfo(ComponentTypesFile const* compTypesFile,
+    ScannedComponentInfo const *scannedCompInfo)
     {
     bool success = true;
     if(compTypesFile)
         {
         success = mDb.exec("begin");
-        OovStringVec compNames = compTypesFile->getComponentNames();
+        OovStringVec compNames = compTypesFile->getDefinedComponentNames();
         for(auto const &compName : compNames)
             {
-            OovStringVec sources = compTypesFile->getComponentFiles(
-                ComponentTypesFile::CFT_CppSource, compName);
-            OovStringVec includes = compTypesFile->getComponentFiles(
-                ComponentTypesFile::CFT_CppInclude, compName);
+            OovStringVec sources = scannedCompInfo->getComponentFiles(
+                *compTypesFile, ScannedComponentInfo::CFT_CppSource, compName);
+            OovStringVec includes = scannedCompInfo->getComponentFiles(
+                *compTypesFile, ScannedComponentInfo::CFT_CppInclude, compName);
             sources.insert(sources.end(), includes.begin(), includes.end());
             int compId = 0;
             success = mDb.addComponent(compName, compId);
@@ -504,10 +506,12 @@ SHAREDSHARED_EXPORT bool OpenDb(char const *projectDir, void const *modelData)
     }
 SHAREDSHARED_EXPORT bool WriteDb(int passIndex, int &typeIndex, int maxTypesPerTransaction)
     { return sDbWriter.writeTypes(passIndex, typeIndex, maxTypesPerTransaction); }
-SHAREDSHARED_EXPORT bool WriteDbComponentTypes(void const *compTypesFile)
+SHAREDSHARED_EXPORT bool WriteDbComponentTypes(void const *compTypesFile,
+    void const *scannedCompInfoFile)
     {
     return sDbWriter.writeComponentsInfo(
-        static_cast<ComponentTypesFile const*>(compTypesFile));
+        static_cast<ComponentTypesFile const*>(compTypesFile),
+        static_cast<ScannedComponentInfo const*>(scannedCompInfoFile));
     }
 SHAREDSHARED_EXPORT bool WriteDbModuleRelations(void const *includeMapFile)
     {

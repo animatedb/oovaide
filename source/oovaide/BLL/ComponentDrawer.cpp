@@ -13,12 +13,12 @@ GraphSize ComponentDrawer::drawNode(const ComponentNode &node)
     std::vector<std::string> drawStrings;
 
     drawStrings.push_back(node.getName());
-    ComponentTypesFile::eCompTypes ct = node.getComponentType();
+    eCompTypes ct = node.getComponentType();
     if(node.getComponentNodeType() == ComponentNode::CNT_ExternalPackage)
         {
         drawStrings.push_back("<<External>>");
         }
-    else if(ct != ComponentTypesFile::CT_Unknown)
+    else if(ct != CT_Unknown)
         {
         std::string stereotype = "<<";
         stereotype += ComponentTypesFile::getShortComponentTypeName(ct);

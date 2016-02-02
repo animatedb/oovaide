@@ -12,18 +12,18 @@
 
 void ComponentGraph::updateGraph(const ComponentDrawOptions &options)
     {
-    ComponentTypesFile compFile;
-    OovStatus status = compFile.read();
+    ComponentTypesFile compFile(mProject);
+    OovStatus status = mScannedComponentInfo.readScannedInfo();
     if(status.ok())
         {
         mNodes.clear();
-        for(auto const &name : compFile.getComponentNames())
+        for(auto const &name : compFile.getDefinedComponentNames())
             {
-            ComponentTypesFile::eCompTypes ct = compFile.getComponentType(name);
-            if(ct != ComponentTypesFile::CT_Unknown)
+            eCompTypes ct = compFile.getComponentType(name);
+            if(ct != CT_Unknown)
                 {
                 mNodes.push_back(ComponentNode(name,
-                        ComponentNode::CNT_Component, ct));
+                    ComponentNode::CNT_Component, ct));
                 }
             }
         BuildPackages buildPkgs(true);
@@ -31,19 +31,19 @@ void ComponentGraph::updateGraph(const ComponentDrawOptions &options)
         for(auto const &pkg : packages)
             {
             mNodes.push_back(ComponentNode(pkg.getPkgName(),
-                    ComponentNode::CNT_ExternalPackage));
+                ComponentNode::CNT_ExternalPackage));
             }
-        updateConnections(compFile, options);
+        updateConnections(options);
         }
     if(status.needReport())
         {
-        status.report(ET_Error, "Unable to update component graph");
+        status.report(ET_Error, "Unable to read scanned file information for component graph");
         }
     }
 
-void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
-        const ComponentDrawOptions &options)
+void ComponentGraph::updateConnections(const ComponentDrawOptions &options)
     {
+    ComponentTypesFile compFile(mProject);
     BuildPackages buildPkgs(true);
     std::vector<Package> packages = buildPkgs.getPackages();
     mConnections.clear();
@@ -65,18 +65,17 @@ void ComponentGraph::updateConnections(const ComponentTypesFile &compFile,
         {
         if(mNodes[consumerIndex].getComponentNodeType() == ComponentNode::CNT_Component)
             {
-            ComponentTypesFile::eCompTypes compType = mNodes[consumerIndex].getComponentType();
-            ComponentTypesFile::CompFileTypes srcFileType;
-            if(compType == ComponentTypesFile::CT_JavaJarLib ||
-                compType == ComponentTypesFile::CT_JavaJarProg)
+            eCompTypes compType = mNodes[consumerIndex].getComponentType();
+            ScannedComponentInfo::CompFileTypes srcFileType;
+            if(compType == CT_JavaJarLib || compType == CT_JavaJarProg)
                 {
-                srcFileType = ComponentTypesFile::CFT_JavaSource;
+                srcFileType = ScannedComponentInfo::CFT_JavaSource;
                 }
             else
                 {
-                srcFileType = ComponentTypesFile::CFT_CppSource;
+                srcFileType = ScannedComponentInfo::CFT_CppSource;
                 }
-            OovStringVec srcFiles = compFile.getComponentFiles(
+            OovStringVec srcFiles = mScannedComponentInfo.getComponentFiles(compFile,
                 srcFileType, mNodes[consumerIndex].getName());
             for(auto const &srcFile : srcFiles)
                 {
@@ -234,16 +233,7 @@ void ComponentGraph::removeNode(const ComponentNode &node,
             break;
             }
         }
-    ComponentTypesFile compFile;
-    OovStatus status = compFile.read();
-    if(status.needReport())
-        {
-        status.report(ET_Error, "Unable to read components file to update connections");
-        }
-    if(status.ok())
-        {
-        updateConnections(compFile, options);
-        }
+    updateConnections(options);
     mModified = true;
     }
 

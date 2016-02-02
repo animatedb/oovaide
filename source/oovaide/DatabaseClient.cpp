@@ -11,7 +11,7 @@
 #include "BuildConfigReader.h"
 #include "IncludeMap.h"
 
-void DatabaseWriter::writeDatabase(ModelData *modelData)
+void DatabaseWriter::writeDatabase(ProjectReader &project, ModelData *modelData)
     {
     // Linux is interesting here.  If the project directory (a static
     // string) is read after the library is opened, then the string
@@ -55,8 +55,9 @@ void DatabaseWriter::writeDatabase(ModelData *modelData)
                 }
             if(success)
                 {
-                ComponentTypesFile compFile;
-                OovStatus status = compFile.read();
+                ComponentTypesFile compFile(project);
+                ScannedComponentInfo scannedCompInfo;
+                OovStatus status = scannedCompInfo.readScannedInfo();
                 IncDirDependencyMapReader incMapFile;
                 BuildConfigReader buildConfig;
                 std::string incDepsFilePath = buildConfig.getIncDepsFilePath();
@@ -64,7 +65,7 @@ void DatabaseWriter::writeDatabase(ModelData *modelData)
                 status = incMapFile.read(incDepsFilePath);
                 if(status.ok())
                     {
-                    success = WriteDbComponentTypes(&compFile);
+                    success = WriteDbComponentTypes(&compFile, &scannedCompInfo);
                     }
                 if(status.ok())
                     {
@@ -73,7 +74,7 @@ void DatabaseWriter::writeDatabase(ModelData *modelData)
                 if(status.needReport())
                     {
                     status.reported();
-                    OovError::report(ET_Error, "Unable to open component types file.");
+                    OovError::report(ET_Error, "Unable to read scanned file info for database.");
                     }
                 }
             CloseDb();

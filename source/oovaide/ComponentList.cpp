@@ -11,18 +11,20 @@
 #include <algorithm>    // For find_if
 
 
-static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
+static bool addNames(OovStringRef const compName,
+    ComponentTypesFile const &compFile,
+    ScannedComponentInfo const &scannedCompInfoFile,
     std::vector<ComponentListItem> &names)
     {
     bool added = false;
 
-    OovStringVec sources = compFile.getComponentFiles(
-        ComponentTypesFile::CFT_CppSource, compName, false);
-    OovStringVec includes = compFile.getComponentFiles(
-        ComponentTypesFile::CFT_CppInclude, compName, false);
+    OovStringVec sources = scannedCompInfoFile.getComponentFiles(compFile,
+        ScannedComponentInfo::CFT_CppSource, compName, false);
+    OovStringVec includes = scannedCompInfoFile.getComponentFiles(compFile,
+        ScannedComponentInfo::CFT_CppInclude, compName, false);
     sources.insert(sources.end(), includes.begin(), includes.end());
-    OovStringVec javaSource = compFile.getComponentFiles(
-        ComponentTypesFile::CFT_JavaSource, compName, false);
+    OovStringVec javaSource = scannedCompInfoFile.getComponentFiles(compFile,
+        ScannedComponentInfo::CFT_JavaSource, compName, false);
     sources.insert(sources.end(), javaSource.begin(), javaSource.end());
     for(const auto &fn : sources)
         {
@@ -46,14 +48,15 @@ static bool addNames(OovStringRef const compName, ComponentTypesFile &compFile,
 void ComponentList::updateComponentList()
     {
     clear();
-    ComponentTypesFile compFile;
-    OovStatus status = compFile.read();
+    ComponentTypesFile compFile(mProject);
+    ScannedComponentInfo scannedCompInfo;
+    OovStatus status = scannedCompInfo.readScannedInfo();
     if(status.ok())
         {
         GuiTreeItem root;
-        for(const auto &compName : compFile.getComponentNames())
+        for(const auto &compName : scannedCompInfo.getComponentNames())
             {
-            bool addedSrc = addNames(compName, compFile, mListMap);
+            bool addedSrc = addNames(compName, compFile, scannedCompInfo, mListMap);
 //            bool addedInc = addNames(compName, compFile, mListMap);
             if(addedSrc /*|| addedInc*/)
                 {
@@ -70,7 +73,7 @@ void ComponentList::updateComponentList()
         }
     if(status.needReport())
         {
-        status.report(ET_Error, "Unable to update component list");
+        status.report(ET_Error, "Unable to read scanned component info for component list");
         }
     }
 

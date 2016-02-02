@@ -22,16 +22,6 @@ static char sCoverageSourceDir[] = "oov-cov";
 static char sCoverageProjectDir[] = "oov-cov-oovaide";
 
 
-
-OovString makeBuildConfigArgName(OovStringRef const baseName,
-        OovStringRef const buildConfig)
-    {
-    OovString name = baseName;
-    name += '-';
-    name += buildConfig;
-    return name;
-    }
-
 void Project::setArgv0(OovStringRef arg)
     {
 #ifndef __linux__
@@ -39,12 +29,14 @@ void Project::setArgv0(OovStringRef arg)
 #endif
     }
 
+/*
 OovString Project::getComponentTypesFilePath()
     {
     FilePath fn(sProjectDirectory, FP_Dir);
     fn.appendFile("oovaide-comptypes.txt");
     return fn;
     }
+*/
 
 OovString Project::getComponentSourceListFilePath()
     {
@@ -398,6 +390,15 @@ OovString Project::getCoverageProjectDirectory()
     return coverageDir;
     }
 
+void ProjectReader::checkProjectVersion()
+    {
+    if(getValue("BuildArgsBase").length() > 0)
+        {
+        OovError::report(ET_Error, "This is an old project file.\n"
+            "An old version of OovAide should be used with this project,"
+            " or a new project should be created.");
+        }
+    }
 
 OovStatusReturn ProjectReader::readProject(OovStringRef const oovProjectDir)
     {
@@ -406,13 +407,32 @@ OovStatusReturn ProjectReader::readProject(OovStringRef const oovProjectDir)
     OovStatus status = readFile();
     if(status.ok())
         {
+        checkProjectVersion();
         Project::setSourceRootDirectory(getValue(OptSourceRootDir));
         }
     return status;
     }
 
-void ProjectBuildArgs::loadBuildArgs(OovStringRef const buildConfigName)
+OovString ProjectReader::getCppArgsCompFilterName(OovStringRef compName)
     {
+    BuildVariable buildVar;
+    buildVar.setVarName(OptCppArgs);
+    buildVar.addFilter(OptFilterNameComponent, compName);
+    buildVar.setFunction(BuildVariable::F_Append);
+    return(buildVar.getVarFilterName());
+    }
+
+
+void ProjectBuildArgs::setConfig(OovStringRef buildMode, OovStringRef const buildConfig)
+    {
+    mBuildEnv.addCurrentFilterValue(OptFilterNameBuildMode, buildMode);
+    mBuildEnv.addCurrentFilterValue(OptFilterNameBuildConfig, buildConfig);
+#ifdef __linux__
+    mBuildEnv.addCurrentFilterValue(OptFilterNamePlatform, OptFilterValuePlatformLinux);
+#else
+    mBuildEnv.addCurrentFilterValue(OptFilterNamePlatform, OptFilterValuePlatformWindows);
+#endif
+
     OovStatus status = mProjectPackages.read();
     if(status.needReport())
         {
@@ -425,21 +445,15 @@ void ProjectBuildArgs::loadBuildArgs(OovStringRef const buildConfigName)
         // These packages are optional.
         status.clearError();
         }
+    }
 
+void ProjectBuildArgs::setCompConfig(OovStringRef ownerCompName)
+    {
+    mBuildEnv.addCurrentFilterValue(OptFilterNameComponent, ownerCompName);
     OovStringVec args;
     CompoundValue baseArgs;
-    baseArgs.parseString(mProjectOptions.getValue(OptBaseArgs));
+    baseArgs.parseString(mBuildEnv.getValue(OptCppArgs));
     for(auto const &arg : baseArgs)
-        {
-        args.push_back(arg);
-        }
-
-    std::string optionExtraArgs = makeBuildConfigArgName(OptExtraBuildArgs,
-            buildConfigName);
-    CompoundValue extraArgs;
-    extraArgs.parseString(mProjectOptions.getValue(optionExtraArgs));
-    extraArgs.quoteAllArgs();
-    for(auto const &arg : extraArgs)
         {
         args.push_back(arg);
         }
@@ -448,6 +462,11 @@ void ProjectBuildArgs::loadBuildArgs(OovStringRef const buildConfigName)
 
 void ProjectBuildArgs::parseArgs(OovStringVec const &args)
     {
+    mCompileArgs.clear();
+    mLinkArgs.clear();
+    mExternalRootArgs.clear();
+    mExternalPackageNames.clear();
+
     unsigned int linkOrderIndex = LOI_AfterInternalProject;
     for(auto const &arg : args)
         {
@@ -561,4 +580,11 @@ unsigned int ProjectBuildArgs::getExternalPackageLinkOrder(OovStringRef const pk
             index = item.mLinkOrderIndex;
         }
     return index;
+    }
+
+std::string ProjectBuildArgs::getCovInstrToolPath()
+    {
+    OovString path = Project::getBinDirectory();
+    path += "oovCovInstr";
+    return(path);
     }

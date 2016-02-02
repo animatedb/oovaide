@@ -215,7 +215,7 @@ OovStringVec Tokenizer::getDiagResults()
     if(mTransUnit)
         {
         int numDiags = clang_getNumDiagnostics(mTransUnit);
-        for (int i = 0; i<numDiags && i < 10; i++)
+        for (int i = 0; i<numDiags && diagResults.size() < 10; i++)
             {
             CXDiagnostic diag = clang_getDiagnostic(mTransUnit, i);
 //          CXDiagnosticSeverity sev = clang_getDiagnosticSeverity(diag);

@@ -392,6 +392,9 @@ class FilePath:public FilePathRefInterface<FilePath>, public OovString
         /// @param ext The extension to append.
         void appendExtension( OovStringRef const ext);
 
+        /// Discard the drive part of the path.
+        void discardDrive();
+
         /// Discard the directory part of the path.
         void discardDirectory();
 

@@ -26,6 +26,8 @@ Explanations
 	  directory.
 	- If the error, "Never use <adxintrin.h> directly", displays, the
 	  Oovaide project must be set to exclude lib dir for analysis.
+	- In mingw-5.3.0, cannot find libapi-ms-win-core-winrt-string-l1-1-0.a,
+	  copying versions from 5.1.0 works.
 
 Code/Design Guidelines
 -----------
@@ -36,11 +38,22 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - General
+	- click on top left corner of oovaide program (settings menu) is terrible.
+	- __chkstk_ms error for linking .so - make sure path is set to correct version of mingw.
+	- add cmakelists reader
+	- tool paths should be specific to linux/windows - update when loading project?
+	- clean says, unable to get directory for analysis
+	- source path in project is different on linux and windows. need to change when opening project
+	- oovaide-pkg.txt must be different on linux/windows?
+	- Add advanced build dialog for setting variables.
+	- Add help to describe dependencies on CLang, etc. Different for linux/windows
 	- Duplicate class/function names
 	- Build Java/task sequencing
 	- Preserve state between sessions
 - Gui
 	- Add External Directories button for Build Arguments dialog.
+	- Optimize directory path dependencies by oovBuilder, component diagram.
+	  Store path dirs with indices to allow comparing indices?
 	- Changing preferences should update drawings
 	- For linux, don't getPackage if not in available list.
 
@@ -171,7 +184,20 @@ Missing Features
 	- Add -Wall, --analyzer
 
 - Build System (Build not required for displaying diagrams)
-	- C++ modules (see clang, import, umbrella)
+	- isystem is in BuildArgsExtra-Analyze, but should be in BuildArgsBase. Options.cpp, extraCppDocArgs -> baseArgs
+	- Improved build
+	  - C++ modules (see clang, import, umbrella)
+	    - order include dirs by component directory hierarchy
+	    - module.modulemap - built automatically, but user can edit includes?
+	    - create a new oovaide file in component dirs that defines what goes into modulemap
+	  - solve dup filenames (ChibiOS, FreeRTOS, or RTEMS)
+	  - provide custom hooks - doxygen, etc.
+	  - two phases, 1. find dependencies, 2. build, trigger by editor,
+	    what about dir moves?
+	  - take ideas from ninja / build.gn / gyp
+	    - gyp specifies target type, sources, dependencies, import files, compile flags
+	  - read cmake files? or exec some of cmake to get packages?
+	  - parent build files define settings for children
 	- Java - use imports to build executable jars in correct order
 	- Java - jar building needs to delete output jar.
 	- Java - build failing in linux? Can't find *.class in makeJar()
@@ -197,6 +223,16 @@ Missing Features
 	  (in case of restore files)
 	- Cache file times or monitor file changes
 
+- CMaker
+	- Change oovCMaker to generate target_include_directories instead of
+	  include_directories. Change add_definitions to target_compile_definitions.
+	- Use target_compile_features instead of -std=c++11
+	- BUG: discards directories in CMaker::getCompSources
+	- Allow debug/release and cross compile in cmake
+		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
+		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
+			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
+
 - Database
 	- Some functions have '#' appended in writeStatement for undefined
 	  functions implicitely called or templates, etc.
@@ -213,14 +249,8 @@ Missing Features
 	- space before semicolon under if with no braces? -
 		Search ZoneDiagram.cpp "mZoom /= 1.5 ;"
 
-- CMaker
-	- BUG: discards directories in CMaker::getCompSources
-	- Allow debug/release and cross compile in cmake
-		http://blog.beuc.net/posts/Cross-compiling_with_CMake/
-		http://stackoverflow.com/questions/6476203/how-can-i-make-cmake-use-
-			specific-compiler-and-flags-when-final-compilation-stag- C++ parsing
-
 - Editor
+	- Syntax highlighting isn't updated for files dependent on a modified header.
 	- Sometimes goto definition doesn't.  Second time works.
 	- Click on tab should set focus to view so cursor displays
 	- Make find in files a background task

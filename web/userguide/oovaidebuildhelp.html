@@ -100,11 +100,14 @@
     <p> OovAide uses the CLang parser for analysis. This means that problems
       with include paths can be solved by searching the web for typical CLang
       installation problems. </p>
-    <p> Oovaide generally uses one set of compiler settings for all directories.
-      This typically means that a superset of all packages must be specified.
+    <p> Oovaide by default uses one set of compiler settings for all directories.
+      This means that a superset of all packages should be specified in the
+      common build arguments.
       For example, if gtk is not needed for some directories, adding it for all
       directories should not cause a problem for directories that do not require
-      gtk. It may make analysis slower, but should not fail. </p>
+      gtk. It may make analysis slower, but should not fail. This can be
+      changed for complex projects.
+    </p>
     <p> Each header and source file is analyzed independently. This means that
       each file should be able to include all definitions needed. Search the web
       for "self-sufficient headers", or "self-contained headers", for more
@@ -183,8 +186,10 @@
       Compile Problems</h3>
     One of the most difficult problems can be solving include path problems. The
     include directories for files in the project do not have to be set since
-    OovAide sets these automatically. OovAide requires that the include file
-    names are unique, or the wrong one could be used.
+    OovAide sets these automatically. OovAide generally requires that the include
+    file names are unique, or the wrong one could be used. Include paths
+    can be set per component to resolve these issues. The simplest way is to
+    use the Build Settings dialog. Another way is to edit the oovaide.txt project file.
     <p> See the Inkscape Example below for more problem solving information. </p>
     <p> </p>
     <h4><a class="mozTocH4" id="mozTocId416185"></a>LibCLang missing</h4>

@@ -64,50 +64,55 @@ static void addCLangArgs(CompoundValue &cv)
     cv.addArg("-std=c++11");
     }
 
-static void setBuildConfigurationPaths(NameValueFile &file,
-        OovStringRef const buildConfig, OovStringRef const extraArgs, bool useclang)
-    {
-    std::string optStr = makeBuildConfigArgName(OptExtraBuildArgs, buildConfig);
-    file.setNameValue(optStr, extraArgs);
 
-    if(std::string(buildConfig).compare(BuildConfigAnalysis) == 0)
-        {
-        useclang = true;
-        }
+static void setCppArgs(NameValueFile &file, OovStringRef filterName,
+    OovStringRef const buildConfig, OovStringRef extraArgs)
+    {
+    BuildVariable buildVar;
+    buildVar.setVarName(OptCppArgs);
+    buildVar.setFunction(BuildVariable::F_Append);
+    buildVar.addFilter(filterName, buildConfig);
+    file.setNameValue(buildVar.getVarFilterName().getStr(), extraArgs);
+    }
+
+
+static void setBuildConfigurationPaths(NameValueFile &file,
+    bool useclang)
+    {
+    BuildVariable buildVar;
+
     // Assume the archiver is installed and on path.
     // llvm-ar gives link error.
     // setNameValue(makeExeFilename("llvm-ar"));
-    optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
-    file.setNameValue(optStr, FilePathMakeExeFilename("ar"));
+    buildVar.setVarName(OptCppLibPath);
+    buildVar.setFunction(BuildVariable::F_Assign);
+    file.setNameValue(buildVar.getVarFilterName(), FilePathMakeExeFilename("ar"));
 
     // llvm-nm gives bad file error on Windows, and has no output on Linux.
     // mPathObjSymbol = "makeExeFilename(llvm-nm)";
-    optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
-    file.setNameValue(optStr, FilePathMakeExeFilename("nm"));
+    buildVar.setVarName(OptObjSymbolPath);
+    file.setNameValue(buildVar.getVarFilterName(), FilePathMakeExeFilename("nm"));
 
     std::string compiler;
     if(useclang)
         compiler = FilePathMakeExeFilename("clang++");
     else
         compiler = FilePathMakeExeFilename("g++");
-    optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
-    file.setNameValue(optStr, compiler);
+    buildVar.setVarName(OptCppCompilerPath);
+    file.setNameValue(buildVar.getVarFilterName(), compiler);
 
-    optStr = makeBuildConfigArgName(OptToolJavaCompilePath, buildConfig);
-    if(strcmp(buildConfig, BuildConfigAnalysis) == 0)
-        {
-        file.setNameValue(optStr, "java");
+    buildVar.setVarName(OptJavaJarPath);
+    file.setNameValue(buildVar.getVarFilterName(), "jar");
 
-        optStr = makeBuildConfigArgName(OptToolJavaAnalyzerTool, buildConfig);
-        file.setNameValue(optStr, "oovJavaParser");
-        }
-    else
-        {
-        file.setNameValue(optStr, "javac");
-        }
+    buildVar.setVarName(OptJavaCompilerPath);
+    file.setNameValue(buildVar.getVarFilterName(), "javac");
 
-    optStr = makeBuildConfigArgName(OptToolJavaJarToolPath, buildConfig);
-    file.setNameValue(optStr, "jar");
+    // For analysis mode, set different java paths
+    buildVar.addFilter(OptFilterNameBuildConfig, BuildConfigAnalysis);
+    file.setNameValue(buildVar.getVarFilterName(), "java");
+
+    buildVar.setVarName(OptJavaAnalyzerPath);
+    file.setNameValue(buildVar.getVarFilterName(), "oovJavaParser");
     }
 
 #ifdef __linux__
@@ -180,7 +185,9 @@ void OptionsDefaults::setDefaultOptions()
     CompoundValue extraCppDocArgs;
     CompoundValue extraCppRlsArgs;
     CompoundValue extraCppDbgArgs;
+    CompoundValue extraLinuxArgs;
 
+    mProject.clear();
     baseArgs.addArg("-c");
     bool useCLangBuild = false;
 #ifdef __linux__
@@ -236,8 +243,8 @@ void OptionsDefaults::setDefaultOptions()
             {
             for(auto const &incPath : sysIncPaths)
                 {
-                extraCppDocArgs.addArg("-isystem");
-                extraCppDocArgs.addArg(incPath);
+                extraLinuxArgs.addArg("-isystem");
+                extraLinuxArgs.addArg(incPath);
                 }
             }
         else
@@ -252,35 +259,45 @@ void OptionsDefaults::setDefaultOptions()
     extraCppRlsArgs.addArg("-O3");
 
 #ifdef __linux__
-    mProject.setNameValue(OptToolDebuggerPath, "/usr/bin/gdb");
+    mProject.setNameValue(OptExeDebuggerPath, "/usr/bin/gdb");
 #else
     // This works without setting the full path.
     // The path could be /MinGW/bin, or could be /Program Files/mingw-builds/...
-    mProject.setNameValue(OptToolDebuggerPath, "gdb.exe");
+    mProject.setNameValue(OptExeDebuggerPath, "gdb.exe");
 #endif
 
-    setBuildConfigurationPaths(mProject, BuildConfigAnalysis,
-            extraCppDocArgs.getAsString(), useCLangBuild);
-    setBuildConfigurationPaths(mProject, BuildConfigDebug,
-            extraCppDbgArgs.getAsString(), useCLangBuild);
-    setBuildConfigurationPaths(mProject, BuildConfigRelease,
-            extraCppRlsArgs.getAsString(), useCLangBuild);
+    BuildVariable buildVar;
+    buildVar.setVarName(OptCppArgs);
+    mProject.setNameValue(buildVar.getVarFilterName(), baseArgs.getAsString());
 
-    mProject.setNameValue(OptBaseArgs, baseArgs.getAsString());
+    setCppArgs(mProject, OptFilterNameBuildConfig, BuildConfigAnalysis,
+        extraCppDocArgs.getAsString());
+    setCppArgs(mProject, OptFilterNameBuildConfig, BuildConfigDebug,
+        extraCppDbgArgs.getAsString());
+    setCppArgs(mProject, OptFilterNameBuildConfig, BuildConfigRelease,
+        extraCppRlsArgs.getAsString());
+    setCppArgs(mProject, OptFilterNamePlatform, OptFilterValuePlatformLinux,
+        extraLinuxArgs.getAsString());
+
+    setBuildConfigurationPaths(mProject, useCLangBuild);
 
     OovString str = GetEnv("CLASSPATH");;
     if(str.length())
         {
-        mProject.setNameValue(OptJavaClassPath, str);
+        buildVar.setVarName(OptJavaClassPath);
+        mProject.setNameValue(buildVar.getVarFilterName(), str);
         }
     str = GetEnv("JAVA_HOME");
-    if(str.length() > 0)
+    if(str.length() == 0)
         {
 #ifdef __linux__
         str = "/usr/lib/jvm/default-java";
-#else
 #endif
-        mProject.setNameValue(OptJavaJdkPath, str);
+        }
+    if(str.length())
+        {
+        buildVar.setVarName(OptJavaJdkPath);
+        mProject.setNameValue(buildVar.getVarFilterName(), str);
         }
     }
 

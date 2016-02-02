@@ -83,7 +83,8 @@ class FileEditViewListener
 class FileEditView
     {
     public:
-        FileEditView():
+        FileEditView(ProjectReader &project):
+            mProject(project),
             mTextView(nullptr), mTextBuffer(nullptr), mCurHistoryPos(0),
             mDoingHistory(false), mLastViewTopOffset(0), mLastViewBotOffset(0),
             mHighlightTextContentChange(false), mListener(nullptr),
@@ -204,6 +205,7 @@ class FileEditView
             { mHighlightTextContentChange = false; }
 
     private:
+        ProjectReader &mProject;
         std::string mFilePath;
         GtkTextView *mTextView;
         GtkTextBuffer *mTextBuffer;

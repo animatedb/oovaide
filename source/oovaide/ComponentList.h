@@ -9,6 +9,7 @@
 #define COMPONENTLIST_H_
 
 #include "Gui.h"
+#include "Project.h"
 #include <vector>
 
 
@@ -29,6 +30,9 @@ struct ComponentListItem
 class ComponentList:public GuiTree
     {
     public:
+        ComponentList(ProjectReader &project):
+            mProject(project)
+            {}
         void init(Builder &builder, OovStringRef const widgetName,
                 OovStringRef const title)
             {
@@ -43,6 +47,7 @@ class ComponentList:public GuiTree
         std::string getSelectedFileName() const;
 
     private:
+        ProjectReader &mProject;
         std::vector<ComponentListItem> mListMap;
     };
 

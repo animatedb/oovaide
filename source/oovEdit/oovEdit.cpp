@@ -17,7 +17,8 @@
 
 
 Editor::Editor():
-    mEditFiles(mDebugger, mEditOptions), mLastSearchCaseSensitive(false)
+    mEditFiles(mProject, mDebugger, mEditOptions),
+    mLastSearchCaseSensitive(false)
     {
     mDebugger.setListener(*this);
     }
@@ -556,7 +557,7 @@ void Editor::loadSettings()
         {
         gtk_window_resize(Gui::getMainWindow(), width, height);
         }
-    Project::setProjectDirectory(mProjectDir);
+    mProject.readProject(mProjectDir);
     }
 
 void Editor::saveSettings()
@@ -571,20 +572,15 @@ void Editor::editPreferences()
     GtkComboBoxText *cb = GTK_COMBO_BOX_TEXT(mBuilder.getWidget("DebugComponent"));
     Gui::clear(cb);
 
-    ComponentTypesFile compFile;
-    OovStatus status = compFile.read();
-    if(status.needReport())
-        {
-        status.report(ET_Error, "Unable to read components file to get types for debugging");
-        }
+    ComponentTypesFile compFile(mProject);
     bool haveNames = false;
     Gui::setSelected(cb, 0);
     std::string dbgComponent = mEditOptions.getValue(OptEditDebuggee);
     int compIndex = -1;
     int boxCount = 0;
-    for(const std::string &name : compFile.getComponentNames())
+    for(const std::string &name : compFile.getDefinedComponentNames())
         {
-        if(compFile.getComponentType(name) == ComponentTypesFile::CT_Program)
+        if(compFile.getComponentType(name) == CT_Program)
             {
             FilePath fp(Project::getBuildOutputDir(BuildConfigDebug), FP_Dir);
             OovString filename = name;

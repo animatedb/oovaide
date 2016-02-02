@@ -110,6 +110,9 @@ class NameValueRecord
         /// @param value The value of the item.
         void setNameValue(OovStringRef const optionName, OovStringRef const value);
 
+        /// Gets all names starting with the baseName
+        OovStringVec getMatchingNames(OovStringRef const baseName) const;
+
         /// Get a value associated with the name
         OovString getValue(OovStringRef const optionName) const;
 

@@ -20,6 +20,12 @@ static bool makeCoverageProjectFile(OovStringRef const srcFn, OovStringRef const
         {
         file.setFilename(dstFn);
         file.setNameValue(OptSourceRootDir, covSrcDir);
+
+        // Add the coverage component as a static library.
+        static OovStringRef const covLibName = Project::getCovLibName();
+        file.setNameValue(ComponentTypesFile::getTypeArgsCompFilterName(covLibName),
+                ComponentTypesFile::getShortComponentTypeName(CT_StaticLib));
+
         status = file.writeFile();
         }
     if(status.needReport())
@@ -31,36 +37,6 @@ static bool makeCoverageProjectFile(OovStringRef const srcFn, OovStringRef const
     return status.ok();
     }
 
-static bool makeCoverageComponentTypesFile(OovStringRef const srcFn, OovStringRef const dstFn)
-    {
-    ComponentTypesFile file;
-    OovStatus status = file.readTypesOnly(srcFn);
-    if(status.ok())
-        {
-        // Define a static library that contains the code that stores
-        // the coverage counts that is compiled into exectuables.
-        static OovStringRef const covLibName = Project::getCovLibName();
-        CompoundValue names = file.getComponentNames();
-        if(names.find(covLibName) == CompoundValue::npos)
-            {
-            names.push_back(covLibName);
-            file.setComponentNames(names.getAsString());
-            file.setComponentType(covLibName,
-                    ComponentTypesFile::getShortComponentTypeName(
-                            ComponentTypesFile::CT_StaticLib));
-            }
-        status = file.writeTypesOnly(dstFn);
-        }
-    if(status.needReport())
-        {
-        OovString err = "Unable to make component types file ";
-        err += srcFn;
-        status.report(ET_Error, err);
-        }
-    return status.ok();
-    }
-
-
 /// The package file is only copied if it doesn't exist or is old.  If it was
 /// always copied, then the date would be updated which would cause a full
 /// rebuild of all analysis and build files.
@@ -69,11 +45,11 @@ static bool copyPackageFileIfNeeded(OovStringRef const srcFn, OovStringRef const
     OovStatus status(true, SC_File);
     if(FileStat::isOutputOld(dstFn, srcFn, status))
         {
-        File srcFile;
-        status = srcFile.open(srcFn, "r");
-        if(status.ok())
+        if(FileIsFileOnDisk(srcFn, status))
             {
-            if(FileIsFileOnDisk(srcFn, status))
+            File srcFile;
+            status = srcFile.open(srcFn, "r");
+            if(status.ok())
                 {
                 if(srcFile.isOpen())
                     {
@@ -108,10 +84,9 @@ static bool copyPackageFileIfNeeded(OovStringRef const srcFn, OovStringRef const
     return status.ok();
     }
 
-bool makeCoverageBuildProject()
+bool makeCoverageBuildProject(ProjectReader &project)
     {
     std::string origProjFilePath = Project::getProjectFilePath();
-    std::string origCompTypesFilePath = Project::getComponentTypesFilePath();
     std::string origPackagesFilePath = Project::getPackagesFilePath();
     std::string covSrcDir = Project::getCoverageSourceDirectory();
     std::string covProjDir = Project::getCoverageProjectDirectory();
@@ -123,11 +98,6 @@ bool makeCoverageBuildProject()
         std::string newProjFilePath = Project::getProjectFilePath();
         success = makeCoverageProjectFile(origProjFilePath,
             newProjFilePath, covSrcDir);
-        if(success)
-            {
-            success = makeCoverageComponentTypesFile(origCompTypesFilePath,
-                Project::getComponentTypesFilePath());
-            }
         if(success)
             {
             success = copyPackageFileIfNeeded(origPackagesFilePath,
@@ -264,7 +234,9 @@ static void updateCovSourceCounts(OovStringRef const relSrcFn,
     OovStatus status = srcFile.open(srcFn, "r");
     if(status.ok())
         {
-        status = FileEnsurePathExists(dstFn);
+        FilePath dstDir(dstFn, FP_File);
+        dstDir.discardFilename();
+        status = FileEnsurePathExists(dstDir);
         if(status.ok())
             {
             File dstFile;

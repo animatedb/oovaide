@@ -54,7 +54,8 @@ OovString JournalRecord::getDiagramName() const
     return name;
     }
 
-Journal::Journal(GuiOptions const &guiOptions):
+Journal::Journal(ProjectReader &project, GuiOptions const &guiOptions):
+    mProject(project),
     mGuiOptions(guiOptions), mCurrentRecord(0), mBuilder(nullptr), mModel(nullptr),
     mJournalListener(nullptr), mTaskStatusListener(nullptr)
     {
@@ -158,7 +159,7 @@ void Journal::displayComponents()
         JournalRecordComponentDiagram *rec;
         if(recordIndex == NO_INDEX)
             {
-            rec = new JournalRecordComponentDiagram(mGuiOptions, *mIncludeMap,
+            rec = new JournalRecordComponentDiagram(mProject, mGuiOptions, *mIncludeMap,
                     *mJournalListener);
             rec->mComponentDiagram.drawToDrawingArea();
             addRecord(rec, componentName);

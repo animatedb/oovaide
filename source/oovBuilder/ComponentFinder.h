@@ -23,30 +23,6 @@ class CppChildArgs:public OovProcessChildArgs
                 const OovStringVec &incDirs);
     };
 
-class ToolPathFile:public NameValueFile
-    {
-    public:
-        void setConfig(OovStringRef const buildConfig)
-            {
-            mBuildConfig = buildConfig;
-            }
-        std::string getCompilerPath();
-        // See Project.h for how this varies depending on build configuration.
-        std::string getJavaCompilerPath();
-        static void appendArgs(bool appendSwitchArgs, OovStringRef argStr, CppChildArgs &args);
-        std::string getJavaJarToolPath();
-        std::string getLibberPath();
-        std::string getObjSymbolPath();
-        static std::string getCovInstrToolPath();
-        OovString makeBuildConfigArgName(OovStringRef const baseName)
-            { return ::makeBuildConfigArgName(baseName, mBuildConfig); }
-    private:
-        std::string mBuildConfig;
-        std::string mPathJavaJarTool;
-        void getPaths();
-    };
-
-
 /// This keeps the insertion order, but does not store duplicates.
 class InsertOrderedSet:public OovStringVec
 {
@@ -56,19 +32,7 @@ public:
         if(!exists(str))
             push_back(str);
         }
-    bool exists(OovStringRef const &str)
-        {
-        bool exists = false;
-        for(const auto &s : *this)
-            {
-            if(s.compare(str) == 0)
-                {
-                exists = true;
-                break;
-                }
-            }
-        return exists;
-        }
+    bool exists(OovStringRef const &str) const;
 };
 
 // Temporary storage while scanning.
@@ -82,19 +46,20 @@ class ScannedComponent
         void addCppIncludeFileName(OovStringRef const objPath)
             { mCppIncludeFiles.insert(objPath); }
         void saveComponentSourcesToFile(ProjectReader const &proj,
-            OovStringRef const compName, ComponentTypesFile &file,
+            OovStringRef const compName, ComponentTypesFile &compFile,
+            ScannedComponentInfo &file,
             OovStringRef analysisPath) const;
         static OovString getComponentName(ProjectReader const &proj,
-            OovStringRef const filePath, OovString *rootPathName=nullptr);
+            OovStringRef const filePath);
 
     private:
         OovStringSet mJavaSourceFiles;
         OovStringSet mCppSourceFiles;
         OovStringSet mCppIncludeFiles;
-        void saveComponentFileInfo(ComponentTypesFile::CompFileTypes cft,
+        void saveComponentFileInfo(ScannedComponentInfo::CompFileTypes cft,
             ProjectReader const &proj, OovStringRef const compName,
-            ComponentTypesFile &compFile, OovStringRef analysisPath,
-            OovStringSet const &newFiles) const;
+            ComponentTypesFile&compFile, ScannedComponentInfo &file,
+            OovStringRef analysisPath, OovStringSet const &newFiles) const;
     };
 
 // Temporary storage while scanning.
@@ -107,8 +72,8 @@ class ScannedComponentsInfo
         void addCppSourceFile(OovStringRef const compName, OovStringRef const srcFileName);
         void addCppIncludeFile(OovStringRef const compName, OovStringRef const srcFileName);
         void initializeComponentTypesFileValues(ProjectReader const &proj,
-            ComponentTypesFile &file, OovStringRef analysisPath);
-        void setProjectComponentsFileValues(ComponentsFile &file);
+            ComponentTypesFile &file, ScannedComponentInfo &scannedFile,
+            OovStringRef analysisPath);
         InsertOrderedSet const &getProjectIncludeDirs() const
             { return mProjectIncludeDirs; }
 
@@ -128,12 +93,24 @@ class ScannedComponentsInfo
 class ComponentFinder:public dirRecurser
     {
     public:
+        enum VariableName
+            {
+            VN_ConvertTool,     // Uses build config name, comp name, file type, and the platform.
+            VN_IntDeps,         // Uses build config name, comp name, file type, and the platform.
+            };
+        /// @todo - should read these definitions from file
+        enum VarFileTypes
+            {
+            VFT_Cpp,            // For .cpp, .h, ...
+            VFT_Java            // For .java, .class
+            };
+
         ComponentFinder():
-            mProjectBuildArgs(mProject), mScanningPackage(nullptr),
-            mAddIncs(false), mAddLibs(false)
+            mComponentTypesFile(mProject), mProjectBuildArgs(mProject),
+            mScanningPackage(nullptr), mAddIncs(false), mAddLibs(false)
             {}
         bool readProject(OovStringRef const oovProjectDir,
-                OovStringRef const buildConfigName);
+            OovStringRef buildMode, OovStringRef const buildConfigName);
 
         /// Recursively scan a directory for source and include files.
         OovStatus scanProject();
@@ -146,58 +123,61 @@ class ComponentFinder:public dirRecurser
             { return getProjectBuildArgs().getBuildPackages().doesPackageExist(pkgName); }
         void addBuildPackage(Package const &pkg);
 
-        /// Adds the components and initial includes to the project components
-        /// file.
-        void saveProject(OovStringRef const compFn, OovStringRef analysisPath);
+        /// Adds the components to the project components file.
+        void saveProject(OovStringRef analysisPath);
 
-        OovString getComponentName(OovStringRef const filePath);
-// DEAD CODE
-//        const ProjectReader &getProject() const
-//            { return mProject; }
-//        ProjectReader &getProject()
-//            { return mProject; }
+        OovString getComponentName(OovStringRef const filePath) const;
 
+        ProjectReader &getProject()
+            { return mProject; }
         ProjectBuildArgs &getProjectBuildArgs()
             { return mProjectBuildArgs; }
         ProjectBuildArgs const &getProjectBuildArgs() const
             { return mProjectBuildArgs; }
+        void setCompConfig(OovStringRef filename)
+            { mProjectBuildArgs.setCompConfig(filename); }
         const ComponentTypesFile &getComponentTypesFile() const
             { return mComponentTypesFile; }
 
-// DEAD CODE
-//        const ComponentsFile &getComponentsFile() const
-//            { return mComponentsFile; }
-
         const ScannedComponentsInfo &getScannedInfo() const
             { return mScannedInfo; }
-        OovStringVec getAllIncludeDirs() const;
+        const ScannedComponentInfo &getScannedComponentInfo() const
+            { return mScannedComponentInfo; }
 
-        OovString makeActualComponentName(OovStringRef const projName) const
-            {
-            OovString fn = projName;
-            if(strcmp(projName, Project::getRootComponentName()) == 0)
-                { fn = mRootPathName; }
-            return fn;
-            }
-        static OovString getRelCompDir(OovStringRef const projName)
-            {
-            OovString fn = projName;
-            if(strcmp(projName, Project::getRootComponentName()) == 0)
-                { fn = ""; }
-            return fn;
-            }
+        // This returns all external and internal dependencies required for the component.
+        OovStringVec getFileIncludeDirs(OovStringRef const srcFile) const;
+
+        OovString makeActualComponentName(OovStringRef const projName) const;
+        static OovString getRelCompDir(OovStringRef const projName);
+        static void appendArgs(bool appendSwitchArgs, OovStringRef argStr, CppChildArgs &args);
+
+        /// This splits the root search dir into a root dir and exclude directories.
+        /// This can accept a rootSrch dir such as "/rootdir/.!/excludedir1/!/excludedir2/"
+        /// @param rootSrch The entire search dir including exclude directories.
+        /// @param rootDir The returned rootDir part of the search dir.
+        /// @param excludes The returned list of exclude directories.
+        static void parseProjRefs(OovStringRef const rootSrch, OovString &rootDir,
+                OovStringVec &excludes);
+
+        /// Checks to see if the filePath is a substring of any of the exclude
+        /// paths.
+        /// @param filePath The filePath to search for within the excludes.
+        /// @param excludes The list of exclude directories.
+        static bool excludesMatch(OovStringRef const filePath,
+                OovStringVec const &excludes);
 
     private:
-        OovString mRootPathName;
         // This is overwritten for every external project.
         OovStringVec mExcludeDirs;
 
+        ProjectReader mProject;
+        ComponentTypesFile mComponentTypesFile;
+        /// @todo - should fix/combine these classes
+        ScannedComponentInfo mScannedComponentInfo;     /// This is the file
         ScannedComponentsInfo mScannedInfo;
 
-        ProjectReader mProject;
+        OovString mBuildConfigName;
         ProjectBuildArgs mProjectBuildArgs;
-        ComponentTypesFile mComponentTypesFile;
-        ComponentsFile mComponentsFile;
         Package *mScanningPackage;
         bool mAddIncs;
         bool mAddLibs;
@@ -205,6 +185,14 @@ class ComponentFinder:public dirRecurser
         /// While searching the directories add C++ source files to the
         /// mComponentNames set, and C++ include files to the mIncludeDirs list.
         virtual bool processFile(OovStringRef const filePath) override;
+
+        /// This returns the external project package dirs, and the internal project
+        /// scanned dirs.
+        OovStringVec getAllIncludeDirs() const;
+        OovStringRef getBuildConfigName() const
+            { return mBuildConfigName; }
+        enum VarFileTypes getVariableFileType(OovStringRef const filePath) const;
+//        OovString getVariableValue(VariableName vn, OovStringRef const srcFile) const;
     };
 
 #endif

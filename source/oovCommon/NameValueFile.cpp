@@ -114,6 +114,20 @@ void NameValueRecord::setNameValue(OovStringRef const optionName,
     mNameValues[optionName] = value;
     }
 
+OovStringVec NameValueRecord::getMatchingNames(OovStringRef const baseName) const
+    {
+    OovStringVec names;
+    int len = baseName.numBytes();
+    for(auto const &nv : mNameValues)
+        {
+        if(nv.first.compare(0, len, baseName, len) == 0)
+            {
+            names.push_back(nv.first);
+            }
+        }
+    return names;
+    }
+
 void NameValueRecord::setNameValueBool(OovStringRef const optionName, bool val)
     {
     setNameValue(optionName, val ? "Yes" : "No");
@@ -169,6 +183,7 @@ bool NameValueRecord::getLine(File &file, OovString &str, OovStatus &status)
 
 OovStatusReturn NameValueRecord::read(File &file)
     {
+    clear();
     OovString lineBuf;
     OovStatus status(true, SC_File);
     while(getLine(file, lineBuf, status))

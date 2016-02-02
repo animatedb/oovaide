@@ -423,20 +423,14 @@ void oovGui::updateMenuEnables(ProjectStatus const &projStat)
             builder->getWidget("StopInstrumentMenuitem"), !idle);
     }
 
-static bool checkAnyComponents()
+static bool checkAnyComponents(ProjectReader &project)
     {
-    ComponentTypesFile compFile;
-    OovStatus status = compFile.read();
-    if(status.needReport())
-        {
-        status.report(ET_Error, "Unable to read component types file "
-            "to see if there are any components");
-        }
+    ComponentTypesFile compFile(project);
     bool success = compFile.anyComponentsDefined();
     if(!success)
         {
         Gui::messageBox("Define some components in Build/Settings",
-                GTK_MESSAGE_INFO);
+            GTK_MESSAGE_INFO);
         }
     return success;
     }
@@ -453,14 +447,14 @@ void oovGui::runSrcManager(OovStringRef const buildConfigName,
             break;
 
         case PM_Build:
-            if(checkAnyComponents())
+            if(checkAnyComponents(mProject.getProjectOptions()))
                 {
                 str = "\nBuilding\n";
                 }
             break;
 
         case PM_CovInstr:
-            if(checkAnyComponents())
+            if(checkAnyComponents(mProject.getProjectOptions()))
                 {
                 str = "\nInstrumenting\n";
                 }
@@ -1015,7 +1009,7 @@ int main(int argc, char *argv[])
         OptionsDialogUpdate optionsDlg(gOovGui->getProject().getProjectOptions(),
                 gOovGui->getProject().getGuiOptions());
         sOptionsDialog = &optionsDlg;
-        BuildSettingsDialog buildDlg;
+        BuildSettingsDialog buildDlg(gOovGui->getProject().getProjectOptions());
 
         GtkWidget *window = gOovGui->getBuilder().getWidget("MainWindow");
         gtk_widget_show(window);
@@ -1053,7 +1047,7 @@ extern "C" G_MODULE_EXPORT void on_ProjectSettingsMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_NewModuleMenuitem_activate(
         GtkWidget * /*widget*/, gpointer /*data*/)
     {
-    NewModule newModule;
+    NewModule newModule(gOovGui->getProject().getProjectOptions());
     if(newModule.runDialog())
         {
         viewSource(gOovGui->getProject().getGuiOptions(), newModule.getFileName(), 1);
@@ -1238,7 +1232,8 @@ extern "C" G_MODULE_EXPORT void on_CreateDatabaseMenuitem_activate(
     if(success)
         {
         DatabaseWriter writer;
-        writer.writeDatabase(&gOovGui->getProject().getModelData());
+        writer.writeDatabase(gOovGui->getProject().getProjectOptions(),
+            &gOovGui->getProject().getModelData());
         }
     }
 

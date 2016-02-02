@@ -44,6 +44,9 @@ class ZoneClassInfoToolTipWindow
 class ZoneDiagramList
     {
     public:
+        ZoneDiagramList(ProjectReader &project):
+            mComponentFile(project)
+            {}
         void init();
         void update();
         GuiTreeItem getParent(std::string const &compName)
@@ -61,6 +64,7 @@ class ZoneDiagramList
     private:
         GuiTree mComponentTree;
         ComponentTypesFile mComponentFile;
+        ScannedComponentInfo mScannedComponentInfo;
     };
 
 

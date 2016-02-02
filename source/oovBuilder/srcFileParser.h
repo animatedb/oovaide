@@ -29,7 +29,7 @@ extern VerboseDumper sVerboseDump;
 class srcFileParser:public dirRecurser, public ThreadedWorkWaitQueue<CppChildArgs, srcFileParser>
 {
 public:
-    srcFileParser(const ComponentFinder &compFinder):
+    srcFileParser(ComponentFinder &compFinder):
         mSrcRootDir(nullptr), mAnalysisDir(nullptr), mComponentFinder(compFinder)
         {}
     virtual ~srcFileParser()
@@ -44,11 +44,7 @@ private:
     char const * mSrcRootDir;
     char const * mAnalysisDir;
     OovStringVec mExcludeDirs;
-    OovStringVec mIncDirArgs;
-    // It is kind of strange that both this and the builder instantiate this,
-    // but since both jobs are different, no significant reason to make them the same.
-    ToolPathFile mToolPathFile;
-    const ComponentFinder &mComponentFinder;
+    ComponentFinder &mComponentFinder;
 
     virtual bool processFile(OovStringRef const filePath) override;
 };

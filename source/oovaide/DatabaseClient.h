@@ -7,6 +7,7 @@
 
 #include "OovLibrary.h"
 #include "ModelObjects.h"
+#include "Project.h"
 
 
 /// This is the C style interface to the Oov database writer run-time library.
@@ -25,7 +26,7 @@ struct DatabaseWriterInterface
     /// *param typeIndex The index of the type to save from ModelData::mTypes.
     bool (*WriteDb)(int passIndex, int &typeIndex, int maxTypesPerTransaction);
     /// This writes the component information that is used by the modules table.
-    bool (*WriteDbComponentTypes)(void const *compTypesFile);
+    bool (*WriteDbComponentTypes)(void const *compTypesFile, void const *scannedCompInfo);
     /// This writes the module relations for include or import.
     bool (*WriteDbModuleRelations)(void const *incMapFile);
     /// Get the last error string.
@@ -44,7 +45,7 @@ class DatabaseWriter:public DatabaseWriterInterface, public OovLibrary
     {
     public:
         /// Write the model data and component information.
-        void writeDatabase(ModelData *modelData);
+        void writeDatabase(ProjectReader &project, ModelData *modelData);
 
     private:
         void loadSymbols();

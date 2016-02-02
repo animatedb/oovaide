@@ -15,82 +15,32 @@
 static DebugFile sLog("oov-finder-debug.txt");
 #endif
 
-void ToolPathFile::getPaths()
-    {
-    if(!haveValues())
-        {
-        std::string projFileName = Project::getProjectFilePath();
-        setFilename(projFileName);
-        OovStatus status = readFile();
-        if(status.needReport())
-            {
-            status.report(ET_Error, "Unable to get project paths");
-            }
 
-        }
-    }
-
-void ToolPathFile::appendArgs(bool appendSwitchArgs, OovStringRef argStr,
-    CppChildArgs &childArgs)
+bool InsertOrderedSet::exists(OovStringRef const &str) const
     {
-    CompoundValue javaArgs;
-    javaArgs.parseString(argStr);
-    for(auto const &arg : javaArgs)
+    bool exists = false;
+    for(const auto &s : *this)
         {
-        if(appendSwitchArgs == (arg[0] == '-'))
+        if(s.compare(str) == 0)
             {
-            childArgs.addArg(arg);
+            exists = true;
+            break;
             }
         }
-    }
-
-std::string ToolPathFile::getCompilerPath()
-    {
-    getPaths();
-    return getValue(makeBuildConfigArgName(OptToolCompilePath));
-    }
-
-std::string ToolPathFile::getJavaCompilerPath()
-    {
-    getPaths();
-    return(getValue(makeBuildConfigArgName(OptToolJavaCompilePath)));
-    }
-
-std::string ToolPathFile::getJavaJarToolPath()
-    {
-    getPaths();
-    return getValue(makeBuildConfigArgName(OptToolJavaJarToolPath));
-    }
-
-std::string ToolPathFile::getObjSymbolPath()
-    {
-    getPaths();
-    return getValue(makeBuildConfigArgName(OptToolObjSymbolPath));
-    }
-
-std::string ToolPathFile::getLibberPath()
-    {
-    getPaths();
-    return getValue(makeBuildConfigArgName(OptToolLibPath));
-    }
-
-std::string ToolPathFile::getCovInstrToolPath()
-    {
-    OovString path = Project::getBinDirectory();
-    path += "oovCovInstr";
-    return(path);
+    return exists;
     }
 
 void ScannedComponent::saveComponentFileInfo(
-    ComponentTypesFile::CompFileTypes cft, ProjectReader const &proj,
+    ScannedComponentInfo::CompFileTypes cft, ProjectReader const &proj,
     OovStringRef const compName, ComponentTypesFile &compFile,
-    OovStringRef analysisPath, OovStringSet const &newFiles) const
+    ScannedComponentInfo &scannedFile, OovStringRef analysisPath,
+    OovStringSet const &newFiles) const
     {
     OovStringSet deleteFiles;
     for(auto const &newFile : newFiles)
         {
         OovString newCompName = getComponentName(proj, newFile);
-        OovStringVec origFiles = compFile.getComponentFiles(cft, newCompName, false);
+        OovStringVec origFiles = scannedFile.getComponentFiles(compFile, cft, newCompName, false);
         for(auto const &origFileName : origFiles)
             {
             if(newFiles.find(origFileName) == newFiles.end())
@@ -113,23 +63,23 @@ void ScannedComponent::saveComponentFileInfo(
             status.report(ET_Error, "Unable to delete analysis files");
             }
         }
-    compFile.setComponentFiles(cft, compName, newFiles);
+    scannedFile.setComponentFiles(cft, compName, newFiles);
     }
 
 void ScannedComponent::saveComponentSourcesToFile(ProjectReader const &proj,
     OovStringRef const compName, ComponentTypesFile &compFile,
-    OovStringRef analysisPath) const
+    ScannedComponentInfo &scannedFile, OovStringRef analysisPath) const
     {
-    saveComponentFileInfo(ComponentTypesFile::CFT_JavaSource, proj, compName,
-        compFile, analysisPath, mJavaSourceFiles);
-    saveComponentFileInfo(ComponentTypesFile::CFT_CppSource, proj, compName,
-        compFile, analysisPath, mCppSourceFiles);
-    saveComponentFileInfo(ComponentTypesFile::CFT_CppInclude, proj, compName,
-        compFile, analysisPath, mCppIncludeFiles);
+    saveComponentFileInfo(ScannedComponentInfo::CFT_JavaSource, proj, compName,
+        compFile, scannedFile, analysisPath, mJavaSourceFiles);
+    saveComponentFileInfo(ScannedComponentInfo::CFT_CppSource, proj, compName,
+        compFile, scannedFile, analysisPath, mCppSourceFiles);
+    saveComponentFileInfo(ScannedComponentInfo::CFT_CppInclude, proj, compName,
+        compFile, scannedFile, analysisPath, mCppIncludeFiles);
     }
 
 OovString ScannedComponent::getComponentName(ProjectReader const &proj,
-    OovStringRef const filePath, OovString *rootPathName)
+    OovStringRef const filePath)
     {
     FilePath path(filePath, FP_File);
     path.discardFilename();
@@ -137,10 +87,6 @@ OovString ScannedComponent::getComponentName(ProjectReader const &proj,
             proj.getSrcRootDirectory());
     if(compName.length() == 0)
         {
-        if(rootPathName)
-            {
-            *rootPathName = Project::getRootComponentFileName();
-            }
         compName = Project::getRootComponentName();
         }
     else
@@ -150,9 +96,9 @@ OovString ScannedComponent::getComponentName(ProjectReader const &proj,
     return compName;
     }
 
-OovString ComponentFinder::getComponentName(OovStringRef const filePath)
+OovString ComponentFinder::getComponentName(OovStringRef const filePath) const
     {
-    return ScannedComponent::getComponentName(mProject, filePath, &mRootPathName);
+    return ScannedComponent::getComponentName(mProject, filePath);
     }
 
 
@@ -196,46 +142,30 @@ void ScannedComponentsInfo::addCppIncludeFile(OovStringRef const compName,
     (*it).second.addCppIncludeFileName(srcFileName);
     }
 
-static void setFileValues(OovStringRef const tagName,
-    OovStringVec const &vals, ComponentsFile &compFile)
-    {
-    CompoundValue incArgs;
-    for(const auto &inc : vals)
-        {
-        incArgs.addArg(inc);
-        }
-    compFile.setNameValue(tagName, incArgs.getAsString());
-    }
-
-void ScannedComponentsInfo::setProjectComponentsFileValues(ComponentsFile &compFile)
-    {
-    setFileValues("Components-init-proj-incs", mProjectIncludeDirs, compFile);
-    }
-
 void ScannedComponentsInfo::initializeComponentTypesFileValues(
     ProjectReader const &proj, ComponentTypesFile &compFile,
-    OovStringRef analysisPath)
+    ScannedComponentInfo &scannedFile, OovStringRef analysisPath)
     {
     CompoundValue comps;
     for(const auto &comp : mComponents)
         {
         comps.addArg(comp.first);
         comp.second.saveComponentSourcesToFile(proj, comp.first, compFile,
-            analysisPath);
+            scannedFile, analysisPath);
         }
-    compFile.setComponentNames(comps.getAsString());
+    scannedFile.setComponentNames(comps.getAsString());
     }
 
 //////////////
 
 bool ComponentFinder::readProject(OovStringRef const oovProjectDir,
-        OovStringRef const buildConfigName)
+    OovStringRef buildMode, OovStringRef const buildConfig)
     {
+    mBuildConfigName = buildConfig;
     OovStatus status = mProject.readProject(oovProjectDir);
     if(status.ok())
         {
-        mProjectBuildArgs.loadBuildArgs(buildConfigName);
-        status = mComponentTypesFile.read();
+        mProjectBuildArgs.setConfig(buildMode, buildConfig);
         }
     if(status.needReport())
         {
@@ -260,7 +190,7 @@ void ComponentFinder::scanExternalProject(OovStringRef const externalRootSrch,
         Package const *pkg)
     {
     OovString externalRootDir;
-    ComponentsFile::parseProjRefs(externalRootSrch, externalRootDir, mExcludeDirs);
+    parseProjRefs(externalRootSrch, externalRootDir, mExcludeDirs);
 
     Package rootPkg;
     if(pkg)
@@ -292,23 +222,14 @@ void ComponentFinder::addBuildPackage(Package const &pkg)
         }
     }
 
-void ComponentFinder::saveProject(OovStringRef const compFn, OovStringRef analysisPath)
+void ComponentFinder::saveProject(OovStringRef analysisPath)
     {
-    mComponentsFile.read(compFn);
-    mScannedInfo.setProjectComponentsFileValues(mComponentsFile);
     mScannedInfo.initializeComponentTypesFileValues(mProject, mComponentTypesFile,
-        analysisPath);
-    OovStatus status = mComponentTypesFile.writeFile();
+        mScannedComponentInfo, analysisPath);
+    OovStatus status = mScannedComponentInfo.writeScannedInfo();
     if(status.needReport())
         {
         OovString errStr = "Unable to save component types file";
-        status.report(ET_Error, errStr);
-        }
-    status = mComponentsFile.writeFile();
-    if(status.needReport())
-        {
-        OovString errStr = "Unable to save components file: ";
-        errStr += mComponentsFile.getFilename();
         status.report(ET_Error, errStr);
         }
     }
@@ -316,7 +237,7 @@ void ComponentFinder::saveProject(OovStringRef const compFn, OovStringRef analys
 bool ComponentFinder::processFile(OovStringRef const filePath)
     {
     /// @todo - find files with no extension? to match things like std::vector include
-    if(!ComponentsFile::excludesMatch(filePath, mExcludeDirs))
+    if(!excludesMatch(filePath, mExcludeDirs))
         {
         bool cppInc = isCppHeader(filePath);
         bool cppSrc = isCppSource(filePath);
@@ -391,6 +312,151 @@ OovStringVec ComponentFinder::getAllIncludeDirs() const
     return incs;
     }
 
+enum ComponentFinder::VarFileTypes ComponentFinder::getVariableFileType(OovStringRef const filePath) const
+    {
+    VarFileTypes vft = VFT_Cpp;
+    if(isCppSource(filePath))
+        { vft = VFT_Cpp; }
+    else if(isJavaSource(filePath))
+        { vft = VFT_Java; }
+    return vft;
+    }
+
+/*
+OovString ComponentFinder::getVariableValue(VariableName vn, OovStringRef const srcFile) const
+    {
+    OovString value;
+
+    char const *platform = Project::getPlatform();
+    char const *bldConfigName = getBuildConfigName();
+    VarFileTypes vft = getVariableFileType(srcFile);
+    OovString compName = getComponentName(srcFile);
+    switch(vn)
+        {
+        case VN_ConvertTool:
+            break;
+
+        case VN_ConvertToolArgs:
+            break;
+
+        case VN_CombineTool:
+// http://www.conifersystems.com/whitepapers/gnu-make/
+// Age dependency checking, timestamps are bad when multiple computers are used. Get time
+// from central location? Could be simple order counter, but would need a place to store
+// the counter for each file.
+//
+// Compiling is dependent on header files, but is not a build dependency since headers are done.
+// So components are only dependent on another component if dependent on the output of the comp.
+// Typically combiners are dependent on converters and other combiners.
+//          Cpp Lib       rule:   $toolpath r $compName.[lib|a] &infiles.[obj|o]
+//          Cpp Link      rule:   $toolpath -o $compName.[exe|so|] [-shared]
+            break;
+
+        case VN_IntDeps:
+            {
+            // How to distinguish between 32/64, etc.
+            // Use Any or All to match
+            // Use Or And? Always And?
+            // Cannot tell difference between bldConfigName and compName, so either
+            // position must be used, or tags. Position is bad because it is limited to a
+            // fixed number of variables. Allow custom defined variables for each build config.
+            //     platform(plt): buildcfg(cfg): component(cmp): filetype(ft): file(f): langtype(lt):
+            // With tags, not specified means any, so "[]" or "" means any.
+            // [plt=Linux & ft=Cpp][+/=]
+            OovString depsStr = mComponentTypesFile.getComponentDepsInternal(compName);
+            // Combine platform and bldConfigName?
+            //  custom          platform=Linux/Windows
+            //  custom          bits=16/32
+            //  compName=*
+            //  bldConfigName=Analyze/Debug/Release/etc.
+            //  vft=Cpp/Java
+            }
+            break;
+        }
+    return value;
+    }
+*/
+
+OovStringVec ComponentFinder::getFileIncludeDirs(OovStringRef const srcFile) const
+    {
+/*
+    OovString dirStr = getVariableValue(VN_IntDeps, srcFile);
+    CompoundValue dirs;
+    if(dirStr.length() != 0)
+        {
+        dirs.parseString(dirStr);
+        }
+    else
+        {
+        dirs = getAllIncludeDirs();
+        }
+    return dirs;
+*/
+    return getAllIncludeDirs();
+    }
+
+OovString ComponentFinder::makeActualComponentName(OovStringRef const projName) const
+    {
+    OovString fn = projName;
+    if(strcmp(projName, Project::getRootComponentName()) == 0)
+        {
+        fn = Project::getRootComponentFileName();
+        }
+    return fn;
+    }
+
+OovString ComponentFinder::getRelCompDir(OovStringRef const projName)
+    {
+    OovString fn = projName;
+    if(strcmp(projName, Project::getRootComponentName()) == 0)
+        { fn = ""; }
+    return fn;
+    }
+
+void ComponentFinder::appendArgs(bool appendSwitchArgs, OovStringRef argStr,
+    CppChildArgs &childArgs)
+    {
+    CompoundValue javaArgs;
+    javaArgs.parseString(argStr);
+    for(auto const &arg : javaArgs)
+        {
+        if(appendSwitchArgs == (arg[0] == '-'))
+            {
+            childArgs.addArg(arg);
+            }
+        }
+    }
+
+void ComponentFinder::parseProjRefs(OovStringRef const arg, OovString &rootDir,
+        OovStringVec &excludes)
+    {
+    excludes.clear();
+    OovStringVec tokens = StringSplit(arg, '!');
+    if(rootDir.size() == 0)
+        rootDir = tokens[0];
+    if(tokens.size() > 1)
+        {
+        excludes.resize(tokens.size()-1);
+        std::copy(tokens.begin()+1, tokens.end(), excludes.begin());
+        }
+    }
+
+bool ComponentFinder::excludesMatch(OovStringRef const filePath,
+        OovStringVec const &excludes)
+    {
+    bool exclude = false;
+    for(const auto &str : excludes)
+        {
+        FilePath normFilePath(filePath, FP_File);
+        FilePath normExcludePath(str, FP_File);
+        if(normFilePath.find(normExcludePath) != std::string::npos)
+            {
+            exclude = true;
+            break;
+            }
+        }
+    return exclude;
+    }
 
 void CppChildArgs::addCompileArgList(const ComponentFinder &finder,
         const OovStringVec &incDirs)

@@ -290,12 +290,18 @@ bool IncDirDependencyMapReader::anyRootDirsUsedBySourceFile(
 #endif
 
 bool IncDirDependencyMapReader::anyRootDirsMatch(OovStringVec const &incRoots,
-        OovStringRef const dirName) const
+    OovStringRef const dirName) const
+    {
+    OovStringVec sources = getFilesDefinedInDirectory(dirName);
+    return anyRootDirsMatch(incRoots, sources);
+    }
+
+bool IncDirDependencyMapReader::anyRootDirsMatch(OovStringVec const &incRoots,
+    OovStringVec const &consumerFiles) const
     {
     bool match = false;
     OovStringSet includesUsedSoFar;
-    OovStringVec sources = getFilesDefinedInDirectory(dirName);
-    for(auto const &src : sources)
+    for(auto const &src : consumerFiles)
         {
 #if(FAST_MATCH)
         match = anyRootDirsUsedBySourceFile(incRoots, includesUsedSoFar, src);

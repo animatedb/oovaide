@@ -15,7 +15,10 @@ static Contexts *sContexts;
 
 
 Contexts::Contexts(OovProject &proj):
-    mProject(proj), mJournal(proj.getGuiOptions()), mCurrentContext(C_BinaryComponent),
+    mProject(proj), mJournal(proj.getProjectOptions(), proj.getGuiOptions()),
+    mCurrentContext(C_BinaryComponent),
+    mComponentList(proj.getProjectOptions()),
+    mZoneList(proj.getProjectOptions()),
     mEditorContainer(mProject.getModelData())
     {
     sContexts = this;

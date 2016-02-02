@@ -148,6 +148,7 @@ class Editor:public DebuggerListener, public OovErrorListener
         Debugger mDebugger;
         OovString mLastSearch;
         OovString mProjectDir;
+        ProjectReader mProject;
         bool mLastSearchCaseSensitive;
         OovString mDebugOut;
         EditOptions mEditOptions;

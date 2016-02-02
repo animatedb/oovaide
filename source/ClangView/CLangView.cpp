@@ -447,7 +447,7 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
         {
         status.report(ET_Error, "Unable to read project to get CPP args");
         }
-    buildArgs.loadBuildArgs(BuildConfigAnalysis);
+    buildArgs.setConfig(OptFilterValueBuildModeAnalyze, BuildConfigAnalysis);
     OovStringVec cppArgs = buildArgs.getCompileArgs();
     for(auto const &arg : cppArgs)
         {

@@ -10,48 +10,51 @@
 
 #include <string>
 #include "FilePath.h"
-#include "NameValueFile.h"
+#include "BuildVariables.h"
 #include "Packages.h"
 #include "OovString.h"
 
 #define OptSourceRootDir "SourceRootDir"
 #define OptProjectExcludeDirs "ExcludeDirs"
-#define OptBaseArgs "BuildArgsBase"
-
-// These are stored per configuration. They will have the build configuration
-// name appended.
-#define OptExtraBuildArgs "BuildArgsExtra"
 
 // This is for user custom build configurations.
 #define OptBuildConfigs "BuildConfigs"
 
-// These are stored per configuration. They will have the build configuration
-// name appended.
-#define OptToolLibPath "Tool-LibPath"
-#define OptToolCompilePath "Tool-CompilerPath"
+#define OptCppArgs "CppArgs"
+#define OptCppLibPath "CppLibPath"
+#define OptCppCompilerPath "CppCompilerPath"
+#define OptObjSymbolPath "ObjSymbolPath"
 // During analysis, the compiler is typically "java", but also requires JavaAnalyzerTool.
 // During debug or release or other, the compiler is typically "javac".
-#define OptToolJavaCompilePath "Tool-JavaCompilerPath"
-#define OptToolJavaAnalyzerTool "Tool-JavaAnalyzerTool"
-#define OptToolJavaJarToolPath "Tool-JavaJarToolPath"           // Actually the jar name.
-#define OptToolObjSymbolPath "Tool-ObjSymbolPath"
+#define OptJavaCompilerPath "JavaCompilerPath"
+#define OptJavaAnalyzerPath "JavaAnalyzerPath"
+#define OptJavaJarPath "JavaJarPath"           // Actually the jar tool name.
 
-#define OptToolDebuggerPath "Tool-DebuggerPath"
+#define OptExeDebuggerPath "ExeDebuggerPath"
 
-#define OptJavaClassPath "Java-ClassPath"
-#define OptJavaJdkPath "Java-JdkPath"
-#define OptJavaAnalyzeArgs "Java-Args-Analyze"
-#define OptJavaBuildArgs "Java-Args-Build"
+#define OptJavaClassPath "JavaClassPath"
+#define OptJavaJdkPath "JavaJdkPath"
+#define OptJavaArgs "JavaArgs"
 
-#define BuildConfigAnalysis "Analyze"
+#define OptFilterNameBuildConfig "cfg"
+#define BuildConfigAnalysis "Analysis"
 #define BuildConfigDebug "Debug"
 #define BuildConfigRelease "Release"
+
+#define OptFilterNameBuildMode "mode"
+#define OptFilterValueBuildModeAnalyze "Analyze"
+#define OptFilterValueBuildModeBuild "Build"
+
+#define OptFilterNamePlatform "plat"
+#define OptFilterValuePlatformLinux "Linux"
+#define OptFilterValuePlatformWindows "Windows"
+
+#define OptCompType "CompType"
+#define OptFilterNameComponent "comp"
 
 #define DupsDir "dups"
 #define DupsHashExtension "hsh"
 
-OovString makeBuildConfigArgName(OovStringRef const baseName,
-        OovStringRef const buildConfig);
 
 enum eProcessModes
     {
@@ -60,6 +63,16 @@ enum eProcessModes
 
     PM_CleanMask=0xF00,
     PM_CleanAnalyze=0x100, PM_CleanBuild=0x200, PM_CleanCoverage=0x400
+    };
+
+enum eCompTypes
+    {
+    CT_Unknown,
+    CT_StaticLib,       // .a or .lib
+    CT_SharedLib,       // .so or .dll
+    CT_Program,         // no extension or .exe
+    CT_JavaJarLib,      // .jar
+    CT_JavaJarProg      // .jar (with manifest)
     };
 
 /// A project file contains compile flags and drawing parameters.
@@ -88,7 +101,7 @@ class Project
         static OovString const &getSourceRootDirectory()
             { return sSourceRootDirectory; }
 
-        static OovString getComponentTypesFilePath();
+//        static OovString getComponentTypesFilePath();
         static OovString getComponentSourceListFilePath();
 
         static char const *getRootComponentName()
@@ -123,8 +136,6 @@ class Project
 
         static OovStringRef getAnalysisIncDepsFilename()
             { return "oovaide-incdeps.txt"; }
-        static OovStringRef getAnalysisComponentsFilename()
-            { return "oovaide-extdirs.txt"; }
         /// Make a filename for the compressed content file for each source file.
         /// The analysisDir is retreived from the build configuration.
         static OovString makeAnalysisFileName(OovStringRef const srcFileName,
@@ -183,16 +194,23 @@ class ProjectReader:public NameValueFile
         OovStatusReturn readProject(OovStringRef const oovProjectDir);
         static OovStringRef const getSrcRootDirectory()
             { return Project::getSrcRootDirectory(); }
+        static OovString getCppArgsCompFilterName(OovStringRef compName);
+
+    private:
+        void checkProjectVersion();
     };
 
 class ProjectBuildArgs
     {
     public:
         ProjectBuildArgs(ProjectReader &project):
-            mProjectOptions(project), mProjectPackages(false), mBuildPackages(false),
-            mVerbose(false)
+            mProjectOptions(project), mBuildEnv(project),
+            mProjectPackages(false), mBuildPackages(false), mVerbose(false)
             {}
-        void loadBuildArgs(OovStringRef const buildConfigName);
+        void setConfig(OovStringRef buildMode, OovStringRef const buildConfig);
+        // This must set the component name as from ComponentTypesFile
+        // getComponentNameOwner
+        void setCompConfig(OovStringRef ownerCompName);
 
         const ProjectPackages &getProjectPackages() const
             { return mProjectPackages; }
@@ -200,6 +218,29 @@ class ProjectBuildArgs
             { return mBuildPackages; }
         BuildPackages &getBuildPackages()
             { return mBuildPackages; }
+
+        std::string getCompilerPath()
+            { return mBuildEnv.getValue(OptCppCompilerPath); }
+        // See Project.h for how this varies depending on build configuration.
+        std::string getJavaAnalyzerPath() const
+            { return mBuildEnv.getValue(OptJavaAnalyzerPath); }
+        std::string getJavaCompilerPath() const
+            { return mBuildEnv.getValue(OptJavaCompilerPath); }
+        std::string getJavaJarToolPath() const
+            { return mBuildEnv.getValue(OptJavaJarPath); }
+        std::string getJavaArgs() const
+            { return mBuildEnv.getValue(OptJavaArgs); }
+        std::string getJavaJdkPath() const
+            { return mBuildEnv.getValue(OptJavaJdkPath); }
+        std::string getJavaClassPath() const
+            { return mBuildEnv.getValue(OptJavaClassPath); }
+        std::string getLibberPath() const
+            { return mBuildEnv.getValue(OptCppLibPath); }
+        std::string getObjSymbolPath() const
+            { return mBuildEnv.getValue(OptObjSymbolPath); }
+
+        static std::string getCovInstrToolPath();
+
         const OovStringVec &getCompileArgs() const
             { return mCompileArgs; }
         const IndexedStringVec &getLinkArgs() const
@@ -219,6 +260,8 @@ class ProjectBuildArgs
 
     private:
         ProjectReader &mProjectOptions;
+        BuildVariableEnvironment mBuildEnv;
+
         OovStringVec mCompileArgs;
         IndexedStringVec mLinkArgs;
         OovStringVec mExternalRootArgs;

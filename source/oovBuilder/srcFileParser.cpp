@@ -24,11 +24,8 @@ bool srcFileParser::analyzeSrcFiles(OovStringRef const srcRootDir,
 #else
     setupQueue(1);
 #endif
-    mToolPathFile.setConfig(BuildConfigAnalysis);
-    mIncDirArgs = mComponentFinder.getAllIncludeDirs();
     mExcludeDirs = mComponentFinder.getProjectBuildArgs().getProjectExcludeDirs();
     OovStatus status = recurseDirs(srcRootDir);
-    mIncDirArgs.clear();
     waitForCompletion();
     return status.ok();
     }
@@ -86,17 +83,17 @@ static void appendPathArgSep(OovString &str)
     }
 
 static void getAnalysisToolCommand(FilePath const &filePath,
-    ToolPathFile &toolPathFile, CppChildArgs &args)
+    ProjectBuildArgs const &projBuildInfo, CppChildArgs &args)
     {
     OovString command;
     if(isJavaSource(filePath))
         {
-        args.addArg(toolPathFile.getJavaCompilerPath());
+        args.addArg(projBuildInfo.getJavaCompilerPath());
 
         // Arguments for the parser must not be given to java, and instead
         // given later to the parser outside of this function.
         CompoundValue javaArgs;
-        OovString javaArgsStr = toolPathFile.getValue(OptJavaAnalyzeArgs);
+        OovString javaArgsStr = projBuildInfo.getJavaArgs();     // This should be filtered for analyze mode
         javaArgs.parseString(javaArgsStr);
         if(javaArgsStr.length() > 0)
             {
@@ -104,15 +101,14 @@ static void getAnalysisToolCommand(FilePath const &filePath,
                 [](OovString const &arg){ return(arg.find("-dups") != std::string::npos);}
                 ));
             }
-        ToolPathFile::appendArgs(true, javaArgs.getAsString(), args);
+        ComponentFinder::appendArgs(true, javaArgs.getAsString(), args);
 
         // Add the classpath
         args.addArg("-cp");
         // Add the compiler jar to the classpath.
         OovString classPathArg;
         FilePath javaParserPath(Project::getBinDirectory(), FP_Dir);
-        OovString javaAnalyzerTool = toolPathFile.getValue(
-            toolPathFile.makeBuildConfigArgName(OptToolJavaAnalyzerTool));
+        OovString javaAnalyzerTool = projBuildInfo.getJavaAnalyzerPath();
         OovString anaToolJar = javaAnalyzerTool;
         anaToolJar += ".jar";
         javaParserPath.appendFile(anaToolJar);
@@ -120,7 +116,7 @@ static void getAnalysisToolCommand(FilePath const &filePath,
 
         // Add tools.jar from the Java SDK to the classpath.
         appendPathArgSep(classPathArg);
-        OovString toolsJar = toolPathFile.getValue(OptJavaJdkPath);
+        OovString toolsJar = projBuildInfo.getJavaJdkPath();
         if(toolsJar.back() == ';')
             {
             toolsJar.pop_back();
@@ -130,7 +126,7 @@ static void getAnalysisToolCommand(FilePath const &filePath,
         toolsJarFile.appendFile("tools.jar");
         classPathArg += toolsJarFile;
 
-        OovString classPathStr = toolPathFile.getValue(OptJavaClassPath);
+        OovString classPathStr = projBuildInfo.getJavaClassPath();
         if(classPathStr.length() > 0)
             {
             appendPathArgSep(classPathArg);
@@ -154,7 +150,7 @@ static void getAnalysisToolCommand(FilePath const &filePath,
 bool srcFileParser::processFile(OovStringRef const srcFile)
     {
     bool success = true;
-    if(!ComponentsFile::excludesMatch(srcFile, mExcludeDirs))
+    if(!ComponentFinder::excludesMatch(srcFile, mExcludeDirs))
         {
         FilePath ext(srcFile, FP_File);
         bool cppSource = isCppHeader(ext) || isCppSource(ext);
@@ -171,26 +167,30 @@ bool srcFileParser::processFile(OovStringRef const srcFile)
                 OovStatus status(true, SC_File);
                 if(FileStat::isOutputOld(outFileName, srcFile, status))
                     {
+                    OovString ownerComp = mComponentFinder.getComponentTypesFile().getComponentNameOwner(srcFile);
+                    mComponentFinder.setCompConfig(ownerComp);
                     CppChildArgs ca;
-                    getAnalysisToolCommand(ext, mToolPathFile, ca);
+                    getAnalysisToolCommand(ext, mComponentFinder.getProjectBuildArgs(), ca);
                     ca.addArg(srcFile);
                     ca.addArg(mSrcRootDir);
                     ca.addArg(mAnalysisDir);
 
                     if(cppSource)
                         {
-                        ca.addCompileArgList(mComponentFinder, mIncDirArgs);
+                        OovStringVec incDirs = mComponentFinder.getFileIncludeDirs(srcFile);
+                        ca.addCompileArgList(mComponentFinder, incDirs);
                         }
                     else
                         {
                         CompoundValue javaArgs;
-                        javaArgs.parseString(mToolPathFile.getValue(OptJavaAnalyzeArgs));
+                        javaArgs.parseString(mComponentFinder.getProjectBuildArgs().getJavaArgs());
                         if(javaArgs.find("-dups") != std::string::npos)
                             {
                             ca.addArg("-dups");
                             }
-                        ToolPathFile::appendArgs(false, javaArgs.getAsString(), ca);
+                        ComponentFinder::appendArgs(false, javaArgs.getAsString(), ca);
                         }
+                    sVerboseDump.logProcess(srcFile, ca.getArgv(), static_cast<int>(ca.getArgc()));
                     addTask(ca);
     /*
                     sLog.logProcess(srcFile, ca.getArgv(), ca.getArgc());

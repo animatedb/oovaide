@@ -46,12 +46,17 @@ bool OovProject::newProject(OovString projectDir, CompoundValue const &excludeDi
             if(status.ok())
                 {
                 Project::setProjectDirectory(projectDir);
-                mProjectOptions.setFilename(Project::getProjectFilePath());
-                mGuiOptions.setFilename(Project::getGuiOptionsFilePath());
-
+                // The new project dialog already clears the options.
+                // The options cannot be cleared here or the src root dir is also cleared.
+/*
                 OptionsDefaults optionDefaults(mProjectOptions);
                 optionDefaults.setDefaultOptions();
+                getProjectOptions().setNameValue(OptSourceRootDir, rootSrcText);
+*/
                 mGuiOptions.setDefaultOptions();
+
+                mProjectOptions.setFilename(Project::getProjectFilePath());
+                mGuiOptions.setFilename(Project::getGuiOptionsFilePath());
 
                 mProjectOptions.setNameValue(OptProjectExcludeDirs, excludeDirs.getAsString(';'));
                 status = mProjectOptions.writeFile();
@@ -240,6 +245,15 @@ void OovProject::processAnalysisFiles()
         }
     mProjectStatus.mAnalysisStatus |= ProjectStatus::AS_Loaded;
     logProj("-processAnalysisFiles");
+    }
+
+static OovString makeBuildConfigArgName(OovStringRef const baseName,
+        OovStringRef const buildConfig)
+    {
+    OovString name = baseName;
+    name += '-';
+    name += buildConfig;
+    return name;
     }
 
 bool OovProject::runSrcManager(OovStringRef const buildConfigName,

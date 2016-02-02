@@ -30,8 +30,6 @@ void ComponentBuilder::build(eProcessModes mode, OovStringRef const incDepsFileP
         }
     mIntermediatePath.setPath(Project::getIntermediateDir(buildDirClass), FP_Dir);
 
-    mToolPathFile.setConfig(buildDirClass);
-
     OovStatus status = FileDelete(getDiagFileName());
     if(status.needReport())
         {
@@ -73,11 +71,16 @@ bool ComponentPkgDeps::isDependent(OovStringRef const compName,
 bool ComponentBuilder::anyIncDirsMatch(OovStringRef const compName,
         RootDirPackage const &pkg)
     {
-    std::string compDir = mComponentFinder.getComponentTypesFile().
-            getComponentAbsolutePath(compName);
+    OovStringVec consumerFiles = mComponentFinder.getScannedComponentInfo().
+        getComponentFiles(mComponentFinder.getComponentTypesFile(),
+        ScannedComponentInfo::CFT_CppSource, compName);
+    OovStringVec consumerIncs = mComponentFinder.getScannedComponentInfo().
+        getComponentFiles(mComponentFinder.getComponentTypesFile(),
+        ScannedComponentInfo::CFT_CppInclude, compName);
+    std::copy(consumerIncs.begin(), consumerIncs.end(), std::back_inserter(consumerFiles));
 
     OovStringVec incRoots = pkg.getIncludeDirs();
-    return mIncDirMap.anyRootDirsMatch(incRoots, compDir);
+    return mIncDirMap.anyRootDirsMatch(incRoots, consumerFiles);
     }
 
 void ComponentBuilder::makeOrderedPackageLibs(OovStringRef const compName)
@@ -150,8 +153,7 @@ void ComponentBuilder::appendOrderedPackageLibs(OovStringRef const compName,
         }
     }
 
-OovStringSet ComponentBuilder::getComponentCompileArgs(OovStringRef const compName,
-        ComponentTypesFile const & /* file */ )
+OovStringSet ComponentBuilder::getComponentPackageCompileArgs(OovStringRef const compName)
     {
     OovStringSet compileArgs;
     BuildPackages &buildPackages = mComponentFinder.getProjectBuildArgs().getBuildPackages();
@@ -165,20 +167,6 @@ OovStringSet ComponentBuilder::getComponentCompileArgs(OovStringRef const compNa
                 }
             }
         }
-// lnk args should not be sent to clang?
-// clang compiler gives, "unknown argument: '-mwindows'" when -lnk-mwindows is used.
-// instead, use: "-lnk-Wl,--subsystem,windows"
-// https://gcc.gnu.org/ml/gcc-help/2004-01/msg00225.html
-/*
-    OovString argStr = file.getComponentBuildArgs(compName);
-    for(auto const &arg : CompoundValueRef::parseString(argStr))
-        {
-        if(arg.find("-lnk", 0, 4) == std::string::npos)
-            {
-            compileArgs.insert(arg);
-            }
-        }
-*/
     return compileArgs;
     }
 
@@ -213,14 +201,6 @@ IndexedStringSet ComponentBuilder::getComponentPackageLinkArgs(OovStringRef cons
                 }
             }
         }
-    std::string argStr = file.getComponentBuildArgs(compName);
-    for(auto const &arg : CompoundValueRef::parseString(argStr))
-        {
-        if(arg.find("-lnk", 0, 4) != std::string::npos)
-            {
-            linkArgs.insert(IndexedString(0, arg.substr(4)));
-            }
-        }
     return linkArgs;
     }
 
@@ -244,39 +224,38 @@ void LibTaskListener::extraProcessing(bool success, OovStringRef const outFile,
 
 void ComponentBuilder::processSourceForComponents(eProcessModes pm)
     {
-    ComponentTypesFile const &compTypesFile =
-            mComponentFinder.getComponentTypesFile();
-    OovStringVec compNames = compTypesFile.getComponentNames();
+    ScannedComponentInfo const &scannedInfoFile =
+        mComponentFinder.getScannedComponentInfo();
+    ComponentTypesFile const &compTypes =
+        mComponentFinder.getComponentTypesFile();
+    OovStringVec compNames = scannedInfoFile.getComponentNames();
     if(compNames.size() > 0)
         {
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
             {
-            // compTypesFile is not used!!!
-            OovStringSet compileArgs = getComponentCompileArgs(name,
-                compTypesFile);
-            ComponentTypesFile::eCompTypes compType = compTypesFile.getComponentType(name);
-            if(compType != ComponentTypesFile::CT_Unknown &&
-                compType != ComponentTypesFile::CT_JavaJarLib &&
-                compType != ComponentTypesFile::CT_JavaJarProg)
+            OovStringSet compileArgs = getComponentPackageCompileArgs(name);
+            eCompTypes compType = compTypes.getComponentType(name);
+            if(compType != CT_Unknown && compType != CT_JavaJarLib &&
+                compType != CT_JavaJarProg)
                 {
-                OovStringVec cppSources = compTypesFile.getComponentFiles(
-                    ComponentTypesFile::CFT_CppSource, name);
+                OovStringVec cppSources = scannedInfoFile.getComponentFiles(
+                    compTypes, ScannedComponentInfo::CFT_CppSource, name);
                 if(pm == PM_CovInstr)
                     {
-                    OovStringVec includes = compTypesFile.getComponentFiles(
-                        ComponentTypesFile::CFT_CppInclude, name);
+                    OovStringVec includes = scannedInfoFile.getComponentFiles(
+                        compTypes, ScannedComponentInfo::CFT_CppInclude, name);
                     cppSources.insert(cppSources.end(), includes.begin(), includes.end());
                     }
 
-                OovStringVec orderedIncRoots = mComponentFinder.getAllIncludeDirs();
                 for(const auto &src : cppSources)
                     {
                     FilePath absSrc;
                     absSrc.getAbsolutePath(src, FP_File);
-                    OovStringVec incDirs =
+                    OovStringVec orderedCompIncRoots = mComponentFinder.getFileIncludeDirs(src);
+                    OovStringVec orderedIncDirs =
                         mIncDirMap.getOrderedIncludeDirsForSourceFile(absSrc,
-                        orderedIncRoots);
+                        orderedCompIncRoots);
                     /// @todo - this could be optimized to not check file times of external files.
                     /// @todo - more optimization could use the times in the incdeps file.
                     std::set<IncludedPath> incFilesSet;
@@ -287,14 +266,13 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
                         {
                         incFiles.push_back(file.getFullPath());
                         }
-                    processCppSourceFile(pm, src, incDirs, incFiles, compileArgs);
+                    processCppSourceFile(pm, src, orderedIncDirs, incFiles, compileArgs);
                     }
                 }
-            if(compType == ComponentTypesFile::CT_JavaJarLib ||
-                compType == ComponentTypesFile::CT_JavaJarProg)
+            if(compType == CT_JavaJarLib || compType == CT_JavaJarProg)
                 {
-                OovStringVec javaSources = compTypesFile.getComponentFiles(
-                        ComponentTypesFile::CFT_JavaSource, name);
+                OovStringVec javaSources = scannedInfoFile.getComponentFiles(
+                    compTypes, ScannedComponentInfo::CFT_JavaSource, name);
                 processJavaSourceFiles(pm, name, javaSources /*, compileArgs*/);
                 }
             }
@@ -305,7 +283,7 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
 void ComponentBuilder::generateDependencies()
     {
     ComponentTypesFile const &compTypesFile = getComponentTypesFile();
-    OovStringVec compNames = compTypesFile.getComponentNames();
+    OovStringVec compNames = compTypesFile.getDefinedComponentNames();
     BuildPackages const &buildPackages =
         mComponentFinder.getProjectBuildArgs().getBuildPackages();
 
@@ -316,11 +294,9 @@ void ComponentBuilder::generateDependencies()
         /// @todo - this should be optimized so that only components with source files
         /// that have changed include dependencies are processed.
         // This is done for libraries too because they may need compile switches.
-        ComponentTypesFile::eCompTypes compType =
-                compTypesFile.getComponentType(compName);
-        if(compType != ComponentTypesFile::CT_Unknown &&
-            compType != ComponentTypesFile::CT_JavaJarLib &&
-            compType != ComponentTypesFile::CT_JavaJarProg)
+        eCompTypes compType = compTypesFile.getComponentType(compName);
+        if(compType != CT_Unknown && compType != CT_JavaJarLib &&
+            compType != CT_JavaJarProg)
             {
             for(auto const &pkg : buildPackages.getPackages())
                 {
@@ -366,9 +342,11 @@ void ComponentBuilder::generateDependencies()
 // C:\Program Files\GTK+-Bundle-3.6.1\lib       (contains glib, gmodule stuff on Windows)
 void ComponentBuilder::buildComponents()
     {
+    ScannedComponentInfo const &scannedInfoFile =
+        mComponentFinder.getScannedComponentInfo();
     ComponentTypesFile const &compTypesFile =
             mComponentFinder.getComponentTypesFile();
-    OovStringVec compNames = compTypesFile.getComponentNames();
+    OovStringVec compNames = compTypesFile.getDefinedComponentNames();
 
     sVerboseDump.logProgress("Generating package dependencies");
     generateDependencies();
@@ -387,10 +365,10 @@ void ComponentBuilder::buildComponents()
         setupQueue(getNumHardwareThreads());
         for(const auto &name : compNames)
             {
-            if(compTypesFile.getComponentType(name) == ComponentTypesFile::CT_StaticLib)
+            if(compTypesFile.getComponentType(name) == CT_StaticLib)
                 {
-                OovStringVec sources = compTypesFile.getComponentFiles(
-                    ComponentTypesFile::CFT_CppSource, name);
+                OovStringVec sources = scannedInfoFile.getComponentFiles(
+                    compTypesFile, ScannedComponentInfo::CFT_CppSource, name);
                 for(size_t i=0; i<sources.size(); i++)
                     {
                     sources[i] = makeOutputObjectFileName(sources[i]);
@@ -434,30 +412,28 @@ void ComponentBuilder::buildComponents()
             OovStringVec externalLibDirs;       // not in library search order, eliminate dups.
             IndexedStringVec externalOrderedPackageLibNames;
             auto type = compTypesFile.getComponentType(name);
-            if(type == ComponentTypesFile::CT_Program ||
-                    type == ComponentTypesFile::CT_SharedLib)
+            if(type == CT_Program || type == CT_SharedLib)
                 {
                 appendOrderedPackageLibs(name, externalLibDirs,
                         externalOrderedPackageLibNames);
                 IndexedStringSet compPkgLinkArgs = getComponentPackageLinkArgs(name,
                         compTypesFile);
 
-                OovStringVec sources = compTypesFile.getComponentFiles(
-                    ComponentTypesFile::CFT_CppSource, name);
+                OovStringVec sources = scannedInfoFile.getComponentFiles(
+                    compTypesFile, ScannedComponentInfo::CFT_CppSource, name);
                 makeExe(name, sources, projectLibFileNames,
                         externalLibDirs, externalOrderedPackageLibNames,
-                        compPkgLinkArgs, type == ComponentTypesFile::CT_SharedLib);
+                        compPkgLinkArgs, type == CT_SharedLib);
                 }
             }
         for(const auto &name : compNames)
             {
             auto type = compTypesFile.getComponentType(name);
-            if(type == ComponentTypesFile::CT_JavaJarLib ||
-                type == ComponentTypesFile::CT_JavaJarProg)
+            if(type == CT_JavaJarLib || type == CT_JavaJarProg)
                 {
-                bool prog = (type == ComponentTypesFile::CT_JavaJarProg);
-                OovStringVec sources = compTypesFile.getComponentFiles(
-                    ComponentTypesFile::CFT_JavaSource, name);
+                bool prog = (type == CT_JavaJarProg);
+                OovStringVec sources = scannedInfoFile.getComponentFiles(
+                    compTypesFile, ScannedComponentInfo::CFT_JavaSource, name);
                 makeJar(name, sources, prog);
                 }
             }
@@ -579,15 +555,18 @@ void ComponentBuilder::processCppSourceFile(eProcessModes pm, OovStringRef const
         if(FileStat::isOutputOld(outFileName, srcFile, status) ||
                 FileStat::isOutputOld(outFileName, incFiles, status, &incFileOlderIndex))
             {
+            OovString ownerComp = getComponentTypesFile().getComponentNameOwner(srcFile);
+            mComponentFinder.setCompConfig(ownerComp);
+
             CppChildArgs ca;
             OovString procPath;
             if(pm == PM_CovInstr)
                 {
-                procPath = mToolPathFile.getCovInstrToolPath();
+                procPath = mComponentFinder.getProjectBuildArgs().getCovInstrToolPath();
                 }
             else
                 {
-                procPath = mToolPathFile.getCompilerPath();
+                procPath = mComponentFinder.getProjectBuildArgs().getCompilerPath();
                 }
             ca.addArg(procPath);
             ca.addArg(srcFile);
@@ -631,6 +610,8 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm,
         outFileName.appendExtension(".class");
         if(FileStat::isOutputOld(outFileName, srcFile, status))
             {
+            OovString ownerComp = getComponentTypesFile().getComponentNameOwner(srcFile);
+            mComponentFinder.setCompConfig(ownerComp);
             old = true;
             break;
             }
@@ -675,17 +656,17 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm,
             if(pm == PM_CovInstr)
                 {
 //                procPath = mToolPathFile.getCovInstrToolPath();
-                procPath = mToolPathFile.getJavaCompilerPath();
+                procPath = mComponentFinder.getProjectBuildArgs().getJavaCompilerPath();
                 }
             else
                 {
-                procPath = mToolPathFile.getJavaCompilerPath();
+                procPath = mComponentFinder.getProjectBuildArgs().getJavaCompilerPath();
                 }
             ca.addArg(procPath);
             ca.addArg("-d");
             ca.addArg(intDirName);
 
-            OovString classPathStr = mToolPathFile.getValue(OptJavaClassPath);
+            OovString classPathStr = mComponentFinder.getProjectBuildArgs().getJavaClassPath();
             if(classPathStr.length() > 0)
                 {
                 ca.addArg("-cp");
@@ -693,10 +674,8 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm,
                 ca.addArg(classPathStr);
                 }
 
-            ToolPathFile::appendArgs(true, mToolPathFile.getValue(
-                OptJavaBuildArgs), ca);
-            ToolPathFile::appendArgs(false, mToolPathFile.getValue(
-                OptJavaBuildArgs), ca);
+            ComponentFinder::appendArgs(true, mComponentFinder.getProjectBuildArgs().getJavaArgs(), ca);
+            ComponentFinder::appendArgs(false, mComponentFinder.getProjectBuildArgs().getJavaArgs(), ca);
             OovString srcArg = "@";
             srcArg += srcFileListFn;
             ca.addArg(srcArg);
@@ -724,23 +703,6 @@ void ComponentBuilder::processJavaSourceFiles(eProcessModes pm,
         }
     }
 
-bool ComponentsFile::excludesMatch(OovStringRef const filePath,
-        OovStringVec const &excludes)
-    {
-    bool exclude = false;
-    for(const auto &str : excludes)
-        {
-        FilePath normFilePath(filePath, FP_File);
-        FilePath normExcludePath(str, FP_File);
-        if(normFilePath.find(normExcludePath) != std::string::npos)
-            {
-            exclude = true;
-            break;
-            }
-        }
-    return exclude;
-    }
-
 OovString ComponentBuilder::getSymbolBasePath()
     {
     FilePath outPath = mIntermediatePath;
@@ -751,7 +713,7 @@ OovString ComponentBuilder::getSymbolBasePath()
 void ComponentBuilder::makeLibSymbols(OovStringRef const clumpName,
         OovStringVec const &files)
     {
-    std::string objSymbolTool = mToolPathFile.getObjSymbolPath();
+    std::string objSymbolTool = mComponentFinder.getProjectBuildArgs().getObjSymbolPath();
 
     OovString str = "Make lib symbols: ";
     str += clumpName;
@@ -769,7 +731,9 @@ void ComponentBuilder::makeLib(OovStringRef const libPath,
     OovStatus status(true, SC_File);
     if(FileStat::isOutputOld(outFileName, objectFileNames, status))
         {
-        OovString procPath = mToolPathFile.getLibberPath();
+        OovString ownerComp = getComponentTypesFile().getComponentNameOwner(libPath);
+        mComponentFinder.setCompConfig(ownerComp);
+        OovString procPath = mComponentFinder.getProjectBuildArgs().getLibberPath();
         OovProcessChildArgs ca;
         ca.addArg(procPath);
         ca.addArg("r");
@@ -825,7 +789,9 @@ void ComponentBuilder::makeExe(OovStringRef const compName,
     if(FileStat::isOutputOld(outFileName, projectLibFilePaths, status) ||
             FileStat::isOutputOld(outFileName, objects, status))
         {
-        OovString procPath = mToolPathFile.getCompilerPath();
+        OovString ownerComp = getComponentTypesFile().getComponentNameOwner(compName);
+        mComponentFinder.setCompConfig(ownerComp);
+        OovString procPath = mComponentFinder.getProjectBuildArgs().getCompilerPath();
         OovProcessChildArgs ca;
         ca.addArg(procPath);
         ca.addArg("-o");
@@ -926,7 +892,7 @@ void ComponentBuilder::makeJar(OovStringRef const compName,
         {
         // Get the jar file names in order to check times.
         OovStringVec jarLibs = mComponentFinder.getComponentTypesFile().
-            getComponentNamesByType(ComponentTypesFile::CT_JavaJarLib);
+            getDefinedComponentNamesByType(CT_JavaJarLib);
         for(auto const &jar : jarLibs)
             {
             OovString jarFn = makeOutputJarName(jar);
@@ -937,7 +903,9 @@ void ComponentBuilder::makeJar(OovStringRef const compName,
     if(FileStat::isOutputOld(outFileName, projectJarFilePaths, status) ||
         FileStat::isOutputOld(outFileName, classFilePaths, status))
         {
-        OovString procPath = mToolPathFile.getJavaJarToolPath();
+        OovString ownerComp = getComponentTypesFile().getComponentNameOwner(compName);
+        mComponentFinder.setCompConfig(ownerComp);
+        OovString procPath = mComponentFinder.getProjectBuildArgs().getJavaJarToolPath();
         OovProcessChildArgs ca;
         ca.addArg(procPath);
         OovString jarTypeArgs = "cf";

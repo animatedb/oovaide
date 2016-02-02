@@ -95,22 +95,23 @@ void CheckOption::screenToOption(NameValueFile &file) const
     file.setNameValueBool(mOptionName, active);
     }
 
-class TextViewOption:public Option
+class TextViewBuildOption:public Option
     {
     public:
-        TextViewOption(OovStringRef const optionName, OovStringRef const widgetName):
+        /// The buildVar value is never retrieved or filled.
+        TextViewBuildOption(OovStringRef optionName, OovStringRef const widgetName):
             Option(optionName, widgetName)
             {}
-        virtual ~TextViewOption();
+        virtual ~TextViewBuildOption();
         virtual void optionToScreen(NameValueFile const &file) const override;
         virtual void screenToOption(NameValueFile &file) const override;
     };
 
-TextViewOption::~TextViewOption()
+TextViewBuildOption::~TextViewBuildOption()
     {
     }
 
-void TextViewOption::optionToScreen(NameValueFile const &file) const
+void TextViewBuildOption::optionToScreen(NameValueFile const &file) const
     {
     CompoundValue cppArgs;
     cppArgs.parseString(file.getValue(mOptionName));
@@ -120,7 +121,7 @@ void TextViewOption::optionToScreen(NameValueFile const &file) const
     Gui::appendText(view, str);
     }
 
-void TextViewOption::screenToOption(NameValueFile &file) const
+void TextViewBuildOption::screenToOption(NameValueFile &file) const
     {
     GtkTextView *view = GTK_TEXT_VIEW(Builder::getBuilder()->getWidget(mWidgetName));
     std::string str = Gui::getText(view);
@@ -152,37 +153,55 @@ ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &proj
     mProjectOptions(project),
     mGuiOptions(guiOptions)
     {
-    std::string optStr = makeBuildConfigArgName(OptToolCompilePath, buildConfig);
+    BuildVariable buildVar;
+
+    // First set base/global/default variables.
+
+    buildVar.setVarName(OptCppCompilerPath);
     mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
-        optStr, "CompilerPathEntry")));
+        buildVar.getVarFilterName(), "CompilerPathEntry")));
 
-    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
-        OptJavaClassPath, "JavaClassPathTextview")));
+    buildVar.setVarName(OptJavaClassPath);
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
+        buildVar.getVarFilterName().getStr(), "JavaClassPathTextview")));
 
-    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
-        OptJavaJdkPath, "JavaJdkPathTextview")));
+    buildVar.setVarName(OptJavaJdkPath);
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
+        buildVar.getVarFilterName().getStr(), "JavaJdkPathTextview")));
 
-    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
-        OptJavaAnalyzeArgs, "JavaExtraAnalysisArgsTextview")));
-
-    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
-        OptJavaBuildArgs, "JavaExtraBuildArgsTextview")));
-
-    optStr = makeBuildConfigArgName(OptToolLibPath, buildConfig);
+    buildVar.setVarName(OptCppLibPath);
     mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
-        optStr, "LibraryPathEntry")));
+        buildVar.getVarFilterName().getStr(), "LibraryPathEntry")));
 
-    optStr = makeBuildConfigArgName(OptToolObjSymbolPath, buildConfig);
+    buildVar.setVarName(OptObjSymbolPath);
     mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
-        optStr, "SymbolPathEntry")));
+        buildVar.getVarFilterName().getStr(), "SymbolPathEntry")));
+
+    buildVar.setVarName(OptCppArgs);
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
+        buildVar.getVarFilterName().getStr(), "CppArgumentsTextview")));
 
 
-    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(OptBaseArgs,
-        "CppArgumentsTextview")));
+    // Now set filtered variables.
 
-    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewOption(
-        makeBuildConfigArgName(OptExtraBuildArgs, buildConfig),
-        "ExtraBuildArgsTextview")));
+    buildVar.clearFilter();
+    buildVar.setVarName(OptCppArgs);
+    buildVar.setFunction(BuildVariable::F_Append);
+    buildVar.addFilter(OptFilterNameBuildConfig, buildConfig);
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
+        buildVar.getVarFilterName().getStr(), "ExtraBuildArgsTextview")));
+
+    buildVar.clearFilter();
+    buildVar.setVarName(OptJavaArgs);
+    buildVar.addFilter(OptFilterNameBuildMode, OptFilterValueBuildModeAnalyze);
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
+        buildVar.getVarFilterName().getStr(), "JavaExtraAnalysisArgsTextview")));
+
+    buildVar.clearFilter();
+    buildVar.setVarName(OptJavaArgs);
+    buildVar.addFilter(OptFilterNameBuildMode, OptFilterValueBuildModeBuild);
+    mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
+        buildVar.getVarFilterName().getStr(), "JavaExtraBuildArgsTextview")));
 
     // Editor
     mGuiOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
@@ -190,7 +209,7 @@ ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &proj
     mGuiOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
         OptGuiEditorLineArg, "EditorLineArgEntry")));
     mProjectOptionLookup.push_back(std::unique_ptr<Option>(new EntryOption(
-        OptToolDebuggerPath, "DebuggerPathEntry")));
+        OptExeDebuggerPath, "DebuggerPathEntry")));
 
     mGuiOptionLookup.push_back(std::unique_ptr<Option>(new CheckOption(
         OptGuiShowAttributes, "ShowAttributesCheckbutton")));

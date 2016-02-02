@@ -42,10 +42,10 @@ class OovBuilder
         void analyze(BuildConfigWriter &cfg, eProcessModes procMode,
             OovStringRef const buildConfigName, OovStringRef const srcRootDir);
         void build(eProcessModes processMode, OovStringRef oovProjDir,
-                OovStringRef buildConfigName, bool verbose);
+            OovStringRef buildConfigName, bool verbose);
         void clean(eProcessModes pm, OovStringRef oovProjDir);
-        bool readProject(OovStringRef const buildConfigName,
-            OovStringRef const oovProjDir, bool verbose);
+        bool readProject(OovStringRef oovProjDir, OovStringRef buildMode,
+            OovStringRef buildConfigName, bool verbose);
         ComponentFinder &getComponentFinder()
             { return mCompFinder; }
     };
@@ -163,14 +163,25 @@ void OovBuilder::build(eProcessModes processMode, OovStringRef oovProjDir,
     {
     bool success = true;
     Project::setProjectDirectory(oovProjDir);
-    if(processMode == PM_CovBuild)
-        {
-        success = makeCoverageBuildProject();
-        }
     if(success)
         {
-        success = readProject(buildConfigName, Project::getProjectDirectory(),
-                verbose);
+        OovString buildMode;
+        switch(processMode)
+            {
+            case PM_Analyze:        buildMode = OptFilterValueBuildModeAnalyze;       break;
+            default:
+            case PM_Build:          buildMode = OptFilterValueBuildModeBuild;         break;
+            }
+        if(processMode == PM_CovBuild)
+            {
+            success = makeCoverageBuildProject(mCompFinder.getProject());
+            }
+        if(success)
+            {
+            // This must be after creating the coverage project.
+            success = readProject(Project::getProjectDirectory(), buildMode,
+                buildConfigName, verbose);
+            }
         }
     if(success)
         {
@@ -207,12 +218,13 @@ void OovBuilder::build(eProcessModes processMode, OovStringRef oovProjDir,
         }
     }
 
-bool OovBuilder::readProject(OovStringRef const buildConfigName,
-        OovStringRef const oovProjDir, bool verbose)
+bool OovBuilder::readProject(OovStringRef oovProjDir, OovStringRef buildMode,
+    OovStringRef buildConfigName, bool verbose)
     {
-    bool success = mCompFinder.readProject(oovProjDir, buildConfigName);
+    bool success = mCompFinder.readProject(oovProjDir, buildMode, buildConfigName);
     if(success)
         {
+        mCompFinder.getProjectBuildArgs().setCompConfig("");    // This updates verbose arg
         if(mCompFinder.getProjectBuildArgs().getVerbose() || verbose)
             {
             sVerboseDump.open(oovProjDir);
@@ -382,10 +394,7 @@ void OovBuilder::analyze(BuildConfigWriter &cfg,
         status = FileEnsurePathExists(analysisPath);
         if(status.ok())
             {
-            FilePath compFn(analysisPath, FP_Dir);
-            compFn.appendFile(Project::getAnalysisComponentsFilename());
-            mCompFinder.saveProject(compFn, analysisPath);
-
+            mCompFinder.saveProject(analysisPath);
             sfp.analyzeSrcFiles(srcRootDir, analysisPath);
             }
         if(status.needReport())

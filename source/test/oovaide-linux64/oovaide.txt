@@ -1,9 +1,11 @@
 BuildArgsBase|-c;-x;c++;-std=c++11;-I/usr/lib/llvm-3.6/include;-I/usr/lib/clang/3.6/include;-lnk-L/usr/lib/llvm-3.6/lib;-lnk-lclang;-lnk-ldl;-fPIC;-lnk-Wl,-rpath=./;-lnk-static-libstdc++;-bv;-EPgtk+-3.0;-EPgmodule-2.0;
+BuildArgsExtra-Analyze|-isystem;/usr/bin/../lib/gcc/x86_64-linux-gnu/5.2.1/../../../../include/c++/5.2.1;-isystem;/usr/bin/../lib/gcc/x86_64-linux-gnu/5.2.1/../../../../include/x86_64-linux-gnu/c++/5.2.1;-isystem;/usr/bin/../lib/gcc/x86_64-linux-gnu/5.2.1/../../../../include/c++/5.2.1/backward;-isystem;/usr/local/include;-isystem;/usr/lib/llvm-3.6/bin/../lib/clang/3.6.2/include;-isystem;/usr/include/x86_64-linux-gnu;-isystem;/usr/include;
 BuildArgsExtra-Debug|-O0;-g3;
 BuildArgsExtra-Release|-O3;
 Java-ClassPath|/usr/lib/jvm/java-7-openjdk-amd64/lib/tools.jar;
 Java-JdkPath|/usr/lib/jvm/java-7-openjdk-amd64;
-SourceRootDir|/home/dave/software/oovaide/sourceforge/source
+SourceRootDir|/home/dave/software/oovaide/sourceforge/source/
+Tool-CompilerPath-Analyze|clang++
 Tool-CompilerPath-Debug|clang++
 Tool-CompilerPath-Release|clang++
 Tool-DebuggerPath|/usr/bin/gdb
@@ -14,7 +16,9 @@ Tool-JavaCompilerPath-Release|javac
 Tool-JavaJarToolPath-Analyze|jar
 Tool-JavaJarToolPath-Debug|jar
 Tool-JavaJarToolPath-Release|jar
+Tool-LibPath-Analyze|ar
 Tool-LibPath-Debug|ar
 Tool-LibPath-Release|ar
+Tool-ObjSymbolPath-Analyze|nm
 Tool-ObjSymbolPath-Debug|nm
 Tool-ObjSymbolPath-Release|nm

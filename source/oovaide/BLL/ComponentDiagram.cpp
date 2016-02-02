@@ -54,7 +54,7 @@ void ComponentDiagram::updatePositionsInGraph(DiagramDrawer &nullDrawer)
             }
         else
             {
-            if(node.getComponentType() == ComponentTypesFile::CT_StaticLib)
+            if(node.getComponentType() == CT_StaticLib)
                 {
                 nodeVectors[NVI_Lib].add(&node, size.x, pad);
                 }

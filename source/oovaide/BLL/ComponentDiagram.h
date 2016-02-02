@@ -16,6 +16,9 @@
 class ComponentDiagram:public Diagram
     {
     public:
+        ComponentDiagram(ProjectReader &project):
+            mComponentGraph(project)
+            {}
         void initialize(IncDirDependencyMapReader const &incMap);
 
         // Adds all nodes/components and repositions

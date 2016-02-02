@@ -21,6 +21,7 @@ class CMaker
 
         BuildConfigReader mConfig;
         ComponentTypesFile mCompTypes;
+        ScannedComponentInfo mScannedComponentInfo;
         // First arg is component name, second is path
         // std::map<OovString, OovString> mCachedComponentPaths;
         BuildPackages mBuildPkgs;
@@ -53,9 +54,9 @@ class CMaker
         OovStatusReturn makeTopInFile(OovStringRef const destName);
         OovStatusReturn makeTopVerInFile(OovStringRef const destName);
         OovStatusReturn makeComponentFile(OovStringRef const compName,
-            ComponentTypesFile::eCompTypes compType,
+            eCompTypes compType,
             OovStringVec const &source, OovStringRef const destName);
         OovString makeJavaComponentFile(OovStringRef const compName,
-            ComponentTypesFile::eCompTypes compType,
+            eCompTypes compType,
             OovStringVec const &source, OovStringRef const destName);
     };

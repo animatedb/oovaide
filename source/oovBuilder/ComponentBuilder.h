@@ -90,7 +90,6 @@ class ComponentBuilder:public ComponentTaskQueue
         FilePath mOutputPath;
         FilePath mIntermediatePath;
         ComponentFinder &mComponentFinder;
-        ToolPathFile mToolPathFile;
         ObjSymbols mObjSymbols;
         IncDirDependencyMapReader mIncDirMap;
         /// A map of all packages required to build each component.
@@ -177,8 +176,7 @@ class ComponentBuilder:public ComponentTaskQueue
         void appendOrderedPackageLibs(OovStringRef const compName,
                 OovStringVec &libDirs, IndexedStringVec &sortedLibNames);
         /// file arg is not used.
-        OovStringSet getComponentCompileArgs(OovStringRef const compName,
-                ComponentTypesFile const & /*file*/);
+        OovStringSet getComponentPackageCompileArgs(OovStringRef const compName);
         /// For the specified component, get the link arguments for the external build
         /// packages.
         IndexedStringSet getComponentPackageLinkArgs(OovStringRef const compName,

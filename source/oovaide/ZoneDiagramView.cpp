@@ -23,18 +23,15 @@ void ZoneDiagramList::init()
 
 void ZoneDiagramList::update()
     {
-    OovStatus status = mComponentFile.read();
-    if(status.ok())
-        {
-        for(auto const &name : mComponentFile.getComponentNames())
-            {
-            mComponentTree.appendText(getParent(name),
-                    ComponentTypesFile::getComponentChildName(name));
-            }
-        }
+    OovStatus status = mScannedComponentInfo.readScannedInfo();
     if(status.needReport())
         {
         status.report(ET_Error, "Unable to read components for zones");
+        }
+    for(auto const &name : mScannedComponentInfo.getComponentNames())
+        {
+        mComponentTree.appendText(getParent(name),
+            ComponentTypesFile::getComponentChildName(name));
         }
     mComponentTree.setAllCheckboxes(true);
     }

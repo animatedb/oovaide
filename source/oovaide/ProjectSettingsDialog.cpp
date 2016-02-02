@@ -103,6 +103,11 @@ bool ProjectSettingsDialog::runDialog()
         // Update the project options.
         if(mEditStyle == PS_NewProject)
             {
+            // The project dir is used by setDefaultOptions.
+            OovString projectDir = getProjectDir();
+            Project::setProjectDirectory(projectDir);
+            FilePathEnsureLastPathSep(projectDir);
+            OovStatus status = FileEnsurePathExists(projectDir);
             OptionsDefaults optionDefaults(getProjectOptions());
             optionDefaults.setDefaultOptions();
             sProjectSettingsDialog->getGuiOptions().setDefaultOptions();

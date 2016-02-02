@@ -157,10 +157,11 @@ class JournalRecordOperationDiagram:public JournalRecord, public OperationDiagra
 class JournalRecordComponentDiagram:public JournalRecord
     {
     public:
-        JournalRecordComponentDiagram(GuiOptions const &guiOptions,
+        JournalRecordComponentDiagram(ProjectReader &project,
+            GuiOptions const &guiOptions,
             IncDirDependencyMapReader const &incMap, JournalListener &listener):
             JournalRecord(RT_Component, listener),
-            mComponentDiagram(guiOptions)
+            mComponentDiagram(project, guiOptions)
             {
             mComponentDiagram.initialize(incMap);
             }
@@ -318,7 +319,7 @@ class JournalRecordIncludeDiagram:public JournalRecord
 class Journal
     {
     public:
-        Journal(GuiOptions const &guiOptions);
+        Journal(ProjectReader &project, GuiOptions const &guiOptions);
         virtual ~Journal();
         static Journal *getJournal();
         void init(Builder &builder, const ModelData &model,
@@ -393,6 +394,7 @@ class Journal
             }
 
     private:
+        ProjectReader &mProject;
         GuiOptions const &mGuiOptions;
         std::vector<JournalRecord*> mRecords;
         size_t mCurrentRecord;

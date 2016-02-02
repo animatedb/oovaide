@@ -749,6 +749,16 @@ FilePath FilePath::getParent() const
     return parent;
     }
 
+void FilePath::discardDrive()
+    {
+    size_t pos = getPosStartDir();
+    if(pos > 0 && getStdString()[pos] == '/')
+        {
+        pos--;
+        }
+    discardHead(pos);
+    }
+
 void FilePath::discardDirectory()
     {
     discardHead(getPosEndDir());

@@ -54,7 +54,9 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
         {
         status.report(ET_Error, "Unable to read project for editor CPP args.");
         }
-    buildArgs.loadBuildArgs(BuildConfigAnalysis);
+    ComponentTypesFile compFile(proj);
+    buildArgs.setConfig(OptFilterValueBuildModeAnalyze, BuildConfigAnalysis);
+    buildArgs.setCompConfig(compFile.getComponentNameOwner(srcName));
     OovStringVec cppArgs = buildArgs.getCompileArgs();
     for(auto const &arg : cppArgs)
         {
