@@ -6,8 +6,8 @@ add_executable(oovaide BLL/ClassDiagram.cpp BLL/ClassDrawer.cpp BLL/ClassGenes.c
   BLL/IncludeDiagram.cpp BLL/IncludeDrawer.cpp BLL/IncludeGraph.cpp BLL/OperationDiagram.cpp 
   BLL/OperationDrawer.cpp BLL/OperationGraph.cpp BLL/PortionDiagram.cpp 
   BLL/PortionDrawer.cpp BLL/PortionGraph.cpp BLL/XmlWriter.cpp BLL/ZoneDiagram.cpp 
-  BLL/ZoneDrawer.cpp BLL/ZoneGraph.cpp BuildSettingsDialog.cpp BuildVariables.cpp
-  BuildVariablesDialog.cpp CairoDrawer.cpp 
+  BLL/ZoneDrawer.cpp BLL/ZoneGraph.cpp BuildSettingsDialog.cpp BuildVariablesDialog.cpp
+  CairoDrawer.cpp 
   ClassDiagramView.cpp ComplexityView.cpp ComponentDiagramView.cpp ComponentList.cpp 
   Contexts.cpp DatabaseClient.cpp DuplicatesView.cpp GlobalSettings.cpp
   IncludeDiagramView.cpp Journal.cpp NewModule.cpp oovaide.cpp OovProject.cpp
