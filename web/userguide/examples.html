@@ -431,19 +431,20 @@
     <h1><a class="mozTocH2 mozTocH1" name="mozTocId382189"></a>Oovaide Example</h1>
     The Oovaide example will build all of the Oovaide programs, which includes
     multiple libraries and executables. This example has multiple processes and
-    threads, graphics, and many other features.<br>
-    This example is under the test directory, and there is a version for Windows
-    and one for Linux.<br>
-    <br>
-    Open either project, and use Analysis/Settings and run "External Project
-    Packages".&nbsp; On Linux, it may be required to remove and add the gtk +-3
-    package so that it is updated for your machine. Linux uses pkg-config, which
-    should be on many distributions of Linux. On Windows, the Scan button may
-    find the correct location, otherwise enter the directory manually.<br>
-    <br>
-    To set the component types, use Build/Settings, and set the oovBuilder,
-    oovCMaker, oovCppParser, and oovEdit to Program/Executable, and set the
-    oovCommon and oovGuiCommon to static libraries.<br>
+    threads, graphics, and many other features.
+    This example is under the test directory, and supports Windows or Linux.<br>
+    <p/>
+    Opening the project will automatically update the external project
+    packages using the packages available on the system.
+    Linux uses pkg-config, which should be on many distributions of Linux.
+    On Windows, the Scan button may find the correct location, otherwise enter
+    the directory manually. The packages can be manually set up using the
+    External Project Packages button on the Analysis Settings Dialog.
+    <p/>
+    The component types should be already set, but can be manually viewed or
+    changed using Build/Settings. The oovBuilder,
+    oovCMaker, oovCppParser, and oovEdit shoud be set to Program/Executable,
+    and the oovCommon and oovGuiCommon should be set to be static libraries.<br>
     <br>
     Explanations of the classes and components is in the Oovaide Design document.<br>
     <br>

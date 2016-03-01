@@ -61,6 +61,11 @@ class OperationDiagramView
         void drawToDrawingArea();
         OovStatusReturn drawSvgDiagram(File &file);
         void gotoClass(OovStringRef const className);
+        void addVarRefs(OperationNode const *node)
+            {
+            mOperationDiagram.addVariableReferencesFromGraphNodes(node);
+            requestRedraw();
+            }
         void gotoOperation(OperationCall const *oper);
         bool isModified() const
             { return mOperationDiagram.isModified(); }

@@ -49,6 +49,7 @@
               <li><a href="#mozTocId671330">OovAide Build Java</a></li>
             </ol>
           </li>
+          <li><a href="#mozTocId190095">Advanced Build Variables</a></li>
           <li><a href="#mozTocId513853">Inkscape Example on Windows</a></li>
         </ol>
       </li>
@@ -74,11 +75,11 @@
     Analysis/Project Settings menu item. The source root directory can be
     changed if the directory does not exist.
     <p> Oovaide scans the directories of the project under the source root
-      directory to find source files that need to be analyzed. The extensions of
-      the files in the directories are used to determine which source file
-      parser to use. Oovaide can analyze and build a single directory tree that
-      contains both C++ and Java files. In fact, Oovaide itself can be built
-      this way. </p>
+      directory (excluding exluded directories) to find source files that need
+      to be analyzed. The extensions of the files in the directories are used to
+      determine which source file parser to use. Oovaide can analyze and build a
+      single directory tree that contains both C++ and Java files. In fact,
+      Oovaide itself can be built this way. </p>
     <h2><a class="mozTocH2" id="mozTocId694741"></a>C++ Analysis</h2>
     There are typically three types of files used to analyze or build a project.
     <ul>
@@ -94,20 +95,22 @@
         specify externally required files is to use the "External Project
         Packages" button. Some examples of these packages are GTK, Boost, etc.</li>
     </ul>
-    <p> Oovaide scans all directories in the project, and adds include directory
-      paths to the compiler command line for any directories in the project that
-      contain header files. </p>
+    <p> Oovaide scans all non-excluded directories in the project, and adds
+      include directory paths to the compiler command line for any directories
+      in the project that contain header files. If there are files with
+      duplicate names, it is possible to add a -I switch to include the needed
+      directory first and it will be used before the project include paths. It
+      is possible to do this component or directory specific by using the build
+      settings dialog, or editing the oovaide.txt file itself. </p>
     <p> OovAide uses the CLang parser for analysis. This means that problems
       with include paths can be solved by searching the web for typical CLang
-      installation problems. </p>
-    <p> Oovaide by default uses one set of compiler settings for all directories.
-      This means that a superset of all packages should be specified in the
-      common build arguments.
-      For example, if gtk is not needed for some directories, adding it for all
-      directories should not cause a problem for directories that do not require
-      gtk. It may make analysis slower, but should not fail. This can be
-      changed for complex projects.
-    </p>
+      installation problems</p>
+    <p>Oovaide by default uses one set of compiler settings for all directories.
+      This means that a superset of all packages should normally be specified in
+      the common build arguments. For example, if gtk is not needed for some
+      directories, adding it for all directories should not cause a problem for
+      directories that do not require gtk. It may make analysis slower, but
+      should not fail. This can be changed for complex projects. </p>
     <p> Each header and source file is analyzed independently. This means that
       each file should be able to include all definitions needed. Search the web
       for "self-sufficient headers", or "self-contained headers", for more
@@ -134,12 +137,12 @@
     <p> On Windows, there is a file called bin/oovaide-allpkgs-win.txt, that
       defines a few common packages. This file can be easily read to see how
       packages are defined, and it is possible to modify and add more packages.
-    </p>
+      You can always file a bug to get another package added. </p>
     <p> On Windows, Oovaide attempts to find directories using wildcards in the
       package directory definitions. If there are multiple versions, then the
       directory can be specified manually. </p>
-    <p> If the "Include Directory" setting is blank, then the directories are
-      scanned for include files, and paths are saved. To prevent this scan,
+    <p> If the "Include Directory" setting is a wildcard, then the directories
+      are scanned for include files, and paths are saved. To prevent this scan,
       directories can be specified (separated with semicolons) or a single
       period can be used to specify that only the current directory relative to
       the root should be used as the path. </p>
@@ -186,10 +189,11 @@
       Compile Problems</h3>
     One of the most difficult problems can be solving include path problems. The
     include directories for files in the project do not have to be set since
-    OovAide sets these automatically. OovAide generally requires that the include
-    file names are unique, or the wrong one could be used. Include paths
-    can be set per component to resolve these issues. The simplest way is to
-    use the Build Settings dialog. Another way is to edit the oovaide.txt project file.
+    OovAide sets these automatically. OovAide generally requires that the
+    include file names are unique, or the wrong one could be used. Include paths
+    can be set per component to resolve these issues. The simplest way is to use
+    the Build Settings dialog. Another way is to edit the oovaide.txt project
+    file.
     <p> See the Inkscape Example below for more problem solving information. </p>
     <p> </p>
     <h4><a class="mozTocH4" id="mozTocId416185"></a>LibCLang missing</h4>
@@ -207,33 +211,28 @@
     If an error displays "fatal error: clang-c/Index.h: No such file or
     directory", then something like libclang-3.6-dev is needed. OovAide should
     work with many versions of the libclang library.
-
     <h4><a class="mozTocH4" id="mozTocId919305"></a>Missing Standard Library
       Includes</h4>
     On Linux, OovAide attempts to define some standard include paths for
-    analysis using -isystem when a project is created.  If these are not correct,
+    analysis using -isystem when a project is created. If these are not correct,
     it may be required to set them manually after the project as been created.
-    <p/>
-    If an error appears such as "error: 'stdio.h' file not found" or for 
-    'limits.h' or 'stddef.h', this means that CLang is not finding the include
-    files in some standard locations. It is possible to find the locations that
-    CLang is looking by using the -v switch in the Analysis/Settings menu on the
-    C++ Settings tab in the Common Build Arguments edit box.
-    On Debian, the package that includes the files is libclang-common-x.x-dev,
-    which is included by using libclang-x.x-dev.  Sometimes using the 
-    build-essentials may help.
-    <p/>
-    It is possible to find the intersection of files that packages supply,
-    and where clang is searching using the following.
-    Using "echo '#include <stddef.h>' | clang -xc -v -", showed that clang
-    was searching for /usr/lib/llvm-3.6/bin/../lib/clang/3.6.2/include. Remember
-    that the paths during analysis and build are different since the path
-    to oovCppParser is different than the path to clang.
-    Using "dpkg --search stddef.h", showed that
-    libclang-common-3.6-dev supplied the file
-    /usr/lib/llvm-3.6/lib/clang/3.6.2/include/stddef.h.  The "-xc -v -"
-    switches can also be used in the OovAide analysis settings.
-
+    <p> If an error appears such as "error: 'stdio.h' file not found" or for
+      'limits.h' or 'stddef.h', this means that CLang is not finding the include
+      files in some standard locations. It is possible to find the locations
+      that CLang is looking by using the -v switch in the Analysis/Settings menu
+      on the C++ Settings tab in the Common Build Arguments edit box. On Debian,
+      the package that includes the files is libclang-common-x.x-dev, which is
+      included by using libclang-x.x-dev. Sometimes using the build-essentials
+      may help. </p>
+    <p> It is possible to find the intersection of files that packages supply,
+      and where clang is searching using the following. Using "echo '#include <stddef.h>'
+        | clang -xc -v -", showed that clang was searching for
+        /usr/lib/llvm-3.6/bin/../lib/clang/3.6.2/include. Remember that the
+        paths during analysis and build are different since the path to
+        oovCppParser is different than the path to clang. Using "dpkg --search
+        stddef.h", showed that libclang-common-3.6-dev supplied the file
+        /usr/lib/llvm-3.6/lib/clang/3.6.2/include/stddef.h. The "-xc -v -"
+        switches can also be used in the OovAide analysis settings. </stddef.h></p>
     <h4><a class="mozTocH4" id="mozTocId597034"></a>Builtin identifiers</h4>
     If an error "undeclared identifier __builtin__ia32_bsri" displays, this
     means that the clang headers are not found or the libclang.dll version is
@@ -327,6 +326,29 @@
       under the specified component's directory. </p>
     <p> The Extra Build Arguments can be used to specify switches or to add jar,
       java or class files. </p>
+    <h2><a class="mozTocH2" id="mozTocId190095"></a>Advanced Build Variables</h2>
+    <p>On the Analysis Settings dialog, there is an Advanced button that allows
+      setting build variables. All of the settings used for the build are
+      defined using build variables, so the&nbsp; Advanced button allows
+      changing the build variables with much more flexibility than the other
+      screens.</p>
+    <p>Build Variables are used to define compiler and linker flags, tool paths,
+      and other environment variables. Each variable can have some settings, and
+      in some circumstances will be modified to append more settings. For
+      example, the base setting of the project for C++ arguments may include
+      some directory using a "-I/path" flag. Then for a particular
+      component/directory, an additional "-I/otherPath" may be appended to the
+      base settings of the project. Another example is that an external package
+      may be different on Linux or Windows.</p>
+    <p>The build settings that are used are only the settings where the filter
+      matches the&nbsp;current build being performed. For example, a C++ build
+      variable with no filter will match all C++ files. A variable with a filter
+      where the configuration is Debug, will only be used when the compile being
+      performed is for debug mode.</p>
+    <p>The build settings are run in a particular order. In many cases the order
+      may not matter, but an example of where they may matter is when there are
+      duplicate header files, and one must be searched first. The shortest rules
+      are run before longer rules.</p>
     <h2><a class="mozTocH3 mozTocH2" id="mozTocId513853"></a>Inkscape Example on
       Windows</h2>
     This example shows how to analyze a project where little is known about the

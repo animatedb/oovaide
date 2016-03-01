@@ -209,7 +209,7 @@ bool StaticAnalysis::createMemberVarUsageFile(GtkWindow *parentWindow,
                         "  </Attr>\n";
                     /// @todo - add error checking
                     if(fprintf(useFile.getFp(), item,
-                        classifier->getName().makeXml().c_str(),
+                        classifier->getName().getXml().c_str(),
                         attr->getName().c_str(), usageCount, allUseCount) < 0)
                         {
                         status.set(false, SC_File);
@@ -386,8 +386,8 @@ bool StaticAnalysis::createMethodUsageFile(GtkWindow *parentWindow,
                         "    <UseCount>%d</UseCount>\n"
                         "  </Oper>\n";
                     if(fprintf(useFile.getFp(), item,
-                        classifier->getName().makeXml().getStr(),
-                        oper->getName().makeXml().getStr(), operTypeStr.getStr(),
+                        classifier->getName().getXml().getStr(),
+                        oper->getName().getXml().getStr(), operTypeStr.getStr(),
                         usageCount) < 0)
                         {
                         status.set(false, SC_File);
@@ -603,8 +603,8 @@ bool StaticAnalysis::createLineStatsFile(ModelData const &modelData, std::string
                 "  </Module>\n";
             FilePath modName(getRelativeFileName(module->getName()), FP_File);
             if(fprintf(useFile.getFp(), item,
-                modName.getNameExt().makeXml().c_str(),
-                modName.getDrivePath().makeXml().c_str(),
+                modName.getNameExt().getXml().c_str(),
+                modName.getDrivePath().getXml().c_str(),
                 module.get()->mLineStats.mNumCodeLines,
                 module.get()->mLineStats.mNumCommentLines,
                 module.get()->mLineStats.mNumModuleLines) < 0)

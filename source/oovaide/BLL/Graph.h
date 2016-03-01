@@ -49,6 +49,7 @@ class GraphPoint
         GraphPoint(int px, int py):
             x(px), y(py)
             {}
+        GraphPoint abs() const;
         void set(int px, int py)
             { x=px; y=py; }
         // Same as +=
@@ -115,6 +116,7 @@ class GraphRect
     public:
         GraphRect()
             {}
+        GraphRect(GraphPoint const p1, GraphPoint const p2);
         GraphRect(int x, int y, int xsize, int ysize)
             {
             start.x = x;

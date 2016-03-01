@@ -9,6 +9,7 @@
 #include "Options.h"
 #include "Gui.h"
 #include "OovError.h"
+#include "BuildVariablesDialog.h"
 #include <gtk/gtk.h>
 #include <memory>       // For unique_ptr
 #include <algorithm>
@@ -184,20 +185,20 @@ ScreenOptions::ScreenOptions(OovStringRef const buildConfig, ProjectReader &proj
 
     // Now set filtered variables.
 
-    buildVar.clearFilter();
+    buildVar.clearFilters();
     buildVar.setVarName(OptCppArgs);
     buildVar.setFunction(BuildVariable::F_Append);
     buildVar.addFilter(OptFilterNameBuildConfig, buildConfig);
     mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
         buildVar.getVarFilterName().getStr(), "ExtraBuildArgsTextview")));
 
-    buildVar.clearFilter();
+    buildVar.clearFilters();
     buildVar.setVarName(OptJavaArgs);
     buildVar.addFilter(OptFilterNameBuildMode, OptFilterValueBuildModeAnalyze);
     mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
         buildVar.getVarFilterName().getStr(), "JavaExtraAnalysisArgsTextview")));
 
-    buildVar.clearFilter();
+    buildVar.clearFilters();
     buildVar.setVarName(OptJavaArgs);
     buildVar.addFilter(OptFilterNameBuildMode, OptFilterValueBuildModeBuild);
     mProjectOptionLookup.push_back(std::unique_ptr<Option>(new TextViewBuildOption(
@@ -354,14 +355,21 @@ void OptionsDialog::updateBuildConfig()
 void OptionsDialog::showScreen()
     {
     Dialog dlg(GTK_DIALOG(Builder::getBuilder()->getWidget("OptionsDialog")));
+    BuildVariablesDialog buildVarDlg(mProjectOptions, GTK_WINDOW(dlg.getDialog()));
+
     updateBuildConfig();
-    ScreenOptions options(mCurrentBuildConfig, mProjectOptions, mGuiOptions);
-    mBuildConfigList.setSelected(mCurrentBuildConfig);
-    options.optionsToScreen();
+    moveOptionsToScreen();
     enableBuildWidgets(mCurrentBuildConfig != BuildConfigAnalysis);
     mDialogRunning = true;
     dlg.run();
     mDialogRunning = false;
+    }
+
+void OptionsDialog::moveOptionsToScreen()
+    {
+    ScreenOptions options(mCurrentBuildConfig, mProjectOptions, mGuiOptions);
+    mBuildConfigList.setSelected(mCurrentBuildConfig);
+    options.optionsToScreen();
     }
 
 void OptionsDialog::newConfig()
@@ -445,6 +453,16 @@ void OptionsDialog::runPackagesDialog()
 
 /////////////////
 
+
+extern "C" G_MODULE_EXPORT void on_AnalysisAdvancedButton_clicked(
+    GtkWidget *button, gpointer data)
+    {
+    if(BuildVariablesDialog::runAdvancedDialog())
+        {
+        if(gOptionsDlg)
+            gOptionsDlg->moveOptionsToScreen();
+        }
+    }
 
 extern "C" G_MODULE_EXPORT void on_EditOptionsmenuitem_activate()
     {

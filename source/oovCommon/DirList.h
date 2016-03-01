@@ -43,13 +43,12 @@ OovStatusReturn getDirListMatchExt(const std::vector<std::string> &paths,
 OovStatusReturn const getDirListMatch(OovStringRef const path,
     std::vector<std::string> &fn);
 
-/// Find a directory that matches the wildcard string.
-/// Returns the first matching directory, or an empty string for no match.
+/// Find directories that match the wildcard string.
 /// The wildcardStr can have an asterisk, but must be at the end of
 /// a subdirectory. For example: "\Qt*\mingw*\"
 /// @param startingDirs A list of directories to find the closest match.
 /// @param wildCardStr The wildcard string to use to match.
-OovString const findMatchingDir(FilePaths const &startingDirs,
+FilePaths findMatchingDirs(FilePaths const &startingDirs,
         OovStringRef const wildCardStr);
 
 enum eDirListTypes { DL_Files=0x01, DL_Dirs=0x02, DL_Both=DL_Files|DL_Dirs };

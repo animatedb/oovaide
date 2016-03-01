@@ -309,13 +309,14 @@ std::vector<std::string> matchDirs(FilePaths const &wildCardDirs)
     return subDirs;
     }
 
-OovString const findMatchingDir(FilePaths const &startingDirs, OovStringRef const wildCardStr)
+FilePaths findMatchingDirs(FilePaths const &startingDirs, OovStringRef const wildCardStr)
     {
     OovString matchedDir;
     FilePath wildCardPattern(wildCardStr, FP_Dir);
+    FilePaths searchDirs;
     if(wildCardPattern.length() > 0)
         {
-        FilePaths searchDirs = startingDirs;
+        searchDirs = startingDirs;
         size_t pos = wildCardPattern.getPosStartDir();
         while(1)
             {
@@ -342,12 +343,8 @@ OovString const findMatchingDir(FilePaths const &startingDirs, OovStringRef cons
                 break;
                 }
             }
-        if(searchDirs.size() > 0)
-            {
-            matchedDir = searchDirs[0];
-            }
         }
-    return matchedDir;
+    return searchDirs;
     }
 
 dirRecurser::~dirRecurser()

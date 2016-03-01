@@ -8,6 +8,7 @@
 #include "Project.h"
 #include "Packages.h"
 #include "OovError.h"
+#include "Options.h"
 #ifdef __linux__
 #include <unistd.h>     // For readlink
 #endif
@@ -427,11 +428,7 @@ void ProjectBuildArgs::setConfig(OovStringRef buildMode, OovStringRef const buil
     {
     mBuildEnv.addCurrentFilterValue(OptFilterNameBuildMode, buildMode);
     mBuildEnv.addCurrentFilterValue(OptFilterNameBuildConfig, buildConfig);
-#ifdef __linux__
-    mBuildEnv.addCurrentFilterValue(OptFilterNamePlatform, OptFilterValuePlatformLinux);
-#else
-    mBuildEnv.addCurrentFilterValue(OptFilterNamePlatform, OptFilterValuePlatformWindows);
-#endif
+    mBuildEnv.addCurrentFilterValue(OptFilterNamePlatform, OptionsDefaults::getPlatform());
 
     OovStatus status = mProjectPackages.read();
     if(status.needReport())

@@ -52,15 +52,15 @@ void OperationDiagramView::gotoClass(OovStringRef const className)
     }
 
 void OperationDiagramView::gotoOperation(OperationCall const *opcall)
-	{
-    std::string className = getDiagram().getClassName(*opcall);
+    {
+    OovString className = getDiagram().getNodeName(*opcall);
     if(mListener)
         {
         mListener->gotoOperation(className, opcall->getName(), opcall->isConst());
         }
 //    clearGraphAndAddOperation(className, opcall->getName(), opcall->isConst());
 //    requestRedraw();
-	}
+    }
 
 void OperationDiagramView::graphButtonPressEvent(const GdkEventButton *event)
     {
@@ -77,7 +77,7 @@ void OperationDiagramView::viewSource(OovStringRef const module,
 static void displayContextMenu(guint button, guint32 acttime, gpointer data)
     {
     GdkEventButton *event = static_cast<GdkEventButton*>(data);
-    const OperationClass *node = gOperationDiagramView->getDiagram().getNode(
+    const OperationNode *node = gOperationDiagramView->getDiagram().getNode(
         static_cast<int>(event->x), static_cast<int>(event->y));
     const OperationCall *opcall = gOperationDiagramView->getDiagram().getOperation(
             gStartPosInfo.x, gStartPosInfo.y);
@@ -85,6 +85,7 @@ static void displayContextMenu(guint button, guint32 acttime, gpointer data)
         {
         "OperGotoClassMenuitem",
         "RemoveOperClassMenuitem",
+        "AddCallerVarRefsMenuitem"
         };
     Builder *builder = Builder::getBuilder();
     for(size_t i=0; i<sizeof(nodeitems)/sizeof(nodeitems[i]); i++)
@@ -116,11 +117,11 @@ void OperationDiagramView::graphButtonReleaseEvent(const GdkEventButton *event)
     {
     if(event->button == 1)
         {
-        const OperationClass *node = gOperationDiagramView->getDiagram().getNode(
+        /*
+        OperationNode const *node = gOperationDiagramView->getDiagram().getNode(
                 gStartPosInfo.x, gStartPosInfo.y);
         if(node)
             {
-            /*
             DiagramPoint offset = gStartPosInfo.startPos;
             offset.sub(node->getPosition());
 
@@ -129,8 +130,8 @@ void OperationDiagramView::graphButtonReleaseEvent(const GdkEventButton *event)
 
             node->setPosition(newPos);
             gOperationDiagram->getOpGraph().drawDiagram();
-            */
             }
+        */
         }
     else
         {
@@ -152,7 +153,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoOperationmenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_OperGotoClassMenuitem_activate(
         GtkWidget * /*widget*/, gpointer /*data*/)
     {
-    const OperationClass *node = gOperationDiagramView->getDiagram().getNode(
+    const OperationClass *node = gOperationDiagramView->getDiagram().getClass(
             gStartPosInfo.x, gStartPosInfo.y);
     if(node)
         {
@@ -163,7 +164,7 @@ extern "C" G_MODULE_EXPORT void on_OperGotoClassMenuitem_activate(
 extern "C" G_MODULE_EXPORT void on_RemoveOperClassMenuitem_activate(
         GtkWidget * /*widget*/, gpointer /*data*/)
     {
-    const OperationClass *node = gOperationDiagramView->getDiagram().getNode(
+    const OperationNode *node = gOperationDiagramView->getDiagram().getNode(
             gStartPosInfo.x, gStartPosInfo.y);
     if(node)
         {
@@ -208,6 +209,17 @@ extern "C" G_MODULE_EXPORT void on_AddCallersMenuitem_activate(
         }
     }
 
+extern "C" G_MODULE_EXPORT void on_AddCallerVarRefsMenuitem_activate(
+        GtkWidget * /*widget*/, gpointer /*data*/)
+    {
+    const OperationNode *node = gOperationDiagramView->getDiagram().getNode(
+            gStartPosInfo.x, gStartPosInfo.y);
+    if(node)
+        {
+        gOperationDiagramView->addVarRefs(node);
+        }
+    }
+
 extern "C" G_MODULE_EXPORT void on_OperationFontMenuitem_activate(
     GtkWidget * /*widget*/, gpointer /*data*/)
     {
@@ -232,7 +244,7 @@ extern "C" G_MODULE_EXPORT void on_ViewOperSourceMenuitem_activate(
                     oper.getLineNum());
             }
         }
-    const OperationClass *node = gOperationDiagramView->getDiagram().getNode(
+    const OperationClass *node = gOperationDiagramView->getDiagram().getClass(
             gStartPosInfo.x, gStartPosInfo.y);
     if(node)
         {

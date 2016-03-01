@@ -156,10 +156,10 @@ bool createComplexityFile(ModelData const &modelData, std::string &fn)
                             OovString str =
                             "  <Oper>\n"
                             "    <ClassName>";
-                            str += classifier->getName().makeXml();
+                            str += classifier->getName().getXml();
                             str += "</ClassName>\n"
                             "    <OperName>";
-                            str += oper->getName().makeXml();
+                            str += oper->getName().getXml();
                             str += "</OperName>\n"
                             "    <McCabe>";
                             str.appendInt(mcCabe);

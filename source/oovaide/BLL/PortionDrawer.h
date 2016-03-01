@@ -51,10 +51,21 @@ class PortionDrawer:public DiagramDependencyDrawer
         PortionConnection getConnection(size_t index) const
             { return mGraph->getConnections()[index]; }
 
+        bool isSelected(size_t nodeIndex) const;
+        void setSingleSelection(size_t nodeIndex);
+        // If no nodes are contained in the rectangle, this clears the selection.
+        void setRectSelection(GraphPoint p1, GraphPoint p2);
+
+        void moveSelection(GraphPoint p);
+        void alignTopSelection();
+        void alignLeftSelection();
+        void spaceEvenlyDownSelection();
+
     private:
         Diagram const &mDiagram;
         PortionGraph const *mGraph;
         std::vector<GraphPoint> mNodePositions;
+        std::vector<int> mSelectedNodeIndices;
 
         void drawNodes(DiagramDrawer &drawer);
         void drawConnections(DiagramDrawer &drawer);
@@ -66,6 +77,8 @@ class PortionDrawer:public DiagramDependencyDrawer
         /// Operations start at a depth of 1, and attributes start at 0.
         std::vector<size_t> getCallDepths() const;
         void fillDepths(size_t nodeIndex, std::vector<size_t> &depths) const;
+        std::vector<int> getSelectedNodeIndicesSortedX() const;
+        std::vector<int> getSelectedNodeIndicesSortedY() const;
     };
 
 

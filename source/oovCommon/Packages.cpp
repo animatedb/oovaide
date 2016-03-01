@@ -8,6 +8,7 @@
 #include "Packages.h"
 #include "Project.h"
 #include "OovError.h"
+#include "DirList.h"
 #include <algorithm>
 
 #define TagPkgNames "PkgNames"
@@ -227,6 +228,36 @@ OovStringVec RootDirPackage::getScannedLibraryFilePaths() const
     return(getValAddRootToVector(mScannedLibFilePaths, FP_File));
     }
 
+#ifndef __linux__
+// Warning - this may alter paths (sort them)
+static OovString findBestPath(FilePaths &paths)
+    {
+    OovString bestPath;
+    if(paths.size() > 0)
+        {
+        // Sorting will allow matching the highest version of
+        // filepaths that have a similar format.
+        std::sort(paths.begin(), paths.end());
+        bestPath = paths[paths.size()-1];
+        }
+    return bestPath;
+    }
+
+bool RootDirPackage::winScanAndSetRootDir(OovStringRef rootDir)
+    {
+    FilePaths dirs;
+    dirs.push_back(FilePath("/", FP_Dir));
+    dirs.push_back(FilePath("/Program Files", FP_Dir));
+    FilePaths paths = findMatchingDirs(dirs, rootDir);
+    OovString dir = findBestPath(paths);
+    if(dir.length())
+        {
+        setRootDir(dir);
+        }
+    return(dir.length());
+    }
+#endif
+
 /*
 bool RootDirPackage::anyIncDirsMatch(std::set<std::string> const &incDirs) const
     {
@@ -278,6 +309,53 @@ OovStringVec Package::getCompileArgs() const
 OovStringVec Package::getLinkArgs() const
     {
     return CompoundValueRef::parseString(mLinkArgs);
+    }
+
+static bool checkDirs(OovStringVec const &dirs, OovString &badPath)
+    {
+    OovStatus status(true, SC_File);
+    bool ok = true;
+    for(auto const &path : dirs)
+        {
+        if(path.find('*') == std::string::npos)
+            {
+            FilePath fp(path, FP_Dir);
+            ok = FileIsDirOnDisk(fp, status);
+            if(!ok)
+                {
+                badPath = fp;
+                break;
+                }
+            }
+        }
+    if(status.needReport())
+        {
+        status.reported();
+        }
+    return ok;
+    }
+
+bool Package::checkDirectories(OovString &badPath) const
+    {
+    OovStatus status(true, SC_File);
+    bool ok = FileIsDirOnDisk(getRootDir(), status);
+    if(!ok)
+        {
+        badPath = getRootDir();
+        }
+    if(ok)
+        {
+        ok = checkDirs(getIncludeDirs(), badPath);
+        }
+    if(ok)
+        {
+        ok = checkDirs(getLibraryDirs(), badPath);
+        }
+    if(status.needReport())
+        {
+        status.reported();
+        }
+    return ok;
     }
 
 ////////////////
@@ -362,15 +440,17 @@ OovStatusReturn ProjectPackages::read()
     if(mFile.isFilePresent(status))
         {
         status = mFile.readFile();
-        }
-    if(status.needReport())
-        {
-        OovString str = "Unable to read project packages: ";
-        str += getFilename();
-        status.report(ET_Error, str);
+        if(status.needReport())
+            {
+            OovString str = "Unable to read project packages: ";
+            str += getFilename();
+            status.report(ET_Error, str);
+            }
         }
     return status;
     }
+
+
 
 ////////////////
 

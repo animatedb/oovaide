@@ -138,6 +138,15 @@ bool NameValueRecord::getValueBool(OovStringRef const optionName) const
     return(getValue(optionName) == "Yes");
     }
 
+void NameValueRecord::removeName(OovStringRef const optionName)
+    {
+    auto iter = mNameValues.find(optionName);
+    if(iter != mNameValues.end())
+        {
+        mNameValues.erase(iter);
+        }
+    }
+
 OovStatusReturn NameValueRecord::write(File &file)
     {
     OovStatus status(true, SC_File);

@@ -179,6 +179,15 @@ static OovStringVec getEnvPathDirs()
     }
 #endif
 
+char const *OptionsDefaults::getPlatform()
+    {
+#ifdef __linux__
+    return OptFilterValuePlatformLinux;
+#else
+    return OptFilterValuePlatformWindows;
+#endif
+    }
+
 void OptionsDefaults::setDefaultOptions()
     {
     CompoundValue baseArgs;

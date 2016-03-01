@@ -91,6 +91,33 @@ bool OovProject::newProject(OovString projectDir, CompoundValue const &excludeDi
     return started;
     }
 
+static OovStringVec getExternalProjectPackages(ProjectReader const &projOptions)
+    {
+    OovStringVec cppArgVars = projOptions.getMatchingNames("CppArgs");
+    OovStringVec extPackageNames;
+    for(auto const &cppArg : cppArgVars)
+        {
+        BuildVariable buildVar;
+        buildVar.initVarFromString(cppArg, "");
+        OovString platform = buildVar.getFilterValue(OptFilterNamePlatform);
+        if(platform.length() == 0 || OptionsDefaults::getPlatform() == platform)
+            {
+            OovString cppArgStr = projOptions.getValue(cppArg);
+            CompoundValue compArgs;
+            compArgs.parseString(cppArgStr);
+            for(auto const &arg : compArgs)
+                {
+                size_t pos = arg.find("-EP");
+                if(pos != std::string::npos)
+                    {
+                    extPackageNames.push_back(arg.substr(pos+3));
+                    }
+                }
+            }
+        }
+    return extPackageNames;
+    }
+
 bool OovProject::openProject(OovStringRef projectDir, bool &openedProject)
     {
     bool started = isProjectIdle();
@@ -121,11 +148,15 @@ bool OovProject::openProject(OovStringRef projectDir, bool &openedProject)
                 }
             if(openedProject)
                 {
+                OovStringVec extPackageNames = getExternalProjectPackages(
+                    mProjectOptions);
+                updateProjectPackages(extPackageNames);
                 status = mGuiOptions.read();
                 if(status.needReport())
                     {
                     mGuiOptions.setDefaultOptions();
-                    status.report(ET_Error, "Unable to read GUI options for project, using defaults");
+                    status.report(ET_Error,
+                        "Unable to read GUI options for project, using defaults");
                     }
                 }
             }
@@ -241,7 +272,9 @@ void OovProject::processAnalysisFiles()
         }
     if(status.needReport())
         {
-        status.report(ET_Error, "Unable to get directory for analysis");
+        status.reported();
+// The analysis directory is optional.
+//        status.report(ET_Error, "Unable to get directory for analysis");
         }
     mProjectStatus.mAnalysisStatus |= ProjectStatus::AS_Loaded;
     logProj("-processAnalysisFiles");

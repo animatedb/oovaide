@@ -64,6 +64,21 @@ class PortionDiagramView
             }
         int getFontSize()
             { return mPortionDiagram.getDiagramBaseFontSize(); }
+        void alignTopSelection()
+            {
+            mPortionDiagram.alignTopSelection();
+            requestRedraw();
+            }
+        void alignLeftSelection()
+            {
+            mPortionDiagram.alignLeftSelection();
+            requestRedraw();
+            }
+        void spaceEvenlyDownSelection()
+            {
+            mPortionDiagram.spaceEvenlyDownSelection();
+            requestRedraw();
+            }
 
     private:
         GuiOptions const &mGuiOptions;

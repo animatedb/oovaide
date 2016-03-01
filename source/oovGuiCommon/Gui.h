@@ -55,8 +55,9 @@ class Dialog
         bool run(bool hideDialogAfterButtonPress = false);
         virtual void beforeRun()
             {}
-        virtual void afterRun(bool /*ok*/)
-            {}
+        // Return true to allow closing dialog, return false to keep dialog open.
+        virtual bool afterRun(bool /*ok*/)
+            { return true; }
         GtkWidget *getContentArea()
             { return gtk_dialog_get_content_area(mDialog); }
         void destroy()
@@ -65,7 +66,9 @@ class Dialog
             { return mDialog; }
 
     private:
+        GtkWindow *mParentWindow;
         GtkDialog *mDialog;
+        void preRun();
     };
 
 /// Many GTK functions return a string that must be freed.  This class

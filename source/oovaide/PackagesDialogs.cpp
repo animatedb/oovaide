@@ -7,7 +7,6 @@
 
 #include "PackagesDialogs.h"
 #include "OovString.h"
-#include "DirList.h"
 #include "ctype.h"
 #include <algorithm>
 
@@ -110,42 +109,68 @@ void ProjectPackagesDialog::beforeRun()
     mBaseBuildArgs = args;
     }
 
-void ProjectPackagesDialog::afterRun(bool ok)
+static bool checkPackageDirs(Package const &pkg)
     {
-    if(ok)
+    OovString badPath;
+    bool ok = pkg.checkDirectories(badPath);
+    if(!ok)
         {
-        savePackage(mProjectPackagesList.getSelected());
-        OovStatus status = mProjectPackages.savePackages();
-        if(status.needReport())
-            {
-            status.report(ET_Error, "Unable to save packages");
-            }
-        int len = mBaseBuildArgs.length();
-        if(len > 0)
-            {
-            if(mBaseBuildArgs[len-1] != '\n')
-                mBaseBuildArgs.append("\n");
-            }
-        for(auto const &str : mProjectPackagesList.getText())
-            {
-            mBaseBuildArgs += "-EP";
-            mBaseBuildArgs += str;
-            mBaseBuildArgs += "\n";
-            }
+        OovString str = "Unable to save package ";
+        str += pkg.getPkgName();
+        str += " because of incorrect directory ";
+        str += badPath;
+        Gui::messageBox(str.getStr());
         }
+    return ok;
     }
 
-void ProjectPackagesDialog::savePackage(const std::string &pkgName)
+bool ProjectPackagesDialog::afterRun(bool ok)
     {
+    bool saved = false;
+    if(ok)
+        {
+        saved = savePackage(mProjectPackagesList.getSelected());
+        if(saved)
+            {
+            for(auto const &pkg : mProjectPackages.getPackages())
+                {
+                saved = checkPackageDirs(pkg);
+                if(!saved)
+                    {
+                    break;
+                    }
+                }
+            }
+        if(saved)
+            {
+            OovStatus status = mProjectPackages.savePackages();
+            if(status.needReport())
+                {
+                status.report(ET_Error, "Unable to save packages");
+                }
+            int len = mBaseBuildArgs.length();
+            if(len > 0)
+                {
+                if(mBaseBuildArgs[len-1] != '\n')
+                    mBaseBuildArgs.append("\n");
+                }
+            for(auto const &str : mProjectPackagesList.getText())
+                {
+                mBaseBuildArgs += "-EP";
+                mBaseBuildArgs += str;
+                mBaseBuildArgs += "\n";
+                }
+            }
+        }
+    return saved;
+    }
+
+bool ProjectPackagesDialog::savePackage(const std::string &pkgName)
+    {
+    bool saved = false;
     if(pkgName.length() > 0)
         {
         bool addOk = true;
-#ifndef __linux__
-        // This isn't perfect since it displays an error, but allows
-        // the package to be inserted into the project anyway. It does
-        // allow the user to clean up themselves though.
-        addOk = winCheckDirectoryOk();
-#endif
         if(addOk)
             {
             Package pkg(pkgName, getEntry("PackageRootDirEntry"));
@@ -153,9 +178,14 @@ void ProjectPackagesDialog::savePackage(const std::string &pkgName)
                     getEntry("PackageCompileArgsEntry"));
             pkg.setLinkInfo(getEntry("PackageLibDirEntry"), getEntry("PackageLibNamesEntry"),
                     getEntry("PackageLinkArgsEntry"));
-            mProjectPackages.insertPackage(pkg);
+            if(checkPackageDirs(pkg))
+                {
+                saved = true;
+                mProjectPackages.insertPackage(pkg);
+                }
             }
         }
+    return saved;
     }
 
 void ProjectPackagesDialog::selectPackage()
@@ -242,17 +272,6 @@ void ProjectPackagesDialog::winSetEnableScanning()
             "ScanDirectoriesButton")), missing);
     }
 
-bool ProjectPackagesDialog::winCheckDirectoryOk()
-    {
-    OovStatus status(true, SC_File);
-    bool missing = !FileIsDirOnDisk(getEntry("PackageRootDirEntry"), status);
-    if(missing || status.needReport())
-        {
-        status.report(ET_Error, "The root directory is not correct");
-        }
-    return(!missing);
-    }
-
 /*
 static int winMatchPackage(OovStringRef const pkgName, OovStringRef const dirName)
     {
@@ -314,13 +333,8 @@ void ProjectPackagesDialog::winScanDirectories()
     if(pkg.getPkgName().length() > 0)
         {
         OovString rootDir = getEntry("PackageRootDirEntry");
-        FilePaths dirs;
-        dirs.push_back(FilePath("/", FP_Dir));
-        dirs.push_back(FilePath("/Program Files", FP_Dir));
-        OovString dir = findMatchingDir(dirs, rootDir);
-        if(dir.length())
+        if(pkg.winScanAndSetRootDir(rootDir))
             {
-            pkg.setRootDir(dir);
             // move to project packages.
             mProjectPackages.insertPackage(pkg);
             }

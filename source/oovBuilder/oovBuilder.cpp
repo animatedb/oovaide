@@ -133,21 +133,19 @@ void OovBuilder::clean(eProcessModes pm, OovStringRef oovProjDir)
         }
     if(status.ok())
         {
+        printf("Cleaning tmp\n");
+        FilePath analysisPath(oovProjDir, FP_Dir);
+        analysisPath.appendFile("oovaide-tmp-*");
+        std::vector<std::string> files;
+        status = getDirListMatch(analysisPath, files);
         if(status.ok())
             {
-            FilePath analysisPath(oovProjDir, FP_Dir);
-            analysisPath.appendFile("oovaide-tmp-*");
-            std::vector<std::string> files;
-            status = getDirListMatch(analysisPath, files);
-            if(status.ok())
+            for(auto const &file : files)
                 {
-                for(auto const &file : files)
+                status = FileDelete(file);
+                if(!status.ok())
                     {
-                    status = FileDelete(file);
-                    if(!status.ok())
-                        {
-                        break;
-                        }
+                    break;
                     }
                 }
             }

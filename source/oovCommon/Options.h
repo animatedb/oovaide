@@ -45,6 +45,7 @@ class OptionsDefaults
         /// This sets the default executable names and compiler arguments by
         /// searching the environment and directories.
         void setDefaultOptions();
+        static char const *getPlatform();
 
     private:
         ProjectReader &mProject;

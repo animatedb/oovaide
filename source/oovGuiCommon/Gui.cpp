@@ -43,21 +43,37 @@ Dialog::~Dialog()
 void Dialog::setDialog(GtkDialog *dlg, GtkWindow *parent)
     {
     mDialog = dlg;
+    mParentWindow = parent;
+    }
+
+void Dialog::preRun()
+    {
+    GtkWindow *parent = mParentWindow;
     if(!parent)
         {
         parent = Gui::getMainWindow();
         }
     if(parent)
         {
-        gtk_window_set_transient_for(GTK_WINDOW(dlg), parent);
+        gtk_window_set_transient_for(GTK_WINDOW(mDialog), parent);
         }
     }
 
 int Dialog::runHideCancel()
     {
+    preRun();
     beforeRun();
-    int ret = gtk_dialog_run(mDialog);
-    afterRun(ret == GTK_RESPONSE_OK);
+    int ret = 0;
+    bool dialogRanOk = false;
+    while(!dialogRanOk)
+        {
+        ret = gtk_dialog_run(mDialog);
+        dialogRanOk = afterRun(ret == GTK_RESPONSE_OK);
+        if(ret != GTK_RESPONSE_OK)
+            {
+            break;
+            }
+        }
     if(ret == GTK_RESPONSE_CANCEL)
         gtk_widget_hide(GTK_WIDGET(getDialog()));
     return ret;
@@ -65,12 +81,22 @@ int Dialog::runHideCancel()
 
 bool Dialog::run(bool hideDialogAfterButtonPress)
     {
+    preRun();
     beforeRun();
-    bool ok = (gtk_dialog_run(mDialog) == GTK_RESPONSE_OK);
-    afterRun(ok);
+    bool okButton = false;
+    bool dialogRanOk = false;
+    while(!dialogRanOk)
+        {
+        okButton = (gtk_dialog_run(mDialog) == GTK_RESPONSE_OK);
+        dialogRanOk = afterRun(okButton);
+        if(!okButton)
+            {
+            break;
+            }
+        }
     if(hideDialogAfterButtonPress)
         gtk_widget_hide(GTK_WIDGET(getDialog()));
-    return ok;
+    return okButton;
     }
 
 

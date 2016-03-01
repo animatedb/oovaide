@@ -43,7 +43,6 @@ class ProjectPackagesDialog:public Dialog
 #ifndef __linux__
         void winScanDirectories();
         void winSetEnableScanning();
-        bool winCheckDirectoryOk();
 #endif
 
     private:
@@ -53,8 +52,8 @@ class ProjectPackagesDialog:public Dialog
         std::string mLastSelectedPackage;
         bool mAllowSelection;
         virtual void beforeRun() override;
-        virtual void afterRun(bool ok) override;
-        void savePackage(const std::string &pkgName);
+        virtual bool afterRun(bool ok) override;
+        bool savePackage(const std::string &pkgName);
         void updatePackageList();
         void clearPackageDisplay();
     };

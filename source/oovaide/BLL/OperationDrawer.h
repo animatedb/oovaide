@@ -57,10 +57,10 @@ class OperationDrawer
         int mPad;
         int mCharHeight;
         std::vector<BlockPolygon> mLifelinePolygons;
-        GraphSize drawClass(DiagramDrawer &drawer, const OperationClass &node,
+        GraphSize drawNode(DiagramDrawer &drawer, const OperationNode &node,
                 const OperationDrawOptions &options, bool draw);
         void drawLifeLines(DiagramDrawer &drawer,
-                const std::vector<OperationClass> &classes,
+                std::vector<std::unique_ptr<OperationNode>> const &nodes,
                 std::vector<int> const &classEndY, int endy);
         /// @todo - This stuff is pretty ugly. The draw flag should be removed,
         /// and some functions for getting size should be separately created.
@@ -75,6 +75,12 @@ class OperationDrawer
                 std::vector<DrawString> &drawStrings, bool draw, int callDepth=0);
         GraphSize drawOrSizeDiagram(DiagramDrawer &drawer, OperationGraph &graph,
                 const OperationDrawOptions &options, bool draw);
+        void drawCall(DiagramDrawer &drawer, const OperationGraph &graph,
+            size_t sourceIndex, OperationCall *call,
+            std::vector<DrawString> &drawStrings, int condOffset, int &y,
+            const OperationDrawOptions &options,
+            std::set<const OperationDefinition*> &drawnOperations,
+            bool draw, int callDepth);
     };
 
 #endif /* OPERATIONDRAWER_H_ */

@@ -121,6 +121,8 @@ class NameValueRecord
         /// @param val The boolean value.
         void setNameValueBool(OovStringRef const optionName, bool val);
 
+        void removeName(OovStringRef const optionName);
+
         /// Get the value of an item that is a boolean.
         /// @param optionName The name of the item to look up.
         bool getValueBool(OovStringRef const optionName) const;

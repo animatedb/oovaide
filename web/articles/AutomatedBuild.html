@@ -296,6 +296,52 @@
 	or 
 	<a href="../design/OovaideBuildDesign.html">OovAide Build Design</a>
 
+    <h2>Build Variables</h2>
+	A base variable	can be defined as having a value, then it can either
+	be reassigned or appended to for certain build states.
+	<p/>
+	Variable as stored in a project file:
+		<table border="1">
+		<tr><th>Entity</th><th>Description</th><th>Example</th></tr>
+		<tr><td>Var name</td><td>An identifier</td><td>CppArgs</td></tr>
+		<tr><td>Filter</td><td>[filtername : filtervalue & filtername : filtervalue]</td>
+			<td>[comp:oovaide & plat:Windows]</td></tr>
+		<tr><td>Function</td><td>Set(=), insert(^), or append(+) to a variable</td><td>+</td></tr>
+		<tr><td>Value separator</td><td>|</td><td>|</td></tr>
+		<tr><td>Value</td><td>any string or compound values</td><td>-lnk-Wl,--subsystem,windows;</td></tr>
+		</table>
+	<br/>
+	The following are filters that are prebuilt into the program.
+		<table border="1">
+		<tr><th>Filter Name</th><th>Possible Values</th></tr>
+		<tr><td>mode</td><td>Analyze, Build</td></tr>
+		<tr><td>plat</td><td>Linux, Windows</td></tr>
+		<tr><td>cfg</td><td>Analysis, Debug, Release, [custom]</td></tr>
+		<tr><td>comp</td><td>Any component name within the project</td></tr>
+		</table>
+	Another filter that may be added is
+	filetype (cpp,c,asm,obj,lib/java). Also coverage does not have filters yet.
+	<p/>
+	The following is an example configuration file.
+	<pre>
+	CppArgs[]=|-c;-x;c++;-std=c++11;
+	CppArgs[cfg:Debug]+|-O0;-g3;
+	</pre>
+
+	The previous configuration would result in the following. The arguments are shown as
+	separated with semicolons. This shows that release mode is using the base
+	variable arguments, and the Debug mode has extra arguments appended.
+
+	<table border="1">
+	<tr><th>Mode</th><th>Flags</th></tr>
+	<tr><td>Debug</td><td>-c;-x;c++;-std=c++11;-O0;-g3;</td></tr>
+	<tr><td>Release</td><td>-c;-x;c++;-std=c++11;</td></tr>
+	</table>
+	<p/>
+	The C++ arguments will be given to the compiler before the project include
+	directories. This can be used to specify directories to eliminate the problem
+	of duplicate header file names.
+
     <h2>Some Future Tasks</h2>
 	For a broader vision, see the Completely Redesigned Build below.
 	Optimize the use of the CLang compiler. The CLang compiler is invoked multiple times.
@@ -507,55 +553,8 @@
 	<li>Bug fix: Support multiple drives?</li>
 	</ul>
     <h2>Evolve OovAide Build</h2>
-	The main reason that the project files must be updated is to support
-	different configurations for different components. The main feature is
-	to support different include paths for any component.
 
-	<h3>Variables</h3>
-	A base variable	can be defined as having a value, then it can either
-	be reassigned or appended to for certain build states.
-	<p/>
-	Variable as stored in a project file:
-		<table border="1">
-		<tr><th>Entity</th><th>Description</th><th>Example</th></tr>
-		<tr><td>Var name</td><td>An identifier</td><td>CppArgs</td></tr>
-		<tr><td>Filter</td><td>[filtername : filtervalue & filtername : filtervalue]</td>
-			<td>[comp:oovaide & plat:Windows]</td></tr>
-		<tr><td>Function</td><td>Set(=), insert(^), or append(+) to a variable</td><td>+</td></tr>
-		<tr><td>Value separator</td><td>|</td><td>|</td></tr>
-		<tr><td>Value</td><td>any string or compound values</td><td>-lnk-Wl,--subsystem,windows;</td></tr>
-		</table>
-	<br/>
-	The following are filters that are prebuilt into the program.
-		<table border="1">
-		<tr><th>Filter Name</th><th>Possible Values</th></tr>
-		<tr><td>mode</td><td>Analyze, Build</td></tr>
-		<tr><td>plat</td><td>Linux, Windows</td></tr>
-		<tr><td>cfg</td><td>Analysis, Debug, Release, [custom]</td></tr>
-		<tr><td>comp</td><td>Any component name within the project</td></tr>
-		</table>
-	The comp filter is not yet supported. Another that may be added is
-	filetype (cpp,c,asm,obj,lib/java). Also coverage does not have filters yet.
-	<p/>
-	The following is an example configuration file.
-	<pre>
-	CppArgs[]=|-c;-x;c++;-std=c++11;
-	CppArgs[cfg:Debug]+|-O0;-g3;
-	</pre>
-
-	The previous configuration would result in the following. The arguments are shown as
-	separated with semicolons. This shows that release mode is using the base
-	variable arguments, and the Debug mode has extra arguments appended.
-
-	<table border="1">
-	<tr><th>Mode</th><th>Flags</th></tr>
-	<tr><td>Debug</td><td>-c;-x;c++;-std=c++11;-O0;-g3;</td></tr>
-	<tr><td>Release</td><td>-c;-x;c++;-std=c++11;</td></tr>
-	</table>
-
-
-	<h3>Future</h3>
-	Some of the following may be already implmented in the latest versions of OovAide.
+	Some of the following may be already implemented in the latest versions of OovAide.
 	<ul>
 	  <li>Dependencies - Add dependency dialog per component/dir.
 	    Clear and find, if manually set up, should builder ever scan?

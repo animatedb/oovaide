@@ -40,13 +40,6 @@ Missing Features
 - General
 	- click on top left corner of oovaide program (settings menu) is terrible.
 	- __chkstk_ms error for linking .so - make sure path is set to correct version of mingw.
-	- add cmakelists reader
-	- tool paths should be specific to linux/windows - update when loading project?
-	- clean says, unable to get directory for analysis
-	- source path in project is different on linux and windows. need to change when opening project
-	- oovaide-pkg.txt must be different on linux/windows?
-	- Add advanced build dialog for setting variables.
-	- Add help to describe dependencies on CLang, etc. Different for linux/windows
 	- Duplicate class/function names
 	- Build Java/task sequencing
 	- Preserve state between sessions
@@ -95,6 +88,9 @@ Missing Features
 	- Use genetic algorithm to optimize for shortest dependencies in each module
 
 - Class Diagrams/List
+	- cairo_text_extents varies for the same text depending on which class was
+	  clicked to load the diagram from Simple example. Font is always Arial size 10.
+	  Setting font size is interesting.
 	- Find shortest path for two related classes with max depth of search
 	- example names: member NotAStar typedef with base type int not shown
 	  when drawing is loaded. Shouldn't show in add selected list?
@@ -119,7 +115,6 @@ Missing Features
 
 - Portion Diagrams
 	- Assert for call to constructor of base class (BackgroundQueueUnitTest)
-	- Allow move with multiple selection
 	- Grid for placement, option for grid size
 	- View source should go to selected function
 	- Could provide go to class for member variables
@@ -144,6 +139,17 @@ Missing Features
 	  New ... notation?
 	- Calls through templates aren't displayed.
 	- Allow rearranging class order?
+
+- Build/Analysis Settings
+	- add cmakelists reader
+	- add custom configs to build variable dialogs
+	- tool paths should be specific to linux/windows - update when loading project?
+	- source path in project is different on linux and windows. need to change when opening project
+	- Add help to describe dependencies on CLang, etc. Different for linux/windows
+	- Add way to update compiler -isystem paths
+	- Add -Wall, --analyzer
+	- Add pthread to link if in compile switch? (external packages already does this)
+	- Adding pthreads-stubs to analysis settings in linux hangs
 
 - Analysis (builder and parser)
 	- Java
@@ -181,7 +187,6 @@ Missing Features
 		for empty classes.
 	- Component specific build args not used to recalculate crc's for rebuild
 	- Changing package does not cause reanalysis? (glib to gmodule)
-	- Add -Wall, --analyzer
 
 - Build System (Build not required for displaying diagrams)
 	- isystem is in BuildArgsExtra-Analyze, but should be in BuildArgsBase. Options.cpp, extraCppDocArgs -> baseArgs
@@ -202,19 +207,15 @@ Missing Features
 	- Java - jar building needs to delete output jar.
 	- Java - build failing in linux? Can't find *.class in makeJar()
 	- Shouldn't have to  rebuild everything if project directories change
-	- Build/Settings per component don't seem to work for -lnk-static-libstdc++
 	- If Debug objects exist, but no analysis directory, Write file sharing error displays
 		- Changing edit/preferences deletes analysis, but not debug/release
-	- Add pthread to link if in compile switch? (external packages already does this)
 	- Build with relative paths doesn't include obj files (TestCpp)
-	- Adding pthreads-stubs to analysis settings in linux hangs
 	- Build of components within/under component directories not supported.
 	- Scan CMake files to find external pkg-config package dependencies
 	- The oovaide-incdeps file should be regenerated if the build settings change
 	- Multithreaded build output is not synchronized well enough
 	- Link only with project libraries that are needed for each component
 	- A static lib without source should not be on link lines
-	- Should include mingw-builds includes so that threading errors don't occur
 	- BUG: Drive letters in path unable to write to bad filename.
 	- Build sometimes must have objects specified before or after other libs/objects
 	- split source of libraries into separate file for each function for release mode
@@ -355,7 +356,13 @@ Missing Features
 	- Java parser does not support comment/code line numbers
 
 - Future
+	- Installer
+	    - CMake NSIS installer CPackNSIS
+	- List of external packages:
+	    https://github.com/ruslo/hunter/wiki
 	- C#
+	    https://github.com/pierre3/PlantUmlClassDiagramGenerator/blob/master/
+		PlantUmlClassDiagramGenerator/ClassDiagramGenerator.cs
 	    http://stackoverflow.com/questions/81406/parser-for-c-sharp
 	    mono dmcs/mcs
 	- Change help links to github

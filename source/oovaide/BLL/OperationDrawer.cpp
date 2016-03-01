@@ -37,14 +37,14 @@ GraphSize OperationDrawer::drawOrSizeDiagram(DiagramDrawer &drawer,
     GraphSize diagramSize;
     int maxy = 0;
     std::vector<int> classEndY;
-    for(size_t i=0; i<graph.mOpClasses.size(); i++)
+    for(size_t i=0; i<graph.mNodes.size(); i++)
         {
-        OperationClass &opClass = graph.mOpClasses[i];
-        opClass.setPosition(pos);
-        size = drawClass(drawer, opClass, options, draw);
+        OperationNode &node = graph.getNode(i);
+        node.setPosition(pos);
+        size = drawNode(drawer, node, options, draw);
         size_t condDepth = graph.getNestDepth(i);
         size.x += static_cast<int>(condDepth) * mPad;
-        opClass.setSize(size);
+        node.setSize(size);
         pos.x += size.x + mCharHeight;
         classEndY.push_back(startpos.y + size.y);
         if(size.y > maxy)
@@ -57,7 +57,7 @@ GraphSize OperationDrawer::drawOrSizeDiagram(DiagramDrawer &drawer,
     std::set<const OperationDefinition*> drawnOperations;
     for(const auto &oper : graph.mOperations)
         {
-        if(drawnOperations.find(oper) == drawnOperations.end())
+        if(drawnOperations.find(oper.get()) == drawnOperations.end())
             {
             size = drawOperation(drawer, pos, *oper, graph, options,
                     drawnOperations, draw);
@@ -66,7 +66,7 @@ GraphSize OperationDrawer::drawOrSizeDiagram(DiagramDrawer &drawer,
         }
     if(draw)
         {
-        drawLifeLines(drawer, graph.mOpClasses, classEndY, pos.y);
+        drawLifeLines(drawer, graph.mNodes, classEndY, pos.y);
         }
 
     diagramSize.y = pos.y + mCharHeight;
@@ -74,61 +74,69 @@ GraphSize OperationDrawer::drawOrSizeDiagram(DiagramDrawer &drawer,
     }
 
 void OperationDrawer::drawLifeLines(DiagramDrawer &drawer,
-        const std::vector<OperationClass> &classes,
+        std::vector<std::unique_ptr<OperationNode>> const &nodes,
         std::vector<int> const &classEndY, int endy)
     {
     drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
     endy += mCharHeight;
-    for(size_t i=0; i<classes.size(); i++)
+    for(size_t i=0; i<nodes.size(); i++)
         {
-        const auto &cl = classes[i];
-        int x = cl.getLifelinePosX();
+        int x = nodes[i]->getLifelinePosX();
         drawer.drawLine(GraphPoint(x, classEndY[i]), GraphPoint(x, endy));
         }
     drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
     }
 
-GraphSize OperationDrawer::drawClass(DiagramDrawer &drawer, const OperationClass &node,
+GraphSize OperationDrawer::drawNode(DiagramDrawer &drawer, const OperationNode &node,
         const OperationDrawOptions & /*options*/, bool draw)
     {
     GraphPoint startpos = node.getPosition();
-    const ModelType *type = node.getType();
-    OovStringRef const typeName = type->getName();
     int rectx = 0;
     int recty = 0;
-    const ModelClassifier *classifier = ModelClassifier::getClass(type);
-    if(classifier)
+    OovStringVec strs;
+    std::vector<GraphPoint> positions;
+
+    OovString const typeName = node.getName();
+    strs.push_back(typeName);
+
+    splitStrings(strs, 30, 40);
+    for(auto const &str : strs)
         {
-        if(draw)
+        recty += mCharHeight + (mPad * 2);
+        positions.push_back(GraphPoint(startpos.x+mPad, startpos.y + recty - mPad));
+        int curx = static_cast<int>(drawer.getTextExtentWidth(str)) + mPad*2;
+        if(curx > rectx)
+            rectx = curx;
+        }
+/*
+    if(node.getNodeType() == NT_Class)
+        {
+        const ModelType *type = OperationClass::getClass(&node)->getType();
+        const ModelClassifier *classifier = ModelClassifier::getClass(type);
+        if(classifier)
             {
-            drawer.groupText(true, false);
             }
-        OovStringVec strs;
-        std::vector<GraphPoint> positions;
-        strs.push_back(typeName);
-        splitStrings(strs, 30, 40);
-
-        for(auto const &str : strs)
+        }
+*/
+    if(draw)
+        {
+        if(node.getNodeType() == NT_Class)
             {
-            recty += mCharHeight + (mPad * 2);
-            positions.push_back(GraphPoint(startpos.x+mPad, startpos.y + recty - mPad));
-            int curx = static_cast<int>(drawer.getTextExtentWidth(str)) + mPad*2;
-            if(curx > rectx)
-                rectx = curx;
+            drawer.groupShapes(true, Color(0,0,0), Color(245,255,245));
             }
-
-        if(draw)
+        else
             {
             drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
-            drawer.drawRect(GraphRect(startpos.x, startpos.y, rectx, recty));
-            drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
-
-            for(size_t i=0; i<strs.size(); i++)
-                {
-                drawer.drawText(positions[i], strs[i]);
-                }
-            drawer.groupText(false, false);
             }
+        drawer.drawRect(GraphRect(startpos.x, startpos.y, rectx, recty));
+        drawer.groupShapes(false, Color(0,0,0), Color(245,245,255));
+
+        drawer.groupText(true, false);
+        for(size_t i=0; i<strs.size(); i++)
+            {
+            drawer.drawText(positions[i], strs[i]);
+            }
+        drawer.groupText(false, false);
         }
     return GraphSize(rectx, recty);
     }
@@ -171,17 +179,104 @@ void BlockPolygon::endChildBlock(int depth, int y)
     }
 */
 
-static void drawCall(DiagramDrawer &drawer, GraphPoint source,
+static void drawConnection(DiagramDrawer &drawer, GraphPoint source,
         GraphPoint target, bool isConst, int arrowLen)
     {
     drawer.drawLine(source, target, isConst);
-    // Draw arrow
-    if(source.x > target.x)
-        arrowLen = -arrowLen;
-    drawer.drawLine(GraphPoint(target.x-arrowLen, target.y-arrowLen),
-            GraphPoint(target.x, target.y));
-    drawer.drawLine(GraphPoint(target.x-arrowLen, target.y+arrowLen),
-            GraphPoint(target.x, target.y));
+    if(arrowLen > 0)
+        {
+        if(source.x > target.x)
+            arrowLen = -arrowLen;
+        drawer.drawLine(GraphPoint(target.x-arrowLen, target.y-arrowLen),
+                GraphPoint(target.x, target.y));
+        drawer.drawLine(GraphPoint(target.x-arrowLen, target.y+arrowLen),
+                GraphPoint(target.x, target.y));
+        }
+    }
+
+void OperationDrawer::drawCall(DiagramDrawer &drawer,
+    const OperationGraph &graph, size_t sourceIndex, OperationCall *call,
+    std::vector<DrawString> &drawStrings, int condOffset, int &y,
+    const OperationDrawOptions &options,
+    std::set<const OperationDefinition*> &drawnOperations, bool draw, int callDepth)
+    {
+    size_t targetIndex = graph.getNodeIndex(call->getDestNode());
+    int arrowLen = mCharHeight * 7 / 10;
+    int lineY = y + mCharHeight + mPad*2;
+    OperationNode const &node = graph.getNode(sourceIndex);
+    int sourcex = node.getLifelinePosX();
+    sourcex += condOffset;
+    const OperationNode &targetNode = graph.getNode(targetIndex);
+    int targetx = targetNode.getLifelinePosX();
+    if(targetIndex == NO_INDEX)
+        {
+        // Handle [else]
+//                  int len = mCharHeight*3;
+//                  mDrawer.drawLine(GraphPoint(sourcex, lineY),
+//                          GraphPoint(sourcex+len, lineY), call->isConst());
+        }
+    else if(targetIndex != sourceIndex)
+        {
+        if(draw)
+            {
+            drawConnection(drawer, GraphPoint(sourcex, lineY),
+                GraphPoint(targetx, lineY), call->isConst(), arrowLen);
+            }
+        }
+    else
+        {
+        // Draw line back to same class
+        int len = mCharHeight*3;
+        int height = 3;
+        if(draw)
+            {
+            drawer.drawLine(GraphPoint(sourcex, lineY),
+                GraphPoint(sourcex+len, lineY), call->isConst());
+            drawer.drawLine(GraphPoint(sourcex+len, lineY),
+                GraphPoint(sourcex+len, lineY+height));
+            drawer.drawLine(GraphPoint(sourcex, lineY+height),
+                GraphPoint(sourcex+len, lineY+height), call->isConst());
+            }
+        y += height;
+        }
+    int textX = (sourceIndex < targetIndex) ? node.getLifelinePosX() :
+            targetNode.getLifelinePosX();
+    GraphPoint callPos(textX+condOffset+mPad, y+mCharHeight);
+    drawStrings.push_back(DrawString(callPos, call->getName()));
+    call->setRect(GraphPoint(callPos.x, callPos.y-mCharHeight),
+            GraphSize(mCharHeight*50, mCharHeight+mPad));
+    y += mCharHeight*2;
+
+    // Draw child definition.
+    OperationDefinition *childDef = graph.getOperDefinition(*call);
+    if(childDef)
+        {
+        BlockPolygon &poly = mLifelinePolygons[sourceIndex];
+        //                    poly.startChildBlock(condDepth, y);
+        if(drawnOperations.find(childDef) == drawnOperations.end())
+            {
+            poly.incDepth(y);
+int posX = targetNode.getLifelinePosX();
+            GraphSize childSize = drawOperationNoText(drawer,
+                GraphPoint(posX/*pos.x*/, y), *childDef, graph, options,
+                drawnOperations, drawStrings, draw, callDepth+1);
+            y += childSize.y + mPad * 2;
+            poly.decDepth(y);
+            }
+        else
+            {
+            // This draws a rectangle to signify that it is defined
+            // elsewhere in the diagram.
+            GraphRect rect(targetx + mPad*2, callPos.y + mPad*2,
+                mCharHeight+mPad, mCharHeight+mPad);
+            if(draw)
+                {
+                drawer.drawRect(rect);
+                }
+            y += mCharHeight+mPad;
+            }
+//                    poly.endChildBlock(condDepth, y);
+        }
     }
 
 GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint pos,
@@ -194,211 +289,122 @@ GraphSize OperationDrawer::drawOperationNoText(DiagramDrawer &drawer, GraphPoint
     // Add space between bottom of class and operation name
     int starty = startpos.y+(mPad*2);
     int y=starty;
-    size_t sourceIndex = operDef.getOperClassIndex();
-    int arrowLen = mCharHeight * 7 / 10;
+    size_t sourceIndex = graph.getNodeIndex(operDef.getDestNode());
     std::vector<int> condStartPosY;
 
     drawnOperations.insert(&operDef);
-    const OperationClass &cls = graph.getClass(sourceIndex);
-    if(callDepth == 0)
+    OperationNode const &node = graph.getNode(sourceIndex);
+    if(node.getNodeType() == NT_Class)
         {
-        // Reinit all polys to initial conditions.
-        mLifelinePolygons.clear();
-        mLifelinePolygons.resize(graph.getClasses().size());
-        }
-    BlockPolygon &poly = mLifelinePolygons[sourceIndex];
-    poly.setup(cls.getLifelinePosX(), mPad);
-
-    if(!graph.isOperCalled(operDef))
-        {
-        // Show starting operation
-        operDef.setRect(GraphPoint(cls.getPosition().x, y),
-                GraphSize(mCharHeight*50, mCharHeight+mPad));
-        y += mCharHeight;
-        drawStrings.push_back(DrawString(GraphPoint(
-                cls.getPosition().x, y), operDef.getName()));
-        // Add space between operation name and called operations.
-        y += (mPad * 2);
-        int lineY = y + mPad*2;
-        if(draw)
+        if(callDepth == 0)
             {
-            drawCall(drawer, GraphPoint(cls.getPosition().x, lineY),
-                GraphPoint(cls.getLifelinePosX(), lineY),
-                operDef.isConst(), arrowLen);
+            // Reinit all polys to initial conditions.
+            mLifelinePolygons.clear();
+            mLifelinePolygons.resize(graph.getNodes().size());
             }
-        }
-    for(const auto &stmt : operDef.getStatements())
-        {
-        int condOffset = poly.getDepth() * mPad;
-        switch(stmt->getStatementType())
+        BlockPolygon &poly = mLifelinePolygons[sourceIndex];
+        poly.setup(node.getLifelinePosX(), mPad);
+
+        if(!graph.isOperCalled(operDef))
             {
-            case ST_Call:
+            // Show starting operation
+            operDef.setRect(GraphPoint(node.getPosition().x, y),
+                    GraphSize(mCharHeight*50, mCharHeight+mPad));
+            y += mCharHeight;
+            drawStrings.push_back(DrawString(GraphPoint(
+                    node.getPosition().x, y), operDef.getName()));
+            // Add space between operation name and called operations.
+            y += (mPad * 2);
+            int lineY = y + mPad*2;
+            if(draw)
                 {
-                OperationCall *call = stmt->getCall();
+                int arrowLen = mCharHeight * 7 / 10;
+                drawConnection(drawer, GraphPoint(node.getPosition().x, lineY),
+                    GraphPoint(node.getLifelinePosX(), lineY),
+                    operDef.isConst(), arrowLen);
+                }
+            }
+        for(const auto &stmt : operDef.getStatements())
+            {
+            int condOffset = poly.getDepth() * mPad;
+            switch(stmt->getStatementType())
+                {
+                case ST_Call:
+                    {
+                    OperationCall *call = stmt->getCall();
+                    drawCall(drawer, graph, sourceIndex, call, drawStrings,
+                        condOffset, y, options, drawnOperations, draw, callDepth);
+                    }
+                    break;
 
-                size_t targetIndex = call->getOperClassIndex();
-                int lineY = y + mCharHeight + mPad*2;
-                int sourcex = cls.getLifelinePosX();
-                sourcex += condOffset;
-                const OperationClass &targetCls = graph.getClass(targetIndex);
-                int targetx = targetCls.getLifelinePosX();
-                if(targetIndex == NO_INDEX)
+                case ST_VarRef:
                     {
-                    // Handle [else]
-//                  int len = mCharHeight*3;
-//                  mDrawer.drawLine(GraphPoint(sourcex, lineY),
-//                          GraphPoint(sourcex+len, lineY), call->isConst());
-                    }
-                else if(targetIndex != sourceIndex)
-                    {
-                    if(draw)
-                        {
-                        drawCall(drawer, GraphPoint(sourcex, lineY),
-                            GraphPoint(targetx, lineY), call->isConst(), arrowLen);
-                        }
-                    }
-                else
-                    {
-                    // Draw line back to same class
-                    int len = mCharHeight*3;
-                    int height = 3;
-                    if(draw)
-                        {
-                        drawer.drawLine(GraphPoint(sourcex, lineY),
-                            GraphPoint(sourcex+len, lineY), call->isConst());
-                        drawer.drawLine(GraphPoint(sourcex+len, lineY),
-                            GraphPoint(sourcex+len, lineY+height));
-                        drawer.drawLine(GraphPoint(sourcex, lineY+height),
-                            GraphPoint(sourcex+len, lineY+height), call->isConst());
-                        }
-                    y += height;
-                    }
-                int textX = (sourceIndex < targetIndex) ? cls.getLifelinePosX() :
-                        targetCls.getLifelinePosX();
-                GraphPoint callPos(textX+condOffset+mPad, y+mCharHeight);
-                drawStrings.push_back(DrawString(callPos, call->getName()));
-                call->setRect(GraphPoint(callPos.x, callPos.y-mCharHeight),
-                        GraphSize(mCharHeight*50, mCharHeight+mPad));
-                y += mCharHeight*2;
+                    OperationVarRef *ref = stmt->getVarRef();
 
-                // Draw child definition.
-                OperationDefinition *childDef = graph.getOperDefinition(*call);
-                if(childDef)
-                    {
-//                    poly.startChildBlock(condDepth, y);
-                    if(drawnOperations.find(childDef) == drawnOperations.end())
+                    size_t targetIndex = graph.getNodeIndex(ref->getDestNode());
+                    int lineY = y + mCharHeight + mPad*2;
+                    int sourcex = node.getLifelinePosX();
+                    sourcex += condOffset;
+                    const OperationNode &targetNode = graph.getNode(targetIndex);
+                    int targetx = targetNode.getLifelinePosX();
+                    if(targetIndex == NO_INDEX)
                         {
-                        poly.incDepth(y);
-                        GraphSize childSize = drawOperationNoText(drawer,
-                            GraphPoint(pos.x, y), *childDef, graph, options,
-                            drawnOperations, drawStrings, draw, callDepth+1);
-                        y += childSize.y + mPad * 2;
-                        poly.decDepth(y);
+                        int len = mCharHeight*3;
+                        if(draw)
+                            {
+                            drawer.drawLine(GraphPoint(sourcex, lineY),
+                                GraphPoint(sourcex+len, lineY), ref->isConst());
+                            }
                         }
                     else
                         {
-                        // This draws a rectangle to signify that it is defined
-                        // elsewhere in the diagram.
-                        GraphRect rect(targetx + mPad*2, callPos.y + mPad*2,
-                            mCharHeight+mPad, mCharHeight+mPad);
                         if(draw)
                             {
-                            drawer.drawRect(rect);
+                            drawConnection(drawer, GraphPoint(sourcex, lineY),
+                                GraphPoint(targetx, lineY), ref->isConst(), 0);
                             }
-                        y += mCharHeight+mPad;
                         }
-//                    poly.endChildBlock(condDepth, y);
+                    int textX = (sourceIndex < targetIndex) ? node.getLifelinePosX() :
+                            targetNode.getLifelinePosX();
+                    GraphPoint callPos(textX+condOffset+mPad, y+mCharHeight);
+                    ref->setRect(GraphPoint(callPos.x, callPos.y-mCharHeight),
+                            GraphSize(mCharHeight*50, mCharHeight+mPad));
+                    y += mCharHeight*2;
                     }
-                }
-                break;
+                    break;
 
-            case ST_VarRef:
-                {
-                OperationVarRef *ref = stmt->getVarRef();
-
-                size_t targetIndex = ref->getOperClassIndex();
-                int lineY = y + mCharHeight + mPad*2;
-                int sourcex = cls.getLifelinePosX();
-                sourcex += condOffset;
-                const OperationClass &targetCls = graph.getClass(targetIndex);
-                int targetx = targetCls.getLifelinePosX();
-                if(targetIndex == NO_INDEX)
+                case ST_OpenNest:
                     {
-                    int len = mCharHeight*3;
+                    GraphPoint lifePos(node.getLifelinePosX()+condOffset+
+                            mPad, y+mCharHeight);
+                    const OperationNestStart *cond = stmt->getNestStart();
                     if(draw)
                         {
-                        drawer.drawLine(GraphPoint(sourcex, lineY),
-                            GraphPoint(sourcex+len, lineY), ref->isConst());
+                        drawStrings.push_back(DrawString(lifePos, cond->getExpr()));
                         }
-                    }
-                else if(targetIndex != sourceIndex)
-                    {
-                    if(draw)
-                        {
-                        drawCall(drawer, GraphPoint(sourcex, lineY),
-                            GraphPoint(targetx, lineY), ref->isConst(), arrowLen);
-                        }
-                    }
-                else
-                    {
-                    // Draw line back to same class
-                    int len = mCharHeight*3;
-                    int height = 3;
-                    if(draw)
-                        {
-                        drawer.drawLine(GraphPoint(sourcex, lineY),
-                            GraphPoint(sourcex+len, lineY), ref->isConst());
-                        drawer.drawLine(GraphPoint(sourcex+len, lineY),
-                            GraphPoint(sourcex+len, lineY+height));
-                        drawer.drawLine(GraphPoint(sourcex, lineY+height),
-                            GraphPoint(sourcex+len, lineY+height), ref->isConst());
-                        }
-                    y += height;
-                    }
-                int textX = (sourceIndex < targetIndex) ? cls.getLifelinePosX() :
-                        targetCls.getLifelinePosX();
-                GraphPoint callPos(textX+condOffset+mPad, y+mCharHeight);
-                if(draw)
-                    {
-                    drawStrings.push_back(DrawString(callPos, ref->getName()));
-                    }
-                ref->setRect(GraphPoint(callPos.x, callPos.y-mCharHeight),
-                        GraphSize(mCharHeight*50, mCharHeight+mPad));
-                y += mCharHeight*2;
-                }
-                break;
+                    condStartPosY.push_back(y);
+                    y += mCharHeight*2;
 
-            case ST_OpenNest:
-                {
-                GraphPoint lifePos(cls.getLifelinePosX()+condOffset+
-                        mPad, y+mCharHeight);
-                const OperationNestStart *cond = stmt->getNestStart();
-                if(draw)
-                    {
-                    drawStrings.push_back(DrawString(lifePos, cond->getExpr()));
+                    poly.incDepth(y);
                     }
-                condStartPosY.push_back(y);
-                y += mCharHeight*2;
+                    break;
 
-                poly.incDepth(y);
+                case ST_CloseNest:
+                    {
+                    poly.decDepth(y);
+                    }
+                    break;
                 }
-                break;
-
-            case ST_CloseNest:
-                {
-                poly.decDepth(y);
-                }
-                break;
             }
-        }
-    if(callDepth == 0)
-        {
-        for(auto &poly : mLifelinePolygons)
+        if(callDepth == 0)
             {
-            poly.finishBlock();
-            if(draw)
+            for(auto &poly : mLifelinePolygons)
                 {
-                drawer.drawPoly(poly, Color(245,245,255));
+                poly.finishBlock();
+                if(draw)
+                    {
+                    drawer.drawPoly(poly, Color(245,245,255));
+                    }
                 }
             }
         }

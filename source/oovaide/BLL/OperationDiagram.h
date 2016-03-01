@@ -39,20 +39,24 @@ class OperationDiagram:public Diagram
         void clearGraphAndAddOperation(OovStringRef const className,
                 OovStringRef const opName, bool isConst);
         void restart();
-        const OperationClass *getNode(int x, int y) const
+        const OperationNode *getNode(int x, int y) const
             { return mOpGraph.getNode(x, y); }
+        const OperationClass *getClass(int x, int y) const
+            { return mOpGraph.getClass(x, y); }
         const OperationCall *getOperation(int x, int y) const
             { return mOpGraph.getOperation(x, y); }
-        void removeNode(const OperationClass *classNode)
-            { mOpGraph.removeNode(classNode); }
+        void removeNode(const OperationNode *node)
+            { mOpGraph.removeNode(node); }
         void addOperDefinition(const OperationCall &call)
             { mOpGraph.addOperDefinition(call); }
         void removeOperDefinition(const OperationCall &opcall)
             { mOpGraph.removeOperDefinition(opcall); }
         void addOperCallers(const OperationCall &call)
             { mOpGraph.addOperCallers(*mModelData, call); }
-        std::string getClassName(const OperationCall &opCall) const
-            { return mOpGraph.getClassName(opCall); }
+        void addVariableReferencesFromGraphNodes(OperationNode const *node)
+            { mOpGraph.addVariableReferencesFromGraphNodes(node); }
+        OovStringRef getNodeName(const OperationCall &opCall) const
+            { return mOpGraph.getNodeName(opCall); }
 
         /// This can be used to paint to a window, or to an SVG file.
         void drawDiagram(DiagramDrawer &drawer);

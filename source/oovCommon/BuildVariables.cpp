@@ -6,9 +6,38 @@
 #include <algorithm>
 
 
+void VariableFilter::initFilterFromString(OovStringRef filter)
+    {
+    OovStringVec filterParts = filter.split(':');
+    if(filterParts.size() == 2)
+        {
+        mFilterName = filterParts[0];
+        mFilterValue = filterParts[1];
+        }
+    }
+
+OovString VariableFilter::getFilterAsString() const
+    {
+    OovString str;
+    str += mFilterName;
+    str += ':';
+    str += mFilterValue;
+    return str;
+    }
+
+void BuildVariable::initVarFromString(OovStringRef filter)
+    {
+    OovString filterStr = filter;
+    OovStringVec varParts = filterStr.split('|');
+    if(varParts.size() == 2)
+        {
+        initVarFromString(varParts[0], varParts[1]);
+        }
+    }
+
 void BuildVariable::initVarFromString(OovStringRef filterDef, OovStringRef varValue)
     {
-    clearFilter();
+    clearFilters();
     OovString filterDefStr = filterDef;
     size_t filterStart=filterDefStr.find('[');
     eFunctions func = F_Assign;
@@ -23,13 +52,14 @@ void BuildVariable::initVarFromString(OovStringRef filterDef, OovStringRef varVa
             func = static_cast<eFunctions>(funcC);
             filterStart++;
             OovString filterString = filterDefStr.substr(filterStart, filterEnd-filterStart);
-            OovStringVec filters = filterString.split('&');
-            for(auto const &filter : filters)
+            if(filterString.length() > 0)
                 {
-                OovStringVec filterParts = filter.split(':');
-                if(filterParts.size() == 2)
+                OovStringVec filters = filterString.split('&');
+                for(auto const &filterStr : filters)
                     {
-                    addFilter(filterParts[0], filterParts[1]);
+                    VariableFilter filter;
+                    filter.initFilterFromString(filterStr.getTrimmed());
+                    mVarFilterList.addFilter(filter);
                     }
                 }
             }
@@ -54,8 +84,18 @@ OovString BuildVariable::getFilterValue(OovStringRef filterName)
 OovString BuildVariable::getVarFilterName()
     {
     OovString name = mVarName;
-    name += getFilterAsString();
+    name += getFiltersAsString();
     name += mFunction;
+    return name;
+    }
+
+OovString BuildVariable::getVarDefinition(char delimChar) const
+    {
+    OovString name = mVarName;
+    name += getFiltersAsString();
+    name += mFunction;
+    name += delimChar;
+    name += mVarValue;
     return name;
     }
 
@@ -83,7 +123,7 @@ bool BuildVariable::isSubsetOf(VariableFilterList const &superset) const
     return subset;
     }
 
-OovString BuildVariable::getFilterAsString() const
+OovString BuildVariable::getFiltersAsString() const
     {
     OovString str = "[";
     for(auto const &vf : mVarFilterList)
@@ -92,9 +132,7 @@ OovString BuildVariable::getFilterAsString() const
             {
             str += " & ";
             }
-        str += vf.mFilterName;
-        str += ':';
-        str += vf.mFilterValue;
+        str += vf.getFilterAsString();
         }
     str += ']';
     return str;

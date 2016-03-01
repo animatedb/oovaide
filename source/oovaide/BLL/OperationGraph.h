@@ -13,22 +13,26 @@
 #include "Graph.h"
 #include <vector>
 
+
 struct OperationDrawOptions
     {
     OperationDrawOptions()
         {}
     };
 
-/// This has information about the size and position of a class
-/// along the top of the sequence diagram.
-class OperationClass
+enum NodeTypes { NT_Class, NT_Variable };
+
+// These are not really graph nodes. These are the blocks at the top of the
+// operation diagram that contain classes, or variable names.
+class OperationNode
     {
     public:
-        OperationClass(const ModelType *type):
-            mType(type)
+        OperationNode(NodeTypes nt):
+            mNodeType(nt)
             {}
-        const ModelType *getType() const
-            { return mType; }
+        virtual ~OperationNode()
+            {}
+        virtual OovString getName() const=0;
         /// Positions are only valid after updateNodeSizes is called.
         void setPosition(const GraphPoint &pos)
             { rect.start = pos; }
@@ -40,12 +44,63 @@ class OperationClass
             { return rect.start; }
         int getLifelinePosX() const
             { return rect.start.x + rect.size.x/2; }
+        NodeTypes getNodeType() const
+            { return mNodeType; }
+        /// Returns nullptr if this is not a class
+        class OperationClass *getClass();
+        class OperationClass const *getClass() const;
+        /// Returns nullptr if this is not a variable
+        class OperationVariable *getVariable();
+        class OperationVariable const *getVariable() const;
+
+    private:
+        GraphRect rect;
+        NodeTypes mNodeType;
+    };
+
+/// This has information about the size and position of a class
+/// along the top of the sequence diagram.
+class OperationClass:public OperationNode
+    {
+    public:
+        OperationClass(const ModelType *type):
+            OperationNode(NT_Class), mType(type)
+            {}
+        virtual OovString getName() const
+            { return mType->getName(); }
+        const ModelType *getType() const
+            { return mType; }
 
     private:
         const ModelType *mType;
-        GraphRect rect;
     };
 
+class OperationVariable:public OperationNode
+    {
+    public:
+        OperationVariable(ModelClassifier const *cls, OovStringRef varName):
+            OperationNode(NT_Variable), mOwnerClass(cls), mAttrName(varName)
+            {}
+        ModelClassifier const *getOwnerClass() const
+            { return mOwnerClass; }
+        OovString getAttrName() const
+            { return mAttrName; }
+        static OovString getName(ModelClassifier const *ownerClass, OovStringRef attrName)
+            {
+            OovString name = ownerClass->getName();
+            name += "::";
+            name += attrName;
+            return name;
+            }
+        virtual OovString getName() const
+            {
+            return getName(mOwnerClass, mAttrName);
+            }
+
+    private:
+        ModelClassifier const *mOwnerClass;
+        OovString mAttrName;
+    };
 
 /// A statement either defines a call, or a conditional(nest) start or end.
 class OperationStatement
@@ -95,14 +150,12 @@ class OperationNestEnd:public OperationStatement
 class OperationCall:public OperationStatement
     {
     public:
-        /// operClassIndex is the class of the operation that is called.
-        OperationCall(size_t operClassIndex, const ModelOperation &operation):
-            OperationStatement(ST_Call), mOperClassIndex(operClassIndex),
+        /// destNode is the class of the operation that is called.
+        OperationCall(OperationNode const *destNode, const ModelOperation &operation):
+            OperationStatement(ST_Call), mDestNode(destNode),
             mOperation(operation)
             {}
         virtual ~OperationCall();
-        size_t getOperClassIndex() const
-            { return mOperClassIndex; }
         OovString const getName() const
             { return mOperation.getName(); }
         OovString getOverloadFuncName() const
@@ -119,11 +172,11 @@ class OperationCall:public OperationStatement
         const ModelOperation &getOperation() const
             { return mOperation; }
         bool compareOperation(const OperationCall &call) const;
-        void decrementClassIndex()
-            { mOperClassIndex--; }
+        OperationNode const *getDestNode() const
+            { return mDestNode; }
 
     private:
-        size_t mOperClassIndex;
+        OperationNode const *mDestNode;
         const ModelOperation &mOperation;
         GraphRect rect;
     };
@@ -131,16 +184,11 @@ class OperationCall:public OperationStatement
 class OperationVarRef:public OperationStatement
     {
     public:
-        /// operClassIndex is the class of the operation that is referred to.
-        OperationVarRef(size_t operClassIndex, const ModelAttribute &attr):
-            OperationStatement(ST_VarRef), mOperClassIndex(operClassIndex),
-            mAttribute(attr)
+        /// destNode is the class of the operation that is referred to.
+        OperationVarRef(OperationNode const *destNode):
+            OperationStatement(ST_VarRef), mDestNode(destNode)
             {}
         virtual ~OperationVarRef();
-        size_t getOperClassIndex() const
-            { return mOperClassIndex; }
-        OovString const &getName() const
-            { return mAttribute.getName(); }
         bool isConst() const
             { return false; }
         void setRect(const GraphPoint &pos, const GraphSize &size)
@@ -150,15 +198,11 @@ class OperationVarRef:public OperationStatement
             }
         void getRect(GraphRect &r) const
             { r = rect; }
-        const ModelAttribute &getAttribute() const
-            { return mAttribute; }
-        bool compareAttribute(const OperationVarRef &ref) const;
-        void decrementClassIndex()
-            { mOperClassIndex--; }
+        OperationNode const *getDestNode() const
+            { return mDestNode; }
 
     private:
-        size_t mOperClassIndex;
-        const ModelAttribute &mAttribute;
+        OperationNode const *mDestNode;
         GraphRect rect;
     };
 
@@ -167,8 +211,9 @@ class OperationVarRef:public OperationStatement
 class OperationDefinition:public OperationCall
     {
     public:
-        OperationDefinition(size_t classIndex, const ModelOperation &operation):
-            OperationCall(classIndex, operation)
+        OperationDefinition(OperationNode const *destNode,
+            const ModelOperation &operation):
+            OperationCall(destNode, operation)
             {}
         virtual ~OperationDefinition();
         void removeStatements()
@@ -195,7 +240,7 @@ class OperationDefinition:public OperationCall
             { return mStatements; }
         const OperationCall *getCall(int x, int y) const;
         bool isCalled(const OperationCall &opcall) const;
-        bool isClassReferred(size_t classIndex) const;
+        bool isClassReferred(OperationNode const *destNode) const;
 
     private:
         std::vector<std::unique_ptr<OperationStatement>> mStatements;
@@ -233,10 +278,8 @@ class OperationGraph
             const ModelOperation &oper, eAddOperationTypes /*addType*/, int maxDepth);
         void clearGraph()
             {
-            for(const auto &oper : mOperations)
-                { delete oper; }
             mOperations.clear();
-            mOpClasses.clear();
+            mNodes.clear();
             }
         /// Clears the graph and adds related operations. See the addRelatedOperations
         /// function for more description.
@@ -244,20 +287,26 @@ class OperationGraph
         void clearGraphAndAddOperation(const ModelData &model,
                 const OperationDrawOptions &options, char const * const className,
                 char const * const operName, bool isConst, int nodeDepth);
-        const std::vector<OperationClass> &getClasses() const
-            { return mOpClasses; }
-        const OperationClass &getClass(size_t index) const
-            { return mOpClasses[index]; }
+        const std::vector<std::unique_ptr<OperationNode>> &getNodes() const
+            { return mNodes; }
+        const OperationNode &getNode(size_t index) const
+            { return *mNodes[index]; }
+        OperationNode &getNode(size_t index)
+            { return *mNodes[index]; }
+        int getNodeIndex(OperationNode const *node) const;
 //      OperationClass *getNode(int x, int y);
         // Can only remove leaf operations?
 //      void removeOperation(const ModelOperation *oper);
         size_t getNestDepth(size_t classIndex);
-        const OperationClass *getNode(int x, int y) const;
-        void removeNode(const OperationClass *classNode);
+        OperationNode const *getNode(int x, int y) const;
+        OperationClass const *getClass(int x, int y) const;
+        void removeNode(const OperationNode *node);
         const OperationCall *getOperation(int x, int y) const;
-        std::string getClassName(const OperationCall &opcall) const;
+        OovStringRef getNodeName(const OperationCall &opcall) const;
         void addOperDefinition(const OperationCall &call);
         void addOperCallers(const ModelData &model, const OperationCall &call);
+        // Adds references from all of the classes in the operation graph.
+        void addVariableReferencesFromGraphNodes(OperationNode const *node);
         void removeOperDefinition(const OperationCall &opcall);
         bool isOperCalled(const OperationCall &opcall) const;
         OperationDefinition *getOperDefinition(const OperationCall &opcall) const;
@@ -267,22 +316,24 @@ class OperationGraph
             { return mModified; }
 
     private:
-        std::vector<OperationClass> mOpClasses;
-        std::vector<OperationDefinition*> mOperations;
+        std::vector<std::unique_ptr<OperationNode>> mNodes;
+        std::vector<std::unique_ptr<OperationDefinition>> mOperations;
         GraphSize mPad;
         bool mModified;
         static const size_t NO_INDEX = static_cast<size_t>(-1);
 
-        void addDefinition(size_t classIndex, const ModelOperation &oper);
-        void addOperCallers(const ModelStatements &stmts, const ModelClassifier &srcCls,
-                const ModelOperation &oper, const OperationCall &callee);
+        void addDefinition(OperationNode const *destNode, ModelOperation const &oper);
+        void addOperCallers(ModelStatements const &stmts, ModelClassifier const &srcCls,
+                ModelOperation const &oper, OperationCall const &callee);
         enum eGetClass { GC_AddClasses, FT_OnlyGetClasses };
-        size_t addOrGetClass(const ModelClassifier *cls, eGetClass gc);
-        void fillDefinition(const ModelStatements &stmt, OperationDefinition &opDef,
+        size_t addOrGetClass(ModelClassifier const *cls, eGetClass gc);
+        size_t addOrGetVariable(ModelClassifier const *cls, OovStringRef varName,
+            eGetClass gc);
+        void fillDefinition(ModelStatements const &stmt, OperationDefinition &opDef,
                 eGetClass ft);
         void removeUnusedClasses();
         void removeOperation(size_t index);
-        void removeClass(size_t index);
+        void removeNode(size_t index);
     };
 
 

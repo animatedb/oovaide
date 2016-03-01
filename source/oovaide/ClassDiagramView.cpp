@@ -96,13 +96,19 @@ void ClassDiagramView::updateDrawingAreaSize()
 
 void ClassDiagramView::drawToDrawingArea()
     {
-    setCairoContext();
+    // cr is null during destruction if this is called through
+    // the change class selection signal.
     GtkCairoContext cairo(getDiagramWidget());
-    CairoDrawer cairoDrawer(mClassDiagram, cairo.getCairo());
-    cairoDrawer.clearAndSetDefaults();
+    cairo_t *cr = cairo.getCairo();
+    if(cr)
+        {
+        setCairoContext();
+        CairoDrawer cairoDrawer(mClassDiagram, cr);
+        cairoDrawer.clearAndSetDefaults();
 
-    mClassDiagram.drawDiagram(cairoDrawer);
-    updateDrawingAreaSize();
+        mClassDiagram.drawDiagram(cairoDrawer);
+        updateDrawingAreaSize();
+        }
     }
 
 OovStatusReturn ClassDiagramView::drawSvgDiagram(File &file)

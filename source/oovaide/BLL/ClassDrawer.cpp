@@ -10,19 +10,24 @@
 #include <algorithm>
 #include <utility>
 
+// Gets the path relative to the source root dir.
 static void getLeafPath(std::string &moduleStr)
     {
     size_t pos = FilePathGetPosLeftPathSep(moduleStr, moduleStr.length()-1, RP_RetPosFailure);
     if(pos != std::string::npos)
         {
-        moduleStr.resize(pos);
+        moduleStr.resize(pos);  // This will not have a last path sep
         }
 
-    OovString rootDir = Project::getSourceRootDirectory();
+    OovString rootDir = FilePathGetWithoutEndPathSep(Project::getSourceRootDirectory());
     int len = rootDir.length();
     if(moduleStr.compare(0, len, rootDir) == 0)
         {
         moduleStr.erase(0, len);
+        if(FilePathIsPathSep(moduleStr, 0))
+            {
+            moduleStr.erase(0, 1);
+            }
         }
     }
 
@@ -271,12 +276,12 @@ GraphSize ClassDrawer::drawNode(const ClassNode &node)
             if(!virtOpers[index])
                 {
                 addDrawString(operStrs[i], GraphPoint(startpos.x+pad, y),
-                fontHeight, pad, y, drawStrings);
+                    fontHeight, pad, y, drawStrings);
                 }
             else
                 {
                 addDrawString(operStrs[i], GraphPoint(startpos.x+pad, y),
-                fontHeight, pad, y, virtDrawStrings);
+                    fontHeight, pad, y, virtDrawStrings);
                 }
             }
         int maxWidth = 0;

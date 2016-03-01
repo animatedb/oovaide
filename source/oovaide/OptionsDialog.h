@@ -24,6 +24,7 @@ class OptionsDialog
         virtual ~OptionsDialog();
         void updateBuildConfig();
         void showScreen();
+        void moveOptionsToScreen();
         void saveScreen();
         void setBuildConfig();
         void newConfig();

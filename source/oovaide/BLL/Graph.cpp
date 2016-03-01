@@ -5,6 +5,7 @@
  *  \copyright 2014 DCBlaha.  Distributed under the GPL.
  */
 #include "Graph.h"
+#include <stdlib.h>     // for abs
 #include <math.h>       // for fabs
 
 static double slope(GraphPoint p1, GraphPoint p2)
@@ -45,6 +46,34 @@ static GraphPoint findIntersect(GraphPoint p1, GraphPoint p2, GraphSize p2size)
     return retP;
 }
 
+GraphPoint GraphPoint::abs() const
+    {
+    return GraphPoint(::abs(x), ::abs(y));
+    }
+
+GraphRect::GraphRect(GraphPoint const p1, GraphPoint const p2)
+    {
+    if(p2.x > p1.x)
+        {
+        start.x = p1.x;
+        size.x = p2.x - p1.x;
+        }
+    else
+        {
+        start.x = p2.x;
+        size.x = p1.x - p2.x;
+        }
+    if(p2.y > p1.y)
+        {
+        start.y = p1.y;
+        size.y = p2.y - p1.y;
+        }
+    else
+        {
+        start.y = p2.y;
+        size.y = p1.y - p2.y;
+        }
+    }
 
 void GraphRect::findConnectPoints(GraphRect const &rect2, GraphPoint &p1e, GraphPoint &p2e) const
     {

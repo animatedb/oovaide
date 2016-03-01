@@ -127,4 +127,43 @@ Package AvailablePackages::getPackage(OovStringRef const pkgName) const
     return pkg;
     }
 
+OovStatusReturn updateProjectPackages(OovStringVec const &externalPackageNames)
+    {
+    AvailablePackages availPackages;
+    ProjectPackages projPackages(true);
+    OovStatus status(true, SC_File);
+    // The main goal of this function is to update the external project packages
+    // when the oovaide project is copied to a new machine.  There are at least
+    // two reasons that the packages should not be updated:
+    // 1. If the project package is newer than the build config, then OovBuilder
+    //    will delete the build config.
+    // 2. The package updating may be slow especially on linux.
+    if(projPackages.getPackages().size() == 0)
+        {
+        for(auto const pkgName : externalPackageNames)
+            {
+            Package pkg = projPackages.getPackage(pkgName);
+            if(!pkg.isPackageDefined())
+                {
+                pkg = availPackages.getPackage(pkgName);
+                if(pkg.isPackageDefined())
+                    {
+    #ifndef __linux__
+                    pkg.winScanAndSetRootDir(pkg.getRootDir());
+    #endif
+                    projPackages.insertPackage(pkg);
+                    }
+                else
+                    {
+                    OovString str = "Package is not available: ";
+                    str += pkgName;
+                    OovError::report(ET_Error, str);
+                    }
+                }
+            }
+        status = projPackages.savePackages();
+        }
+    return status;
+    }
+
 #endif

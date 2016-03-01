@@ -44,6 +44,23 @@ class PortionDiagram:public Diagram
         void setPosition(size_t nodeIndex, GraphPoint startPoint, GraphPoint newPoint)
             { mPortionDrawer.setPosition(nodeIndex, startPoint, newPoint); }
 
+        bool isSelected(size_t nodeIndex) const
+            { return mPortionDrawer.isSelected(nodeIndex); }
+        void setSingleSelection(size_t nodeIndex)
+            { mPortionDrawer.setSingleSelection(nodeIndex); }
+        // If no nodes are contained in the rectangle, this clears the selection.
+        void setRectSelection(GraphPoint p1, GraphPoint p2)
+            { mPortionDrawer.setRectSelection(p1, p2); }
+
+        void moveSelection(GraphPoint p)
+            { mPortionDrawer.moveSelection(p); }
+        void alignTopSelection()
+            { mPortionDrawer.alignTopSelection(); }
+        void alignLeftSelection()
+            { mPortionDrawer.alignLeftSelection(); }
+        void spaceEvenlyDownSelection()
+            { mPortionDrawer.spaceEvenlyDownSelection(); }
+
         /// This can be used to paint to a window, or to an SVG file.
         void drawDiagram(DiagramDrawer &drawer);
         bool isModified() const

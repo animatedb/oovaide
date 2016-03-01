@@ -56,8 +56,20 @@ void PortionDiagramView::graphButtonReleaseEvent(const GdkEventButton *event)
         size_t nodeIndex = mPortionDiagram.getNodeIndex(mNullDrawer, sStartPosInfo);
         if(nodeIndex != PortionDrawer::NO_INDEX)
             {
-            mPortionDiagram.setPosition(nodeIndex, sStartPosInfo,
-                    GraphPoint(event->x, event->y));
+            if(!mPortionDiagram.isSelected(nodeIndex))
+                {
+                mPortionDiagram.setSingleSelection(nodeIndex);
+                }
+//            mPortionDiagram.setPosition(nodeIndex, sStartPosInfo,
+//                    GraphPoint(event->x, event->y));
+            mPortionDiagram.moveSelection(GraphPoint(event->x, event->y) -
+                sStartPosInfo);
+            requestRedraw();
+            }
+        else
+            {
+            // If no nodes are contained in the rectangle, this clears the selection.
+            mPortionDiagram.setRectSelection(sStartPosInfo, GraphPoint(event->x, event->y));
             requestRedraw();
             }
         }
@@ -75,6 +87,25 @@ void PortionDiagramView::viewClassSource()
         viewSource(mGuiOptions, classifier->getModule()->getModulePath(),
         classifier->getLineNum());
         }
+    }
+
+
+extern "C" G_MODULE_EXPORT void on_PortionAlignTopmenuitem_activate(
+        GtkWidget *widget, gpointer data)
+        {
+        sPortionDiagramView->alignTopSelection();
+        }
+
+extern "C" G_MODULE_EXPORT void on_PortionAlignLeftMenuitem_activate(
+    GtkWidget *widget, gpointer data)
+    {
+    sPortionDiagramView->alignLeftSelection();
+    }
+
+extern "C" G_MODULE_EXPORT void on_PortionSpaceEvenlyDownMenuitem_activate(
+    GtkWidget *widget, gpointer data)
+    {
+    sPortionDiagramView->spaceEvenlyDownSelection();
     }
 
 

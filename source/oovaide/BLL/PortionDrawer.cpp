@@ -152,6 +152,22 @@ void PortionDrawer::setPosition(size_t nodeIndex, GraphPoint newPoint)
 
 void PortionDrawer::drawNodes(DiagramDrawer &drawer)
     {
+    drawer.groupShapes(true, Color(255,0,0), Color(245,245,255));
+    for(size_t i=0; i<mNodePositions.size(); i++)
+        {
+        if(std::find(mSelectedNodeIndices.begin(), mSelectedNodeIndices.end(),
+                i) != mSelectedNodeIndices.end())
+            {
+            GraphRect rect = getNodeRect(drawer, i);
+            rect.start.x--;
+            rect.start.y--;
+            rect.size.x+=2;
+            rect.size.y+=2;
+            drawer.drawRect(rect);
+            }
+        }
+    drawer.groupShapes(false, 0, 0);
+
     drawer.groupShapes(true, Color(0,0,0), Color(245,245,255));
     for(size_t i=0; i<mNodePositions.size(); i++)
         {
@@ -230,6 +246,102 @@ void PortionDrawer::drawNodeText(DiagramDrawer &drawer, bool drawVirts,
         if(drawVirts == virtOpers[i])
             {
             drawer.drawText(drawStrings[i].pos, drawStrings[i].str);
+            }
+        }
+    }
+
+bool PortionDrawer::isSelected(size_t nodeIndex) const
+    {
+    return (std::find(mSelectedNodeIndices.begin(), mSelectedNodeIndices.end(),
+        nodeIndex) != mSelectedNodeIndices.end());
+    }
+
+void PortionDrawer::setSingleSelection(size_t nodeIndex)
+    {
+    mSelectedNodeIndices.clear();
+    mSelectedNodeIndices.push_back(nodeIndex);
+    }
+
+// If no nodes are contained in the rectangle, this clears the selection.
+void PortionDrawer::setRectSelection(GraphPoint p1, GraphPoint p2)
+    {
+    mSelectedNodeIndices.clear();
+    GraphRect selRect(p1, p2);
+    for(size_t i=0; i<mNodePositions.size(); i++)
+        {
+        if(selRect.isPointIn(mNodePositions[i]))
+            {
+            mSelectedNodeIndices.push_back(i);
+            }
+        }
+    }
+
+void PortionDrawer::moveSelection(GraphPoint p)
+    {
+    for(auto const &nodeIndex : mSelectedNodeIndices)
+        {
+        mNodePositions[nodeIndex] = mNodePositions[nodeIndex] + p;
+        }
+    }
+
+std::vector<int> PortionDrawer::getSelectedNodeIndicesSortedX() const
+    {
+    std::vector<int> sortedNodes;
+    sortedNodes = mSelectedNodeIndices;
+    std::sort(sortedNodes.begin(), sortedNodes.end(),
+        [this](int n1, int n2)
+        { return(mNodePositions[n1].x < mNodePositions[n2].x); });
+    return sortedNodes;
+    }
+
+std::vector<int> PortionDrawer::getSelectedNodeIndicesSortedY() const
+    {
+    std::vector<int> sortedNodes;
+    sortedNodes = mSelectedNodeIndices;
+    std::sort(sortedNodes.begin(), sortedNodes.end(),
+        [this](int n1, int n2)
+        { return(mNodePositions[n1].y < mNodePositions[n2].y); });
+    return sortedNodes;
+    }
+
+void PortionDrawer::alignTopSelection()
+    {
+    if(mSelectedNodeIndices.size() > 0)
+        {
+        std::vector<int> sortedSelectedNodes = getSelectedNodeIndicesSortedX();
+        int y = mNodePositions[sortedSelectedNodes[0]].y;
+        for(auto const &nodeIndex : mSelectedNodeIndices)
+            {
+            mNodePositions[nodeIndex].y = y;
+            }
+        }
+    }
+
+void PortionDrawer::alignLeftSelection()
+    {
+    if(mSelectedNodeIndices.size() > 0)
+        {
+        std::vector<int> sortedSelectedNodes = getSelectedNodeIndicesSortedY();
+        int x = mNodePositions[sortedSelectedNodes[0]].x;
+        for(auto const &nodeIndex : mSelectedNodeIndices)
+            {
+            mNodePositions[nodeIndex].x = x;
+            }
+        }
+    }
+
+void PortionDrawer::spaceEvenlyDownSelection()
+    {
+    if(mSelectedNodeIndices.size() > 2)
+        {
+        std::vector<int> sortedSelectedNodes = getSelectedNodeIndicesSortedY();
+        int topY = mNodePositions[sortedSelectedNodes[0]].y;
+        int botY = mNodePositions[sortedSelectedNodes[sortedSelectedNodes.size()-1]].y;
+        float nodeDist = static_cast<float>(botY - topY) / (sortedSelectedNodes.size()-1);
+        // No need to reposition first or last selected nodes
+        for(size_t i=1; i<sortedSelectedNodes.size()-1; i++)
+            {
+            mNodePositions[sortedSelectedNodes[i]].y = static_cast<int>(i*nodeDist) + topY;
             }
         }
     }

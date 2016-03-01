@@ -134,6 +134,9 @@ class OovString StringJoin(OovStringVec const &tokens, char delimiter);
 /// @param str The string to use as a source
 class OovString StringMakeXml(char const * const str);
 
+/// Trims leading and trailing white space.
+class OovString StringTrim(char const * const str);
+
 /// This template requires T_Str to have a member "char const * const getStr()".
 /// getStr() is used instead of c_str so that references to c_str() can be found and removed.
 /// This uses CRTP (Curiously recurring template pattern).
@@ -326,15 +329,18 @@ class OovString:public OovStringRefInterface<OovString>, public std::string
         void join(OovStringVec const &tokens, char delim)
             { *this = StringJoin(tokens, delim); }
 
-        /// Convert some characters in a string so they can be encoded into XML.
-        /// For example, "<" is converted to "&lt;"
-        OovString makeXml() const
-            { return StringMakeXml(getStr()); }
-
         /// Replace all strings within a string to a different string.
         /// @param srchStr The string to use as a search string.
         /// @param repStr The string to use as the replace string.
         bool replaceStrs(OovStringRef const srchStr, OovStringRef const repStr);
+
+        /// Convert some characters in a string so they can be encoded into XML.
+        /// For example, "<" is converted to "&lt;"
+        OovString getXml() const
+            { return StringMakeXml(getStr()); }
+
+        OovString getTrimmed() const
+            { return StringTrim(getStr()); }
 
         /// Get the string as a "char const *"
         char const * getStr() const

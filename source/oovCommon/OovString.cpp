@@ -264,36 +264,33 @@ OovString StringMakeXml(char const * const text)
     return outStr;
     }
 
-//////////////
-
-void OovString::setUpperCase(OovStringRef const str)
+OovString StringTrim(char const * const text)
     {
-    char const *p = str;
+    OovString outStr;
+    char const * p = text;
     while(*p)
         {
-        *this += static_cast<char>(toupper(*p));
+        if(!isspace(*p))
+            {
+            break;
+            }
         p++;
         }
-    }
-
-void OovString::setLowerCase(OovStringRef const str)
-    {
-    *this = str;
-    StringToLower(*this);
-    }
-
-void OovString::appendInt(int val, int radix, int minSpaces, int minDigits)
-    {
-    char buf[30];
-    IntToAsciiString(val, buf, sizeof(buf), radix, minSpaces, minDigits);
-    append(buf);
-    }
-
-void OovString::appendFloat(float val, int precision)
-    {
-    char buf[30];
-    FloatToAsciiString(val, buf, sizeof(buf), precision);
-    append(buf);
+    char const *endp = text + strlen(text)-1;
+    while(*endp >= 0)
+        {
+        if(!isspace(*endp))
+            {
+            break;
+            }
+        endp--;
+        }
+    while(p <= endp)
+        {
+        outStr += *p;
+        p++;
+        }
+    return outStr;
     }
 
 OovStringVec StringSplit(char const * const str, char delimiter)
@@ -370,6 +367,38 @@ OovString StringJoin(OovStringVec const &tokens, char delimiter)
             }
         }
     return str;
+    }
+
+//////////////
+
+void OovString::setUpperCase(OovStringRef const str)
+    {
+    char const *p = str;
+    while(*p)
+        {
+        *this += static_cast<char>(toupper(*p));
+        p++;
+        }
+    }
+
+void OovString::setLowerCase(OovStringRef const str)
+    {
+    *this = str;
+    StringToLower(*this);
+    }
+
+void OovString::appendInt(int val, int radix, int minSpaces, int minDigits)
+    {
+    char buf[30];
+    IntToAsciiString(val, buf, sizeof(buf), radix, minSpaces, minDigits);
+    append(buf);
+    }
+
+void OovString::appendFloat(float val, int precision)
+    {
+    char buf[30];
+    FloatToAsciiString(val, buf, sizeof(buf), precision);
+    append(buf);
     }
 
 bool OovString::replaceStrs(OovStringRef const srchStr, OovStringRef const repStr)

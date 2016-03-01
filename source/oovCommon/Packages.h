@@ -73,6 +73,9 @@ class RootDirPackage
         FilePath const &getRootDir() const
             { return mRootDir; }
 
+        bool isPackageDefined() const
+            { return(mRootDir.length() > 0); }
+
         /// Get the library names of the package.
         OovStringVec getLibraryNames() const;
 
@@ -132,6 +135,9 @@ class RootDirPackage
         /// @param file The package file to save to.
         void saveToMap(NameValueFile &file) const;
 
+#ifndef __linux__
+        bool winScanAndSetRootDir(OovStringRef rootDir);
+#endif
 
     protected:
         /// This is delimited with the default CompoundValue delimiter.
@@ -219,6 +225,7 @@ class Package:public RootDirPackage
         OovStringRef const getLinkArgsAsStr() const
             { return mLinkArgs; }
 
+        bool checkDirectories(OovString &badPath) const;
         void loadFromMap(OovStringRef const name, NameValueFile const &file);
         void saveToMap(NameValueFile &file) const;
 
@@ -302,17 +309,19 @@ class BuildPackages
 /// This is information about all packages available on the system.
 /// On Linux, this uses pkg-config to discover the system packages. On Windows,
 /// a package file is read.
+/// If this is used by a component, then pthreads is required or an
+/// undefined reference to pthreads will be generated.
 class AvailablePackages
     {
     public:
         AvailablePackages();
+        OovStringVec getAvailablePackages();
+        Package getPackage(OovStringRef const name) const;
 #ifdef __linux__
         CompoundValue mPackageNames;
 #else
         Packages mPackages;
 #endif
-        OovStringVec getAvailablePackages();
-        Package getPackage(OovStringRef const name) const;
     };
 
 /// These are packages that are defined to be used by the project.  These
@@ -327,5 +336,9 @@ class ProjectPackages:public Packages
             { return mFile.writeFile(); }
         static OovString getFilename();
     };
+
+/// If this is used by a component, then pthreads is required or an
+/// undefined reference to pthreads will be generated.
+OovStatusReturn updateProjectPackages(OovStringVec const &externalPackageNames);
 
 #endif /* PACKAGES_H_ */
