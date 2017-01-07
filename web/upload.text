@@ -1,4 +1,14 @@
-I use RapidSvn for uploading source code.
+
+Upload source:
+	cd oovaide/sourceforge
+	git gui
+	select files and commit
+	push
+    If a push error happens, may have to:
+	Remote/Fetch from
+	Merge/Local Merge
+
+
 The following explains ftp for uploading the web site.
 
 

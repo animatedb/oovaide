@@ -12,11 +12,13 @@ Examples/Simple
 	- Select Class diagram and choose Lamb.
 	- Verify Moveablething <- Mammal <- Mary <>- Lamb -O- Location
 	- Select Build/Settings, <Root>=Program
-	  - Verify Component List displays <Root><<Program>>
+	  - Verify Component List displays <Root>
 	- Select Build/Debug
 	- Verify simple.exe exists in out-Debug directory
 	- Run simple.exe
-	- Right click World operation and select Add Calls.
+	- Select Operation diagram and select World
+	  - Right click "move" operation and select Add Calls.
+	  - Remove variable World:mary
 	- Select Class diagram and choose World, then select Oper diagram.
 	  - Verify World constructor calls Location.
 	  - Verify right click on move shows calls back to Location, setPosition.
@@ -53,3 +55,4 @@ Testing files
 	- coverage
 	- edit file
 	- reports
+

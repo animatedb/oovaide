@@ -222,7 +222,7 @@ bool OovBuilder::readProject(OovStringRef oovProjDir, OovStringRef buildMode,
     bool success = mCompFinder.readProject(oovProjDir, buildMode, buildConfigName);
     if(success)
         {
-        mCompFinder.getProjectBuildArgs().setCompConfig("");    // This updates verbose arg
+        mCompFinder.getProjectBuildArgs().updateArgs();    // This updates verbose arg
         if(mCompFinder.getProjectBuildArgs().getVerbose() || verbose)
             {
             sVerboseDump.open(oovProjDir);

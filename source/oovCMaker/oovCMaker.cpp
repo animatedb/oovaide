@@ -699,7 +699,7 @@ OovStatusReturn CMaker::makeToolchainFiles(OovStringRef const outDir)
             CompoundValue buildConfigs(buildConfigStr);
             for(auto const &config : buildConfigs)
                 {
-                buildArgs.setConfig(OptFilterValueBuildModeBuild, config);
+                buildArgs.setBuildConfig(OptFilterValueBuildModeBuild, config);
 /// @todo - The compiler settings must be more sophisticated if each
 /// component has different settings.
 //                buildArgs.setCompConfig();

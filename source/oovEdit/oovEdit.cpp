@@ -786,7 +786,9 @@ int main(int argc, char **argv)
     for(int i=0; i<argc; i++)
         {
         if(argv[i][0] == '-')
+            {
             argv[i][0] = '+';
+            }
         }
 #endif
     int status = g_application_run(gapp, argc, argv);

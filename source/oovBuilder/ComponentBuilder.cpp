@@ -283,26 +283,26 @@ void ComponentBuilder::processSourceForComponents(eProcessModes pm)
 void ComponentBuilder::generateDependencies()
     {
     ComponentTypesFile const &compTypesFile = getComponentTypesFile();
-    OovStringVec compNames = compTypesFile.getDefinedComponentNames();
+    ComponentDefinitions comps = compTypesFile.getDefinedComponents();
     BuildPackages const &buildPackages =
         mComponentFinder.getProjectBuildArgs().getBuildPackages();
 
     sVerboseDump.logProgress("Generate dependencies");
     // Find component dependencies
-    for(const auto &compName : compNames)
+    for(const auto &compDef : comps)
         {
         /// @todo - this should be optimized so that only components with source files
         /// that have changed include dependencies are processed.
         // This is done for libraries too because they may need compile switches.
-        eCompTypes compType = compTypesFile.getComponentType(compName);
+        eCompTypes compType = compDef.getCompType();
         if(compType != CT_Unknown && compType != CT_JavaJarLib &&
             compType != CT_JavaJarProg)
             {
             for(auto const &pkg : buildPackages.getPackages())
                 {
-                if(anyIncDirsMatch(compName, pkg))
+                if(anyIncDirsMatch(compDef.getCompName(), pkg))
                     {
-                    mComponentPkgDeps.addPkgDep(compName, pkg.getPkgName());
+                    mComponentPkgDeps.addPkgDep(compDef.getCompName(), pkg.getPkgName());
                     }
                 }
             }
@@ -345,8 +345,8 @@ void ComponentBuilder::buildComponents()
     ScannedComponentInfo const &scannedInfoFile =
         mComponentFinder.getScannedComponentInfo();
     ComponentTypesFile const &compTypesFile =
-            mComponentFinder.getComponentTypesFile();
-    OovStringVec compNames = compTypesFile.getDefinedComponentNames();
+        mComponentFinder.getComponentTypesFile();
+    ComponentDefinitions comps = compTypesFile.getDefinedComponents();
 
     sVerboseDump.logProgress("Generating package dependencies");
     generateDependencies();
@@ -358,25 +358,25 @@ void ComponentBuilder::buildComponents()
     // Build all project libraries
     OovStringVec builtLibFileNames;
     OovStringVec allLibFileNames;
-    if(compNames.size() > 0)
+    if(comps.size() > 0)
         {
         LibTaskListener libListener;
         setTaskListener(&libListener);
         setupQueue(getNumHardwareThreads());
-        for(const auto &name : compNames)
+        for(const auto &compDef : comps)
             {
-            if(compTypesFile.getComponentType(name) == CT_StaticLib)
+            if(compDef.getCompType() == CT_StaticLib)
                 {
                 OovStringVec sources = scannedInfoFile.getComponentFiles(
-                    compTypesFile, ScannedComponentInfo::CFT_CppSource, name);
+                    compTypesFile, ScannedComponentInfo::CFT_CppSource, compDef.getCompName());
                 for(size_t i=0; i<sources.size(); i++)
                     {
                     sources[i] = makeOutputObjectFileName(sources[i]);
                     }
                 if(sources.size() > 0)
                     {
-                    allLibFileNames.push_back(makeLibFn(name));
-                    makeLib(name, sources);
+                    allLibFileNames.push_back(makeLibFn(compDef.getCompName()));
+                    makeLib(compDef.getCompName(), sources);
                     }
                 }
             }
@@ -395,20 +395,21 @@ void ComponentBuilder::buildComponents()
     OovStringVec projectLibFileNames;
     mObjSymbols.appendOrderedLibFileNames("ProjLibs", getSymbolBasePath(),
             projectLibFileNames);
-    if(compNames.size() > 0)
+    if(comps.size() > 0)
         {
         sVerboseDump.logProgress("Order external package libraries");
 
-        for(const auto &name : compNames)
+        for(const auto &compDef : comps)
             {
-            makeOrderedPackageLibs(name);
+            makeOrderedPackageLibs(compDef.getCompName());
             }
 
         sVerboseDump.logProgress("Build programs ");
 
         setupQueue(getNumHardwareThreads());
-        for(const auto &name : compNames)
+        for(const auto &compDef : comps)
             {
+            OovString const &name = compDef.getCompName();
             OovStringVec externalLibDirs;       // not in library search order, eliminate dups.
             IndexedStringVec externalOrderedPackageLibNames;
             auto type = compTypesFile.getComponentType(name);
@@ -426,15 +427,15 @@ void ComponentBuilder::buildComponents()
                         compPkgLinkArgs, type == CT_SharedLib);
                 }
             }
-        for(const auto &name : compNames)
+        for(const auto &compDef : comps)
             {
-            auto type = compTypesFile.getComponentType(name);
+            auto type = compTypesFile.getComponentType(compDef.getCompName());
             if(type == CT_JavaJarLib || type == CT_JavaJarProg)
                 {
                 bool prog = (type == CT_JavaJarProg);
                 OovStringVec sources = scannedInfoFile.getComponentFiles(
-                    compTypesFile, ScannedComponentInfo::CFT_JavaSource, name);
-                makeJar(name, sources, prog);
+                    compTypesFile, ScannedComponentInfo::CFT_JavaSource, compDef.getCompName());
+                makeJar(compDef.getCompName(), sources, prog);
                 }
             }
         waitForCompletion();

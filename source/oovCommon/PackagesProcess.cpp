@@ -5,8 +5,8 @@
  *  \copyright 2014 DCBlaha.  Distributed under the GPL.
  */
 
-#ifdef __linux__
 #include "Packages.h"
+#ifdef __linux__
 #include "OovProcess.h"
 #endif
 #include <algorithm>
@@ -127,6 +127,8 @@ Package AvailablePackages::getPackage(OovStringRef const pkgName) const
     return pkg;
     }
 
+#endif
+
 OovStatusReturn updateProjectPackages(OovStringVec const &externalPackageNames)
     {
     AvailablePackages availPackages;
@@ -148,9 +150,9 @@ OovStatusReturn updateProjectPackages(OovStringVec const &externalPackageNames)
                 pkg = availPackages.getPackage(pkgName);
                 if(pkg.isPackageDefined())
                     {
-    #ifndef __linux__
+#ifndef __linux__
                     pkg.winScanAndSetRootDir(pkg.getRootDir());
-    #endif
+#endif
                     projPackages.insertPackage(pkg);
                     }
                 else
@@ -166,4 +168,3 @@ OovStatusReturn updateProjectPackages(OovStringVec const &externalPackageNames)
     return status;
     }
 
-#endif

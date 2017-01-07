@@ -207,10 +207,11 @@ class ProjectBuildArgs
             mProjectOptions(project), mBuildEnv(project),
             mProjectPackages(false), mBuildPackages(false), mVerbose(false)
             {}
-        void setConfig(OovStringRef buildMode, OovStringRef const buildConfig);
+        void setBuildConfig(OovStringRef buildMode, OovStringRef const buildConfig);
         // This must set the component name as from ComponentTypesFile
         // getComponentNameOwner
         void setCompConfig(OovStringRef ownerCompName);
+        void updateArgs();
 
         const ProjectPackages &getProjectPackages() const
             { return mProjectPackages; }
@@ -255,6 +256,8 @@ class ProjectBuildArgs
         const OovStringVec getAllCrcLinkArgs() const;
         /// These are absolute directories
         CompoundValue getProjectExcludeDirs() const;
+        BuildVariableEnvironment const &getBuildEnv() const
+            { return mBuildEnv; }
         bool getVerbose() const
             { return mVerbose; }
 

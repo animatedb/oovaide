@@ -63,7 +63,8 @@ class BuildVariable
         void addFilter(OovStringRef filterName, OovStringRef filterValue)
             { mVarFilterList.addFilter(filterName, filterValue); }
 
-        bool isSubsetOf(VariableFilterList const &superset) const;
+        bool isSubsetOf(VariableFilterList const &superset,
+            const char *ignoreFilterName=nullptr) const;
 
         OovString getFilterValue(OovStringRef filterName);
         eFunctions getFunction() const
@@ -95,11 +96,18 @@ class BuildVariableEnvironment
             { mCurrentFilterValues.clear(); }
         void addCurrentFilterValue(OovStringRef filterName, OovStringRef filterValue)
             { mCurrentFilterValues.addFilter(filterName, filterValue); }
+        OovStringVec getMatchingVariables(OovStringRef varName) const;
+        /// Ignores the component so that all component variables that match
+        /// the environment can be retrieved.
+        OovStringVec getMatchingVariablesIgnoreComp(OovStringRef varName) const;
         OovString getValue(OovStringRef varName) const;
+        NameValueRecord const &getNameValues() const
+            { return mNameValues; }
 
     private:
         NameValueRecord const &mNameValues;
         VariableFilterList mCurrentFilterValues;
+        mutable OovString mIgnoreFilterName;
     };
 
 #endif

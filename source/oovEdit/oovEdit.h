@@ -11,6 +11,7 @@
 #include "EditFiles.h"
 #include "EditOptions.h"
 #include "EditorIpc.h"
+#include "ControlWindow.h"
 
 
 class Editor:public DebuggerListener, public OovErrorListener
@@ -129,6 +130,7 @@ class Editor:public DebuggerListener, public OovErrorListener
         virtual void errorListener(OovStringRef str, OovErrorTypes et) override
             {
             mDebugOut.append(str);
+            ControlWindow::showNotebookTab(ControlWindow::CT_Control);
             }
         virtual void DebugOutput(OovStringRef const str) override
             {

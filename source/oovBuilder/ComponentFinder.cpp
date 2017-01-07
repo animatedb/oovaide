@@ -165,7 +165,8 @@ bool ComponentFinder::readProject(OovStringRef const oovProjectDir,
     OovStatus status = mProject.readProject(oovProjectDir);
     if(status.ok())
         {
-        mProjectBuildArgs.setConfig(buildMode, buildConfig);
+        mProjectBuildArgs.setBuildConfig(buildMode, buildConfig);
+        mComponentTypesFile.setBuildEnvironment(&mProjectBuildArgs.getBuildEnv());
         }
     if(status.needReport())
         {

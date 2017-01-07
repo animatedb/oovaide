@@ -34,16 +34,28 @@ Code/Design Guidelines
 	- Error handling strategy - See OovError.h, OovStatus class.
 	- OovCommon is a shared library between many components
 	- OovGuiCommon is only used for GUI (GTK) components
+	- Editing does not move breakpoints
+	- No warning that debugging is not performed on currently built source code
+	- In editor, F7 should build.
 
 Missing Features
 ----------------
+- Urgent
+	- debugger needs running program console output - shows up in editor control window
+	- editor undo doesn't scroll cursor into region
+	- debug execution arrow doesn't clear sometimes
+	- debugger doesn't have way to view reference values?
+	- need better error messages for setting up debugger - should list menus in oovaide/oovedit?
+	  If a build has never been done before debugging, need to describe how to build.
 - General
+	- release win64
 	- click on top left corner of oovaide program (settings menu) is terrible.
 	- __chkstk_ms error for linking .so - make sure path is set to correct version of mingw.
 	- Duplicate class/function names
 	- Build Java/task sequencing
 	- Preserve state between sessions
 - Gui
+	- Need to improve analysis/build settings for filters.
 	- Add External Directories button for Build Arguments dialog.
 	- Optimize directory path dependencies by oovBuilder, component diagram.
 	  Store path dirs with indices to allow comparing indices?
@@ -141,10 +153,13 @@ Missing Features
 	- Allow rearranging class order?
 
 - Build/Analysis Settings
+	- Semicolons/CR must separate args when they are appended together?
+	- Settings dialog isn't config specific for compiler and other tools
 	- add cmakelists reader
 	- add custom configs to build variable dialogs
 	- tool paths should be specific to linux/windows - update when loading project?
-	- source path in project is different on linux and windows. need to change when opening project
+	- source path in project is different on linux and windows.
+		Need to change when opening project
 	- Add help to describe dependencies on CLang, etc. Different for linux/windows
 	- Add way to update compiler -isystem paths
 	- Add -Wall, --analyzer
@@ -189,7 +204,9 @@ Missing Features
 	- Changing package does not cause reanalysis? (glib to gmodule)
 
 - Build System (Build not required for displaying diagrams)
-	- isystem is in BuildArgsExtra-Analyze, but should be in BuildArgsBase. Options.cpp, extraCppDocArgs -> baseArgs
+	- Should run post build custom job. (translate executable elf to intel hex)
+	- isystem is in BuildArgsExtra-Analyze, but should be in BuildArgsBase.
+		Options.cpp, extraCppDocArgs -> baseArgs
 	- Improved build
 	  - C++ modules (see clang, import, umbrella)
 	    - order include dirs by component directory hierarchy
@@ -251,18 +268,22 @@ Missing Features
 		Search ZoneDiagram.cpp "mZoom /= 1.5 ;"
 
 - Editor
+	- Support Unicode, copyright symbol, etc.
+	- Editor does not get new project settings when they are updated in oovaide.
+	- Editor should display on top if a module is selected in oovaide.
+	- Hover over tab should display full file path in tooltip
+		http://www.velvetcache.org/2007/08/22/gtk-tooltips-on-notebook-tab-labels
 	- Syntax highlighting isn't updated for files dependent on a modified header.
 	- Sometimes goto definition doesn't.  Second time works.
 	- Click on tab should set focus to view so cursor displays
 	- Make find in files a background task
+	- Add option to prevent find in files for exclude directories.
 	- Add history list of lines of last go to defs, go to method, etc.
 	- context help window in linux doesn't go away
 	- Restore previous session, save loaded files and line numbers when exit
 	- On linux, the line number margin doesn't grow with more digits
 	- Edit/Preferences working directory ... does not display dialog
 	- oovaide/editor - https://en.wikipedia.org/wiki/Inter-process_communication
-	- Hover over tab should display full file path in tooltip
-		http://www.velvetcache.org/2007/08/22/gtk-tooltips-on-notebook-tab-labels
 	- editor doesn't handle two files with same name
 	- GtkPlug, XEmbed, Wayland? "gvim -f --socketid %w '%s'"
 	  http://lists.freedesktop.org/archives/wayland-devel/2012-February/002030.html
@@ -277,6 +298,7 @@ Missing Features
 	- refactor-rename
 
 - Debugger (In editor)
+	- Debugger path only works with forward slashes.
 	- whatis for str var, std::++cxx11::string says incomplete type
 	- Allow view variable by asking CLang for type to view (type)var
 	- starting debugger too quickly can crash

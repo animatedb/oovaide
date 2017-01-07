@@ -10,6 +10,7 @@
 #include "Project.h"
 #include "OovString.h"  // For split
 #include "OovError.h"
+#include "Options.h"
 #include <algorithm>
 #include <string.h>     // for strcmp
 
@@ -200,26 +201,70 @@ OovStringVec ScannedComponentInfo::getComponentFiles(ComponentTypesFile compInfo
 
 OovStringVec ComponentTypesFile::getDefinedComponentNames() const
     {
-    OovStringVec compVars = mProject.getMatchingNames(OptCompType);
-
+    ComponentDefinitions comps = getDefinedComponents();
     OovStringVec compNames;
+    for(auto const &comp : comps)
+        {
+        compNames.push_back(comp.getCompName());
+        }
+    return compNames;
+    }
+
+OovStringVec ComponentTypesFile::getMatchingCompTypeVariables() const
+    {
+    OovStringVec compVars;
+    if(mBuildEnv)
+        {
+        compVars = mBuildEnv->getMatchingVariablesIgnoreComp(OptCompType);
+        }
+    else
+        {
+        compVars = mProject.getMatchingNames(OptCompType);
+        }
+    return compVars;
+    }
+
+ComponentDefinitions ComponentTypesFile::getDefinedComponents(char const *compName) const
+    {
+    OovStringVec compVars = getMatchingCompTypeVariables();
+    ComponentDefinitions compDefs;
     for(auto const &var : compVars)
         {
         BuildVariable buildVar;
         OovString filterDef = var;
         buildVar.initVarFromString(filterDef, mProject.getValue(var));
-        compNames.push_back(buildVar.getFilterValue(OptFilterNameComponent));
+        ComponentDefinition def;
+        def.mCompName = buildVar.getFilterValue(OptFilterNameComponent);
+        def.mCompType = getComponentTypeFromTypeName(mProject.getValue(var));
+        if(def.mCompType != CT_Unknown)
+            {
+            if(compName == nullptr || def.mCompName == compName)
+                {
+                // If there are multiple defined, then just get the first one.
+                // It is expected that component types will only be unknown/none
+                // or one other defined type. There should never be conflicting
+                // defined types.
+                auto it = std::find_if(compDefs.begin(), compDefs.end(),
+                    [&def](ComponentDefinition const &item)
+                    { return(item.getCompName() == def.getCompName()); });
+                if(it == compDefs.end())
+                    {
+                    compDefs.push_back(def);
+                    }
+                }
+            }
         }
-    compNames.erase(std::remove_if(compNames.begin(), compNames.end(),
-        [this](OovString &name)
-        { return(getComponentType(name) == CT_Unknown); }), compNames.end());
-/*
-    OovStringVec compNames = getComponentNames();
-    compNames.erase(std::remove_if(compNames.begin(), compNames.end(),
-        [this](OovString &name)
-        { return(getComponentType(name) == CT_Unknown); }), compNames.end());
-*/
-    return compNames;
+#if(0)
+printf("getDefinedComponents %p\n", mBuildEnv);
+if(compName)
+    { printf("  %s\n", compName); }
+for(auto const &def : compDefs)
+    {
+    printf("    %s %d\n", def.getCompName().getStr(), def.getCompType());
+    }
+fflush(stdout);
+#endif
+    return compDefs;
     }
 
 OovString ComponentTypesFile::getComponentDir(OovStringRef relDir,
@@ -264,13 +309,13 @@ OovString ComponentTypesFile::getComponentFileName(OovStringRef relDir,
 
 OovStringVec ComponentTypesFile::getDefinedComponentNamesByType(eCompTypes cft) const
     {
-    OovStringVec allCompNames = getDefinedComponentNames();
+    ComponentDefinitions allComps = getDefinedComponents();
     OovStringVec filteredNames;
-    for(auto const &compName : allCompNames)
+    for(auto const &compDef : allComps)
         {
-        if(getComponentType(compName) == cft)
+        if(compDef.getCompType() == cft)
             {
-            filteredNames.push_back(compName);
+            filteredNames.push_back(compDef.getCompName());
             }
         }
     return filteredNames;
@@ -300,20 +345,24 @@ std::string ComponentTypesFile::getComponentParentName(std::string const &compNa
 
 bool ComponentTypesFile::anyComponentsDefined() const
     {
-    return(getDefinedComponentNames().size() > 0);
+    return(getDefinedComponents().size() > 0);
     }
 
 enum eCompTypes ComponentTypesFile::getComponentType(
         OovStringRef const compName) const
     {
-    OovString tag = getTypeArgsCompFilterName(compName);
-    OovString typeStr = mProject.getValue(tag);
-    return getComponentTypeFromTypeName(typeStr);
+    ComponentDefinitions compDefs = getDefinedComponents(compName);
+    eCompTypes compType = CT_Unknown;
+    if(compDefs.size())
+        {
+        compType = compDefs[0].getCompType();
+        }
+    return compType;
     }
 
 void ComponentTypesFile::setComponentType(OovStringRef const compName, eCompTypes ct)
     {
-    OovString tag = getTypeArgsCompFilterName(compName);
+    OovString tag = buildCompTypeVarFilterName(compName);
     OovStringRef const value = getComponentTypeAsFileValue(ct);
     mProject.setNameValue(tag, value);
     }
@@ -357,15 +406,15 @@ static bool compareComponentNames(std::string const &parentName, std::string con
 
 void ComponentTypesFile::coerceChildComponents(OovStringRef const compName)
     {
-    OovStringVec names = getDefinedComponentNames();
+    ComponentDefinitions compDefs = getDefinedComponents();
     OovString parentName = compName;
-    for(auto const &name : names)
+    for(auto const &def : compDefs)
         {
-        if(name != parentName)
+        if(def.getCompName() != parentName)
             {
-            if(compareComponentNames(parentName, name))
+            if(compareComponentNames(parentName, def.getCompName()))
                 {
-                setComponentType(name, CT_Unknown);
+                setComponentType(def.getCompName(), CT_Unknown);
                 }
             }
         }
@@ -438,7 +487,7 @@ OovStringRef const ComponentTypesFile::getComponentTypeAsFileValue(eCompTypes ct
     return p;
     }
 
-OovString ComponentTypesFile::getTypeArgsCompFilterName(OovStringRef const compName)
+OovString ComponentTypesFile::buildCompTypeVarFilterName(OovStringRef const compName)
     {
     BuildVariable buildVar;
     buildVar.setVarName(OptCompType);
@@ -449,26 +498,31 @@ OovString ComponentTypesFile::getTypeArgsCompFilterName(OovStringRef const compN
 
 OovString ComponentTypesFile::getComponentNameOwner(OovStringRef compName) const
     {
-    OovString ownerCompName;
-    OovStringVec definedCompNames = getDefinedComponentNames();
-    for(auto const &name : definedCompNames)
+    ComponentDefinition ownerComp;
+    ComponentDefinitions definedComps = getDefinedComponents();
+    for(auto const &comp : definedComps)
         {
-        int len = name.length();
-        if(name.compare(0, len, compName, len) == 0)
+        int len = comp.getCompName().length();
+        if(comp.getCompName().compare(0, len, compName, len) == 0)
             {
-            if(name.length() > ownerCompName.length())
+            if(comp.getCompName().length() > ownerComp.getCompName().length())
                 {
-                ownerCompName = name;
+                ownerComp = comp;
                 }
             }
         }
-    if(ownerCompName.length() == 0)
+    OovString ownerCompName;
+    if(ownerComp.getCompName().length() == 0)
         {
         OovString rootName = Project::getRootComponentName();
         if(getComponentType(rootName) != CT_Unknown)
             {
             ownerCompName = rootName;
             }
+        }
+    else
+        {
+        ownerCompName = ownerComp.getCompName();
         }
     return ownerCompName;
     }

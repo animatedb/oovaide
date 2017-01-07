@@ -3,6 +3,7 @@
 // \copyright 2016 DCBlaha.  Distributed under the GPL.
 
 #include "BuildVariables.h"
+#include "Project.h"
 #include <algorithm>
 
 
@@ -99,7 +100,8 @@ OovString BuildVariable::getVarDefinition(char delimChar) const
     return name;
     }
 
-bool BuildVariable::isSubsetOf(VariableFilterList const &superset) const
+bool BuildVariable::isSubsetOf(VariableFilterList const &superset,
+    const char *ignoreFilterName) const
     {
     bool subset = true;
 
@@ -110,9 +112,18 @@ bool BuildVariable::isSubsetOf(VariableFilterList const &superset) const
             { return subVar.mFilterName.compare(superVar.mFilterName) == 0;});
         if(it != superset.end())
             {
-            if(subVar.mFilterValue != (*it).mFilterValue)
+            if(ignoreFilterName == nullptr || subVar.mFilterName != ignoreFilterName)
                 {
-                subset = false;
+                if(subVar.mFilterValue != (*it).mFilterValue)
+                    {
+#if(0)
+printf("Not subset %s: %s != %s\n", subVar.mFilterName.getStr(),
+    subVar.mFilterValue.getStr(), (*it).mFilterValue.getStr());
+fflush(stdout);
+#endif
+                    subset = false;
+                    break;
+                    }
                 }
             }
         else
@@ -138,6 +149,36 @@ OovString BuildVariable::getFiltersAsString() const
     return str;
     }
 
+OovStringVec BuildVariableEnvironment::getMatchingVariables(OovStringRef varName) const
+    {
+    OovStringVec varNames = mNameValues.getMatchingNames(varName);
+    OovStringVec matchingEnvNames;
+/// @TODO - base arg[] or assignments should be done first!
+/// Simple solution that may be ok is to sort varNames by length.
+    std::sort(varNames.begin(), varNames.end(),
+        [](const OovString &l, const OovString &r)
+            { return l.numBytes()<r.numBytes(); });
+    for(auto const &varName : varNames)
+        {
+        BuildVariable fileVar;
+        fileVar.initVarFromString(varName, "");
+        char const *ignore = mIgnoreFilterName.length() ? mIgnoreFilterName.getStr() : nullptr;
+        if(fileVar.isSubsetOf(mCurrentFilterValues, ignore))
+            {
+            matchingEnvNames.push_back(varName);
+            }
+        }
+    return matchingEnvNames;
+    }
+
+OovStringVec BuildVariableEnvironment::getMatchingVariablesIgnoreComp(OovStringRef varName) const
+    {
+    mIgnoreFilterName = OptFilterNameComponent;
+    OovStringVec matchingEnvNames = getMatchingVariables(varName);
+    mIgnoreFilterName.clear();
+    return matchingEnvNames;
+    }
+
 OovString BuildVariableEnvironment::getValue(OovStringRef varName) const
     {
     OovStringVec varNames = mNameValues.getMatchingNames(varName);
@@ -161,11 +202,11 @@ OovString BuildVariableEnvironment::getValue(OovStringRef varName) const
                     break;
 
                 case BuildVariable::F_Append:
-                    val.insert(0, funcVal);
+                    val += funcVal;
                     break;
 
                 case BuildVariable::F_Insert:
-                    val += funcVal;
+                    val.insert(0, funcVal);
                     break;
 
                 case  BuildVariable::F_Remove:

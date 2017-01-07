@@ -55,7 +55,7 @@ static void getCppArgs(OovStringRef const srcName, OovProcessChildArgs &args)
         status.report(ET_Error, "Unable to read project for editor CPP args.");
         }
     ComponentTypesFile compFile(proj);
-    buildArgs.setConfig(OptFilterValueBuildModeAnalyze, BuildConfigAnalysis);
+    buildArgs.setBuildConfig(OptFilterValueBuildModeAnalyze, BuildConfigAnalysis);
     buildArgs.setCompConfig(compFile.getComponentNameOwner(srcName));
     OovStringVec cppArgs = buildArgs.getCompileArgs();
     for(auto const &arg : cppArgs)
@@ -499,6 +499,18 @@ OovStatusReturn FileEditView::openTextFile(OovStringRef const fn)
                     {
                     gtk_text_buffer_set_text(mTextBuffer, &buf.front(), actualCount);
                     gtk_text_buffer_set_modified(mTextBuffer, FALSE);
+
+                    // text buffers can only handle UTF8 and will be empty in other cases
+                    // such as the copyright symbol (0xA9) in code.
+                    int bufCount = gtk_text_buffer_get_char_count(mTextBuffer);
+                    if(bufCount == 0)
+                        {
+                        OovStatus dummy(false, SC_File);
+                        OovString str = "File may contain non-ASCII or non-UTF8 characters: ";
+                        str += fn;
+                        dummy.report(ET_Error, str);
+//                        Gui::messageBox(str);
+                        }
                     }
                 highlightRequest();
                 }

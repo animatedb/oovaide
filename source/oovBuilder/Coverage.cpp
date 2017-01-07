@@ -23,7 +23,7 @@ static bool makeCoverageProjectFile(OovStringRef const srcFn, OovStringRef const
 
         // Add the coverage component as a static library.
         static OovStringRef const covLibName = Project::getCovLibName();
-        file.setNameValue(ComponentTypesFile::getTypeArgsCompFilterName(covLibName),
+        file.setNameValue(ComponentTypesFile::buildCompTypeVarFilterName(covLibName),
                 ComponentTypesFile::getShortComponentTypeName(CT_StaticLib));
 
         status = file.writeFile();

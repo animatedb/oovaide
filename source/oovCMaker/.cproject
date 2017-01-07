@@ -176,7 +176,7 @@
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1766863788" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovCMaker ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.1225191412" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
 								<option id="gnu.cpp.link.option.libs.908274605" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
+									<listOptionValue builtIn="false" value="oovCommon"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.885460285" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>

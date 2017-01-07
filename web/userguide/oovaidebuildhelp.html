@@ -331,7 +331,14 @@
       setting build variables. All of the settings used for the build are
       defined using build variables, so the&nbsp; Advanced button allows
       changing the build variables with much more flexibility than the other
-      screens.</p>
+      screens. At this time, there may be some interactions between other
+      screens, so the advanced button is a good place to learn build settings,
+      but it may be required that the oovaide.txt build file is edited directly
+      if things don't work.</p>
+    <p>This allows setting compiler options for each configuration (debug,
+      release, custom), platform (Linux, Windows), component, etc. For example,
+      a test configuration could be set up to use a different compiler in cross
+      compiling circumstances.</p>
     <p>Build Variables are used to define compiler and linker flags, tool paths,
       and other environment variables. Each variable can have some settings, and
       in some circumstances will be modified to append more settings. For
@@ -349,6 +356,52 @@
       may not matter, but an example of where they may matter is when there are
       duplicate header files, and one must be searched first. The shortest rules
       are run before longer rules.</p>
+    <p><br>
+    </p>
+    The oovaide.txt build file can be edited manually. The following example
+    shows the use of multiple compilers (clang++ for analysis, g++ for Test, and
+    msp430-g++ for Debug.<br>
+    <ul>
+      <li>A Test configuration is created that builds using the g++ compiler,
+        and builds the MyProjectTests program, with the ProjectLib library. Note
+        that the MyProjectTests component is set as a Program for the Test
+        configuration, and will be defined as unknown or none for the other
+        configurations.</li>
+      <li>The Debug configuration builds using the msp430 TI compiler, and
+        builds the MyProjectApp program, with the ProjectLib and ProjectTiLib
+        libraries.</li>
+      <li>In all configurations (Analysis, Test, and Debug), the all compilers
+        will use the "CppArgs[]" that point to the same TI include files. In the
+        Test configuration, the "-O-;-g3" options are appended, and for the Debug
+        configuration, the minrt, etc. flags are appended.</li>
+      <li>The Release configuration is not set up in this example.</li>
+    </ul>
+    <pre>BuildConfigs|Test;
+CompType[comp:MyProjectApp&amp;cfg:Debug]=|Program
+CompType[comp:MyProjectLib]=|StaticLib
+CompType[comp:MyProjectTiLib]=|StaticLib
+CompType[comp:MyProject&amp;cfg:Debug]=|StaticLib
+CompType[comp:MyProjectTests&amp;cfg:Test]=|Program
+CppArgs[]=|-c;-x;c++;-fdata-sections;-ffunction-sections;-D__MSP430G2553__;-I\mspgcc-20120406-p20120911\msp430\include;-I\mspgcc-20120406-p20120911\lib\gcc\msp430\4.6.3\include
+CppArgs[cfg:Debug]+|-O0;-g3;-mmcu=msp430g2553;-lnk-minrt;-lnk-Wl,--gc-sections;-lnk-Wl,-Map,\MyProject-oovaide\oovaide-map.txt;-lnk-L\mspgcc-20120406-p20120911\msp430\lib\ldscripts\msp430g2553;-lnk-nostdlib
+CppArgs[cfg:Release]+|-O3;
+CppArgs[cfg:Test]+|-O0;-g3;
+CppCompilerPath[cfg:Analysis]=|clang++.exe
+CppCompilerPath[cfg:Debug]=|\mspgcc-20120406-p20120911\bin\msp430-g++.exe
+CppCompilerPath[cfg:Test]=|g++.exe
+CppLibPath[]=|ar.exe
+ExeDebuggerPath|gdb.exe
+JavaAnalyzerPath[cfg:Analysis]=|oovJavaParser
+JavaClassPath[]=|
+JavaCompilerPath[]=|javac
+JavaCompilerPath[cfg:Analysis]=|java
+JavaJarPath[]=|jar
+JavaJdkPath[]=|C:\Program Files\Java\jdk1.8.0_51;
+ObjSymbolPath[]=|nm.exe
+SourceRootDir|C:/Dave/stjude/MRI/mine/Implementation/MyProject/
+</pre>
+    <p><br>
+    </p>
     <h2><a class="mozTocH3 mozTocH2" id="mozTocId513853"></a>Inkscape Example on
       Windows</h2>
     This example shows how to analyze a project where little is known about the

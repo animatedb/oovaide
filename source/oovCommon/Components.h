@@ -21,6 +21,16 @@ bool isCppHeader(OovStringRef const file);
 bool isCppSource(OovStringRef const file);
 bool isLibrary(OovStringRef const file);
 
+struct ComponentDefinition
+    {
+    OovString mCompName;
+    eCompTypes mCompType;
+    OovString const &getCompName() const
+        { return mCompName; }
+    eCompTypes const &getCompType() const
+        { return mCompType; }
+    };
+typedef std::vector<ComponentDefinition> ComponentDefinitions;
 
 /// The component types information is read and written by both oovaide and
 /// oovBuilder.
@@ -31,16 +41,36 @@ class ComponentTypesFile
     {
     public:
         ComponentTypesFile(ProjectReader &project):
-            mProject(project)
+            mProject(project), mBuildEnv(nullptr)
             {}
+
+        /// If there is a build env, then this class returns data for the matching env.
+        /// If there is no build env, then functions return component type info for
+        /// the superset of all matching possibilities.
+        void setBuildEnvironment(BuildVariableEnvironment const *buildEnv)
+            { mBuildEnv = buildEnv; }
 
         OovStatusReturn writeComponentTypes() const
             { return mProject.writeFile(); }
 
+        /// This returns a defined component even when some build
+        /// configurations do not have the component defined.
+        ///
         /// Get the component names with a defined component type of
         /// a project.  The component names do not have an absolute path,
         /// and is <Root> for the root.
         OovStringVec getDefinedComponentNames() const;
+
+        /// If there is no build environment, this returns a defined component
+        /// even when some build configurations do not have the component defined.
+        /// If there is a build environment, this returns component names for
+        /// any build configuration.
+        ///
+        /// Get the components with a defined component type of a project.
+        /// The component names do not have an absolute path,
+        /// and is <Root> for the root.
+        /// @param compName If null, returns all defined components.
+        ComponentDefinitions getDefinedComponents(char const *compName=nullptr) const;
 
         /// Returns a directory relative to relDir.
         /// This returns relDir for the root compName.
@@ -112,7 +142,10 @@ class ComponentTypesFile
         /// @param compName The component name.
         OovString getComponentAbsolutePath(OovStringRef const compName) const;
 
-        static OovString getTypeArgsCompFilterName(OovStringRef const compName);
+        /// Build a variable filter name for the component type that matches
+        /// the passed in component.
+        /// WARNING: This does not work for build environment names.
+        static OovString buildCompTypeVarFilterName(OovStringRef const compName);
 
         /// If there is no owner, this returns the root component.
         /// This can return the owner as the passed in name if it is a defined
@@ -121,13 +154,24 @@ class ComponentTypesFile
 
     private:
         ProjectReader &mProject;
+        /// The build environment references the project, but also contains
+        /// build variable filter values.
+        BuildVariableEnvironment const *mBuildEnv;
 
         void setComponentType(OovStringRef const compName, eCompTypes ct);
+
         // Setting a component below some parent must make sure the parents are unknown
         void coerceParentComponents(OovStringRef const compName);
+
         // Setting a component above some child must make sure children are unknown
         void coerceChildComponents(OovStringRef const compName);
+
+        /// Returns the matching component type variables if there is an
+        /// environment, else returns all component type variables.
+        OovStringVec getMatchingCompTypeVariables() const;
+
         static OovStringRef const getComponentTypeAsFileValue(eCompTypes ct);
+
         static enum eCompTypes getComponentTypeFromTypeName(
             OovStringRef const compTypeName);
     };

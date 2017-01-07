@@ -5,7 +5,7 @@ INCLUDE(FindPkgConfig)
 
 set(OOVAIDE_MAJOR_VERION 0)
 set(OOVAIDE_MINOR_VERION 1)
-set(OOVAIDE_PATCH_VERION 5)
+set(OOVAIDE_PATCH_VERION 6)
 set(OOVAIDE_VERION ${OOVAIDE_MAJOR_VERSION}.${OOVAIDE_MINOR_VERSION}.${OOVAIDE_PATCH_VERSION})
 
 #set(CMAKE_INSTALL_PREFIX "/usr")
@@ -43,12 +43,12 @@ add_definitions(${GTK_CFLAGS_OTHER})
 # DL - This is in libc6-dev package on Ubuntu
 set(DL_LIBRARIES dl)
 
-# LLVM - Neither LLVM or CLANG are in /usr/share/cmake*/Modules at least up to LLVM 3.6
+# LLVM - Neither LLVM or CLANG are in /usr/share/cmake*/Modules at least up to LLVM 3.8
 # pkg_check_modules(CLANG REQUIRED libclang-dev)
 # pkg_check_modules(LLVM REQUIRED llvm)
-include_directories(/usr/lib/llvm-3.6/include)
+include_directories(/usr/lib/llvm-3.8/include)
 cmake_policy(SET CMP0015 NEW)
-link_directories(/usr/lib/llvm-3.6/lib)
+link_directories(/usr/lib/llvm-3.8/lib)
 set(LLVM_LIBRARIES clang)
 # include_directories(${LLVM_INCLUDE_DIRS})
 # link_directories(${LLVM_LIBRARY_DIRS})

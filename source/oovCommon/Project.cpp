@@ -424,7 +424,7 @@ OovString ProjectReader::getCppArgsCompFilterName(OovStringRef compName)
     }
 
 
-void ProjectBuildArgs::setConfig(OovStringRef buildMode, OovStringRef const buildConfig)
+void ProjectBuildArgs::setBuildConfig(OovStringRef buildMode, OovStringRef const buildConfig)
     {
     mBuildEnv.addCurrentFilterValue(OptFilterNameBuildMode, buildMode);
     mBuildEnv.addCurrentFilterValue(OptFilterNameBuildConfig, buildConfig);
@@ -447,6 +447,11 @@ void ProjectBuildArgs::setConfig(OovStringRef buildMode, OovStringRef const buil
 void ProjectBuildArgs::setCompConfig(OovStringRef ownerCompName)
     {
     mBuildEnv.addCurrentFilterValue(OptFilterNameComponent, ownerCompName);
+    updateArgs();
+    }
+
+void ProjectBuildArgs::updateArgs()
+    {
     OovStringVec args;
     CompoundValue baseArgs;
     baseArgs.parseString(mBuildEnv.getValue(OptCppArgs));
