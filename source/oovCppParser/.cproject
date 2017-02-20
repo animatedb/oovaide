@@ -30,22 +30,22 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.1970825014" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base.1278781988" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.base">
-								<option id="gnu.cpp.compiler.option.include.paths.1005703814" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.1005703814" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProgramFiles}/LLVM/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${LLVM}/include&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.optimization.level.1710400820" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.debugging.level.1620572102" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.717852886" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.level.1710400820" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.1620572102" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.max" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.717852886" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.810181317" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.base.95482246" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.base">
-								<option id="gnu.c.compiler.option.include.paths.1655774385" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1655774385" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 								</option>
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1054836217" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.debugging.level.1199964617" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.1054836217" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.1199964617" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1746954058" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.base.473147516" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.base"/>
@@ -57,10 +57,10 @@
 									<listOptionValue builtIn="false" value="pthread"/>
 									<listOptionValue builtIn="false" value="libclang"/>
 								</option>
-								<option id="gnu.cpp.link.option.paths.1134293610" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+								<option id="gnu.cpp.link.option.paths.1134293610" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" useByScannerDiscovery="false" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Windows-Debug}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProgramFiles}/llvm/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${LLVM}/lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.636424032" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.linker.input.742476301" superClass="cdt.managedbuild.tool.gnu.cpp.linker.input">
@@ -76,7 +76,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -103,9 +103,9 @@
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.mingw.base.496688005" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.mingw.base"/>
 							<tool id="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release.830896512" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.mingw.exe.release">
-								<option id="gnu.cpp.compiler.mingw.exe.release.option.optimization.level.1086614027" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.mingw.exe.release.option.debugging.level.711196924" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.include.paths.408337435" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.mingw.exe.release.option.optimization.level.1086614027" name="Optimization Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.mingw.exe.release.option.debugging.level.711196924" name="Debug Level" superClass="gnu.cpp.compiler.mingw.exe.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.include.paths.408337435" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 									<listOptionValue builtIn="false" value="c:/mingw/lib/gcc/mingw32/4.6.2/include/c++"/>
@@ -116,12 +116,12 @@
 									<listOptionValue builtIn="false" value="c:/mingw/lib/gcc/mingw32/4.6.2/include-fixed"/>
 									<listOptionValue builtIn="false" value="&quot;${ProgramFiles}/LLVM/include&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.other.other.735215933" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.other.other.735215933" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0 -std=c++0x" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.1635871233" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release.746777722" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.mingw.exe.release">
-								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.mingw.exe.release.option.optimization.level.178436769" name="Optimization Level" superClass="gnu.c.compiler.mingw.exe.release.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.mingw.exe.release.option.debugging.level.1040761360" name="Debug Level" superClass="gnu.c.compiler.mingw.exe.release.option.debugging.level" value="gnu.c.debugging.level.none" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.most" id="gnu.c.compiler.mingw.exe.release.option.optimization.level.178436769" name="Optimization Level" superClass="gnu.c.compiler.mingw.exe.release.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.mingw.exe.release.option.debugging.level.1040761360" name="Debug Level" superClass="gnu.c.compiler.mingw.exe.release.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.none" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.2057928410" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release.1250200196" name="MinGW C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.mingw.exe.release"/>
@@ -193,7 +193,7 @@
 									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="clang"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.532360790" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.6/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1122878061" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./" valueType="string"/>
@@ -216,7 +216,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -240,23 +240,23 @@
 							<builder buildPath="${workspace_loc:/oovCppParser/Linux-Debug}" id="org.eclipse.cdt.build.core.internal.builder.924088460" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.865758877" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.compiler.base.1259497182" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
-								<option id="gnu.cpp.compiler.option.include.paths.1897711893" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.1897711893" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.2/include&quot;"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.optimization.level.1981409762" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.debugging.level.902655154" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.693298780" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -m32 -fmessage-length=0  -std=c++0x" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.level.1981409762" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.902655154" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.693298780" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -m32 -fmessage-length=0  -std=c++0x" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.370010709" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.494912026" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
-								<option id="gnu.c.compiler.option.include.paths.1392951713" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.1392951713" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="C:/Dave/Mine/software/oovcde-llvm/clang+llvm-3.1/include"/>
 								</option>
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.485616039" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.debugging.level.1863383266" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.485616039" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.1863383266" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.107833148" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.1103795289" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
@@ -281,7 +281,7 @@
 									<listOptionValue builtIn="false" value="clangFrontend"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1451417588" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../clang+llvm-3.2-x86/lib&quot;"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.1701675887" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-m32 -static-libstdc++ -Wl,-rpath=./" valueType="string"/>
@@ -304,7 +304,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -328,33 +328,33 @@
 							<builder buildPath="${workspace_loc:/oovCppParser/Linux-Debug}" id="org.eclipse.cdt.build.core.internal.builder.858676550" keepEnvironmentInBuildfile="false" name="CDT Internal Builder" superClass="org.eclipse.cdt.build.core.internal.builder"/>
 							<tool id="cdt.managedbuild.tool.gnu.archiver.base.108346386" name="GCC Archiver" superClass="cdt.managedbuild.tool.gnu.archiver.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.compiler.base.591174829" name="GCC C++ Compiler" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.base">
-								<option id="gnu.cpp.compiler.option.include.paths.1973819718" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.cpp.compiler.option.include.paths.1973819718" name="Include paths (-I)" superClass="gnu.cpp.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../oovCommon&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.8/include"/>
 								</option>
-								<option id="gnu.cpp.compiler.option.optimization.level.1938174172" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.debugging.level.1778791069" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
-								<option id="gnu.cpp.compiler.option.other.other.1315332743" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" value="-c -fmessage-length=0  -std=c++0x" valueType="string"/>
+								<option id="gnu.cpp.compiler.option.optimization.level.1938174172" name="Optimization Level" superClass="gnu.cpp.compiler.option.optimization.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.optimization.level.most" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.debugging.level.1778791069" name="Debug Level" superClass="gnu.cpp.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.cpp.compiler.debugging.level.none" valueType="enumerated"/>
+								<option id="gnu.cpp.compiler.option.other.other.1315332743" name="Other flags" superClass="gnu.cpp.compiler.option.other.other" useByScannerDiscovery="false" value="-c -fmessage-length=0  -std=c++0x" valueType="string"/>
 								<inputType id="cdt.managedbuild.tool.gnu.cpp.compiler.input.188602998" superClass="cdt.managedbuild.tool.gnu.cpp.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.compiler.base.1552920143" name="GCC C Compiler" superClass="cdt.managedbuild.tool.gnu.c.compiler.base">
-								<option id="gnu.c.compiler.option.include.paths.2060886771" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" valueType="includePath">
+								<option id="gnu.c.compiler.option.include.paths.2060886771" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon}&quot;"/>
 									<listOptionValue builtIn="false" value="C:/Dave/Mine/software/oovcde-llvm/clang+llvm-3.1/include"/>
 								</option>
-								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.78505999" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" valueType="enumerated"/>
-								<option id="gnu.c.compiler.option.debugging.level.2134457009" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" value="gnu.c.debugging.level.max" valueType="enumerated"/>
+								<option defaultValue="gnu.c.optimization.level.none" id="gnu.c.compiler.option.optimization.level.78505999" name="Optimization Level" superClass="gnu.c.compiler.option.optimization.level" useByScannerDiscovery="false" valueType="enumerated"/>
+								<option id="gnu.c.compiler.option.debugging.level.2134457009" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated"/>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.636244194" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
 							<tool id="cdt.managedbuild.tool.gnu.c.linker.base.201469181" name="GCC C Linker" superClass="cdt.managedbuild.tool.gnu.c.linker.base"/>
 							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${ProjDirPath}/../bin-linux/oovCppParser ${INPUTS}" id="cdt.managedbuild.tool.gnu.cpp.linker.base.1819708900" name="GCC C++ Linker" superClass="cdt.managedbuild.tool.gnu.cpp.linker.base">
 								<option id="gnu.cpp.link.option.libs.872094571" name="Libraries (-l)" superClass="gnu.cpp.link.option.libs" valueType="libs">
-									<listOptionValue builtIn="false" value="oovCommon"/>
+									<listOptionValue builtIn="false" srcPrefixMapping="" srcRootPath="" value="oovCommon"/>
 									<listOptionValue builtIn="false" value="clang"/>
 								</option>
 								<option id="gnu.cpp.link.option.paths.1981959765" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
-									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Linux-Release}&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/oovCommon/Release}&quot;"/>
 									<listOptionValue builtIn="false" value="/usr/lib/llvm-3.8/lib"/>
 								</option>
 								<option id="gnu.cpp.link.option.flags.283361422" name="Linker flags" superClass="gnu.cpp.link.option.flags" value="-static-libstdc++ -Wl,-rpath=./" valueType="string"/>
@@ -377,7 +377,7 @@
 				<externalSettings containerId="oovCommon;" factoryId="org.eclipse.cdt.core.cfg.export.settings.sipplier">
 					<externalSetting>
 						<entry flags="VALUE_WORKSPACE_PATH" kind="includePath" name="/oovCommon"/>
-						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Linux-Release"/>
+						<entry flags="VALUE_WORKSPACE_PATH" kind="libraryPath" name="/oovCommon/Release"/>
 						<entry flags="RESOLVED" kind="libraryFile" name="oovCommon" srcPrefixMapping="" srcRootPath=""/>
 					</externalSetting>
 				</externalSettings>
@@ -389,19 +389,19 @@
 	</storageModule>
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="refreshScope" versionNumber="2">
-		<configuration configurationName="Linux-Release">
-			<resource resourceType="PROJECT" workspacePath="/oovCppParser"/>
-		</configuration>
-		<configuration configurationName="Windows-Release">
+		<configuration configurationName="Linux-Debug">
 			<resource resourceType="PROJECT" workspacePath="/oovCppParser"/>
 		</configuration>
 		<configuration configurationName="Linux-Release32">
 			<resource resourceType="PROJECT" workspacePath="/oovCppParser"/>
 		</configuration>
+		<configuration configurationName="Linux-Release">
+			<resource resourceType="PROJECT" workspacePath="/oovCppParser"/>
+		</configuration>
 		<configuration configurationName="Windows-Debug">
 			<resource resourceType="PROJECT" workspacePath="/oovCppParser"/>
 		</configuration>
-		<configuration configurationName="Linux-Debug">
+		<configuration configurationName="Windows-Release">
 			<resource resourceType="PROJECT" workspacePath="/oovCppParser"/>
 		</configuration>
 	</storageModule>

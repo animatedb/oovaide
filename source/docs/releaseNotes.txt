@@ -41,6 +41,15 @@ Code/Design Guidelines
 Missing Features
 ----------------
 - Urgent
+	- It looks like 3.7 is last version that is compiled without VS, so it works with gcc paths.
+		pacman -S mingw-w64-x86_64-clang
+			mingw64/mingw-w64-x86_64-clang 3.9.1-3
+		-std=c++14
+	- use Wix to make a windows installer
+	- need a better solution for VS/mingw - Msys has mingw libclang.dll, LLVM downloads has mingw version.
+	- fix packages - isystem works better to hide warnings for package msys-mingw-w64
+	- oovEdit:"unable to get screen size" when opening cstdio.
+	- External Packages - Project Packages/ include can't have wildcard at end of path?
 	- debugger needs running program console output - shows up in editor control window
 	- editor undo doesn't scroll cursor into region
 	- debug execution arrow doesn't clear sometimes

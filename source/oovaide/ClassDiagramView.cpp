@@ -109,6 +109,7 @@ void ClassDiagramView::drawToDrawingArea()
         mClassDiagram.drawDiagram(cairoDrawer);
         updateDrawingAreaSize();
         }
+    requestRedraw();
     }
 
 OovStatusReturn ClassDiagramView::drawSvgDiagram(File &file)

@@ -8,10 +8,16 @@ The Oovaide web site is at http://oovaide.sourceforge.net or
 Using OovAide to analyze programs:
     Windows Versions:
 	The oovaide-*-win downloads include parts of GTK-3.0 and CLang
-	so running analysis does not require any additional
-	downloads. Using Oovaide for more complete analysis usually
+	so running analysis does not require any additional downloads.
+
+	Oovaide is shipped with libclang.dll for MinGW from MSys2.
+	If Visual Studio include files are used, download the
+	libclang.dll from the llvm site and replace the one in bin.
+
+	Using Oovaide for more complete analysis with MinGW usually
 	requires some MinGW or other package so that CLang can find
-	additional include files.
+	additional include files such as stdio.h.
+	
 	Exporting to database requires sqlite3.
 	Analyzing Java source code requires the Java JDK.
 
