@@ -45,6 +45,7 @@ Missing Features
 		pacman -S mingw-w64-x86_64-clang
 			mingw64/mingw-w64-x86_64-clang 3.9.1-3
 		-std=c++14
+	- the linux .deb files do not install the example files.
 	- use Wix to make a windows installer
 	- need a better solution for VS/mingw - Msys has mingw libclang.dll, LLVM downloads has mingw version.
 	- fix packages - isystem works better to hide warnings for package msys-mingw-w64
@@ -56,6 +57,9 @@ Missing Features
 	- debugger doesn't have way to view reference values?
 	- need better error messages for setting up debugger - should list menus in oovaide/oovedit?
 	  If a build has never been done before debugging, need to describe how to build.
+	- Support Python by using ## @param doxygen comments, members are on or before the line. @package
+	  docstring = """do x and return list""", after method decl and after members self.attr
+	  use filenames and directories as namespaces
 - General
 	- release win64
 	- click on top left corner of oovaide program (settings menu) is terrible.

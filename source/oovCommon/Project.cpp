@@ -194,6 +194,11 @@ OovString const Project::getDataDirectory()
             {
             path.replace(pos, 3, "share/oovaide/data");
             }
+        OovStatus status(true, SC_File);
+        if(!FileIsDirOnDisk(path, status))
+            {
+            path.setPath("/usr/share/oovaide/data", FP_Dir);
+            }
         }
 #else
     path.appendDir("data");
@@ -215,6 +220,11 @@ OovString const Project::getDocDirectory()
         if(pos != std::string::npos)
             {
             path.replace(pos, 3, "share/oovaide/doc");
+            }
+        OovStatus status(true, SC_File);
+        if(!FileIsDirOnDisk(path, status))
+            {
+            path.setPath("/usr/share/oovaide/doc", FP_Dir);
             }
         }
 #else
