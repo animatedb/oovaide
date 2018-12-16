@@ -401,7 +401,7 @@ Missing Features
 	    http://stackoverflow.com/questions/81406/parser-for-c-sharp
 	    mono dmcs/mcs
 	- Change help links to github
-		https://rawgit.com/animatedb/oovaide/master/web/articles/PortionDiagrams.html
+		https://combinatronics.com/animatedb/oovaide/master/web/articles/PortionDiagrams.html
 	- Popularize project
 		- https://github.com/rdp/open-source-how-to-popularize-your-project
 		- http://keywordtool.io/search
