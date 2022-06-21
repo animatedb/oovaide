@@ -53,9 +53,7 @@ analysis statistics.
 
 ## Download
 
-Download the Oovaide binaries from the [releases]
-(https://github.com/animatedb/oovaide/releases) or from [Sourceforge]
-(http://sourceforge.net/projects/oovaide/files/). There is a version for Linux,
+Download the Oovaide binaries from the [releases](https://github.com/animatedb/oovaide/releases) or from [Sourceforge](http://sourceforge.net/projects/oovaide/files/). There is a version for Linux,
 and one for Windows. The Linux version requires GTK and CLang to be
 installed on the computer. The Windows version does not require any extra downloads
 for analysis, but CLang or some minGW package is required  if OovAide is used to
@@ -83,9 +81,7 @@ required.
 ## Quick Start
 
 The quickest way to get started is to download the program, then run the examples.
-The explanation of the examples is here.
-[oovaide.sourceforge.net/userguide/examples.html]
-(http://oovaide.sourceforge.net/userguide/examples.html)
+The explanation of the examples is on [Sourceforge](http://oovaide.sourceforge.net/userguide/examples.html).
 
 
 ## Project Goals
@@ -100,10 +96,8 @@ The explanation of the examples is here.
 
 ## Other Documentation
 
- - The user guide is [http://oovaide.sourceforge.net/userguide/oovaideuserguide.shtml]
-	(http://oovaide.sourceforge.net/userguide/oovaideuserguide.shtml)
- - The design documentation is [http://oovaide.sourceforge.net/design/OovaideDesign.html]
-	(http://oovaide.sourceforge.net/design/OovaideDesign.html)
+ - The user guide is http://oovaide.sourceforge.net/userguide/oovaideuserguide.shtml
+ - The design documentation is http://oovaide.sourceforge.net/design/OovaideDesign.html
  - The existing Oovaide website is at http://oovaide.sourceforge.net/
 
 
